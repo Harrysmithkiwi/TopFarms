@@ -169,13 +169,88 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (Populated during roadmap creation) | | |
+| AUTH-01 | Phase 1 | Pending |
+| AUTH-02 | Phase 1 | Pending |
+| AUTH-03 | Phase 1 | Pending |
+| AUTH-04 | Phase 1 | Pending |
+| AUTH-05 | Phase 1 | Pending |
+| DATA-01 | Phase 1 | Pending |
+| DATA-02 | Phase 1 | Pending |
+| DATA-03 | Phase 1 | Pending |
+| DATA-04 | Phase 1 | Pending |
+| DSGN-01 | Phase 1 | Pending |
+| DSGN-02 | Phase 1 | Pending |
+| DSGN-03 | Phase 1 | Pending |
+| DSGN-04 | Phase 1 | Pending |
+| EONB-01 | Phase 2 | Pending |
+| EONB-02 | Phase 2 | Pending |
+| EONB-03 | Phase 2 | Pending |
+| EONB-04 | Phase 2 | Pending |
+| EONB-05 | Phase 2 | Pending |
+| EONB-06 | Phase 2 | Pending |
+| EVER-01 | Phase 2 | Pending |
+| EVER-02 | Phase 2 | Pending |
+| EVER-03 | Phase 2 | Pending |
+| EVER-04 | Phase 2 | Pending |
+| JPOS-01 | Phase 2 | Pending |
+| JPOS-02 | Phase 2 | Pending |
+| JPOS-03 | Phase 2 | Pending |
+| JPOS-04 | Phase 2 | Pending |
+| JPOS-05 | Phase 2 | Pending |
+| JPOS-06 | Phase 2 | Pending |
+| JPOS-07 | Phase 2 | Pending |
+| SONB-01 | Phase 3 | Pending |
+| SONB-02 | Phase 3 | Pending |
+| SONB-03 | Phase 3 | Pending |
+| SONB-04 | Phase 3 | Pending |
+| SONB-05 | Phase 3 | Pending |
+| SONB-06 | Phase 3 | Pending |
+| SONB-07 | Phase 3 | Pending |
+| SONB-08 | Phase 3 | Pending |
+| SRCH-01 | Phase 3 | Pending |
+| SRCH-02 | Phase 3 | Pending |
+| SRCH-03 | Phase 3 | Pending |
+| SRCH-04 | Phase 3 | Pending |
+| SRCH-05 | Phase 3 | Pending |
+| SRCH-06 | Phase 3 | Pending |
+| SRCH-07 | Phase 3 | Pending |
+| SRCH-08 | Phase 3 | Pending |
+| SRCH-09 | Phase 3 | Pending |
+| SRCH-10 | Phase 3 | Pending |
+| SRCH-11 | Phase 3 | Pending |
+| SRCH-12 | Phase 3 | Pending |
+| JDET-01 | Phase 3 | Pending |
+| JDET-02 | Phase 3 | Pending |
+| JDET-03 | Phase 3 | Pending |
+| JDET-04 | Phase 3 | Pending |
+| APPL-01 | Phase 3 | Pending |
+| APPL-02 | Phase 3 | Pending |
+| APPL-03 | Phase 3 | Pending |
+| APPL-04 | Phase 3 | Pending |
+| APPL-05 | Phase 3 | Pending |
+| APPL-06 | Phase 3 | Pending |
+| MTCH-01 | Phase 4 | Pending |
+| MTCH-02 | Phase 4 | Pending |
+| MTCH-03 | Phase 4 | Pending |
+| MTCH-04 | Phase 4 | Pending |
+| MTCH-05 | Phase 4 | Pending |
+| MTCH-06 | Phase 4 | Pending |
+| REVN-01 | Phase 5 | Pending |
+| REVN-02 | Phase 5 | Pending |
+| REVN-03 | Phase 5 | Pending |
+| REVN-04 | Phase 5 | Pending |
+| LAND-01 | Phase 6 | Pending |
+| LAND-02 | Phase 6 | Pending |
+| LAND-03 | Phase 6 | Pending |
+| LAND-04 | Phase 6 | Pending |
+| LAND-05 | Phase 6 | Pending |
+| LAND-06 | Phase 6 | Pending |
 
 **Coverage:**
-- v1 requirements: 68 total
-- Mapped to phases: 0
-- Unmapped: 68 ⚠️
+- v1 requirements: 76 total (note: original header said 68 — actual count of defined IDs is 76)
+- Mapped to phases: 76
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-15*
-*Last updated: 2026-03-15 after initial definition*
+*Last updated: 2026-03-15 after roadmap creation — all requirements mapped*
