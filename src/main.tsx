@@ -16,6 +16,10 @@ import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { EmployerOnboarding } from '@/pages/onboarding/EmployerOnboarding'
 import { PostJob } from '@/pages/jobs/PostJob'
+import { JobDetail } from '@/pages/jobs/JobDetail'
+import { EmployerVerification } from '@/pages/verification/EmployerVerification'
+import { DocumentUpload } from '@/pages/verification/DocumentUpload'
+import { FarmPhotoUpload } from '@/pages/verification/FarmPhotoUpload'
 
 // Placeholder for routes defined in future phases
 function Placeholder({ title }: { title: string }) {
@@ -45,6 +49,7 @@ function OnboardingPlaceholder({ role }: { role: 'employer' | 'seeker' }) {
 }
 
 const router = createBrowserRouter([
+  // ─── Public routes ──────────────────────────────────────────────────────────
   {
     path: '/',
     element: <Home />,
@@ -69,41 +74,13 @@ const router = createBrowserRouter([
     path: '/auth/reset',
     element: <ResetPassword />,
   },
-  {
-    path: '/dashboard/employer',
-    element: (
-      <ProtectedRoute requiredRole="employer">
-        <EmployerDashboard />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/dashboard/seeker',
-    element: (
-      <ProtectedRoute requiredRole="seeker">
-        <SeekerDashboard />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/onboarding/employer',
-    element: (
-      <ProtectedRoute requiredRole="employer">
-        <EmployerOnboarding />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/onboarding/seeker',
-    element: (
-      <ProtectedRoute requiredRole="seeker">
-        <OnboardingPlaceholder role="seeker" />
-      </ProtectedRoute>
-    ),
-  },
+
+  // ─── Jobs ───────────────────────────────────────────────────────────────────
+  // NOTE: /jobs/new MUST be declared before /jobs/:id to prevent React Router
+  // from treating "new" as a dynamic :id param.
   {
     path: '/jobs',
-    element: <Placeholder title="Find Work" />,
+    element: <Placeholder title="Find Work" />, // Phase 3: seeker search page
   },
   {
     path: '/jobs/new',
@@ -122,8 +99,71 @@ const router = createBrowserRouter([
     ),
   },
   {
+    // PUBLIC — no ProtectedRoute wrapper. Component handles auth-gated views internally.
     path: '/jobs/:id',
-    element: <Placeholder title="Job Details" />,
+    element: <JobDetail />,
+  },
+
+  // ─── Employer dashboard & verification ──────────────────────────────────────
+  {
+    path: '/dashboard/employer',
+    element: (
+      <ProtectedRoute requiredRole="employer">
+        <EmployerDashboard />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/dashboard/employer/verification',
+    element: (
+      <ProtectedRoute requiredRole="employer">
+        <EmployerVerification />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/dashboard/employer/verification/documents',
+    element: (
+      <ProtectedRoute requiredRole="employer">
+        <DocumentUpload />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/dashboard/employer/verification/photos',
+    element: (
+      <ProtectedRoute requiredRole="employer">
+        <FarmPhotoUpload />
+      </ProtectedRoute>
+    ),
+  },
+
+  // ─── Seeker dashboard ───────────────────────────────────────────────────────
+  {
+    path: '/dashboard/seeker',
+    element: (
+      <ProtectedRoute requiredRole="seeker">
+        <SeekerDashboard />
+      </ProtectedRoute>
+    ),
+  },
+
+  // ─── Onboarding ─────────────────────────────────────────────────────────────
+  {
+    path: '/onboarding/employer',
+    element: (
+      <ProtectedRoute requiredRole="employer">
+        <EmployerOnboarding />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/onboarding/seeker',
+    element: (
+      <ProtectedRoute requiredRole="seeker">
+        <OnboardingPlaceholder role="seeker" />
+      </ProtectedRoute>
+    ),
   },
 ])
 
