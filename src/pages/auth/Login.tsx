@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { toast } from 'sonner'
 import { Eye, EyeOff } from 'lucide-react'
 import { AuthLayout } from '@/components/layout/AuthLayout'
@@ -16,9 +16,11 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>
 
 export function Login() {
-  const { signIn } = useAuth()
+  const { signIn, session, role, loading } = useAuth()
+  const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const didSubmit = useRef(false)
 
   const {
     register,
@@ -28,6 +30,13 @@ export function Login() {
     resolver: zodResolver(schema),
   })
 
+  // After successful login, role is loaded via onAuthStateChange — navigate when ready
+  useEffect(() => {
+    if (didSubmit.current && !loading && session && role) {
+      navigate(`/dashboard/${role}`, { replace: true })
+    }
+  }, [session, role, loading, navigate])
+
   const onSubmit = async (data: FormValues) => {
     setIsSubmitting(true)
     try {
@@ -35,8 +44,9 @@ export function Login() {
       if (result.error) {
         toast.error(result.error.message)
       } else {
+        didSubmit.current = true
         toast.success('Logged in successfully!')
-        // Routing to dashboard handled in Plan 04 via onAuthStateChange
+        // Navigation handled by useEffect above once role loads
       }
     } catch {
       toast.error('An unexpected error occurred. Please try again.')
