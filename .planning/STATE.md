@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-03-15)
 ## Current Position
 
 Phase: 1 of 6 (Foundation)
-Plan: 2 of 4 in current phase
+Plan: 3 of 4 in current phase
 Status: In progress
-Last activity: 2026-03-15 — Plan 01-02 complete: 10 design system UI components with Radix UI primitives and TopFarms Tailwind v4 theme
+Last activity: 2026-03-15 — Plan 01-03 complete: Supabase Auth integration with useAuth hook, 5 auth pages, split-screen AuthLayout, role metadata for DB trigger
 
-Progress: [██░░░░░░░░] 8%
+Progress: [███░░░░░░░] 12%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
-- Average duration: 3.5 min
-- Total execution time: 0.1 hours
+- Total plans completed: 3
+- Average duration: 3.7 min
+- Total execution time: 0.2 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundation | 2 | 7 min | 3.5 min |
+| 01-foundation | 3 | 11 min | 3.7 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (5 min), 01-02 (2 min)
-- Trend: Faster
+- Last 5 plans: 01-01 (5 min), 01-02 (2 min), 01-03 (4 min)
+- Trend: Stable
 
 *Updated after each plan completion*
 
@@ -53,6 +53,9 @@ Recent decisions affecting current work:
 - [01-02]: Checkbox onCheckedChange normalises Radix boolean | 'indeterminate' to plain boolean for simpler consumer API
 - [01-02]: Select uses position=popper with sideOffset=4 for proper dropdown positioning relative to trigger
 - [01-02]: data-[state=checked] Radix attribute selectors used directly in Tailwind class strings for stateful styling
+- [01-03]: signUpWithRole passes role in metadata.data.role — handle_new_user() DB trigger owns user_roles insert (never from client)
+- [01-03]: Auth pages use direct Tailwind + CSS variable inline styles (not Plan 02 design system) — parallel builds, no circular dependency
+- [01-03]: ResetPassword waits 5s for PASSWORD_RECOVERY event before showing invalid-link UI
 
 ### Pending Todos
 
@@ -67,5 +70,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-15
-Stopped at: Completed 01-02-PLAN.md — 10 design system UI components (Button, Card, Tag, MatchCircle, InfoBox, ProgressBar, Input, Toggle, Checkbox, Select)
+Stopped at: Completed 01-03-PLAN.md — Supabase Auth integration (useAuth hook, 5 auth pages, AuthLayout, role metadata for DB trigger)
 Resume file: None
