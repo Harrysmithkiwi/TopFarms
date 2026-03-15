@@ -10,27 +10,27 @@ See: .planning/PROJECT.md (updated 2026-03-15)
 ## Current Position
 
 Phase: 1 of 6 (Foundation)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-03-15 — Roadmap created, all 6 phases defined with 76 requirements mapped
+Plan: 1 of 4 in current phase
+Status: In progress
+Last activity: 2026-03-15 — Plan 01-01 complete: project scaffold, Tailwind v4 theme, 14-table Supabase schema with RLS
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█░░░░░░░░░] 4%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0
-- Average duration: -
-- Total execution time: 0 hours
+- Total plans completed: 1
+- Average duration: 5 min
+- Total execution time: 0.1 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 01-foundation | 1 | 5 min | 5 min |
 
 **Recent Trend:**
-- Last 5 plans: none yet
+- Last 5 plans: 01-01 (5 min)
 - Trend: -
 
 *Updated after each plan completion*
@@ -42,9 +42,12 @@ Progress: [░░░░░░░░░░] 0%
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- [Research]: Contact fields must live in a separate `seeker_contacts` table — not in `seeker_profiles` — or any employer with SELECT on seeker_profiles can read contact data before paying the placement fee
-- [Research]: User role must be stored in a `user_roles` table, not JWT metadata — JWT `raw_user_meta_data` is client-readable and not a reliable RLS signal
-- [Research]: Tailwind v4 uses CSS-first config (`@theme` directive, no `tailwind.config.js`) — verify `@tailwindcss/vite` peer dep compatibility with Vite 8 on project init
+- [01-01]: @tailwindcss/vite used for Tailwind v4 — CSS-first @theme directive, no tailwind.config.js
+- [01-01]: seeker_contacts is a SEPARATE table from seeker_profiles — contact masking architecture enforced at schema level
+- [01-01]: user_roles table is authoritative role source for RLS — get_user_role() security definer prevents recursion
+- [01-01]: handle_new_user() trigger creates user_roles row atomically with auth.users insert, defaulting to 'seeker'
+- [01-01]: tailwind-merge@3 required — v2 incompatible with Tailwind v4 CSS variable classes
+- [01-01]: react-router@7 unified package used (not react-router-dom)
 - [Research]: Zod v4 + `@hookform/resolvers` v5 import paths changed — verify correct imports on first form implementation
 
 ### Pending Todos
@@ -60,5 +63,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-15
-Stopped at: Roadmap created — 6 phases, 76 requirements mapped, ROADMAP.md and STATE.md written
+Stopped at: Completed 01-01-PLAN.md — project scaffold, Tailwind v4 theme, 14-table Supabase schema with RLS, 40 skills seeded
 Resume file: None

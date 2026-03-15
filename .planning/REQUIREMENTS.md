@@ -17,15 +17,15 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Database & Security
 
-- [ ] **DATA-01**: Supabase PostgreSQL schema with all tables (users, employer_profiles, seeker_profiles, jobs, applications, match_scores, skills, placement_fees, verification_tiers, etc.)
-- [ ] **DATA-02**: Row Level Security policies on all tables enforcing role-based access
-- [ ] **DATA-03**: Contact details (phone, email) masked at RLS level until placement fee acknowledged
-- [ ] **DATA-04**: Skills master table seeded with ~40 dairy + sheep/beef skills with proficiency levels
+- [x] **DATA-01**: Supabase PostgreSQL schema with all tables (users, employer_profiles, seeker_profiles, jobs, applications, match_scores, skills, placement_fees, verification_tiers, etc.)
+- [x] **DATA-02**: Row Level Security policies on all tables enforcing role-based access
+- [x] **DATA-03**: Contact details (phone, email) masked at RLS level until placement fee acknowledged
+- [x] **DATA-04**: Skills master table seeded with ~40 dairy + sheep/beef skills with proficiency levels
 
 ### Design System
 
-- [ ] **DSGN-01**: Component library with Fraunces (display) + DM Sans (body) typography
-- [ ] **DSGN-02**: Colour palette tokens: soil (#2C1A0E), moss (#2D5016), fern (#4A7C2F), meadow (#7AAF3F), hay (#D4A843), cream (#F7F2E8)
+- [x] **DSGN-01**: Component library with Fraunces (display) + DM Sans (body) typography
+- [x] **DSGN-02**: Colour palette tokens: soil (#2C1A0E), moss (#2D5016), fern (#4A7C2F), meadow (#7AAF3F), hay (#D4A843), cream (#F7F2E8)
 - [ ] **DSGN-03**: Reusable form components (inputs, selects, checkboxes, sliders, toggles) styled to design system
 - [ ] **DSGN-04**: Mobile-responsive layout system (320px minimum breakpoint)
 
@@ -174,12 +174,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-03 | Phase 1 | Pending |
 | AUTH-04 | Phase 1 | Pending |
 | AUTH-05 | Phase 1 | Pending |
-| DATA-01 | Phase 1 | Pending |
-| DATA-02 | Phase 1 | Pending |
-| DATA-03 | Phase 1 | Pending |
-| DATA-04 | Phase 1 | Pending |
-| DSGN-01 | Phase 1 | Pending |
-| DSGN-02 | Phase 1 | Pending |
+| DATA-01 | Phase 1 | Complete |
+| DATA-02 | Phase 1 | Complete |
+| DATA-03 | Phase 1 | Complete |
+| DATA-04 | Phase 1 | Complete |
+| DSGN-01 | Phase 1 | Complete |
+| DSGN-02 | Phase 1 | Complete |
 | DSGN-03 | Phase 1 | Pending |
 | DSGN-04 | Phase 1 | Pending |
 | EONB-01 | Phase 2 | Pending |
