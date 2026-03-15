@@ -31,8 +31,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Employer Onboarding
 
-- [ ] **EONB-01**: 8-screen onboarding wizard: farm type, farm details, culture, accommodation, verification start, pricing overview, completion
-- [ ] **EONB-02**: Farm type selection (dairy cattle, sheep & beef)
+- [x] **EONB-01**: 8-screen onboarding wizard: farm type, farm details, culture, accommodation, verification start, pricing overview, completion
+- [x] **EONB-02**: Farm type selection (dairy cattle, sheep & beef)
 - [x] **EONB-03**: Farm details capture (herd size, shed type, milking system, region, property size)
 - [x] **EONB-04**: Culture and work environment description
 - [x] **EONB-05**: Accommodation details with sub-fields (pets, couples, family, utilities included)
@@ -47,10 +47,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Job Posting
 
-- [ ] **JPOS-01**: 7-screen job posting wizard: role basics, farm details, skills required, compensation, description, pricing/payment, success
-- [ ] **JPOS-02**: Role basics: title, contract type, start date, duration
-- [ ] **JPOS-03**: Skills required with proficiency levels from master skills table
-- [ ] **JPOS-04**: Compensation: salary range (NZD annual), accommodation offered, other benefits
+- [x] **JPOS-01**: 7-screen job posting wizard: role basics, farm details, skills required, compensation, description, pricing/payment, success
+- [x] **JPOS-02**: Role basics: title, contract type, start date, duration
+- [x] **JPOS-03**: Skills required with proficiency levels from master skills table
+- [x] **JPOS-04**: Compensation: salary range (NZD annual), accommodation offered, other benefits
 - [ ] **JPOS-05**: Listing fee payment via Stripe: first listing free, Standard $100, Featured $150, Premium $200
 - [x] **JPOS-06**: Job status management: draft, active, paused, filled, expired, archived
 - [ ] **JPOS-07**: 30-day listing expiry with status transitions
@@ -182,8 +182,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DSGN-02 | Phase 1 | Complete |
 | DSGN-03 | Phase 1 | Complete |
 | DSGN-04 | Phase 1 | Complete |
-| EONB-01 | Phase 2 | Pending |
-| EONB-02 | Phase 2 | Pending |
+| EONB-01 | Phase 2 | Complete |
+| EONB-02 | Phase 2 | Complete |
 | EONB-03 | Phase 2 | Complete |
 | EONB-04 | Phase 2 | Complete |
 | EONB-05 | Phase 2 | Complete |
@@ -192,10 +192,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | EVER-02 | Phase 2 | Complete |
 | EVER-03 | Phase 2 | Complete |
 | EVER-04 | Phase 2 | Complete |
-| JPOS-01 | Phase 2 | Pending |
-| JPOS-02 | Phase 2 | Pending |
-| JPOS-03 | Phase 2 | Pending |
-| JPOS-04 | Phase 2 | Pending |
+| JPOS-01 | Phase 2 | Complete |
+| JPOS-02 | Phase 2 | Complete |
+| JPOS-03 | Phase 2 | Complete |
+| JPOS-04 | Phase 2 | Complete |
 | JPOS-05 | Phase 2 | Pending |
 | JPOS-06 | Phase 2 | Complete |
 | JPOS-07 | Phase 2 | Pending |

@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-15T11:36:32.621Z"
+last_updated: "2026-03-15T11:45:16.971Z"
 progress:
   total_phases: 2
   completed_phases: 1
   total_plans: 10
-  completed_plans: 6
+  completed_plans: 8
 ---
 
 # Project State
@@ -23,11 +23,11 @@ See: .planning/PROJECT.md (updated 2026-03-15)
 ## Current Position
 
 Phase: 2 of 6 (Employer Supply Side) — IN PROGRESS
-Plan: 3 of 6 in current phase — COMPLETE
-Status: Phase 2 Plan 3 complete — verification hub, phone OTP flow, NZBN submission, document and farm photo upload pages built
-Last activity: 2026-03-15 — Plan 02-03 complete: 5 verification pages (EmployerVerification hub, PhoneVerification OTP, NzbnVerification inline, DocumentUpload, FarmPhotoUpload) using existing FileDropzone + VerificationBadge + useVerifications components
+Plan: 4 of 6 in current phase — COMPLETE
+Status: Phase 2 Plan 4 complete — job posting wizard (6 steps), draft job creation, skills picker with requirement levels, preview screen
+Last activity: 2026-03-15 — Plan 02-04 complete: PostJob wizard shell + 6 step components (JobStep1Basics through JobStep6Preview), /jobs/new and /jobs/:id/edit routes wired
 
-Progress: [████░░░░░░] 20%
+Progress: [█████░░░░░] 25%
 
 ## Performance Metrics
 
@@ -51,6 +51,7 @@ Progress: [████░░░░░░] 20%
 
 | Phase 02-employer-supply-side P02 | 4 min | 2 tasks | 11 files |
 | Phase 02-employer-supply-side P03 | 3 min | 2 tasks | 5 files |
+| Phase 02-employer-supply-side P04 | 4 | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -90,6 +91,10 @@ Recent decisions affecting current work:
 - [Phase 02-03]: Phone and NZBN verification expand inline via toggleExpand state — only one method expanded at a time
 - [Phase 02-03]: FarmPhotoUpload renders all photos by listing the storage bucket path rather than just the latest document_url — allows multiple photos while keeping verification record schema simple
 - [Phase 02-03]: Routes for verification pages deferred to plan 02-06 to avoid main.tsx parallel edit conflicts
+- [Phase 02-04]: PostJob shell does INSERT on step 1 (no jobId), UPDATE on re-visit (jobId present from URL param)
+- [Phase 02-04]: URL updated via replaceState after draft insert so /jobs/:id/edit works on reload
+- [Phase 02-04]: JobStep3Skills uses delete+insert pattern for job_skills to handle edits cleanly
+- [Phase 02-04]: JobStep6Preview loads from Supabase with job_skills join rather than wizard state for accuracy
 
 ### Pending Todos
 
@@ -104,5 +109,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-15
-Stopped at: Completed 02-02-PLAN.md — 8-screen employer onboarding wizard (EmployerOnboarding shell + Steps 1-8), /onboarding/employer route wired, EmployerDashboard updated with onboarding progress
+Stopped at: Completed 02-04-PLAN.md — job posting wizard (6 content steps: Basics, Farm Details, Skills, Compensation, Description, Preview), /jobs/new and /jobs/:id/edit routes wired
 Resume file: None
