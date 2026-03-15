@@ -136,7 +136,7 @@ export function PostJob() {
           .from('jobs')
           .select('*')
           .eq('id', urlJobId)
-          .eq('employer_id', session.user.id)
+          .eq('employer_id', profile.id)
           .single()
 
         if (jobError) {
