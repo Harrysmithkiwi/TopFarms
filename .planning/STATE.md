@@ -49,6 +49,7 @@ Progress: [████░░░░░░] 20%
 
 *Updated after each plan completion*
 
+| Phase 02-employer-supply-side P02 | 4 min | 2 tasks | 11 files |
 | Phase 02-employer-supply-side P03 | 3 min | 2 tasks | 5 files |
 
 ## Accumulated Context
@@ -81,6 +82,10 @@ Recent decisions affecting current work:
 - [02-01]: TrustLevel computed from verifications: unverified → no verified records; basic → email; verified → email+phone; fully_verified → email+phone+(nzbn or document)+farm_photo
 - [02-01]: Storage buckets use path-scoped RLS via storage.foldername(name)[1] = auth.uid()::text to prevent path guessing even in public buckets
 - [02-01]: SkillsPicker's requirementMode prop allows reuse for both seeker proficiency (basic/intermediate/advanced) and job posting requirement (required/preferred)
+- [02-02]: Wizard shell owns all Supabase persistence — upserts employer_profiles with onboarding_step incremented on each step; last step also sets onboarding_complete: true
+- [02-02]: PGRST116 error code used to distinguish no-rows (new user) from real DB error in profile load on mount
+- [02-02]: Step5 (Verification) and Step6 (Pricing) pass empty object to onComplete — both are informational screens with no required data
+- [02-02]: Step7Preview uses onGoToStep prop from wizard shell for targeted back-navigation while preserving linear-order architecture
 - [Phase 02-03]: EmployerVerification hub auto-creates email verification record on mount (after verifications loaded) using useEffect guard on loadingVerifications
 - [Phase 02-03]: Phone and NZBN verification expand inline via toggleExpand state — only one method expanded at a time
 - [Phase 02-03]: FarmPhotoUpload renders all photos by listing the storage bucket path rather than just the latest document_url — allows multiple photos while keeping verification record schema simple
@@ -99,5 +104,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-15
-Stopped at: Completed 02-03-PLAN.md — verification hub (EmployerVerification), PhoneVerification OTP flow, NzbnVerification inline, DocumentUpload and FarmPhotoUpload pages
+Stopped at: Completed 02-02-PLAN.md — 8-screen employer onboarding wizard (EmployerOnboarding shell + Steps 1-8), /onboarding/employer route wired, EmployerDashboard updated with onboarding progress
 Resume file: None
