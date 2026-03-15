@@ -1,0 +1,40 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=DM+Sans:ital,opsz,wght@0,9..40,300..900;1,9..40,300..900&family=DM+Mono:wght@400;500&display=swap");
+@import "tailwindcss";
+
+@theme {
+  /* Colours */
+  --color-soil: #2c1a0e;
+  --color-soil-deep: #1e1108;
+  --color-moss: #2d5016;
+  --color-fern: #4a7c2f;
+  --color-meadow: #7aaf3f;
+  --color-hay: #d4a843;
+  --color-hay-lt: #fff8e7;
+  --color-cream: #f7f2e8;
+  --color-fog: #eee8dc;
+  --color-mist: #f2eee6;
+  --color-ink: #1a1208;
+  --color-mid: #6b5d4a;
+  --color-light: #9e8e78;
+  --color-white: #ffffff;
+  --color-red: #c0392b;
+  --color-red-lt: #fdf0ee;
+  --color-blue: #1a5276;
+  --color-blue-lt: #eaf4fb;
+  --color-orange: #e67e22;
+  --color-orange-lt: #fef5ec;
+  --color-purple: #6c3483;
+  --color-purple-lt: #f5eef8;
+  --color-green-lt: #eaf5ea;
+
+  /* Typography */
+  --font-display: "Fraunces", serif;
+  --font-body: "DM Sans", sans-serif;
+  --font-mono: "DM Mono", monospace;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-cream);
+  color: var(--color-ink);
+}
