@@ -5,32 +5,32 @@
 See: .planning/PROJECT.md (updated 2026-03-15)
 
 **Core value:** Farm employers and seekers can find each other through agriculture-specific matching that no generic platform provides — shed type, accommodation, DairyNZ qualifications, and herd size experience
-**Current focus:** Phase 1 — Foundation
+**Current focus:** Phase 1 — Foundation (COMPLETE)
 
 ## Current Position
 
-Phase: 1 of 6 (Foundation)
-Plan: 3 of 4 in current phase
-Status: In progress
-Last activity: 2026-03-15 — Plan 01-03 complete: Supabase Auth integration with useAuth hook, 5 auth pages, split-screen AuthLayout, role metadata for DB trigger
+Phase: 1 of 6 (Foundation) — COMPLETE
+Plan: 4 of 4 in current phase — COMPLETE
+Status: Phase 1 complete, ready for Phase 2
+Last activity: 2026-03-15 — Plan 01-04 complete: react-router v7 routing, ProtectedRoute role guards, Nav/Sidebar/DashboardLayout, employer/seeker dashboard shells with onboarding prompts
 
-Progress: [███░░░░░░░] 12%
+Progress: [████░░░░░░] 17%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: 3.7 min
+- Total plans completed: 4
+- Average duration: 3.5 min
 - Total execution time: 0.2 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundation | 3 | 11 min | 3.7 min |
+| 01-foundation | 4 | 14 min | 3.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (5 min), 01-02 (2 min), 01-03 (4 min)
+- Last 5 plans: 01-01 (5 min), 01-02 (2 min), 01-03 (4 min), 01-04 (3 min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -56,6 +56,10 @@ Recent decisions affecting current work:
 - [01-03]: signUpWithRole passes role in metadata.data.role — handle_new_user() DB trigger owns user_roles insert (never from client)
 - [01-03]: Auth pages use direct Tailwind + CSS variable inline styles (not Plan 02 design system) — parallel builds, no circular dependency
 - [01-03]: ResetPassword waits 5s for PASSWORD_RECOVERY event before showing invalid-link UI
+- [01-04]: Router defined with createBrowserRouter in main.tsx — App.tsx replaced with null shell
+- [01-04]: Button has no as/polymorphic prop — dashboard CTAs use Link styled via cn() with equivalent class strings
+- [01-04]: Login navigation uses useRef didSubmit + useEffect on session/role/loading — avoids premature redirect before role loads
+- [01-04]: ProtectedRoute redirects wrong-role users to /dashboard/${role} not /login — employer on seeker route goes straight to their dashboard
 
 ### Pending Todos
 
@@ -70,5 +74,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-15
-Stopped at: Completed 01-03-PLAN.md — Supabase Auth integration (useAuth hook, 5 auth pages, AuthLayout, role metadata for DB trigger)
+Stopped at: Completed 01-04-PLAN.md — react-router v7 routing with ProtectedRoute role guards, Nav/Sidebar/DashboardLayout, employer/seeker dashboard shells (Phase 1 COMPLETE)
 Resume file: None
