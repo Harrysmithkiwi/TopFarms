@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-15T11:45:16.971Z"
+last_updated: "2026-03-15T11:47:23.362Z"
 progress:
   total_phases: 2
   completed_phases: 1
   total_plans: 10
-  completed_plans: 8
+  completed_plans: 9
 ---
 
 # Project State
@@ -23,9 +23,9 @@ See: .planning/PROJECT.md (updated 2026-03-15)
 ## Current Position
 
 Phase: 2 of 6 (Employer Supply Side) — IN PROGRESS
-Plan: 4 of 6 in current phase — COMPLETE
-Status: Phase 2 Plan 4 complete — job posting wizard (6 steps), draft job creation, skills picker with requirement levels, preview screen
-Last activity: 2026-03-15 — Plan 02-04 complete: PostJob wizard shell + 6 step components (JobStep1Basics through JobStep6Preview), /jobs/new and /jobs/:id/edit routes wired
+Plan: 5 of 6 in current phase — COMPLETE
+Status: Phase 2 Plan 5 complete — Stripe payment flow: Edge Functions + PaymentForm + JobStep7Payment + JobStep8Success + employer_id bug fix
+Last activity: 2026-03-15 — Plan 02-05 complete: create-payment-intent Edge Function, stripe-webhook Edge Function, PaymentForm with Stripe Elements, JobStep7Payment (tier selection + payment), JobStep8Success
 
 Progress: [█████░░░░░] 25%
 
@@ -52,6 +52,7 @@ Progress: [█████░░░░░] 25%
 | Phase 02-employer-supply-side P02 | 4 min | 2 tasks | 11 files |
 | Phase 02-employer-supply-side P03 | 3 min | 2 tasks | 5 files |
 | Phase 02-employer-supply-side P04 | 4 | 2 tasks | 8 files |
+| Phase 02-employer-supply-side P05 | 8 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -95,6 +96,9 @@ Recent decisions affecting current work:
 - [Phase 02-04]: URL updated via replaceState after draft insert so /jobs/:id/edit works on reload
 - [Phase 02-04]: JobStep3Skills uses delete+insert pattern for job_skills to handle edits cleanly
 - [Phase 02-04]: JobStep6Preview loads from Supabase with job_skills join rather than wizard state for accuracy
+- [Phase 02-05]: employer_profiles.id (not auth.users.id) is the correct employer_id FK for jobs table
+- [Phase 02-05]: Stripe v14 imported from esm.sh in Deno Edge Functions for PaymentIntent and webhook
+- [Phase 02-05]: First-listing-free: listing_fees count check in Edge Function (server-side) prevents race conditions
 
 ### Pending Todos
 
@@ -109,5 +113,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-15
-Stopped at: Completed 02-04-PLAN.md — job posting wizard (6 content steps: Basics, Farm Details, Skills, Compensation, Description, Preview), /jobs/new and /jobs/:id/edit routes wired
+Stopped at: Completed 02-05-PLAN.md — Stripe payment flow: create-payment-intent Edge Function (first-listing-free + PaymentIntent), stripe-webhook (idempotent job activation), PaymentForm Stripe Elements component, JobStep7Payment, JobStep8Success
 Resume file: None

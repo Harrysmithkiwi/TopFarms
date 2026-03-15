@@ -51,9 +51,9 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **JPOS-02**: Role basics: title, contract type, start date, duration
 - [x] **JPOS-03**: Skills required with proficiency levels from master skills table
 - [x] **JPOS-04**: Compensation: salary range (NZD annual), accommodation offered, other benefits
-- [ ] **JPOS-05**: Listing fee payment via Stripe: first listing free, Standard $100, Featured $150, Premium $200
+- [x] **JPOS-05**: Listing fee payment via Stripe: first listing free, Standard $100, Featured $150, Premium $200
 - [x] **JPOS-06**: Job status management: draft, active, paused, filled, expired, archived
-- [ ] **JPOS-07**: 30-day listing expiry with status transitions
+- [x] **JPOS-07**: 30-day listing expiry with status transitions
 
 ### Seeker Onboarding
 
@@ -196,9 +196,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | JPOS-02 | Phase 2 | Complete |
 | JPOS-03 | Phase 2 | Complete |
 | JPOS-04 | Phase 2 | Complete |
-| JPOS-05 | Phase 2 | Pending |
+| JPOS-05 | Phase 2 | Complete |
 | JPOS-06 | Phase 2 | Complete |
-| JPOS-07 | Phase 2 | Pending |
+| JPOS-07 | Phase 2 | Complete |
 | SONB-01 | Phase 3 | Pending |
 | SONB-02 | Phase 3 | Pending |
 | SONB-03 | Phase 3 | Pending |
