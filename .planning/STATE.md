@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-03-15)
 ## Current Position
 
 Phase: 1 of 6 (Foundation)
-Plan: 1 of 4 in current phase
+Plan: 2 of 4 in current phase
 Status: In progress
-Last activity: 2026-03-15 — Plan 01-01 complete: project scaffold, Tailwind v4 theme, 14-table Supabase schema with RLS
+Last activity: 2026-03-15 — Plan 01-02 complete: 10 design system UI components with Radix UI primitives and TopFarms Tailwind v4 theme
 
-Progress: [█░░░░░░░░░] 4%
+Progress: [██░░░░░░░░] 8%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
-- Average duration: 5 min
+- Total plans completed: 2
+- Average duration: 3.5 min
 - Total execution time: 0.1 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundation | 1 | 5 min | 5 min |
+| 01-foundation | 2 | 7 min | 3.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (5 min)
-- Trend: -
+- Last 5 plans: 01-01 (5 min), 01-02 (2 min)
+- Trend: Faster
 
 *Updated after each plan completion*
 
@@ -49,6 +49,10 @@ Recent decisions affecting current work:
 - [01-01]: tailwind-merge@3 required — v2 incompatible with Tailwind v4 CSS variable classes
 - [01-01]: react-router@7 unified package used (not react-router-dom)
 - [Research]: Zod v4 + `@hookform/resolvers` v5 import paths changed — verify correct imports on first form implementation
+- [01-02]: Input uses forwardRef for react-hook-form register() compatibility in future form implementations
+- [01-02]: Checkbox onCheckedChange normalises Radix boolean | 'indeterminate' to plain boolean for simpler consumer API
+- [01-02]: Select uses position=popper with sideOffset=4 for proper dropdown positioning relative to trigger
+- [01-02]: data-[state=checked] Radix attribute selectors used directly in Tailwind class strings for stateful styling
 
 ### Pending Todos
 
@@ -63,5 +67,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-15
-Stopped at: Completed 01-01-PLAN.md — project scaffold, Tailwind v4 theme, 14-table Supabase schema with RLS, 40 skills seeded
+Stopped at: Completed 01-02-PLAN.md — 10 design system UI components (Button, Card, Tag, MatchCircle, InfoBox, ProgressBar, Input, Toggle, Checkbox, Select)
 Resume file: None

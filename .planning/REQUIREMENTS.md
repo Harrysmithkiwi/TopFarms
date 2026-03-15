@@ -26,8 +26,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **DSGN-01**: Component library with Fraunces (display) + DM Sans (body) typography
 - [x] **DSGN-02**: Colour palette tokens: soil (#2C1A0E), moss (#2D5016), fern (#4A7C2F), meadow (#7AAF3F), hay (#D4A843), cream (#F7F2E8)
-- [ ] **DSGN-03**: Reusable form components (inputs, selects, checkboxes, sliders, toggles) styled to design system
-- [ ] **DSGN-04**: Mobile-responsive layout system (320px minimum breakpoint)
+- [x] **DSGN-03**: Reusable form components (inputs, selects, checkboxes, sliders, toggles) styled to design system
+- [x] **DSGN-04**: Mobile-responsive layout system (320px minimum breakpoint)
 
 ### Employer Onboarding
 
@@ -180,8 +180,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DATA-04 | Phase 1 | Complete |
 | DSGN-01 | Phase 1 | Complete |
 | DSGN-02 | Phase 1 | Complete |
-| DSGN-03 | Phase 1 | Pending |
-| DSGN-04 | Phase 1 | Pending |
+| DSGN-03 | Phase 1 | Complete |
+| DSGN-04 | Phase 1 | Complete |
 | EONB-01 | Phase 2 | Pending |
 | EONB-02 | Phase 2 | Pending |
 | EONB-03 | Phase 2 | Pending |
