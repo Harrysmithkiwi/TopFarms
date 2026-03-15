@@ -12,6 +12,8 @@ import { JobStep3Skills } from './steps/JobStep3Skills'
 import { JobStep4Compensation } from './steps/JobStep4Compensation'
 import { JobStep5Description } from './steps/JobStep5Description'
 import { JobStep6Preview } from './steps/JobStep6Preview'
+import { JobStep7Payment } from './steps/JobStep7Payment'
+import { JobStep8Success } from './steps/JobStep8Success'
 
 const STEP_LABELS = [
   'Basics',
@@ -21,9 +23,10 @@ const STEP_LABELS = [
   'Description',
   'Preview',
   'Payment',
+  'Done',
 ]
 
-const TOTAL_STEPS = 7
+const TOTAL_STEPS = 8
 
 export interface JobPostingData {
   // Step 1
@@ -59,6 +62,7 @@ export interface JobPostingData {
 }
 
 export interface EmployerProfileDefaults {
+  id?: string // employer_profiles.id (UUID) — required for jobs FK
   region?: string
   farm_type?: string
   shed_type?: string[]
@@ -112,6 +116,7 @@ export function PostJob() {
         }
 
         setEmployerProfile({
+          id: profile.id, // employer_profiles.id used as employer_id FK in jobs table
           region: profile.region,
           farm_type: profile.farm_type,
           shed_type: profile.shed_type,
@@ -183,10 +188,17 @@ export function PostJob() {
 
     if (!jobId) {
       // First submission — INSERT new draft job
+      // employer_id must be employer_profiles.id (UUID), not auth.users.id
+      if (!employerProfile.id) {
+        toast.error('Employer profile not loaded. Please refresh and try again.')
+        setSaving(false)
+        return
+      }
+
       const { data, error } = await supabase
         .from('jobs')
         .insert({
-          employer_id: session.user.id,
+          employer_id: employerProfile.id,
           source: 'direct',
           status: 'draft',
           title: updatedData.title,
@@ -409,23 +421,17 @@ export function PostJob() {
             />
           )}
 
-          {currentStep === 6 && (
-            <div className="text-center py-8 space-y-3">
-              <h2 className="text-lg font-semibold" style={{ color: 'var(--color-ink)' }}>
-                Choose a listing plan
-              </h2>
-              <p className="text-sm" style={{ color: 'var(--color-mid)' }}>
-                Payment flow coming in the next step.
-              </p>
-              <button
-                type="button"
-                onClick={() => navigate('/dashboard/employer')}
-                className="text-sm font-medium"
-                style={{ color: 'var(--color-fern)' }}
-              >
-                Return to dashboard
-              </button>
-            </div>
+          {currentStep === 6 && jobId && employerProfile.id && (
+            <JobStep7Payment
+              jobId={jobId}
+              employerId={employerProfile.id}
+              onComplete={() => wizard.nextStep()}
+              onBack={() => wizard.prevStep()}
+            />
+          )}
+
+          {currentStep === 7 && jobId && (
+            <JobStep8Success jobId={jobId} />
           )}
         </div>
       </div>
