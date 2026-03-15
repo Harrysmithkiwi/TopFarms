@@ -14,6 +14,7 @@ import { EmployerDashboard } from '@/pages/dashboard/EmployerDashboard'
 import { SeekerDashboard } from '@/pages/dashboard/SeekerDashboard'
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
+import { EmployerOnboarding } from '@/pages/onboarding/EmployerOnboarding'
 
 // Placeholder for routes defined in future phases
 function Placeholder({ title }: { title: string }) {
@@ -87,7 +88,7 @@ const router = createBrowserRouter([
     path: '/onboarding/employer',
     element: (
       <ProtectedRoute requiredRole="employer">
-        <OnboardingPlaceholder role="employer" />
+        <EmployerOnboarding />
       </ProtectedRoute>
     ),
   },

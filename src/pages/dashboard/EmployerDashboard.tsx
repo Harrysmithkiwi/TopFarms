@@ -1,10 +1,62 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { Card } from '@/components/ui/Card'
 import { ProgressBar } from '@/components/ui/ProgressBar'
 import { cn } from '@/lib/utils'
+import { supabase } from '@/lib/supabase'
+import { useAuth } from '@/hooks/useAuth'
+
+const TOTAL_STEPS = 8
+
+interface OnboardingStatus {
+  onboarding_step: number
+  onboarding_complete: boolean
+}
 
 export function EmployerDashboard() {
+  const { session } = useAuth()
+  const [onboarding, setOnboarding] = useState<OnboardingStatus | null>(null)
+  const [loadingStatus, setLoadingStatus] = useState(true)
+
+  useEffect(() => {
+    async function loadOnboardingStatus() {
+      if (!session?.user) {
+        setLoadingStatus(false)
+        return
+      }
+
+      const { data, error } = await supabase
+        .from('employer_profiles')
+        .select('onboarding_step, onboarding_complete')
+        .eq('user_id', session.user.id)
+        .single()
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error loading onboarding status:', error)
+      }
+
+      if (data) {
+        setOnboarding({
+          onboarding_step: data.onboarding_step ?? 0,
+          onboarding_complete: data.onboarding_complete ?? false,
+        })
+      } else {
+        setOnboarding({ onboarding_step: 0, onboarding_complete: false })
+      }
+
+      setLoadingStatus(false)
+    }
+
+    loadOnboardingStatus()
+  }, [session?.user?.id])
+
+  const onboardingProgress = onboarding
+    ? Math.round((onboarding.onboarding_step / TOTAL_STEPS) * 100)
+    : 0
+
+  const isOnboardingComplete = onboarding?.onboarding_complete ?? false
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -21,45 +73,84 @@ export function EmployerDashboard() {
           </p>
         </div>
 
-        {/* Onboarding prompt */}
-        <Card className="p-6">
-          <div className="flex flex-col md:flex-row md:items-center gap-6">
-            <div
-              className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0 text-3xl"
-              style={{ backgroundColor: 'var(--color-hay-lt)' }}
-            >
-              🌾
-            </div>
-            <div className="flex-1 min-w-0">
-              <h2
-                className="text-lg font-semibold mb-1"
-                style={{ color: 'var(--color-ink)' }}
+        {/* Onboarding prompt (only if not complete) */}
+        {!loadingStatus && !isOnboardingComplete && (
+          <Card className="p-6">
+            <div className="flex flex-col md:flex-row md:items-center gap-6">
+              <div
+                className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0 text-3xl"
+                style={{ backgroundColor: 'var(--color-hay-lt)' }}
               >
-                Complete your farm profile to start posting jobs
-              </h2>
-              <p className="text-sm mb-4" style={{ color: 'var(--color-mid)' }}>
-                Set up your farm details, verification, and team culture to attract the best
-                candidates
-              </p>
-              <ProgressBar progress={0} className="mb-2" />
-              <p className="text-xs" style={{ color: 'var(--color-light)' }}>
-                0 of 8 steps completed
-              </p>
+                🌾
+              </div>
+              <div className="flex-1 min-w-0">
+                <h2
+                  className="text-lg font-semibold mb-1"
+                  style={{ color: 'var(--color-ink)' }}
+                >
+                  Complete your farm profile to start posting jobs
+                </h2>
+                <p className="text-sm mb-4" style={{ color: 'var(--color-mid)' }}>
+                  Set up your farm details, verification, and team culture to attract the best
+                  candidates
+                </p>
+                <ProgressBar progress={onboardingProgress} className="mb-2" />
+                <p className="text-xs" style={{ color: 'var(--color-light)' }}>
+                  {onboarding?.onboarding_step ?? 0} of {TOTAL_STEPS} steps completed
+                </p>
+              </div>
+              <div className="flex-shrink-0">
+                <Link
+                  to="/onboarding/employer"
+                  className={cn(
+                    'font-body font-bold rounded-[8px] transition-all duration-200 inline-flex items-center justify-center',
+                    'bg-moss text-white hover:bg-fern',
+                    'px-4 py-2 text-[13px]',
+                  )}
+                >
+                  {(onboarding?.onboarding_step ?? 0) > 0 ? 'Continue Setup' : 'Get Started'}
+                </Link>
+              </div>
             </div>
-            <div className="flex-shrink-0">
-              <Link
-                to="/onboarding/employer"
-                className={cn(
-                  'font-body font-bold rounded-[8px] transition-all duration-200 inline-flex items-center justify-center',
-                  'bg-moss text-white hover:bg-fern',
-                  'px-4 py-2 text-[13px]',
-                )}
+          </Card>
+        )}
+
+        {/* Post-onboarding: Post first job CTA */}
+        {!loadingStatus && isOnboardingComplete && (
+          <Card className="p-6">
+            <div className="flex flex-col md:flex-row md:items-center gap-6">
+              <div
+                className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0 text-3xl"
+                style={{ backgroundColor: 'var(--color-hay-lt)' }}
               >
-                Get Started
-              </Link>
+                📌
+              </div>
+              <div className="flex-1 min-w-0">
+                <h2
+                  className="text-lg font-semibold mb-1"
+                  style={{ color: 'var(--color-ink)' }}
+                >
+                  Post your first job listing
+                </h2>
+                <p className="text-sm" style={{ color: 'var(--color-mid)' }}>
+                  Your farm profile is complete — start finding great farm workers today
+                </p>
+              </div>
+              <div className="flex-shrink-0">
+                <Link
+                  to="/jobs/new"
+                  className={cn(
+                    'font-body font-bold rounded-[8px] transition-all duration-200 inline-flex items-center justify-center',
+                    'bg-moss text-white hover:bg-fern',
+                    'px-4 py-2 text-[13px]',
+                  )}
+                >
+                  Post a Job
+                </Link>
+              </div>
             </div>
-          </div>
-        </Card>
+          </Card>
+        )}
 
         {/* Empty state cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
