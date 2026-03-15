@@ -18,7 +18,7 @@ async function loadRole(userId: string): Promise<UserRole | null> {
   const { data, error } = await supabase
     .from('user_roles')
     .select('role')
-    .eq('id', userId)
+    .eq('user_id', userId)
     .single()
 
   if (error || !data) return null

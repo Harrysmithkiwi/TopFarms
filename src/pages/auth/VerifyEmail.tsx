@@ -28,7 +28,7 @@ export function VerifyEmail() {
         const { data: roleData } = await supabase
           .from('user_roles')
           .select('role')
-          .eq('id', session.user.id)
+          .eq('user_id', session.user.id)
           .single()
 
         const role = (roleData?.role as UserRole) ?? 'seeker'
