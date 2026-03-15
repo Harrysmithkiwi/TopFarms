@@ -13,7 +13,7 @@ TopFarms launches as a six-phase build. Phase 1 lays the schema, security, auth,
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Schema, auth, RLS policies, design system, and project scaffolding
-- [ ] **Phase 2: Employer Supply Side** - Employer onboarding, job posting wizard, Stripe listing fees, and verification
+- [x] **Phase 2: Employer Supply Side** - Employer onboarding, job posting wizard, Stripe listing fees, and verification (completed 2026-03-15)
 - [ ] **Phase 3: Seeker Demand Side** - Seeker onboarding, ag-specific job search, and application pipeline
 - [ ] **Phase 4: Match Scoring Engine** - Pre-computed match scores, staleness triggers, and AI explanations
 - [ ] **Phase 5: Revenue Protection** - Placement fee gate, RLS contact masking, and follow-up emails
@@ -108,7 +108,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 4/4 | Complete | 2026-03-15 |
-| 2. Employer Supply Side | 5/6 | In Progress|  |
+| 2. Employer Supply Side | 6/6 | Complete   | 2026-03-15 |
 | 3. Seeker Demand Side | 0/TBD | Not started | - |
 | 4. Match Scoring Engine | 0/TBD | Not started | - |
 | 5. Revenue Protection | 0/TBD | Not started | - |

@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: unknown
-last_updated: "2026-03-15T11:47:23.362Z"
+status: phase-complete
+last_updated: "2026-03-15T11:53:00Z"
 progress:
   total_phases: 2
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 10
-  completed_plans: 9
+  completed_plans: 10
 ---
 
 # Project State
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-15)
 
 **Core value:** Farm employers and seekers can find each other through agriculture-specific matching that no generic platform provides — shed type, accommodation, DairyNZ qualifications, and herd size experience
-**Current focus:** Phase 2 — Employer Supply Side (IN PROGRESS)
+**Current focus:** Phase 2 — Employer Supply Side (COMPLETE)
 
 ## Current Position
 
-Phase: 2 of 6 (Employer Supply Side) — IN PROGRESS
-Plan: 5 of 6 in current phase — COMPLETE
-Status: Phase 2 Plan 5 complete — Stripe payment flow: Edge Functions + PaymentForm + JobStep7Payment + JobStep8Success + employer_id bug fix
-Last activity: 2026-03-15 — Plan 02-05 complete: create-payment-intent Edge Function, stripe-webhook Edge Function, PaymentForm with Stripe Elements, JobStep7Payment (tier selection + payment), JobStep8Success
+Phase: 2 of 6 (Employer Supply Side) — COMPLETE
+Plan: 6 of 6 in current phase — COMPLETE
+Status: Phase 2 complete — EmployerDashboard with job management, JobDetail public page, MarkFilledModal, pg_cron expiry, all routes wired
+Last activity: 2026-03-15 — Plan 02-06 complete: EmployerDashboard rebuild (job cards, filter tabs, stats, verification nudge), MarkFilledModal, JobDetail (visitor sticky CTA, trust badge), 008_job_expiry_cron.sql, main.tsx route wiring
 
-Progress: [█████░░░░░] 25%
+Progress: [██████░░░░] 30%
 
 ## Performance Metrics
 
@@ -53,6 +53,7 @@ Progress: [█████░░░░░] 25%
 | Phase 02-employer-supply-side P03 | 3 min | 2 tasks | 5 files |
 | Phase 02-employer-supply-side P04 | 4 | 2 tasks | 8 files |
 | Phase 02-employer-supply-side P05 | 8 | 2 tasks | 7 files |
+| Phase 02-employer-supply-side P06 | 4 min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -99,6 +100,10 @@ Recent decisions affecting current work:
 - [Phase 02-05]: employer_profiles.id (not auth.users.id) is the correct employer_id FK for jobs table
 - [Phase 02-05]: Stripe v14 imported from esm.sh in Deno Edge Functions for PaymentIntent and webhook
 - [Phase 02-05]: First-listing-free: listing_fees count check in Edge Function (server-side) prevents race conditions
+- [02-06]: JobDetail loads employer verifications via separate query (not nested join) for clarity and reliability
+- [02-06]: /jobs/:id is public (no ProtectedRoute) — component handles auth-gated views internally based on session/role
+- [02-06]: /jobs/new route placed before /jobs/:id in router config to prevent 'new' matching as :id param
+- [02-06]: MarkFilledModal handles no-applicants case gracefully — employer can mark filled externally before Phase 3 applications exist
 
 ### Pending Todos
 
@@ -113,5 +118,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-15
-Stopped at: Completed 02-05-PLAN.md — Stripe payment flow: create-payment-intent Edge Function (first-listing-free + PaymentIntent), stripe-webhook (idempotent job activation), PaymentForm Stripe Elements component, JobStep7Payment, JobStep8Success
+Stopped at: Completed 02-06-PLAN.md — Phase 2 complete: EmployerDashboard rebuild with job management cards/filter tabs, MarkFilledModal, JobDetail public page with visitor sticky CTA + trust badge, pg_cron daily expiry job, all routes wired in main.tsx
 Resume file: None
