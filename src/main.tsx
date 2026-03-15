@@ -15,6 +15,7 @@ import { SeekerDashboard } from '@/pages/dashboard/SeekerDashboard'
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { EmployerOnboarding } from '@/pages/onboarding/EmployerOnboarding'
+import { PostJob } from '@/pages/jobs/PostJob'
 
 // Placeholder for routes defined in future phases
 function Placeholder({ title }: { title: string }) {
@@ -103,6 +104,22 @@ const router = createBrowserRouter([
   {
     path: '/jobs',
     element: <Placeholder title="Find Work" />,
+  },
+  {
+    path: '/jobs/new',
+    element: (
+      <ProtectedRoute requiredRole="employer">
+        <PostJob />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/jobs/:id/edit',
+    element: (
+      <ProtectedRoute requiredRole="employer">
+        <PostJob />
+      </ProtectedRoute>
+    ),
   },
   {
     path: '/jobs/:id',
