@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: unknown
-last_updated: "2026-03-15T08:40:52.293Z"
+status: in_progress
+last_updated: "2026-03-15T11:28:32.000Z"
 progress:
-  total_phases: 1
+  total_phases: 6
   completed_phases: 1
-  total_plans: 4
-  completed_plans: 4
+  total_plans: 10
+  completed_plans: 5
 ---
 
 # Project State
@@ -18,22 +18,22 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-15)
 
 **Core value:** Farm employers and seekers can find each other through agriculture-specific matching that no generic platform provides — shed type, accommodation, DairyNZ qualifications, and herd size experience
-**Current focus:** Phase 1 — Foundation (COMPLETE)
+**Current focus:** Phase 2 — Employer Supply Side (IN PROGRESS)
 
 ## Current Position
 
-Phase: 1 of 6 (Foundation) — COMPLETE
-Plan: 4 of 4 in current phase — COMPLETE
-Status: Phase 1 complete, ready for Phase 2
-Last activity: 2026-03-15 — Plan 01-04 complete: react-router v7 routing, ProtectedRoute role guards, Nav/Sidebar/DashboardLayout, employer/seeker dashboard shells with onboarding prompts
+Phase: 2 of 6 (Employer Supply Side) — IN PROGRESS
+Plan: 1 of 6 in current phase — COMPLETE
+Status: Phase 2 Plan 1 complete — foundation migrations and shared components ready
+Last activity: 2026-03-15 — Plan 02-01 complete: 4 SQL migrations, 6 UI components (StepIndicator, FileDropzone, SkillsPicker, TierCard, JobCard, VerificationBadge), 2 hooks (useWizard, useVerifications), extended domain types, react-dropzone + @stripe/* packages installed
 
-Progress: [████░░░░░░] 17%
+Progress: [████░░░░░░] 20%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
-- Average duration: 3.5 min
+- Total plans completed: 5
+- Average duration: 3.6 min
 - Total execution time: 0.2 hours
 
 **By Phase:**
@@ -41,9 +41,10 @@ Progress: [████░░░░░░] 17%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation | 4 | 14 min | 3.5 min |
+| 02-employer-supply-side | 1 | 5 min | 5 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (5 min), 01-02 (2 min), 01-03 (4 min), 01-04 (3 min)
+- Last 5 plans: 01-01 (5 min), 01-02 (2 min), 01-03 (4 min), 01-04 (3 min), 02-01 (5 min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -73,6 +74,11 @@ Recent decisions affecting current work:
 - [01-04]: Button has no as/polymorphic prop — dashboard CTAs use Link styled via cn() with equivalent class strings
 - [01-04]: Login navigation uses useRef didSubmit + useEffect on session/role/loading — avoids premature redirect before role loads
 - [01-04]: ProtectedRoute redirects wrong-role users to /dashboard/${role} not /login — employer on seeker route goes straight to their dashboard
+- [02-01]: useWizard is 0-indexed with progress = (currentStep / (totalSteps - 1)) * 100 — wizard shell owns database persistence, hook manages navigation state only
+- [02-01]: employer_verifications uses UNIQUE(employer_id, method) — each method has one record per employer, upserted on verification event
+- [02-01]: TrustLevel computed from verifications: unverified → no verified records; basic → email; verified → email+phone; fully_verified → email+phone+(nzbn or document)+farm_photo
+- [02-01]: Storage buckets use path-scoped RLS via storage.foldername(name)[1] = auth.uid()::text to prevent path guessing even in public buckets
+- [02-01]: SkillsPicker's requirementMode prop allows reuse for both seeker proficiency (basic/intermediate/advanced) and job posting requirement (required/preferred)
 
 ### Pending Todos
 
@@ -87,5 +93,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-15
-Stopped at: Completed 01-04-PLAN.md — react-router v7 routing with ProtectedRoute role guards, Nav/Sidebar/DashboardLayout, employer/seeker dashboard shells (Phase 1 COMPLETE)
+Stopped at: Completed 02-01-PLAN.md — database migrations (employer profile columns, employer_verifications table, jobs status + benefits, storage buckets), shared UI components (StepIndicator, FileDropzone, SkillsPicker, TierCard, JobCard, VerificationBadge), hooks (useWizard, useVerifications), extended domain types
 Resume file: None

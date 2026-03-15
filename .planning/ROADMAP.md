@@ -47,7 +47,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. A job listing becomes active after Stripe payment confirmation and expires after 30 days with correct status transitions (draft, active, paused, filled, expired, archived)
   4. Employer verification badges (email auto-verified, phone SMS, NZBN, document upload, farm photo) appear on the employer profile and job listings
   5. A visitor viewing a job detail page sees full listing information and a signup prompt instead of match details
-**Plans**: TBD
+**Plans**: 6 plans
+- [x] 02-01-PLAN.md — Database migrations (employer profile columns, employer_verifications, jobs status+benefits, storage buckets), shared UI components (StepIndicator, FileDropzone, SkillsPicker, TierCard, JobCard, VerificationBadge), hooks (useWizard, useVerifications), extended domain types
+- [ ] 02-02-PLAN.md — Employer onboarding wizard (8 screens)
+- [ ] 02-03-PLAN.md — Job posting wizard (7 screens)
+- [ ] 02-04-PLAN.md — Verification system (5-method: email, phone, NZBN, document, farm photo)
+- [ ] 02-05-PLAN.md — Stripe listing fee payment flow
+- [ ] 02-06-PLAN.md — Job management dashboard (status lifecycle, edit, archive, mark filled)
 
 ### Phase 3: Seeker Demand Side
 **Goal**: A seeker can complete their profile, search jobs using all NZ agriculture-specific filters, view match scores on results, and submit and track applications through the full pipeline
@@ -102,7 +108,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 4/4 | Complete | 2026-03-15 |
-| 2. Employer Supply Side | 0/TBD | Not started | - |
+| 2. Employer Supply Side | 1/6 | In progress | - |
 | 3. Seeker Demand Side | 0/TBD | Not started | - |
 | 4. Match Scoring Engine | 0/TBD | Not started | - |
 | 5. Revenue Protection | 0/TBD | Not started | - |
