@@ -31,7 +31,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. A user can reset their forgotten password via an email link and log in with the new password
   4. Every database table has RLS enabled and enforced — seeker contact details (phone, email) are inaccessible without a confirmed placement fee record
   5. All design system components (typography, colour tokens, form controls, responsive breakpoints) render correctly at 320px and above
-**Plans**: TBD
+**Plans**: 4 plans
+- [ ] 01-01-PLAN.md — Project scaffolding, Tailwind v4 theme, Supabase schema with RLS, skills seed
+- [ ] 01-02-PLAN.md — Design system component library (10 UI primitives)
+- [ ] 01-03-PLAN.md — Auth flows (signup with role, login, email verify, password reset)
+- [ ] 01-04-PLAN.md — Protected routes, role routing, Nav/Sidebar, dashboard shells
 
 ### Phase 2: Employer Supply Side
 **Goal**: An employer can complete their profile, post a job with listing tier payment, and have their employer verification status displayed — creating the supply of listings that seekers will search
@@ -97,7 +101,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/TBD | Not started | - |
+| 1. Foundation | 0/4 | Planning complete | - |
 | 2. Employer Supply Side | 0/TBD | Not started | - |
 | 3. Seeker Demand Side | 0/TBD | Not started | - |
 | 4. Match Scoring Engine | 0/TBD | Not started | - |
