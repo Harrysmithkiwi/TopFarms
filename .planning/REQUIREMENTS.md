@@ -41,9 +41,9 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Employer Verification
 
 - [x] **EVER-01**: 5-tier verification system: email (auto), phone SMS, NZBN, document upload, farm photo
-- [ ] **EVER-02**: Verification badges displayed on employer profile and job listings
-- [ ] **EVER-03**: Manual NZBN verification (admin flag, no API integration for MVP)
-- [ ] **EVER-04**: Document and photo upload via Supabase Storage
+- [x] **EVER-02**: Verification badges displayed on employer profile and job listings
+- [x] **EVER-03**: Manual NZBN verification (admin flag, no API integration for MVP)
+- [x] **EVER-04**: Document and photo upload via Supabase Storage
 
 ### Job Posting
 
@@ -189,9 +189,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | EONB-05 | Phase 2 | Complete |
 | EONB-06 | Phase 2 | Complete |
 | EVER-01 | Phase 2 | Complete |
-| EVER-02 | Phase 2 | Pending |
-| EVER-03 | Phase 2 | Pending |
-| EVER-04 | Phase 2 | Pending |
+| EVER-02 | Phase 2 | Complete |
+| EVER-03 | Phase 2 | Complete |
+| EVER-04 | Phase 2 | Complete |
 | JPOS-01 | Phase 2 | Pending |
 | JPOS-02 | Phase 2 | Pending |
 | JPOS-03 | Phase 2 | Pending |
