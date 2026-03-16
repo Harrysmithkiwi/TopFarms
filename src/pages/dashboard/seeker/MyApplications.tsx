@@ -33,7 +33,6 @@ export function MyApplications() {
   const [applications, setApplications] = useState<ApplicationWithJob[]>([])
   const [scoreMap, setScoreMap] = useState<Map<string, MatchScore>>(new Map())
   const [loading, setLoading] = useState(true)
-  const [seekerProfileId, setSeekerProfileId] = useState<string | null>(null)
 
   useEffect(() => {
     async function loadData() {
@@ -55,7 +54,6 @@ export function MyApplications() {
       }
 
       const profileId = profileData.id
-      setSeekerProfileId(profileId)
 
       // Load applications with job details
       const { data, error } = await supabase
@@ -76,10 +74,11 @@ export function MyApplications() {
       // Fetch batch match scores for all unique job IDs
       if (apps.length > 0) {
         const jobIds = [...new Set(apps.map((a) => a.job_id))]
-        const { data: scores } = await supabase.rpc('compute_match_scores_batch', {
-          p_seeker_id: profileId,
-          p_job_ids: jobIds,
-        })
+        const { data: scores } = await supabase
+          .from('match_scores')
+          .select('job_id, total_score, breakdown')
+          .eq('seeker_id', profileId)
+          .in('job_id', jobIds)
 
         if (scores && Array.isArray(scores)) {
           const map = new Map<string, MatchScore>()

@@ -219,8 +219,19 @@ export function JobDetail() {
 
           // Fetch match score
           const { data: scoreData } = await supabase
-            .rpc('compute_match_score', { p_seeker_id: profile.id, p_job_id: jobId })
+            .from('match_scores')
+            .select('total_score, breakdown, explanation')
+            .eq('seeker_id', profile.id)
+            .eq('job_id', jobId)
+            .maybeSingle()
           if (scoreData) setMatchScore(scoreData as MatchScore)
+
+          // Trigger async AI explanation if score exists but explanation is missing
+          if (scoreData && !scoreData.explanation) {
+            supabase.functions.invoke('generate-match-explanation', {
+              body: { seeker_id: profile.id, job_id: jobId },
+            }).catch(() => {}) // fire-and-forget, no error handling needed
+          }
 
           // Check if already applied
           const { data: existingApp } = await supabase

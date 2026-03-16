@@ -161,18 +161,20 @@ export function ApplicantDashboard() {
       let newScoreMap = new Map<string, MatchScore>()
 
       if (seekerIds.length > 0) {
-        // Use per-seeker scores: compute_match_scores_batch expects seeker_id + job_ids
-        // We invert: for each seeker, compute score for this job
-        // Batch by calling once per seeker or using the RPC with single job
-        for (const seekerId of seekerIds) {
-          const { data: scoreData } = await supabase.rpc('compute_match_scores_batch', {
-            p_seeker_id: seekerId,
-            p_job_ids: [jobId],
-          })
-          if (scoreData && Array.isArray(scoreData) && scoreData.length > 0) {
-            const row = scoreData[0] as { job_id: string; total_score: number; breakdown: MatchScore['breakdown'] }
-            // Key by seeker_id so we can look up by applicant
-            newScoreMap.set(seekerId, { total_score: row.total_score, breakdown: row.breakdown })
+        // Load all pre-computed scores for this job in one query
+        const { data: scoreRows } = await supabase
+          .from('match_scores')
+          .select('seeker_id, total_score, breakdown, explanation')
+          .eq('job_id', jobId)
+          .in('seeker_id', seekerIds)
+
+        if (scoreRows) {
+          for (const row of scoreRows) {
+            newScoreMap.set(row.seeker_id, {
+              total_score: row.total_score,
+              breakdown: row.breakdown,
+              explanation: row.explanation,
+            })
           }
         }
       }

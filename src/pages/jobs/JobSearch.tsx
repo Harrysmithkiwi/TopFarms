@@ -226,10 +226,11 @@ export function JobSearch() {
 
           if (profileData?.id) {
             const newJobIds = fetchedJobs.map((j) => j.id)
-            const { data: scoreData } = await supabase.rpc('compute_match_scores_batch', {
-              p_seeker_id: profileData.id,
-              p_job_ids: newJobIds,
-            })
+            const { data: scoreData } = await supabase
+              .from('match_scores')
+              .select('job_id, total_score, breakdown')
+              .eq('seeker_id', profileData.id)
+              .in('job_id', newJobIds)
 
             const newScores = new Map(scores)
             ;(scoreData as BatchScoreRow[] | null)?.forEach((row) => {
