@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 04-00-PLAN.md
-last_updated: "2026-03-16T08:49:13.308Z"
+stopped_at: Completed 04-02-PLAN.md
+last_updated: "2026-03-16T08:49:29.129Z"
 last_activity: "2026-03-15 — Plan 02-06 complete: EmployerDashboard rebuild (job cards, filter tabs, stats, verification nudge), MarkFilledModal, JobDetail (visitor sticky CTA, trust badge), 008_job_expiry_cron.sql, main.tsx route wiring"
 progress:
   total_phases: 6
@@ -65,6 +65,7 @@ Progress: [██████░░░░] 30%
 | Phase 03-seeker-demand-side P05 | 22 | 2 tasks | 4 files |
 | Phase 03-seeker-demand-side P06 | 5 | 2 tasks | 4 files |
 | Phase 04-match-scoring-engine P00 | 1 | 1 tasks | 2 files |
+| Phase 04-match-scoring-engine P02 | 5min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -136,6 +137,7 @@ Recent decisions affecting current work:
 - [Phase 03-05]: Status Tag variant mapping: applied=blue, review=hay, interview=orange, shortlisted=purple, offered/hired=green, declined=red, withdrawn=grey
 - [Phase 03-06]: Removed Placeholder and OnboardingPlaceholder from main.tsx — all Phase 3 routes now have real components, no future-phase placeholders remain
 - [Phase 03-06]: Sidebar seeker nav omits Settings item — no seeker settings page exists yet; employer-only for now
+- [Phase 04-02]: claude-sonnet-4-20250514 used for AI match explanations; max_tokens:150 enforces 2-3 sentence output; graceful null degradation on all-retry failure
 
 ### Pending Todos
 
@@ -149,6 +151,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-16T08:49:01.380Z
-Stopped at: Completed 04-00-PLAN.md
+Last session: 2026-03-16T08:49:29.126Z
+Stopped at: Completed 04-02-PLAN.md
 Resume file: None
