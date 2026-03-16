@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 03-02-PLAN.md
-last_updated: "2026-03-16T03:06:33.482Z"
+stopped_at: Completed 03-03-PLAN.md
+last_updated: "2026-03-16T03:30:48.181Z"
 last_activity: "2026-03-15 — Plan 02-06 complete: EmployerDashboard rebuild (job cards, filter tabs, stats, verification nudge), MarkFilledModal, JobDetail (visitor sticky CTA, trust badge), 008_job_expiry_cron.sql, main.tsx route wiring"
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 17
-  completed_plans: 13
+  completed_plans: 14
   percent: 30
 ---
 
@@ -60,6 +60,7 @@ Progress: [██████░░░░] 30%
 | Phase 03-seeker-demand-side P00 | 3min | 2 tasks | 8 files |
 | Phase 03-seeker-demand-side P01 | 7 | 2 tasks | 2 files |
 | Phase 03-seeker-demand-side P02 | 8 | 2 tasks | 9 files |
+| Phase 03-seeker-demand-side P03 | 20 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -118,6 +119,9 @@ Recent decisions affecting current work:
 - [Phase 03-02]: SeekerOnboarding.tsx tracks seekerProfileId in state from first upsert response — enables skills step delete+insert without requiring pre-existing profile row
 - [Phase 03-02]: SkillsPicker sector: sheep_beef only if that's the sole sector_pref; otherwise dairy — avoids passing union string type to 'dairy' | 'sheep_beef' prop
 - [Phase 03-02]: Post-onboarding redirect: /jobs?sector={firstSector}&region={region} with URLSearchParams for clean param building
+- [Phase 03-03]: __salary__ special key used in onFilterChange for atomic salary_min + salary_max batch update via functional setSearchParams — avoids race condition from two sequential calls on same searchParams snapshot
+- [Phase 03-03]: handleFilterChange uses functional setSearchParams(prev => ...) for all filter updates — ensures serial calls read latest state
+- [Phase 03-03]: Employer verifications fetched in single batch query after job results, stored in Map<employerId> to avoid per-card queries
 
 ### Pending Todos
 
@@ -131,6 +135,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-16T03:06:33.480Z
-Stopped at: Completed 03-02-PLAN.md
+Last session: 2026-03-16T03:30:48.179Z
+Stopped at: Completed 03-03-PLAN.md
 Resume file: None
