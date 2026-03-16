@@ -104,7 +104,7 @@ New components introduced in this phase. All must follow patterns from `MarkFill
 - Backdrop: `fixed inset-0 z-40 bg-black/40`
 - Container: `fixed inset-0 z-50 flex items-center justify-center p-4`
 - Card: `bg-white rounded-[16px] shadow-xl w-full max-w-md border-[1.5px] border-fog`
-- Header: icon (`Lock` from lucide-react, `w-5 h-5 text-hay`) + title "Shortlist Candidate" at 16px semibold + close `X` button
+- Header: icon (`Lock` from lucide-react, `w-5 h-5 text-hay`) + title "Shortlist Candidate" at 16px semibold + close `X` button (`aria-label="Close"`)
 - Body sections (separated by `space-y-6`):
   1. Candidate name at 14px semibold text-ink
   2. Fee tier badge — pill showing tier label (`Entry`, `Experienced`, `Senior`) at 11px uppercase tracking-wide, `bg-hay-lt text-hay rounded-full px-2 py-1`
@@ -112,7 +112,7 @@ New components introduced in this phase. All must follow patterns from `MarkFill
   4. Explanatory text at 13px text-mid: "Placement fee applies if you hire this candidate. Shortlisting is free — this creates a record that you've seen their contact details."
   5. Contact details preview (blurred): phone and email placeholders at 13px font-mono text-mid blur-sm select-none
 - Footer: two buttons full-width in `flex gap-3`
-  - Cancel: `variant="outline"` (existing Button component) — label: "Cancel"
+  - Cancel: `variant="outline"` (existing Button component) — label: "Keep current stage"
   - Primary CTA: `variant="primary"` (existing Button component) — label: "I understand — release contact details"
 
 **Interaction contract:**
@@ -131,7 +131,7 @@ New components introduced in this phase. All must follow patterns from `MarkFill
 
 **Structure:**
 - Same backdrop/container/card pattern as `PlacementFeeModal` and `MarkFilledModal`
-- Header: icon (`CheckCircle` from lucide-react, `w-5 h-5 text-moss`) + title "Confirm Hire" at 16px semibold + close `X` button
+- Header: icon (`CheckCircle` from lucide-react, `w-5 h-5 text-moss`) + title "Confirm Hire" at 16px semibold + close `X` button (`aria-label="Close"`)
 - Body sections:
   1. Candidate label at 14px text-mid: "Confirm hire of [Seeker name/region]?"
   2. Invoice warning box: `rounded-[10px] p-4 bg-hay-lt border-[1.5px] border-hay` containing:
@@ -182,7 +182,7 @@ The existing `Select` component renders options from the `options` array. The tr
 | Element | Copy |
 |---------|------|
 | Primary CTA — PlacementFeeModal | "I understand — release contact details" |
-| Cancel — PlacementFeeModal | "Cancel" |
+| Cancel — PlacementFeeModal | "Keep current stage" |
 | Primary CTA — HireConfirmModal | "Confirm Hire" |
 | Cancel — HireConfirmModal | "Go back" |
 | Modal title — PlacementFeeModal | "Shortlist Candidate" |
