@@ -99,7 +99,12 @@ Plans:
   2. Seeker contact details (phone, email) remain masked in the UI and inaccessible via direct database query until the employer has acknowledged the placement fee — the gate is enforced at the RLS level, not in UI code
   3. Stripe listing fee payment intents are created and processed with idempotency guards — duplicate Stripe webhook deliveries do not create duplicate fee records or double-activate listings
   4. Placement follow-up emails are sent automatically at Day 7 and Day 14 after shortlisting, via Resend Edge Function
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [ ] 05-01-PLAN.md — Migration 011 (follow-up columns, stripe_customer_id, pg_cron), placement fee types + calculatePlacementFee, test scaffolds
+- [ ] 05-02-PLAN.md — PlacementFeeModal, acknowledge-placement-fee Edge Function, ApplicantDashboard shortlist intercept, ApplicantPanel contact masking
+- [ ] 05-03-PLAN.md — HireConfirmModal, create-placement-invoice Edge Function (Stripe Invoice Net 14), stripe-webhook invoice event handler
+- [ ] 05-04-PLAN.md — send-followup-emails Edge Function (Day 7/14 employer+seeker emails via Resend)
 
 ### Phase 6: Landing Page and Launch
 **Goal**: The public landing page is live with real platform data, all flows pass mobile QA at 320px, accessibility meets WCAG 2.1 AA, and the application is deployed to production on Vercel
@@ -123,5 +128,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 2. Employer Supply Side | 6/6 | Complete   | 2026-03-15 |
 | 3. Seeker Demand Side | 7/7 | Complete   | 2026-03-16 |
 | 4. Match Scoring Engine | 4/4 | Complete   | 2026-03-16 |
-| 5. Revenue Protection | 0/TBD | Not started | - |
+| 5. Revenue Protection | 0/4 | Not started | - |
 | 6. Landing Page and Launch | 0/TBD | Not started | - |
