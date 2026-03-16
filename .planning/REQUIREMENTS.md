@@ -57,18 +57,18 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Seeker Onboarding
 
-- [ ] **SONB-01**: 8-step onboarding wizard: account setup, farm type preference, experience, skills with proficiency, life situation, visa status, completion, profile management
+- [x] **SONB-01**: 8-step onboarding wizard: account setup, farm type preference, experience, skills with proficiency, life situation, visa status, completion, profile management
 - [ ] **SONB-02**: Farm type preference selection (dairy cattle, sheep & beef)
 - [ ] **SONB-03**: Experience capture: years, herd sizes worked with, shed types experienced
 - [ ] **SONB-04**: Skills self-assessment with proficiency levels from master skills table
 - [ ] **SONB-05**: Life situation: couples seeking, accommodation requirements (pets, family), location preferences
 - [ ] **SONB-06**: Visa and work rights status
-- [ ] **SONB-07**: DairyNZ qualification level capture
+- [x] **SONB-07**: DairyNZ qualification level capture
 - [ ] **SONB-08**: Seeker profile persisted and editable after completion
 
 ### Job Search
 
-- [ ] **SRCH-01**: Job search results page with filter sidebar (280px desktop, drawer on mobile)
+- [x] **SRCH-01**: Job search results page with filter sidebar (280px desktop, drawer on mobile)
 - [ ] **SRCH-02**: Filter by shed type (rotary, herringbone, other)
 - [ ] **SRCH-03**: Filter by accommodation (available/not, pets, couples, family)
 - [ ] **SRCH-04**: Filter by visa requirements
@@ -99,11 +99,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Application Pipeline
 
-- [ ] **APPL-01**: Seeker can submit application to a job listing
+- [x] **APPL-01**: Seeker can submit application to a job listing
 - [ ] **APPL-02**: Seeker application view with pipeline stages: applied, review, interview, shortlisted, offered, hired, declined, withdrawn
 - [ ] **APPL-03**: Seeker can withdraw application
 - [ ] **APPL-04**: Employer applicant dashboard with ranked candidates by match score
-- [ ] **APPL-05**: Employer can transition applicants through pipeline stages
+- [x] **APPL-05**: Employer can transition applicants through pipeline stages
 - [ ] **APPL-06**: Expandable applicant panels showing seeker profile details
 
 ### Placement Fee & Revenue
@@ -199,15 +199,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | JPOS-05 | Phase 2 | Complete |
 | JPOS-06 | Phase 2 | Complete |
 | JPOS-07 | Phase 2 | Complete |
-| SONB-01 | Phase 3 | Pending |
+| SONB-01 | Phase 3 | Complete |
 | SONB-02 | Phase 3 | Pending |
 | SONB-03 | Phase 3 | Pending |
 | SONB-04 | Phase 3 | Pending |
 | SONB-05 | Phase 3 | Pending |
 | SONB-06 | Phase 3 | Pending |
-| SONB-07 | Phase 3 | Pending |
+| SONB-07 | Phase 3 | Complete |
 | SONB-08 | Phase 3 | Pending |
-| SRCH-01 | Phase 3 | Pending |
+| SRCH-01 | Phase 3 | Complete |
 | SRCH-02 | Phase 3 | Pending |
 | SRCH-03 | Phase 3 | Pending |
 | SRCH-04 | Phase 3 | Pending |
@@ -223,11 +223,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | JDET-02 | Phase 3 | Pending |
 | JDET-03 | Phase 3 | Pending |
 | JDET-04 | Phase 3 | Pending |
-| APPL-01 | Phase 3 | Pending |
+| APPL-01 | Phase 3 | Complete |
 | APPL-02 | Phase 3 | Pending |
 | APPL-03 | Phase 3 | Pending |
 | APPL-04 | Phase 3 | Pending |
-| APPL-05 | Phase 3 | Pending |
+| APPL-05 | Phase 3 | Complete |
 | APPL-06 | Phase 3 | Pending |
 | MTCH-01 | Phase 4 | Pending |
 | MTCH-02 | Phase 4 | Pending |

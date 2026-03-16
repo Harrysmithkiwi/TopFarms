@@ -3,7 +3,7 @@ phase: 3
 slug: seeker-demand-side
 status: draft
 nyquist_compliant: false
-wave_0_complete: false
+wave_0_complete: true
 created: 2026-03-16
 ---
 
@@ -52,13 +52,13 @@ created: 2026-03-16
 
 ## Wave 0 Requirements
 
-- [ ] `vitest.config.ts` + `tests/setup.ts` — framework config
-- [ ] `npm install -D vitest @testing-library/react @testing-library/user-event jsdom` — framework install
-- [ ] `tests/seeker-onboarding.test.tsx` — stubs for SONB-01 through SONB-08
-- [ ] `tests/job-search.test.tsx` — stubs for SRCH-01 through SRCH-11
-- [ ] `tests/applications.test.ts` — stubs for APPL-01 through APPL-06
-- [ ] `tests/pipeline-transitions.test.ts` — state machine logic for APPL-05
-- [ ] `tests/seeker-profile.test.ts` — profile CRUD for SONB-07
+- [x] `vitest.config.ts` + `tests/setup.ts` — framework config
+- [x] `npm install -D vitest @testing-library/react @testing-library/user-event jsdom` — framework install
+- [x] `tests/seeker-onboarding.test.tsx` — stubs for SONB-01 through SONB-08
+- [x] `tests/job-search.test.tsx` — stubs for SRCH-01 through SRCH-11
+- [x] `tests/applications.test.ts` — stubs for APPL-01 through APPL-06
+- [x] `tests/pipeline-transitions.test.ts` — state machine logic for APPL-05
+- [x] `tests/seeker-profile.test.ts` — profile CRUD for SONB-07
 
 ---
 

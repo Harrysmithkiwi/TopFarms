@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Phase 3 context gathered
-last_updated: "2026-03-15T23:40:23.956Z"
+stopped_at: Completed 03-00-PLAN.md
+last_updated: "2026-03-16T01:16:20.526Z"
 last_activity: "2026-03-15 — Plan 02-06 complete: EmployerDashboard rebuild (job cards, filter tabs, stats, verification nudge), MarkFilledModal, JobDetail (visitor sticky CTA, trust badge), 008_job_expiry_cron.sql, main.tsx route wiring"
 progress:
   total_phases: 6
   completed_phases: 2
-  total_plans: 10
-  completed_plans: 10
+  total_plans: 17
+  completed_plans: 12
   percent: 30
 ---
 
@@ -57,6 +57,8 @@ Progress: [██████░░░░] 30%
 | Phase 02-employer-supply-side P04 | 4 | 2 tasks | 8 files |
 | Phase 02-employer-supply-side P05 | 8 | 2 tasks | 7 files |
 | Phase 02-employer-supply-side P06 | 4 min | 2 tasks | 5 files |
+| Phase 03-seeker-demand-side P00 | 3min | 2 tasks | 8 files |
+| Phase 03-seeker-demand-side P01 | 7 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -107,6 +109,11 @@ Recent decisions affecting current work:
 - [02-06]: /jobs/:id is public (no ProtectedRoute) — component handles auth-gated views internally based on session/role
 - [02-06]: /jobs/new route placed before /jobs/:id in router config to prevent 'new' matching as :id param
 - [02-06]: MarkFilledModal handles no-applicants case gracefully — employer can mark filled externally before Phase 3 applications exist
+- [Phase 03-00]: vitest mergeConfig(viteConfig) pattern used so @ alias from vite.config.ts is inherited automatically
+- [Phase 03-00]: CSS disabled in test environment (css: false) to avoid Tailwind v4 parsing overhead in vitest
+- [Phase 03-01]: compute_match_score returns jsonb with total_score + breakdown; batch function loops returning TABLE — avoids N+1 on search page
+- [Phase 03-01]: Location scoring: open_to_relocate=true gives 16pts (80%), outranking adjacency (60%) — rewards seeker flexibility explicitly
+- [Phase 03-01]: Phase 3 types: all seeker-side enums exported as const arrays with value/label shape for direct UI consumption
 
 ### Pending Todos
 
@@ -120,6 +127,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T23:40:23.942Z
-Stopped at: Phase 3 context gathered
-Resume file: .planning/phases/03-seeker-demand-side/03-CONTEXT.md
+Last session: 2026-03-16T01:16:06.514Z
+Stopped at: Completed 03-00-PLAN.md
+Resume file: None
