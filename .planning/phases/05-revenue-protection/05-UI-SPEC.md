@@ -47,12 +47,16 @@ Exceptions: touch targets for close buttons use `w-8 h-8` (32px) — established
 
 ## Typography
 
+Exactly 4 sizes and 2 weights are declared. No other sizes or weights may be introduced in this phase.
+
 | Role | Size | Weight | Line Height | Font | Source |
 |------|------|--------|-------------|------|--------|
 | Body | 14px | 400 (regular) | 1.5 | DM Sans | Established across all existing components |
 | Label / detail | 13px | 400 (regular) | 1.5 | DM Sans | `ApplicantPanel.tsx` profile grid values |
 | Section heading (uppercase) | 11px | 600 (semibold) | 1.5 | DM Sans | `ApplicantPanel.tsx` section labels with `tracking-wide uppercase` |
-| Modal heading | 16px | 700 (bold) | 1.2 | DM Sans | `MarkFilledModal.tsx` `text-[16px] font-bold` |
+| Modal heading / fee amount | 16px | 600 (semibold) | 1.2 | DM Sans | `MarkFilledModal.tsx` heading pattern; fee amount reuses this size |
+
+**Weight rule:** exactly 2 weights in use — 400 (regular) and 600 (semibold). The codebase pattern `font-bold` (700) is replaced by `font-semibold` (600) in all new components introduced by this phase. Existing components that use `font-bold` are not touched.
 
 Fonts are loaded via Google Fonts in `src/index.css`. No new font sizes introduced in this phase — all four sizes above are already present in the codebase.
 
@@ -64,7 +68,7 @@ Fonts are loaded via Google Fonts in `src/index.css`. No new font sizes introduc
 |------|-------|-----|-------|
 | Dominant (60%) | `cream` | `#F7F2E8` | Page background, modal body background |
 | Secondary (30%) | `white` + `fog` | `#FFFFFF` / `#EEE8DC` | Modal surface (`bg-white`), card borders (`border-fog`), panel backgrounds |
-| Accent (10%) | `moss` / `fern` | `#2D5016` / `#4A7C2F` | Confirm buttons, active/selected states, fee tier badge background on confirmed state |
+| Accent (10%) | `moss` | `#2D5016` | Confirm buttons, active/selected states, fee tier badge background on confirmed state. `fern` (`#4A7C2F`) is the hover/active variant of `moss` only — not a separate accent role. Use `fern` exclusively for hover and focus-visible states on `moss`-coloured interactive elements. |
 | Destructive | `red` | `#C0392B` | Decline/block interactions only — not used in this phase's primary flows |
 | Semantic: warning | `hay` | `#D4A843` | Placement fee tier badge (the fee amount display to convey cost awareness) |
 | Semantic: info text | `mid` | `#6B5D4A` | Secondary body text, modal description copy |
@@ -100,15 +104,15 @@ New components introduced in this phase. All must follow patterns from `MarkFill
 - Backdrop: `fixed inset-0 z-40 bg-black/40`
 - Container: `fixed inset-0 z-50 flex items-center justify-center p-4`
 - Card: `bg-white rounded-[16px] shadow-xl w-full max-w-md border-[1.5px] border-fog`
-- Header: icon (`Lock` from lucide-react, `w-5 h-5 text-hay`) + title "Shortlist Candidate" at 16px bold + close `X` button
-- Body sections (separated by `space-y-5`):
+- Header: icon (`Lock` from lucide-react, `w-5 h-5 text-hay`) + title "Shortlist Candidate" at 16px semibold + close `X` button
+- Body sections (separated by `space-y-6`):
   1. Candidate name at 14px semibold text-ink
-  2. Fee tier badge — pill showing tier label (`Entry`, `Experienced`, `Senior`) at 11px uppercase tracking-wide, `bg-hay-lt text-hay rounded-full px-3 py-1`
-  3. Fee amount at 20px font-display font-semibold text-ink (e.g. `$400 NZD`)
+  2. Fee tier badge — pill showing tier label (`Entry`, `Experienced`, `Senior`) at 11px uppercase tracking-wide, `bg-hay-lt text-hay rounded-full px-2 py-1`
+  3. Fee amount at 16px font-semibold text-ink (e.g. `$400 NZD`) — reuses modal heading size
   4. Explanatory text at 13px text-mid: "Placement fee applies if you hire this candidate. Shortlisting is free — this creates a record that you've seen their contact details."
   5. Contact details preview (blurred): phone and email placeholders at 13px font-mono text-mid blur-sm select-none
 - Footer: two buttons full-width in `flex gap-3`
-  - Cancel: `variant="outline"` (existing Button component)
+  - Cancel: `variant="outline"` (existing Button component) — label: "Cancel"
   - Primary CTA: `variant="primary"` (existing Button component) — label: "I understand — release contact details"
 
 **Interaction contract:**
@@ -127,14 +131,16 @@ New components introduced in this phase. All must follow patterns from `MarkFill
 
 **Structure:**
 - Same backdrop/container/card pattern as `PlacementFeeModal` and `MarkFilledModal`
-- Header: icon (`CheckCircle` from lucide-react, `w-5 h-5 text-moss`) + title "Confirm Hire" at 16px bold + close `X` button
+- Header: icon (`CheckCircle` from lucide-react, `w-5 h-5 text-moss`) + title "Confirm Hire" at 16px semibold + close `X` button
 - Body sections:
   1. Candidate label at 14px text-mid: "Confirm hire of [Seeker name/region]?"
   2. Invoice warning box: `rounded-[10px] p-4 bg-hay-lt border-[1.5px] border-hay` containing:
      - "A placement fee invoice of **$X NZD** will be generated and sent to your email." at 13px text-mid
-     - "Payment due within 14 days." at 12px text-light
-  3. Star rating (optional): five `Star` icons from lucide-react at 20px, unfilled `text-fog` / filled `text-hay`, click to rate 1-5. Label at 11px uppercase tracking-wide text-light: "Rate your matching experience (optional)"
+     - "Payment due within 14 days." at 11px uppercase tracking-wide text-light (absorbed into 11px label size)
+  3. Star rating (optional): five `Star` icons from lucide-react at 16px, unfilled `text-fog` / filled `text-hay`, click to rate 1-5. Label at 11px uppercase tracking-wide text-light: "Rate your matching experience (optional)"
 - Footer: Cancel + "Confirm Hire" (variant="primary")
+  - Cancel: `variant="outline"` — label: "Go back"
+  - Primary CTA: `variant="primary"` — label: "Confirm Hire"
 - Loading: "Confirming..." with Loader2 spin
 
 **Interaction contract:**
@@ -157,7 +163,7 @@ Two-column grid (same pattern as Seeker Profile section):
   Email label (11px text-light) / value (13px text-ink or blurred mono)
 ```
 
-**Before acknowledgement (contacts prop null):** both values show blurred mono placeholders + a 12px caption below the grid: "Contact details unlock when you shortlist this candidate." at `text-[12px] font-body text-light italic`.
+**Before acknowledgement (contacts prop null):** both values show blurred mono placeholders + a caption below the grid at 11px uppercase tracking-wide text-light italic: "Contact details unlock when you shortlist this candidate." (absorbed from 12px into 11px label size).
 
 **After acknowledgement (contacts prop present):** real values, no blur. Phone shows "Not provided" in `text-light italic` if `contacts.phone === null`.
 
@@ -176,7 +182,9 @@ The existing `Select` component renders options from the `options` array. The tr
 | Element | Copy |
 |---------|------|
 | Primary CTA — PlacementFeeModal | "I understand — release contact details" |
+| Cancel — PlacementFeeModal | "Cancel" |
 | Primary CTA — HireConfirmModal | "Confirm Hire" |
+| Cancel — HireConfirmModal | "Go back" |
 | Modal title — PlacementFeeModal | "Shortlist Candidate" |
 | Modal title — HireConfirmModal | "Confirm Hire" |
 | Fee tier badge — entry | "Entry Level" |
@@ -252,8 +260,8 @@ Emails are sent via Resend. HTML is authored inline as template literal strings 
 - Accent: `#2D5016` (moss) for primary CTA button background
 - Text: `#1A1208` (ink) for body, `#6B5D4A` (mid) for secondary text
 - Max-width: 560px centered
-- No external image assets (logo as text: "TopFarms" in `#2D5016` at 20px)
-- CTA button: `background:#2D5016; color:#ffffff; border-radius:8px; padding:12px 24px; text-decoration:none; font-weight:600`
+- No external image assets (logo as text: "TopFarms" in `#2D5016` at 16px)
+- CTA button: `background:#2D5016; color:#ffffff; border-radius:8px; padding:16px 24px; text-decoration:none; font-weight:600`
 
 ---
 
