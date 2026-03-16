@@ -15,6 +15,7 @@ import { SeekerDashboard } from '@/pages/dashboard/SeekerDashboard'
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { EmployerOnboarding } from '@/pages/onboarding/EmployerOnboarding'
+import { SeekerOnboarding } from '@/pages/onboarding/SeekerOnboarding'
 import { PostJob } from '@/pages/jobs/PostJob'
 import { JobDetail } from '@/pages/jobs/JobDetail'
 import { EmployerVerification } from '@/pages/verification/EmployerVerification'
@@ -161,7 +162,7 @@ const router = createBrowserRouter([
     path: '/onboarding/seeker',
     element: (
       <ProtectedRoute requiredRole="seeker">
-        <OnboardingPlaceholder role="seeker" />
+        <SeekerOnboarding />
       </ProtectedRoute>
     ),
   },
