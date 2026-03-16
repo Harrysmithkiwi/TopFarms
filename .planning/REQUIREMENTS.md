@@ -58,35 +58,35 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Seeker Onboarding
 
 - [x] **SONB-01**: 8-step onboarding wizard: account setup, farm type preference, experience, skills with proficiency, life situation, visa status, completion, profile management
-- [ ] **SONB-02**: Farm type preference selection (dairy cattle, sheep & beef)
-- [ ] **SONB-03**: Experience capture: years, herd sizes worked with, shed types experienced
-- [ ] **SONB-04**: Skills self-assessment with proficiency levels from master skills table
-- [ ] **SONB-05**: Life situation: couples seeking, accommodation requirements (pets, family), location preferences
-- [ ] **SONB-06**: Visa and work rights status
+- [x] **SONB-02**: Farm type preference selection (dairy cattle, sheep & beef)
+- [x] **SONB-03**: Experience capture: years, herd sizes worked with, shed types experienced
+- [x] **SONB-04**: Skills self-assessment with proficiency levels from master skills table
+- [x] **SONB-05**: Life situation: couples seeking, accommodation requirements (pets, family), location preferences
+- [x] **SONB-06**: Visa and work rights status
 - [x] **SONB-07**: DairyNZ qualification level capture
-- [ ] **SONB-08**: Seeker profile persisted and editable after completion
+- [x] **SONB-08**: Seeker profile persisted and editable after completion
 
 ### Job Search
 
 - [x] **SRCH-01**: Job search results page with filter sidebar (280px desktop, drawer on mobile)
-- [ ] **SRCH-02**: Filter by shed type (rotary, herringbone, other)
-- [ ] **SRCH-03**: Filter by accommodation (available/not, pets, couples, family)
-- [ ] **SRCH-04**: Filter by visa requirements
-- [ ] **SRCH-05**: Filter by DairyNZ qualification level
-- [ ] **SRCH-06**: Filter by herd size range
-- [ ] **SRCH-07**: Filter by couples welcome
-- [ ] **SRCH-08**: Filter by salary range (dual-handle slider)
-- [ ] **SRCH-09**: Filter by region (NZ regions)
-- [ ] **SRCH-10**: Filter by contract type
-- [ ] **SRCH-11**: Search results display match score per job (when logged in as seeker)
-- [ ] **SRCH-12**: Search results load in <1.5 seconds
+- [x] **SRCH-02**: Filter by shed type (rotary, herringbone, other)
+- [x] **SRCH-03**: Filter by accommodation (available/not, pets, couples, family)
+- [x] **SRCH-04**: Filter by visa requirements
+- [x] **SRCH-05**: Filter by DairyNZ qualification level
+- [x] **SRCH-06**: Filter by herd size range
+- [x] **SRCH-07**: Filter by couples welcome
+- [x] **SRCH-08**: Filter by salary range (dual-handle slider)
+- [x] **SRCH-09**: Filter by region (NZ regions)
+- [x] **SRCH-10**: Filter by contract type
+- [x] **SRCH-11**: Search results display match score per job (when logged in as seeker)
+- [x] **SRCH-12**: Search results load in <1.5 seconds
 
 ### Job Detail Page
 
-- [ ] **JDET-01**: Job detail page with full listing information
-- [ ] **JDET-02**: Logged-in seeker view: match score breakdown by category (shed type, location, accommodation, skills, salary, visa)
-- [ ] **JDET-03**: Visitor view: signup prompt instead of match details
-- [ ] **JDET-04**: Apply button with optional cover note
+- [x] **JDET-01**: Job detail page with full listing information
+- [x] **JDET-02**: Logged-in seeker view: match score breakdown by category (shed type, location, accommodation, skills, salary, visa)
+- [x] **JDET-03**: Visitor view: signup prompt instead of match details
+- [x] **JDET-04**: Apply button with optional cover note
 
 ### Match Scoring Engine
 
@@ -100,7 +100,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Application Pipeline
 
 - [x] **APPL-01**: Seeker can submit application to a job listing
-- [ ] **APPL-02**: Seeker application view with pipeline stages: applied, review, interview, shortlisted, offered, hired, declined, withdrawn
+- [x] **APPL-02**: Seeker application view with pipeline stages: applied, review, interview, shortlisted, offered, hired, declined, withdrawn
 - [ ] **APPL-03**: Seeker can withdraw application
 - [ ] **APPL-04**: Employer applicant dashboard with ranked candidates by match score
 - [x] **APPL-05**: Employer can transition applicants through pipeline stages
@@ -200,31 +200,31 @@ Which phases cover which requirements. Updated during roadmap creation.
 | JPOS-06 | Phase 2 | Complete |
 | JPOS-07 | Phase 2 | Complete |
 | SONB-01 | Phase 3 | Complete |
-| SONB-02 | Phase 3 | Pending |
-| SONB-03 | Phase 3 | Pending |
-| SONB-04 | Phase 3 | Pending |
-| SONB-05 | Phase 3 | Pending |
-| SONB-06 | Phase 3 | Pending |
+| SONB-02 | Phase 3 | Complete |
+| SONB-03 | Phase 3 | Complete |
+| SONB-04 | Phase 3 | Complete |
+| SONB-05 | Phase 3 | Complete |
+| SONB-06 | Phase 3 | Complete |
 | SONB-07 | Phase 3 | Complete |
-| SONB-08 | Phase 3 | Pending |
+| SONB-08 | Phase 3 | Complete |
 | SRCH-01 | Phase 3 | Complete |
-| SRCH-02 | Phase 3 | Pending |
-| SRCH-03 | Phase 3 | Pending |
-| SRCH-04 | Phase 3 | Pending |
-| SRCH-05 | Phase 3 | Pending |
-| SRCH-06 | Phase 3 | Pending |
-| SRCH-07 | Phase 3 | Pending |
-| SRCH-08 | Phase 3 | Pending |
-| SRCH-09 | Phase 3 | Pending |
-| SRCH-10 | Phase 3 | Pending |
-| SRCH-11 | Phase 3 | Pending |
-| SRCH-12 | Phase 3 | Pending |
-| JDET-01 | Phase 3 | Pending |
-| JDET-02 | Phase 3 | Pending |
-| JDET-03 | Phase 3 | Pending |
-| JDET-04 | Phase 3 | Pending |
+| SRCH-02 | Phase 3 | Complete |
+| SRCH-03 | Phase 3 | Complete |
+| SRCH-04 | Phase 3 | Complete |
+| SRCH-05 | Phase 3 | Complete |
+| SRCH-06 | Phase 3 | Complete |
+| SRCH-07 | Phase 3 | Complete |
+| SRCH-08 | Phase 3 | Complete |
+| SRCH-09 | Phase 3 | Complete |
+| SRCH-10 | Phase 3 | Complete |
+| SRCH-11 | Phase 3 | Complete |
+| SRCH-12 | Phase 3 | Complete |
+| JDET-01 | Phase 3 | Complete |
+| JDET-02 | Phase 3 | Complete |
+| JDET-03 | Phase 3 | Complete |
+| JDET-04 | Phase 3 | Complete |
 | APPL-01 | Phase 3 | Complete |
-| APPL-02 | Phase 3 | Pending |
+| APPL-02 | Phase 3 | Complete |
 | APPL-03 | Phase 3 | Pending |
 | APPL-04 | Phase 3 | Pending |
 | APPL-05 | Phase 3 | Complete |
