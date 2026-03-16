@@ -13,7 +13,6 @@ import { ResetPassword } from '@/pages/auth/ResetPassword'
 import { EmployerDashboard } from '@/pages/dashboard/EmployerDashboard'
 import { SeekerDashboard } from '@/pages/dashboard/SeekerDashboard'
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
-import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { EmployerOnboarding } from '@/pages/onboarding/EmployerOnboarding'
 import { SeekerOnboarding } from '@/pages/onboarding/SeekerOnboarding'
 import { PostJob } from '@/pages/jobs/PostJob'
@@ -22,6 +21,8 @@ import { EmployerVerification } from '@/pages/verification/EmployerVerification'
 import { DocumentUpload } from '@/pages/verification/DocumentUpload'
 import { FarmPhotoUpload } from '@/pages/verification/FarmPhotoUpload'
 import { JobSearch } from '@/pages/jobs/JobSearch'
+import { MyApplications } from '@/pages/dashboard/seeker/MyApplications'
+import { ApplicantDashboard } from '@/pages/dashboard/employer/ApplicantDashboard'
 
 // Placeholder for routes defined in future phases
 function Placeholder({ title }: { title: string }) {
@@ -39,14 +40,6 @@ function Placeholder({ title }: { title: string }) {
         </p>
       </div>
     </div>
-  )
-}
-
-function OnboardingPlaceholder({ role }: { role: 'employer' | 'seeker' }) {
-  return (
-    <DashboardLayout>
-      <Placeholder title={role === 'employer' ? 'Employer Onboarding' : 'Seeker Onboarding'} />
-    </DashboardLayout>
   )
 }
 
@@ -107,6 +100,15 @@ const router = createBrowserRouter([
   },
 
   // ─── Employer dashboard & verification ──────────────────────────────────────
+  // NOTE: /dashboard/employer/jobs/:id/applicants MUST be before /dashboard/employer
+  {
+    path: '/dashboard/employer/jobs/:id/applicants',
+    element: (
+      <ProtectedRoute requiredRole="employer">
+        <ApplicantDashboard />
+      </ProtectedRoute>
+    ),
+  },
   {
     path: '/dashboard/employer',
     element: (
@@ -141,6 +143,16 @@ const router = createBrowserRouter([
   },
 
   // ─── Seeker dashboard ───────────────────────────────────────────────────────
+  // NOTE: /dashboard/seeker/applications MUST be before /dashboard/seeker to prevent
+  // React Router from treating the sub-path as a nested match on the parent.
+  {
+    path: '/dashboard/seeker/applications',
+    element: (
+      <ProtectedRoute requiredRole="seeker">
+        <MyApplications />
+      </ProtectedRoute>
+    ),
+  },
   {
     path: '/dashboard/seeker',
     element: (

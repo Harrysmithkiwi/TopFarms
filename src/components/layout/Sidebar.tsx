@@ -27,10 +27,9 @@ const employerItems: NavItem[] = [
 
 const seekerItems: NavItem[] = [
   { to: '/dashboard/seeker', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/jobs', label: 'Find Work', icon: Search },
-  { to: '/my-applications', label: 'My Applications', icon: FileText },
-  { to: '/profile', label: 'My Profile', icon: User },
-  { to: '/settings', label: 'Settings', icon: Settings },
+  { to: '/jobs', label: 'Find Jobs', icon: Search },
+  { to: '/dashboard/seeker/applications', label: 'My Applications', icon: FileText },
+  { to: '/onboarding/seeker', label: 'Edit Profile', icon: User },
 ]
 
 export function Sidebar() {
