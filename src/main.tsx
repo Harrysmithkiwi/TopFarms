@@ -21,6 +21,7 @@ import { JobDetail } from '@/pages/jobs/JobDetail'
 import { EmployerVerification } from '@/pages/verification/EmployerVerification'
 import { DocumentUpload } from '@/pages/verification/DocumentUpload'
 import { FarmPhotoUpload } from '@/pages/verification/FarmPhotoUpload'
+import { JobSearch } from '@/pages/jobs/JobSearch'
 
 // Placeholder for routes defined in future phases
 function Placeholder({ title }: { title: string }) {
@@ -81,7 +82,7 @@ const router = createBrowserRouter([
   // from treating "new" as a dynamic :id param.
   {
     path: '/jobs',
-    element: <Placeholder title="Find Work" />, // Phase 3: seeker search page
+    element: <JobSearch />,
   },
   {
     path: '/jobs/new',
