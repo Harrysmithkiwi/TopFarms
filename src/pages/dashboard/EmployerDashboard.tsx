@@ -58,6 +58,7 @@ export function EmployerDashboard() {
 
   const [jobs, setJobs] = useState<JobListing[]>([])
   const [loadingJobs, setLoadingJobs] = useState(false)
+  const [appCountMap, setAppCountMap] = useState<Map<string, number>>(new Map())
 
   const [activeTab, setActiveTab] = useState<FilterTab>('all')
   const [confirmArchiveId, setConfirmArchiveId] = useState<string | null>(null)
@@ -120,7 +121,25 @@ export function EmployerDashboard() {
         return
       }
 
-      setJobs((data as JobListing[]) ?? [])
+      const jobList = (data as JobListing[]) ?? []
+      setJobs(jobList)
+
+      // Load application counts per job
+      const jobIds = jobList.map((j) => j.id)
+      if (jobIds.length > 0) {
+        const { data: appCounts } = await supabase
+          .from('applications')
+          .select('job_id, id')
+          .in('job_id', jobIds)
+
+        if (appCounts) {
+          const countMap = new Map<string, number>()
+          for (const row of appCounts) {
+            countMap.set(row.job_id, (countMap.get(row.job_id) ?? 0) + 1)
+          }
+          setAppCountMap(countMap)
+        }
+      }
     } finally {
       setLoadingJobs(false)
     }
@@ -409,16 +428,31 @@ export function EmployerDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {filteredJobs
                     .filter((j) => (activeTab === 'drafts' ? true : j.status !== 'draft'))
-                    .map((job) => (
-                      <JobCard
-                        key={job.id}
-                        job={job}
-                        onPause={() => handlePauseResume(job)}
-                        onEdit={() => navigate(`/jobs/${job.id}/edit`)}
-                        onArchive={() => setConfirmArchiveId(job.id)}
-                        onMarkFilled={() => handleMarkFilled(job.id)}
-                      />
-                    ))}
+                    .map((job) => {
+                      const appCount = appCountMap.get(job.id) ?? 0
+                      return (
+                        <div key={job.id}>
+                          <JobCard
+                            job={job}
+                            onPause={() => handlePauseResume(job)}
+                            onEdit={() => navigate(`/jobs/${job.id}/edit`)}
+                            onArchive={() => setConfirmArchiveId(job.id)}
+                            onMarkFilled={() => handleMarkFilled(job.id)}
+                          />
+                          {appCount > 0 && (
+                            <div className="mt-1.5 px-1">
+                              <Link
+                                to={`/dashboard/employer/jobs/${job.id}/applicants`}
+                                className="text-sm font-body font-semibold hover:underline"
+                                style={{ color: 'var(--color-moss)' }}
+                              >
+                                View Applicants ({appCount})
+                              </Link>
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
                 </div>
               )}
             </div>

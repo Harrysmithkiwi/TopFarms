@@ -24,25 +24,6 @@ import { JobSearch } from '@/pages/jobs/JobSearch'
 import { MyApplications } from '@/pages/dashboard/seeker/MyApplications'
 import { ApplicantDashboard } from '@/pages/dashboard/employer/ApplicantDashboard'
 
-// Placeholder for routes defined in future phases
-function Placeholder({ title }: { title: string }) {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-cream">
-      <div className="text-center">
-        <h1
-          className="font-display text-3xl font-semibold mb-2"
-          style={{ color: 'var(--color-soil)' }}
-        >
-          {title}
-        </h1>
-        <p className="text-sm" style={{ color: 'var(--color-mid)' }}>
-          Coming soon in a future phase
-        </p>
-      </div>
-    </div>
-  )
-}
-
 const router = createBrowserRouter([
   // ─── Public routes ──────────────────────────────────────────────────────────
   {
