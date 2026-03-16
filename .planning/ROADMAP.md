@@ -83,7 +83,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. When a seeker updates their profile or an employer changes a job listing, all affected match scores are recalculated within 60 seconds
   3. Each match score includes a correct breakdown: shed type (25pts), location (20pts), accommodation (20pts), skills (20pts), salary (10pts), visa (5pts), couples bonus (+5pts), and recency multiplier
   4. Each match has a 2-3 sentence AI explanation (via Claude API, called from an Edge Function) visible on the job detail page and the employer applicant dashboard — if the Claude API is unavailable, the explanation area degrades gracefully without breaking the page
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 04-01-PLAN.md — Database migration: explanation column, sector-scoped AFTER triggers on seeker_profiles and jobs, backfill, pg_cron nightly batch
+- [ ] 04-02-PLAN.md — Edge Function: generate-match-explanation with Claude API, retry logic, graceful degradation
+- [ ] 04-03-PLAN.md — Frontend: MatchScore type update, MatchBreakdown AI explanation section, switch 4 pages from RPC to match_scores table reads
 
 ### Phase 5: Revenue Protection
 **Goal**: The placement fee gate is enforced at the database layer — an employer cannot read seeker contact details until they have acknowledged the placement fee, and follow-up emails fire automatically after shortlisting
@@ -117,6 +121,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 1. Foundation | 4/4 | Complete | 2026-03-15 |
 | 2. Employer Supply Side | 6/6 | Complete   | 2026-03-15 |
 | 3. Seeker Demand Side | 7/7 | Complete   | 2026-03-16 |
-| 4. Match Scoring Engine | 0/TBD | Not started | - |
+| 4. Match Scoring Engine | 0/3 | Not started | - |
 | 5. Revenue Protection | 0/TBD | Not started | - |
 | 6. Landing Page and Launch | 0/TBD | Not started | - |
