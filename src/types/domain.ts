@@ -175,6 +175,7 @@ export interface MatchBreakdown {
 export interface MatchScore {
   total_score: number
   breakdown: MatchBreakdown
+  explanation?: string | null
 }
 
 // Application record type

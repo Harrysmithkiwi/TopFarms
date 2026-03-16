@@ -98,6 +98,24 @@ export function MatchBreakdown({ score, blurred = false, className }: MatchBreak
           )
         })}
       </div>
+
+      {/* AI explanation */}
+      {score.explanation && (
+        <div className="mt-4 pt-4 border-t border-fog">
+          <p
+            className="text-[11px] font-body font-semibold uppercase tracking-wide mb-1.5"
+            style={{ color: 'var(--color-light)' }}
+          >
+            Why this match
+          </p>
+          <p
+            className="text-[14px] font-body leading-relaxed"
+            style={{ color: 'var(--color-mid)' }}
+          >
+            {score.explanation}
+          </p>
+        </div>
+      )}
     </div>
   )
 
