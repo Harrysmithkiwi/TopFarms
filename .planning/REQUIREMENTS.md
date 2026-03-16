@@ -93,8 +93,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **MTCH-01**: 100-point match scoring: shed type 25pts, location 20pts, accommodation 20pts, skills 20pts, salary 10pts, visa 5pts
 - [x] **MTCH-02**: Couples bonus (+5 points when both parties seek couples and offer couples accommodation)
 - [x] **MTCH-03**: Recency multiplier applied to scores
-- [ ] **MTCH-04**: Pre-computed scores stored in match_scores table (never computed client-side)
-- [ ] **MTCH-05**: Match scores recalculated when seeker profile or job listing changes (<60s SLA)
+- [x] **MTCH-04**: Pre-computed scores stored in match_scores table (never computed client-side)
+- [x] **MTCH-05**: Match scores recalculated when seeker profile or job listing changes (<60s SLA)
 - [x] **MTCH-06**: AI match explanations via Claude API: 2-3 sentence insights per match, called from Edge Function
 
 ### Application Pipeline
@@ -232,8 +232,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MTCH-01 | Phase 4 | Complete |
 | MTCH-02 | Phase 4 | Complete |
 | MTCH-03 | Phase 4 | Complete |
-| MTCH-04 | Phase 4 | Pending |
-| MTCH-05 | Phase 4 | Pending |
+| MTCH-04 | Phase 4 | Complete |
+| MTCH-05 | Phase 4 | Complete |
 | MTCH-06 | Phase 4 | Complete |
 | REVN-01 | Phase 5 | Pending |
 | REVN-02 | Phase 5 | Pending |
