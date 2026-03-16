@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Foundation** - Schema, auth, RLS policies, design system, and project scaffolding
 - [x] **Phase 2: Employer Supply Side** - Employer onboarding, job posting wizard, Stripe listing fees, and verification (completed 2026-03-15)
 - [x] **Phase 3: Seeker Demand Side** - Seeker onboarding, ag-specific job search, and application pipeline (completed 2026-03-16)
-- [ ] **Phase 4: Match Scoring Engine** - Pre-computed match scores, staleness triggers, and AI explanations
+- [x] **Phase 4: Match Scoring Engine** - Pre-computed match scores, staleness triggers, and AI explanations (completed 2026-03-16)
 - [ ] **Phase 5: Revenue Protection** - Placement fee gate, RLS contact masking, and follow-up emails
 - [ ] **Phase 6: Landing Page and Launch** - Public landing page, mobile QA, accessibility, and production deployment
 
@@ -122,6 +122,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 1. Foundation | 4/4 | Complete | 2026-03-15 |
 | 2. Employer Supply Side | 6/6 | Complete   | 2026-03-15 |
 | 3. Seeker Demand Side | 7/7 | Complete   | 2026-03-16 |
-| 4. Match Scoring Engine | 3/4 | In Progress|  |
+| 4. Match Scoring Engine | 4/4 | Complete   | 2026-03-16 |
 | 5. Revenue Protection | 0/TBD | Not started | - |
 | 6. Landing Page and Launch | 0/TBD | Not started | - |

@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 04-01-PLAN.md
-last_updated: "2026-03-16T08:50:08.417Z"
+stopped_at: Completed 04-03-PLAN.md
+last_updated: "2026-03-16T08:57:48.175Z"
 last_activity: "2026-03-15 — Plan 02-06 complete: EmployerDashboard rebuild (job cards, filter tabs, stats, verification nudge), MarkFilledModal, JobDetail (visitor sticky CTA, trust badge), 008_job_expiry_cron.sql, main.tsx route wiring"
 progress:
   total_phases: 6
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 21
-  completed_plans: 20
+  completed_plans: 21
   percent: 30
 ---
 
@@ -67,6 +67,7 @@ Progress: [██████░░░░] 30%
 | Phase 04-match-scoring-engine P00 | 1 | 1 tasks | 2 files |
 | Phase 04-match-scoring-engine P02 | 5min | 1 tasks | 1 files |
 | Phase 04-match-scoring-engine P01 | 1 | 1 tasks | 1 files |
+| Phase 04-match-scoring-engine P03 | 5 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -142,6 +143,9 @@ Recent decisions affecting current work:
 - [Phase 04-01]: trigger_recompute_seeker_scores column guard uses IS NOT DISTINCT FROM on 8 fields — skips non-scoring updates; trigger_recompute_job_scores guards status != active first
 - [Phase 04-01]: CROSS JOIN LATERAL captures compute_match_score() result once per row — explanation column excluded from all DO UPDATE SET clauses, owned by AI Edge Function
 - [Phase 04-01]: Nightly pg_cron at 0 3 * * * with IS DISTINCT FROM skip guard; SET statement_timeout = 0 before backfill for Supabase timeout safety
+- [Phase 04-03]: maybeSingle() used in JobDetail score fetch — avoids PGRST116 when no score row exists yet for a seeker-job pair
+- [Phase 04-03]: JobDetail triggers generate-match-explanation fire-and-forget when score exists without explanation — enables progressive explanation delivery
+- [Phase 04-03]: ApplicantDashboard replaced N sequential RPC calls with single .in() query against match_scores — explanation stored in scoreMap for future ApplicantPanel rendering
 
 ### Pending Todos
 
@@ -155,6 +159,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-16T08:50:08.414Z
-Stopped at: Completed 04-01-PLAN.md
+Last session: 2026-03-16T08:57:48.172Z
+Stopped at: Completed 04-03-PLAN.md
 Resume file: None
