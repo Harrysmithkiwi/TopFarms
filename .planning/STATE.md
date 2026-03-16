@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 03-04-PLAN.md
-last_updated: "2026-03-16T03:45:25.686Z"
+stopped_at: Completed 03-05-PLAN.md
+last_updated: "2026-03-16T04:15:41.298Z"
 last_activity: "2026-03-15 — Plan 02-06 complete: EmployerDashboard rebuild (job cards, filter tabs, stats, verification nudge), MarkFilledModal, JobDetail (visitor sticky CTA, trust badge), 008_job_expiry_cron.sql, main.tsx route wiring"
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 17
-  completed_plans: 15
+  completed_plans: 16
   percent: 30
 ---
 
@@ -62,6 +62,7 @@ Progress: [██████░░░░] 30%
 | Phase 03-seeker-demand-side P02 | 8 | 2 tasks | 9 files |
 | Phase 03-seeker-demand-side P03 | 20 | 2 tasks | 5 files |
 | Phase 03-seeker-demand-side P04 | 8min | 2 tasks | 2 files |
+| Phase 03-seeker-demand-side P05 | 22 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -127,6 +128,10 @@ Recent decisions affecting current work:
 - [Phase 03-04]: Visitor teaser uses hardcoded realistic score (VISITOR_TEASER_SCORE=78) to show meaningful blurred preview rather than empty state
 - [Phase 03-04]: JobDetail loadJob useEffect depends on [jobId, session, role] to re-fetch seeker data on auth change
 - [Phase 03-04]: Apply button disabled (not hidden) when seekerProfileId is null — preserves layout, shows toast 'Complete your profile before applying'
+- [Phase 03-05]: ApplicationCard withdraw uses window.confirm() guard before calling onWithdraw callback — prevents accidental withdrawals
+- [Phase 03-05]: Supabase seeker_profiles join returns array — normalised to object with Array.isArray check
+- [Phase 03-05]: VALID_TRANSITIONS empty array renders 'Final stage' text instead of empty dropdown for hired/declined/withdrawn
+- [Phase 03-05]: Status Tag variant mapping: applied=blue, review=hay, interview=orange, shortlisted=purple, offered/hired=green, declined=red, withdrawn=grey
 
 ### Pending Todos
 
@@ -140,6 +145,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-16T03:45:25.675Z
-Stopped at: Completed 03-04-PLAN.md
+Last session: 2026-03-16T04:15:41.296Z
+Stopped at: Completed 03-05-PLAN.md
 Resume file: None

@@ -101,10 +101,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **APPL-01**: Seeker can submit application to a job listing
 - [x] **APPL-02**: Seeker application view with pipeline stages: applied, review, interview, shortlisted, offered, hired, declined, withdrawn
-- [ ] **APPL-03**: Seeker can withdraw application
-- [ ] **APPL-04**: Employer applicant dashboard with ranked candidates by match score
+- [x] **APPL-03**: Seeker can withdraw application
+- [x] **APPL-04**: Employer applicant dashboard with ranked candidates by match score
 - [x] **APPL-05**: Employer can transition applicants through pipeline stages
-- [ ] **APPL-06**: Expandable applicant panels showing seeker profile details
+- [x] **APPL-06**: Expandable applicant panels showing seeker profile details
 
 ### Placement Fee & Revenue
 
@@ -225,10 +225,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | JDET-04 | Phase 3 | Complete |
 | APPL-01 | Phase 3 | Complete |
 | APPL-02 | Phase 3 | Complete |
-| APPL-03 | Phase 3 | Pending |
-| APPL-04 | Phase 3 | Pending |
+| APPL-03 | Phase 3 | Complete |
+| APPL-04 | Phase 3 | Complete |
 | APPL-05 | Phase 3 | Complete |
-| APPL-06 | Phase 3 | Pending |
+| APPL-06 | Phase 3 | Complete |
 | MTCH-01 | Phase 4 | Pending |
 | MTCH-02 | Phase 4 | Pending |
 | MTCH-03 | Phase 4 | Pending |
