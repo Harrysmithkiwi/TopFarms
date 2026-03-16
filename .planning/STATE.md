@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-03-16T01:16:23.594Z"
+stopped_at: Completed 03-02-PLAN.md
+last_updated: "2026-03-16T03:06:33.482Z"
 last_activity: "2026-03-15 — Plan 02-06 complete: EmployerDashboard rebuild (job cards, filter tabs, stats, verification nudge), MarkFilledModal, JobDetail (visitor sticky CTA, trust badge), 008_job_expiry_cron.sql, main.tsx route wiring"
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 17
-  completed_plans: 12
+  completed_plans: 13
   percent: 30
 ---
 
@@ -59,6 +59,7 @@ Progress: [██████░░░░] 30%
 | Phase 02-employer-supply-side P06 | 4 min | 2 tasks | 5 files |
 | Phase 03-seeker-demand-side P00 | 3min | 2 tasks | 8 files |
 | Phase 03-seeker-demand-side P01 | 7 | 2 tasks | 2 files |
+| Phase 03-seeker-demand-side P02 | 8 | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -114,6 +115,9 @@ Recent decisions affecting current work:
 - [Phase 03-01]: compute_match_score returns jsonb with total_score + breakdown; batch function loops returning TABLE — avoids N+1 on search page
 - [Phase 03-01]: Location scoring: open_to_relocate=true gives 16pts (80%), outranking adjacency (60%) — rewards seeker flexibility explicitly
 - [Phase 03-01]: Phase 3 types: all seeker-side enums exported as const arrays with value/label shape for direct UI consumption
+- [Phase 03-02]: SeekerOnboarding.tsx tracks seekerProfileId in state from first upsert response — enables skills step delete+insert without requiring pre-existing profile row
+- [Phase 03-02]: SkillsPicker sector: sheep_beef only if that's the sole sector_pref; otherwise dairy — avoids passing union string type to 'dairy' | 'sheep_beef' prop
+- [Phase 03-02]: Post-onboarding redirect: /jobs?sector={firstSector}&region={region} with URLSearchParams for clean param building
 
 ### Pending Todos
 
@@ -127,6 +131,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-16T01:16:23.592Z
-Stopped at: Completed 03-01-PLAN.md
+Last session: 2026-03-16T03:06:33.480Z
+Stopped at: Completed 03-02-PLAN.md
 Resume file: None
