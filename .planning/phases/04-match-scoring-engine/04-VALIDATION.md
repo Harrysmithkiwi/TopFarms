@@ -2,8 +2,8 @@
 phase: 4
 slug: match-scoring-engine
 status: draft
-nyquist_compliant: false
-wave_0_complete: false
+nyquist_compliant: true
+wave_0_complete: true
 created: 2026-03-16
 ---
 
@@ -38,21 +38,22 @@ created: 2026-03-16
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 04-01-01 | 01 | 0 | MTCH-01 | unit | `npx vitest run tests/match-scoring.test.ts` | ❌ W0 | ⬜ pending |
-| 04-01-02 | 01 | 0 | MTCH-02 | unit | `npx vitest run tests/match-scoring.test.ts` | ❌ W0 | ⬜ pending |
-| 04-01-03 | 01 | 0 | MTCH-03 | unit | `npx vitest run tests/match-scoring.test.ts` | ❌ W0 | ⬜ pending |
-| 04-01-04 | 01 | 0 | MTCH-06 | unit | `npx vitest run tests/match-breakdown-ui.test.tsx` | ❌ W0 | ⬜ pending |
-| 04-XX-XX | XX | X | MTCH-04 | manual | Manual — requires live Supabase | N/A | ⬜ pending |
-| 04-XX-XX | XX | X | MTCH-05 | manual | Manual — requires live Supabase + timer | N/A | ⬜ pending |
+| 04-00-01 | 00 | 0 | MTCH-01/02/03/06 | scaffold | `npx vitest run tests/match-scoring.test.ts tests/match-breakdown-ui.test.tsx` | Created by 04-00 | pending |
+| 04-01-01 | 01 | 1 | MTCH-01 | unit | `npx vitest run tests/match-scoring.test.ts` | Created by 04-00 | pending |
+| 04-01-02 | 01 | 1 | MTCH-02 | unit | `npx vitest run tests/match-scoring.test.ts` | Created by 04-00 | pending |
+| 04-01-03 | 01 | 1 | MTCH-03 | unit | `npx vitest run tests/match-scoring.test.ts` | Created by 04-00 | pending |
+| 04-03-01 | 03 | 2 | MTCH-06 | unit | `npx vitest run tests/match-breakdown-ui.test.tsx` | Created by 04-00 | pending |
+| 04-XX-XX | XX | X | MTCH-04 | manual | Manual — requires live Supabase | N/A | pending |
+| 04-XX-XX | XX | X | MTCH-05 | manual | Manual — requires live Supabase + timer | N/A | pending |
 
-*Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
+*Status: pending / green / red / flaky*
 
 ---
 
 ## Wave 0 Requirements
 
-- [ ] `tests/match-scoring.test.ts` — stubs for MTCH-01, MTCH-02, MTCH-03 (pure TS scoring logic unit tests)
-- [ ] `tests/match-breakdown-ui.test.tsx` — stubs for MTCH-06 (MatchBreakdown renders explanation conditionally)
+- [x] `tests/match-scoring.test.ts` — stubs for MTCH-01, MTCH-02, MTCH-03 (pure TS scoring logic unit tests) — created by 04-00-PLAN.md
+- [x] `tests/match-breakdown-ui.test.tsx` — stubs for MTCH-06 (MatchBreakdown renders explanation conditionally) — created by 04-00-PLAN.md
 
 *Existing infrastructure covers framework: `vitest.config.ts`, `tests/setup.ts`, `@testing-library/react` are all present — no framework install needed.*
 
@@ -69,11 +70,11 @@ created: 2026-03-16
 
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all MISSING references
-- [ ] No watch-mode flags
-- [ ] Feedback latency < 15s
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] All tasks have `<automated>` verify or Wave 0 dependencies
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] Wave 0 covers all MISSING references
+- [x] No watch-mode flags
+- [x] Feedback latency < 15s
+- [x] `nyquist_compliant: true` set in frontmatter
 
 **Approval:** pending
