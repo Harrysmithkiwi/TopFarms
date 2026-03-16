@@ -65,7 +65,8 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. A logged-in seeker sees a match score per job in search results and a full per-dimension match breakdown (shed type, location, accommodation, skills, salary, visa) on the job detail page
   4. A seeker can apply to a job with an optional cover note, and track their application through all 8 pipeline stages (applied, review, interview, shortlisted, offered, hired, declined, withdrawn)
   5. An employer can view all applicants for a job ranked by match score, expand individual applicant panels, and move applicants through pipeline stages
-**Plans**: 6 plans
+**Plans**: 7 plans
+- [ ] 03-00-PLAN.md — Test infrastructure: vitest config, setup, and stub test files for all Phase 3 verification points
 - [ ] 03-01-PLAN.md — Schema migration (seeker onboarding columns, application pipeline enum, seeker_skills proficiency fix, RLS policies, match scoring SQL functions), extended domain types
 - [ ] 03-02-PLAN.md — Seeker onboarding wizard (7 steps: farm type, experience, qualifications, skills, life situation, visa, complete)
 - [ ] 03-03-PLAN.md — Job search page with FilterSidebar (9 filter types, URL sync, batch match scores) and SearchJobCard
@@ -115,7 +116,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 |-------|----------------|--------|-----------|
 | 1. Foundation | 4/4 | Complete | 2026-03-15 |
 | 2. Employer Supply Side | 6/6 | Complete   | 2026-03-15 |
-| 3. Seeker Demand Side | 0/6 | Not started | - |
+| 3. Seeker Demand Side | 0/7 | Not started | - |
 | 4. Match Scoring Engine | 0/TBD | Not started | - |
 | 5. Revenue Protection | 0/TBD | Not started | - |
 | 6. Landing Page and Launch | 0/TBD | Not started | - |
