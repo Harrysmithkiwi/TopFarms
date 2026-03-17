@@ -115,12 +115,12 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Landing Page
 
-- [ ] **LAND-01**: Hero section with full-bleed background, headline, and dual CTA (employer/seeker paths)
-- [ ] **LAND-02**: Live counters (jobs posted, workers registered, matches made) with scroll-triggered animation
-- [ ] **LAND-03**: How-it-works section with employer/seeker toggle
-- [ ] **LAND-04**: Featured job listings section
-- [ ] **LAND-05**: Testimonials section
-- [ ] **LAND-06**: Footer with navigation and legal links
+- [x] **LAND-01**: Hero section with full-bleed background, headline, and dual CTA (employer/seeker paths)
+- [x] **LAND-02**: Live counters (jobs posted, workers registered, matches made) with scroll-triggered animation
+- [x] **LAND-03**: How-it-works section with employer/seeker toggle
+- [x] **LAND-04**: Featured job listings section
+- [x] **LAND-05**: Testimonials section
+- [x] **LAND-06**: Footer with navigation and legal links
 
 ## v2 Requirements
 
@@ -239,12 +239,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | REVN-02 | Phase 5 | Complete |
 | REVN-03 | Phase 5 | Complete |
 | REVN-04 | Phase 5 | Complete |
-| LAND-01 | Phase 6 | Pending |
-| LAND-02 | Phase 6 | Pending |
-| LAND-03 | Phase 6 | Pending |
-| LAND-04 | Phase 6 | Pending |
-| LAND-05 | Phase 6 | Pending |
-| LAND-06 | Phase 6 | Pending |
+| LAND-01 | Phase 6 | Complete |
+| LAND-02 | Phase 6 | Complete |
+| LAND-03 | Phase 6 | Complete |
+| LAND-04 | Phase 6 | Complete |
+| LAND-05 | Phase 6 | Complete |
+| LAND-06 | Phase 6 | Complete |
 
 **Coverage:**
 - v1 requirements: 76 total (note: original header said 68 — actual count of defined IDs is 76)

@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Phase 6 context gathered
-last_updated: "2026-03-17T08:32:07.283Z"
+stopped_at: Completed 06-01-PLAN.md
+last_updated: "2026-03-17T09:44:28.490Z"
 last_activity: "2026-03-17 — Phase 5 complete: PlacementFeeModal + acknowledge Edge Function, HireConfirmModal + create-placement-invoice, stripe-webhook invoice handler, send-followup-emails"
 progress:
   total_phases: 6
   completed_phases: 5
-  total_plans: 25
-  completed_plans: 25
+  total_plans: 27
+  completed_plans: 26
   percent: 100
 ---
 
@@ -72,6 +72,7 @@ Progress: [████████████████████] 25/25 p
 | Phase 05-revenue-protection P04 | 5 | 1 tasks | 1 files |
 | Phase 05-revenue-protection P03 | 5 | 2 tasks | 5 files |
 | Phase 05-revenue-protection P02 | 5 | 2 tasks | 4 files |
+| Phase 06-landing-page-and-launch P01 | 6 | 2 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -159,6 +160,9 @@ Recent decisions affecting current work:
 - [Phase 05-02]: Idempotency: check existing placement_fees row with .maybeSingle() before insert — if acknowledged_at IS NOT NULL return early with already_acknowledged:true
 - [Phase 05-02]: Contact section only renders for shortlisted/offered/hired status — pre-shortlist stages show no contact section at all (not even blurred)
 - [Phase 05-02]: Radix SelectItem.ItemText only accepts text content — Lock icon not injectable, plain label 'Shortlist — unlocks contact details' used
+- [Phase 06-01]: FeaturedListings falls back to 3 most-recent active jobs when no featured/premium listings exist — page always shows content
+- [Phase 06-01]: get_platform_stats RPC uses SECURITY DEFINER to give anon users aggregate read access without direct table access on seeker_profiles/match_scores
+- [Phase 06-01]: SignUp role pre-selection: useSearchParams + initialRole state + useEffect setValue sync for react-hook-form compatibility
 
 ### Pending Todos
 
@@ -171,6 +175,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-17T08:32:07.271Z
-Stopped at: Phase 6 context gathered
-Resume file: .planning/phases/06-landing-page-and-launch/06-CONTEXT.md
+Last session: 2026-03-17T09:44:28.487Z
+Stopped at: Completed 06-01-PLAN.md
+Resume file: None
