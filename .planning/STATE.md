@@ -18,19 +18,19 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-15)
+See: .planning/PROJECT.md (updated 2026-03-17)
 
 **Core value:** Farm employers and seekers can find each other through agriculture-specific matching that no generic platform provides — shed type, accommodation, DairyNZ qualifications, and herd size experience
-**Current focus:** Phase 2 — Employer Supply Side (COMPLETE)
+**Current focus:** Phase 6 — Landing Page and Launch
 
 ## Current Position
 
-Phase: 2 of 6 (Employer Supply Side) — COMPLETE
-Plan: 6 of 6 in current phase — COMPLETE
-Status: Phase 2 complete — EmployerDashboard with job management, JobDetail public page, MarkFilledModal, pg_cron expiry, all routes wired
-Last activity: 2026-03-15 — Plan 02-06 complete: EmployerDashboard rebuild (job cards, filter tabs, stats, verification nudge), MarkFilledModal, JobDetail (visitor sticky CTA, trust badge), 008_job_expiry_cron.sql, main.tsx route wiring
+Phase: 6 of 6 (Landing Page and Launch) — Ready to plan
+Plan: Not started
+Status: Phase 5 complete — placement fee gate, Stripe invoicing, follow-up emails all shipped
+Last activity: 2026-03-17 — Phase 5 complete: PlacementFeeModal + acknowledge Edge Function, HireConfirmModal + create-placement-invoice, stripe-webhook invoice handler, send-followup-emails
 
-Progress: [██████░░░░] 30%
+Progress: [████████████████████] 25/25 plans (100%)
 
 ## Performance Metrics
 
@@ -166,12 +166,11 @@ None yet.
 
 ### Blockers/Concerns
 
-- [Phase 4 setup]: Verify `pg_cron` vs Supabase scheduled functions availability in the project's Supabase plan tier before implementing the nightly batch recompute
-- [Phase 5 setup]: Resend SPF/DKIM DNS configuration must be initiated before Phase 5 testing begins (24-48h DNS propagation lead time)
 - [Phase 6 setup]: E2E testing framework choice (Playwright vs Cypress) needs a decision before Phase 6 begins
+- [Phase 5]: Resend SPF/DKIM DNS configuration needed for email deliverability in production
 
 ## Session Continuity
 
-Last session: 2026-03-17T08:22:25.640Z
-Stopped at: Completed 05-02-PLAN.md
+Last session: 2026-03-17
+Stopped at: Phase 5 complete, ready to plan Phase 6
 Resume file: None

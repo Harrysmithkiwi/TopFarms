@@ -12,7 +12,8 @@ Farm employers and seekers can find each other through agriculture-specific matc
 
 ### Validated
 
-(None yet — ship to validate)
+- ✓ Placement fee gate: acknowledgement modal at shortlist, contact masking via RLS until confirmed — Phase 5
+- ✓ Contact masking at RLS level: data-layer protection, not CSS — Phase 5
 
 ### Active
 
@@ -79,9 +80,12 @@ Farm employers and seekers can find each other through agriculture-specific matc
 | Manual NZBN verification for MVP | API integration deferred, manual + admin flag sufficient | — Pending |
 | Hardcoded market rate salary data | Update quarterly from DairyNZ publications, avoid API dependency | — Pending |
 | Manual skills curation (~40 skills) | Better quality than automated import for MVP | — Pending |
-| Resend for transactional email | Good free tier, React Email templates, easy Edge Function integration | — Pending |
-| Contact masking at RLS level | Data-layer protection, not CSS — cannot be extracted from page source | — Pending |
+| Resend for transactional email | Good free tier, React Email templates, easy Edge Function integration | ✓ Shipped Phase 5 |
+| Contact masking at RLS level | Data-layer protection, not CSS — cannot be extracted from page source | ✓ Shipped Phase 5 |
+| Flat placement fee tiers ($200/$400/$800) | Salary-primary with title keyword bump — simple, transparent, scales with role seniority | ✓ Shipped Phase 5 |
+| Stripe Invoice Net 14 for placement fees | Deferred payment after hire, auto-collection, professional invoice PDF | ✓ Shipped Phase 5 |
+| Resend via plain fetch() not SDK | Avoids Deno SDK compatibility concerns, consistent with Edge Function patterns | ✓ Shipped Phase 5 |
 | Soft contact detection in messaging | Nudge banners not hard blocks — preserves goodwill (Growth Phase) | — Pending |
 
 ---
-*Last updated: 2026-03-15 after initialization*
+*Last updated: 2026-03-17 after Phase 5*
