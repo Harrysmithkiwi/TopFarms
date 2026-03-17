@@ -188,3 +188,60 @@ export interface Application {
   created_at: string
   jobs?: JobListing & { employer_profiles?: { farm_name: string; region: string } }
 }
+
+// ============================================================
+// Phase 5 — Revenue Protection types
+// ============================================================
+
+export type PlacementFeeTier = 'entry' | 'experienced' | 'senior'
+
+export const PLACEMENT_FEE_TIERS: Record<PlacementFeeTier, { label: string; amount: number; displayAmount: string }> = {
+  entry:       { label: 'Entry Level',         amount: 20000, displayAmount: '$200' },
+  experienced: { label: 'Experienced',         amount: 40000, displayAmount: '$400' },
+  senior:      { label: 'Senior / Management', amount: 80000, displayAmount: '$800' },
+} as const
+
+export interface PlacementFeeRecord {
+  id: string
+  job_id: string
+  application_id: string
+  employer_id: string
+  seeker_id: string
+  acknowledged_at: string | null
+  confirmed_at: string | null
+  amount_nzd: number | null
+  fee_tier: PlacementFeeTier | null
+  stripe_invoice_id: string | null
+  rating: number | null
+}
+
+export interface SeekerContact {
+  phone: string | null
+  email: string
+}
+
+/**
+ * Calculate placement fee tier from job salary range + title keywords.
+ * Salary-based primary: <$55k = entry ($200), $55k-$80k = experienced ($400), $80k+ = senior ($800).
+ * Title keywords ('manager', 'head', 'senior', 'supervisor') bump UP but never down.
+ */
+export function calculatePlacementFee(
+  salaryMin: number | null,
+  salaryMax: number | null,
+  jobTitle: string,
+): { tier: PlacementFeeTier; amount: number; displayAmount: string } {
+  const avgSalary = ((salaryMin ?? 0) + (salaryMax ?? 0)) / 2
+  let tier: PlacementFeeTier =
+    avgSalary >= 80000 ? 'senior' : avgSalary >= 55000 ? 'experienced' : 'entry'
+
+  // Title keyword can bump UP but never down
+  const lowerTitle = jobTitle.toLowerCase()
+  const seniorKeywords = ['manager', 'head', 'senior', 'supervisor']
+  if (seniorKeywords.some((kw) => lowerTitle.includes(kw))) {
+    if (tier === 'entry') tier = 'experienced'
+    else if (tier === 'experienced') tier = 'senior'
+  }
+
+  const tierInfo = PLACEMENT_FEE_TIERS[tier]
+  return { tier, amount: tierInfo.amount, displayAmount: tierInfo.displayAmount }
+}
