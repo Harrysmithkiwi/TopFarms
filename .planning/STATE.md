@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 05-03-PLAN.md
-last_updated: "2026-03-17T08:21:20.574Z"
+stopped_at: Completed 05-02-PLAN.md
+last_updated: "2026-03-17T08:22:25.643Z"
 last_activity: "2026-03-15 — Plan 02-06 complete: EmployerDashboard rebuild (job cards, filter tabs, stats, verification nudge), MarkFilledModal, JobDetail (visitor sticky CTA, trust badge), 008_job_expiry_cron.sql, main.tsx route wiring"
 progress:
   total_phases: 6
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 25
-  completed_plans: 24
+  completed_plans: 25
   percent: 30
 ---
 
@@ -71,6 +71,7 @@ Progress: [██████░░░░] 30%
 | Phase 05-revenue-protection P01 | 4 | 2 tasks | 3 files |
 | Phase 05-revenue-protection P04 | 5 | 1 tasks | 1 files |
 | Phase 05-revenue-protection P03 | 5 | 2 tasks | 5 files |
+| Phase 05-revenue-protection P02 | 5 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -155,6 +156,9 @@ Recent decisions affecting current work:
 - [Phase 05-03]: create-placement-invoice uses auto_advance: false and explicit finalizeInvoice() — line items must be added before finalize (Stripe API requirement)
 - [Phase 05-03]: Seeker hire email is fire-and-forget in Edge Function — hire confirmation must not fail if Resend is unavailable
 - [Phase 05-03]: Stripe-native idempotencyKey listing-fee-{job_id} on PaymentIntent creation prevents duplicate charges on retry
+- [Phase 05-02]: Idempotency: check existing placement_fees row with .maybeSingle() before insert — if acknowledged_at IS NOT NULL return early with already_acknowledged:true
+- [Phase 05-02]: Contact section only renders for shortlisted/offered/hired status — pre-shortlist stages show no contact section at all (not even blurred)
+- [Phase 05-02]: Radix SelectItem.ItemText only accepts text content — Lock icon not injectable, plain label 'Shortlist — unlocks contact details' used
 
 ### Pending Todos
 
@@ -168,6 +172,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-17T08:21:20.572Z
-Stopped at: Completed 05-03-PLAN.md
+Last session: 2026-03-17T08:22:25.640Z
+Stopped at: Completed 05-02-PLAN.md
 Resume file: None
