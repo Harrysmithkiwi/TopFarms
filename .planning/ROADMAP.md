@@ -115,7 +115,10 @@ Plans:
   2. Live counters (jobs posted, workers registered, matches made) reflect real platform data and animate on scroll into view
   3. Every user flow (auth, employer onboarding, job posting, seeker onboarding, job search, application, shortlist, contact release) works correctly on a 320px-wide mobile screen — filter sidebar renders as a drawer on mobile
   4. The deployed production application passes Lighthouse performance targets (search results under 1.5 seconds, page load under 2 seconds on 4G) and meets WCAG 2.1 AA accessibility requirements
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 06-01-PLAN.md — Landing page sections (hero, counters, how-it-works, featured listings, testimonials, footer), utility hooks, platform stats RPC, SignUp role pre-selection
+- [ ] 06-02-PLAN.md — Landing page tests, Vercel deployment config, font optimization, mobile QA checkpoint
 
 ## Progress
 
@@ -129,4 +132,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 3. Seeker Demand Side | 7/7 | Complete   | 2026-03-16 |
 | 4. Match Scoring Engine | 4/4 | Complete   | 2026-03-16 |
 | 5. Revenue Protection | 4/4 | Complete   | 2026-03-17 |
-| 6. Landing Page and Launch | 0/TBD | Not started | - |
+| 6. Landing Page and Launch | 0/2 | Not started | - |
