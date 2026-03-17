@@ -108,8 +108,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Placement Fee & Revenue
 
-- [ ] **REVN-01**: Placement fee acknowledgement modal triggered when employer shortlists a candidate
-- [ ] **REVN-02**: Contact details (phone, email) remain masked via RLS until placement fee acknowledged
+- [x] **REVN-01**: Placement fee acknowledgement modal triggered when employer shortlists a candidate
+- [x] **REVN-02**: Contact details (phone, email) remain masked via RLS until placement fee acknowledged
 - [ ] **REVN-03**: Stripe integration for listing fee collection (PaymentIntent API)
 - [ ] **REVN-04**: Stripe webhook handling with idempotency guards
 
@@ -235,8 +235,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MTCH-04 | Phase 4 | Complete |
 | MTCH-05 | Phase 4 | Complete |
 | MTCH-06 | Phase 4 | Complete |
-| REVN-01 | Phase 5 | Pending |
-| REVN-02 | Phase 5 | Pending |
+| REVN-01 | Phase 5 | Complete |
+| REVN-02 | Phase 5 | Complete |
 | REVN-03 | Phase 5 | Pending |
 | REVN-04 | Phase 5 | Pending |
 | LAND-01 | Phase 6 | Pending |
