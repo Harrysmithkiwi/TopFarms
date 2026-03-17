@@ -12,35 +12,38 @@ Farm employers and seekers can find each other through agriculture-specific matc
 
 ### Validated
 
-- ✓ Placement fee gate: acknowledgement modal at shortlist, contact masking via RLS until confirmed — Phase 5
-- ✓ Contact masking at RLS level: data-layer protection, not CSS — Phase 5
+- ✓ Authentication with email/password, role selection, session persistence, password reset — v1.0
+- ✓ Supabase PostgreSQL schema (14 tables) with RLS on all tables — v1.0
+- ✓ Contact details masked at RLS level until placement fee acknowledged — v1.0
+- ✓ Skills master table seeded with ~40 dairy + sheep/beef skills — v1.0
+- ✓ Design system: Fraunces + DM Sans typography, soil/moss/fern/meadow/hay/cream palette, component library — v1.0
+- ✓ Employer 8-screen onboarding wizard with editable profile — v1.0
+- ✓ 5-tier employer verification (email, phone, NZBN, document, farm photo) — v1.0
+- ✓ 7-screen job posting wizard with Stripe listing fees (first free, $100/$150/$200) — v1.0
+- ✓ Job status lifecycle (draft, active, paused, filled, expired, archived) with 30-day expiry — v1.0
+- ✓ Seeker 8-step onboarding wizard with editable profile — v1.0
+- ✓ Job search with 9 agriculture-specific filters, URL-synced state, <1.5s load — v1.0
+- ✓ Job detail page with match breakdown (seeker) and signup prompt (visitor) — v1.0
+- ✓ Application pipeline with 8 stages, seeker tracking, employer management — v1.0
+- ✓ 100-point match scoring: shed type 25, location 20, accommodation 20, skills 20, salary 10, visa 5, couples bonus, recency — v1.0
+- ✓ Pre-computed match scores with database triggers (<60s recalc SLA) — v1.0
+- ✓ AI match explanations via Claude API Edge Function — v1.0
+- ✓ Placement fee gate at RLS level with acknowledgement modal — v1.0
+- ✓ Stripe listing fee with idempotency guards — v1.0
+- ✓ Stripe Invoice Net 14 for placement fees — v1.0
+- ✓ Automated follow-up emails (Day 7/14) via Resend — v1.0
+- ✓ Landing page: hero, live counters, how-it-works, featured listings, testimonials, footer — v1.0
+- ✓ Mobile-responsive design (320px minimum) — v1.0
 
 ### Active
 
-- [ ] Authentication with email/password, user type selection (Employer/Seeker), session persistence
-- [ ] Employer onboarding wizard (8 screens): farm type, details, culture, accommodation, verification, pricing
-- [ ] Employer job posting form (7-screen wizard): role basics, farm details, skills, compensation, description, pricing, success
-- [ ] Job detail page with two states (logged-in match breakdown / visitor signup prompt)
-- [ ] Seeker onboarding wizard (8 steps): account, farm type pref, experience, skills with proficiency, life situation, visa, completion, profile management
-- [ ] Worker job search with all agriculture-specific filters (shed type, accommodation, visa, DairyNZ, herd size, couples, salary, region, contract type)
-- [ ] Worker application view with pipeline stages (applied, review, interview, shortlisted, offered, hired, declined, withdrawn)
-- [ ] Employer applicant dashboard with ranked candidates, match scores, pipeline stages, expandable panels
-- [ ] Match scoring engine (100-point system): shed type 25pts, location 20pts, accommodation 20pts, skills 20pts, salary 10pts, visa 5pts + couples bonus + recency multiplier
-- [ ] AI match explanations via Claude API (2-3 sentence insights per match)
-- [ ] Listing fees via Stripe: first free, Standard $100, Featured $150, Premium $200
-- [ ] Placement fee gate: acknowledgement modal at shortlist, contact masking via RLS until confirmed
-- [ ] 5-tier employer verification: email (auto), phone SMS, NZBN, document upload, farm photo
-- [ ] Landing page: hero, dual CTA, live counters, how-it-works, featured listings, testimonials, footer
-- [ ] Mobile-responsive design (320px minimum) with drawer filter on mobile
-- [ ] Design system: Fraunces + DM Sans typography, soil/moss/fern/meadow/hay/cream palette, component library
-- [ ] Supabase database with full schema (12 tables), RLS on all tables
-- [ ] Skills master table seeded with ~40 dairy + sheep/beef skills
+(None — define with `/gsd:new-milestone`)
 
 ### Out of Scope
 
 - Data scraping pipeline (Apify/Claude) — separate build track and document
 - Messaging / Expressions of Interest — Growth Phase, wireframe exists but do not build
-- Horticulture and viticulture sectors — Phase 2
+- Horticulture and viticulture sectors — future milestone
 - Social media login (Google/Facebook OAuth) — email/password only for MVP
 - Mobile native apps (iOS/Android) — mobile web only
 - Partner job matching (separate role for seeker's partner)
@@ -49,8 +52,12 @@ Farm employers and seekers can find each other through agriculture-specific matc
 - API for third-party developers
 - International markets
 - Training providers / courses module
+- Real-time chat — contact release after shortlist handles core use case
 
 ## Context
+
+Shipped v1.0 MVP with 17,234 LOC TypeScript across 214 files in 3 days.
+Tech stack: React 19, TypeScript, Vite 6, Tailwind v4, Supabase, Claude API, Stripe, Resend, Vercel.
 
 - NZ agricultural sector is small and reputation-driven — social enforcement mechanisms inform platform design
 - 86% of NZ ag Facebook job posts are dairy — primary target sector
@@ -58,8 +65,6 @@ Farm employers and seekers can find each other through agriculture-specific matc
 - Shed type (rotary vs herringbone) is the primary skill differentiator in dairy
 - 28% of seekers are couples — couples matching is a significant filter
 - All 8 MVP screens are fully wireframed as interactive HTML files in `TopFarms_Launch_Pack/wireframes/`
-- Revenue Journey and Data Architecture are documented as separate HTML files in `TopFarms_Launch_Pack/docs/`
-- Complete SPEC.md with all technical details at project root
 
 ## Constraints
 
@@ -75,17 +80,18 @@ Farm employers and seekers can find each other through agriculture-specific matc
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Pre-computed match scores | Instant search results without real-time computation | — Pending |
-| Flat placement fee (recommended) | Simpler than % of salary, less contentious, easier ToS | — Pending |
-| Manual NZBN verification for MVP | API integration deferred, manual + admin flag sufficient | — Pending |
-| Hardcoded market rate salary data | Update quarterly from DairyNZ publications, avoid API dependency | — Pending |
-| Manual skills curation (~40 skills) | Better quality than automated import for MVP | — Pending |
-| Resend for transactional email | Good free tier, React Email templates, easy Edge Function integration | ✓ Shipped Phase 5 |
-| Contact masking at RLS level | Data-layer protection, not CSS — cannot be extracted from page source | ✓ Shipped Phase 5 |
-| Flat placement fee tiers ($200/$400/$800) | Salary-primary with title keyword bump — simple, transparent, scales with role seniority | ✓ Shipped Phase 5 |
-| Stripe Invoice Net 14 for placement fees | Deferred payment after hire, auto-collection, professional invoice PDF | ✓ Shipped Phase 5 |
-| Resend via plain fetch() not SDK | Avoids Deno SDK compatibility concerns, consistent with Edge Function patterns | ✓ Shipped Phase 5 |
+| Pre-computed match scores | Instant search results without real-time computation | ✓ Shipped v1.0 — triggers + pg_cron maintain freshness |
+| Flat placement fee tiers ($200/$400/$800) | Salary-primary with title keyword bump — simple, transparent | ✓ Shipped v1.0 |
+| Manual NZBN verification for MVP | API integration deferred, manual + admin flag sufficient | ✓ Shipped v1.0 |
+| Hardcoded market rate salary data | Update quarterly from DairyNZ publications, avoid API dependency | ✓ Shipped v1.0 |
+| Manual skills curation (~40 skills) | Better quality than automated import for MVP | ✓ Shipped v1.0 |
+| Resend for transactional email | Good free tier, React Email templates, easy Edge Function integration | ✓ Shipped v1.0 |
+| Contact masking at RLS level | Data-layer protection, not CSS — cannot be extracted from page source | ✓ Shipped v1.0 |
+| Stripe Invoice Net 14 for placement fees | Deferred payment after hire, auto-collection, professional invoice PDF | ✓ Shipped v1.0 |
+| Resend via plain fetch() not SDK | Avoids Deno SDK compatibility concerns, consistent with Edge Function patterns | ✓ Shipped v1.0 |
+| Tailwind v4 CSS-first (@theme directive) | No tailwind.config.js, cleaner DX | ✓ Shipped v1.0 |
+| seeker_contacts as separate table | Contact masking enforced at schema level, not view layer | ✓ Shipped v1.0 |
 | Soft contact detection in messaging | Nudge banners not hard blocks — preserves goodwill (Growth Phase) | — Pending |
 
 ---
-*Last updated: 2026-03-17 after Phase 5*
+*Last updated: 2026-03-17 after v1.0 milestone*
