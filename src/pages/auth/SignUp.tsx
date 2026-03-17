@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { useNavigate, Link } from 'react-router'
+import { useNavigate, Link, useSearchParams } from 'react-router'
 import { toast } from 'sonner'
 import { Eye, EyeOff, Building2, User } from 'lucide-react'
 import { AuthLayout } from '@/components/layout/AuthLayout'
@@ -35,8 +35,13 @@ export function SignUp() {
   const navigate = useNavigate()
   const { signUpWithRole } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
-  const [selectedRole, setSelectedRole] = useState<'employer' | 'seeker' | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const [searchParams] = useSearchParams()
+  const roleParam = searchParams.get('role')
+  const initialRole = (roleParam === 'employer' || roleParam === 'seeker') ? roleParam : null
+
+  const [selectedRole, setSelectedRole] = useState<'employer' | 'seeker' | null>(initialRole)
 
   const {
     register,
@@ -47,6 +52,12 @@ export function SignUp() {
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
   })
+
+  useEffect(() => {
+    if (initialRole) {
+      setValue('role', initialRole)
+    }
+  }, [initialRole, setValue])
 
   const passwordValue = watch('password', '')
   const strength = getPasswordStrength(passwordValue)
