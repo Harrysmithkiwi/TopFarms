@@ -4,13 +4,19 @@ import { toast } from 'sonner'
 import { ArrowLeft } from 'lucide-react'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { ApplicantPanel } from '@/components/ui/ApplicantPanel'
+import { PlacementFeeModal } from '@/pages/dashboard/employer/PlacementFeeModal'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/hooks/useAuth'
-import type { ApplicationStatus, MatchScore } from '@/types/domain'
-import { APPLICATION_STATUS_LABELS } from '@/types/domain'
+import type { ApplicationStatus, MatchScore, SeekerContact } from '@/types/domain'
+import {
+  APPLICATION_STATUS_LABELS,
+  PLACEMENT_FEE_TIERS,
+  calculatePlacementFee,
+} from '@/types/domain'
 
 interface SeekerProfile {
   id: string
+  user_id?: string
   region?: string
   years_experience?: number
   sector_pref?: string[]
@@ -56,10 +62,19 @@ export function ApplicantDashboard() {
   const { session } = useAuth()
 
   const [jobTitle, setJobTitle] = useState<string>('')
+  const [jobSalaryMin, setJobSalaryMin] = useState<number | null>(null)
+  const [jobSalaryMax, setJobSalaryMax] = useState<number | null>(null)
+  const [empProfileId, setEmpProfileId] = useState<string | null>(null)
+  const [farmName, setFarmName] = useState<string>('')
   const [applicants, setApplicants] = useState<Applicant[]>([])
   const [scoreMap, setScoreMap] = useState<Map<string, MatchScore>>(new Map())
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+
+  // Placement fee modal state
+  const [pendingShortlistApp, setPendingShortlistApp] = useState<Applicant | null>(null)
+  const [showPlacementFeeModal, setShowPlacementFeeModal] = useState(false)
+  const [contactsMap, setContactsMap] = useState<Map<string, SeekerContact>>(new Map())
 
   useEffect(() => {
     async function loadData() {
@@ -80,10 +95,12 @@ export function ApplicantDashboard() {
         return
       }
 
+      setEmpProfileId(empProfile.id)
+
       // Load job details and verify ownership
       const { data: jobData, error: jobError } = await supabase
         .from('jobs')
-        .select('title, employer_id')
+        .select('title, employer_id, salary_min, salary_max')
         .eq('id', jobId)
         .single()
 
@@ -98,14 +115,16 @@ export function ApplicantDashboard() {
       }
 
       setJobTitle(jobData.title)
+      setJobSalaryMin(jobData.salary_min ?? null)
+      setJobSalaryMax(jobData.salary_max ?? null)
 
-      // Load applicants with seeker profiles
+      // Load applicants with seeker profiles (including user_id for contact lookup)
       const { data: appData, error: appError } = await supabase
         .from('applications')
         .select(`
           id, status, cover_note, created_at,
           seeker_profiles(
-            id, region, years_experience, sector_pref, visa_status,
+            id, user_id, region, years_experience, sector_pref, visa_status,
             dairynz_level, couples_seeking, accommodation_needed,
             shed_types_experienced, herd_sizes_worked
           )
@@ -189,6 +208,29 @@ export function ApplicantDashboard() {
       })
 
       setApplicants(sorted)
+
+      // Batch-fetch contacts for applicants already shortlisted/offered/hired
+      // RLS ensures only acknowledged rows are returned
+      const acknowledgedSeekerUserIds = sorted
+        .filter((a) => ['shortlisted', 'offered', 'hired'].includes(a.status))
+        .map((a) => a.seeker_profiles?.user_id)
+        .filter((id): id is string => !!id)
+
+      if (acknowledgedSeekerUserIds.length > 0) {
+        const { data: contactRows } = await supabase
+          .from('seeker_contacts')
+          .select('user_id, phone, email')
+          .in('user_id', acknowledgedSeekerUserIds)
+
+        if (contactRows) {
+          const cMap = new Map<string, SeekerContact>()
+          for (const c of contactRows) {
+            cMap.set(c.user_id, { phone: c.phone, email: c.email })
+          }
+          setContactsMap(cMap)
+        }
+      }
+
       setLoading(false)
     }
 
@@ -196,6 +238,22 @@ export function ApplicantDashboard() {
   }, [session?.user?.id, jobId])
 
   async function handleTransition(applicationId: string, newStatus: ApplicationStatus, _note?: string) {
+    // Shortlist gate — intercept and show placement fee modal
+    if (newStatus === 'shortlisted') {
+      const applicant = applicants.find((a) => a.id === applicationId)
+      if (applicant) {
+        setPendingShortlistApp(applicant)
+        setShowPlacementFeeModal(true)
+        return // Block until modal confirmed
+      }
+    }
+
+    // Hire gate — intercept (handled by Plan 03's HireConfirmModal — for now pass through)
+    if (newStatus === 'hired') {
+      // Plan 03 will add HireConfirmModal intercept here
+    }
+
+    // All other transitions — direct update
     const { error } = await supabase
       .from('applications')
       .update({ status: newStatus })
@@ -212,6 +270,67 @@ export function ApplicantDashboard() {
       prev.map((a) => (a.id === applicationId ? { ...a, status: newStatus } : a)),
     )
   }
+
+  async function handlePlacementFeeConfirm() {
+    if (!pendingShortlistApp || !session?.user || !empProfileId || !jobId) return
+
+    const feeCalc = calculatePlacementFee(jobSalaryMin, jobSalaryMax, jobTitle)
+
+    // Call Edge Function to write placement_fees row via service role
+    const { error: fnError } = await supabase.functions.invoke('acknowledge-placement-fee', {
+      body: {
+        application_id: pendingShortlistApp.id,
+        job_id: jobId,
+        employer_id: empProfileId,
+        seeker_id: pendingShortlistApp.seeker_profiles.id,
+        fee_tier: feeCalc.tier,
+        amount_nzd: feeCalc.amount,
+      },
+    })
+
+    if (fnError) throw fnError
+
+    // Now update application status to shortlisted
+    const { error: statusErr } = await supabase
+      .from('applications')
+      .update({ status: 'shortlisted' })
+      .eq('id', pendingShortlistApp.id)
+
+    if (statusErr) throw statusErr
+
+    // Update local state
+    const acknowledgedAppId = pendingShortlistApp.id
+    setApplicants((prev) =>
+      prev.map((a) =>
+        a.id === acknowledgedAppId ? { ...a, status: 'shortlisted' as ApplicationStatus } : a,
+      ),
+    )
+
+    // Fetch newly revealed contacts (RLS now allows access since placement_fees.acknowledged_at is set)
+    const seekerUserId = pendingShortlistApp.seeker_profiles.user_id
+    if (seekerUserId) {
+      const { data: contactRow } = await supabase
+        .from('seeker_contacts')
+        .select('user_id, phone, email')
+        .eq('user_id', seekerUserId)
+        .maybeSingle()
+
+      if (contactRow) {
+        setContactsMap(
+          (prev) => new Map(prev).set(contactRow.user_id, { phone: contactRow.phone, email: contactRow.email }),
+        )
+      }
+    }
+
+    toast.success('Contact details released')
+    setShowPlacementFeeModal(false)
+    setPendingShortlistApp(null)
+  }
+
+  // Compute fee info for the pending app (only when modal is open)
+  const pendingFeeCalc = pendingShortlistApp
+    ? calculatePlacementFee(jobSalaryMin, jobSalaryMax, jobTitle)
+    : null
 
   return (
     <DashboardLayout>
@@ -275,6 +394,7 @@ export function ApplicantDashboard() {
                 key={app.id}
                 application={app}
                 matchScore={scoreMap.get(app.seeker_profiles?.id ?? '') ?? null}
+                contacts={contactsMap.get(app.seeker_profiles?.user_id ?? '') ?? null}
                 onTransition={handleTransition}
                 expanded={expandedId === app.id}
                 onToggle={() => setExpandedId((prev) => (prev === app.id ? null : app.id))}
@@ -283,6 +403,33 @@ export function ApplicantDashboard() {
           </div>
         )}
       </div>
+
+      {/* Placement fee modal */}
+      {showPlacementFeeModal && pendingShortlistApp && pendingFeeCalc && (
+        <PlacementFeeModal
+          candidateName={
+            [
+              pendingShortlistApp.seeker_profiles.region
+                ? `Seeker from ${pendingShortlistApp.seeker_profiles.region}`
+                : 'Seeker',
+              pendingShortlistApp.seeker_profiles.years_experience != null
+                ? `${pendingShortlistApp.seeker_profiles.years_experience}yr experience`
+                : null,
+            ]
+              .filter(Boolean)
+              .join(' - ')
+          }
+          feeTier={pendingFeeCalc.tier}
+          feeAmount={pendingFeeCalc.amount}
+          feeDisplayAmount={pendingFeeCalc.displayAmount}
+          feeTierLabel={PLACEMENT_FEE_TIERS[pendingFeeCalc.tier].label}
+          onConfirm={handlePlacementFeeConfirm}
+          onCancel={() => {
+            setShowPlacementFeeModal(false)
+            setPendingShortlistApp(null)
+          }}
+        />
+      )}
     </DashboardLayout>
   )
 }
