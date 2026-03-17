@@ -137,15 +137,19 @@ Deno.serve(async (req) => {
 
     const amount = TIER_PRICES[tierNum]
 
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount,
-      currency: 'nzd',
-      metadata: {
-        job_id,
-        tier: String(tierNum),
-        employer_id,
+    const idempotencyKey = `listing-fee-${job_id}`
+    const paymentIntent = await stripe.paymentIntents.create(
+      {
+        amount,
+        currency: 'nzd',
+        metadata: {
+          job_id,
+          tier: String(tierNum),
+          employer_id,
+        },
       },
-    })
+      { idempotencyKey },
+    )
 
     return new Response(
       JSON.stringify({ client_secret: paymentIntent.client_secret, is_free: false }),

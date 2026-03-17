@@ -125,6 +125,53 @@ Deno.serve(async (req) => {
     console.log('Job activated successfully:', job_id)
   }
 
+  if (event.type === 'invoice.payment_succeeded') {
+    const invoice = event.data.object as Stripe.Invoice
+    const { application_id } = invoice.metadata ?? {}
+
+    if (!application_id) {
+      console.log('Invoice event without application_id metadata — skipping (not a placement fee invoice)')
+      return new Response(JSON.stringify({ received: true }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    // Idempotency: check if placement_fee already has this stripe_invoice_id recorded
+    const { data: existingPf, error: checkError } = await supabaseClient
+      .from('placement_fees')
+      .select('id, stripe_invoice_id')
+      .eq('application_id', application_id)
+      .maybeSingle()
+
+    if (checkError) {
+      console.error('Error checking placement fee:', checkError)
+      return new Response(JSON.stringify({ error: 'Database error' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    if (!existingPf) {
+      console.error('No placement_fee found for application_id:', application_id)
+      return new Response(JSON.stringify({ received: true }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    // Already processed — invoice ID matches
+    if (existingPf.stripe_invoice_id === invoice.id) {
+      console.log('Duplicate invoice webhook for application:', application_id, '— skipping')
+      return new Response(JSON.stringify({ received: true }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    console.log('Invoice payment succeeded for application:', application_id)
+  }
+
   // Return 200 for all events (including unhandled ones)
   return new Response(JSON.stringify({ received: true }), {
     status: 200,

@@ -5,6 +5,7 @@ import { ArrowLeft } from 'lucide-react'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { ApplicantPanel } from '@/components/ui/ApplicantPanel'
 import { PlacementFeeModal } from '@/pages/dashboard/employer/PlacementFeeModal'
+import { HireConfirmModal } from '@/pages/dashboard/employer/HireConfirmModal'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/hooks/useAuth'
 import type { ApplicationStatus, MatchScore, SeekerContact } from '@/types/domain'
@@ -17,6 +18,7 @@ import {
 interface SeekerProfile {
   id: string
   user_id?: string
+  first_name?: string
   region?: string
   years_experience?: number
   sector_pref?: string[]
@@ -42,6 +44,17 @@ interface Applicant {
   created_at: string
   seeker_profiles: SeekerProfile
   seeker_skills?: Omit<SeekerSkill, 'seeker_id'>[]
+}
+
+function buildSeekerLabel(app: Applicant): string {
+  return [
+    app.seeker_profiles.region ? `Seeker from ${app.seeker_profiles.region}` : 'Seeker',
+    app.seeker_profiles.years_experience != null
+      ? `${app.seeker_profiles.years_experience}yr experience`
+      : null,
+  ]
+    .filter(Boolean)
+    .join(' - ')
 }
 
 function SkeletonRow() {
@@ -76,6 +89,10 @@ export function ApplicantDashboard() {
   const [showPlacementFeeModal, setShowPlacementFeeModal] = useState(false)
   const [contactsMap, setContactsMap] = useState<Map<string, SeekerContact>>(new Map())
 
+  // Hire confirmation modal state
+  const [pendingHireApp, setPendingHireApp] = useState<Applicant | null>(null)
+  const [showHireConfirmModal, setShowHireConfirmModal] = useState(false)
+
   useEffect(() => {
     async function loadData() {
       if (!session?.user || !jobId) {
@@ -83,10 +100,10 @@ export function ApplicantDashboard() {
         return
       }
 
-      // Get employer profile ID
+      // Get employer profile ID and farm name
       const { data: empProfile, error: empError } = await supabase
         .from('employer_profiles')
-        .select('id')
+        .select('id, farm_name')
         .eq('user_id', session.user.id)
         .single()
 
@@ -96,6 +113,7 @@ export function ApplicantDashboard() {
       }
 
       setEmpProfileId(empProfile.id)
+      setFarmName(empProfile.farm_name ?? '')
 
       // Load job details and verify ownership
       const { data: jobData, error: jobError } = await supabase
@@ -118,13 +136,13 @@ export function ApplicantDashboard() {
       setJobSalaryMin(jobData.salary_min ?? null)
       setJobSalaryMax(jobData.salary_max ?? null)
 
-      // Load applicants with seeker profiles (including user_id for contact lookup)
+      // Load applicants with seeker profiles (including user_id and first_name for contact lookup)
       const { data: appData, error: appError } = await supabase
         .from('applications')
         .select(`
           id, status, cover_note, created_at,
           seeker_profiles(
-            id, user_id, region, years_experience, sector_pref, visa_status,
+            id, user_id, first_name, region, years_experience, sector_pref, visa_status,
             dairynz_level, couples_seeking, accommodation_needed,
             shed_types_experienced, herd_sizes_worked
           )
@@ -248,9 +266,14 @@ export function ApplicantDashboard() {
       }
     }
 
-    // Hire gate — intercept (handled by Plan 03's HireConfirmModal — for now pass through)
+    // Hire gate — intercept and show hire confirmation modal
     if (newStatus === 'hired') {
-      // Plan 03 will add HireConfirmModal intercept here
+      const applicant = applicants.find((a) => a.id === applicationId)
+      if (applicant) {
+        setPendingHireApp(applicant)
+        setShowHireConfirmModal(true)
+        return // Block until modal confirmed
+      }
     }
 
     // All other transitions — direct update
@@ -327,8 +350,60 @@ export function ApplicantDashboard() {
     setPendingShortlistApp(null)
   }
 
+  async function handleHireConfirm(rating: number | null) {
+    if (!pendingHireApp || !session?.user || !empProfileId || !jobId) return
+
+    const feeCalc = calculatePlacementFee(jobSalaryMin, jobSalaryMax, jobTitle)
+
+    // Resolve seeker email — prefer contactsMap, fall back to null
+    const seekerUserIdForContact = pendingHireApp.seeker_profiles?.user_id
+    const seekerContact = seekerUserIdForContact
+      ? contactsMap.get(seekerUserIdForContact)
+      : null
+
+    // Call Edge Function to create Stripe Invoice + send seeker hire notification email
+    const { error } = await supabase.functions.invoke('create-placement-invoice', {
+      body: {
+        application_id: pendingHireApp.id,
+        job_id: jobId,
+        employer_id: empProfileId,
+        employer_email: session.user.email,
+        farm_name: farmName,
+        job_title: jobTitle,
+        fee_tier: feeCalc.tier,
+        amount_nzd: feeCalc.amount,
+        rating,
+        seeker_email: seekerContact?.email ?? null,
+        seeker_name: pendingHireApp.seeker_profiles?.first_name ?? null,
+      },
+    })
+
+    if (error) throw error
+
+    // Update application status to hired
+    const { error: statusErr } = await supabase
+      .from('applications')
+      .update({ status: 'hired' })
+      .eq('id', pendingHireApp.id)
+
+    if (statusErr) throw statusErr
+
+    // Update local state
+    setApplicants((prev) =>
+      prev.map((a) => (a.id === pendingHireApp.id ? { ...a, status: 'hired' as ApplicationStatus } : a)),
+    )
+
+    toast.success('Hire confirmed — invoice sent to your email.')
+    setShowHireConfirmModal(false)
+    setPendingHireApp(null)
+  }
+
   // Compute fee info for the pending app (only when modal is open)
   const pendingFeeCalc = pendingShortlistApp
+    ? calculatePlacementFee(jobSalaryMin, jobSalaryMax, jobTitle)
+    : null
+
+  const hireFeeCalc = pendingHireApp
     ? calculatePlacementFee(jobSalaryMin, jobSalaryMax, jobTitle)
     : null
 
@@ -407,18 +482,7 @@ export function ApplicantDashboard() {
       {/* Placement fee modal */}
       {showPlacementFeeModal && pendingShortlistApp && pendingFeeCalc && (
         <PlacementFeeModal
-          candidateName={
-            [
-              pendingShortlistApp.seeker_profiles.region
-                ? `Seeker from ${pendingShortlistApp.seeker_profiles.region}`
-                : 'Seeker',
-              pendingShortlistApp.seeker_profiles.years_experience != null
-                ? `${pendingShortlistApp.seeker_profiles.years_experience}yr experience`
-                : null,
-            ]
-              .filter(Boolean)
-              .join(' - ')
-          }
+          candidateName={buildSeekerLabel(pendingShortlistApp)}
           feeTier={pendingFeeCalc.tier}
           feeAmount={pendingFeeCalc.amount}
           feeDisplayAmount={pendingFeeCalc.displayAmount}
@@ -427,6 +491,19 @@ export function ApplicantDashboard() {
           onCancel={() => {
             setShowPlacementFeeModal(false)
             setPendingShortlistApp(null)
+          }}
+        />
+      )}
+
+      {/* Hire confirmation modal */}
+      {showHireConfirmModal && pendingHireApp && hireFeeCalc && (
+        <HireConfirmModal
+          candidateName={buildSeekerLabel(pendingHireApp)}
+          feeDisplayAmount={hireFeeCalc.displayAmount}
+          onConfirm={handleHireConfirm}
+          onCancel={() => {
+            setShowHireConfirmModal(false)
+            setPendingHireApp(null)
           }}
         />
       )}
