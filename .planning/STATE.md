@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 05-01-PLAN.md
-last_updated: "2026-03-17T08:13:31.665Z"
+stopped_at: Completed 05-04-PLAN.md
+last_updated: "2026-03-17T08:17:37.179Z"
 last_activity: "2026-03-15 — Plan 02-06 complete: EmployerDashboard rebuild (job cards, filter tabs, stats, verification nudge), MarkFilledModal, JobDetail (visitor sticky CTA, trust badge), 008_job_expiry_cron.sql, main.tsx route wiring"
 progress:
   total_phases: 6
   completed_phases: 4
   total_plans: 25
-  completed_plans: 22
+  completed_plans: 23
   percent: 30
 ---
 
@@ -69,6 +69,7 @@ Progress: [██████░░░░] 30%
 | Phase 04-match-scoring-engine P01 | 1 | 1 tasks | 1 files |
 | Phase 04-match-scoring-engine P03 | 5 | 2 tasks | 6 files |
 | Phase 05-revenue-protection P01 | 4 | 2 tasks | 3 files |
+| Phase 05-revenue-protection P04 | 5 | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -149,6 +150,7 @@ Recent decisions affecting current work:
 - [Phase 04-03]: ApplicantDashboard replaced N sequential RPC calls with single .in() query against match_scores — explanation stored in scoreMap for future ApplicantPanel rendering
 - [Phase 05-01]: Fee tiers: entry=$200, experienced=$400, senior=$800 — salary-primary with title keyword bump-never-down rule in calculatePlacementFee()
 - [Phase 05-01]: pg_cron flag pattern: placement-followup-flags sets due=true at 08:00 UTC; Resend Edge Function consumes due flags and sets sent=true (decoupled scheduling from delivery)
+- [Phase 05-04]: Resend called via plain fetch() — no SDK; hire notification deferred to create-placement-invoice for immediate delivery; seeker name shown as region for employer anonymity
 
 ### Pending Todos
 
@@ -162,6 +164,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-17T08:13:31.662Z
-Stopped at: Completed 05-01-PLAN.md
+Last session: 2026-03-17T08:17:37.177Z
+Stopped at: Completed 05-04-PLAN.md
 Resume file: None
