@@ -24,3 +24,4 @@ npm-debug.log*
 
 # Vitest
 coverage/
+supabase/.temp/

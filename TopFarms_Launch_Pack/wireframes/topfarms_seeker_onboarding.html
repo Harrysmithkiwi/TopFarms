@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TopFarms – Join as a Job Seeker</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --soil:#2C1A0E; --moss:#2D5016; --fern:#4A7C2F; --meadow:#7AAF3F;
+  --hay:#D4A843; --hay-lt:#FFF8E7; --cream:#F7F2E8; --fog:#EEE8DC;
+  --mist:#F2EEE6; --ink:#1A1208; --mid:#6B5D4A; --light:#9E8E78;
+  --white:#FFF; --red:#C0392B; --red-lt:#FDF0EE;
+  --blue:#1A5276; --blue-lt:#EAF4FB; --purple:#6C3483; --purple-lt:#F5EEF8;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;overflow-x:hidden}
+
+/* ── SCREEN SYSTEM ── */
+.screen{display:none;animation:fadeUp .35s ease both}
+.screen.active{display:flex}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;height:56px;background:var(--soil);display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:200}
+.logo{font-family:'Fraunces',serif;font-weight:700;font-size:20px;color:var(--cream);display:flex;align-items:center;gap:7px}
+.logo-leaf{color:var(--meadow)}
+.nav-login{font-size:12px;color:rgba(247,242,232,.6)}
+.nav-login a{color:var(--meadow);text-decoration:none;font-weight:600}
+
+/* ── PROGRESS BAR ── */
+.progress-bar{position:fixed;top:56px;left:0;right:0;height:3px;background:rgba(45,80,22,.15);z-index:199}
+.progress-fill{height:100%;background:linear-gradient(to right,var(--fern),var(--meadow));transition:width .4s cubic-bezier(.4,0,.2,1)}
+
+/* ── STEP INDICATOR ── */
+.step-indicator{position:fixed;top:68px;right:24px;font-size:11px;font-weight:700;color:var(--light);letter-spacing:.5px;z-index:199}
+
+/* ── LAYOUT ── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;min-height:100vh;padding-top:56px}
+.left-panel{background:var(--soil);padding:52px 48px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden}
+.left-panel::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 80%,rgba(74,124,47,.25) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(45,80,22,.2) 0%,transparent 60%)}
+.left-content{position:relative;z-index:1}
+.left-eyebrow{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--meadow);margin-bottom:14px}
+.left-heading{font-family:'Fraunces',serif;font-size:38px;font-weight:700;color:var(--cream);line-height:1.1;letter-spacing:-1px;margin-bottom:16px}
+.left-heading em{font-style:italic;color:var(--hay)}
+.left-sub{font-size:14px;color:rgba(247,242,232,.6);line-height:1.6;margin-bottom:32px}
+.left-stats{display:flex;flex-direction:column;gap:14px}
+.stat-row{display:flex;align-items:center;gap:12px}
+.stat-icon{width:36px;height:36px;border-radius:8px;background:rgba(122,175,63,.15);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.stat-text{font-size:12px;color:rgba(247,242,232,.7);line-height:1.3}
+.stat-text strong{color:var(--cream);display:block}
+
+/* ── RIGHT PANEL ── */
+.right-panel{background:var(--cream);padding:52px 56px;display:flex;flex-direction:column;justify-content:center;overflow-y:auto}
+
+/* ── SINGLE COL SCREENS (wizard steps 2-6) ── */
+.center-screen{min-height:100vh;padding-top:56px;display:flex;align-items:center;justify-content:center;padding-bottom:40px}
+.wizard-card{background:var(--white);border:1.5px solid var(--fog);border-radius:16px;padding:40px 44px;width:100%;max-width:620px;margin:0 auto}
+.wizard-eyebrow{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--meadow);margin-bottom:10px}
+.wizard-title{font-family:'Fraunces',serif;font-size:26px;font-weight:700;color:var(--ink);letter-spacing:-.5px;margin-bottom:6px}
+.wizard-sub{font-size:13px;color:var(--light);margin-bottom:28px;line-height:1.5}
+
+/* ── FORM ── */
+.form-group{margin-bottom:16px}
+.fld-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mid);margin-bottom:6px;display:block}
+.fld-label .req{color:var(--red)}
+input[type=text],input[type=email],input[type=password],input[type=tel],input[type=number],select,textarea{
+  width:100%;padding:11px 14px;border:1.5px solid var(--fog);border-radius:8px;
+  font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--white);
+  outline:none;transition:border-color .2s,box-shadow .2s}
+input:focus,select:focus,textarea:focus{border-color:var(--fern);box-shadow:0 0 0 3px rgba(74,124,47,.08)}
+input::placeholder,textarea::placeholder{color:var(--light)}
+select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%239E8E78' d='M6 8L0 0h12z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:38px}
+textarea{resize:vertical;min-height:80px;line-height:1.6}
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.hint{font-size:11px;color:var(--light);margin-top:5px;line-height:1.4}
+.hint.warn{color:#7A5C00}
+.pw-strength{height:3px;background:var(--fog);border-radius:2px;margin-top:6px;overflow:hidden}
+.pw-strength-fill{height:100%;border-radius:2px;transition:all .3s;width:0%}
+
+/* ── CHOICE CARDS ── */
+.choice-grid{display:grid;gap:10px}
+.choice-grid.c2{grid-template-columns:1fr 1fr}
+.choice-card{border:2px solid var(--fog);border-radius:10px;padding:16px 18px;cursor:pointer;transition:all .18s;position:relative;background:var(--white)}
+.choice-card:hover{border-color:var(--fern);transform:translateY(-1px)}
+.choice-card.sel{border-color:var(--moss);background:rgba(45,80,22,.04)}
+.choice-card.sel::after{content:'✓';position:absolute;top:12px;right:14px;color:var(--moss);font-weight:800;font-size:14px}
+.cc-icon{font-size:26px;margin-bottom:8px}
+.cc-title{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.cc-desc{font-size:11px;color:var(--mid);line-height:1.4}
+
+/* ── CHIPS ── */
+.chip-grid{display:flex;flex-wrap:wrap;gap:7px}
+.chip{padding:7px 13px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid var(--fog);color:var(--mid);background:var(--mist);transition:all .15s;display:flex;align-items:center;gap:5px}
+.chip:hover{border-color:var(--fern);color:var(--fern)}
+.chip.sel{background:rgba(45,80,22,.08);border-color:var(--moss);color:var(--moss);font-weight:600}
+
+/* ── TOGGLE ── */
+.tgl-row{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border:1.5px solid var(--fog);border-radius:8px;cursor:pointer;transition:all .2s;background:var(--white);margin-bottom:8px}
+.tgl-row:hover{border-color:var(--fern)}
+.tgl-row.on{border-color:var(--moss);background:rgba(45,80,22,.03)}
+.tgl-lbl{font-size:13px;color:var(--ink);display:flex;align-items:center;gap:8px}
+.tgl-sub{font-size:11px;color:var(--light)}
+.tgl{width:36px;height:20px;background:var(--fog);border-radius:10px;position:relative;flex-shrink:0;transition:background .2s}
+.tgl.on{background:var(--moss)}
+.tgl::after{content:'';position:absolute;width:16px;height:16px;background:white;border-radius:50%;top:2px;left:2px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.tgl.on::after{transform:translateX(16px)}
+
+/* ── BUTTONS ── */
+.btn{padding:11px 24px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;border:none;display:inline-flex;align-items:center;gap:7px}
+.btn-primary{background:var(--moss);color:white;width:100%;justify-content:center;font-size:14px;padding:13px}
+.btn-primary:hover{background:var(--fern)}
+.btn-ghost{background:transparent;border:1.5px solid var(--fog);color:var(--mid)}
+.btn-ghost:hover{border-color:var(--mid)}
+.btn-row{display:flex;gap:10px;margin-top:28px}
+.btn-row .btn-ghost{flex:0 0 auto}
+.btn-row .btn-primary{flex:1}
+
+/* ── PROFILE PAGE ── */
+.profile-shell{display:grid;grid-template-columns:280px 1fr;min-height:100vh;padding-top:56px}
+.profile-sidebar{background:var(--white);border-right:1.5px solid var(--fog);padding:28px 0;position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto}
+.ps-avatar-section{padding:20px 22px 20px;border-bottom:1.5px solid var(--fog);text-align:center}
+.ps-avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--fern),var(--meadow));color:white;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:24px;font-weight:700;margin:0 auto 10px;position:relative;cursor:pointer}
+.ps-avatar-edit{position:absolute;bottom:0;right:0;width:22px;height:22px;background:var(--moss);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;border:2px solid white}
+.ps-name{font-family:'Fraunces',serif;font-size:16px;font-weight:700;color:var(--ink)}
+.ps-role{font-size:11px;color:var(--light);margin-top:2px}
+.ps-complete{margin-top:10px}
+.ps-complete-bar{height:5px;background:var(--fog);border-radius:3px;overflow:hidden;margin-top:5px}
+.ps-complete-fill{height:100%;background:linear-gradient(to right,var(--fern),var(--meadow));border-radius:3px}
+.ps-complete-text{display:flex;justify-content:space-between;font-size:10px;color:var(--light);margin-top:3px}
+.ps-nav{padding:16px 0}
+.ps-nav-item{padding:9px 22px;font-size:13px;font-weight:500;color:var(--mid);cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .15s;border-left:3px solid transparent}
+.ps-nav-item:hover{background:var(--mist);color:var(--ink)}
+.ps-nav-item.active{background:rgba(45,80,22,.05);color:var(--moss);font-weight:700;border-left-color:var(--moss)}
+.ps-nav-item .nav-badge{margin-left:auto;background:var(--red);color:white;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px}
+.ps-nav-section{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--light);padding:12px 22px 4px}
+
+/* ── PROFILE MAIN ── */
+.profile-main{padding:28px 32px;background:var(--cream)}
+.pm-header{margin-bottom:24px}
+.pm-title{font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:var(--ink);letter-spacing:-.5px}
+.pm-sub{font-size:12px;color:var(--light);margin-top:3px}
+.card{background:var(--white);border:1.5px solid var(--fog);border-radius:12px;overflow:hidden;margin-bottom:18px}
+.card-head{padding:16px 22px;border-bottom:1.5px solid var(--fog);background:var(--mist);display:flex;align-items:center;gap:12px}
+.ch-icon{width:36px;height:36px;border-radius:9px;background:var(--moss);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.ch-title{font-family:'Fraunces',serif;font-size:15px;font-weight:600;color:var(--ink)}
+.ch-sub{font-size:11px;color:var(--light);margin-top:1px}
+.ch-badge{margin-left:auto;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;border-radius:4px;white-space:nowrap}
+.badge-req{background:var(--red-lt);color:var(--red)}
+.badge-paid{background:rgba(108,52,131,.1);color:var(--purple)}
+.badge-done{background:rgba(45,80,22,.1);color:var(--moss)}
+.card-body{padding:20px 22px}
+
+/* ── SKILL PROFICIENCY ── */
+.skill-item{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--mist);border-radius:7px;margin-bottom:6px}
+.skill-name{flex:1;font-size:13px;color:var(--ink)}
+.prof-btns{display:flex;gap:4px}
+.pb{padding:4px 10px;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;border:1.5px solid var(--fog);background:white;color:var(--light);font-family:'DM Sans',sans-serif;transition:all .15s}
+.pb.confident{border-color:var(--moss);background:rgba(45,80,22,.08);color:var(--moss)}
+.pb.learning{border-color:var(--hay);background:var(--hay-lt);color:#7A5C00}
+.pb.entry{border-color:var(--light);background:var(--mist);color:var(--mid)}
+.skill-remove{color:var(--light);cursor:pointer;font-size:13px;padding:2px 4px;transition:color .15s}
+.skill-remove:hover{color:var(--red)}
+
+/* ── DOC UPLOAD ── */
+.doc-grid{display:grid;gap:8px}
+.doc-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border:1.5px solid var(--fog);border-radius:8px;background:var(--white);cursor:pointer;transition:all .15s}
+.doc-item:hover{border-color:var(--fern)}
+.doc-item.uploaded{border-color:rgba(45,80,22,.3);background:rgba(45,80,22,.02)}
+.doc-item.uploaded.verified{border-color:var(--moss)}
+.doc-icon{font-size:20px;flex-shrink:0}
+.doc-info{flex:1}
+.doc-name{font-size:13px;font-weight:600;color:var(--ink)}
+.doc-meta{font-size:10px;color:var(--light);margin-top:1px}
+.doc-status{font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px}
+.status-verified{background:rgba(45,80,22,.1);color:var(--moss)}
+.status-uploaded{background:var(--blue-lt);color:var(--blue)}
+.status-missing{background:var(--red-lt);color:var(--red)}
+.status-optional{background:var(--mist);color:var(--light)}
+.doc-upload-btn{font-size:11px;color:var(--light);border:1.5px dashed var(--fog);border-radius:6px;padding:4px 10px;cursor:pointer;transition:all .15s;white-space:nowrap;background:none;font-family:'DM Sans',sans-serif;font-weight:600}
+.doc-upload-btn:hover{border-color:var(--fern);color:var(--fern)}
+
+/* ── CV BUILDER PROMO ── */
+.cv-builder-card{background:linear-gradient(135deg,var(--soil) 0%,#1a3d0a 100%);border-radius:14px;padding:28px 28px;margin-bottom:18px;position:relative;overflow:hidden}
+.cv-builder-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 50%,rgba(122,175,63,.2) 0%,transparent 60%)}
+.cvb-eyebrow{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--meadow);margin-bottom:8px;position:relative}
+.cvb-title{font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:var(--cream);letter-spacing:-.5px;margin-bottom:6px;position:relative}
+.cvb-title em{font-style:italic;color:var(--hay)}
+.cvb-sub{font-size:12px;color:rgba(247,242,232,.6);line-height:1.6;margin-bottom:20px;position:relative;max-width:380px}
+.cvb-features{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px;position:relative}
+.cvb-feat{font-size:11px;color:rgba(247,242,232,.8);background:rgba(255,255,255,.08);padding:4px 10px;border-radius:4px;display:flex;align-items:center;gap:4px}
+.cvb-footer{display:flex;align-items:center;gap:14px;position:relative}
+.cvb-price{font-family:'Fraunces',serif;font-size:28px;font-weight:700;color:var(--hay)}
+.cvb-price span{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:400;color:rgba(247,242,232,.5)}
+.cvb-btn{background:var(--hay);color:var(--soil);padding:11px 24px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .2s;display:flex;align-items:center;gap:7px}
+.cvb-btn:hover{background:#c49a38}
+.cvb-sample{position:absolute;right:24px;top:50%;transform:translateY(-50%);width:130px;opacity:.4}
+
+/* ── CV BUILDER SCREEN ── */
+.cv-builder-screen{background:var(--cream);min-height:calc(100vh - 56px);padding:32px}
+.cvb-layout{display:grid;grid-template-columns:1fr 380px;gap:24px;max-width:1100px;margin:0 auto}
+.cvb-form-section{background:var(--white);border:1.5px solid var(--fog);border-radius:12px;overflow:hidden;margin-bottom:18px}
+.cvb-step-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--meadow);margin-bottom:6px}
+.cvb-step-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:var(--ink);letter-spacing:-.3px;margin-bottom:16px}
+
+/* CV Preview */
+.cv-preview-card{background:var(--white);border:1.5px solid var(--fog);border-radius:12px;overflow:hidden;position:sticky;top:80px}
+.cvp-header{background:var(--moss);padding:16px 20px}
+.cvp-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.7);margin-bottom:4px}
+.cvp-name{font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:white;letter-spacing:-.3px}
+.cvp-role{font-size:12px;color:rgba(255,255,255,.7);margin-top:2px}
+.cvp-body{padding:16px 18px;font-size:11px;line-height:1.6;color:var(--mid);max-height:500px;overflow-y:auto}
+.cvp-section-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--moss);border-bottom:1px solid var(--fog);padding-bottom:4px;margin:12px 0 8px}
+.cvp-item{margin-bottom:8px}
+.cvp-item-title{font-weight:700;color:var(--ink);font-size:11px}
+.cvp-item-sub{font-size:10px;color:var(--light)}
+.cvp-item-bullet{font-size:10px;color:var(--mid);padding-left:12px;position:relative;margin-top:2px}
+.cvp-item-bullet::before{content:'•';position:absolute;left:3px;color:var(--moss)}
+.cvp-ai-badge{background:var(--purple-lt);border-top:1.5px solid rgba(108,52,131,.15);padding:10px 16px;display:flex;align-items:center;gap:7px;font-size:11px;color:var(--purple)}
+.cvp-generate-btn{width:100%;background:var(--purple);color:white;border:none;padding:12px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s}
+.cvp-generate-btn:hover{background:#5B2A72}
+.cvp-loading{text-align:center;padding:30px;display:none}
+.cvp-loading .spinner{width:32px;height:32px;border:3px solid var(--fog);border-top-color:var(--moss);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── COMPLETE SCREEN ── */
+.complete-screen{min-height:100vh;padding-top:56px;display:flex;align-items:center;justify-content:center;background:var(--cream)}
+.complete-card{text-align:center;max-width:520px;padding:48px 40px}
+.complete-icon{font-size:56px;margin-bottom:16px;animation:pop .4s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes pop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+.complete-title{font-family:'Fraunces',serif;font-size:30px;font-weight:700;color:var(--ink);letter-spacing:-.5px;margin-bottom:8px}
+.complete-sub{font-size:14px;color:var(--mid);line-height:1.6;margin-bottom:28px}
+.complete-jobs-preview{background:var(--white);border:1.5px solid var(--fog);border-radius:10px;padding:16px;margin-bottom:24px;text-align:left}
+.cjp-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--moss);margin-bottom:10px}
+.cjp-job{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--fog)}
+.cjp-job:last-child{border-bottom:none;padding-bottom:0}
+.cjp-match{width:36px;height:36px;border-radius:50%;background:rgba(45,80,22,.08);border:2px solid var(--moss);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--moss);flex-shrink:0}
+.cjp-info{flex:1}
+.cjp-title{font-size:13px;font-weight:700;color:var(--ink)}
+.cjp-meta{font-size:10px;color:var(--light)}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo"><span class="logo-leaf">🌿</span> TopFarms</div>
+  <div class="nav-login">Already have an account? <a href="#">Sign in</a></div>
+</nav>
+
+<div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:14%"></div></div>
+<div class="step-indicator" id="step-indicator">Step 1 of 7</div>
+
+<!-- ═══════════════════════════════════ -->
+<!-- SCREEN 1 — SIGN UP -->
+<!-- ═══════════════════════════════════ -->
+<div class="screen two-col active" id="screen-1">
+  <div class="left-panel">
+    <div class="left-content">
+      <div class="left-eyebrow">For Job Seekers</div>
+      <h1 class="left-heading">Find your next<br><em>farming role</em><br>in New Zealand</h1>
+      <p class="left-sub">TopFarms matches you with dairy and ag roles based on your actual skills, shed experience, and life situation — not just keywords.</p>
+      <div class="left-stats">
+        <div class="stat-row"><div class="stat-icon">🐄</div><div class="stat-text"><strong>Free to join, always</strong>Job seekers never pay to apply or browse</div></div>
+        <div class="stat-row"><div class="stat-icon">🏠</div><div class="stat-text"><strong>Accommodation-aware matching</strong>Filter by housing, couples roles, pets OK</div></div>
+        <div class="stat-row"><div class="stat-icon">⭐</div><div class="stat-text"><strong>Match score on every job</strong>See exactly why you're a fit — before you apply</div></div>
+        <div class="stat-row"><div class="stat-icon">📄</div><div class="stat-text"><strong>AI-powered CV builder</strong>Turn your experience into a polished farming CV</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="right-panel">
+    <div style="max-width:400px;width:100%">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--meadow);margin-bottom:10px">Create your account</div>
+      <h2 style="font-family:'Fraunces',serif;font-size:26px;font-weight:700;letter-spacing:-.5px;margin-bottom:6px">Let's get you set up</h2>
+      <p style="font-size:13px;color:var(--light);margin-bottom:28px">Takes about 5 minutes. Free forever.</p>
+      <div class="form-group"><label class="fld-label">Full Name <span class="req">*</span></label><input type="text" placeholder="e.g. James Tūhoe"></div>
+      <div class="form-group row-2">
+        <div><label class="fld-label">Email <span class="req">*</span></label><input type="email" placeholder="you@example.com"></div>
+        <div><label class="fld-label">Phone</label><input type="tel" placeholder="+64 21 xxx xxxx"></div>
+      </div>
+      <div class="form-group"><label class="fld-label">Password <span class="req">*</span></label><input type="password" placeholder="Min. 8 characters" id="pw-input" oninput="updatePwStrength(this.value)"><div class="pw-strength"><div class="pw-strength-fill" id="pw-bar"></div></div><div class="hint" id="pw-hint">Use a mix of letters, numbers and symbols</div></div>
+      <button class="btn btn-primary" style="margin-top:8px" onclick="goto(2)">Create Account →</button>
+      <div style="text-align:center;margin-top:14px;font-size:12px;color:var(--light)">By signing up you agree to our <a href="#" style="color:var(--moss)">Terms</a> and <a href="#" style="color:var(--moss)">Privacy Policy</a></div>
+      <div style="display:flex;align-items:center;gap:12px;margin:20px 0"><div style="flex:1;height:1px;background:var(--fog)"></div><span style="font-size:11px;color:var(--light)">or sign up with</span><div style="flex:1;height:1px;background:var(--fog)"></div></div>
+      <button class="btn btn-ghost" style="width:100%;justify-content:center;gap:8px;font-size:13px">🔵 Continue with Google</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<!-- SCREEN 2 — WHO ARE YOU -->
+<!-- ═══════════════════════════════════ -->
+<div class="screen center-screen" id="screen-2">
+  <div class="wizard-card">
+    <div class="wizard-eyebrow">Step 2 of 7</div>
+    <h2 class="wizard-title">What best describes you right now?</h2>
+    <p class="wizard-sub">This shapes what we ask next — no right answer, just be honest.</p>
+    <div class="choice-grid c2">
+      <div class="choice-card sel" onclick="selectChoice(this)"><div class="cc-icon">🐄</div><div class="cc-title">Working in dairy now</div><div class="cc-desc">Currently employed on a dairy farm, looking for a better role</div></div>
+      <div class="choice-card" onclick="selectChoice(this)"><div class="cc-icon">🌱</div><div class="cc-title">Looking for my first dairy role</div><div class="cc-desc">New to dairy farming — maybe from another industry or fresh start</div></div>
+      <div class="choice-card" onclick="selectChoice(this)"><div class="cc-icon">🔄</div><div class="cc-title">Returning to farming</div><div class="cc-desc">Have dairy experience but have been away from it for a while</div></div>
+      <div class="choice-card" onclick="selectChoice(this)"><div class="cc-icon">🌾</div><div class="cc-title">In another ag sector</div><div class="cc-desc">Working in sheep/beef, horticulture, or other primary industries</div></div>
+    </div>
+    <div class="btn-row"><button class="btn btn-ghost" onclick="goto(1)">← Back</button><button class="btn btn-primary" onclick="goto(3)">Continue →</button></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<!-- SCREEN 3 — WHERE & WHAT -->
+<!-- ═══════════════════════════════════ -->
+<div class="screen center-screen" id="screen-3">
+  <div class="wizard-card">
+    <div class="wizard-eyebrow">Step 3 of 7</div>
+    <h2 class="wizard-title">Where do you want to work, and doing what?</h2>
+    <p class="wizard-sub">Select all that apply — we'll show you matching jobs immediately after setup.</p>
+    <div class="form-group">
+      <label class="fld-label">Preferred Regions <span class="req">*</span></label>
+      <div class="chip-grid">
+        <span class="chip sel" onclick="this.classList.toggle('sel')">🗺 Anywhere in NZ</span>
+        <span class="chip sel" onclick="this.classList.toggle('sel')">Waikato</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">Canterbury (Mid)</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">Canterbury (North)</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">Taranaki</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">Bay of Plenty</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">Manawatu</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">Southland</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">Northland</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">Hawke's Bay</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">Otago</span>
+      </div>
+    </div>
+    <div class="form-group" style="margin-top:20px">
+      <label class="fld-label">Role Types Sought <span class="req">*</span></label>
+      <div class="chip-grid">
+        <span class="chip sel" onclick="this.classList.toggle('sel')">Farm Assistant</span>
+        <span class="chip sel" onclick="this.classList.toggle('sel')">2IC / Asst. Manager</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">Herd Manager</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">Relief Milker</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">Farm Manager</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">Calf Rearer</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">Tractor / Machinery</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">Contract Milking</span>
+      </div>
+    </div>
+    <div class="form-group" style="margin-top:20px">
+      <label class="fld-label">Employment Type</label>
+      <div class="chip-grid">
+        <span class="chip sel" onclick="this.classList.toggle('sel')">Permanent</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">Casual / Relief</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">Seasonal</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">Any</span>
+      </div>
+    </div>
+    <div class="btn-row"><button class="btn btn-ghost" onclick="goto(2)">← Back</button><button class="btn btn-primary" onclick="goto(4)">Continue →</button></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<!-- SCREEN 4 — EXPERIENCE -->
+<!-- ═══════════════════════════════════ -->
+<div class="screen center-screen" id="screen-4">
+  <div class="wizard-card">
+    <div class="wizard-eyebrow">Step 4 of 7</div>
+    <h2 class="wizard-title">Tell us about your farming experience</h2>
+    <p class="wizard-sub">Be honest — it helps us show you roles at the right level.</p>
+    <div class="form-group row-2">
+      <div><label class="fld-label">Years in Dairy <span class="req">*</span></label><input type="number" placeholder="e.g. 4" min="0" max="40"></div>
+      <div><label class="fld-label">Current / Most Recent Role</label><select><option value="">Select role…</option><option>Farm Assistant</option><option selected>2IC / Asst. Manager</option><option>Herd Manager</option><option>Relief Milker</option><option>Farm Manager</option><option>Student / First Role</option></select></div>
+    </div>
+    <div class="form-group">
+      <label class="fld-label">Shed Type Experience <span class="req">*</span></label>
+      <div class="chip-grid">
+        <span class="chip sel" onclick="this.classList.toggle('sel')">🔄 Rotary</span>
+        <span class="chip sel" onclick="this.classList.toggle('sel')">↔️ Herringbone</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">Both</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">None yet</span>
+      </div>
+    </div>
+    <div class="form-group" style="margin-top:16px">
+      <label class="fld-label">Largest Herd You've Worked With</label>
+      <select><option>Under 200 cows</option><option>200–400 cows</option><option selected>400–600 cows</option><option>600–900 cows</option><option>900+ cows</option></select>
+    </div>
+    <div class="form-group" style="margin-top:16px">
+      <label class="fld-label">Key Skills <span class="hint" style="margin:0;display:inline;margin-left:6px">— select all you're confident with</span></label>
+      <div class="chip-grid" style="margin-top:8px">
+        <span class="chip sel" onclick="this.classList.toggle('sel')">Milking</span>
+        <span class="chip sel" onclick="this.classList.toggle('sel')">Calving</span>
+        <span class="chip sel" onclick="this.classList.toggle('sel')">Pasture mgmt</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">Tractor operation</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">Calf rearing</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">Animal health</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">Effluent mgmt</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">Irrigation</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">Fencing</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">Feeding out</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">Staff management</span>
+        <span class="chip" onclick="this.classList.toggle('sel')">Sole charge</span>
+      </div>
+    </div>
+    <div class="btn-row"><button class="btn btn-ghost" onclick="goto(3)">← Back</button><button class="btn btn-primary" onclick="goto(5)">Continue →</button></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<!-- SCREEN 5 — LIFE SITUATION -->
+<!-- ═══════════════════════════════════ -->
+<div class="screen center-screen" id="screen-5">
+  <div class="wizard-card">
+    <div class="wizard-eyebrow">Step 5 of 7</div>
+    <h2 class="wizard-title">Your situation</h2>
+    <p class="wizard-sub">These four questions unlock the filters that matter most in NZ dairy hiring.</p>
+    <div class="tgl-row on" onclick="this.classList.toggle('on');this.querySelector('.tgl').classList.toggle('on')">
+      <div><div class="tgl-lbl">🏠 I need accommodation provided</div><div class="tgl-sub">Only show roles that include a house or sleepout</div></div>
+      <div class="tgl on"></div>
+    </div>
+    <div class="tgl-row" onclick="this.classList.toggle('on');this.querySelector('.tgl').classList.toggle('on')">
+      <div><div class="tgl-lbl">💑 I'm part of a couple — partner also seeking work</div><div class="tgl-sub">Unlocks couples positions and couple-friendly roles</div></div>
+      <div class="tgl"></div>
+    </div>
+    <div class="tgl-row" onclick="this.classList.toggle('on');this.querySelector('.tgl').classList.toggle('on')">
+      <div><div class="tgl-lbl">🐕 I have working dogs</div><div class="tgl-sub">Filters to farms that allow dogs on-property</div></div>
+      <div class="tgl"></div>
+    </div>
+    <div class="tgl-row" onclick="this.classList.toggle('on');this.querySelector('.tgl').classList.toggle('on')">
+      <div><div class="tgl-lbl">👨‍👩‍👧 I have a family / children</div><div class="tgl-sub">Shows family-suitable roles — school bus access, good housing</div></div>
+      <div class="tgl"></div>
+    </div>
+    <div class="form-group" style="margin-top:16px">
+      <label class="fld-label">Minimum salary expectation (NZD / year)</label>
+      <input type="number" placeholder="e.g. 60000" value="65000">
+      <div class="hint">Optional — used to filter out roles below your threshold</div>
+    </div>
+    <div class="form-group">
+      <label class="fld-label">Available from</label>
+      <div class="chip-grid">
+        <span class="chip sel" onclick="singleChip(this,'.avail-chip')">⚡ Immediately</span>
+        <span class="chip avail-chip" onclick="singleChip(this,'.avail-chip')">Within 1 month</span>
+        <span class="chip avail-chip" onclick="singleChip(this,'.avail-chip')">June 2026</span>
+        <span class="chip avail-chip" onclick="singleChip(this,'.avail-chip')">Flexible</span>
+      </div>
+    </div>
+    <div class="btn-row"><button class="btn btn-ghost" onclick="goto(4)">← Back</button><button class="btn btn-primary" onclick="goto(6)">Continue →</button></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<!-- SCREEN 6 — RIGHT TO WORK -->
+<!-- ═══════════════════════════════════ -->
+<div class="screen center-screen" id="screen-6">
+  <div class="wizard-card">
+    <div class="wizard-eyebrow">Step 6 of 7</div>
+    <h2 class="wizard-title">Right to work in New Zealand</h2>
+    <p class="wizard-sub">This ensures we only show you roles you're eligible to apply for. Your status is private.</p>
+    <div class="choice-grid">
+      <div class="choice-card sel" onclick="selectChoice(this)"><div style="display:flex;align-items:center;gap:12px"><div style="font-size:22px">🇳🇿</div><div><div class="cc-title">NZ Citizen or Permanent Resident</div><div class="cc-desc">Full right to work — no restrictions</div></div></div></div>
+      <div class="choice-card" onclick="selectChoice(this)"><div style="display:flex;align-items:center;gap:12px"><div style="font-size:22px">📄</div><div><div class="cc-title">NZ Resident Visa (work rights)</div><div class="cc-desc">Have a valid work visa — not permanent resident yet</div></div></div></div>
+      <div class="choice-card" onclick="selectChoice(this)"><div style="display:flex;align-items:center;gap:12px"><div style="font-size:22px">🎒</div><div><div class="cc-title">Working Holiday Visa</div><div class="cc-desc">WHV — limited work duration applies</div></div></div></div>
+      <div class="choice-card" onclick="selectChoice(this)"><div style="display:flex;align-items:center;gap:12px"><div style="font-size:22px">🌾</div><div><div class="cc-title">Peak Seasonal Worker Visa</div><div class="cc-desc">Seasonal visa through approved employer scheme</div></div></div></div>
+    </div>
+    <div style="background:var(--blue-lt);border:1.5px solid rgba(26,82,118,.15);border-radius:8px;padding:12px 14px;margin-top:16px;font-size:11px;color:var(--blue);line-height:1.5">
+      🔒 Your visa status is only used to filter job listings — it's never shared with employers until you choose to apply and include it in your profile.
+    </div>
+    <div class="btn-row"><button class="btn btn-ghost" onclick="goto(5)">← Back</button><button class="btn btn-primary" onclick="goto(7)">Continue →</button></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<!-- SCREEN 7 — COMPLETE + JOBS FEED PREVIEW -->
+<!-- ═══════════════════════════════════ -->
+<div class="screen complete-screen" id="screen-7">
+  <div class="complete-card">
+    <div class="complete-icon">🎉</div>
+    <h2 class="complete-title">You're in, James!</h2>
+    <p class="complete-sub">We found <strong>14 jobs</strong> matching your profile in Waikato and surrounding regions. Your match scores are calculated — here's a preview:</p>
+    <div class="complete-jobs-preview">
+      <div class="cjp-label">🎯 Your Top Matches</div>
+      <div class="cjp-job"><div class="cjp-match">92%</div><div class="cjp-info"><div class="cjp-title">Dairy Farm 2IC — 540 cows, Herringbone</div><div class="cjp-meta">Te Awamutu, Waikato · $70k–$80k · Housing included</div></div></div>
+      <div class="cjp-job"><div class="cjp-match">87%</div><div class="cjp-info"><div class="cjp-title">Farm Assistant — 620 cows, HB shed</div><div class="cjp-meta">Cambridge, Waikato · $65k–$72k · 3-bed house</div></div></div>
+      <div class="cjp-job"><div class="cjp-match">81%</div><div class="cjp-info"><div class="cjp-title">Herd Manager Trainee — 480 cows</div><div class="cjp-meta">Morrinsville, Waikato · $72k–$85k · Housing + mentorship</div></div></div>
+    </div>
+    <button class="btn btn-primary" onclick="goto(8)" style="margin-bottom:10px">View All Matching Jobs →</button>
+    <button class="btn btn-ghost" style="width:100%;justify-content:center" onclick="goto(8)">Complete my profile first</button>
+    <div style="margin-top:16px;font-size:11px;color:var(--light)">Profile is 35% complete — a complete profile gets 3× more views from employers</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<!-- SCREEN 8 — PROFILE MANAGEMENT -->
+<!-- ═══════════════════════════════════ -->
+<div class="screen" id="screen-8" style="flex-direction:column">
+  <div class="profile-shell">
+    <!-- SIDEBAR -->
+    <aside class="profile-sidebar">
+      <div class="ps-avatar-section">
+        <div class="ps-avatar">JT<div class="ps-avatar-edit">📷</div></div>
+        <div class="ps-name">James Tūhoe</div>
+        <div class="ps-role">2IC · Waikato · NZ Resident</div>
+        <div class="ps-complete">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--light)"><span>Profile strength</span><span style="color:var(--moss);font-weight:700">68%</span></div>
+          <div class="ps-complete-bar"><div class="ps-complete-fill" style="width:68%"></div></div>
+        </div>
+      </div>
+      <nav class="ps-nav">
+        <div class="ps-nav-section">Profile</div>
+        <div class="ps-nav-item active" onclick="showSection('overview',this)">👤 Overview</div>
+        <div class="ps-nav-item" onclick="showSection('experience',this)">🐄 Experience & Skills</div>
+        <div class="ps-nav-item" onclick="showSection('documents',this)">📄 Documents <span class="nav-badge">2</span></div>
+        <div class="ps-nav-item" onclick="showSection('cvbuilder',this)">✨ CV Builder</div>
+        <div class="ps-nav-section">Applications</div>
+        <div class="ps-nav-item" onclick="showSection('applications',this)">📋 My Applications</div>
+        <div class="ps-nav-item" onclick="showSection('saved',this)">❤️ Saved Jobs</div>
+        <div class="ps-nav-section">Account</div>
+        <div class="ps-nav-item" onclick="showSection('notifications',this)">🔔 Notifications</div>
+        <div class="ps-nav-item" onclick="showSection('privacy',this)">🔒 Privacy</div>
+      </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="profile-main">
+
+      <!-- OVERVIEW SECTION -->
+      <div id="section-overview">
+        <div class="pm-header">
+          <div class="pm-title">My Profile</div>
+          <div class="pm-sub">Employers see this when you apply — keep it current</div>
+        </div>
+
+        <!-- Completeness nudge -->
+        <div style="background:var(--hay-lt);border:1.5px solid rgba(212,168,67,.3);border-radius:10px;padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:14px">
+          <div style="font-size:22px">⚡</div>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:700;color:#5A4400;margin-bottom:3px">3 things to complete for better matches</div>
+            <div style="font-size:11px;color:#7A5C00">Upload your driver's licence · Add qualifications · Write a short bio</div>
+          </div>
+          <button class="btn btn-hay" style="padding:8px 16px;font-size:12px" onclick="showSection('documents',document.querySelector('.ps-nav-item:nth-child(4))'))">Fix Now</button>
+        </div>
+
+        <!-- Bio card -->
+        <div class="card">
+          <div class="card-head"><div class="ch-icon">✍️</div><div><div class="ch-title">About Me</div><div class="ch-sub">A short intro shown to employers on your applications</div></div><span class="ch-badge badge-req">Missing</span></div>
+          <div class="card-body">
+            <textarea placeholder="e.g. I'm a motivated dairy worker with 7 years experience across Waikato farms. I take pride in animal health and shed management, and I'm looking for a 2IC role where I can continue to grow toward farm management…" style="min-height:100px"></textarea>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+              <div class="hint">Aim for 3–5 sentences. Be specific about what you bring and what you're looking for.</div>
+              <button class="btn" style="padding:7px 14px;font-size:11px;background:var(--moss);color:white">Save</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick stats -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px">
+          <div style="background:var(--white);border:1.5px solid var(--fog);border-radius:10px;padding:14px;text-align:center"><div style="font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:var(--moss)">14</div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--light);margin-top:3px">Matching Jobs</div></div>
+          <div style="background:var(--white);border:1.5px solid var(--fog);border-radius:10px;padding:14px;text-align:center"><div style="font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:var(--moss)">3</div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--light);margin-top:3px">Applications</div></div>
+          <div style="background:var(--white);border:1.5px solid var(--fog);border-radius:10px;padding:14px;text-align:center"><div style="font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:var(--moss)">47</div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--light);margin-top:3px">Profile Views</div></div>
+          <div style="background:var(--white);border:1.5px solid var(--fog);border-radius:10px;padding:14px;text-align:center"><div style="font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:var(--moss)">68%</div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--light);margin-top:3px">Profile Complete</div></div>
+        </div>
+      </div>
+
+      <!-- EXPERIENCE SECTION -->
+      <div id="section-experience" style="display:none">
+        <div class="pm-header"><div class="pm-title">Experience & Skills</div><div class="pm-sub">The more detail here, the more accurately you're matched</div></div>
+        <div class="card">
+          <div class="card-head"><div class="ch-icon">🐄</div><div><div class="ch-title">Work History</div><div class="ch-sub">Add your dairy and farming roles</div></div><button class="btn" style="margin-left:auto;padding:6px 14px;font-size:11px;background:var(--moss);color:white">+ Add Role</button></div>
+          <div class="card-body">
+            <div style="border:1.5px solid var(--fog);border-radius:8px;padding:14px;margin-bottom:10px">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start">
+                <div><div style="font-weight:700;font-size:14px;color:var(--ink)">2IC – Waikato Dairy Farm</div><div style="font-size:11px;color:var(--light);margin-top:2px">Te Awamutu, Waikato · Jan 2023 – Present</div></div>
+                <button class="btn btn-ghost" style="padding:5px 10px;font-size:11px">Edit</button>
+              </div>
+              <div style="font-size:12px;color:var(--mid);margin-top:8px;line-height:1.5">620-cow herringbone. Responsible for milking, calving, pasture allocation, and supporting the farm manager with daily operations.</div>
+              <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:8px"><span style="background:rgba(45,80,22,.08);color:var(--moss);padding:2px 8px;border-radius:3px;font-size:10px;font-weight:600">Herringbone</span><span style="background:rgba(45,80,22,.08);color:var(--moss);padding:2px 8px;border-radius:3px;font-size:10px;font-weight:600">620 cows</span><span style="background:rgba(45,80,22,.08);color:var(--moss);padding:2px 8px;border-radius:3px;font-size:10px;font-weight:600">Pasture mgmt</span></div>
+            </div>
+            <div style="border:1.5px dashed var(--fog);border-radius:8px;padding:14px;text-align:center;cursor:pointer;color:var(--light);font-size:13px">+ Add another role</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="ch-icon">🔧</div><div><div class="ch-title">Skills & Proficiency</div><div class="ch-sub">Set your level for each skill — drives your match score</div></div></div>
+          <div class="card-body">
+            <div class="skill-item"><span class="skill-name">🥛 Milking</span><div class="prof-btns"><button class="pb confident" onclick="setProf(this,'confident')">Confident</button><button class="pb" onclick="setProf(this,'learning')">Learning</button><button class="pb" onclick="setProf(this,'entry')">Entry</button></div><span class="skill-remove">✕</span></div>
+            <div class="skill-item"><span class="skill-name">🐄 Calving</span><div class="prof-btns"><button class="pb confident" onclick="setProf(this,'confident')">Confident</button><button class="pb" onclick="setProf(this,'learning')">Learning</button><button class="pb" onclick="setProf(this,'entry')">Entry</button></div><span class="skill-remove">✕</span></div>
+            <div class="skill-item"><span class="skill-name">🌿 Pasture Management</span><div class="prof-btns"><button class="pb confident" onclick="setProf(this,'confident')">Confident</button><button class="pb" onclick="setProf(this,'learning')">Learning</button><button class="pb" onclick="setProf(this,'entry')">Entry</button></div><span class="skill-remove">✕</span></div>
+            <div class="skill-item"><span class="skill-name">🚜 Tractor Operation</span><div class="prof-btns"><button class="pb" onclick="setProf(this,'confident')">Confident</button><button class="pb learning" onclick="setProf(this,'learning')">Learning</button><button class="pb" onclick="setProf(this,'entry')">Entry</button></div><span class="skill-remove">✕</span></div>
+            <div class="skill-item"><span class="skill-name">🌾 Feeding Out</span><div class="prof-btns"><button class="pb confident" onclick="setProf(this,'confident')">Confident</button><button class="pb" onclick="setProf(this,'learning')">Learning</button><button class="pb" onclick="setProf(this,'entry')">Entry</button></div><span class="skill-remove">✕</span></div>
+            <div style="margin-top:10px"><button class="btn btn-ghost" style="font-size:12px;padding:8px 14px">+ Add skill</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DOCUMENTS SECTION -->
+      <div id="section-documents" style="display:none">
+        <div class="pm-header"><div class="pm-title">Documents</div><div class="pm-sub">Upload once — used across all your applications. Employers only see documents you choose to share.</div></div>
+        <div class="card">
+          <div class="card-head"><div class="ch-icon">🆔</div><div><div class="ch-title">Identity & Work Rights</div><div class="ch-sub">Required for any application</div></div><span class="ch-badge badge-req">2 missing</span></div>
+          <div class="card-body">
+            <div class="doc-grid">
+              <div class="doc-item uploaded verified"><span class="doc-icon">🇳🇿</span><div class="doc-info"><div class="doc-name">NZ Passport</div><div class="doc-meta">Uploaded 3 Jan 2026 · Expires Aug 2031</div></div><span class="doc-status status-verified">✓ Verified</span></div>
+              <div class="doc-item"><span class="doc-icon">🪪</span><div class="doc-info"><div class="doc-name">Driver's Licence (front + back)</div><div class="doc-meta">Full NZ licence required for most roles</div></div><span class="doc-status status-missing">Missing</span><button class="doc-upload-btn">Upload</button></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="ch-icon">🎓</div><div><div class="ch-title">Qualifications & Certificates</div><div class="ch-sub">Verified quals appear as badges on your profile</div></div></div>
+          <div class="card-body">
+            <div class="doc-grid">
+              <div class="doc-item uploaded verified"><span class="doc-icon">📜</span><div class="doc-info"><div class="doc-name">DairyNZ Level 3 – Milk Harvesting</div><div class="doc-meta">Issued by Primary ITO · 2023</div></div><span class="doc-status status-verified">✓ Verified</span></div>
+              <div class="doc-item uploaded"><span class="doc-icon">🏍️</span><div class="doc-info"><div class="doc-name">ATV Safety Certificate</div><div class="doc-meta">Uploaded · Expires Oct 2026</div></div><span class="doc-status status-uploaded">Uploaded</span></div>
+              <div class="doc-item"><span class="doc-icon">🚑</span><div class="doc-info"><div class="doc-name">First Aid Certificate</div><div class="doc-meta">Optional but valued for 2IC+ roles</div></div><span class="doc-status status-optional">Optional</span><button class="doc-upload-btn">Upload</button></div>
+              <div class="doc-item"><span class="doc-icon">🚜</span><div class="doc-info"><div class="doc-name">Machinery / Tractor Licence</div><div class="doc-meta">Required for machinery operator roles</div></div><span class="doc-status status-optional">Optional</span><button class="doc-upload-btn">Upload</button></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="ch-icon">📝</div><div><div class="ch-title">CV & Cover Letter</div><div class="ch-sub">Upload an existing CV or use our AI builder to create one</div></div></div>
+          <div class="card-body">
+            <div class="doc-grid">
+              <div class="doc-item"><span class="doc-icon">📄</span><div class="doc-info"><div class="doc-name">CV / Resume</div><div class="doc-meta">PDF or Word. Or use the AI CV Builder below →</div></div><span class="doc-status status-missing">Missing</span><button class="doc-upload-btn">Upload PDF</button></div>
+              <div class="doc-item"><span class="doc-icon">✉️</span><div class="doc-info"><div class="doc-name">Generic Cover Letter</div><div class="doc-meta">Optional — you can also write role-specific ones per application</div></div><span class="doc-status status-optional">Optional</span><button class="doc-upload-btn">Upload</button></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="ch-icon">👥</div><div><div class="ch-title">References</div><div class="ch-sub">Upload reference letters or add referee contact details</div></div><button class="btn" style="margin-left:auto;padding:6px 14px;font-size:11px;background:var(--moss);color:white">+ Add Referee</button></div>
+          <div class="card-body">
+            <div class="doc-grid">
+              <div class="doc-item uploaded verified"><span class="doc-icon">👤</span><div class="doc-info"><div class="doc-name">Sarah White – Farm Owner, Te Awamutu</div><div class="doc-meta">Reference letter uploaded · 2025</div></div><span class="doc-status status-verified">✓ Uploaded</span></div>
+              <div class="doc-item uploaded"><span class="doc-icon">👤</span><div class="doc-info"><div class="doc-name">Tom Barker – Farm Manager, Cambridge</div><div class="doc-meta">Contact details only (no letter yet)</div></div><span class="doc-status status-uploaded">Contact added</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CV BUILDER SECTION -->
+      <div id="section-cvbuilder" style="display:none">
+        <div class="pm-header"><div class="pm-title">AI CV Builder</div><div class="pm-sub">Turn your experience into a polished, farming-specific CV in minutes</div></div>
+
+        <!-- Promo banner -->
+        <div class="cv-builder-card" id="cvb-promo">
+          <div class="cvb-eyebrow">Powered by Claude AI</div>
+          <h3 class="cvb-title">A <em>farming CV</em> that actually<br>gets you interviews</h3>
+          <p class="cvb-sub">Most dairy workers have either no CV or a generic one that undersells their experience. Our AI builder uses your TopFarms profile to create a polished, NZ farming-specific CV — in the language employers actually use.</p>
+          <div class="cvb-features">
+            <span class="cvb-feat">✓ Farming-specific language</span>
+            <span class="cvb-feat">✓ Action-verb led bullet points</span>
+            <span class="cvb-feat">✓ Quantified achievements</span>
+            <span class="cvb-feat">✓ NZ context throughout</span>
+            <span class="cvb-feat">✓ Download as PDF</span>
+            <span class="cvb-feat">✓ Regenerate once free</span>
+          </div>
+          <div class="cvb-footer">
+            <div><div class="cvb-price">$15 <span>NZD one-time</span></div><div style="font-size:10px;color:rgba(247,242,232,.4);margin-top:2px">Free regeneration if you're not happy</div></div>
+            <button class="cvb-btn" onclick="document.getElementById('cvb-promo').style.display='none';document.getElementById('cvb-form').style.display='block'">✨ Build My CV →</button>
+          </div>
+        </div>
+
+        <!-- CV Builder form -->
+        <div id="cvb-form" style="display:none">
+          <div style="display:grid;grid-template-columns:1fr 340px;gap:20px">
+            <div>
+              <div class="card">
+                <div class="card-head"><div class="ch-icon">👤</div><div><div class="ch-title">About You</div><div class="ch-sub">Pre-filled from your profile — edit as needed</div></div></div>
+                <div class="card-body">
+                  <div class="form-group"><label class="fld-label">Your Name</label><input type="text" value="James Tūhoe"></div>
+                  <div class="form-group row-2">
+                    <div><label class="fld-label">Location</label><input type="text" value="Waikato, New Zealand"></div>
+                    <div><label class="fld-label">Phone</label><input type="tel" value="+64 21 xxx xxxx"></div>
+                  </div>
+                  <div class="form-group"><label class="fld-label">Email</label><input type="email" value="james@email.com"></div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-head"><div class="ch-icon">✍️</div><div><div class="ch-title">In Your Own Words</div><div class="ch-sub">This is what makes your CV personal — don't skip it</div></div></div>
+                <div class="card-body">
+                  <div class="form-group"><label class="fld-label">Tell us about yourself <span class="req">*</span></label><textarea placeholder="Write naturally — what kind of farmer are you? What do you care about? What are you proud of?" style="min-height:90px">I'm a hands-on dairy worker who takes real pride in animal health and shed efficiency. I've spent 7 years building up skills across two Waikato farms and I'm at the point where I want a 2IC role where I can take on more responsibility and work toward farm management.</textarea></div>
+                  <div class="form-group"><label class="fld-label">Your proudest farming achievement</label><textarea placeholder="e.g. Reduced cell count from 280 to 180 over one season by improving teat spray protocol and identifying problem cows earlier…" style="min-height:70px">Helped our team get through a really tough calving season with minimal calf losses — we lost only 3 calves in 540 calvings by improving our checking schedule and acting faster on problem cows.</textarea></div>
+                  <div class="form-group"><label class="fld-label">What are you looking for in your next role?</label><textarea placeholder="e.g. I want a role where I can develop pasture management skills and work toward a farm manager position within 2–3 years…" style="min-height:70px">A 2IC role on a well-run farm where I can keep developing, ideally with a progressive farmer who values good animal husbandry.</textarea></div>
+                  <div class="form-group"><label class="fld-label">Anything else to highlight?</label><input type="text" placeholder="e.g. I'm great with dogs, I have my own ute, I can start ASAP…" value="Have two well-trained huntaway dogs. Own reliable transport."></div>
+                </div>
+              </div>
+              <button class="btn btn-primary" onclick="showCVGenerate()">✨ Generate My CV — $15 NZD</button>
+            </div>
+
+            <!-- Preview panel -->
+            <div>
+              <div class="cv-preview-card">
+                <div class="cvp-header">
+                  <div class="cvp-title">CV Preview</div>
+                  <div class="cvp-name">James Tūhoe</div>
+                  <div class="cvp-role">Dairy Farm 2IC · Waikato</div>
+                </div>
+                <div class="cvp-body" id="cv-preview-body">
+                  <div class="cvp-section-title">Professional Summary</div>
+                  <p style="font-size:11px;color:var(--mid);line-height:1.6;margin-bottom:8px">Motivated and experienced dairy worker with 7 years across Waikato herringbone operations. Proven ability in herd health management, calving, and pasture allocation. Seeking a 2IC role with a clear pathway toward farm management.</p>
+                  <div class="cvp-section-title">Experience</div>
+                  <div class="cvp-item">
+                    <div class="cvp-item-title">2IC — Te Awamutu Dairy Farm</div>
+                    <div class="cvp-item-sub">Waikato · Jan 2023 – Present · 620-cow Herringbone</div>
+                    <div class="cvp-item-bullet">Managed twice-daily milking on 40-aside HB shed with ACRs and Protrack drafting</div>
+                    <div class="cvp-item-bullet">Led calving team through 540-cow spring calving with 3-calf loss rate</div>
+                    <div class="cvp-item-bullet">Assisted farm manager with weekly pasture wedge and feed allocation</div>
+                  </div>
+                  <div class="cvp-item">
+                    <div class="cvp-item-title">Farm Assistant — Cambridge Dairy</div>
+                    <div class="cvp-item-sub">Waikato · 2018 – 2023 · 420-cow Herringbone</div>
+                    <div class="cvp-item-bullet">Milking, animal health monitoring, calf rearing and general farm maintenance</div>
+                    <div class="cvp-item-bullet">Developed strong mastitis detection and teat spray protocol skills</div>
+                  </div>
+                  <div class="cvp-section-title">Qualifications</div>
+                  <div class="cvp-item"><div class="cvp-item-title">DairyNZ Level 3 – Milk Harvesting</div><div class="cvp-item-sub">Primary ITO · 2023</div></div>
+                  <div class="cvp-item"><div class="cvp-item-title">ATV Safety Certificate</div><div class="cvp-item-sub">Current · Expires Oct 2026</div></div>
+                  <div class="cvp-item"><div class="cvp-item-title">Full NZ Driver's Licence</div></div>
+                  <div class="cvp-section-title">Skills</div>
+                  <p style="font-size:10px;color:var(--mid);line-height:1.7">Milking · Calving · Pasture management · Animal health · Feeding out · Herringbone shed operation · Protrack · Allflex · Calf rearing · Staff support</p>
+                </div>
+                <div class="cvp-ai-badge">🤖 AI will enhance language, add achievements and format professionally</div>
+                <div class="cvp-loading" id="cv-loading"><div class="spinner"></div><div style="font-size:12px;color:var(--mid)">Claude is writing your CV…</div></div>
+                <button class="cvp-generate-btn" onclick="showCVGenerate()">✨ Generate & Download — $15</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PLACEHOLDER SECTIONS -->
+      <div id="section-applications" style="display:none"><div class="pm-header"><div class="pm-title">My Applications</div></div><div style="background:var(--white);border:1.5px solid var(--fog);border-radius:10px;padding:40px;text-align:center;color:var(--light)"><div style="font-size:32px;margin-bottom:10px">📋</div><div style="font-weight:700;color:var(--mid)">3 active applications</div><div style="font-size:12px;margin-top:4px">Dairy Farm 2IC · Herd Manager Trainee · Farm Assistant</div></div></div>
+      <div id="section-saved" style="display:none"><div class="pm-header"><div class="pm-title">Saved Jobs</div></div><div style="background:var(--white);border:1.5px solid var(--fog);border-radius:10px;padding:40px;text-align:center;color:var(--light)"><div style="font-size:32px;margin-bottom:10px">❤️</div><div style="font-weight:700;color:var(--mid)">7 saved jobs</div></div></div>
+      <div id="section-notifications" style="display:none"><div class="pm-header"><div class="pm-title">Notifications</div></div><div style="background:var(--white);border:1.5px solid var(--fog);border-radius:10px;padding:40px;text-align:center;color:var(--light)"><div style="font-size:32px;margin-bottom:10px">🔔</div><div style="font-weight:700;color:var(--mid)">Notification settings</div></div></div>
+      <div id="section-privacy" style="display:none"><div class="pm-header"><div class="pm-title">Privacy</div></div><div style="background:var(--white);border:1.5px solid var(--fog);border-radius:10px;padding:40px;text-align:center;color:var(--light)"><div style="font-size:32px;margin-bottom:10px">🔒</div><div style="font-weight:700;color:var(--mid)">Privacy settings — anonymous mode, profile visibility</div></div></div>
+    </main>
+  </div>
+</div>
+
+<script>
+const STEPS = 7;
+const PROGRESS = {1:14,2:28,3:42,4:56,5:70,6:84,7:100,8:100};
+
+function goto(n) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const s = document.getElementById('screen-' + n);
+  if (s) { s.classList.add('active'); s.scrollIntoView({behavior:'smooth',block:'start'}); }
+  const fill = document.getElementById('progress-fill');
+  const ind = document.getElementById('step-indicator');
+  if (fill) fill.style.width = (PROGRESS[n] || 100) + '%';
+  if (ind) ind.textContent = n <= STEPS ? 'Step ' + n + ' of ' + STEPS : '';
+}
+
+function selectChoice(el) {
+  el.closest('.choice-grid, .wizard-card, .screen').querySelectorAll('.choice-card').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function singleChip(el, sel) {
+  document.querySelectorAll(sel).forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function updatePwStrength(val) {
+  const bar = document.getElementById('pw-bar');
+  const hint = document.getElementById('pw-hint');
+  if (!bar) return;
+  let w = 0; let col = '#C0392B'; let msg = 'Too short';
+  if (val.length >= 8) { w = 40; col = '#E67E22'; msg = 'Weak — add numbers or symbols'; }
+  if (val.length >= 10 && /[0-9]/.test(val)) { w = 70; col = var_color('--hay'); msg = 'Getting better'; }
+  if (val.length >= 12 && /[^a-zA-Z0-9]/.test(val)) { w = 100; col = '#4A7C2F'; msg = '✓ Strong password'; }
+  bar.style.width = w + '%'; bar.style.background = col;
+  if (hint) hint.textContent = msg;
+}
+function var_color(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim() || '#D4A843'; }
+
+function showSection(id, navEl) {
+  document.querySelectorAll('[id^="section-"]').forEach(s => s.style.display = 'none');
+  const s = document.getElementById('section-' + id);
+  if (s) s.style.display = 'block';
+  document.querySelectorAll('.ps-nav-item').forEach(n => n.classList.remove('active'));
+  if (navEl) navEl.classList.add('active');
+}
+
+function setProf(btn, level) {
+  btn.closest('.prof-btns').querySelectorAll('.pb').forEach(b => b.classList.remove('confident','learning','entry'));
+  btn.classList.add(level);
+}
+
+function showCVGenerate() {
+  const loading = document.getElementById('cv-loading');
+  const body = document.getElementById('cv-preview-body');
+  const genBtn = document.querySelector('.cvp-generate-btn');
+  if (loading) { loading.style.display = 'block'; }
+  if (body) body.style.opacity = '.3';
+  if (genBtn) genBtn.style.display = 'none';
+  setTimeout(() => {
+    if (loading) loading.style.display = 'none';
+    if (body) {
+      body.style.opacity = '1';
+      body.innerHTML = `
+        <div style="background:rgba(108,52,131,.06);border:1px solid rgba(108,52,131,.15);border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:10px;color:var(--purple);display:flex;align-items:center;gap:6px">🤖 Enhanced by Claude AI — language optimised for NZ dairy employers</div>
+        <div class="cvp-section-title">Professional Summary</div>
+        <p style="font-size:11px;color:var(--mid);line-height:1.7;margin-bottom:10px">A dedicated and results-driven dairy professional with seven years of progressive experience across high-performing Waikato herringbone operations. Recognised for exceptional animal health outcomes — achieving a 99.4% calving survival rate through proactive intervention and system improvements. Combines strong technical shed skills with a genuine commitment to herd welfare, farm efficiency, and team performance. Seeking a 2IC role with a progressive farming operation offering a clear pathway toward farm management.</p>
+        <div class="cvp-section-title">Career Experience</div>
+        <div class="cvp-item">
+          <div class="cvp-item-title">2IC — Te Awamutu Dairy Farm, Waikato</div>
+          <div class="cvp-item-sub">January 2023 – Present · 620-cow Herringbone · System 4</div>
+          <div class="cvp-item-bullet">Operate 40-aside herringbone shed with ACR technology and Protrack drafting, consistently achieving sub-20-minute milk times</div>
+          <div class="cvp-item-bullet">Led spring calving programme for 540-cow herd, achieving industry-leading 3-calf loss result through improved monitoring schedule and early intervention protocols</div>
+          <div class="cvp-item-bullet">Contribute to weekly pasture wedge and feed allocation decisions, supporting farm manager with System 4 supplement management</div>
+          <div class="cvp-item-bullet">Maintain Allflex collar data and animal health records; proactively identify lame and mastitic cows for early treatment</div>
+        </div>
+        <div class="cvp-item">
+          <div class="cvp-item-title">Farm Assistant — Cambridge Dairy, Waikato</div>
+          <div class="cvp-item-sub">2018 – 2022 · 420-cow Herringbone</div>
+          <div class="cvp-item-bullet">Developed comprehensive milking, animal health, and calf rearing skills across five seasons</div>
+          <div class="cvp-item-bullet">Implemented revised teat spray protocol that contributed to sustained cell count reduction</div>
+        </div>
+        <div class="cvp-section-title">Qualifications</div>
+        <div class="cvp-item"><div class="cvp-item-title">DairyNZ Level 3 – Milk Harvesting & Quality</div><div class="cvp-item-sub">Primary ITO · Completed 2023</div></div>
+        <div class="cvp-item"><div class="cvp-item-title">ATV Safety Certificate · Full NZ Driver's Licence</div></div>
+      `;
+    }
+    if (genBtn) { genBtn.textContent = '⬇️ Download PDF'; genBtn.style.display = 'block'; genBtn.style.background = 'var(--moss)'; }
+  }, 2200);
+}
+
+document.querySelectorAll('.tgl-row').forEach(tr => {
+  tr.addEventListener('click', () => { tr.classList.toggle('on'); tr.querySelector('.tgl')?.classList.toggle('on'); });
+});
+</script>
+</body>
+</html>

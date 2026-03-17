@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dairy Farm Assistant — Greenfield Farms Ltd · TopFarms</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --soil:#2C1A0E;--soil-deep:#1E1108;
+  --moss:#2D5016;--fern:#4A7C2F;--meadow:#7AAF3F;
+  --hay:#D4A843;--hay-lt:#FFF8E7;
+  --cream:#F7F2E8;--fog:#EEE8DC;--mist:#F2EEE6;
+  --ink:#1A1208;--mid:#6B5D4A;--light:#9E8E78;--white:#FFFFFF;
+  --red:#C0392B;--red-lt:#FDF0EE;
+  --blue:#1A5276;--blue-lt:#EAF4FB;
+  --orange:#E67E22;--orange-lt:#FEF5EC;
+  --purple:#6C3483;--purple-lt:#F5EEF8;
+  --sidebar:320px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-thumb{background:var(--fog);border-radius:3px}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;height:56px;background:var(--soil);
+  display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:200;
+  border-bottom:1px solid rgba(255,255,255,.06)}
+.logo{font-family:'Fraunces',serif;font-weight:700;font-size:20px;color:var(--cream);
+  display:flex;align-items:center;gap:7px;text-decoration:none}
+.logo-leaf{color:var(--meadow)}
+.nav-r{display:flex;align-items:center;gap:10px}
+.nav-link{font-size:12px;color:rgba(247,242,232,.5);text-decoration:none;padding:6px 12px;border-radius:6px;transition:color .2s}
+.nav-link:hover{color:var(--cream)}
+.btn-nav{padding:7px 16px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;border:none}
+.btn-nav-ghost{background:transparent;border:1.5px solid rgba(247,242,232,.2);color:rgba(247,242,232,.65)}
+.btn-nav-ghost:hover{border-color:rgba(247,242,232,.5);color:var(--cream)}
+.btn-nav-primary{background:var(--meadow);color:var(--soil)}
+.btn-nav-primary:hover{background:var(--hay)}
+
+/* ── BREADCRUMB BAR ── */
+.breadcrumb-bar{margin-top:56px;background:var(--white);border-bottom:1.5px solid var(--fog);
+  padding:0 clamp(16px,4vw,64px)}
+.breadcrumb-inner{max-width:1200px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  height:44px;gap:16px}
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--light);flex-wrap:wrap}
+.bc-link{color:var(--light);text-decoration:none;transition:color .2s}
+.bc-link:hover{color:var(--moss)}
+.bc-sep{color:var(--fog);font-size:10px}
+.bc-current{color:var(--mid);font-weight:600}
+.breadcrumb-actions{display:flex;align-items:center;gap:8px}
+.bc-action{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:6px;
+  font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--fog);
+  color:var(--mid);background:var(--white);transition:all .2s}
+.bc-action:hover{border-color:var(--mid);color:var(--ink)}
+.bc-action.saved{border-color:var(--moss);color:var(--moss);background:rgba(45,80,22,.04)}
+
+/* ── PAGE LAYOUT ── */
+.page-wrap{max-width:1200px;margin:0 auto;padding:28px clamp(16px,4vw,64px) 64px;
+  display:grid;grid-template-columns:1fr var(--sidebar);gap:28px;align-items:start}
+
+/* ── MAIN CONTENT ── */
+.main-col{}
+
+/* Job header card */
+.job-header-card{background:var(--white);border:1.5px solid var(--fog);border-radius:16px;
+  overflow:hidden;margin-bottom:20px}
+.jhc-hero{background:var(--soil);padding:24px 28px;position:relative;overflow:hidden}
+.jhc-hero::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 80% 50%,rgba(74,124,47,.2) 0%,transparent 60%),
+             radial-gradient(ellipse at 10% 80%,rgba(212,168,67,.08) 0%,transparent 50%)}
+.jhc-hero-inner{position:relative;z-index:1;display:flex;align-items:flex-start;gap:16px}
+.jhc-logo{width:56px;height:56px;border-radius:12px;background:rgba(122,175,63,.15);
+  border:1.5px solid rgba(122,175,63,.25);display:flex;align-items:center;
+  justify-content:center;font-size:24px;flex-shrink:0}
+.jhc-title-block{flex:1}
+.jhc-farm-name{font-size:11px;font-weight:700;color:var(--meadow);margin-bottom:5px;
+  display:flex;align-items:center;gap:6px}
+.verified-badge{background:rgba(122,175,63,.15);border:1px solid rgba(122,175,63,.25);
+  padding:2px 7px;border-radius:4px;font-size:9px;font-weight:700;color:var(--meadow);
+  display:inline-flex;align-items:center;gap:3px}
+.jhc-title{font-family:'Fraunces',serif;font-size:28px;font-weight:700;color:var(--cream);
+  letter-spacing:-.8px;line-height:1.1;margin-bottom:8px}
+.jhc-meta-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.jhc-meta-item{display:flex;align-items:center;gap:5px;font-size:12px;color:rgba(247,242,232,.6)}
+.jhc-meta-item strong{color:rgba(247,242,232,.85)}
+.jhc-meta-sep{width:3px;height:3px;border-radius:50%;background:rgba(247,242,232,.2)}
+
+/* Featured banner */
+.featured-banner{background:linear-gradient(to right,rgba(212,168,67,.15),rgba(212,168,67,.06));
+  border-bottom:1px solid rgba(212,168,67,.2);
+  padding:8px 28px;display:flex;align-items:center;gap:8px;
+  font-size:11px;font-weight:700;color:#7A5C00}
+.fb-icon{font-size:13px}
+
+.jhc-body{padding:20px 28px}
+.tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.tag{font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;
+  display:inline-flex;align-items:center;gap:4px}
+.tag-green{background:rgba(45,80,22,.07);color:var(--moss)}
+.tag-hay{background:var(--hay-lt);color:#7A5C00}
+.tag-blue{background:var(--blue-lt);color:var(--blue)}
+.tag-grey{background:var(--mist);color:var(--mid)}
+.tag-orange{background:var(--orange-lt);color:var(--orange)}
+.tag-purple{background:var(--purple-lt);color:var(--purple)}
+
+/* Stats strip */
+.stats-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  background:var(--fog);border-radius:10px;overflow:hidden;margin-bottom:0}
+.ss-item{background:var(--mist);padding:12px 14px;text-align:center}
+.ss-val{font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:var(--ink)}
+.ss-lbl{font-size:10px;font-weight:600;color:var(--light);text-transform:uppercase;
+  letter-spacing:.4px;margin-top:2px}
+
+/* Section blocks */
+.content-section{background:var(--white);border:1.5px solid var(--fog);border-radius:14px;
+  padding:24px 28px;margin-bottom:16px}
+.cs-title{font-family:'Fraunces',serif;font-size:17px;font-weight:700;color:var(--ink);
+  letter-spacing:-.3px;margin-bottom:14px;padding-bottom:10px;
+  border-bottom:1.5px solid var(--fog);display:flex;align-items:center;gap:8px}
+.cs-title-icon{font-size:16px}
+
+/* Responsibilities list */
+.resp-list{display:flex;flex-direction:column;gap:7px}
+.resp-item{display:flex;align-items:flex-start;gap:10px;font-size:13px;
+  color:var(--mid);line-height:1.5;padding:6px 0;
+  border-bottom:1px solid var(--fog)}
+.resp-item:last-child{border-bottom:none}
+.resp-bullet{width:6px;height:6px;border-radius:50%;background:var(--meadow);
+  flex-shrink:0;margin-top:6px}
+
+/* Skills grid */
+.skills-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.skill-item{display:flex;align-items:center;justify-content:space-between;
+  padding:9px 12px;border-radius:8px;border:1.5px solid var(--fog);background:var(--mist)}
+.skill-item.required{border-color:rgba(45,80,22,.15);background:rgba(45,80,22,.04)}
+.skill-name{font-size:12px;font-weight:600;color:var(--ink)}
+.skill-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px}
+.sb-required{background:rgba(45,80,22,.1);color:var(--moss)}
+.sb-preferred{background:var(--blue-lt);color:var(--blue)}
+.sb-bonus{background:var(--mist);color:var(--light);border:1px solid var(--fog)}
+
+/* Two col inside section */
+.two-col-section{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tc-block{}
+.tc-block-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;
+  color:var(--light);margin-bottom:8px}
+.tc-block-list{display:flex;flex-direction:column;gap:5px}
+.tc-item{font-size:13px;color:var(--mid);display:flex;align-items:center;gap:7px;padding:3px 0}
+.tc-item::before{content:'✓';color:var(--meadow);font-weight:800;font-size:11px;flex-shrink:0}
+.tc-item.no::before{content:'–';color:var(--light)}
+
+/* Accommodation visual */
+.accom-card{background:var(--mist);border:1.5px solid var(--fog);border-radius:10px;
+  padding:16px;display:flex;gap:16px;align-items:flex-start}
+.accom-icon{font-size:32px;flex-shrink:0;margin-top:2px}
+.accom-body{}
+.accom-title{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.accom-sub{font-size:12px;color:var(--mid);line-height:1.5;margin-bottom:8px}
+.accom-tags{display:flex;flex-wrap:wrap;gap:5px}
+
+/* Map placeholder */
+.map-placeholder{background:var(--mist);border:1.5px solid var(--fog);border-radius:10px;
+  height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:6px;cursor:pointer;transition:border-color .2s}
+.map-placeholder:hover{border-color:rgba(45,80,22,.2)}
+.map-icon{font-size:28px}
+.map-label{font-size:12px;font-weight:600;color:var(--mid)}
+.map-sub{font-size:11px;color:var(--light)}
+.map-distance{background:var(--white);border:1.5px solid var(--fog);border-radius:6px;
+  padding:5px 10px;font-size:11px;color:var(--mid);margin-top:4px;
+  display:flex;align-items:center;gap:5px}
+
+/* About farm */
+.farm-about-text{font-size:13px;color:var(--mid);line-height:1.7}
+
+/* Timeline */
+.timeline{display:flex;flex-direction:column;gap:0}
+.tl-item{display:flex;gap:14px;padding-bottom:14px;position:relative}
+.tl-item:last-child{padding-bottom:0}
+.tl-left{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.tl-dot{width:10px;height:10px;border-radius:50%;background:var(--meadow);flex-shrink:0;margin-top:3px}
+.tl-line{flex:1;width:1.5px;background:var(--fog);margin-top:4px}
+.tl-item:last-child .tl-line{display:none}
+.tl-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px}
+.tl-desc{font-size:11px;color:var(--light);line-height:1.4}
+.tl-date{font-size:10px;font-weight:700;color:var(--mid);margin-bottom:4px;
+  text-transform:uppercase;letter-spacing:.4px}
+
+/* ── SIDEBAR ── */
+.sidebar-col{display:flex;flex-direction:column;gap:16px;position:sticky;top:76px}
+
+/* Apply card */
+.apply-card{background:var(--white);border:1.5px solid var(--fog);border-radius:16px;
+  overflow:hidden;box-shadow:0 4px 20px rgba(44,26,14,.06)}
+
+/* Logged-in state: match score prominent */
+.ac-match-header{background:var(--soil);padding:20px;text-align:center;position:relative;overflow:hidden}
+.ac-match-header::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 50% 50%,rgba(74,124,47,.2) 0%,transparent 65%)}
+.ac-match-circle{
+  width:72px;height:72px;border-radius:50%;
+  background:rgba(45,80,22,.2);border:3px solid rgba(122,175,63,.4);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  margin:0 auto 10px;position:relative;z-index:1}
+.amc-pct{font-family:'Fraunces',serif;font-size:24px;font-weight:900;color:var(--cream);line-height:1}
+.amc-lbl{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:rgba(247,242,232,.5)}
+.ac-match-title{font-family:'Fraunces',serif;font-size:15px;font-weight:700;color:var(--cream);
+  position:relative;z-index:1;margin-bottom:4px}
+.ac-match-sub{font-size:11px;color:rgba(247,242,232,.5);position:relative;z-index:1}
+
+.ac-body{padding:18px}
+.ac-salary-row{display:flex;align-items:baseline;gap:6px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--fog)}
+.ac-salary-val{font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:var(--ink)}
+.ac-salary-extra{font-size:11px;color:var(--mid)}
+
+/* Quick facts in sidebar */
+.qf-list{display:flex;flex-direction:column;gap:7px;margin-bottom:16px}
+.qf-item{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--mid)}
+.qf-icon{font-size:14px;width:20px;text-align:center;flex-shrink:0}
+.qf-item strong{color:var(--ink)}
+
+/* Match breakdown bars */
+.match-breakdown{margin-bottom:16px;padding:14px;background:var(--mist);border-radius:10px;
+  border:1.5px solid var(--fog)}
+.mb-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;
+  color:var(--light);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.mb-overall{font-size:10px;font-weight:700;color:var(--moss)}
+.mb-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.mb-row:last-child{margin-bottom:0}
+.mb-label{font-size:11px;color:var(--mid);width:100px;flex-shrink:0}
+.mb-bar-wrap{flex:1;height:5px;background:var(--fog);border-radius:3px;overflow:hidden}
+.mb-bar{height:100%;border-radius:3px;transition:width .8s ease}
+.mb-bar.high{background:linear-gradient(to right,var(--fern),var(--meadow))}
+.mb-bar.mid{background:var(--orange)}
+.mb-bar.low{background:var(--red)}
+.mb-score{font-size:10px;font-weight:700;width:26px;text-align:right;flex-shrink:0}
+.mb-score.high{color:var(--moss)}
+.mb-score.mid{color:var(--orange)}
+.mb-score.low{color:var(--red)}
+
+/* AI insight in sidebar */
+.ai-insight{background:var(--purple-lt);border:1.5px solid rgba(108,52,131,.12);
+  border-radius:10px;padding:13px;margin-bottom:16px}
+.ai-header{font-size:10px;font-weight:700;color:var(--purple);
+  display:flex;align-items:center;gap:5px;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.ai-body{font-size:12px;color:#4A2D5C;line-height:1.55}
+.ai-body strong{color:var(--purple)}
+
+/* CTA buttons */
+.btn{width:100%;padding:11px;border-radius:9px;font-family:'DM Sans',sans-serif;
+  font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;border:none;
+  display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:8px}
+.btn:last-child{margin-bottom:0}
+.btn-apply{background:var(--moss);color:white;box-shadow:0 4px 14px rgba(45,80,22,.2)}
+.btn-apply:hover{background:var(--fern);box-shadow:0 6px 18px rgba(45,80,22,.3);transform:translateY(-1px)}
+.btn-save{background:var(--white);border:1.5px solid var(--fog);color:var(--mid)}
+.btn-save:hover{border-color:var(--mid);color:var(--ink)}
+.btn-save.saved{border-color:var(--moss);color:var(--moss);background:rgba(45,80,22,.04)}
+.btn-share{background:var(--white);border:1.5px solid var(--fog);color:var(--mid)}
+.btn-share:hover{border-color:var(--mid);color:var(--ink)}
+.btn-message{background:var(--hay-lt);border:1.5px solid rgba(212,168,67,.3);color:#7A5C00}
+.btn-message:hover{background:rgba(212,168,67,.2)}
+
+/* Deadline notice */
+.deadline-notice{background:var(--hay-lt);border:1.5px solid rgba(212,168,67,.3);
+  border-radius:8px;padding:9px 12px;font-size:11px;color:#7A5C00;
+  display:flex;align-items:center;gap:6px;margin-bottom:10px;font-weight:600}
+
+/* Not logged in state banner */
+.login-nudge{background:var(--mist);border:1.5px solid var(--fog);border-radius:10px;
+  padding:14px;margin-bottom:14px;text-align:center}
+.ln-icon{font-size:24px;margin-bottom:6px}
+.ln-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.ln-sub{font-size:11px;color:var(--mid);line-height:1.5;margin-bottom:10px}
+.btn-ln{width:100%;padding:9px;border-radius:7px;font-family:'DM Sans',sans-serif;
+  font-size:12px;font-weight:700;cursor:pointer;border:none;margin-bottom:6px}
+.btn-ln-primary{background:var(--moss);color:white}
+.btn-ln-ghost{background:transparent;border:1.5px solid var(--fog);color:var(--mid)}
+
+/* Farm profile sidebar card */
+.farm-card{background:var(--white);border:1.5px solid var(--fog);border-radius:14px;overflow:hidden}
+.fc-header{background:var(--soil);padding:16px;position:relative;overflow:hidden}
+.fc-header::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 80% 20%,rgba(74,124,47,.2) 0%,transparent 60%)}
+.fc-logo{width:38px;height:38px;border-radius:8px;background:rgba(122,175,63,.15);
+  border:1px solid rgba(122,175,63,.25);display:flex;align-items:center;justify-content:center;
+  font-size:17px;margin-bottom:8px;position:relative;z-index:1}
+.fc-name{font-family:'Fraunces',serif;font-size:14px;font-weight:700;color:var(--cream);
+  position:relative;z-index:1;margin-bottom:2px}
+.fc-sub{font-size:10px;color:rgba(247,242,232,.5);position:relative;z-index:1}
+.fc-body{padding:14px}
+.fc-stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+.fc-stat{text-align:center;padding:7px 4px;background:var(--mist);border-radius:6px}
+.fc-stat-val{font-family:'Fraunces',serif;font-size:15px;font-weight:700;color:var(--ink)}
+.fc-stat-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;color:var(--light);margin-top:1px}
+.fc-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.fc-tag{font-size:9px;font-weight:600;padding:2px 7px;border-radius:4px}
+.fct-green{background:rgba(45,80,22,.07);color:var(--moss)}
+.fct-hay{background:var(--hay-lt);color:#7A5C00}
+.fc-view-link{font-size:12px;font-weight:700;color:var(--moss);text-decoration:none;
+  display:flex;align-items:center;gap:4px;transition:color .2s}
+.fc-view-link:hover{color:var(--fern)}
+.fc-rating{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mid);margin-bottom:8px}
+.fc-stars{color:var(--hay);font-size:12px;letter-spacing:1px}
+
+/* Similar jobs */
+.similar-card{background:var(--white);border:1.5px solid var(--fog);border-radius:14px;padding:16px}
+.similar-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;
+  color:var(--light);margin-bottom:12px}
+.sj-item{padding:10px 0;border-bottom:1px solid var(--fog);cursor:pointer;
+  transition:background .15s;border-radius:4px}
+.sj-item:last-child{border-bottom:none;padding-bottom:0}
+.sj-item:hover .sj-title{color:var(--moss)}
+.sj-title{font-size:12px;font-weight:700;color:var(--ink);margin-bottom:2px;transition:color .2s}
+.sj-meta{font-size:10px;color:var(--light);margin-bottom:4px}
+.sj-footer{display:flex;align-items:center;justify-content:space-between}
+.sj-salary{font-size:11px;font-weight:700;color:var(--mid)}
+.sj-match{font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px}
+.sjm-high{background:rgba(45,80,22,.08);color:var(--moss)}
+.sjm-mid{background:var(--orange-lt);color:var(--orange)}
+
+/* ── STATE TOGGLE (demo) ── */
+.state-toggle{
+  position:fixed;bottom:24px;right:24px;
+  background:var(--soil);border-radius:12px;padding:12px 16px;
+  display:flex;align-items:center;gap:10px;z-index:300;
+  box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.st-label{font-size:11px;color:rgba(247,242,232,.5);font-weight:600}
+.st-btn{padding:5px 12px;border-radius:6px;font-size:11px;font-weight:700;
+  cursor:pointer;border:none;transition:all .2s}
+.st-btn.active{background:var(--meadow);color:var(--soil)}
+.st-btn:not(.active){background:rgba(255,255,255,.08);color:rgba(247,242,232,.5)}
+.st-btn:not(.active):hover{background:rgba(255,255,255,.14);color:var(--cream)}
+
+/* ── REPORT LINK ── */
+.report-link{text-align:center;margin-top:6px}
+.report-link a{font-size:11px;color:var(--light);text-decoration:none;transition:color .2s}
+.report-link a:hover{color:var(--red)}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeUp .4s ease both}
+
+/* ── RESPONSIVE ── */
+@media(max-width:860px){
+  .page-wrap{grid-template-columns:1fr}
+  .sidebar-col{position:static}
+  .skills-grid{grid-template-columns:1fr}
+  .two-col-section{grid-template-columns:1fr}
+  .stats-strip{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" href="#"><span class="logo-leaf">🌿</span> TopFarms</a>
+  <div class="nav-r">
+    <a class="nav-link" href="#">← Back to search</a>
+    <button class="btn-nav btn-nav-ghost">Sign in</button>
+    <button class="btn-nav btn-nav-primary">Create profile</button>
+  </div>
+</nav>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb-bar">
+  <div class="breadcrumb-inner">
+    <div class="breadcrumb">
+      <a class="bc-link" href="#">Jobs</a>
+      <span class="bc-sep">›</span>
+      <a class="bc-link" href="#">Dairy</a>
+      <span class="bc-sep">›</span>
+      <a class="bc-link" href="#">Waikato</a>
+      <span class="bc-sep">›</span>
+      <span class="bc-current">Dairy Farm Assistant — Greenfield Farms</span>
+    </div>
+    <div class="breadcrumb-actions">
+      <button class="bc-action" onclick="this.classList.toggle('saved');this.innerHTML=this.classList.contains('saved')?'🔖 Saved':'🔖 Save'">🔖 Save</button>
+      <button class="bc-action" onclick="copyLink(this)">🔗 Share link</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE -->
+<div class="page-wrap">
+
+  <!-- ════ MAIN COLUMN ════ -->
+  <div class="main-col fade-in">
+
+    <!-- Job header card -->
+    <div class="job-header-card">
+      <div class="featured-banner">
+        <span class="fb-icon">⭐</span>
+        Featured listing — appears at the top of Waikato dairy searches
+      </div>
+      <div class="jhc-hero">
+        <div class="jhc-hero-inner">
+          <div class="jhc-logo">🌿</div>
+          <div class="jhc-title-block">
+            <div class="jhc-farm-name">
+              Greenfield Farms Ltd
+              <span class="verified-badge">✓ Verified</span>
+            </div>
+            <h1 class="jhc-title">Dairy Farm Assistant</h1>
+            <div class="jhc-meta-row">
+              <div class="jhc-meta-item">📍 <strong>Te Awamutu, Waikato</strong></div>
+              <div class="jhc-meta-sep"></div>
+              <div class="jhc-meta-item">🕐 Full-time, permanent</div>
+              <div class="jhc-meta-sep"></div>
+              <div class="jhc-meta-item">📅 Start <strong>1 June 2026</strong></div>
+              <div class="jhc-meta-sep"></div>
+              <div class="jhc-meta-item">⏳ <strong style="color:var(--hay)">18 days</strong> remaining</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="jhc-body">
+        <div class="tag-row">
+          <span class="tag tag-green">🥛 Dairy</span>
+          <span class="tag tag-green">🔄 Rotary shed</span>
+          <span class="tag tag-green">520 cows</span>
+          <span class="tag tag-green">2× daily milking</span>
+          <span class="tag tag-hay">🏠 3-bed house included</span>
+          <span class="tag tag-hay">👫 Couples welcome</span>
+          <span class="tag tag-hay">🐾 Pets negotiable</span>
+          <span class="tag tag-blue">DairyNZ training support</span>
+          <span class="tag tag-grey">NZ residents preferred</span>
+        </div>
+        <div class="stats-strip">
+          <div class="ss-item">
+            <div class="ss-val">23</div>
+            <div class="ss-lbl">Applications</div>
+          </div>
+          <div class="ss-item">
+            <div class="ss-val">89</div>
+            <div class="ss-lbl">Views</div>
+          </div>
+          <div class="ss-item">
+            <div class="ss-val" style="color:var(--moss)">$52k–$62k</div>
+            <div class="ss-lbl">Per year</div>
+          </div>
+          <div class="ss-item">
+            <div class="ss-val">12 days</div>
+            <div class="ss-lbl">Posted ago</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Role overview -->
+    <div class="content-section">
+      <div class="cs-title"><span class="cs-title-icon">📋</span> Role overview</div>
+      <p class="farm-about-text" style="margin-bottom:16px">
+        We're looking for a reliable, enthusiastic dairy farm assistant to join our tight-knit team on our family-owned rotary operation outside Te Awamutu. This is a permanent, full-time role with genuine opportunity for growth — we back our people and support ongoing training through DairyNZ.
+      </p>
+      <p class="farm-about-text">
+        You'll be working alongside the farm owner and one other assistant, taking real ownership of your responsibilities from day one. The role suits someone who takes pride in animal care, wants to develop their skills, and is looking for a place to settle in for the long term — not just a season.
+      </p>
+    </div>
+
+    <!-- Day-to-day responsibilities -->
+    <div class="content-section">
+      <div class="cs-title"><span class="cs-title-icon">🌅</span> Day-to-day responsibilities</div>
+      <div class="resp-list">
+        <div class="resp-item"><div class="resp-bullet"></div><span>Twice-daily milking on a 50-bail rotary shed (AM and PM rotations, shared with team)</span></div>
+        <div class="resp-item"><div class="resp-bullet"></div><span>Herd health monitoring — identifying and reporting any animal health concerns to the farm owner</span></div>
+        <div class="resp-item"><div class="resp-bullet"></div><span>Calf rearing during calving season (spring, August–October)</span></div>
+        <div class="resp-item"><div class="resp-bullet"></div><span>General farm maintenance — fencing, laneways, water troughs and infrastructure upkeep</span></div>
+        <div class="resp-item"><div class="resp-bullet"></div><span>Tractor operation for feed-out and pasture management tasks</span></div>
+        <div class="resp-item"><div class="resp-bullet"></div><span>Assisting with pasture management and farm record keeping</span></div>
+        <div class="resp-item"><div class="resp-bullet"></div><span>On-call responsibilities on a shared roster (typically 1 in 3 weekends)</span></div>
+      </div>
+    </div>
+
+    <!-- Skills & requirements -->
+    <div class="content-section">
+      <div class="cs-title"><span class="cs-title-icon">✅</span> Skills &amp; requirements</div>
+      <div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap">
+        <span style="font-size:11px;color:var(--mid);display:flex;align-items:center;gap:5px">
+          <span style="background:rgba(45,80,22,.1);color:var(--moss);padding:2px 7px;border-radius:4px;font-size:9px;font-weight:700">Required</span> Must have
+        </span>
+        <span style="font-size:11px;color:var(--mid);display:flex;align-items:center;gap:5px">
+          <span style="background:var(--blue-lt);color:var(--blue);padding:2px 7px;border-radius:4px;font-size:9px;font-weight:700">Preferred</span> Strong advantage
+        </span>
+        <span style="font-size:11px;color:var(--mid);display:flex;align-items:center;gap:5px">
+          <span style="background:var(--mist);color:var(--light);padding:2px 7px;border-radius:4px;font-size:9px;font-weight:700;border:1px solid var(--fog)">Bonus</span> Nice to have
+        </span>
+      </div>
+      <div class="skills-grid">
+        <div class="skill-item required"><span class="skill-name">🔄 Rotary shed experience</span><span class="skill-badge sb-required">Required</span></div>
+        <div class="skill-item required"><span class="skill-name">🚗 Full NZ driver's licence</span><span class="skill-badge sb-required">Required</span></div>
+        <div class="skill-item required"><span class="skill-name">🐄 Dairy herd management</span><span class="skill-badge sb-required">Required</span></div>
+        <div class="skill-item required"><span class="skill-name">🏥 Basic animal health</span><span class="skill-badge sb-required">Required</span></div>
+        <div class="skill-item"><span class="skill-name">🚜 Tractor operation</span><span class="skill-badge sb-preferred">Preferred</span></div>
+        <div class="skill-item"><span class="skill-name">📜 DairyNZ Level 2+</span><span class="skill-badge sb-preferred">Preferred</span></div>
+        <div class="skill-item"><span class="skill-name">🌾 Pasture management</span><span class="skill-badge sb-preferred">Preferred</span></div>
+        <div class="skill-item"><span class="skill-name">🐂 Calf rearing</span><span class="skill-badge sb-bonus">Bonus</span></div>
+        <div class="skill-item"><span class="skill-name">🏗️ Fencing experience</span><span class="skill-badge sb-bonus">Bonus</span></div>
+        <div class="skill-item"><span class="skill-name">💉 Vet / treatment cert</span><span class="skill-badge sb-bonus">Bonus</span></div>
+      </div>
+    </div>
+
+    <!-- Compensation & conditions -->
+    <div class="content-section">
+      <div class="cs-title"><span class="cs-title-icon">💰</span> Compensation &amp; conditions</div>
+      <div class="two-col-section">
+        <div class="tc-block">
+          <div class="tc-block-title">Salary &amp; pay</div>
+          <div style="margin-bottom:12px">
+            <div style="font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:var(--ink);letter-spacing:-.5px">$52,000 – $62,000</div>
+            <div style="font-size:11px;color:var(--light);margin-top:2px">per year · negotiable based on experience</div>
+          </div>
+          <div class="tc-block-list">
+            <div class="tc-item">Annual pay review</div>
+            <div class="tc-item">DairyNZ training costs covered</div>
+            <div class="tc-item">On-call allowance included</div>
+          </div>
+        </div>
+        <div class="tc-block">
+          <div class="tc-block-title">Hours &amp; roster</div>
+          <div class="tc-block-list">
+            <div class="tc-item">Full-time, permanent position</div>
+            <div class="tc-item">Approx 45–50 hrs/week (season-dependent)</div>
+            <div class="tc-item">Shared weekend roster (1-in-3)</div>
+            <div class="tc-item">Time in lieu for extra hours</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accommodation -->
+    <div class="content-section">
+      <div class="cs-title"><span class="cs-title-icon">🏠</span> Accommodation</div>
+      <div class="accom-card" style="margin-bottom:14px">
+        <div class="accom-icon">🏡</div>
+        <div class="accom-body">
+          <div class="accom-title">3-bedroom house, on-farm</div>
+          <div class="accom-sub">Modern, well-maintained 3-bedroom home located on the property — approximately 200 metres from the dairy shed. Power and water included. Broadband connected.</div>
+          <div class="accom-tags">
+            <span class="tag tag-hay" style="font-size:10px">Power included</span>
+            <span class="tag tag-hay" style="font-size:10px">Water included</span>
+            <span class="tag tag-hay" style="font-size:10px">Broadband</span>
+            <span class="tag tag-hay" style="font-size:10px">👫 Couples welcome</span>
+            <span class="tag tag-hay" style="font-size:10px">🐾 Pets negotiable</span>
+            <span class="tag tag-hay" style="font-size:10px">Garden / section</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <div class="tc-block-title" style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--light);margin-bottom:8px">Farm vehicle access</div>
+          <div class="tc-block-list">
+            <div class="tc-item">UTV / side-by-side for on-farm use</div>
+            <div class="tc-item">Quad bike available</div>
+          </div>
+        </div>
+        <div>
+          <div class="tc-block-title" style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--light);margin-bottom:8px">Nearest amenities</div>
+          <div class="tc-block-list">
+            <div class="tc-item">Te Awamutu — 8 km (~10 min)</div>
+            <div class="tc-item">Hamilton — 35 km (~30 min)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Location -->
+    <div class="content-section">
+      <div class="cs-title"><span class="cs-title-icon">📍</span> Location</div>
+      <div class="map-placeholder" onclick="this.innerHTML='<div style=\'font-size:13px;font-weight:600;color:var(--mid)\'>🗺️ Map would load here (Google Maps embed)</div>'">
+        <div class="map-icon">🗺️</div>
+        <div class="map-label">Te Awamutu, Waikato</div>
+        <div class="map-sub">Click to view on map</div>
+        <div class="map-distance">📏 8 km to Te Awamutu town centre · 35 km to Hamilton</div>
+      </div>
+    </div>
+
+    <!-- About the farm -->
+    <div class="content-section">
+      <div class="cs-title"><span class="cs-title-icon">🌿</span> About Greenfield Farms</div>
+      <p class="farm-about-text" style="margin-bottom:14px">
+        Family-owned dairy operation, been in the family 25 years. We milk 520 Friesian-cross cows on a 210-hectare property near Te Awamutu. We believe in work-life balance and looking after our team — you'll be trusted to manage your responsibilities without being micromanaged.
+      </p>
+      <p class="farm-about-text" style="margin-bottom:16px">
+        We've had low staff turnover — our last assistant stayed nearly four years. We're a tight-knit team of three and we genuinely enjoy what we do. If you're looking for somewhere to grow your skills and put down some roots, we'd like to meet you.
+      </p>
+      <div class="fc-tags">
+        <span class="fc-tag fct-green">🥛 Rotary · 50-bail</span>
+        <span class="fc-tag fct-green">2× daily</span>
+        <span class="fc-tag fct-green">Spring calving</span>
+        <span class="fc-tag fct-hay">Family-owned · 25 yrs</span>
+        <span class="fc-tag fct-hay">Team of 3</span>
+        <span class="fc-tag" style="background:var(--blue-lt);color:var(--blue)">DairyNZ support</span>
+      </div>
+    </div>
+
+    <!-- Application timeline -->
+    <div class="content-section">
+      <div class="cs-title"><span class="cs-title-icon">📅</span> Application &amp; start timeline</div>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-dot" style="background:var(--meadow)"></div><div class="tl-line"></div></div>
+          <div>
+            <div class="tl-date">Now open</div>
+            <div class="tl-title">Applications open</div>
+            <div class="tl-desc">Listing posted 12 days ago — closes in 18 days or when filled</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-dot" style="background:var(--hay)"></div><div class="tl-line"></div></div>
+          <div>
+            <div class="tl-date">~1 week</div>
+            <div class="tl-title">Shortlisting</div>
+            <div class="tl-desc">Employer reviews applications and contacts shortlisted candidates</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-dot" style="background:var(--light)"></div><div class="tl-line"></div></div>
+          <div>
+            <div class="tl-date">~2 weeks</div>
+            <div class="tl-title">Interviews / farm visits</div>
+            <div class="tl-desc">Phone or on-farm interview — employer typically invites 3–4 candidates</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-dot" style="background:var(--fog)"></div></div>
+          <div>
+            <div class="tl-date">1 June 2026</div>
+            <div class="tl-title">Start date</div>
+            <div class="tl-desc">Flexible for the right candidate — some lead-in time available</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="report-link"><a href="#">⚑ Report this listing</a></div>
+
+  </div><!-- end main col -->
+
+
+  <!-- ════ SIDEBAR ════ -->
+  <div class="sidebar-col">
+
+    <!-- APPLY CARD — LOGGED IN STATE (default shown) -->
+    <div class="apply-card" id="apply-card-loggedin">
+      <div class="ac-match-header">
+        <div class="ac-match-circle">
+          <div class="amc-pct">94%</div>
+          <div class="amc-lbl">match</div>
+        </div>
+        <div class="ac-match-title">Strong match for you</div>
+        <div class="ac-match-sub">Based on your profile · James Tūhoe</div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-salary-row">
+          <div class="ac-salary-val">$52k–$62k</div>
+          <div class="ac-salary-extra">+ 3-bed house included</div>
+        </div>
+
+        <!-- Match breakdown -->
+        <div class="match-breakdown">
+          <div class="mb-title">
+            <span>Why you match</span>
+            <span class="mb-overall">94% overall</span>
+          </div>
+          <div class="mb-row">
+            <div class="mb-label">Shed experience</div>
+            <div class="mb-bar-wrap"><div class="mb-bar high" style="width:100%"></div></div>
+            <div class="mb-score high">100</div>
+          </div>
+          <div class="mb-row">
+            <div class="mb-label">Herd size fit</div>
+            <div class="mb-bar-wrap"><div class="mb-bar high" style="width:90%"></div></div>
+            <div class="mb-score high">90</div>
+          </div>
+          <div class="mb-row">
+            <div class="mb-label">Location match</div>
+            <div class="mb-bar-wrap"><div class="mb-bar high" style="width:95%"></div></div>
+            <div class="mb-score high">95</div>
+          </div>
+          <div class="mb-row">
+            <div class="mb-label">Qualifications</div>
+            <div class="mb-bar-wrap"><div class="mb-bar high" style="width:88%"></div></div>
+            <div class="mb-score high">88</div>
+          </div>
+          <div class="mb-row">
+            <div class="mb-label">Living needs</div>
+            <div class="mb-bar-wrap"><div class="mb-bar high" style="width:100%"></div></div>
+            <div class="mb-score high">100</div>
+          </div>
+          <div class="mb-row">
+            <div class="mb-label">Tractor skills</div>
+            <div class="mb-bar-wrap"><div class="mb-bar mid" style="width:55%"></div></div>
+            <div class="mb-score mid">55</div>
+          </div>
+        </div>
+
+        <!-- AI insight -->
+        <div class="ai-insight">
+          <div class="ai-header">✨ AI insight</div>
+          <div class="ai-body">Your rotary and DairyNZ Level 3 qualifications are a <strong>strong fit</strong>. Main gap is tractor — your profile shows "some experience" which partially matches. Consider mentioning any tractor hours in your application note.</div>
+        </div>
+
+        <div class="deadline-notice">⏳ Closes in 18 days — 23 applicants so far</div>
+
+        <button class="btn btn-apply" onclick="applyNow()">🚀 Apply now</button>
+        <button class="btn btn-message" id="msg-btn">💬 Message employer first</button>
+        <button class="btn btn-save" id="save-btn" onclick="toggleSave(this)">🔖 Save job</button>
+
+        <div style="text-align:center;margin-top:8px">
+          <div style="font-size:10px;color:var(--light);line-height:1.5">Your profile is <strong style="color:var(--moss)">82% complete</strong> · <a href="#" style="color:var(--fern)">Improve it →</a></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- APPLY CARD — LOGGED OUT STATE (hidden by default) -->
+    <div class="apply-card" id="apply-card-loggedout" style="display:none">
+      <div class="ac-match-header" style="background:var(--soil)">
+        <div style="font-size:32px;margin-bottom:10px;position:relative;z-index:1">🎯</div>
+        <div class="ac-match-title">See your match score</div>
+        <div class="ac-match-sub">Create a free profile to see how well you match this role</div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-salary-row">
+          <div class="ac-salary-val">$52k–$62k</div>
+          <div class="ac-salary-extra">+ 3-bed house included</div>
+        </div>
+
+        <div class="login-nudge">
+          <div class="ln-icon">👤</div>
+          <div class="ln-title">Sign in to apply</div>
+          <div class="ln-sub">Your TopFarms profile is your application. Sign up free in 5 minutes and apply with one tap.</div>
+          <button class="btn-ln btn-ln-primary">Create free profile</button>
+          <button class="btn-ln btn-ln-ghost">Already have an account? Sign in</button>
+        </div>
+
+        <div class="qf-list">
+          <div class="qf-item"><span class="qf-icon">📍</span><span><strong>Te Awamutu</strong>, Waikato</span></div>
+          <div class="qf-item"><span class="qf-icon">💰</span><span><strong>$52k–$62k</strong> per year</span></div>
+          <div class="qf-item"><span class="qf-icon">🏠</span><span><strong>3-bed house</strong> included</span></div>
+          <div class="qf-item"><span class="qf-icon">📅</span><span>Start <strong>1 June 2026</strong></span></div>
+          <div class="qf-item"><span class="qf-icon">🔄</span><span>Rotary shed · 520 cows</span></div>
+        </div>
+
+        <button class="btn btn-save" onclick="toggleSave(this)">🔖 Save job</button>
+        <button class="btn btn-share">🔗 Share this listing</button>
+      </div>
+    </div>
+
+    <!-- Farm profile card -->
+    <div class="farm-card">
+      <div class="fc-header">
+        <div class="fc-logo">🌿</div>
+        <div class="fc-name">Greenfield Farms Ltd</div>
+        <div class="fc-sub">Owner-operated · Est. 2000 · Waikato</div>
+      </div>
+      <div class="fc-body">
+        <div class="fc-stat-row">
+          <div class="fc-stat"><div class="fc-stat-val">520</div><div class="fc-stat-lbl">Cows</div></div>
+          <div class="fc-stat"><div class="fc-stat-val">210</div><div class="fc-stat-lbl">Hectares</div></div>
+          <div class="fc-stat"><div class="fc-stat-val">3</div><div class="fc-stat-lbl">Team</div></div>
+        </div>
+        <div class="fc-tags" style="margin-bottom:10px">
+          <span class="fc-tag fct-green">🥛 Rotary</span>
+          <span class="fc-tag fct-green">2× daily</span>
+          <span class="fc-tag fct-hay">Family-owned</span>
+          <span class="fc-tag fct-hay">Low turnover</span>
+        </div>
+        <div class="fc-rating" style="margin-bottom:10px">
+          <div class="fc-stars">★★★★★</div>
+          <span>4.8 · 6 reviews</span>
+        </div>
+        <a class="fc-view-link" href="#">View full farm profile →</a>
+      </div>
+    </div>
+
+    <!-- Similar jobs -->
+    <div class="similar-card">
+      <div class="similar-title">Similar listings near you</div>
+
+      <div class="sj-item">
+        <div class="sj-title">Herd Manager 2IC</div>
+        <div class="sj-meta">📍 Twizel, Canterbury · Rotary · 380 cows</div>
+        <div class="sj-footer">
+          <div class="sj-salary">$64k–$72k</div>
+          <span class="sj-match sjm-high">87% match</span>
+        </div>
+      </div>
+
+      <div class="sj-item">
+        <div class="sj-title">Farm Assistant — Permanent</div>
+        <div class="sj-meta">📍 Morrinsville, Waikato · HB · 420 cows</div>
+        <div class="sj-footer">
+          <div class="sj-salary">$48k–$58k</div>
+          <span class="sj-match sjm-high">81% match</span>
+        </div>
+      </div>
+
+      <div class="sj-item">
+        <div class="sj-title">Relief Milker — Seasonal</div>
+        <div class="sj-meta">📍 Cambridge, Waikato · Rotary · 300 cows</div>
+        <div class="sj-footer">
+          <div class="sj-salary">$26/hr</div>
+          <span class="sj-match sjm-mid">74% match</span>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--fog)">
+        <a href="#" style="font-size:12px;font-weight:700;color:var(--moss);text-decoration:none">View all 87 listings →</a>
+      </div>
+    </div>
+
+  </div><!-- end sidebar -->
+
+</div><!-- end page-wrap -->
+
+
+<!-- ── DEMO STATE TOGGLE ── -->
+<div class="state-toggle">
+  <span class="st-label">Viewing as:</span>
+  <button class="st-btn active" id="btn-loggedin" onclick="setLoggedIn(true)">Logged in</button>
+  <button class="st-btn" id="btn-loggedout" onclick="setLoggedIn(false)">Visitor</button>
+</div>
+
+
+<script>
+function setLoggedIn(loggedIn) {
+  document.getElementById('apply-card-loggedin').style.display = loggedIn ? '' : 'none';
+  document.getElementById('apply-card-loggedout').style.display = loggedIn ? 'none' : '';
+  document.getElementById('btn-loggedin').classList.toggle('active', loggedIn);
+  document.getElementById('btn-loggedout').classList.toggle('active', !loggedIn);
+  // Nav buttons
+  document.querySelector('.btn-nav-ghost').style.display = loggedIn ? 'none' : '';
+  document.querySelector('.btn-nav-primary').textContent = loggedIn ? 'My profile' : 'Create profile';
+}
+
+function toggleSave(btn) {
+  const saved = btn.classList.toggle('saved');
+  btn.innerHTML = saved ? '🔖 Saved!' : '🔖 Save job';
+}
+
+function applyNow() {
+  const btn = document.querySelector('.btn-apply');
+  btn.innerHTML = '✅ Application sent!';
+  btn.style.background = 'var(--fern)';
+  btn.style.cursor = 'default';
+  document.querySelector('.btn-message').style.display = 'none';
+  setTimeout(() => {
+    btn.innerHTML = '✅ Applied — track in dashboard';
+  }, 1200);
+}
+
+function copyLink(btn) {
+  btn.innerHTML = '✅ Copied!';
+  setTimeout(() => btn.innerHTML = '🔗 Share link', 2000);
+}
+
+// Animate match bars on load
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.mb-bar').forEach(bar => {
+      const target = bar.style.width;
+      bar.style.width = '0%';
+      setTimeout(() => bar.style.width = target, 50);
+    });
+  }, 300);
+});
+</script>
+</body>
+</html>

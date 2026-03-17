@@ -10,6 +10,8 @@
 -- Schedule: runs daily at 2:00 AM UTC
 -- Effect: updates jobs from status='active' to status='expired' where expires_at < now()
 
+CREATE EXTENSION IF NOT EXISTS pg_cron WITH SCHEMA extensions;
+
 SELECT cron.schedule(
   'expire-job-listings',         -- Job name (unique)
   '0 2 * * *',                   -- Cron expression: every day at 02:00 UTC

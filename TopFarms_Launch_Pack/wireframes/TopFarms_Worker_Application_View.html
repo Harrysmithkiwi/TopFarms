@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TopFarms – My Applications</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--soil:#2C1A0E;--moss:#2D5016;--fern:#4A7C2F;--meadow:#7AAF3F;--hay:#D4A843;--hay-lt:#FFF8E7;--cream:#F7F2E8;--fog:#EEE8DC;--mist:#F2EEE6;--ink:#1A1208;--mid:#6B5D4A;--light:#9E8E78;--white:#FFFFFF;--red:#C0392B;--red-lt:#FDF0EE;--blue:#1A5276;--blue-lt:#EAF4FB;--orange:#E67E22;--orange-lt:#FEF5EC;--purple:#6C3483;--purple-lt:#F5EEF8;--green-lt:#EAF5EA}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh}
+nav{position:fixed;top:0;left:0;right:0;height:56px;background:var(--soil);display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:200}
+.logo{font-family:'Fraunces',serif;font-weight:700;font-size:20px;color:var(--cream);display:flex;align-items:center;gap:7px}
+.logo-leaf{color:var(--meadow)}
+.nav-links{display:flex;align-items:center;gap:4px}
+.nav-link{padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;color:rgba(247,242,232,.55);cursor:pointer;transition:all .15s}
+.nav-link.active{color:var(--cream);background:rgba(255,255,255,.1)}
+.nl-badge{background:var(--hay);color:var(--soil);font-size:9px;font-weight:800;padding:1px 5px;border-radius:8px;margin-left:5px}
+.nav-r{display:flex;align-items:center;gap:12px}
+.nav-notif{position:relative;cursor:pointer;color:rgba(247,242,232,.55);font-size:18px}
+.notif-dot{position:absolute;top:0;right:0;width:7px;height:7px;background:var(--hay);border-radius:50%;border:1.5px solid var(--soil)}
+.nav-av{width:32px;height:32px;border-radius:50%;background:var(--fern);color:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.page{padding-top:56px;min-height:100vh;display:grid;grid-template-columns:260px 1fr;max-width:1280px;margin:0 auto}
+.sidebar{padding:24px 18px;border-right:1.5px solid var(--fog);position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto;background:var(--white)}
+.sidebar-heading{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--light);margin-bottom:10px;padding:0 4px}
+.pipeline-counts{display:flex;flex-direction:column;gap:3px;margin-bottom:22px}
+.pc-row{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:8px;cursor:pointer;transition:all .15s;border:1.5px solid transparent}
+.pc-row:hover{background:var(--mist)}
+.pc-row.sel{background:var(--green-lt);border-color:rgba(45,80,22,.18)}
+.pc-left{display:flex;align-items:center;gap:9px}
+.pc-dot{width:9px;height:9px;border-radius:50%}
+.pc-label{font-size:13px;color:var(--mid)}
+.pc-row.sel .pc-label{color:var(--moss);font-weight:600}
+.pc-count{font-family:'Fraunces',serif;font-size:14px;font-weight:700;color:var(--light)}
+.pc-row.sel .pc-count{color:var(--moss)}
+.profile-nudge{background:var(--hay-lt);border:1.5px solid rgba(212,168,67,.3);border-radius:10px;padding:12px 14px;margin-bottom:18px}
+.pn-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#7A5C00;margin-bottom:6px}
+.pn-bar-wrap{height:5px;background:rgba(212,168,67,.2);border-radius:3px;margin-bottom:7px}
+.pn-bar{height:100%;background:var(--hay);border-radius:3px;width:72%}
+.pn-text{font-size:11px;color:#7A5C00;line-height:1.4}
+.pn-text a{color:#7A5C00;font-weight:700;text-decoration:underline;cursor:pointer}
+.saved-mini{display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border-radius:8px;border:1.5px solid var(--fog);margin-bottom:7px;cursor:pointer;transition:all .15s}
+.saved-mini:hover{border-color:var(--fern)}
+.sm-title{font-size:12px;font-weight:600;color:var(--ink)}
+.sm-meta{font-size:10px;color:var(--light);margin-top:1px}
+.main{padding:28px 32px}
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px}
+.ph-title{font-family:'Fraunces',serif;font-size:26px;font-weight:700;color:var(--ink);letter-spacing:-.5px;margin-bottom:4px}
+.ph-sub{font-size:13px;color:var(--light)}
+.filter-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:18px;border-bottom:1.5px solid var(--fog);flex-wrap:wrap}
+.filter-chip{padding:6px 13px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--fog);color:var(--mid);background:var(--white);transition:all .15s;display:flex;align-items:center;gap:5px}
+.filter-chip.active{background:rgba(45,80,22,.08);border-color:var(--moss);color:var(--moss)}
+.fc-count{font-size:9px;font-weight:800;padding:1px 5px;border-radius:8px;color:white}
+.filter-chip.active .fc-count{background:var(--moss)}
+.filter-chip:not(.active) .fc-count{background:var(--light)}
+.fb-spacer{flex:1}
+.sort-select{padding:6px 13px;border:1.5px solid var(--fog);border-radius:7px;font-size:12px;color:var(--mid);background:var(--white);font-family:'DM Sans',sans-serif}
+.urgent-banner{background:var(--orange-lt);border:1.5px solid rgba(230,126,34,.3);border-radius:10px;padding:13px 16px;margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.ub-body{flex:1;font-size:12px;color:#6B3A10;line-height:1.5}
+.ub-body strong{color:var(--orange)}
+.app-card{background:var(--white);border:1.5px solid var(--fog);border-radius:14px;margin-bottom:14px;overflow:hidden;transition:border-color .2s,box-shadow .2s}
+.app-card:hover{border-color:rgba(45,80,22,.2)}
+.app-card.expanded{border-color:var(--moss)}
+.app-card.urgent{border-color:var(--orange);border-width:2px}
+.app-card.positive{border-color:var(--moss);border-width:2px}
+.ac-head{display:grid;grid-template-columns:1fr auto auto auto;align-items:center;gap:14px;padding:18px 20px;cursor:pointer}
+.ac-role{font-family:'Fraunces',serif;font-size:17px;font-weight:700;color:var(--ink);letter-spacing:-.3px;margin-bottom:3px}
+.ac-farm{font-size:12px;color:var(--mid);margin-bottom:8px}
+.ac-tags{display:flex;flex-wrap:wrap;gap:5px}
+.ac-tag{padding:3px 8px;border-radius:4px;font-size:10px;font-weight:600}
+.tag-green{background:rgba(45,80,22,.08);color:var(--moss)}
+.tag-hay{background:rgba(212,168,67,.12);color:#7A5C00}
+.tag-blue{background:var(--blue-lt);color:var(--blue)}
+.tag-grey{background:var(--fog);color:var(--mid)}
+.tag-orange{background:var(--orange-lt);color:var(--orange)}
+.tag-purple{background:var(--purple-lt);color:var(--purple)}
+.match-circle{width:52px;height:52px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
+.match-pct{font-family:'Fraunces',serif;font-size:15px;font-weight:700;line-height:1}
+.match-lbl{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-top:1px}
+.match-high{background:rgba(45,80,22,.06);border:2.5px solid var(--moss)}.match-high .match-pct{color:var(--moss)}.match-high .match-lbl{color:var(--fern)}
+.match-mid{background:var(--orange-lt);border:2.5px solid var(--orange)}.match-mid .match-pct{color:var(--orange)}.match-mid .match-lbl{color:var(--orange)}
+.stage-pill{padding:5px 11px;border-radius:20px;font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.stage-applied{background:#F1F5F9;color:#475569}
+.stage-reviewed{background:var(--blue-lt);color:var(--blue)}
+.stage-shortlisted{background:rgba(212,168,67,.15);color:#7A5C00}
+.stage-interview{background:var(--orange-lt);color:var(--orange)}
+.stage-offered{background:var(--purple-lt);color:var(--purple)}
+.stage-declined{background:var(--fog);color:var(--light)}
+.expand-btn{background:none;border:none;cursor:pointer;color:var(--light);font-size:18px;padding:4px;transition:transform .25s;line-height:1}
+.expand-btn.open{transform:rotate(180deg)}
+.ac-expanded{display:none;border-top:1.5px solid var(--fog)}
+.ac-expanded.show{display:block}
+.pipeline-strip{padding:16px 22px 14px;background:var(--white);border-bottom:1.5px solid var(--fog)}
+.ps-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--light);margin-bottom:14px}
+.pipeline-steps{display:flex;align-items:flex-start}
+.pipe-step{flex:1;display:flex;flex-direction:column;align-items:center;position:relative}
+.pipe-step:not(:last-child)::after{content:'';position:absolute;top:14px;left:55%;width:90%;height:2px;z-index:0}
+.pipe-step.done::after{background:var(--moss)}
+.pipe-step.pending::after{background:var(--fog)}
+.pipe-step.active-step::after{background:linear-gradient(to right,var(--moss),var(--fog))}
+.pipe-circle{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;z-index:1;position:relative;border:2px solid transparent}
+.pipe-done{background:var(--moss);color:white;border-color:var(--moss)}
+.pipe-active{background:var(--white);border-width:2px}
+.pipe-pending{background:var(--fog);color:var(--light);border-color:var(--fog)}
+.pipe-label{font-size:10px;font-weight:700;color:var(--light);margin-top:7px;text-align:center;line-height:1.3}
+.pipe-sublabel{font-size:9px;color:var(--light);text-align:center;margin-top:2px}
+.tab-nav{display:flex;border-bottom:1.5px solid var(--fog);background:var(--mist);padding:0 20px;gap:2px}
+.exp-tab{padding:11px 14px;font-size:12px;font-weight:600;color:var(--light);cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-1.5px;transition:all .15s;white-space:nowrap}
+.exp-tab:hover{color:var(--mid)}
+.exp-tab.active{color:var(--moss);border-bottom-color:var(--moss);background:var(--white)}
+.exp-panel{display:none;padding:20px 22px 18px}
+.exp-panel.show{display:block}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 28px;margin-bottom:16px}
+.dg-row{padding:7px 0;border-bottom:1px solid var(--fog);display:flex;flex-direction:column;gap:2px}
+.dg-key{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--light)}
+.dg-val{font-size:13px;color:var(--ink);font-weight:500}
+.dg-val.good{color:var(--moss)}
+.app-timeline{display:flex;flex-direction:column;gap:0}
+.tl-item{display:flex;gap:14px;padding-bottom:18px;position:relative}
+.tl-item:last-child{padding-bottom:0}
+.tl-line{position:absolute;left:14px;top:30px;bottom:0;width:1.5px;background:var(--fog)}
+.tl-dot{width:29px;height:29px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;z-index:1}
+.tld-done{background:rgba(45,80,22,.1);border:2px solid var(--moss);color:var(--moss)}
+.tld-active{background:var(--orange-lt);border:2px solid var(--orange);color:var(--orange)}
+.tld-pending{background:var(--fog);border:1.5px solid var(--fog);color:var(--light)}
+.tld-offer{background:var(--purple-lt);border:2px solid var(--purple);color:var(--purple)}
+.tl-body{flex:1;padding-top:3px}
+.tl-title{font-size:13px;font-weight:600;color:var(--ink)}
+.tl-title.pending{color:var(--light)}
+.tl-when{font-size:11px;color:var(--light);margin-top:2px}
+.tl-note{font-size:12px;color:var(--mid);margin-top:6px;line-height:1.5;background:var(--white);border:1px solid var(--fog);border-radius:7px;padding:9px 12px}
+.match-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.mbr-label{font-size:11px;color:var(--mid);width:140px;flex-shrink:0}
+.mbr-track{flex:1;height:6px;background:var(--fog);border-radius:3px;overflow:hidden}
+.mbr-fill{height:100%;border-radius:3px}
+.fill-high{background:var(--moss)}
+.fill-mid{background:var(--hay)}
+.fill-low{background:var(--orange)}
+.mbr-val{font-size:11px;font-weight:700;width:40px;text-align:right;flex-shrink:0}
+.ai-insight{background:var(--purple-lt);border:1.5px solid rgba(108,52,131,.15);border-radius:10px;padding:13px 15px;margin-bottom:14px}
+.ai-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--purple);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.ai-body{font-size:12px;color:#4A2D5C;line-height:1.6}
+.info-box{border-radius:10px;padding:12px 14px;margin-bottom:12px}
+.ib-title{font-size:11px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.ib-body{font-size:12px;line-height:1.5}
+.ib-blue{background:var(--blue-lt);border:1.5px solid rgba(26,82,118,.18)}.ib-blue .ib-title{color:var(--blue)}.ib-blue .ib-body{color:#1A3A5C}
+.ib-orange{background:var(--orange-lt);border:1.5px solid rgba(230,126,34,.25)}.ib-orange .ib-title{color:var(--orange)}.ib-orange .ib-body{color:#6B3A10}
+.ib-green{background:rgba(45,80,22,.05);border:1.5px solid rgba(45,80,22,.2)}.ib-green .ib-title{color:var(--moss)}.ib-green .ib-body{color:var(--mid)}
+.ib-purple{background:var(--purple-lt);border:1.5px solid rgba(108,52,131,.15)}.ib-purple .ib-title{color:var(--purple)}.ib-purple .ib-body{color:#4A2D5C}
+.action-box{background:var(--white);border:1.5px solid var(--fog);border-radius:10px;padding:16px 18px;margin-bottom:12px}
+.ab-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mid);margin-bottom:12px}
+.msg-templates{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.msg-tpl{padding:5px 11px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--fog);color:var(--mid);background:var(--mist);transition:all .15s;font-family:'DM Sans',sans-serif}
+.msg-tpl:hover{border-color:var(--fern);color:var(--fern)}
+textarea{width:100%;border:1.5px solid var(--fog);border-radius:8px;padding:10px 13px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);background:var(--white);resize:vertical;outline:none;transition:border-color .2s;line-height:1.6}
+textarea:focus{border-color:var(--fern);box-shadow:0 0 0 3px rgba(74,124,47,.07)}
+.withdraw-box{background:var(--red-lt);border:1.5px solid rgba(192,57,43,.2);border-radius:10px;padding:14px 16px}
+.wb-title{font-size:12px;font-weight:700;color:var(--red);margin-bottom:4px}
+.wb-body{font-size:12px;color:#7A2020;line-height:1.5;margin-bottom:10px}
+.outcome-offer{background:var(--purple-lt);border:2px solid var(--purple);border-radius:12px;padding:18px 20px;margin-bottom:14px}
+.oo-badge{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--purple);margin-bottom:8px}
+.oo-title{font-family:'Fraunces',serif;font-size:16px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.oo-sub{font-size:12px;color:var(--mid);margin-bottom:14px}
+.outcome-declined{background:var(--fog);border:1.5px solid rgba(0,0,0,.06);border-radius:10px;padding:14px 16px;margin-bottom:12px}
+.od-title{font-size:12px;font-weight:700;color:var(--mid);margin-bottom:4px}
+.od-body{font-size:12px;color:var(--mid);line-height:1.5}
+.slot-option{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--white);border:1.5px solid var(--fog);border-radius:9px;cursor:pointer;margin-bottom:8px;transition:all .15s}
+.slot-option:hover{border-color:var(--fern)}
+.slot-option.picked{border-color:var(--moss);border-width:2px;background:rgba(45,80,22,.03)}
+.slot-radio{width:20px;height:20px;border-radius:50%;border:2px solid var(--fog);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;transition:all .15s}
+.slot-option.picked .slot-radio{background:rgba(45,80,22,.1);border-color:var(--moss);color:var(--moss)}
+.slot-title{font-size:13px;font-weight:700;color:var(--ink)}
+.slot-meta{font-size:11px;color:var(--mid);margin-top:2px}
+.btn{padding:9px 18px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;border:none;display:inline-flex;align-items:center;gap:6px}
+.btn-sm{padding:7px 13px;font-size:11px}
+.btn-primary{background:var(--moss);color:white}.btn-primary:hover{background:var(--fern)}
+.btn-ghost{background:transparent;border:1.5px solid var(--fog);color:var(--mid)}.btn-ghost:hover{border-color:var(--mid)}
+.btn-hay{background:var(--hay);color:var(--soil)}.btn-hay:hover{background:#c49a38}
+.btn-danger{background:var(--red-lt);color:var(--red);border:1.5px solid rgba(192,57,43,.2)}.btn-danger:hover{background:rgba(192,57,43,.12)}
+.btn-blue{background:var(--blue-lt);color:var(--blue);border:1.5px solid rgba(26,82,118,.2)}
+.btn-purple{background:var(--purple-lt);color:var(--purple);border:1.5px solid rgba(108,52,131,.2)}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo"><span class="logo-leaf">🌿</span> TopFarms</div>
+  <div class="nav-links">
+    <span class="nav-link">Find Jobs</span>
+    <span class="nav-link active">My Applications <span class="nl-badge">1</span></span>
+    <span class="nav-link">My Profile</span>
+    <span class="nav-link">Saved Jobs</span>
+  </div>
+  <div class="nav-r">
+    <div class="nav-notif">🔔<div class="notif-dot"></div></div>
+    <div class="nav-av">JT</div>
+  </div>
+</nav>
+
+<div class="page">
+<aside class="sidebar">
+  <div class="profile-nudge">
+    <div class="pn-label">Profile completeness</div>
+    <div class="pn-bar-wrap"><div class="pn-bar"></div></div>
+    <div class="pn-text">72% complete — <a>add ATV cert</a> to unlock 14 more matches.</div>
+  </div>
+  <div class="sidebar-heading">Applications</div>
+  <div class="pipeline-counts">
+    <div class="pc-row" onclick="sideFilter(this)"><div class="pc-left"><div class="pc-dot" style="background:var(--mid)"></div><div class="pc-label">All</div></div><div class="pc-count">5</div></div>
+    <div class="pc-row sel" onclick="sideFilter(this)"><div class="pc-left"><div class="pc-dot" style="background:#94A3B8"></div><div class="pc-label">Applied</div></div><div class="pc-count">1</div></div>
+    <div class="pc-row" onclick="sideFilter(this)"><div class="pc-left"><div class="pc-dot" style="background:var(--blue)"></div><div class="pc-label">Under review</div></div><div class="pc-count">1</div></div>
+    <div class="pc-row" onclick="sideFilter(this)"><div class="pc-left"><div class="pc-dot" style="background:var(--hay)"></div><div class="pc-label">Shortlisted</div></div><div class="pc-count">1</div></div>
+    <div class="pc-row" onclick="sideFilter(this)"><div class="pc-left"><div class="pc-dot" style="background:var(--orange)"></div><div class="pc-label">Interview</div></div><div class="pc-count">1</div></div>
+    <div class="pc-row" onclick="sideFilter(this)"><div class="pc-left"><div class="pc-dot" style="background:var(--purple)"></div><div class="pc-label">Outcome received</div></div><div class="pc-count">1</div></div>
+  </div>
+  <div class="sidebar-heading" style="margin-top:6px">Saved Jobs</div>
+  <div class="saved-mini"><div><div class="sm-title">Relief Milker – Southland</div><div class="sm-meta">Oraka Farms · $28/hr · 3 days ago</div></div><span style="color:var(--light);font-size:11px">→</span></div>
+  <div class="saved-mini"><div><div class="sm-title">Herd Manager 2IC</div><div class="sm-meta">Pukekohe Dairy · $68k · 1 week ago</div></div><span style="color:var(--light);font-size:11px">→</span></div>
+  <div class="saved-mini"><div><div class="sm-title">Farm Assistant – Taranaki</div><div class="sm-meta">Inglewood Station · $54k · 2 weeks ago</div></div><span style="color:var(--light);font-size:11px">→</span></div>
+</aside>
+
+<main class="main">
+  <div class="page-header">
+    <div><h1 class="ph-title">My Applications</h1><p class="ph-sub">Kia ora James — 5 active applications across 4 farms.</p></div>
+    <div style="display:flex;gap:10px"><button class="btn btn-ghost">📊 Export</button><button class="btn btn-primary">🔍 Find more jobs</button></div>
+  </div>
+
+  <div class="urgent-banner">
+    <div style="font-size:20px;flex-shrink:0">📅</div>
+    <div class="ub-body"><strong>Action needed:</strong> Greenfield Farms Ltd has proposed 3 interview times for your Dairy Farm Assistant application. <strong>Respond by Friday 14 March</strong> to keep your spot.</div>
+    <button class="btn btn-hay btn-sm" onclick="openCard('c1','interview')">View →</button>
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-chip active" onclick="toggleFC(this)">Active <span class="fc-count">4</span></div>
+    <div class="filter-chip" onclick="toggleFC(this)">All <span class="fc-count">5</span></div>
+    <div class="filter-chip" onclick="toggleFC(this)">Dairy <span class="fc-count">3</span></div>
+    <div class="filter-chip" onclick="toggleFC(this)">Sheep & Beef <span class="fc-count">2</span></div>
+    <div class="fb-spacer"></div>
+    <select class="sort-select"><option>Sort: Most recent</option><option>Sort: Highest match</option><option>Sort: Stage</option></select>
+  </div>
+
+  <!-- ── CARD 1: INTERVIEW ── -->
+  <div class="app-card urgent expanded" id="c1">
+    <div class="ac-head" onclick="toggleCard('c1')">
+      <div class="ac-main">
+        <div class="ac-role">Dairy Farm Assistant</div>
+        <div class="ac-farm">🌿 Greenfield Farms Ltd &nbsp;·&nbsp; 📍 Te Awamutu, Waikato &nbsp;·&nbsp; Applied 14 days ago</div>
+        <div class="ac-tags">
+          <span class="ac-tag tag-green">🥛 Dairy · Rotary</span><span class="ac-tag tag-green">520 cows</span>
+          <span class="ac-tag tag-hay">🏠 3-bed house</span><span class="ac-tag tag-hay">👫 Couples OK</span>
+          <span class="ac-tag tag-blue">$52k–$62k</span>
+        </div>
+      </div>
+      <div class="match-circle match-high"><div class="match-pct">89%</div><div class="match-lbl">Match</div></div>
+      <div style="text-align:center">
+        <div class="stage-pill stage-interview">📅 Interview</div>
+        <div style="font-size:10px;color:var(--orange);font-weight:700;margin-top:5px">⚠ Action needed</div>
+      </div>
+      <button class="expand-btn open" id="ebtn-c1">▾</button>
+    </div>
+    <div class="ac-expanded show" id="exp-c1">
+      <div class="pipeline-strip">
+        <div class="ps-title">Your progress on this application</div>
+        <div class="pipeline-steps">
+          <div class="pipe-step done"><div class="pipe-circle pipe-done">✓</div><div class="pipe-label">Applied</div><div class="pipe-sublabel">1 Mar</div></div>
+          <div class="pipe-step done"><div class="pipe-circle pipe-done">✓</div><div class="pipe-label">Reviewed</div><div class="pipe-sublabel">5 Mar</div></div>
+          <div class="pipe-step done"><div class="pipe-circle pipe-done">✓</div><div class="pipe-label">Shortlisted</div><div class="pipe-sublabel">8 Mar</div></div>
+          <div class="pipe-step active-step"><div class="pipe-circle pipe-active" style="border-color:var(--orange);color:var(--orange);box-shadow:0 0 0 4px rgba(230,126,34,.1)">📅</div><div class="pipe-label" style="color:var(--orange)">Interview</div><div class="pipe-sublabel" style="color:var(--orange)">Awaiting you</div></div>
+          <div class="pipe-step pending"><div class="pipe-circle pipe-pending">◯</div><div class="pipe-label">Outcome</div><div class="pipe-sublabel">TBC</div></div>
+        </div>
+      </div>
+      <div class="tab-nav">
+        <div class="exp-tab active" id="t-c1-interview" onclick="switchTab('c1','interview',this)">📅 Interview request</div>
+        <div class="exp-tab" id="t-c1-timeline" onclick="switchTab('c1','timeline',this)">🕐 Timeline</div>
+        <div class="exp-tab" id="t-c1-match" onclick="switchTab('c1','match',this)">🎯 My match</div>
+        <div class="exp-tab" id="t-c1-detail" onclick="switchTab('c1','detail',this)">📋 Job details</div>
+        <div class="exp-tab" id="t-c1-actions" onclick="switchTab('c1','actions',this)">⚙️ Actions</div>
+      </div>
+      <div class="exp-panel show" id="p-c1-interview">
+        <div class="info-box ib-orange">
+          <div class="ib-title">⏰ Respond by Friday 14 March</div>
+          <div class="ib-body">Dave Henderson from Greenfield Farms has proposed 3 times. Select one to confirm your interview slot.</div>
+        </div>
+        <div style="font-size:11px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Choose a time</div>
+        <div class="slot-option picked" onclick="pickSlot(this)">
+          <div class="slot-radio">✓</div>
+          <div><div class="slot-title">Monday 11 March · 10:00–10:30am</div><div class="slot-meta">📞 Phone call · Dave Henderson +64 21 555 0192</div></div>
+          <div style="margin-left:auto;font-size:10px;font-weight:700;background:rgba(45,80,22,.08);color:var(--moss);padding:3px 9px;border-radius:6px">Selected</div>
+        </div>
+        <div class="slot-option" onclick="pickSlot(this)">
+          <div class="slot-radio"></div>
+          <div><div class="slot-title">Tuesday 12 March · 2:00–2:30pm</div><div class="slot-meta">📞 Phone call · Dave Henderson</div></div>
+        </div>
+        <div class="slot-option" onclick="pickSlot(this)">
+          <div class="slot-radio"></div>
+          <div><div class="slot-title">Wednesday 13 March · 9:00–9:30am</div><div class="slot-meta">📞 Phone call · Dave Henderson</div></div>
+        </div>
+        <div style="margin-top:14px;font-size:11px;font-weight:700;color:var(--mid);margin-bottom:8px">Add a note (optional)</div>
+        <textarea style="min-height:60px">Hi Dave, Monday morning works perfectly for me. Looking forward to hearing more about the operation!</textarea>
+        <div class="btn-row">
+          <button class="btn btn-primary">✅ Confirm Monday 11 March, 10am</button>
+          <button class="btn btn-ghost">📅 Suggest a different time</button>
+        </div>
+      </div>
+      <div class="exp-panel" id="p-c1-timeline">
+        <div class="app-timeline">
+          <div class="tl-item"><div class="tl-line"></div><div class="tl-dot tld-done">✓</div><div class="tl-body"><div class="tl-title">Application submitted</div><div class="tl-when">Saturday 1 March · 2:14pm</div><div class="tl-note">CV uploaded, 89% match score calculated. Application sent to Greenfield Farms Ltd.</div></div></div>
+          <div class="tl-item"><div class="tl-line"></div><div class="tl-dot tld-done">✓</div><div class="tl-body"><div class="tl-title">Viewed by employer</div><div class="tl-when">Wednesday 5 March · 9:22am</div><div class="tl-note">Dave Henderson opened your profile and CV. Application moved to "Under review".</div></div></div>
+          <div class="tl-item"><div class="tl-line"></div><div class="tl-dot tld-done">✓</div><div class="tl-body"><div class="tl-title">Shortlisted — top 4 of 18</div><div class="tl-when">Saturday 8 March · 11:05am</div><div class="tl-note">You were shortlisted from 18 applicants. Top 4 selected for phone interview.</div></div></div>
+          <div class="tl-item"><div class="tl-line"></div><div class="tl-dot tld-active">📅</div><div class="tl-body"><div class="tl-title" style="color:var(--orange)">Interview request received</div><div class="tl-when">Monday 9 March · 8:47am</div><div class="tl-note">Dave proposed 3 phone interview slots. <strong style="color:var(--orange)">Confirm by Friday 14 March.</strong></div></div></div>
+          <div class="tl-item"><div class="tl-dot tld-pending">◯</div><div class="tl-body"><div class="tl-title pending">Outcome</div><div class="tl-when" style="color:var(--fog)">Pending interview</div></div></div>
+        </div>
+      </div>
+      <div class="exp-panel" id="p-c1-match">
+        <div class="ai-insight"><div class="ai-title">✨ AI match summary</div><div class="ai-body">Strong match. Your 7 years of rotary experience directly aligns with their 60-bail shed. The only minor gap is tractor — listed as "confident" by the farm, where you noted "some experience". Your housing situation (couples, dogs negotiable) is a strong positive for this listing.</div></div>
+        <div style="font-size:11px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Score breakdown · 89%</div>
+        <div class="match-bar-row"><div class="mbr-label">Shed experience</div><div class="mbr-track"><div class="mbr-fill fill-high" style="width:100%"></div></div><div class="mbr-val" style="color:var(--moss)">30/30</div></div>
+        <div class="match-bar-row"><div class="mbr-label">Experience level</div><div class="mbr-track"><div class="mbr-fill fill-high" style="width:90%"></div></div><div class="mbr-val" style="color:var(--moss)">27/30</div></div>
+        <div class="match-bar-row"><div class="mbr-label">Location match</div><div class="mbr-track"><div class="mbr-fill fill-high" style="width:100%"></div></div><div class="mbr-val" style="color:var(--moss)">15/15</div></div>
+        <div class="match-bar-row"><div class="mbr-label">Accommodation fit</div><div class="mbr-track"><div class="mbr-fill fill-high" style="width:100%"></div></div><div class="mbr-val" style="color:var(--moss)">10/10</div></div>
+        <div class="match-bar-row"><div class="mbr-label">Machinery skills</div><div class="mbr-track"><div class="mbr-fill fill-mid" style="width:50%"></div></div><div class="mbr-val" style="color:#7A5C00">7/14</div></div>
+        <div class="match-bar-row"><div class="mbr-label">Qualifications</div><div class="mbr-track"><div class="mbr-fill fill-high" style="width:100%"></div></div><div class="mbr-val" style="color:var(--moss)">10/10</div></div>
+        <div class="info-box ib-blue" style="margin-top:14px"><div class="ib-title">💡 Interview tip</div><div class="ib-body">Dave listed tractor as "preferred" — be honest about your level. Willingness to upskill lands well with owner-operators.</div></div>
+      </div>
+      <div class="exp-panel" id="p-c1-detail">
+        <div class="detail-grid">
+          <div class="dg-row"><span class="dg-key">Farm type</span><span class="dg-val">Dairy · Rotary (60-bail)</span></div>
+          <div class="dg-row"><span class="dg-key">Herd size</span><span class="dg-val">520 cows · Friesian</span></div>
+          <div class="dg-row"><span class="dg-key">Milking</span><span class="dg-val">2× daily · Spring calving</span></div>
+          <div class="dg-row"><span class="dg-key">Salary</span><span class="dg-val good">$52,000–$62,000</span></div>
+          <div class="dg-row"><span class="dg-key">Accommodation</span><span class="dg-val good">3-bed house · Power incl.</span></div>
+          <div class="dg-row"><span class="dg-key">Couples</span><span class="dg-val good">Welcome ✓</span></div>
+          <div class="dg-row"><span class="dg-key">Vehicle</span><span class="dg-val">UTV on-farm</span></div>
+          <div class="dg-row"><span class="dg-key">Start</span><span class="dg-val">ASAP / flexible</span></div>
+        </div>
+      </div>
+      <div class="exp-panel" id="p-c1-actions">
+        <div class="action-box">
+          <div class="ab-title">Send a message</div>
+          <div class="msg-templates">
+            <div class="msg-tpl" onclick="fillMsg('ta-c1','Still very interested — happy to chat further anytime.')">👋 Still interested</div>
+            <div class="msg-tpl" onclick="fillMsg('ta-c1','Thank you for shortlisting me. Looking forward to connecting!')">🙏 Thank you</div>
+            <div class="msg-tpl" onclick="fillMsg('ta-c1','Just checking in — happy to answer any further questions.')">📋 Check in</div>
+          </div>
+          <textarea id="ta-c1" style="min-height:70px" placeholder="Message Dave at Greenfield Farms…"></textarea>
+          <div class="btn-row"><button class="btn btn-primary btn-sm">📤 Send</button><button class="btn btn-ghost btn-sm">💾 Draft</button></div>
+        </div>
+        <div class="action-box" style="margin-bottom:12px">
+          <div class="ab-title">Application files</div>
+          <div class="btn-row" style="margin-top:0"><button class="btn btn-ghost btn-sm">📄 View my submitted CV</button><button class="btn btn-blue btn-sm">📋 View full listing</button></div>
+        </div>
+        <div class="withdraw-box">
+          <div class="wb-title">⚠ Withdraw this application</div>
+          <div class="wb-body">This will notify Greenfield Farms Ltd and remove you from consideration. You cannot re-apply for 30 days.</div>
+          <button class="btn btn-danger btn-sm">Withdraw application</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CARD 2: OFFER RECEIVED ── -->
+  <div class="app-card positive" id="c2">
+    <div class="ac-head" onclick="toggleCard('c2')">
+      <div class="ac-main">
+        <div class="ac-role">2IC – Sheep &amp; Beef Operation</div>
+        <div class="ac-farm">🌿 Tussock Ridge Station &nbsp;·&nbsp; 📍 Hawke's Bay &nbsp;·&nbsp; Applied 21 days ago</div>
+        <div class="ac-tags"><span class="ac-tag tag-green">🐑 Sheep &amp; Beef</span><span class="ac-tag tag-green">3,200 su</span><span class="ac-tag tag-hay">🏠 4-bed homestead</span><span class="ac-tag tag-purple">$68k–$75k</span></div>
+      </div>
+      <div class="match-circle match-high"><div class="match-pct">83%</div><div class="match-lbl">Match</div></div>
+      <div style="text-align:center"><div class="stage-pill stage-offered">🎉 Offer received</div><div style="font-size:10px;color:var(--purple);font-weight:700;margin-top:5px">Respond by 15 Mar</div></div>
+      <button class="expand-btn" id="ebtn-c2">▾</button>
+    </div>
+    <div class="ac-expanded" id="exp-c2">
+      <div class="pipeline-strip">
+        <div class="ps-title">Your progress</div>
+        <div class="pipeline-steps">
+          <div class="pipe-step done"><div class="pipe-circle pipe-done">✓</div><div class="pipe-label">Applied</div><div class="pipe-sublabel">17 Feb</div></div>
+          <div class="pipe-step done"><div class="pipe-circle pipe-done">✓</div><div class="pipe-label">Reviewed</div><div class="pipe-sublabel">20 Feb</div></div>
+          <div class="pipe-step done"><div class="pipe-circle pipe-done">✓</div><div class="pipe-label">Shortlisted</div><div class="pipe-sublabel">24 Feb</div></div>
+          <div class="pipe-step done"><div class="pipe-circle pipe-done">✓</div><div class="pipe-label">Interview</div><div class="pipe-sublabel">4 Mar</div></div>
+          <div class="pipe-step active-step"><div class="pipe-circle pipe-active" style="border-color:var(--purple);color:var(--purple);box-shadow:0 0 0 4px rgba(108,52,131,.1)">🎉</div><div class="pipe-label" style="color:var(--purple)">Offer received</div><div class="pipe-sublabel" style="color:var(--purple)">Respond needed</div></div>
+        </div>
+      </div>
+      <div class="tab-nav">
+        <div class="exp-tab active" id="t-c2-offer" onclick="switchTab('c2','offer',this)">🎉 Offer details</div>
+        <div class="exp-tab" id="t-c2-timeline" onclick="switchTab('c2','timeline',this)">🕐 Timeline</div>
+        <div class="exp-tab" id="t-c2-match" onclick="switchTab('c2','match',this)">🎯 My match</div>
+        <div class="exp-tab" id="t-c2-actions" onclick="switchTab('c2','actions',this)">⚙️ Actions</div>
+      </div>
+      <div class="exp-panel show" id="p-c2-offer">
+        <div class="outcome-offer">
+          <div class="oo-badge">🎉 Congratulations — offer received</div>
+          <div class="oo-title">2IC · Tussock Ridge Station, Hawke's Bay</div>
+          <div class="oo-sub">From Grant & Michelle Tūhoe · Respond by Saturday 15 March</div>
+          <div class="detail-grid" style="margin-bottom:14px">
+            <div class="dg-row"><span class="dg-key">Offered salary</span><span class="dg-val good" style="font-family:'Fraunces',serif;font-size:16px">$71,000 / year</span></div>
+            <div class="dg-row"><span class="dg-key">Start date</span><span class="dg-val">1 April 2026</span></div>
+            <div class="dg-row"><span class="dg-key">Accommodation</span><span class="dg-val good">4-bed homestead · Power incl.</span></div>
+            <div class="dg-row"><span class="dg-key">Vehicle</span><span class="dg-val">Farm ute (personal use)</span></div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-primary" style="background:var(--purple);flex:1;justify-content:center">✅ Accept offer</button>
+            <button class="btn btn-ghost">🗣 Request call</button>
+            <button class="btn btn-danger btn-sm">Decline</button>
+          </div>
+        </div>
+        <div class="info-box ib-purple"><div class="ib-title">💡 Before you decide</div><div class="ib-body">You still have a pending interview with Greenfield Farms Ltd (Waikato, $52k–$62k). Accepting this offer would normally mean withdrawing other applications. The Tussock Ridge offer is above median 2IC salary for Hawke's Bay ($67k).</div></div>
+      </div>
+      <div class="exp-panel" id="p-c2-timeline">
+        <div class="app-timeline">
+          <div class="tl-item"><div class="tl-line"></div><div class="tl-dot tld-done">✓</div><div class="tl-body"><div class="tl-title">Application submitted</div><div class="tl-when">Monday 17 February</div></div></div>
+          <div class="tl-item"><div class="tl-line"></div><div class="tl-dot tld-done">✓</div><div class="tl-body"><div class="tl-title">Reviewed by employer</div><div class="tl-when">Thursday 20 February</div></div></div>
+          <div class="tl-item"><div class="tl-line"></div><div class="tl-dot tld-done">✓</div><div class="tl-body"><div class="tl-title">Shortlisted — top 3 of 11</div><div class="tl-when">Monday 24 February</div></div></div>
+          <div class="tl-item"><div class="tl-line"></div><div class="tl-dot tld-done">✓</div><div class="tl-body"><div class="tl-title">Phone interview with Grant Tūhoe</div><div class="tl-when">Tuesday 4 March · 11:00am</div><div class="tl-note">45-minute call. Discussed herd management and relocation timeline.</div></div></div>
+          <div class="tl-item"><div class="tl-dot tld-offer">🎉</div><div class="tl-body"><div class="tl-title" style="color:var(--purple)">Offer received</div><div class="tl-when">Monday 9 March</div><div class="tl-note">Formal offer letter via TopFarms. Salary: $71,000. Start: 1 April.</div></div></div>
+        </div>
+      </div>
+      <div class="exp-panel" id="p-c2-match">
+        <div class="ai-insight"><div class="ai-title">✨ AI match summary</div><div class="ai-body">Strong fit across experience, livestock scale, and location. Your mustering background across multiple breeds aligns well with their mixed operation. The 4-bed homestead exceeds your accommodation request — a meaningful positive.</div></div>
+        <div class="match-bar-row"><div class="mbr-label">Livestock experience</div><div class="mbr-track"><div class="mbr-fill fill-high" style="width:93%"></div></div><div class="mbr-val" style="color:var(--moss)">28/30</div></div>
+        <div class="match-bar-row"><div class="mbr-label">Management level</div><div class="mbr-track"><div class="mbr-fill fill-high" style="width:87%"></div></div><div class="mbr-val" style="color:var(--moss)">26/30</div></div>
+        <div class="match-bar-row"><div class="mbr-label">Location match</div><div class="mbr-track"><div class="mbr-fill fill-high" style="width:80%"></div></div><div class="mbr-val" style="color:var(--moss)">12/15</div></div>
+        <div class="match-bar-row"><div class="mbr-label">Accommodation fit</div><div class="mbr-track"><div class="mbr-fill fill-high" style="width:100%"></div></div><div class="mbr-val" style="color:var(--moss)">10/10</div></div>
+        <div class="match-bar-row"><div class="mbr-label">Machinery skills</div><div class="mbr-track"><div class="mbr-fill fill-mid" style="width:60%"></div></div><div class="mbr-val" style="color:#7A5C00">9/15</div></div>
+      </div>
+      <div class="exp-panel" id="p-c2-actions">
+        <div class="action-box">
+          <div class="ab-title">Message the employer</div>
+          <textarea id="ta-c2" style="min-height:70px" placeholder="Message Grant or Michelle at Tussock Ridge Station…"></textarea>
+          <div class="btn-row"><button class="btn btn-primary btn-sm">📤 Send</button></div>
+        </div>
+        <div class="withdraw-box">
+          <div class="wb-title">⚠ Decline this offer</div>
+          <div class="wb-body">Declining is permanent and will notify the employer immediately. Consider messaging them first if you want to negotiate terms.</div>
+          <button class="btn btn-danger btn-sm">Decline offer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CARD 3: UNDER REVIEW ── -->
+  <div class="app-card" id="c3">
+    <div class="ac-head" onclick="toggleCard('c3')">
+      <div class="ac-main">
+        <div class="ac-role">Dairy Farm Assistant</div>
+        <div class="ac-farm">🌿 Kahikatea Dairy Ltd &nbsp;·&nbsp; 📍 Matamata, Waikato &nbsp;·&nbsp; Applied 6 days ago</div>
+        <div class="ac-tags"><span class="ac-tag tag-green">🥛 Dairy · Herringbone</span><span class="ac-tag tag-green">340 cows</span><span class="ac-tag tag-hay">🏠 2-bed cottage</span><span class="ac-tag tag-blue">$48k–$56k</span></div>
+      </div>
+      <div class="match-circle match-high"><div class="match-pct">76%</div><div class="match-lbl">Match</div></div>
+      <div style="text-align:center"><div class="stage-pill stage-reviewed">👁 Under review</div><div style="font-size:10px;color:var(--blue);font-weight:600;margin-top:5px">Viewed by employer</div></div>
+      <button class="expand-btn" id="ebtn-c3">▾</button>
+    </div>
+    <div class="ac-expanded" id="exp-c3">
+      <div class="pipeline-strip">
+        <div class="ps-title">Your progress</div>
+        <div class="pipeline-steps">
+          <div class="pipe-step done"><div class="pipe-circle pipe-done">✓</div><div class="pipe-label">Applied</div><div class="pipe-sublabel">3 Mar</div></div>
+          <div class="pipe-step active-step"><div class="pipe-circle pipe-active" style="border-color:var(--blue);color:var(--blue);box-shadow:0 0 0 4px rgba(26,82,118,.1)">👁</div><div class="pipe-label" style="color:var(--blue)">Reviewed</div><div class="pipe-sublabel" style="color:var(--blue)">In progress</div></div>
+          <div class="pipe-step pending"><div class="pipe-circle pipe-pending">◯</div><div class="pipe-label">Shortlisted</div><div class="pipe-sublabel">Pending</div></div>
+          <div class="pipe-step pending"><div class="pipe-circle pipe-pending">◯</div><div class="pipe-label">Interview</div><div class="pipe-sublabel">Pending</div></div>
+          <div class="pipe-step pending"><div class="pipe-circle pipe-pending">◯</div><div class="pipe-label">Outcome</div><div class="pipe-sublabel">Pending</div></div>
+        </div>
+      </div>
+      <div class="tab-nav">
+        <div class="exp-tab active" id="t-c3-status" onclick="switchTab('c3','status',this)">📊 Status</div>
+        <div class="exp-tab" id="t-c3-match" onclick="switchTab('c3','match',this)">🎯 My match</div>
+        <div class="exp-tab" id="t-c3-actions" onclick="switchTab('c3','actions',this)">⚙️ Actions</div>
+      </div>
+      <div class="exp-panel show" id="p-c3-status">
+        <div class="info-box ib-blue"><div class="ib-title">👁 Your application is being reviewed</div><div class="ib-body">An employer at Kahikatea Dairy viewed your profile on 4 March. They typically take 5–10 days to shortlist. Median time to decision for similar roles: 8 days.</div></div>
+        <div class="ai-insight"><div class="ai-title">✨ AI insight</div><div class="ai-body">Your herringbone experience is directly relevant here. One flag: your preferred salary floor ($55k) is near their advertised max ($56k) — worth clarifying if they reach out.</div></div>
+      </div>
+      <div class="exp-panel" id="p-c3-match">
+        <div class="match-bar-row"><div class="mbr-label">Shed experience</div><div class="mbr-track"><div class="mbr-fill fill-high" style="width:100%"></div></div><div class="mbr-val" style="color:var(--moss)">30/30</div></div>
+        <div class="match-bar-row"><div class="mbr-label">Experience level</div><div class="mbr-track"><div class="mbr-fill fill-high" style="width:80%"></div></div><div class="mbr-val" style="color:var(--moss)">24/30</div></div>
+        <div class="match-bar-row"><div class="mbr-label">Location match</div><div class="mbr-track"><div class="mbr-fill fill-high" style="width:87%"></div></div><div class="mbr-val" style="color:var(--moss)">13/15</div></div>
+        <div class="match-bar-row"><div class="mbr-label">Salary alignment</div><div class="mbr-track"><div class="mbr-fill fill-mid" style="width:65%"></div></div><div class="mbr-val" style="color:#7A5C00">⚠</div></div>
+      </div>
+      <div class="exp-panel" id="p-c3-actions">
+        <div class="action-box">
+          <div class="ab-title">Send a follow-up</div>
+          <div class="msg-templates">
+            <div class="msg-tpl" onclick="fillMsg('ta-c3','Still very keen — happy to discuss further anytime.')">👋 Still interested</div>
+            <div class="msg-tpl" onclick="fillMsg('ta-c3','Just checking in — happy to answer any further questions.')">📋 Check in</div>
+          </div>
+          <textarea id="ta-c3" style="min-height:65px" placeholder="Message Kahikatea Dairy…"></textarea>
+          <div class="btn-row"><button class="btn btn-primary btn-sm">📤 Send</button></div>
+        </div>
+        <div class="withdraw-box">
+          <div class="wb-title">⚠ Withdraw application</div>
+          <div class="wb-body">You won't be able to re-apply for 30 days. This cannot be undone.</div>
+          <button class="btn btn-danger btn-sm">Withdraw application</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CARD 4: APPLIED / AWAITING ── -->
+  <div class="app-card" id="c4">
+    <div class="ac-head" onclick="toggleCard('c4')">
+      <div class="ac-main">
+        <div class="ac-role">Relief Milker – Casual</div>
+        <div class="ac-farm">🌿 Mōkau Valley Farm &nbsp;·&nbsp; 📍 Taranaki &nbsp;·&nbsp; Applied 2 days ago</div>
+        <div class="ac-tags"><span class="ac-tag tag-green">🥛 Dairy · Rotary</span><span class="ac-tag tag-grey">270 cows</span><span class="ac-tag tag-grey">Casual / relief</span><span class="ac-tag tag-blue">$28–$32/hr</span></div>
+      </div>
+      <div class="match-circle match-high"><div class="match-pct">91%</div><div class="match-lbl">Match</div></div>
+      <div style="text-align:center"><div class="stage-pill stage-applied">📥 Applied</div><div style="font-size:10px;color:var(--light);margin-top:5px">Not yet opened</div></div>
+      <button class="expand-btn" id="ebtn-c4">▾</button>
+    </div>
+    <div class="ac-expanded" id="exp-c4">
+      <div class="pipeline-strip">
+        <div class="ps-title">Your progress</div>
+        <div class="pipeline-steps">
+          <div class="pipe-step active-step"><div class="pipe-circle pipe-active" style="border-color:#94A3B8;color:#64748B;box-shadow:0 0 0 4px rgba(148,163,184,.1)">📥</div><div class="pipe-label" style="color:#64748B">Applied</div><div class="pipe-sublabel" style="color:#94A3B8">7 Mar</div></div>
+          <div class="pipe-step pending"><div class="pipe-circle pipe-pending">◯</div><div class="pipe-label">Reviewed</div><div class="pipe-sublabel">Pending</div></div>
+          <div class="pipe-step pending"><div class="pipe-circle pipe-pending">◯</div><div class="pipe-label">Shortlisted</div><div class="pipe-sublabel">Pending</div></div>
+          <div class="pipe-step pending"><div class="pipe-circle pipe-pending">◯</div><div class="pipe-label">Interview</div><div class="pipe-sublabel">Pending</div></div>
+          <div class="pipe-step pending"><div class="pipe-circle pipe-pending">◯</div><div class="pipe-label">Outcome</div><div class="pipe-sublabel">Pending</div></div>
+        </div>
+      </div>
+      <div class="tab-nav">
+        <div class="exp-tab active" id="t-c4-status" onclick="switchTab('c4','status',this)">📊 Status</div>
+        <div class="exp-tab" id="t-c4-actions" onclick="switchTab('c4','actions',this)">⚙️ Actions</div>
+      </div>
+      <div class="exp-panel show" id="p-c4-status">
+        <div class="info-box ib-green"><div class="ib-title">📥 In the queue — not yet opened</div><div class="ib-body">Applied 2 days ago and hasn't been viewed yet. This is normal for casual roles. Your 91% match puts you in the top tier of applicants — you'll likely be one of the first they review.</div></div>
+      </div>
+      <div class="exp-panel" id="p-c4-actions">
+        <div class="withdraw-box">
+          <div class="wb-title">⚠ Withdraw application</div>
+          <div class="wb-body">You won't be able to re-apply for 30 days.</div>
+          <button class="btn btn-danger btn-sm">Withdraw application</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CARD 5: DECLINED ── -->
+  <div class="app-card" id="c5" style="opacity:.72">
+    <div class="ac-head" onclick="toggleCard('c5')">
+      <div class="ac-main">
+        <div class="ac-role">Herd Manager</div>
+        <div class="ac-farm">🌿 Southfield Pastoral &nbsp;·&nbsp; 📍 Southland &nbsp;·&nbsp; Applied 28 days ago</div>
+        <div class="ac-tags"><span class="ac-tag tag-grey">🥛 Dairy · Rotary</span><span class="ac-tag tag-grey">720 cows</span><span class="ac-tag tag-hay">$75k–$85k</span></div>
+      </div>
+      <div class="match-circle match-mid"><div class="match-pct">61%</div><div class="match-lbl">Match</div></div>
+      <div style="text-align:center"><div class="stage-pill stage-declined">✕ Unsuccessful</div><div style="font-size:10px;color:var(--light);margin-top:5px">8 March</div></div>
+      <button class="expand-btn" id="ebtn-c5">▾</button>
+    </div>
+    <div class="ac-expanded" id="exp-c5">
+      <div class="tab-nav">
+        <div class="exp-tab active" id="t-c5-outcome" onclick="switchTab('c5','outcome',this)">📋 Outcome</div>
+        <div class="exp-tab" id="t-c5-match" onclick="switchTab('c5','match',this)">🎯 My match</div>
+      </div>
+      <div class="exp-panel show" id="p-c5-outcome">
+        <div class="outcome-declined">
+          <div class="od-title">✕ Position filled — application unsuccessful</div>
+          <div style="font-size:12px;color:var(--mid);line-height:1.5">Southfield Pastoral filled this role from 24 applications. They selected a candidate with specific large-herd management experience at the 700+ cow scale.</div>
+        </div>
+        <div class="ai-insight"><div class="ai-title">✨ What this means for you</div><div class="ai-body">The primary gap was herd scale — your largest previous role was 420 cows vs. their 720-cow requirement. This is a natural experience-ladder step. We've found 3 Herd Manager roles at 450–600 cow operations that would be strong stepping stones for you.</div></div>
+        <div class="btn-row">
+          <button class="btn btn-hay">🔍 See stepping-stone roles</button>
+          <button class="btn btn-ghost btn-sm">🗄 Archive</button>
+        </div>
+      </div>
+      <div class="exp-panel" id="p-c5-match">
+        <div class="match-bar-row"><div class="mbr-label">Shed experience</div><div class="mbr-track"><div class="mbr-fill fill-high" style="width:100%"></div></div><div class="mbr-val" style="color:var(--moss)">30/30</div></div>
+        <div class="match-bar-row"><div class="mbr-label">Herd scale</div><div class="mbr-track"><div class="mbr-fill fill-low" style="width:43%"></div></div><div class="mbr-val" style="color:var(--orange)">13/30</div></div>
+        <div class="match-bar-row"><div class="mbr-label">Management level</div><div class="mbr-track"><div class="mbr-fill fill-mid" style="width:67%"></div></div><div class="mbr-val" style="color:#7A5C00">10/15</div></div>
+        <div class="match-bar-row"><div class="mbr-label">Location match</div><div class="mbr-track"><div class="mbr-fill fill-mid" style="width:53%"></div></div><div class="mbr-val" style="color:#7A5C00">8/15</div></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<script>
+document.querySelectorAll('.ac-head').forEach(h=>{
+  h.addEventListener('click',function(e){
+    if(e.target.closest('button')&&!e.target.closest('.expand-btn'))return;
+    const card=this.closest('.app-card');
+    const id=card.id;
+    const exp=document.getElementById('exp-'+id);
+    const btn=document.getElementById('ebtn-'+id);
+    if(!exp)return;
+    const open=exp.classList.contains('show');
+    exp.classList.toggle('show',!open);
+    card.classList.toggle('expanded',!open);
+    if(btn)btn.classList.toggle('open',!open);
+  });
+});
+function toggleCard(id){
+  const card=document.getElementById(id);
+  const exp=document.getElementById('exp-'+id);
+  const btn=document.getElementById('ebtn-'+id);
+  if(!exp)return;
+  const open=exp.classList.contains('show');
+  exp.classList.toggle('show',!open);
+  card.classList.toggle('expanded',!open);
+  if(btn)btn.classList.toggle('open',!open);
+}
+function openCard(id,tab){
+  const card=document.getElementById(id);
+  const exp=document.getElementById('exp-'+id);
+  const btn=document.getElementById('ebtn-'+id);
+  if(exp){exp.classList.add('show');card.classList.add('expanded');if(btn)btn.classList.add('open')}
+  if(tab){
+    const tabEl=document.getElementById('t-'+id+'-'+tab);
+    if(tabEl){switchTab(id,tab,tabEl)}
+  }
+  setTimeout(()=>{card.scrollIntoView({behavior:'smooth',block:'start'})},100);
+}
+function switchTab(cardId,tabName,el){
+  document.querySelectorAll('[id^="t-'+cardId+'-"]').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('[id^="p-'+cardId+'-"]').forEach(p=>p.classList.remove('show'));
+  el.classList.add('active');
+  const panel=document.getElementById('p-'+cardId+'-'+tabName);
+  if(panel)panel.classList.add('show');
+}
+function toggleFC(el){
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+}
+function sideFilter(el){
+  document.querySelectorAll('.pc-row').forEach(r=>r.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function fillMsg(id,msg){
+  const ta=document.getElementById(id);
+  if(ta){ta.value=msg;ta.focus()}
+}
+function pickSlot(row){
+  row.closest('.exp-panel').querySelectorAll('.slot-option').forEach(r=>{
+    r.classList.remove('picked');
+    r.querySelector('.slot-radio').textContent='';
+    const b=r.querySelector('.slot-badge');if(b)b.remove();
+  });
+  row.classList.add('picked');
+  row.querySelector('.slot-radio').textContent='✓';
+  const badge=document.createElement('div');
+  badge.className='slot-badge';
+  badge.style.cssText='margin-left:auto;font-size:10px;font-weight:700;background:rgba(45,80,22,.08);color:var(--moss);padding:3px 9px;border-radius:6px;flex-shrink:0';
+  badge.textContent='Selected';
+  row.appendChild(badge);
+}
+</script>
+</body>
+</html>

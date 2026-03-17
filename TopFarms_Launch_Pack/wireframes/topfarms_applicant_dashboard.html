@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TopFarms – Applicant Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --soil:#2C1A0E;--moss:#2D5016;--fern:#4A7C2F;--meadow:#7AAF3F;
+  --hay:#D4A843;--hay-lt:#FFF8E7;--cream:#F7F2E8;--fog:#EEE8DC;
+  --mist:#F2EEE6;--ink:#1A1208;--mid:#6B5D4A;--light:#9E8E78;
+  --white:#FFFFFF;--red:#C0392B;--red-lt:#FDF0EE;--blue:#1A5276;--blue-lt:#EAF4FB;
+  --orange:#E67E22;--orange-lt:#FEF5EC;--purple:#6C3483;--purple-lt:#F5EEF8;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh}
+
+nav{background:var(--soil);padding:0 28px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:300}
+.logo{font-family:'Fraunces',serif;font-weight:700;font-size:21px;color:var(--cream);display:flex;align-items:center;gap:8px}
+.logo span{color:var(--meadow)}
+.nav-r{display:flex;align-items:center;gap:12px}
+.nav-farm{font-size:11px;color:rgba(247,242,232,.5)}
+.nav-farm strong{color:var(--cream);display:block;font-size:12px}
+.nav-av{width:32px;height:32px;border-radius:50%;background:var(--fern);color:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+
+/* ── LAYOUT ── */
+.shell{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 58px)}
+
+/* ── SIDEBAR ── */
+.sidebar{background:var(--white);border-right:1.5px solid var(--fog);padding:20px 0;position:sticky;top:58px;height:calc(100vh - 58px);overflow-y:auto}
+.sb-section{padding:0 16px;margin-bottom:24px}
+.sb-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--light);padding:0 8px;margin-bottom:8px}
+.sb-job{padding:10px 12px;border-radius:8px;cursor:pointer;border:1.5px solid transparent;transition:all .15s;margin-bottom:4px}
+.sb-job:hover{background:var(--mist)}
+.sb-job.active{background:rgba(45,80,22,.06);border-color:rgba(45,80,22,.2)}
+.sb-job-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:3px}
+.sb-job-meta{font-size:11px;color:var(--light)}
+.sb-job-badge{display:inline-flex;align-items:center;gap:3px;background:var(--moss);color:white;font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;margin-top:5px}
+.sb-divider{height:1px;background:var(--fog);margin:16px 16px}
+
+/* ── MAIN ── */
+.main{padding:24px 28px;overflow-y:auto}
+
+/* ── JOB HEADER ── */
+.job-header{background:var(--white);border:1.5px solid var(--fog);border-radius:12px;padding:20px 24px;margin-bottom:20px;display:flex;align-items:center;gap:16px}
+.job-header-icon{width:48px;height:48px;border-radius:10px;background:var(--moss);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.job-header-title{font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--ink);line-height:1.1}
+.job-header-meta{font-size:12px;color:var(--light);margin-top:3px}
+.job-header-stats{margin-left:auto;display:flex;gap:20px}
+.jhs{text-align:center}
+.jhs-val{font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:var(--moss)}
+.jhs-lbl{font-size:10px;color:var(--light);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.status-pill{padding:5px 12px;border-radius:12px;font-size:11px;font-weight:700;background:#d4edda;color:#155724;display:inline-flex;align-items:center;gap:4px;margin-left:12px}
+
+/* ── TOOLBAR ── */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.sort-label{font-size:12px;font-weight:600;color:var(--mid);white-space:nowrap}
+.sort-btn{padding:7px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--fog);background:var(--white);color:var(--mid);transition:all .15s;display:flex;align-items:center;gap:5px}
+.sort-btn:hover{border-color:var(--fern);color:var(--fern)}
+.sort-btn.active{background:var(--moss);border-color:var(--moss);color:white}
+.toolbar-spacer{flex:1}
+.filter-pill{padding:6px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--fog);background:var(--white);color:var(--mid);transition:all .15s}
+.filter-pill.active{background:var(--hay-lt);border-color:var(--hay);color:#7A5C00}
+.search-box{padding:7px 14px;border:1.5px solid var(--fog);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);outline:none;background:var(--white);width:180px}
+.search-box:focus{border-color:var(--fern)}
+
+/* ── APPLICANT CARD ── */
+.applicant-card{background:var(--white);border:1.5px solid var(--fog);border-radius:12px;margin-bottom:12px;overflow:hidden;transition:all .2s;cursor:pointer}
+.applicant-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.06);border-color:rgba(45,80,22,.2)}
+.applicant-card.expanded{border-color:var(--moss)}
+
+.ac-main{display:grid;grid-template-columns:48px 1fr auto auto auto;gap:0;align-items:center;padding:16px 20px;gap:14px}
+
+.ac-rank{display:flex;flex-direction:column;align-items:center;gap:3px}
+.rank-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+.rank-1{background:#FFD700;color:#7A5C00}
+.rank-2{background:#C0C0C0;color:#444}
+.rank-3{background:#CD7F32;color:white}
+.rank-other{background:var(--mist);color:var(--mid);border:1.5px solid var(--fog)}
+.rank-label{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--light)}
+
+.ac-identity{}
+.ac-name{font-weight:700;font-size:15px;color:var(--ink);display:flex;align-items:center;gap:8px}
+.ac-name-sub{font-size:11px;color:var(--light);margin-top:2px}
+.verified-badge{background:var(--blue-lt);color:var(--blue);font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px}
+.doc-badge{background:rgba(45,80,22,.08);color:var(--moss);font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px}
+
+.ac-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.ac-tag{padding:3px 8px;border-radius:4px;font-size:10px;font-weight:600}
+.tag-green{background:rgba(45,80,22,.08);color:var(--moss)}
+.tag-hay{background:rgba(212,168,67,.12);color:#7A5C00}
+.tag-grey{background:var(--mist);color:var(--mid)}
+.tag-red{background:var(--red-lt);color:var(--red)}
+.tag-blue{background:var(--blue-lt);color:var(--blue)}
+.tag-purple{background:var(--purple-lt);color:var(--purple)}
+
+/* Match score */
+.ac-match{text-align:center;min-width:80px}
+.match-circle{width:54px;height:54px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 4px;position:relative}
+.match-ring{position:absolute;inset:0;border-radius:50%}
+.match-pct{font-family:'Fraunces',serif;font-size:16px;font-weight:700;line-height:1;position:relative;z-index:1}
+.match-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--light)}
+.match-high .match-pct{color:var(--moss)}
+.match-high{background:rgba(45,80,22,.06);border:2.5px solid var(--moss)}
+.match-mid .match-pct{color:var(--orange)}
+.match-mid{background:var(--orange-lt);border:2.5px solid var(--orange)}
+.match-low .match-pct{color:var(--red)}
+.match-low{background:var(--red-lt);border:2.5px solid var(--red)}
+
+/* Status */
+.ac-status{min-width:100px;text-align:right}
+.stage-pill{padding:5px 10px;border-radius:6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;display:inline-block;margin-bottom:6px}
+.stage-new{background:#e8f5e8;color:var(--moss)}
+.stage-review{background:var(--blue-lt);color:var(--blue)}
+.stage-interview{background:rgba(212,168,67,.15);color:#7A5C00}
+.stage-offered{background:var(--purple-lt);color:var(--purple)}
+.stage-declined{background:var(--red-lt);color:var(--red)}
+
+/* Actions */
+.ac-actions{display:flex;gap:6px;align-items:center;min-width:140px;justify-content:flex-end}
+.btn{padding:7px 14px;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;border:none;display:flex;align-items:center;gap:4px}
+.btn-sm{padding:6px 10px;font-size:11px}
+.btn-ghost{background:transparent;border:1.5px solid var(--fog);color:var(--mid)}
+.btn-ghost:hover{border-color:var(--mid)}
+.btn-outline{background:transparent;border:1.5px solid var(--moss);color:var(--moss)}
+.btn-outline:hover{background:rgba(45,80,22,.05)}
+.btn-primary{background:var(--moss);color:white}
+.btn-primary:hover{background:var(--fern)}
+.btn-hay{background:var(--hay);color:var(--soil)}
+.btn-hay:hover{background:#c49a38}
+.btn-cal{background:var(--blue-lt);color:var(--blue);border:1.5px solid rgba(26,82,118,.2)}
+.btn-cal:hover{background:#D5E8F5}
+.expand-btn{background:none;border:none;cursor:pointer;color:var(--light);font-size:16px;padding:4px;transition:transform .2s}
+.expand-btn.open{transform:rotate(180deg)}
+
+/* ── EXPANDED PANEL ── */
+.ac-expanded{display:none;border-top:1.5px solid var(--fog);background:var(--mist)}
+.ac-expanded.show{display:block}
+.exp-tabs{display:flex;border-bottom:1.5px solid var(--fog);background:var(--white)}
+.exp-tab{padding:10px 18px;font-size:12px;font-weight:600;color:var(--light);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
+.exp-tab:hover{color:var(--ink)}
+.exp-tab.active{color:var(--moss);border-bottom-color:var(--moss)}
+.exp-body{padding:20px 22px}
+.exp-panel{display:none}
+.exp-panel.active{display:grid}
+
+/* CV parsed */
+.cv-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.cv-section{background:var(--white);border:1.5px solid var(--fog);border-radius:10px;padding:14px 16px}
+.cv-section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mid);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.cv-item{display:flex;justify-content:space-between;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--fog);font-size:12px}
+.cv-item:last-child{border-bottom:none;padding-bottom:0}
+.cv-key{color:var(--mid);flex:1}
+.cv-val{font-weight:600;color:var(--ink);text-align:right;flex:1}
+.cv-val.match{color:var(--moss)}
+.cv-val.partial{color:var(--orange)}
+.cv-val.miss{color:var(--red)}
+
+.match-breakdown{background:var(--white);border:1.5px solid var(--fog);border-radius:10px;padding:14px 16px;margin-top:14px}
+.mb-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mid);margin-bottom:12px}
+.mb-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.mb-label{font-size:12px;color:var(--mid);width:160px;flex-shrink:0}
+.mb-bar-wrap{flex:1;height:6px;background:var(--fog);border-radius:3px;overflow:hidden}
+.mb-bar{height:100%;border-radius:3px;transition:width .5s}
+.mb-bar.high{background:var(--moss)}
+.mb-bar.mid{background:var(--orange)}
+.mb-bar.low{background:var(--red)}
+.mb-score{font-size:11px;font-weight:700;width:36px;text-align:right;flex-shrink:0}
+.mb-score.high{color:var(--moss)}
+.mb-score.mid{color:var(--orange)}
+.mb-score.low{color:var(--red)}
+.mb-total{display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1.5px solid var(--fog);margin-top:4px}
+.mb-total-label{font-size:12px;font-weight:700;color:var(--ink)}
+.mb-total-val{font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--moss)}
+
+/* CV text preview */
+.cv-raw{background:var(--white);border:1.5px solid var(--fog);border-radius:10px;padding:16px;margin-top:14px}
+.cv-raw-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.cv-raw-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mid)}
+.cv-ai-badge{background:rgba(108,52,131,.1);color:var(--purple);font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;display:flex;align-items:center;gap:3px}
+.cv-raw-text{font-size:11px;color:var(--mid);line-height:1.7;max-height:180px;overflow-y:auto}
+.cv-raw-text strong{color:var(--ink)}
+.cv-highlight{background:rgba(45,80,22,.1);color:var(--moss);padding:0 3px;border-radius:2px;font-weight:600}
+
+/* Scheduling panel */
+.sched-panel{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.cal-connect{background:var(--white);border:1.5px solid rgba(45,80,22,.2);border-radius:10px;padding:16px;grid-column:1/-1;display:flex;align-items:center;gap:14px}
+.cal-icon{width:40px;height:40px;background:var(--blue-lt);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.cal-text-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px}
+.cal-text-sub{font-size:11px;color:var(--light)}
+.cal-connect-btn{margin-left:auto;background:var(--blue-lt);color:var(--blue);border:1.5px solid rgba(26,82,118,.25);padding:8px 16px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.cal-connected{background:rgba(45,80,22,.06);border-color:var(--moss)}
+.cal-connected .cal-icon{background:rgba(45,80,22,.1)}
+.cal-connected-status{font-size:10px;font-weight:700;color:var(--moss);display:flex;align-items:center;gap:4px}
+
+.time-slots{background:var(--white);border:1.5px solid var(--fog);border-radius:10px;padding:14px 16px}
+.ts-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mid);margin-bottom:12px}
+.slot{padding:9px 12px;border:1.5px solid var(--fog);border-radius:7px;margin-bottom:6px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:space-between;font-size:12px}
+.slot:hover{border-color:var(--fern)}
+.slot.sel{border-color:var(--moss);background:rgba(45,80,22,.04)}
+.slot-time{font-weight:600;color:var(--ink)}
+.slot-avail{font-size:10px;color:var(--moss);font-weight:700}
+.slot-avail.busy{color:var(--light)}
+.slot-check{color:var(--moss);font-size:14px;opacity:0;transition:opacity .15s}
+.slot.sel .slot-check{opacity:1}
+
+.interview-form{background:var(--white);border:1.5px solid var(--fog);border-radius:10px;padding:14px 16px}
+.if-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mid);margin-bottom:12px}
+.if-label{font-size:11px;font-weight:600;color:var(--mid);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+input.if-input,select.if-input,textarea.if-input{width:100%;padding:8px 12px;border:1.5px solid var(--fog);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);outline:none;margin-bottom:10px;transition:border-color .2s}
+input.if-input:focus,select.if-input:focus,textarea.if-input:focus{border-color:var(--fern)}
+textarea.if-input{min-height:60px;resize:none}
+.if-method{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.if-method-btn{padding:7px 10px;border:1.5px solid var(--fog);border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s;color:var(--mid)}
+.if-method-btn:hover{border-color:var(--fern);color:var(--fern)}
+.if-method-btn.sel{border-color:var(--moss);background:rgba(45,80,22,.05);color:var(--moss)}
+
+.sched-sent{background:rgba(45,80,22,.05);border:1.5px solid rgba(45,80,22,.2);border-radius:10px;padding:16px;grid-column:1/-1;text-align:center}
+.sched-sent-icon{font-size:28px;margin-bottom:8px}
+.sched-sent-title{font-weight:700;color:var(--moss);margin-bottom:4px}
+.sched-sent-sub{font-size:12px;color:var(--mid)}
+
+/* Notes panel */
+.notes-panel{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.note-box{background:var(--white);border:1.5px solid var(--fog);border-radius:10px;padding:14px 16px}
+.note-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mid);margin-bottom:10px}
+textarea.note-input{width:100%;padding:10px 12px;border:1.5px solid var(--fog);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);outline:none;min-height:100px;resize:none;transition:border-color .2s}
+textarea.note-input:focus{border-color:var(--fern)}
+.note-saved{font-size:10px;color:var(--moss);margin-top:5px}
+.move-stage{background:var(--white);border:1.5px solid var(--fog);border-radius:10px;padding:14px 16px}
+.stage-btn{width:100%;padding:8px 12px;margin-bottom:6px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--fog);background:white;color:var(--mid);text-align:left;display:flex;align-items:center;gap:8px;transition:all .15s;font-family:'DM Sans',sans-serif}
+.stage-btn:hover{border-color:var(--fern);color:var(--ink)}
+.stage-btn.current{border-color:var(--moss);background:rgba(45,80,22,.05);color:var(--moss)}
+
+/* AI summary */
+.ai-summary{background:var(--purple-lt);border:1.5px solid rgba(108,52,131,.15);border-radius:10px;padding:14px 16px;margin-bottom:14px;grid-column:1/-1}
+.ai-sum-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.ai-sum-icon{font-size:16px}
+.ai-sum-title{font-size:11px;font-weight:700;color:var(--purple)}
+.ai-sum-body{font-size:12px;color:#4A2D5C;line-height:1.6}
+.ai-sum-body strong{color:#3A1D4C}
+
+/* ── EMPTY STATE ── */
+.empty-state{text-align:center;padding:60px 20px;color:var(--light)}
+.empty-icon{font-size:40px;margin-bottom:12px}
+.empty-title{font-size:16px;font-weight:700;color:var(--mid);margin-bottom:6px}
+
+/* Tooltip */
+.tooltip-wrap{position:relative;display:inline-block}
+.tooltip{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--soil);color:var(--cream);font-size:10px;padding:6px 10px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s;z-index:100;line-height:1.4;text-align:center;max-width:200px;white-space:normal}
+.tooltip-wrap:hover .tooltip{opacity:1}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo"><span>🌿</span> TopFarms</div>
+  <div class="nav-r">
+    <div class="nav-farm"><strong>Demo Farm</strong>Waikato · 540 cows</div>
+    <div class="nav-av">DF</div>
+  </div>
+</nav>
+
+<div class="shell">
+
+<!-- SIDEBAR — job list -->
+<aside class="sidebar">
+  <div class="sb-section">
+    <div class="sb-label">Active Listings</div>
+    <div class="sb-job active">
+      <div class="sb-job-title">Dairy Farm Assistant</div>
+      <div class="sb-job-meta">Waikato · Posted 8 days ago</div>
+      <div class="sb-job-badge">10 applicants</div>
+    </div>
+    <div class="sb-job">
+      <div class="sb-job-title">Relief Milker (casual)</div>
+      <div class="sb-job-meta">Waikato · Posted 3 days ago</div>
+      <div class="sb-job-badge">4 applicants</div>
+    </div>
+    <div class="sb-job">
+      <div class="sb-job-title">Herd Manager 2IC</div>
+      <div class="sb-job-meta">Waikato · Posted 14 days ago</div>
+      <div class="sb-job-badge" style="background:var(--hay);color:var(--soil)">2 applicants</div>
+    </div>
+  </div>
+  <div class="sb-divider"></div>
+  <div class="sb-section">
+    <div class="sb-label">Filled / Archived</div>
+    <div class="sb-job">
+      <div class="sb-job-title">Farm Manager Trainee</div>
+      <div class="sb-job-meta">Filled 5 days ago</div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- JOB HEADER -->
+  <div class="job-header">
+    <div class="job-header-icon">🐄</div>
+    <div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="job-header-title">Dairy Farm Assistant</div>
+        <div class="status-pill">✅ Active</div>
+      </div>
+      <div class="job-header-meta">40-aside Herringbone · 540 cows · Waikato · $65k–$75k · 11/3 roster · Housing included</div>
+    </div>
+    <div class="job-header-stats">
+      <div class="jhs"><div class="jhs-val">10</div><div class="jhs-lbl">Applicants</div></div>
+      <div class="jhs"><div class="jhs-val">7</div><div class="jhs-lbl">Reviewed</div></div>
+      <div class="jhs"><div class="jhs-val">2</div><div class="jhs-lbl">Interviewed</div></div>
+      <div class="jhs"><div class="jhs-val">89%</div><div class="jhs-lbl">Top Match</div></div>
+    </div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <span class="sort-label">Sort:</span>
+    <button class="sort-btn active" onclick="setSort(this)">⭐ Match Score</button>
+    <button class="sort-btn" onclick="setSort(this)">📅 Applied Date</button>
+    <button class="sort-btn" onclick="setSort(this)">📋 Stage</button>
+    <div class="toolbar-spacer"></div>
+    <button class="filter-pill active" onclick="this.classList.toggle('active')">All (10)</button>
+    <button class="filter-pill" onclick="this.classList.toggle('active')">New (6)</button>
+    <button class="filter-pill" onclick="this.classList.toggle('active')">Interviewed (2)</button>
+    <button class="filter-pill" onclick="this.classList.toggle('active')">Shortlisted (3)</button>
+    <input type="text" class="search-box" placeholder="🔍 Search applicants…">
+  </div>
+
+  <!-- ── APPLICANT CARDS ── -->
+
+  <!-- #1 — TOP MATCH -->
+  <div class="applicant-card expanded" id="card-1">
+    <div class="ac-main" onclick="toggleCard('card-1')">
+      <div class="ac-rank"><div class="rank-num rank-1">1</div><div class="rank-label">Top</div></div>
+      <div class="ac-identity">
+        <div class="ac-name">
+          James Tūhoe
+          <span class="verified-badge">✓ Verified ID</span>
+          <span class="doc-badge">📄 Docs complete</span>
+        </div>
+        <div class="ac-name-sub">Applied 2 days ago · Waikato · NZ Resident</div>
+        <div class="ac-tags">
+          <span class="ac-tag tag-green">🥛 7 yrs dairy</span>
+          <span class="ac-tag tag-green">↔️ Herringbone ✓</span>
+          <span class="ac-tag tag-green">🌿 Pasture mgmt ✓</span>
+          <span class="ac-tag tag-hay">🏠 Housing needed</span>
+          <span class="ac-tag tag-blue">🐕 Has working dogs</span>
+          <span class="ac-tag tag-purple">🎓 DairyNZ Level 3</span>
+        </div>
+      </div>
+      <div class="ac-match">
+        <div class="match-circle match-high"><span class="match-pct">89%</span></div>
+        <div class="match-label">Match</div>
+      </div>
+      <div class="ac-status">
+        <div class="stage-pill stage-interview">📅 Interview sent</div>
+        <div style="font-size:10px;color:var(--light)">Tue 11 Mar · 10am</div>
+      </div>
+      <div class="ac-actions">
+        <button class="btn btn-cal btn-sm" onclick="event.stopPropagation();openTab('card-1','sched')">📅 Reschedule</button>
+        <button class="expand-btn open" id="expand-card-1">▾</button>
+      </div>
+    </div>
+
+    <div class="ac-expanded show" id="exp-card-1">
+      <div class="exp-tabs">
+        <div class="exp-tab active" onclick="switchTab('card-1','cv',this)">📄 CV & Parsed Data</div>
+        <div class="exp-tab" onclick="switchTab('card-1','match',this)">⭐ Match Breakdown</div>
+        <div class="exp-tab" onclick="switchTab('card-1','sched',this)" id="tab-sched-card-1">📅 Schedule Interview</div>
+        <div class="exp-tab" onclick="switchTab('card-1','notes',this)">📝 Notes & Actions</div>
+      </div>
+      <div class="exp-body">
+
+        <!-- CV PANEL -->
+        <div class="exp-panel active" id="panel-card-1-cv" style="grid-template-columns:1fr">
+          <div class="ai-summary" style="display:block">
+            <div class="ai-sum-header"><span class="ai-sum-icon">🤖</span><span class="ai-sum-title">AI Summary — parsed from CV</span></div>
+            <div class="ai-sum-body">James is a <strong>highly experienced dairy worker with 7 years</strong> across two Waikato farms, both herringbone sheds. His most recent role as <strong>2IC on a 620-cow operation</strong> makes him well above the minimum requirement. He holds <strong>DairyNZ Level 3 milk harvesting</strong> and has pasture management and calving experience. His <strong>main gap is tractor operation</strong> — listed as "some experience" in his CV rather than confident. References from two previous employers are uploaded and verified.</div>
+          </div>
+          <div class="cv-grid">
+            <div class="cv-section">
+              <div class="cv-section-title">👤 Experience</div>
+              <div class="cv-item"><span class="cv-key">Total dairy experience</span><span class="cv-val match">7 years ✓</span></div>
+              <div class="cv-item"><span class="cv-key">Most recent role</span><span class="cv-val">2IC, Waikato (2 yrs)</span></div>
+              <div class="cv-item"><span class="cv-key">Previous role</span><span class="cv-val">Farm Assistant, Waikato (5 yrs)</span></div>
+              <div class="cv-item"><span class="cv-key">Herd sizes worked</span><span class="cv-val match">420 & 620 cows ✓</span></div>
+              <div class="cv-item"><span class="cv-key">Shed type exp.</span><span class="cv-val match">Herringbone ✓</span></div>
+            </div>
+            <div class="cv-section">
+              <div class="cv-section-title">🎓 Qualifications & Docs</div>
+              <div class="cv-item"><span class="cv-key">DairyNZ Level 3</span><span class="cv-val match">✓ Uploaded & verified</span></div>
+              <div class="cv-item"><span class="cv-key">Full driver's licence</span><span class="cv-val match">✓ Verified</span></div>
+              <div class="cv-item"><span class="cv-key">ATV safety certificate</span><span class="cv-val match">✓ Current (exp. Oct 2026)</span></div>
+              <div class="cv-item"><span class="cv-key">Right to work</span><span class="cv-val match">NZ Resident ✓</span></div>
+              <div class="cv-item"><span class="cv-key">References</span><span class="cv-val match">2 uploaded ✓</span></div>
+            </div>
+            <div class="cv-section">
+              <div class="cv-section-title">🔧 Skills (from CV)</div>
+              <div class="cv-item"><span class="cv-key">Milking</span><span class="cv-val match">Confident ✓</span></div>
+              <div class="cv-item"><span class="cv-key">Calving</span><span class="cv-val match">Confident ✓</span></div>
+              <div class="cv-item"><span class="cv-key">Pasture management</span><span class="cv-val match">Confident ✓</span></div>
+              <div class="cv-item"><span class="cv-key">Tractor operation</span><span class="cv-val partial">Some experience ⚠️</span></div>
+              <div class="cv-item"><span class="cv-key">Feeding out</span><span class="cv-val match">Confident ✓</span></div>
+            </div>
+            <div class="cv-section">
+              <div class="cv-section-title">🏠 Situation</div>
+              <div class="cv-item"><span class="cv-key">Location</span><span class="cv-val match">Waikato ✓</span></div>
+              <div class="cv-item"><span class="cv-key">Accommodation needed</span><span class="cv-val match">Yes — matches ✓</span></div>
+              <div class="cv-item"><span class="cv-key">Availability</span><span class="cv-val">Immediate</span></div>
+              <div class="cv-item"><span class="cv-key">Working dogs</span><span class="cv-val">2 dogs (huntaways)</span></div>
+              <div class="cv-item"><span class="cv-key">Couple</span><span class="cv-val">Single applicant</span></div>
+            </div>
+          </div>
+          <div class="cv-raw">
+            <div class="cv-raw-header"><div class="cv-raw-title">📄 Extracted CV Text</div><div class="cv-ai-badge">🤖 AI parsed</div></div>
+            <div class="cv-raw-text">
+              <strong>James Tūhoe</strong> — Dairy Farm Worker, Waikato<br><br>
+              <strong>Experience:</strong> I have been working in the <span class="cv-highlight">dairy industry for 7 years</span> across two farms in the Waikato region. Most recently I worked as a <span class="cv-highlight">2IC on a 620-cow herringbone operation</span> for the past two seasons where I was responsible for milking, calving, and supporting the farm manager with <span class="cv-highlight">pasture management and feed planning</span>. Prior to that I spent five years as a Farm Assistant on a 420-cow HB farm near Te Awamutu.<br><br>
+              <strong>Qualifications:</strong> I hold <span class="cv-highlight">DairyNZ Level 3 Milk Harvesting</span> and a full New Zealand driver's licence. I have an <span class="cv-highlight">ATV safety certificate</span> current until October 2026. I have some experience operating a tractor for feeding out and basic maintenance but would not describe myself as a confident tractor operator.<br><br>
+              <strong>I am available immediately</strong> and am looking for a role with accommodation for myself and my two huntaway dogs. Happy to start ASAP if the right role comes up.
+            </div>
+          </div>
+        </div>
+
+        <!-- MATCH BREAKDOWN PANEL -->
+        <div class="exp-panel" id="panel-card-1-match" style="grid-template-columns:1fr">
+          <div class="match-breakdown">
+            <div class="mb-title">Match Score Breakdown — James Tūhoe vs. Dairy Farm Assistant</div>
+            <div class="mb-row"><span class="mb-label">Shed type (Herringbone)</span><div class="mb-bar-wrap"><div class="mb-bar high" style="width:100%"></div></div><span class="mb-score high">25/25</span></div>
+            <div class="mb-row"><span class="mb-label">Years experience</span><div class="mb-bar-wrap"><div class="mb-bar high" style="width:100%"></div></div><span class="mb-score high">20/20</span></div>
+            <div class="mb-row"><span class="mb-label">Required skills match</span><div class="mb-bar-wrap"><div class="mb-bar high" style="width:90%"></div></div><span class="mb-score high">18/20</span></div>
+            <div class="mb-row"><span class="mb-label">Location / region</span><div class="mb-bar-wrap"><div class="mb-bar high" style="width:100%"></div></div><span class="mb-score high">15/15</span></div>
+            <div class="mb-row"><span class="mb-label">Qualifications</span><div class="mb-bar-wrap"><div class="mb-bar high" style="width:90%"></div></div><span class="mb-score high">9/10</span></div>
+            <div class="mb-row"><span class="mb-label">Preferred skills</span><div class="mb-bar-wrap"><div class="mb-bar mid" style="width:20%"></div></div><span class="mb-score mid">2/10</span></div>
+            <div class="mb-total"><span class="mb-total-label">Total Match Score</span><span class="mb-total-val">89%</span></div>
+          </div>
+          <div style="background:var(--hay-lt);border:1.5px solid rgba(212,168,67,.3);border-radius:10px;padding:14px 16px;margin-top:14px">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#7A5C00;margin-bottom:8px">⚠️ Gaps to discuss at interview</div>
+            <div style="font-size:12px;color:#5A4400;line-height:1.6">
+              <strong>Tractor operation</strong> — listed as "some experience" only. If tractor work is important for this role, confirm comfort level at interview.<br>
+              <strong>Preferred skills</strong> — effluent management and irrigation not mentioned in CV. Worth asking if he has any background here.
+            </div>
+          </div>
+        </div>
+
+        <!-- SCHEDULE INTERVIEW PANEL -->
+        <div class="exp-panel" id="panel-card-1-sched">
+          <div class="cal-connect cal-connected" style="grid-column:1/-1">
+            <div class="cal-icon">📅</div>
+            <div>
+              <div class="cal-text-title">Google Calendar connected</div>
+              <div class="cal-connected-status">✓ Connected as <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9efafbf3f1deeaf1eef8ffecf3edb0fdf1b0f0e4">[email&#160;protected]</a> · Availability synced</div>
+            </div>
+            <button class="cal-connect-btn" style="background:var(--mist);color:var(--mid);border-color:var(--fog)">⚙️ Manage</button>
+          </div>
+          <div class="time-slots">
+            <div class="ts-title">📅 Your Available Slots — Next 5 Days</div>
+            <div class="slot sel" onclick="this.classList.toggle('sel')"><span class="slot-time">Tue 11 Mar · 10:00am</span><span class="slot-avail">Free ✓</span><span class="slot-check">✓</span></div>
+            <div class="slot" onclick="this.classList.toggle('sel')"><span class="slot-time">Tue 11 Mar · 2:00pm</span><span class="slot-avail">Free ✓</span><span class="slot-check">✓</span></div>
+            <div class="slot" onclick="this.classList.toggle('sel')"><span class="slot-time">Wed 12 Mar · 9:00am</span><span class="slot-avail busy">Busy</span><span class="slot-check">✓</span></div>
+            <div class="slot" onclick="this.classList.toggle('sel')"><span class="slot-time">Thu 13 Mar · 3:00pm</span><span class="slot-avail">Free ✓</span><span class="slot-check">✓</span></div>
+            <div class="slot" onclick="this.classList.toggle('sel')"><span class="slot-time">Fri 14 Mar · 11:00am</span><span class="slot-avail">Free ✓</span><span class="slot-check">✓</span></div>
+          </div>
+          <div class="interview-form">
+            <div class="if-title">Interview Details</div>
+            <div class="if-label">Method</div>
+            <div class="if-method">
+              <div class="if-method-btn sel" onclick="selectMethod(this)">📞 Phone call</div>
+              <div class="if-method-btn" onclick="selectMethod(this)">📹 Video call</div>
+              <div class="if-method-btn" onclick="selectMethod(this)">🚜 On-farm visit</div>
+              <div class="if-method-btn" onclick="selectMethod(this)">☕ In person</div>
+            </div>
+            <div class="if-label">Duration</div>
+            <select class="if-input">
+              <option>20 minutes</option>
+              <option selected>30 minutes</option>
+              <option>45 minutes</option>
+              <option>1 hour</option>
+            </select>
+            <div class="if-label">Notes to candidate (optional)</div>
+            <textarea class="if-input" placeholder="e.g. I'll call you on the number from your application. Happy to chat about the role and answer any questions you have about the farm.">Happy to chat through the role. I'll call you on your mobile. Will take about 30 minutes.</textarea>
+            <div style="display:flex;gap:8px;margin-top:4px">
+              <button class="btn btn-ghost btn-sm" style="flex:1">Send Available Times Only</button>
+              <button class="btn btn-cal" style="flex:1;justify-content:center" onclick="showScheduleSent()">📅 Send Invite via Google Cal</button>
+            </div>
+            <div style="font-size:10px;color:var(--light);margin-top:7px;text-align:center">Candidate receives a calendar invite + email notification. You'll get a confirmation when they accept.</div>
+          </div>
+        </div>
+
+        <!-- NOTES PANEL -->
+        <div class="exp-panel" id="panel-card-1-notes">
+          <div class="notes-panel" style="display:contents">
+            <div class="note-box">
+              <div class="note-title">📝 Internal Notes</div>
+              <textarea class="note-input" placeholder="Add private notes about this candidate — only visible to you…">Strong candidate. 7 years is well above minimum. Herringbone match is perfect. Tractor experience is the only question mark — need to probe this at interview. Has 2 dogs which is fine, we have kennels.</textarea>
+              <div class="note-saved">✓ Auto-saved</div>
+            </div>
+            <div class="move-stage">
+              <div class="note-title">📋 Move to Stage</div>
+              <button class="stage-btn" onclick="setStage(this)">📥 New application</button>
+              <button class="stage-btn" onclick="setStage(this)">👁️ Under review</button>
+              <button class="stage-btn current" onclick="setStage(this)">📅 Interview scheduled</button>
+              <button class="stage-btn" onclick="setStage(this)">⭐ Shortlisted</button>
+              <button class="stage-btn" onclick="setStage(this)">📄 Offer made</button>
+              <button class="stage-btn" onclick="setStage(this)" style="color:var(--red)">❌ Declined / not suitable</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- #2 -->
+  <div class="applicant-card" id="card-2">
+    <div class="ac-main" onclick="toggleCard('card-2')">
+      <div class="ac-rank"><div class="rank-num rank-2">2</div><div class="rank-label">2nd</div></div>
+      <div class="ac-identity">
+        <div class="ac-name">Sarah Ngātai</div>
+        <div class="ac-name-sub">Applied 1 day ago · Canterbury · NZ Citizen</div>
+        <div class="ac-tags">
+          <span class="ac-tag tag-green">🥛 5 yrs dairy</span>
+          <span class="ac-tag tag-green">↔️ Herringbone ✓</span>
+          <span class="ac-tag tag-hay">📍 Relocating from Canterbury</span>
+          <span class="ac-tag tag-purple">🎓 DairyNZ Level 2</span>
+          <span class="ac-tag tag-hay">💑 Partner also seeking work</span>
+        </div>
+      </div>
+      <div class="ac-match"><div class="match-circle match-high"><span class="match-pct">81%</span></div><div class="match-label">Match</div></div>
+      <div class="ac-status"><div class="stage-pill stage-review">👁️ Under review</div></div>
+      <div class="ac-actions">
+        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation()">📅 Schedule</button>
+        <button class="expand-btn" id="expand-card-2">▾</button>
+      </div>
+    </div>
+    <div class="ac-expanded" id="exp-card-2">
+      <div class="exp-tabs">
+        <div class="exp-tab active" onclick="switchTab('card-2','cv',this)">📄 CV & Parsed Data</div>
+        <div class="exp-tab" onclick="switchTab('card-2','match',this)">⭐ Match Breakdown</div>
+        <div class="exp-tab" onclick="switchTab('card-2','sched',this)">📅 Schedule Interview</div>
+        <div class="exp-tab" onclick="switchTab('card-2','notes',this)">📝 Notes & Actions</div>
+      </div>
+      <div class="exp-body">
+        <div class="exp-panel active" id="panel-card-2-cv" style="grid-template-columns:1fr">
+          <div class="ai-summary" style="display:block">
+            <div class="ai-sum-header"><span class="ai-sum-icon">🤖</span><span class="ai-sum-title">AI Summary — parsed from CV</span></div>
+            <div class="ai-sum-body">Sarah has <strong>5 years herringbone experience</strong> across Canterbury farms, currently working as a Farm Assistant. She is relocating to Waikato with her partner who is also seeking dairy work — <strong>a potential couple placement opportunity</strong>. She holds DairyNZ Level 2. Her main gap versus this role is experience level — she's at the lower end of the intermediate range. Strong references.</div>
+          </div>
+          <div class="cv-grid">
+            <div class="cv-section">
+              <div class="cv-section-title">👤 Experience</div>
+              <div class="cv-item"><span class="cv-key">Total dairy experience</span><span class="cv-val match">5 years ✓</span></div>
+              <div class="cv-item"><span class="cv-key">Most recent role</span><span class="cv-val">Farm Assistant, Canterbury (3 yrs)</span></div>
+              <div class="cv-item"><span class="cv-key">Shed type exp.</span><span class="cv-val match">Herringbone ✓</span></div>
+              <div class="cv-item"><span class="cv-key">Herd size</span><span class="cv-val">380 cows</span></div>
+            </div>
+            <div class="cv-section">
+              <div class="cv-section-title">🔧 Skills (from CV)</div>
+              <div class="cv-item"><span class="cv-key">Milking</span><span class="cv-val match">Confident ✓</span></div>
+              <div class="cv-item"><span class="cv-key">Calving</span><span class="cv-val match">Confident ✓</span></div>
+              <div class="cv-item"><span class="cv-key">Tractor operation</span><span class="cv-val match">Confident ✓</span></div>
+              <div class="cv-item"><span class="cv-key">Pasture management</span><span class="cv-val partial">Some ⚠️</span></div>
+              <div class="cv-item"><span class="cv-key">Feeding out</span><span class="cv-val match">Confident ✓</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="exp-panel" id="panel-card-2-match" style="grid-template-columns:1fr">
+          <div class="match-breakdown">
+            <div class="mb-title">Match Score Breakdown — Sarah Ngātai vs. Dairy Farm Assistant</div>
+            <div class="mb-row"><span class="mb-label">Shed type (Herringbone)</span><div class="mb-bar-wrap"><div class="mb-bar high" style="width:100%"></div></div><span class="mb-score high">25/25</span></div>
+            <div class="mb-row"><span class="mb-label">Years experience</span><div class="mb-bar-wrap"><div class="mb-bar high" style="width:75%"></div></div><span class="mb-score high">15/20</span></div>
+            <div class="mb-row"><span class="mb-label">Required skills match</span><div class="mb-bar-wrap"><div class="mb-bar high" style="width:85%"></div></div><span class="mb-score high">17/20</span></div>
+            <div class="mb-row"><span class="mb-label">Location / region</span><div class="mb-bar-wrap"><div class="mb-bar mid" style="width:60%"></div></div><span class="mb-score mid">9/15</span></div>
+            <div class="mb-row"><span class="mb-label">Qualifications</span><div class="mb-bar-wrap"><div class="mb-bar mid" style="width:70%"></div></div><span class="mb-score mid">7/10</span></div>
+            <div class="mb-row"><span class="mb-label">Preferred skills</span><div class="mb-bar-wrap"><div class="mb-bar high" style="width:80%"></div></div><span class="mb-score high">8/10</span></div>
+            <div class="mb-total"><span class="mb-total-label">Total Match Score</span><span class="mb-total-val">81%</span></div>
+          </div>
+        </div>
+        <div class="exp-panel" id="panel-card-2-sched">
+          <div class="cal-connect cal-connected" style="grid-column:1/-1">
+            <div class="cal-icon">📅</div>
+            <div><div class="cal-text-title">Google Calendar connected</div><div class="cal-connected-status">✓ Connected as <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0d696860624d79627d6b6c7f607e236e62236377">[email&#160;protected]</a></div></div>
+          </div>
+          <div class="time-slots">
+            <div class="ts-title">📅 Your Available Slots</div>
+            <div class="slot" onclick="this.classList.toggle('sel')"><span class="slot-time">Tue 11 Mar · 2:00pm</span><span class="slot-avail">Free ✓</span><span class="slot-check">✓</span></div>
+            <div class="slot" onclick="this.classList.toggle('sel')"><span class="slot-time">Thu 13 Mar · 3:00pm</span><span class="slot-avail">Free ✓</span><span class="slot-check">✓</span></div>
+            <div class="slot" onclick="this.classList.toggle('sel')"><span class="slot-time">Fri 14 Mar · 11:00am</span><span class="slot-avail">Free ✓</span><span class="slot-check">✓</span></div>
+          </div>
+          <div class="interview-form">
+            <div class="if-title">Interview Details</div>
+            <div class="if-label">Method</div>
+            <div class="if-method">
+              <div class="if-method-btn sel" onclick="selectMethod(this)">📞 Phone call</div>
+              <div class="if-method-btn" onclick="selectMethod(this)">📹 Video call</div>
+              <div class="if-method-btn" onclick="selectMethod(this)">🚜 On-farm visit</div>
+              <div class="if-method-btn" onclick="selectMethod(this)">☕ In person</div>
+            </div>
+            <textarea class="if-input" placeholder="Notes to candidate…" style="margin-top:8px"></textarea>
+            <button class="btn btn-cal" style="width:100%;justify-content:center;margin-top:6px">📅 Send Interview Invite</button>
+          </div>
+        </div>
+        <div class="exp-panel" id="panel-card-2-notes">
+          <div class="notes-panel" style="display:contents">
+            <div class="note-box"><div class="note-title">📝 Internal Notes</div><textarea class="note-input" placeholder="Add private notes…">Interesting — partner is also looking for dairy work. Could be a good couple placement if we ever need two roles filled. Canterbury relocation is a slight question mark but she says she's committed to moving.</textarea></div>
+            <div class="move-stage">
+              <div class="note-title">📋 Move to Stage</div>
+              <button class="stage-btn" onclick="setStage(this)">📥 New application</button>
+              <button class="stage-btn current" onclick="setStage(this)">👁️ Under review</button>
+              <button class="stage-btn" onclick="setStage(this)">📅 Interview scheduled</button>
+              <button class="stage-btn" onclick="setStage(this)">⭐ Shortlisted</button>
+              <button class="stage-btn" onclick="setStage(this)">📄 Offer made</button>
+              <button class="stage-btn" onclick="setStage(this)" style="color:var(--red)">❌ Declined / not suitable</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- #3 -->
+  <div class="applicant-card" id="card-3">
+    <div class="ac-main" onclick="toggleCard('card-3')">
+      <div class="ac-rank"><div class="rank-num rank-3">3</div><div class="rank-label">3rd</div></div>
+      <div class="ac-identity">
+        <div class="ac-name">Beau Jones</div>
+        <div class="ac-name-sub">Applied 3 days ago · Bay of Plenty · NZ Citizen</div>
+        <div class="ac-tags">
+          <span class="ac-tag tag-green">🥛 4 yrs dairy</span>
+          <span class="ac-tag tag-hay">🔄 Rotary exp. only</span>
+          <span class="ac-tag tag-hay">📍 Relocating</span>
+          <span class="ac-tag tag-hay">👨‍👩‍👧 Family — needs schooling</span>
+        </div>
+      </div>
+      <div class="ac-match"><div class="match-circle match-mid"><span class="match-pct">61%</span></div><div class="match-label">Match</div></div>
+      <div class="ac-status"><div class="stage-pill stage-new">📥 New</div></div>
+      <div class="ac-actions">
+        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation()">📅 Schedule</button>
+        <button class="expand-btn" id="expand-card-3">▾</button>
+      </div>
+    </div>
+    <div class="ac-expanded" id="exp-card-3">
+      <div class="exp-tabs">
+        <div class="exp-tab active" onclick="switchTab('card-3','cv',this)">📄 CV & Parsed Data</div>
+        <div class="exp-tab" onclick="switchTab('card-3','match',this)">⭐ Match Breakdown</div>
+        <div class="exp-tab" onclick="switchTab('card-3','sched',this)">📅 Schedule Interview</div>
+        <div class="exp-tab" onclick="switchTab('card-3','notes',this)">📝 Notes & Actions</div>
+      </div>
+      <div class="exp-body">
+        <div class="exp-panel active" id="panel-card-3-cv" style="grid-template-columns:1fr">
+          <div class="ai-summary" style="display:block">
+            <div class="ai-sum-header"><span class="ai-sum-icon">🤖</span><span class="ai-sum-title">AI Summary — parsed from CV</span></div>
+            <div class="ai-sum-body">Beau has 4 years dairy experience but <strong>all on rotary sheds</strong> — the primary gap for this herringbone role. He is a family man relocating from BOP, needs <strong>accommodation with school nearby</strong>. His general skills are solid but the shed type mismatch is significant for an experienced hire. May be worth a conversation if you're willing to cross-train on HB.</div>
+          </div>
+          <div class="cv-grid">
+            <div class="cv-section">
+              <div class="cv-section-title">👤 Experience</div>
+              <div class="cv-item"><span class="cv-key">Total dairy experience</span><span class="cv-val match">4 years ✓</span></div>
+              <div class="cv-item"><span class="cv-key">Shed type exp.</span><span class="cv-val miss">Rotary only ✗</span></div>
+              <div class="cv-item"><span class="cv-key">Herd sizes</span><span class="cv-val">800+ cows rotary</span></div>
+            </div>
+            <div class="cv-section">
+              <div class="cv-section-title">🔧 Skills</div>
+              <div class="cv-item"><span class="cv-key">Milking</span><span class="cv-val match">Confident ✓</span></div>
+              <div class="cv-item"><span class="cv-key">Calving</span><span class="cv-val match">Confident ✓</span></div>
+              <div class="cv-item"><span class="cv-key">Tractor</span><span class="cv-val partial">Learning ⚠️</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="exp-panel" id="panel-card-3-match" style="grid-template-columns:1fr">
+          <div class="match-breakdown">
+            <div class="mb-title">Match Score Breakdown — Beau Jones vs. Dairy Farm Assistant</div>
+            <div class="mb-row"><span class="mb-label">Shed type (Herringbone)</span><div class="mb-bar-wrap"><div class="mb-bar low" style="width:0%"></div></div><span class="mb-score low">0/25</span></div>
+            <div class="mb-row"><span class="mb-label">Years experience</span><div class="mb-bar-wrap"><div class="mb-bar high" style="width:85%"></div></div><span class="mb-score high">17/20</span></div>
+            <div class="mb-row"><span class="mb-label">Required skills match</span><div class="mb-bar-wrap"><div class="mb-bar high" style="width:75%"></div></div><span class="mb-score high">15/20</span></div>
+            <div class="mb-row"><span class="mb-label">Location / region</span><div class="mb-bar-wrap"><div class="mb-bar mid" style="width:60%"></div></div><span class="mb-score mid">9/15</span></div>
+            <div class="mb-row"><span class="mb-label">Qualifications</span><div class="mb-bar-wrap"><div class="mb-bar mid" style="width:70%"></div></div><span class="mb-score mid">7/10</span></div>
+            <div class="mb-row"><span class="mb-label">Preferred skills</span><div class="mb-bar-wrap"><div class="mb-bar mid" style="width:30%"></div></div><span class="mb-score mid">3/10</span></div>
+            <div class="mb-total"><span class="mb-total-label">Total Match Score</span><span class="mb-total-val" style="color:var(--orange)">61%</span></div>
+          </div>
+          <div style="background:var(--red-lt);border:1.5px solid rgba(192,57,43,.2);border-radius:10px;padding:14px;margin-top:14px">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--red);margin-bottom:6px">⚠️ Key gap — Shed type mismatch</div>
+            <div style="font-size:12px;color:#7A2020;line-height:1.5">Beau has zero herringbone experience. All his experience is on rotary sheds. This is the single biggest factor in his lower score. If you're willing to invest time cross-training, his other skills are solid. If not, he's likely not the right fit for this role.</div>
+          </div>
+        </div>
+        <div class="exp-panel" id="panel-card-3-sched">
+          <div class="cal-connect cal-connected" style="grid-column:1/-1">
+            <div class="cal-icon">📅</div>
+            <div><div class="cal-text-title">Google Calendar connected</div><div class="cal-connected-status">✓ Connected</div></div>
+          </div>
+          <div class="time-slots">
+            <div class="ts-title">📅 Your Available Slots</div>
+            <div class="slot" onclick="this.classList.toggle('sel')"><span class="slot-time">Thu 13 Mar · 3:00pm</span><span class="slot-avail">Free ✓</span><span class="slot-check">✓</span></div>
+            <div class="slot" onclick="this.classList.toggle('sel')"><span class="slot-time">Fri 14 Mar · 11:00am</span><span class="slot-avail">Free ✓</span><span class="slot-check">✓</span></div>
+          </div>
+          <div class="interview-form">
+            <div class="if-title">Interview Details</div>
+            <div class="if-label">Method</div>
+            <div class="if-method">
+              <div class="if-method-btn sel" onclick="selectMethod(this)">📞 Phone call</div>
+              <div class="if-method-btn" onclick="selectMethod(this)">📹 Video call</div>
+              <div class="if-method-btn" onclick="selectMethod(this)">🚜 On-farm visit</div>
+              <div class="if-method-btn" onclick="selectMethod(this)">☕ In person</div>
+            </div>
+            <button class="btn btn-cal" style="width:100%;justify-content:center;margin-top:8px">📅 Send Interview Invite</button>
+          </div>
+        </div>
+        <div class="exp-panel" id="panel-card-3-notes">
+          <div class="notes-panel" style="display:contents">
+            <div class="note-box"><div class="note-title">📝 Internal Notes</div><textarea class="note-input" placeholder="Add private notes…"></textarea></div>
+            <div class="move-stage">
+              <div class="note-title">📋 Move to Stage</div>
+              <button class="stage-btn current" onclick="setStage(this)">📥 New application</button>
+              <button class="stage-btn" onclick="setStage(this)">👁️ Under review</button>
+              <button class="stage-btn" onclick="setStage(this)">📅 Interview scheduled</button>
+              <button class="stage-btn" onclick="setStage(this)">⭐ Shortlisted</button>
+              <button class="stage-btn" onclick="setStage(this)">📄 Offer made</button>
+              <button class="stage-btn" onclick="setStage(this)" style="color:var(--red)">❌ Declined / not suitable</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Remaining applicants collapsed -->
+  <div style="background:var(--white);border:1.5px solid var(--fog);border-radius:12px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;color:var(--mid);font-size:13px" onclick="this.style.display='none'">
+    <span>+ 7 more applicants ranked below (scores: 58%, 54%, 51%, 47%, 43%, 38%, 22%)</span>
+    <span style="font-size:11px;color:var(--light)">Click to expand all ▾</span>
+  </div>
+
+</main>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+function toggleCard(id) {
+  const card = document.getElementById(id);
+  const exp = document.getElementById('exp-' + id);
+  const btn = document.getElementById('expand-' + id);
+  card.classList.toggle('expanded');
+  exp.classList.toggle('show');
+  if (btn) btn.classList.toggle('open');
+}
+
+function switchTab(cardId, panel, el) {
+  const body = document.getElementById('exp-' + cardId);
+  body.querySelectorAll('.exp-tab').forEach(t => t.classList.remove('active'));
+  body.querySelectorAll('.exp-panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  const target = document.getElementById('panel-' + cardId + '-' + panel);
+  if (target) target.classList.add('active');
+}
+
+function openTab(cardId, panel) {
+  const card = document.getElementById(cardId);
+  const exp = document.getElementById('exp-' + cardId);
+  const btn = document.getElementById('expand-' + cardId);
+  card.classList.add('expanded');
+  exp.classList.add('show');
+  if (btn) btn.classList.add('open');
+  const tabs = exp.querySelectorAll('.exp-tab');
+  const panels = exp.querySelectorAll('.exp-panel');
+  tabs.forEach(t => t.classList.remove('active'));
+  panels.forEach(p => p.classList.remove('active'));
+  tabs.forEach(t => { if (t.textContent.toLowerCase().includes('sched')) t.classList.add('active'); });
+  const target = document.getElementById('panel-' + cardId + '-' + panel);
+  if (target) target.classList.add('active');
+}
+
+function setSort(btn) {
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function setStage(btn) {
+  btn.closest('.move-stage').querySelectorAll('.stage-btn').forEach(b => b.classList.remove('current'));
+  btn.classList.add('current');
+}
+
+function selectMethod(btn) {
+  btn.closest('.if-method').querySelectorAll('.if-method-btn').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+}
+
+function showScheduleSent() {
+  const form = event.target.closest('.interview-form');
+  if (!form) return;
+  form.innerHTML = `
+    <div class="sched-sent" style="background:transparent;border:none;padding:8px 0">
+      <div class="sched-sent-icon">✅</div>
+      <div class="sched-sent-title">Interview invite sent via Google Calendar</div>
+      <div class="sched-sent-sub">James will receive a calendar invite + email notificatio

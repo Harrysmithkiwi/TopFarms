@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TopFarms — NZ Agricultural Recruitment</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700;1,9..144,900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --soil:#2C1A0E;
+  --soil-deep:#1E1108;
+  --moss:#2D5016;
+  --fern:#4A7C2F;
+  --meadow:#7AAF3F;
+  --hay:#D4A843;
+  --hay-lt:#FFF8E7;
+  --cream:#F7F2E8;
+  --fog:#EEE8DC;
+  --mist:#F2EEE6;
+  --ink:#1A1208;
+  --mid:#6B5D4A;
+  --light:#9E8E78;
+  --white:#FFFFFF;
+  --red:#C0392B;
+  --blue:#1A5276;
+  --blue-lt:#EAF4FB;
+  --orange:#E67E22;
+  --purple:#6C3483;
+  --purple-lt:#F5EEF8;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);overflow-x:hidden}
+
+/* ─── CUSTOM SCROLLBAR ─── */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--cream)}
+::-webkit-scrollbar-thumb{background:var(--fog);border-radius:3px}
+
+/* ─── GRAIN OVERLAY ─── */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:1000;opacity:.4}
+
+/* ─── NAV ─── */
+nav{
+  position:fixed;top:0;left:0;right:0;height:58px;
+  background:var(--soil);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;z-index:200;
+  border-bottom:1px solid rgba(255,255,255,.06)}
+.logo{font-family:'Fraunces',serif;font-weight:700;font-size:21px;color:var(--cream);display:flex;align-items:center;gap:8px;text-decoration:none}
+.logo-leaf{color:var(--meadow);font-size:18px}
+.nav-links{display:flex;gap:2px}
+.nav-link{padding:7px 14px;border-radius:6px;font-size:12px;font-weight:600;color:rgba(247,242,232,.5);cursor:pointer;transition:all .2s;text-decoration:none}
+.nav-link:hover{color:var(--cream);background:rgba(255,255,255,.06)}
+.nav-r{display:flex;align-items:center;gap:10px}
+.btn-nav-sign{padding:7px 16px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;border:1.5px solid rgba(247,242,232,.2);color:rgba(247,242,232,.7);background:transparent}
+.btn-nav-sign:hover{border-color:rgba(247,242,232,.5);color:var(--cream)}
+.btn-nav-cta{padding:7px 16px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;border:none;background:var(--meadow);color:var(--soil)}
+.btn-nav-cta:hover{background:var(--hay)}
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideRight{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:translateX(0)}}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-10px) rotate(-1.5deg)}}
+@keyframes countUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.85)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+
+/* ─── HERO ─── */
+.hero{
+  min-height:100vh;padding-top:58px;
+  background:var(--soil-deep);
+  position:relative;overflow:hidden;
+  display:grid;grid-template-columns:1fr 480px;align-items:center;
+  padding-left:clamp(32px,6vw,96px);padding-right:0}
+
+/* Animated background blobs */
+.hero::before{
+  content:'';position:absolute;
+  width:700px;height:700px;border-radius:50%;
+  background:radial-gradient(circle,rgba(74,124,47,.18) 0%,transparent 65%);
+  top:-200px;right:-100px;pointer-events:none}
+.hero::after{
+  content:'';position:absolute;
+  width:500px;height:500px;border-radius:50%;
+  background:radial-gradient(circle,rgba(212,168,67,.08) 0%,transparent 65%);
+  bottom:-100px;left:200px;pointer-events:none}
+
+/* Topographic lines overlay */
+.hero-topo{
+  position:absolute;inset:0;pointer-events:none;opacity:.04;
+  background-image:repeating-linear-gradient(
+    transparent,transparent 28px,rgba(122,175,63,.5) 28px,rgba(122,175,63,.5) 29px);
+  background-size:100% 29px}
+
+.hero-left{position:relative;z-index:2;padding-bottom:60px;padding-top:40px}
+
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(122,175,63,.12);
+  border:1px solid rgba(122,175,63,.25);
+  border-radius:20px;padding:5px 13px;
+  font-size:11px;font-weight:700;color:var(--meadow);
+  letter-spacing:.8px;text-transform:uppercase;
+  margin-bottom:28px;
+  animation:fadeIn .6s ease .1s both}
+.hero-eyebrow-dot{width:6px;height:6px;background:var(--meadow);border-radius:50%;animation:pulse-dot 2s infinite}
+
+.hero-headline{
+  font-family:'Fraunces',serif;
+  font-size:clamp(48px,6.5vw,82px);
+  font-weight:900;
+  color:var(--cream);
+  line-height:1.0;
+  letter-spacing:-2.5px;
+  margin-bottom:28px}
+.hero-headline em{font-style:italic;color:var(--hay);font-weight:700}
+.hero-headline .line{display:block;overflow:hidden}
+.hero-headline .line span{
+  display:block;
+  animation:fadeUp .7s cubic-bezier(.16,1,.3,1) both}
+.line:nth-child(1) span{animation-delay:.2s}
+.line:nth-child(2) span{animation-delay:.35s}
+.line:nth-child(3) span{animation-delay:.5s}
+
+.hero-sub{
+  font-size:17px;color:rgba(247,242,232,.58);line-height:1.65;
+  max-width:520px;margin-bottom:38px;
+  animation:fadeUp .7s ease .65s both}
+.hero-sub strong{color:rgba(247,242,232,.85)}
+
+/* Dual CTA fork */
+.hero-cta-fork{
+  display:flex;align-items:stretch;gap:0;
+  border:1.5px solid rgba(247,242,232,.12);border-radius:14px;
+  overflow:hidden;max-width:520px;
+  animation:fadeUp .7s ease .8s both;
+  background:rgba(255,255,255,.03)}
+.fork-side{
+  flex:1;padding:20px 22px;cursor:pointer;
+  transition:background .25s;position:relative}
+.fork-side:first-child{border-right:1.5px solid rgba(247,242,232,.1)}
+.fork-side:hover{background:rgba(255,255,255,.05)}
+.fork-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(247,242,232,.35);margin-bottom:6px}
+.fork-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:var(--cream);margin-bottom:5px;letter-spacing:-.3px}
+.fork-desc{font-size:12px;color:rgba(247,242,232,.5);line-height:1.4;margin-bottom:14px}
+.fork-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:9px 18px;border-radius:7px;font-family:'DM Sans',sans-serif;
+  font-size:12px;font-weight:700;cursor:pointer;border:none;transition:all .2s}
+.fork-btn-seeker{background:var(--meadow);color:var(--soil)}
+.fork-btn-seeker:hover{background:var(--hay)}
+.fork-btn-employer{background:rgba(212,168,67,.15);color:var(--hay);border:1.5px solid rgba(212,168,67,.3)}
+.fork-btn-employer:hover{background:rgba(212,168,67,.25);border-color:var(--hay)}
+
+/* Live counter strip */
+.live-strip{
+  display:flex;align-items:center;gap:22px;margin-top:28px;
+  animation:fadeIn .6s ease 1.1s both}
+.ls-item{display:flex;align-items:center;gap:8px}
+.ls-val{font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:var(--cream)}
+.ls-label{font-size:11px;color:rgba(247,242,232,.4);line-height:1.3}
+.ls-sep{width:1px;height:28px;background:rgba(247,242,232,.1)}
+.live-badge{
+  display:flex;align-items:center;gap:5px;
+  background:rgba(122,175,63,.1);border:1px solid rgba(122,175,63,.2);
+  border-radius:5px;padding:3px 8px;
+  font-size:10px;font-weight:700;color:var(--meadow)}
+.live-badge-dot{width:5px;height:5px;background:var(--meadow);border-radius:50%;animation:pulse-dot 1.5s infinite}
+
+/* Hero right — floating job card */
+.hero-right{
+  position:relative;z-index:2;
+  height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  padding-right:48px}
+
+.floating-cards{position:relative;width:340px;height:420px}
+
+.float-card{
+  position:absolute;
+  background:var(--white);border-radius:14px;
+  box-shadow:0 32px 80px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.2);
+  padding:20px;
+  animation:fadeUp .8s cubic-bezier(.16,1,.3,1) both}
+
+.fc-main{
+  width:300px;top:50%;transform:translateY(-50%);left:0;
+  animation-delay:.6s}
+.fc-secondary{
+  width:240px;top:10px;right:-30px;
+  animation-delay:.85s;
+  transform:rotate(3deg);
+  box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.fc-third{
+  width:220px;bottom:20px;right:-10px;
+  animation-delay:1.0s;
+  transform:rotate(-2deg);
+  box-shadow:0 16px 40px rgba(0,0,0,.2)}
+
+/* Main floating card contents */
+.fcard-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.fcard-logo{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;background:var(--mist);flex-shrink:0}
+.fcard-farm{font-size:11px;font-weight:700;color:var(--moss)}
+.fcard-loc{font-size:10px;color:var(--light);margin-top:1px}
+.fcard-title{font-family:'Fraunces',serif;font-size:16px;font-weight:700;color:var(--ink);margin-bottom:8px;letter-spacing:-.3px}
+.fcard-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px}
+.ft{font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px}
+.ft-green{background:rgba(45,80,22,.08);color:var(--moss)}
+.ft-hay{background:var(--hay-lt);color:#7A5C00}
+.ft-blue{background:var(--blue-lt);color:var(--blue)}
+.ft-grey{background:var(--mist);color:var(--mid)}
+.fcard-match-row{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--fog)}
+.fcard-match-circle{
+  width:44px;height:44px;border-radius:50%;
+  background:rgba(45,80,22,.09);border:2px solid rgba(45,80,22,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Fraunces',serif;font-size:13px;font-weight:700;color:var(--moss)}
+.fcard-salary{text-align:right}
+.fcard-salary-val{font-family:'Fraunces',serif;font-size:15px;font-weight:700;color:var(--ink)}
+.fcard-salary-lbl{font-size:10px;color:var(--light)}
+.fcard-apply{background:var(--moss);color:white;border:none;border-radius:6px;padding:7px 14px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer}
+
+/* Notification chip on floating card */
+.notif-chip{
+  position:absolute;top:-10px;right:12px;
+  background:var(--moss);color:white;
+  font-size:10px;font-weight:700;
+  padding:4px 10px;border-radius:10px;
+  display:flex;align-items:center;gap:5px;
+  box-shadow:0 4px 12px rgba(45,80,22,.4)}
+
+/* Secondary card contents */
+.scard-inner{font-size:12px}
+.scard-name{font-family:'Fraunces',serif;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px}
+.scard-role{font-size:10px;color:var(--light);margin-bottom:8px}
+.scard-bar-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--light);margin-bottom:4px}
+.scard-bar{height:4px;background:var(--fog);border-radius:2px;margin-bottom:6px;overflow:hidden}
+.scard-bar-fill{height:100%;background:linear-gradient(to right,var(--fern),var(--meadow));border-radius:2px}
+
+/* Third card (match notification) */
+.tcard-notif{display:flex;align-items:center;gap:10px}
+.tcard-icon{font-size:22px}
+.tcard-text{font-size:11px;color:var(--mid);line-height:1.4}
+.tcard-text strong{color:var(--moss);display:block;font-size:12px;margin-bottom:1px}
+
+/* Scroll hint */
+.scroll-hint{
+  position:absolute;bottom:28px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;
+  color:rgba(247,242,232,.25);
+  animation:fadeIn 1s ease 1.5s both;cursor:pointer}
+.scroll-arrow{
+  width:1px;height:32px;background:linear-gradient(to bottom,rgba(247,242,232,.2),transparent);
+  animation:float 2.5s ease-in-out infinite;animation-delay:1.6s}
+
+/* ─── DIAGONAL SECTION BREAK ─── */
+.diagonal-break{
+  height:80px;background:var(--soil-deep);
+  clip-path:polygon(0 0,100% 0,100% 40%,0 100%);
+  margin-bottom:-2px;position:relative;z-index:1}
+
+/* ─── HOW IT WORKS ─── */
+.how-section{
+  background:var(--cream);padding:96px clamp(24px,6vw,96px);
+  position:relative;overflow:hidden}
+.how-section::before{
+  content:'';position:absolute;top:0;right:-100px;
+  width:400px;height:400px;border-radius:50%;
+  background:radial-gradient(circle,rgba(122,175,63,.06) 0%,transparent 65%)}
+
+.section-eyebrow{
+  font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:2px;color:var(--meadow);margin-bottom:12px;
+  display:flex;align-items:center;gap:10px}
+.section-eyebrow::before{content:'';width:24px;height:2px;background:var(--meadow)}
+.section-title{
+  font-family:'Fraunces',serif;font-size:clamp(32px,4vw,50px);
+  font-weight:800;color:var(--ink);letter-spacing:-1.5px;
+  line-height:1.05;margin-bottom:16px}
+.section-title em{font-style:italic;color:var(--moss)}
+.section-sub{font-size:15px;color:var(--mid);line-height:1.65;max-width:520px;margin-bottom:56px}
+
+/* Tab toggle */
+.how-toggle{
+  display:inline-flex;background:var(--fog);border-radius:10px;padding:4px;
+  margin-bottom:48px;gap:3px}
+.ht-btn{
+  padding:9px 22px;border-radius:7px;font-family:'DM Sans',sans-serif;
+  font-size:13px;font-weight:700;cursor:pointer;border:none;
+  background:transparent;color:var(--light);transition:all .2s}
+.ht-btn.active{background:var(--white);color:var(--moss);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+
+/* Steps */
+.steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:28px}
+.step-card{
+  background:var(--white);border:1.5px solid var(--fog);border-radius:14px;
+  padding:24px;position:relative;transition:border-color .2s,box-shadow .2s}
+.step-card:hover{border-color:rgba(45,80,22,.2);box-shadow:0 6px 24px rgba(44,26,14,.06)}
+.step-num{
+  font-family:'Fraunces',serif;font-size:48px;font-weight:900;
+  color:var(--fog);line-height:1;margin-bottom:12px;letter-spacing:-2px;
+  transition:color .2s}
+.step-card:hover .step-num{color:rgba(45,80,22,.12)}
+.step-icon{font-size:22px;margin-bottom:10px}
+.step-title{font-family:'Fraunces',serif;font-size:17px;font-weight:700;color:var(--ink);margin-bottom:6px;letter-spacing:-.3px}
+.step-desc{font-size:12px;color:var(--mid);line-height:1.55}
+.step-connector{
+  position:absolute;top:50%;right:-16px;
+  width:32px;height:2px;background:var(--fog);z-index:1;
+  display:flex;align-items:center;justify-content:center}
+.step-connector::after{content:'›';color:var(--light);font-size:14px;position:absolute;right:-4px}
+
+/* ─── SOCIAL PROOF ─── */
+.proof-section{
+  background:var(--soil);padding:80px clamp(24px,6vw,96px);
+  position:relative;overflow:hidden}
+.proof-section::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(
+    transparent,transparent 28px,rgba(122,175,63,.04) 28px,rgba(122,175,63,.04) 29px)}
+
+.proof-headline{
+  font-family:'Fraunces',serif;font-size:clamp(22px,3vw,36px);
+  font-weight:700;color:var(--cream);letter-spacing:-.5px;
+  margin-bottom:40px;line-height:1.2}
+.proof-headline em{font-style:italic;color:var(--hay)}
+
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-bottom:56px}
+.stat-block{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);
+  padding:28px 24px;text-align:center}
+.stat-block:first-child{border-radius:12px 0 0 12px}
+.stat-block:last-child{border-radius:0 12px 12px 0}
+.stat-big{
+  font-family:'Fraunces',serif;font-size:clamp(36px,4vw,52px);
+  font-weight:900;color:var(--cream);line-height:1;
+  letter-spacing:-2px;margin-bottom:6px}
+.stat-big em{font-style:italic;color:var(--hay)}
+.stat-lbl{font-size:11px;color:rgba(247,242,232,.45);font-weight:600;letter-spacing:.3px}
+
+/* Testimonials */
+.testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.tcard{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  border-radius:12px;padding:22px;transition:background .2s,border-color .2s}
+.tcard:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.12)}
+.tcard-stars{color:var(--hay);font-size:14px;letter-spacing:1.5px;margin-bottom:10px}
+.tcard-quote{
+  font-size:13px;color:rgba(247,242,232,.7);line-height:1.65;
+  font-style:italic;margin-bottom:16px}
+.tcard-attr{display:flex;align-items:center;gap:10px}
+.tcard-av{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--fern);color:white;font-size:11px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tcard-name{font-size:12px;font-weight:700;color:var(--cream)}
+.tcard-farm{font-size:10px;color:rgba(247,242,232,.4)}
+.tcard-badge{margin-left:auto;background:rgba(122,175,63,.15);border:1px solid rgba(122,175,63,.25);padding:3px 8px;border-radius:5px;font-size:9px;font-weight:700;color:var(--meadow)}
+
+/* ─── FEATURES SECTION ─── */
+.features-section{
+  background:var(--cream);padding:96px clamp(24px,6vw,96px);
+  display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+
+.features-visual{position:relative}
+.feat-visual-card{
+  background:var(--white);border:1.5px solid var(--fog);border-radius:16px;
+  overflow:hidden;box-shadow:0 24px 60px rgba(44,26,14,.1)}
+.fvc-header{
+  background:var(--soil);padding:16px 20px;
+  display:flex;align-items:center;gap:8px}
+.fvc-dot{width:10px;height:10px;border-radius:50%}
+.fvc-title{font-size:11px;font-weight:600;color:rgba(247,242,232,.5);margin-left:6px}
+.fvc-body{padding:20px}
+.match-preview{display:flex;flex-direction:column;gap:10px}
+.mp-row{
+  display:flex;align-items:center;gap:12px;padding:10px 12px;
+  background:var(--mist);border-radius:8px;border:1.5px solid var(--fog);
+  transition:border-color .2s}
+.mp-row:hover{border-color:rgba(45,80,22,.2)}
+.mp-row:first-child{border-color:rgba(45,80,22,.2);background:rgba(45,80,22,.04)}
+.mp-av{
+  width:36px;height:36px;border-radius:50%;background:var(--fern);
+  color:white;font-size:12px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mp-info{flex:1}
+.mp-name{font-size:12px;font-weight:700;color:var(--ink)}
+.mp-detail{font-size:10px;color:var(--light);margin-top:1px}
+.mp-match{
+  width:38px;height:38px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Fraunces',serif;font-size:12px;font-weight:700}
+.mp-high{background:rgba(45,80,22,.09);border:2px solid rgba(45,80,22,.2);color:var(--moss)}
+.mp-mid{background:rgba(230,126,34,.09);border:2px solid rgba(230,126,34,.2);color:var(--orange)}
+
+/* AI insight box in visual */
+.ai-insight-box{
+  margin-top:12px;background:var(--purple-lt);
+  border:1.5px solid rgba(108,52,131,.12);border-radius:8px;padding:11px 13px}
+.aib-header{font-size:10px;font-weight:700;color:var(--purple);margin-bottom:4px;display:flex;align-items:center;gap:5px}
+.aib-body{font-size:11px;color:#4A2D5C;line-height:1.5}
+
+/* Float badge on visual */
+.feat-badge{
+  position:absolute;bottom:-14px;right:-14px;
+  background:var(--moss);color:white;border-radius:10px;
+  padding:12px 16px;font-size:12px;font-weight:700;
+  box-shadow:0 12px 30px rgba(45,80,22,.35);
+  display:flex;align-items:center;gap:8px}
+
+.features-text{}
+.feat-list{display:flex;flex-direction:column;gap:20px;margin-top:32px}
+.feat-item{display:flex;gap:16px}
+.feat-icon-wrap{
+  width:42px;height:42px;border-radius:10px;
+  background:rgba(45,80,22,.07);border:1.5px solid rgba(45,80,22,.12);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;margin-top:2px}
+.feat-item-title{font-family:'Fraunces',serif;font-size:16px;font-weight:700;color:var(--ink);margin-bottom:4px;letter-spacing:-.3px}
+.feat-item-desc{font-size:13px;color:var(--mid);line-height:1.55}
+
+/* ─── FARM TYPES STRIP ─── */
+.farmtypes-section{
+  background:var(--mist);padding:64px clamp(24px,6vw,96px);
+  border-top:1.5px solid var(--fog);border-bottom:1.5px solid var(--fog)}
+.ft-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:32px}
+.ft-card{
+  background:var(--white);border:1.5px solid var(--fog);border-radius:12px;
+  padding:20px 16px;text-align:center;cursor:pointer;
+  transition:all .2s}
+.ft-card:hover{border-color:rgba(45,80,22,.2);transform:translateY(-3px);box-shadow:0 8px 24px rgba(44,26,14,.07)}
+.ft-card-icon{font-size:28px;margin-bottom:10px}
+.ft-card-title{font-family:'Fraunces',serif;font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.ft-card-count{font-size:11px;color:var(--light)}
+.ft-card-count strong{color:var(--moss)}
+
+/* ─── FEATURED LISTINGS PREVIEW ─── */
+.listings-section{
+  background:var(--cream);padding:96px clamp(24px,6vw,96px)}
+
+.listings-header{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  margin-bottom:32px;flex-wrap:wrap;gap:16px}
+.listings-header-left{}
+.view-all-link{
+  font-size:13px;font-weight:700;color:var(--moss);
+  text-decoration:none;display:flex;align-items:center;gap:5px;
+  transition:color .2s;white-space:nowrap}
+.view-all-link:hover{color:var(--fern)}
+
+.listings-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.listing-card{
+  background:var(--white);border:1.5px solid var(--fog);border-radius:14px;
+  overflow:hidden;cursor:pointer;transition:all .2s}
+.listing-card:hover{box-shadow:0 8px 28px rgba(44,26,14,.08);border-color:#D8D0C4;transform:translateY(-2px)}
+.lc-img{
+  height:100px;background:var(--soil);position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center}
+.lc-img-bg{
+  position:absolute;inset:0;font-size:80px;
+  display:flex;align-items:center;justify-content:center;opacity:.15}
+.lc-featured{
+  position:absolute;top:10px;left:10px;
+  background:var(--hay);color:var(--soil);
+  font-size:9px;font-weight:700;padding:3px 8px;border-radius:5px;
+  letter-spacing:.3px}
+.lc-match{
+  position:absolute;top:10px;right:10px;
+  width:38px;height:38px;border-radius:50%;
+  background:rgba(45,80,22,.85);border:2px solid rgba(122,175,63,.4);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Fraunces',serif;font-size:12px;font-weight:700;color:white}
+.lc-body{padding:16px}
+.lc-title{font-family:'Fraunces',serif;font-size:15px;font-weight:700;color:var(--ink);margin-bottom:3px;letter-spacing:-.3px}
+.lc-farm{font-size:11px;color:var(--mid);margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.lc-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.lc-tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px}
+.lct-green{background:rgba(45,80,22,.07);color:var(--moss)}
+.lct-hay{background:var(--hay-lt);color:#7A5C00}
+.lct-grey{background:var(--mist);color:var(--mid)}
+.lct-blue{background:var(--blue-lt);color:var(--blue)}
+.lc-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-top:10px;border-top:1px solid var(--fog)}
+.lc-salary{font-family:'Fraunces',serif;font-size:14px;font-weight:700;color:var(--ink)}
+.lc-posted{font-size:10px;color:var(--light)}
+
+/* ─── FOR EMPLOYERS CTA BAND ─── */
+.employer-band{
+  background:var(--soil);padding:80px clamp(24px,6vw,96px);
+  display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;
+  position:relative;overflow:hidden}
+.employer-band::before{
+  content:'';position:absolute;top:-100px;right:-100px;
+  width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(74,124,47,.14) 0%,transparent 60%)}
+
+.eb-left{position:relative;z-index:1}
+.eb-eyebrow{
+  font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:2px;color:var(--meadow);margin-bottom:12px;
+  display:flex;align-items:center;gap:10px}
+.eb-eyebrow::before{content:'';width:20px;height:2px;background:var(--meadow)}
+.eb-title{
+  font-family:'Fraunces',serif;
+  font-size:clamp(28px,3.5vw,44px);font-weight:900;
+  color:var(--cream);line-height:1.05;letter-spacing:-1.5px;margin-bottom:14px}
+.eb-title em{font-style:italic;color:var(--hay)}
+.eb-sub{font-size:14px;color:rgba(247,242,232,.55);line-height:1.65;margin-bottom:28px}
+.eb-points{display:flex;flex-direction:column;gap:10px;margin-bottom:30px}
+.eb-point{display:flex;align-items:center;gap:10px;font-size:13px;color:rgba(247,242,232,.7)}
+.eb-point::before{
+  content:'✓';color:var(--meadow);font-weight:800;font-size:12px;
+  width:20px;height:20px;border-radius:50%;
+  background:rgba(122,175,63,.12);display:flex;align-items:center;justify-content:center;
+  flex-shrink:0}
+.eb-cta-row{display:flex;gap:10px;align-items:center}
+.btn-eb-primary{
+  padding:12px 24px;background:var(--meadow);color:var(--soil);
+  border:none;border-radius:8px;font-family:'DM Sans',sans-serif;
+  font-size:13px;font-weight:700;cursor:pointer;transition:all .2s}
+.btn-eb-primary:hover{background:var(--hay)}
+.btn-eb-ghost{
+  padding:12px 20px;background:transparent;
+  border:1.5px solid rgba(247,242,232,.2);
+  color:rgba(247,242,232,.65);border-radius:8px;
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s}
+.btn-eb-ghost:hover{border-color:rgba(247,242,232,.45);color:var(--cream)}
+
+/* Employer mini dashboard preview */
+.eb-right{position:relative;z-index:1}
+.mini-dashboard{
+  background:rgba(247,242,232,.04);border:1px solid rgba(247,242,232,.08);
+  border-radius:14px;overflow:hidden}
+.md-header{
+  padding:12px 16px;background:rgba(247,242,232,.04);
+  border-bottom:1px solid rgba(247,242,232,.06);
+  display:flex;align-items:center;gap:8px}
+.md-dot{width:8px;height:8px;border-radius:50%}
+.md-title{font-size:11px;font-weight:600;color:rgba(247,242,232,.35);margin-left:4px}
+.md-body{padding:16px}
+.md-stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.md-stat{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);
+  border-radius:8px;padding:10px;text-align:center}
+.md-stat-val{font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--cream)}
+.md-stat-lbl{font-size:9px;color:rgba(247,242,232,.35);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+.md-candidate{
+  display:flex;align-items:center;gap:10px;padding:9px 10px;
+  background:rgba(255,255,255,.04);border-radius:7px;
+  border:1px solid rgba(255,255,255,.06);margin-bottom:6px}
+.md-av{
+  width:30px;height:30px;border-radius:50%;background:var(--fern);
+  color:white;font-size:10px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.md-cname{font-size:11px;font-weight:700;color:rgba(247,242,232,.8)}
+.md-cdetail{font-size:10px;color:rgba(247,242,232,.35)}
+.md-cmatch{
+  margin-left:auto;width:32px;height:32px;border-radius:50%;
+  background:rgba(45,80,22,.3);border:1.5px solid rgba(122,175,63,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Fraunces',serif;font-size:11px;font-weight:700;color:var(--meadow)}
+
+/* ─── TRUSTED BY ─── */
+.trusted-section{
+  background:var(--mist);padding:48px clamp(24px,6vw,96px);
+  border-top:1.5px solid var(--fog);
+  display:flex;align-items:center;gap:40px;flex-wrap:wrap}
+.trusted-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--light);white-space:nowrap}
+.trusted-logos{display:flex;align-items:center;gap:28px;flex-wrap:wrap}
+.trusted-logo{
+  font-family:'Fraunces',serif;font-size:13px;font-weight:700;
+  color:var(--light);opacity:.6;display:flex;align-items:center;gap:6px;
+  transition:opacity .2s;cursor:default}
+.trusted-logo:hover{opacity:.9}
+.tl-icon{font-size:15px}
+
+/* ─── FINAL CTA ─── */
+.final-cta{
+  background:var(--cream);padding:96px clamp(24px,6vw,96px);
+  text-align:center;position:relative;overflow:hidden}
+.final-cta::before{
+  content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(122,175,63,.07) 0%,transparent 65%);
+  pointer-events:none}
+.fc-eyebrow{
+  font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:2px;color:var(--meadow);margin-bottom:16px;
+  display:inline-flex;align-items:center;gap:8px}
+.fc-eyebrow::before,.fc-eyebrow::after{content:'';width:16px;height:2px;background:var(--meadow)}
+.fc-headline{
+  font-family:'Fraunces',serif;
+  font-size:clamp(36px,5vw,64px);
+  font-weight:900;color:var(--ink);
+  letter-spacing:-2px;line-height:1.0;margin-bottom:16px}
+.fc-headline em{font-style:italic;color:var(--moss)}
+.fc-sub{font-size:16px;color:var(--mid);line-height:1.6;max-width:480px;margin:0 auto 36px}
+.fc-btn-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-fcta{
+  padding:14px 28px;border-radius:9px;font-family:'DM Sans',sans-serif;
+  font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;border:none}
+.btn-fcta-primary{background:var(--moss);color:white;box-shadow:0 4px 20px rgba(45,80,22,.25)}
+.btn-fcta-primary:hover{background:var(--fern);box-shadow:0 6px 28px rgba(45,80,22,.35);transform:translateY(-1px)}
+.btn-fcta-outline{background:transparent;border:2px solid var(--fog);color:var(--mid)}
+.btn-fcta-outline:hover{border-color:var(--mid);color:var(--ink)}
+.fc-note{font-size:11px;color:var(--light);margin-top:16px}
+
+/* ─── FOOTER ─── */
+footer{
+  background:var(--soil-deep);padding:48px clamp(24px,6vw,96px) 28px;
+  border-top:1px solid rgba(255,255,255,.05)}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px}
+.footer-brand{}
+.footer-logo{font-family:'Fraunces',serif;font-weight:700;font-size:20px;color:var(--cream);display:flex;align-items:center;gap:7px;margin-bottom:10px}
+.footer-tagline{font-size:12px;color:rgba(247,242,232,.35);line-height:1.55;max-width:240px}
+.footer-col-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:rgba(247,242,232,.3);margin-bottom:14px}
+.footer-link{display:block;font-size:12px;color:rgba(247,242,232,.45);text-decoration:none;padding:3px 0;transition:color .2s}
+.footer-link:hover{color:var(--cream)}
+.footer-bottom{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-top:20px;border-top:1px solid rgba(255,255,255,.06);
+  font-size:11px;color:rgba(247,242,232,.25);flex-wrap:wrap;gap:10px}
+
+/* ─── SCROLL-TRIGGERED REVEAL ─── */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
+.reveal-delay-4{transition-delay:.4s}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr;padding-right:clamp(24px,6vw,96px)}
+  .hero-right{display:none}
+  .steps-grid{grid-template-columns:1fr 1fr}
+  .testimonials-grid{grid-template-columns:1fr}
+  .features-section{grid-template-columns:1fr;gap:40px}
+  .listings-grid{grid-template-columns:1fr 1fr}
+  .employer-band{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .ft-grid{grid-template-columns:repeat(3,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" href="#"><span class="logo-leaf">🌿</span> TopFarms</a>
+  <div class="nav-links">
+    <a class="nav-link" href="#">Find jobs</a>
+    <a class="nav-link" href="#">For employers</a>
+    <a class="nav-link" href="#">How it works</a>
+    <a class="nav-link" href="#">About</a>
+  </div>
+  <div class="nav-r">
+    <button class="btn-nav-sign">Sign in</button>
+    <button class="btn-nav-cta" onclick="document.querySelector('.hero-cta-fork').scrollIntoView({behavior:'smooth'})">Get started →</button>
+  </div>
+</nav>
+
+
+<!-- ════════════════════════════════════════
+     HERO
+════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-topo"></div>
+
+  <div class="hero-left">
+    <div class="hero-eyebrow">
+      <div class="hero-eyebrow-dot"></div>
+      New Zealand's agricultural job platform
+    </div>
+
+    <h1 class="hero-headline">
+      <div class="line"><span>The right farm</span></div>
+      <div class="line"><span>worker. <em>Found</em></span></div>
+      <div class="line"><span>faster.</span></div>
+    </h1>
+
+    <p class="hero-sub">
+      AI-matched agricultural recruitment for New Zealand farms. <strong>Not just anyone who applies</strong> — the candidates who'll actually thrive in your specific operation.
+    </p>
+
+    <!-- Dual CTA fork -->
+    <div class="hero-cta-fork">
+      <div class="fork-side">
+        <div class="fork-label">I'm a farm worker</div>
+        <div class="fork-title">Find your next role</div>
+        <div class="fork-desc">Browse jobs matched to your shed experience, preferred region and living needs.</div>
+        <button class="fork-btn fork-btn-seeker">Browse jobs →</button>
+      </div>
+      <div class="fork-side">
+        <div class="fork-label">I'm a farm employer</div>
+        <div class="fork-title">Hire the right worker</div>
+        <div class="fork-desc">Post a listing and get AI-ranked candidates in 48 hours — not a pile of irrelevant CVs.</div>
+        <button class="fork-btn fork-btn-employer">Post a job →</button>
+      </div>
+    </div>
+
+    <!-- Live stats strip -->
+    <div class="live-strip">
+      <div class="live-badge"><div class="live-badge-dot"></div>Live</div>
+      <div class="ls-item">
+        <div class="ls-val" id="stat-seekers">1,412</div>
+        <div class="ls-label">active<br>seekers</div>
+      </div>
+      <div class="ls-sep"></div>
+      <div class="ls-item">
+        <div class="ls-val" id="stat-jobs">87</div>
+        <div class="ls-label">open<br>listings</div>
+      </div>
+      <div class="ls-sep"></div>
+      <div class="ls-item">
+        <div class="ls-val" id="stat-placed">312</div>
+        <div class="ls-label">placements<br>this season</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating cards -->
+  <div class="hero-right">
+    <div class="floating-cards">
+
+      <!-- Main card -->
+      <div class="float-card fc-main">
+        <div class="notif-chip">🎯 94% match</div>
+        <div class="fcard-header">
+          <div class="fcard-logo">🌿</div>
+          <div>
+            <div class="fcard-farm">Greenfield Farms Ltd</div>
+            <div class="fcard-loc">📍 Te Awamutu, Waikato</div>
+          </div>
+        </div>
+        <div class="fcard-title">Dairy Farm Assistant</div>
+        <div class="fcard-tags">
+          <span class="ft ft-green">🥛 Rotary · 520 cows</span>
+          <span class="ft ft-hay">🏠 3-bed house</span>
+          <span class="ft ft-hay">👫 Couples OK</span>
+          <span class="ft ft-green">2× daily</span>
+        </div>
+        <div class="fcard-match-row">
+          <div class="fcard-match-circle">94%</div>
+          <div class="fcard-salary">
+            <div class="fcard-salary-val">$52k–$62k</div>
+            <div class="fcard-salary-lbl">per year + accommodation</div>
+          </div>
+          <button class="fcard-apply">Apply now</button>
+        </div>
+      </div>
+
+      <!-- Secondary card — candidate profile snippet -->
+      <div class="float-card fc-secondary">
+        <div class="scard-inner">
+          <div class="scard-name">James Tūhoe</div>
+          <div class="scard-role">Dairy Farm Assistant · 7 yrs experience</div>
+          <div class="scard-bar-lbl">Profile strength</div>
+          <div class="scard-bar"><div class="scard-bar-fill" style="width:82%"></div></div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">
+            <span class="ft ft-green" style="font-size:9px">Rotary ✓</span>
+            <span class="ft ft-green" style="font-size:9px">HB ✓</span>
+            <span class="ft ft-hay" style="font-size:9px">Waikato</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Third card — match notification -->
+      <div class="float-card fc-third">
+        <div class="tcard-notif">
+          <div class="tcard-icon">⭐</div>
+          <div class="tcard-text">
+            <strong>Shortlisted!</strong>
+            Mackenzie High Country Farms added you to their shortlist
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="scroll-hint" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">
+    <div class="scroll-arrow"></div>
+    scroll
+  </div>
+</section>
+
+<div class="diagonal-break"></div>
+
+
+<!-- ════════════════════════════════════════
+     HOW IT WORKS
+════════════════════════════════════════ -->
+<section class="how-section reveal" id="how">
+  <div class="section-eyebrow">How TopFarms works</div>
+  <h2 class="section-title">From Facebook post to <em>filled role</em> — without the chaos</h2>
+  <p class="section-sub">TopFarms brings together job listings and candidate profiles from across New Zealand's agricultural sector, then layers AI matching on top so both sides find the right fit, fast.</p>
+
+  <div class="how-toggle">
+    <button class="ht-btn active" id="tab-seeker" onclick="switchHowTab('seeker')">🌾 I'm looking for work</button>
+    <button class="ht-btn" id="tab-employer" onclick="switchHowTab('employer')">🏡 I'm hiring</button>
+  </div>
+
+  <div id="seeker-steps">
+    <div class="steps-grid">
+      <div class="step-card reveal reveal-delay-1" style="position:relative">
+        <div class="step-num">01</div>
+        <div class="step-icon">👤</div>
+        <div class="step-title">Build your profile</div>
+        <div class="step-desc">Tell us your experience, shed types, preferred regions, and living situation. Takes 5 minutes — or upload your CV and we'll parse it for you.</div>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-card reveal reveal-delay-2" style="position:relative">
+        <div class="step-num">02</div>
+        <div class="step-icon">🎯</div>
+        <div class="step-title">Get matched</div>
+        <div class="step-desc">Our AI scores your profile against every listing — rotary experience matches rotary farms, accommodation needs match what's on offer. No noise.</div>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-card reveal reveal-delay-3" style="position:relative">
+        <div class="step-num">03</div>
+        <div class="step-icon">📋</div>
+        <div class="step-title">Apply in one tap</div>
+        <div class="step-desc">Your profile is your application. Employers see your experience, qualifications, and match score instantly — no covering letter needed unless you want to add one.</div>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-card reveal reveal-delay-4">
+        <div class="step-num">04</div>
+        <div class="step-icon">🤝</div>
+        <div class="step-title">Get hired</div>
+        <div class="step-desc">Track your applications, receive interview requests, and manage offers — all in your dashboard. TopFarms candidates average 12 days from apply to offer.</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="employer-steps" style="display:none">
+    <div class="steps-grid">
+      <div class="step-card" style="position:relative">
+        <div class="step-num">01</div>
+        <div class="step-icon">🏡</div>
+        <div class="step-title">Set up your farm</div>
+        <div class="step-desc">Tell us about your shed type, herd size, location, and accommodation offering. Verification earns you a trust badge that boosts applications by 35%.</div>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-card" style="position:relative">
+        <div class="step-num">02</div>
+        <div class="step-icon">📝</div>
+        <div class="step-title">Post your listing</div>
+        <div class="step-desc">Our guided job posting form asks the right questions for agricultural roles — shed type, herd size, accommodation details, visa requirements. Ready in 10 minutes.</div>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-card" style="position:relative">
+        <div class="step-num">03</div>
+        <div class="step-icon">🤖</div>
+        <div class="step-title">Receive ranked candidates</div>
+        <div class="step-desc">Applicants arrive ranked by AI match score. The highest-rated candidate has the most relevant shed experience, right location, and compatible living situation for your role.</div>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">04</div>
+        <div class="step-icon">✅</div>
+        <div class="step-title">Hire with confidence</div>
+        <div class="step-desc">Shortlist, message, schedule interviews — all from your dashboard. Average 12 days to first qualified applicant. Featured listings fill in 8.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     SOCIAL PROOF
+════════════════════════════════════════ -->
+<section class="proof-section">
+  <h2 class="proof-headline reveal">NZ farms are hiring smarter.<br><em>Here's the proof.</em></h2>
+
+  <div class="stats-row">
+    <div class="stat-block reveal reveal-delay-1">
+      <div class="stat-big"><em>1,400</em>+</div>
+      <div class="stat-lbl">Active seekers on platform</div>
+    </div>
+    <div class="stat-block reveal reveal-delay-2">
+      <div class="stat-big">12</div>
+      <div class="stat-lbl">Days average to first applicant</div>
+    </div>
+    <div class="stat-block reveal reveal-delay-3">
+      <div class="stat-big">94<em>%</em></div>
+      <div class="stat-lbl">Employer satisfaction rate</div>
+    </div>
+    <div class="stat-block reveal reveal-delay-4">
+      <div class="stat-big">3<em>×</em></div>
+      <div class="stat-lbl">More qualified applicants vs generic job boards</div>
+    </div>
+  </div>
+
+  <div class="testimonials-grid">
+    <div class="tcard reveal reveal-delay-1">
+      <div class="tcard-stars">★★★★★</div>
+      <div class="tcard-quote">"We filled our 2IC role in 8 days. The match quality was far better than anything we'd tried before — candidates actually knew what a rotary shed was before they showed up."</div>
+      <div class="tcard-attr">
+        <div class="tcard-av">DH</div>
+        <div>
+          <div class="tcard-name">Dave Henderson</div>
+          <div class="tcard-farm">Greenfield Farms · Waikato · 520 cows</div>
+        </div>
+        <div class="tcard-badge">Employer</div>
+      </div>
+    </div>
+    <div class="tcard reveal reveal-delay-2">
+      <div class="tcard-stars">★★★★★</div>
+      <div class="tcard-quote">"I was relocating from Canterbury with my partner. TopFarms found us both roles on the same farm in Waikato within 3 weeks. I don't know how we'd have done it otherwise."</div>
+      <div class="tcard-attr">
+        <div class="tcard-av">SR</div>
+        <div>
+          <div class="tcard-name">Sarah R.</div>
+          <div class="tcard-farm">Farm Assistant · Waikato (formerly Canterbury)</div>
+        </div>
+        <div class="tcard-badge">Seeker</div>
+      </div>
+    </div>
+    <div class="tcard reveal reveal-delay-3">
+      <div class="tcard-stars">★★★★☆</div>
+      <div class="tcard-quote">"I've tried other platforms for years. The problem was always volume — 50 applications, 3 show up. TopFarms sends me fewer applicants but they're the right ones. Huge time saver."</div>
+      <div class="tcard-attr">
+        <div class="tcard-av">SM</div>
+        <div>
+          <div class="tcard-name">Sarah Mackenzie</div>
+          <div class="tcard-farm">Mackenzie High Country Farms · Twizel</div>
+        </div>
+        <div class="tcard-badge">Employer</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     AI MATCHING FEATURE
+════════════════════════════════════════ -->
+<section class="features-section">
+  <div class="features-visual reveal">
+    <div class="feat-visual-card">
+      <div class="fvc-header">
+        <div class="fvc-dot" style="background:#FF5F56"></div>
+        <div class="fvc-dot" style="background:#FEBC2E"></div>
+        <div class="fvc-dot" style="background:#27C93F"></div>
+        <div class="fvc-title">Applicant Dashboard — Dairy Farm Assistant · Greenfield Farms</div>
+      </div>
+      <div class="fvc-body">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--light);margin-bottom:10px">AI-ranked candidates · 47 total</div>
+        <div class="match-preview">
+          <div class="mp-row">
+            <div class="mp-av">JT</div>
+            <div class="mp-info">
+              <div class="mp-name">James Tūhoe</div>
+              <div class="mp-detail">7 yrs dairy · Rotary ✓ · Waikato · DairyNZ L3</div>
+            </div>
+            <div class="mp-match mp-high">94%</div>
+          </div>
+          <div class="mp-row">
+            <div class="mp-av" style="background:#8B6914">SR</div>
+            <div class="mp-info">
+              <div class="mp-name">Sarah R.</div>
+              <div class="mp-detail">5 yrs dairy · HB + Rotary · Relocating · DairyNZ L2</div>
+            </div>
+            <div class="mp-match mp-high">87%</div>
+          </div>
+          <div class="mp-row">
+            <div class="mp-av" style="background:#4A2D5C">BM</div>
+            <div class="mp-info">
+              <div class="mp-name">Beau M.</div>
+              <div class="mp-detail">4 yrs dairy · Rotary only · BOP · Family housing needed</div>
+            </div>
+            <div class="mp-match mp-mid">68%</div>
+          </div>
+          <div class="ai-insight-box">
+            <div class="aib-header">🤖 AI summary — James Tūhoe</div>
+            <div class="aib-body">7 years rotary dairy, well above requirement. DairyNZ Level 3 verified. Main gap: tractor — "some experience" only. <strong>Recommend shortlist.</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="feat-badge">🎯 Avg 94% match quality</div>
+  </div>
+
+  <div class="features-text reveal reveal-delay-2">
+    <div class="section-eyebrow">AI-powered matching</div>
+    <h2 class="section-title" style="font-size:clamp(28px,3vw,40px)">Not just a job board.<br>A <em>matching engine.</em></h2>
+    <p class="section-sub" style="margin-bottom:0">TopFarms understands the nuances of agricultural hiring that generic platforms miss entirely.</p>
+
+    <div class="feat-list">
+      <div class="feat-item">
+        <div class="feat-icon-wrap">🥛</div>
+        <div>
+          <div class="feat-item-title">Shed-type matching</div>
+          <div class="feat-item-desc">Rotary experience scores higher on rotary farms. Herringbone on herringbone. AMS certification required? We filter for it automatically.</div>
+        </div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-icon-wrap">🏠</div>
+        <div>
+          <div class="feat-item-title">Accommodation intelligence</div>
+          <div class="feat-item-desc">76% of NZ dairy seekers require accommodation. Couples, families, pets — we match living situations as carefully as job skills.</div>
+        </div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-icon-wrap">📄</div>
+        <div>
+          <div class="feat-item-title">Qualification verification</div>
+          <div class="feat-item-desc">DairyNZ certifications, ATV safety, driver's licences — uploaded, parsed, and cross-checked. You see verified, not just claimed.</div>
+        </div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-icon-wrap">🌐</div>
+        <div>
+          <div class="feat-item-title">Built for New Zealand agriculture</div>
+          <div class="feat-item-desc">Designed specifically for the NZ farming market — the regions, the terminology, the shed types, the visa categories. No generic job board guesswork.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     FARM TYPES
+════════════════════════════════════════ -->
+<section class="farmtypes-section">
+  <div class="section-eyebrow reveal">Farm types on TopFarms</div>
+  <h3 class="section-title reveal" style="font-size:clamp(24px,2.5vw,34px);margin-bottom:4px">Find workers across every sector</h3>
+  <p style="font-size:13px;color:var(--mid);margin-top:0" class="reveal">From 500-cow rotary dairies to high-country stations and everything in between.</p>
+  <div class="ft-grid">
+    <div class="ft-card reveal reveal-delay-1">
+      <div class="ft-card-icon">🥛</div>
+      <div class="ft-card-title">Dairy Cattle</div>
+      <div class="ft-card-count"><strong>64</strong> open listings</div>
+    </div>
+    <div class="ft-card reveal reveal-delay-2">
+      <div class="ft-card-icon">🐑</div>
+      <div class="ft-card-title">Sheep &amp; Cattle</div>
+      <div class="ft-card-count"><strong>14</strong> open listings</div>
+    </div>
+    <div class="ft-card reveal reveal-delay-3">
+      <div class="ft-card-icon">🌾</div>
+      <div class="ft-card-title">Cropping</div>
+      <div class="ft-card-count"><strong>5</strong> open listings</div>
+    </div>
+    <div class="ft-card reveal reveal-delay-4">
+      <div class="ft-card-icon">🦌</div>
+      <div class="ft-card-title">Deer Farming</div>
+      <div class="ft-card-count"><strong>2</strong> open listings</div>
+    </div>
+    <div class="ft-card reveal">
+      <div class="ft-card-icon">🐄</div>
+      <div class="ft-card-title">Mixed Livestock</div>
+      <div class="ft-card-count"><strong>2</strong> open listings</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     FEATURED LISTINGS
+════════════════════════════════════════ -->
+<section class="listings-section">
+  <div class="listings-header">
+    <div class="listings-header-left">
+      <div class="section-eyebrow reveal">Latest opportunities</div>
+      <h2 class="section-title reveal" style="font-size:clamp(24px,2.5vw,36px);margin-bottom:0">Featured <em>farm roles</em></h2>
+    </div>
+    <a class="view-all-link reveal" href="#">View all 87 listings →</a>
+  </div>
+
+  <div class="listings-grid">
+    <div class="listing-card reveal reveal-delay-1">
+      <div class="lc-img" style="background:var(--soil)">
+        <div class="lc-img-bg">🥛</div>
+        <div class="lc-featured">⭐ Featured</div>
+        <div class="lc-match">94%</div>
+      </div>
+      <div class="lc-body">
+        <div class="lc-title">Dairy Farm Assistant</div>
+        <div class="lc-farm">🌿 Greenfield Farms · <span style="color:var(--light)">Te Awamutu, Waikato</span></div>
+        <div class="lc-tags">
+          <span class="lc-tag lct-green">🥛 Rotary · 520 cows</span>
+          <span class="lc-tag lct-hay">🏠 3-bed house</span>
+          <span class="lc-tag lct-hay">👫 Couples OK</span>
+        </div>
+        <div class="lc-footer">
+          <div class="lc-salary">$52k–$62k</div>
+          <div class="lc-posted">Posted 2 days ago</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="listing-card reveal reveal-delay-2">
+      <div class="lc-img" style="background:#1a2535">
+        <div class="lc-img-bg">🏔️</div>
+        <div class="lc-featured">⭐ Featured</div>
+        <div class="lc-match" style="background:rgba(45,80,22,.75)">87%</div>
+      </div>
+      <div class="lc-body">
+        <div class="lc-title">Herd Manager 2IC</div>
+        <div class="lc-farm">🏔️ Mackenzie High Country · <span style="color:var(--light)">Twizel, Canterbury</span></div>
+        <div class="lc-tags">
+          <span class="lc-tag lct-green">🥛 Herringbone · 380 cows</span>
+          <span class="lc-tag lct-hay">🏠 2-bed cottage</span>
+          <span class="lc-tag lct-blue">Senior role</span>
+        </div>
+        <div class="lc-footer">
+          <div class="lc-salary">$64k–$72k</div>
+          <div class="lc-posted">Posted 4 days ago</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="listing-card reveal reveal-delay-3">
+      <div class="lc-img" style="background:#1e2a18">
+        <div class="lc-img-bg">🐑</div>
+        <div class="lc-match" style="background:rgba(230,126,34,.7)"><span style="color:white">71%</span></div>
+      </div>
+      <div class="lc-body">
+        <div class="lc-title">Station Hand</div>
+        <div class="lc-farm">🌊 Coastal Ridge Station · <span style="color:var(--light)">Dannevirke, Hawke's Bay</span></div>
+        <div class="lc-tags">
+          <span class="lc-tag lct-grey">🐑 Sheep &amp; Cattle</span>
+          <span class="lc-tag lct-hay">🏠 Housing incl.</span>
+          <span class="lc-tag lct-grey">NZ residents</span>
+        </div>
+        <div class="lc-footer">
+          <div class="lc-salary">$50k–$58k</div>
+          <div class="lc-posted">Posted 6 days ago</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     FOR EMPLOYERS BAND
+════════════════════════════════════════ -->
+<section class="employer-band">
+  <div class="eb-left">
+    <div class="eb-eyebrow">For farm employers</div>
+    <h2 class="eb-title reveal">Hire the worker<br>who <em>fits</em> your farm.</h2>
+    <p class="eb-sub reveal">Stop sorting through 50 applications from people who've never seen a rotary shed. TopFarms sends you candidates ranked by actual fit for your specific operation.</p>
+    <div class="eb-points reveal">
+      <div class="eb-point">AI match scoring based on shed type, herd size, location and living needs</div>
+      <div class="eb-point">Verified employer badge increases applications by 35%</div>
+      <div class="eb-point">Couple placements — 28% of NZ dairy hires are couples</div>
+      <div class="eb-point">From $100/listing, first hire within 12 days on average</div>
+    </div>
+    <div class="eb-cta-row reveal">
+      <button class="btn-eb-primary">Post your first job →</button>
+      <button class="btn-eb-ghost">See pricing</button>
+    </div>
+  </div>
+
+  <div class="eb-right reveal reveal-delay-2">
+    <div class="mini-dashboard">
+      <div class="md-header">
+        <div class="md-dot" style="background:#FF5F56"></div>
+        <div class="md-dot" style="background:#FEBC2E;margin-left:4px"></div>
+        <div class="md-dot" style="background:#27C93F;margin-left:4px"></div>
+        <div class="md-title">Employer Dashboard — Greenfield Farms Ltd</div>
+      </div>
+      <div class="md-body">
+        <div class="md-stat-row">
+          <div class="md-stat"><div class="md-stat-val">5</div><div class="md-stat-lbl">Active listings</div></div>
+          <div class="md-stat"><div class="md-stat-val" style="color:var(--meadow)">47</div><div class="md-stat-lbl">Applications</div></div>
+          <div class="md-stat"><div class="md-stat-val" style="color:var(--hay)">1</div><div class="md-stat-lbl">Offer sent</div></div>
+        </div>
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:rgba(247,242,232,.3);margin-bottom:8px">Top candidates — Dairy Farm Assistant</div>
+        <div class="md-candidate">
+          <div class="md-av">JT</div>
+          <div>
+            <div class="md-cname">James Tūhoe</div>
+            <div class="md-cdetail">7 yrs · Rotary ✓ · DairyNZ L3 · Waikato</div>
+          </div>
+          <div class="md-cmatch">94%</div>
+        </div>
+        <div class="md-candidate">
+          <div class="md-av" style="background:#8B6914">SR</div>
+          <div>
+            <div class="md-cname">Sarah R.</div>
+            <div class="md-cdetail">5 yrs · HB + Rotary · Relocating from Chch</div>
+          </div>
+          <div class="md-cmatch">87%</div>
+        </div>
+        <div class="md-candidate">
+          <div class="md-av" style="background:#4A2D5C">BM</div>
+          <div>
+            <div class="md-cname">Beau M.</div>
+            <div class="md-cdetail">4 yrs · Rotary only · BOP · Family needs</div>
+          </div>
+          <div class="md-cmatch" style="color:var(--orange);background:rgba(230,126,34,.15);border-color:rgba(230,126,34,.3)">68%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     TRUSTED BY
+════════════════════════════════════════ -->
+<!-- trusted section removed -->
+
+
+<!-- ════════════════════════════════════════
+     FINAL CTA
+════════════════════════════════════════ -->
+<section class="final-cta">
+  <div class="fc-eyebrow reveal">Join TopFarms today</div>
+  <h2 class="fc-headline reveal">Your next <em>hire</em><br>is already here.</h2>
+  <p class="fc-sub reveal">1,400+ active farm workers. 87 open roles. AI matching that actually understands rotary sheds, DairyNZ qualifications, and on-farm accommodation.</p>
+  <div class="fc-btn-row reveal">
+    <button class="btn-fcta btn-fcta-primary">🌾 I'm looking for work</button>
+    <button class="btn-fcta btn-fcta-primary" style="background:var(--soil)">🏡 I'm hiring farm workers</button>
+    <button class="btn-fcta btn-fcta-outline">Learn more</button>
+  </div>
+  <p class="fc-note reveal">Free to sign up · No credit card required · First job post from $100</p>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════ -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="footer-logo"><span style="color:var(--meadow)">🌿</span> TopFarms</div>
+      <div class="footer-tagline">New Zealand's agricultural recruitment platform. AI-matched hiring that actually understands farming.</div>
+    </div>
+    <div>
+      <div class="footer-col-title">For seekers</div>
+      <a class="footer-link" href="#">Browse jobs</a>
+      <a class="footer-link" href="#">Create profile</a>
+      <a class="footer-link" href="#">Upload CV</a>
+      <a class="footer-link" href="#">My applications</a>
+      <a class="footer-link" href="#">Job alerts</a>
+    </div>
+    <div>
+      <div class="footer-col-title">For employers</div>
+      <a class="footer-link" href="#">Post a job</a>
+      <a class="footer-link" href="#">Browse candidates</a>
+      <a class="footer-link" href="#">Pricing</a>
+      <a class="footer-link" href="#">Employer sign in</a>
+      <a class="footer-link" href="#">Verification</a>
+    </div>
+    <div>
+      <div class="footer-col-title">Company</div>
+      <a class="footer-link" href="#">About TopFarms</a>
+      <a class="footer-link" href="#">How it works</a>
+      <a class="footer-link" href="#">Privacy policy</a>
+      <a class="footer-link" href="#">Terms of service</a>
+      <a class="footer-link" href="#">Contact</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 TopFarms Ltd · New Zealand</span>
+    <span>Made for farmers, by people who respect the work</span>
+  </div>
+</footer>
+
+
+<script>
+/* ── How it works tab toggle ── */
+function switchHowTab(tab) {
+  document.getElementById('seeker-steps').style.display = tab === 'seeker' ? '' : 'none';
+  document.getElementById('employer-steps').style.display = tab === 'employer' ? '' : 'none';
+  document.getElementById('tab-seeker').classList.toggle('active', tab === 'seeker');
+  document.getElementById('tab-employer').classList.toggle('active', tab === 'employer');
+}
+
+/* ── Scroll-triggered reveals ── */
+const revealEls = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12 });
+revealEls.forEach(el => observer.observe(el));
+
+/* ── Animated counter on load ── */
+function animateCount(el, target, duration = 1800) {
+  const start = performance.now();
+  const from = 0;
+  function update(ts) {
+    const progress = Math.min((ts - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.round(from + (target - from) * ease).toLocaleString();
+    if (progress < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    animateCount(document.getElementById('stat-seekers'), 1412);
+    animateCount(document.getElementById('stat-jobs'), 87, 1200);
+    animateCount(document.getElementById('stat-placed'), 312, 1600);
+  }, 900);
+});
+</script>
+</body>
+</html>

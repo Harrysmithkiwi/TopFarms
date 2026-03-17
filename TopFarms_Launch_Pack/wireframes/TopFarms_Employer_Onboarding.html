@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TopFarms – Employer Sign Up</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --soil:#2C1A0E;--moss:#2D5016;--fern:#4A7C2F;--meadow:#7AAF3F;
+  --hay:#D4A843;--hay-lt:#FFF8E7;--cream:#F7F2E8;--fog:#EEE8DC;
+  --mist:#F2EEE6;--ink:#1A1208;--mid:#6B5D4A;--light:#9E8E78;
+  --white:#FFFFFF;--red:#C0392B;--red-lt:#FDF0EE;
+  --blue:#1A5276;--blue-lt:#EAF4FB;
+  --orange:#E67E22;--orange-lt:#FEF5EC;
+  --purple:#6C3483;--purple-lt:#F5EEF8;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;overflow-x:hidden}
+
+/* ── SCREEN SYSTEM ── */
+.screen{display:none;animation:fadeUp .32s ease both}
+.screen.active{display:flex}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;height:56px;background:var(--soil);display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:200}
+.logo{font-family:'Fraunces',serif;font-weight:700;font-size:20px;color:var(--cream);display:flex;align-items:center;gap:7px;text-decoration:none}
+.logo-leaf{color:var(--meadow)}
+.nav-badge{background:rgba(212,168,67,.2);color:var(--hay);font-size:10px;font-weight:700;padding:3px 9px;border-radius:6px;letter-spacing:.4px;margin-left:4px}
+.nav-r{font-size:12px;color:rgba(247,242,232,.45);display:flex;align-items:center;gap:6px}
+.nav-r a{color:rgba(247,242,232,.6);text-decoration:none}
+.nav-r a:hover{color:var(--cream)}
+
+/* ── PROGRESS BAR ── */
+.progress-bar{position:fixed;top:56px;left:0;right:0;height:3px;background:rgba(45,80,22,.15);z-index:199}
+.progress-fill{height:100%;background:linear-gradient(to right,var(--fern),var(--meadow));transition:width .4s cubic-bezier(.4,0,.2,1)}
+.step-indicator{position:fixed;top:68px;right:24px;font-size:11px;font-weight:700;color:var(--light);letter-spacing:.5px;z-index:199}
+
+/* ── TWO-COL (account creation screen) ── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;min-height:100vh;padding-top:56px}
+.left-panel{background:var(--soil);padding:52px 48px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden}
+.left-panel::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 80%,rgba(74,124,47,.25) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(45,80,22,.2) 0%,transparent 60%)}
+.lp{position:relative;z-index:1}
+.left-eyebrow{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--meadow);margin-bottom:14px}
+.left-heading{font-family:'Fraunces',serif;font-size:38px;font-weight:700;color:var(--cream);line-height:1.1;letter-spacing:-1px;margin-bottom:16px}
+.left-heading em{font-style:italic;color:var(--hay)}
+.left-sub{font-size:14px;color:rgba(247,242,232,.6);line-height:1.65;margin-bottom:32px}
+.trust-list{display:flex;flex-direction:column;gap:13px}
+.trust-item{display:flex;align-items:flex-start;gap:12px}
+.ti-icon{width:34px;height:34px;border-radius:8px;background:rgba(122,175,63,.14);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;margin-top:1px}
+.ti-text{font-size:12px;color:rgba(247,242,232,.68);line-height:1.45}
+.ti-text strong{color:var(--cream);display:block;font-size:13px;margin-bottom:1px}
+
+/* Testimonial */
+.testimonial{margin-top:32px;padding:16px;background:rgba(255,255,255,.05);border-radius:10px;border-left:3px solid var(--hay)}
+.t-quote{font-size:13px;color:rgba(247,242,232,.75);line-height:1.6;font-style:italic;margin-bottom:8px}
+.t-attr{font-size:11px;color:var(--hay);font-weight:600}
+
+.right-panel{background:var(--cream);padding:52px 56px;display:flex;flex-direction:column;justify-content:center;overflow-y:auto}
+.right-panel::-webkit-scrollbar{width:4px}
+.right-panel::-webkit-scrollbar-thumb{background:var(--fog);border-radius:2px}
+
+/* ── CENTER WIZARD SCREENS ── */
+.center-screen{min-height:100vh;padding-top:56px;display:flex;align-items:flex-start;justify-content:center;padding-bottom:48px}
+.wizard-card{background:var(--white);border:1.5px solid var(--fog);border-radius:16px;padding:38px 42px;width:100%;max-width:640px;margin:32px auto 0}
+
+/* ── STEP DOTS ── */
+.step-dots{display:flex;align-items:center;gap:6px;margin-bottom:22px}
+.sd{width:26px;height:4px;border-radius:2px;background:var(--fog);transition:all .3s}
+.sd.done{background:var(--fern)}
+.sd.active{background:var(--moss);width:34px}
+
+/* ── TYPOGRAPHY ── */
+.wizard-eyebrow{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--meadow);margin-bottom:9px}
+.wizard-title{font-family:'Fraunces',serif;font-size:24px;font-weight:700;color:var(--ink);letter-spacing:-.5px;margin-bottom:6px}
+.wizard-sub{font-size:13px;color:var(--light);line-height:1.55;margin-bottom:26px}
+
+/* ── FORM ELEMENTS ── */
+.form-group{margin-bottom:15px}
+.fld-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--mid);margin-bottom:5px;display:block}
+.fld-label .req{color:var(--red)}
+.fld-hint{font-size:11px;color:var(--light);margin-top:4px;line-height:1.4}
+.fld-hint.warn{color:#7A5C00;background:var(--hay-lt);padding:5px 8px;border-radius:5px;margin-top:5px}
+input[type=text],input[type=email],input[type=number],input[type=tel],input[type=url],select,textarea{
+  width:100%;padding:10px 13px;border:1.5px solid var(--fog);border-radius:8px;
+  font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--white);
+  outline:none;transition:border-color .18s,box-shadow .18s}
+input:focus,select:focus,textarea:focus{border-color:var(--fern);box-shadow:0 0 0 3px rgba(74,124,47,.07)}
+input::placeholder,textarea::placeholder{color:var(--light)}
+select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath fill='%239E8E78' d='M5 7L0 0h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px}
+textarea{resize:vertical;min-height:82px;line-height:1.6}
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px}
+
+/* Password strength */
+.pw-strength{height:3px;background:var(--fog);border-radius:2px;margin-top:6px;overflow:hidden}
+.pw-fill{height:100%;border-radius:2px;transition:width .3s,background .3s;width:0%}
+.hint{font-size:11px;color:var(--light);margin-top:4px}
+
+/* ── CHOICE CARDS ── */
+.choice-grid{display:grid;gap:9px;margin-bottom:6px}
+.cg2{grid-template-columns:1fr 1fr}
+.cg3{grid-template-columns:1fr 1fr 1fr}
+.choice-card{border:2px solid var(--fog);border-radius:10px;padding:14px 16px;cursor:pointer;transition:all .18s;position:relative;background:var(--white)}
+.choice-card:hover{border-color:var(--fern);transform:translateY(-1px)}
+.choice-card.sel{border-color:var(--moss);background:rgba(45,80,22,.04)}
+.choice-card.sel::after{content:'✓';position:absolute;top:10px;right:12px;color:var(--moss);font-weight:800;font-size:13px}
+.cc-icon{font-size:20px;margin-bottom:6px}
+.cc-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px}
+.cc-desc{font-size:11px;color:var(--mid);line-height:1.4}
+
+/* Horizontal choice card (for ownership) */
+.choice-card-h{border:2px solid var(--fog);border-radius:10px;padding:13px 16px;cursor:pointer;transition:all .18s;position:relative;background:var(--white);display:flex;align-items:center;gap:13px}
+.choice-card-h:hover{border-color:var(--fern)}
+.choice-card-h.sel{border-color:var(--moss);background:rgba(45,80,22,.04)}
+.choice-card-h.sel::after{content:'✓';position:absolute;top:50%;right:14px;transform:translateY(-50%);color:var(--moss);font-weight:800;font-size:13px}
+.cch-icon{font-size:22px;flex-shrink:0}
+.cch-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:1px}
+.cch-desc{font-size:11px;color:var(--mid);line-height:1.35}
+
+/* ── CHIPS ── */
+.chip-grid{display:flex;flex-wrap:wrap;gap:7px}
+.chip{padding:7px 12px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid var(--fog);color:var(--mid);background:var(--mist);transition:all .15s;display:flex;align-items:center;gap:4px}
+.chip:hover{border-color:var(--fern);color:var(--fern)}
+.chip.sel{background:rgba(45,80,22,.07);border-color:var(--moss);color:var(--moss);font-weight:600}
+.chip.sel::before{content:'✓ ';font-size:10px}
+
+/* ── TOGGLE ROWS ── */
+.tgl-row{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border:1.5px solid var(--fog);border-radius:8px;cursor:pointer;transition:all .2s;background:var(--white);margin-bottom:8px}
+.tgl-row:hover{border-color:var(--fern)}
+.tgl-row.on{border-color:var(--moss);background:rgba(45,80,22,.03)}
+.tgl-info{flex:1}
+.tgl-lbl{font-size:13px;color:var(--ink)}
+.tgl-sub{font-size:11px;color:var(--light);margin-top:1px}
+.tgl{width:36px;height:20px;background:var(--fog);border-radius:10px;position:relative;flex-shrink:0;transition:background .2s}
+.tgl.on{background:var(--moss)}
+.tgl::after{content:'';position:absolute;width:16px;height:16px;background:white;border-radius:50%;top:2px;left:2px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.tgl.on::after{transform:translateX(16px)}
+.tgl-reveal{display:none;padding:10px 14px 12px;margin-top:-4px;background:rgba(45,80,22,.03);border:1.5px solid rgba(45,80,22,.13);border-top:none;border-radius:0 0 8px 8px;margin-bottom:8px}
+.tgl-reveal.show{display:block}
+
+/* ── SECTION DIVIDER ── */
+.section-divider{display:flex;align-items:center;gap:12px;margin:20px 0 16px}
+.sd-line{flex:1;height:1px;background:var(--fog)}
+.sd-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--light)}
+
+/* ── INFO / TIP BOXES ── */
+.info-box{padding:11px 14px;border-radius:8px;font-size:12px;line-height:1.5;margin-bottom:12px}
+.ib-blue{background:var(--blue-lt);color:var(--blue)}
+.ib-hay{background:var(--hay-lt);color:#7A5C00}
+.ib-green{background:rgba(45,80,22,.06);border:1px solid rgba(45,80,22,.12);color:var(--moss)}
+.ib-purple{background:var(--purple-lt);color:var(--purple)}
+.ib-red{background:var(--red-lt);color:var(--red)}
+
+/* ── VERIFICATION STEPS ── */
+.verify-steps{display:flex;flex-direction:column;gap:10px}
+.vs-item{display:flex;align-items:flex-start;gap:13px;padding:13px 15px;border:1.5px solid var(--fog);border-radius:10px;background:var(--white);transition:border-color .2s}
+.vs-item.done{border-color:rgba(45,80,22,.2);background:rgba(45,80,22,.03)}
+.vs-item.active{border-color:var(--moss);box-shadow:0 0 0 3px rgba(45,80,22,.06)}
+.vs-item.optional{opacity:.7}
+.vs-num{width:26px;height:26px;border-radius:50%;background:var(--fog);color:var(--mid);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.vs-item.done .vs-num{background:var(--moss);color:white}
+.vs-item.active .vs-num{background:var(--moss);color:white}
+.vs-body{flex:1}
+.vs-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px}
+.vs-item.done .vs-title{color:var(--moss)}
+.vs-desc{font-size:11px;color:var(--mid);line-height:1.4;margin-bottom:6px}
+.vs-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;display:inline-block}
+.badge-required{background:var(--red-lt);color:var(--red)}
+.badge-optional{background:var(--mist);color:var(--light)}
+.badge-done{background:rgba(45,80,22,.08);color:var(--moss)}
+.badge-trust{background:var(--purple-lt);color:var(--purple)}
+
+/* Upload zone */
+.upload-zone{border:2px dashed var(--fog);border-radius:8px;padding:16px;text-align:center;cursor:pointer;transition:all .2s;background:var(--mist)}
+.upload-zone:hover{border-color:var(--fern);background:rgba(74,124,47,.03)}
+.uz-icon{font-size:24px;margin-bottom:6px}
+.uz-label{font-size:12px;font-weight:600;color:var(--mid);margin-bottom:2px}
+.uz-sub{font-size:11px;color:var(--light)}
+.upload-zone.uploaded{border-color:rgba(45,80,22,.25);background:rgba(45,80,22,.04)}
+.uploaded-file{display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(45,80,22,.05);border:1px solid rgba(45,80,22,.13);border-radius:6px;font-size:12px;color:var(--moss);margin-top:7px}
+.uf-remove{margin-left:auto;color:var(--light);cursor:pointer;font-size:13px;background:none;border:none}
+
+/* ── SUBSCRIPTION PRICING ── */
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+.price-card{background:var(--white);border:1.5px solid var(--fog);border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.price-card:hover{border-color:var(--fern);transform:translateY(-2px)}
+.price-card.sel{border:2.5px solid var(--moss);box-shadow:0 4px 18px rgba(45,80,22,.1)}
+.price-card.popular{border:2px solid var(--hay)}
+.price-card.popular.sel{border:2.5px solid var(--moss)}
+.popular-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--hay);color:var(--soil);font-size:9px;font-weight:700;padding:3px 10px;border-radius:7px;white-space:nowrap}
+.pc-icon{font-size:24px;margin-bottom:10px}
+.pc-name{font-family:'Fraunces',serif;font-size:15px;font-weight:700;color:var(--ink);margin-bottom:5px}
+.pc-price{font-family:'Fraunces',serif;font-size:26px;font-weight:700;color:var(--moss);margin-bottom:2px}
+.pc-period{font-family:'DM Sans',sans-serif;font-size:11px;color:var(--light);margin-bottom:13px}
+.pc-divider{height:1px;background:var(--fog);margin-bottom:12px}
+.pc-feats{text-align:left}
+.pc-feat{font-size:11px;color:var(--mid);padding:3px 0;display:flex;align-items:flex-start;gap:6px;line-height:1.35}
+.pc-feat.yes::before{content:'✓';color:var(--moss);font-weight:700;flex-shrink:0;margin-top:1px}
+.pc-feat.no{color:var(--light)}
+.pc-feat.no::before{content:'–';color:var(--light);flex-shrink:0;margin-top:1px}
+.pc-feat.highlight{color:var(--moss);font-weight:600}
+.pc-feat.highlight::before{content:'⭐';flex-shrink:0;font-size:10px;margin-top:2px}
+.price-note{background:var(--mist);border:1.5px solid var(--fog);border-radius:8px;padding:11px 14px;font-size:11px;color:var(--mid);line-height:1.5;margin-bottom:14px}
+
+/* Annual toggle */
+.billing-toggle{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:18px}
+.bt-label{font-size:12px;font-weight:600;color:var(--light)}
+.bt-label.active{color:var(--ink)}
+.bt-switch{width:40px;height:22px;background:var(--moss);border-radius:11px;position:relative;cursor:pointer;transition:background .2s}
+.bt-switch::after{content:'';position:absolute;width:18px;height:18px;background:white;border-radius:50%;top:2px;right:2px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.bt-switch.monthly::after{transform:translateX(-18px)}
+.savings-badge{background:rgba(45,80,22,.1);color:var(--moss);font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px}
+
+/* ── PROFILE PREVIEW CARD ── */
+.farm-profile-preview{background:var(--white);border:1.5px solid var(--fog);border-radius:12px;overflow:hidden;margin-top:0}
+.fpp-header{background:var(--soil);padding:20px;position:relative;overflow:hidden}
+.fpp-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 20%,rgba(74,124,47,.2) 0%,transparent 60%)}
+.fpp-logo{width:48px;height:48px;border-radius:10px;background:var(--fern);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:10px;position:relative;z-index:1}
+.fpp-name{font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:var(--cream);position:relative;z-index:1;margin-bottom:2px}
+.fpp-sub{font-size:11px;color:rgba(247,242,232,.55);position:relative;z-index:1}
+.fpp-verified{position:absolute;top:16px;right:16px;z-index:1;background:rgba(122,175,63,.2);border:1px solid rgba(122,175,63,.3);padding:4px 9px;border-radius:6px;font-size:10px;font-weight:700;color:var(--meadow);display:flex;align-items:center;gap:4px}
+.fpp-body{padding:16px}
+.fpp-stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.fpp-stat{text-align:center;padding:8px;background:var(--mist);border-radius:7px}
+.fpp-stat-val{font-family:'Fraunces',serif;font-size:16px;font-weight:700;color:var(--ink)}
+.fpp-stat-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--light);margin-top:2px}
+.fpp-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.fpp-tag{font-size:10px;font-weight:600;padding:3px 8px;border-radius:5px}
+.fpp-tag-green{background:rgba(45,80,22,.08);color:var(--moss)}
+.fpp-tag-hay{background:var(--hay-lt);color:#7A5C00}
+.fpp-tag-blue{background:var(--blue-lt);color:var(--blue)}
+.fpp-rating{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mid)}
+.fpp-stars{color:var(--hay);font-size:13px;letter-spacing:1px}
+
+/* ── COMPLETION SCREEN ── */
+.complete-screen{min-height:100vh;padding-top:56px;display:flex;align-items:center;justify-content:center;background:var(--cream)}
+.complete-card{background:var(--white);border:1.5px solid var(--fog);border-radius:20px;padding:52px 56px;text-align:center;max-width:560px;width:100%}
+.cc-icon-big{font-size:52px;margin-bottom:18px}
+.cc-title{font-family:'Fraunces',serif;font-size:30px;font-weight:700;color:var(--ink);letter-spacing:-.5px;margin-bottom:8px}
+.cc-title em{font-style:italic;color:var(--moss)}
+.cc-sub{font-size:14px;color:var(--mid);line-height:1.65;margin-bottom:26px}
+.cc-checklist{background:var(--mist);border-radius:12px;padding:18px 20px;text-align:left;margin-bottom:26px}
+.cc-check-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--light);margin-bottom:12px}
+.cc-check-item{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:13px;color:var(--mid);border-bottom:1px solid var(--fog)}
+.cc-check-item:last-child{border-bottom:none}
+.cc-check-item::before{content:'✓';color:var(--moss);font-weight:800;font-size:13px;flex-shrink:0}
+.cc-actions{display:flex;flex-direction:column;gap:9px}
+
+/* ── BUTTONS ── */
+.btn{padding:10px 20px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;border:none;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--moss);color:white}
+.btn-primary:hover{background:var(--fern)}
+.btn-ghost{background:transparent;border:1.5px solid var(--fog);color:var(--mid)}
+.btn-ghost:hover{border-color:var(--mid);color:var(--ink)}
+.btn-hay{background:var(--hay);color:var(--soil)}
+.btn-hay:hover{background:#c49a38}
+.btn-full{width:100%;justify-content:center}
+.btn-row{display:flex;gap:9px;margin-top:26px;align-items:center}
+.btn-row .spacer{flex:1}
+
+/* Social sign-in */
+.social-btn{width:100%;padding:10px;border:1.5px solid var(--fog);border-radius:8px;background:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--mid);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:border-color .2s,background .2s;margin-bottom:8px}
+.social-btn:hover{border-color:var(--mid);background:var(--mist)}
+.or-divider{display:flex;align-items:center;gap:12px;margin:14px 0}
+.or-line{flex:1;height:1px;background:var(--fog)}
+.or-text{font-size:11px;color:var(--light);font-weight:600}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="#"><span class="logo-leaf">🌿</span> TopFarms <span class="nav-badge">FOR EMPLOYERS</span></a>
+  <div class="nav-r">Already have an account? <a href="#">Sign in →</a></div>
+</nav>
+<div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:12%"></div></div>
+<div class="step-indicator" id="step-indicator">Step 1 of 8</div>
+
+
+<!-- ════════════════════════════════════════════════════
+     SCREEN 1 — Account creation (two-col intro)
+════════════════════════════════════════════════════ -->
+<div class="screen two-col active" id="screen-1">
+  <div class="left-panel">
+    <div class="lp">
+      <div class="left-eyebrow">Employer sign up</div>
+      <h1 class="left-heading">Find the right <em>farm worker</em>, faster</h1>
+      <p class="left-sub">TopFarms matches you with pre-screened, AI-ranked candidates across New Zealand's dairy, sheep and beef sectors. Setup takes about 5 minutes.</p>
+      <div class="trust-list">
+        <div class="trust-item">
+          <div class="ti-icon">🎯</div>
+          <div class="ti-text"><strong>AI-matched candidates only</strong>Ranked by fit to your shed type, herd size, location and accommodation offering — no spam applications</div>
+        </div>
+        <div class="trust-item">
+          <div class="ti-icon">📋</div>
+          <div class="ti-text"><strong>1,400+ active seekers</strong>Dairy, sheep &amp; beef workers across all NZ regions, updated daily from Facebook groups and job boards</div>
+        </div>
+        <div class="trust-item">
+          <div class="ti-icon">⚡</div>
+          <div class="ti-text"><strong>First application within 48 hours</strong>Featured listings average 12 days to fill — 30% faster than Seek or TradeMe</div>
+        </div>
+        <div class="trust-item">
+          <div class="ti-icon">✅</div>
+          <div class="ti-text"><strong>Verified farm profiles build trust</strong>Seekers apply more readily to verified employers — higher quality, less ghosting</div>
+        </div>
+      </div>
+      <div class="testimonial">
+        <div class="t-quote">"We filled our 2IC role in 8 days. The match quality was noticeably better than TradeMe — candidates actually knew what a rotary shed was."</div>
+        <div class="t-attr">— Dave H., Greenfield Farms · Waikato · 520 cows</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <div class="step-dots">
+      <div class="sd active"></div><div class="sd"></div><div class="sd"></div>
+      <div class="sd"></div><div class="sd"></div><div class="sd"></div>
+      <div class="sd"></div><div class="sd"></div>
+    </div>
+    <div class="wizard-eyebrow">Step 1 of 8 · Create your account</div>
+    <h2 class="wizard-title" style="font-family:'Fraunces',serif;font-size:22px;font-weight:700;margin-bottom:5px;letter-spacing:-.5px">Create your employer account</h2>
+    <p style="font-size:13px;color:var(--light);margin-bottom:20px;line-height:1.5">Your account represents your farm or farming operation, not just you personally.</p>
+
+    <button class="social-btn">
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 48 48'%3E%3Cpath fill='%234285F4' d='M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z'/%3E%3Cpath fill='%2334A853' d='M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.32-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z'/%3E%3Cpath fill='%23FBBC05' d='M11.68 28.18A13.9 13.9 0 0 1 10.8 24c0-1.45.25-2.86.68-4.18v-5.7H4.34A23.93 23.93 0 0 0 0 24c0 3.87.93 7.53 2.56 10.77l7.12-5.7-.0001-.89z'/%3E%3Cpath fill='%23EA4335' d='M24 9.5c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 2.99 29.93 1 24 1 15.4 1 7.96 5.93 4.34 13.23l7.34 5.7C13.42 13.37 18.27 9.5 24 9.5z'/%3E%3C/svg%3E" alt="">
+      Continue with Google
+    </button>
+    <button class="social-btn">
+      <span style="font-size:16px">📘</span> Continue with Facebook
+    </button>
+
+    <div class="or-divider"><div class="or-line"></div><div class="or-text">or sign up with email</div><div class="or-line"></div></div>
+
+    <div class="form-group">
+      <label class="fld-label">Your full name <span class="req">*</span></label>
+      <input type="text" placeholder="e.g. Dave Henderson" value="Dave Henderson">
+    </div>
+    <div class="form-group">
+      <label class="fld-label">Work email <span class="req">*</span></label>
+      <input type="email" placeholder="dave@greenfieldfarmsltd.co.nz" value="dave@greenfieldfarmsltd.co.nz">
+      <div class="fld-hint">Use your farm business email if you have one — helps with verification</div>
+    </div>
+    <div class="form-group">
+      <label class="fld-label">Phone <span class="req">*</span></label>
+      <input type="tel" placeholder="+64 21 xxx xxxx" value="+64 21 456 789">
+    </div>
+    <div class="form-group">
+      <label class="fld-label">Password <span class="req">*</span></label>
+      <input type="password" placeholder="Min. 8 characters" value="••••••••••" oninput="updatePw(this)">
+      <div class="pw-strength"><div class="pw-fill" id="pw-fill" style="width:80%;background:var(--moss)"></div></div>
+      <div class="hint" id="pw-hint" style="color:var(--moss)">Strong password ✓</div>
+    </div>
+    <div style="font-size:11px;color:var(--light);line-height:1.5;margin-top:4px">By continuing you agree to TopFarms' <a href="#" style="color:var(--fern)">Terms of Service</a> and <a href="#" style="color:var(--fern)">Privacy Policy</a>.</div>
+
+    <div class="btn-row" style="margin-top:20px">
+      <button class="btn btn-primary btn-full" onclick="goTo(2)">Create account →</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════
+     SCREEN 2 — Farm type & ownership
+════════════════════════════════════════════════════ -->
+<div class="screen center-screen" id="screen-2">
+  <div class="wizard-card">
+    <div class="step-dots"><div class="sd done"></div><div class="sd active"></div><div class="sd"></div><div class="sd"></div><div class="sd"></div><div class="sd"></div><div class="sd"></div><div class="sd"></div></div>
+    <div class="wizard-eyebrow">Step 2 of 8 · Your farm</div>
+    <h2 class="wizard-title">What type of farm are you hiring for?</h2>
+    <p class="wizard-sub">This shapes what we ask next — and how we match you with candidates.</p>
+
+    <div class="form-group">
+      <label class="fld-label">Primary farm type <span class="req">*</span></label>
+      <div class="choice-grid cg2">
+        <div class="choice-card sel" onclick="selectOne(this)"><div class="cc-icon">🥛</div><div class="cc-title">Dairy Cattle</div><div class="cc-desc">Milking cows, herd management, shed work</div></div>
+        <div class="choice-card" onclick="selectOne(this)"><div class="cc-icon">🐑</div><div class="cc-title">Sheep &amp; Beef</div><div class="cc-desc">Livestock, mustering, lambing, finishing</div></div>
+        <div class="choice-card" onclick="selectOne(this)"><div class="cc-icon">🌾</div><div class="cc-title">Cropping / Arable</div><div class="cc-desc">Grain, brassica, irrigation, machinery</div></div>
+        <div class="choice-card" onclick="selectOne(this)"><div class="cc-icon">🦌</div><div class="cc-title">Deer Farming</div><div class="cc-desc">Velvet, venison, antler management</div></div>
+        <div class="choice-card" onclick="selectOne(this)"><div class="cc-icon">🐄</div><div class="cc-title">Mixed Livestock</div><div class="cc-desc">Dairy + dry stock or other combinations</div></div>
+        <div class="choice-card" onclick="selectOne(this)"><div class="cc-icon">🌿</div><div class="cc-title">Other</div><div class="cc-desc">Goats, pigs, specialty or organic</div></div>
+      </div>
+    </div>
+
+    <div class="section-divider"><div class="sd-line"></div><div class="sd-label">Ownership structure</div><div class="sd-line"></div></div>
+
+    <div class="form-group">
+      <label class="fld-label">Who is doing the hiring? <span class="req">*</span></label>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="choice-card-h sel" onclick="selectOne(this)">
+          <div class="cch-icon">🏡</div>
+          <div><div class="cch-title">Farm owner / owner-operator</div><div class="cch-desc">I own this farm and am hiring directly</div></div>
+        </div>
+        <div class="choice-card-h" onclick="selectOne(this)">
+          <div class="cch-icon">🤝</div>
+          <div><div class="cch-title">Sharemilker / contract milker</div><div class="cch-desc">I operate the farm under a contract arrangement</div></div>
+        </div>
+        <div class="choice-card-h" onclick="selectOne(this)">
+          <div class="cch-icon">🏢</div>
+          <div><div class="cch-title">Corporate / company farm</div><div class="cch-desc">Large-scale operation, multiple farms or units</div></div>
+        </div>
+        <div class="choice-card-h" onclick="selectOne(this)">
+          <div class="cch-icon">📋</div>
+          <div><div class="cch-title">Farm manager hiring on behalf of owner</div><div class="cch-desc">I manage this property and have authority to hire</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goTo(1)">← Back</button>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" onclick="goTo(3)">Continue →</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════
+     SCREEN 3 — Farm details (dairy-specific)
+════════════════════════════════════════════════════ -->
+<div class="screen center-screen" id="screen-3">
+  <div class="wizard-card">
+    <div class="step-dots"><div class="sd done"></div><div class="sd done"></div><div class="sd active"></div><div class="sd"></div><div class="sd"></div><div class="sd"></div><div class="sd"></div><div class="sd"></div></div>
+    <div class="wizard-eyebrow">Step 3 of 8 · Farm details</div>
+    <h2 class="wizard-title">Tell us about your operation</h2>
+    <p class="wizard-sub">Used to match you with candidates who have relevant experience. Seekers with rotary experience rank higher on rotary farms automatically.</p>
+
+    <div class="row-2">
+      <div class="form-group">
+        <label class="fld-label">Farm / business name <span class="req">*</span></label>
+        <input type="text" placeholder="e.g. Greenfield Farms Ltd" value="Greenfield Farms Ltd">
+      </div>
+      <div class="form-group">
+        <label class="fld-label">Farm trading name (if different)</label>
+        <input type="text" placeholder="Trading as...">
+      </div>
+    </div>
+
+    <div class="section-divider"><div class="sd-line"></div><div class="sd-label">Shed &amp; herd</div><div class="sd-line"></div></div>
+
+    <div class="form-group">
+      <label class="fld-label">Shed type <span class="req">*</span></label>
+      <div class="chip-grid">
+        <div class="chip sel" onclick="toggleChip(this)">Rotary</div>
+        <div class="chip" onclick="toggleChip(this)">Herringbone</div>
+        <div class="chip" onclick="toggleChip(this)">Automatic Milking (AMS)</div>
+        <div class="chip" onclick="toggleChip(this)">Swing-Over</div>
+        <div class="chip" onclick="toggleChip(this)">Tiestall</div>
+      </div>
+      <div class="fld-hint">Select all types on your farm. Candidates with matching shed experience rank higher.</div>
+    </div>
+
+    <div class="row-3">
+      <div class="form-group">
+        <label class="fld-label">Herd size <span class="req">*</span></label>
+        <input type="number" placeholder="cows in milk" value="520">
+      </div>
+      <div class="form-group">
+        <label class="fld-label">Farm area (ha)</label>
+        <input type="number" placeholder="e.g. 210" value="210">
+      </div>
+      <div class="form-group">
+        <label class="fld-label">Milking frequency</label>
+        <select>
+          <option>OAD (once daily)</option>
+          <option selected>2× daily</option>
+          <option>3× daily</option>
+          <option>AMS (variable)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row-2">
+      <div class="form-group">
+        <label class="fld-label">Breed</label>
+        <select>
+          <option selected>Friesian / Holstein</option>
+          <option>Jersey</option>
+          <option>Friesian-Jersey cross</option>
+          <option>Kiwicross</option>
+          <option>Other / mixed</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="fld-label">Calving system</label>
+        <select>
+          <option selected>Spring calving</option>
+          <option>Autumn calving</option>
+          <option>Mixed / year-round</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="section-divider"><div class="sd-line"></div><div class="sd-label">Location</div><div class="sd-line"></div></div>
+
+    <div class="row-2">
+      <div class="form-group">
+        <label class="fld-label">Region <span class="req">*</span></label>
+        <select>
+          <option>Northland</option>
+          <option selected>Waikato</option>
+          <option>Bay of Plenty</option>
+          <option>Taranaki</option>
+          <option>Manawatu-Whanganui</option>
+          <option>Canterbury</option>
+          <option>Otago</option>
+          <option>Southland</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="fld-label">Nearest town <span class="req">*</span></label>
+        <input type="text" placeholder="e.g. Te Awamutu" value="Te Awamutu">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="fld-label">Distance from nearest town</label>
+      <select>
+        <option>In town or on the outskirts</option>
+        <option>Within 5 km</option>
+        <option selected>5–15 km</option>
+        <option>15–30 km</option>
+        <option>30+ km (remote)</option>
+      </select>
+      <div class="fld-hint warn">⚠ Farms 30+ km from town see fewer applicants without on-farm accommodation. Set this up in step 5.</div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goTo(2)">← Back</button>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" onclick="goTo(4)">Continue →</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════
+     SCREEN 4 — Team, culture & hiring history
+════════════════════════════════════════════════════ -->
+<div class="screen center-screen" id="screen-4">
+  <div class="wizard-card">
+    <div class="step-dots"><div class="sd done"></div><div class="sd done"></div><div class="sd done"></div><div class="sd active"></div><div class="sd"></div><div class="sd"></div><div class="sd"></div><div class="sd"></div></div>
+    <div class="wizard-eyebrow">Step 4 of 8 · Your team</div>
+    <h2 class="wizard-title">Your team and what you offer</h2>
+    <p class="wizard-sub">Seekers choose farms partly on culture and growth opportunity. A good team description increases applications by up to 40%.</p>
+
+    <div class="form-group">
+      <label class="fld-label">Current team size</label>
+      <select>
+        <option>Just me — sole operator</option>
+        <option selected>2–3 people (small team)</option>
+        <option>4–6 people</option>
+        <option>7–12 people</option>
+        <option>13+ people (large operation)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="fld-label">About your farm and team <span class="req">*</span></label>
+      <textarea id="about-ta" oninput="updateChar(this,'about-count',400)" style="min-height:100px">Family-owned operation, been in the family 25 years. We believe in work-life balance and looking after our team. You'll be trusted to manage your responsibilities — we don't micromanage. Tight-knit team of three, good craic.</textarea>
+      <div style="display:flex;justify-content:flex-end"><span style="font-size:11px;color:var(--light)" id="about-count">175 / 400</span></div>
+      <div class="fld-hint">Write as you'd talk. Authentic descriptions outperform corporate language every time.</div>
+    </div>
+
+    <div class="section-divider"><div class="sd-line"></div><div class="sd-label">Career development</div><div class="sd-line"></div></div>
+
+    <div class="form-group">
+      <label class="fld-label">What career or training opportunities do you offer?</label>
+      <div class="chip-grid">
+        <div class="chip sel" onclick="toggleChip(this)">DairyNZ training support</div>
+        <div class="chip sel" onclick="toggleChip(this)">On-the-job mentorship</div>
+        <div class="chip" onclick="toggleChip(this)">Study leave</div>
+        <div class="chip" onclick="toggleChip(this)">Career progression pathway</div>
+        <div class="chip" onclick="toggleChip(this)">2IC → Manager pathway</div>
+        <div class="chip" onclick="toggleChip(this)">Equity / sharemilking pathway</div>
+        <div class="chip" onclick="toggleChip(this)">Cross-training (multiple shed types)</div>
+        <div class="chip" onclick="toggleChip(this)">Budget / business exposure</div>
+      </div>
+    </div>
+
+    <div class="section-divider"><div class="sd-line"></div><div class="sd-label">Hiring patterns</div><div class="sd-line"></div></div>
+
+    <div class="form-group">
+      <label class="fld-label">How often do you typically hire?</label>
+      <select>
+        <option>First time hiring on TopFarms</option>
+        <option selected>Once a year or less</option>
+        <option>1–2 times per year</option>
+        <option>3+ times per year (high turnover / seasonal)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="fld-label">What's your typical hiring timeline?</label>
+      <select>
+        <option>Urgent — need someone ASAP</option>
+        <option selected>Flexible — happy to wait for the right person</option>
+        <option>Planning ahead — 2–3 months out</option>
+        <option>Seasonal — fixed calendar date</option>
+      </select>
+    </div>
+
+    <div class="tgl-row on" onclick="toggleTgl(this,'couples-reveal')">
+      <div class="tgl-info"><div class="tgl-lbl">👫 Open to couple / partner placements</div><div class="tgl-sub">Very common in NZ dairy — if you're open to it, say so</div></div>
+      <div class="tgl on"></div>
+    </div>
+    <div class="tgl-reveal show" id="couples-reveal">
+      <div class="form-group" style="margin-bottom:0">
+        <label class="fld-label">Partner work availability</label>
+        <select>
+          <option selected>Partner role available on same farm</option>
+          <option>May help find partner work nearby</option>
+          <option>No role for partner but open to the arrangement</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goTo(3)">← Back</button>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" onclick="goTo(5)">Continue →</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════
+     SCREEN 5 — Accommodation & perks
+════════════════════════════════════════════════════ -->
+<div class="screen center-screen" id="screen-5">
+  <div class="wizard-card">
+    <div class="step-dots"><div class="sd done"></div><div class="sd done"></div><div class="sd done"></div><div class="sd done"></div><div class="sd active"></div><div class="sd"></div><div class="sd"></div><div class="sd"></div></div>
+    <div class="wizard-eyebrow">Step 5 of 8 · Accommodation &amp; perks</div>
+    <h2 class="wizard-title">What do you offer workers?</h2>
+    <p class="wizard-sub">Listings with accommodation details get 2.4× more applications. Be specific — seekers filter by this heavily.</p>
+
+    <div class="info-box ib-blue">💡 76% of NZ dairy job seekers on TopFarms require or strongly prefer on-farm accommodation. This is your most powerful recruitment tool.</div>
+
+    <div class="tgl-row on" onclick="toggleTgl(this,'acc-reveal')">
+      <div class="tgl-info"><div class="tgl-lbl">🏠 On-farm accommodation available</div><div class="tgl-sub">House or cottage provided with the role</div></div>
+      <div class="tgl on"></div>
+    </div>
+    <div class="tgl-reveal show" id="acc-reveal">
+      <div class="row-2" style="margin-bottom:10px">
+        <div class="form-group" style="margin-bottom:0">
+          <label class="fld-label">House type</label>
+          <select>
+            <option>1-bedroom cottage</option>
+            <option>2-bedroom house</option>
+            <option selected>3-bedroom house</option>
+            <option>4+ bedroom house</option>
+            <option>Multiple options available</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="fld-label">Utilities included</label>
+          <select>
+            <option selected>Power + water included</option>
+            <option>Power included, water metered</option>
+            <option>Water only</option>
+            <option>Not included</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:6px">
+        <label class="fld-label">Accommodation extras</label>
+        <div class="chip-grid">
+          <div class="chip sel" onclick="toggleChip(this)">Couples welcome</div>
+          <div class="chip sel" onclick="toggleChip(this)">Family-friendly</div>
+          <div class="chip" onclick="toggleChip(this)">Pets negotiable</div>
+          <div class="chip" onclick="toggleChip(this)">Working dogs OK</div>
+          <div class="chip" onclick="toggleChip(this)">Close to school</div>
+          <div class="chip" onclick="toggleChip(this)">Broadband connected</div>
+          <div class="chip" onclick="toggleChip(this)">Garden / section</div>
+          <div class="chip" onclick="toggleChip(this)">Garage / workshop</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-divider"><div class="sd-line"></div><div class="sd-label">Vehicles &amp; equipment</div><div class="sd-line"></div></div>
+
+    <div class="tgl-row on" onclick="toggleTgl(this,'vehicle-reveal')">
+      <div class="tgl-info"><div class="tgl-lbl">🚗 Farm vehicle provided for on-farm use</div><div class="tgl-sub">UTV, quad, ute, motorbike etc.</div></div>
+      <div class="tgl on"></div>
+    </div>
+    <div class="tgl-reveal show" id="vehicle-reveal">
+      <div class="chip-grid">
+        <div class="chip sel" onclick="toggleChip(this)">UTV / side-by-side</div>
+        <div class="chip" onclick="toggleChip(this)">Quad bike</div>
+        <div class="chip" onclick="toggleChip(this)">Farm motorbike</div>
+        <div class="chip" onclick="toggleChip(this)">Ute for personal use</div>
+      </div>
+    </div>
+
+    <div class="tgl-row" onclick="toggleTgl(this,'')">
+      <div class="tgl-info"><div class="tgl-lbl">🌐 Broadband / internet at farm house</div><div class="tgl-sub">Increasingly important for applicants with families</div></div>
+      <div class="tgl"></div>
+    </div>
+
+    <div class="section-divider"><div class="sd-line"></div><div class="sd-label">Typical salary range</div><div class="sd-line"></div></div>
+
+    <div class="form-group">
+      <label class="fld-label">Typical salary range you offer (NZD / year)</label>
+      <div style="display:grid;grid-template-columns:1fr 20px 1fr;gap:6px;align-items:center">
+        <input type="number" placeholder="Min e.g. 52000" value="52000">
+        <div style="text-align:center;color:var(--light);font-size:14px;padding-top:6px">–</div>
+        <input type="number" placeholder="Max e.g. 62000" value="62000">
+      </div>
+      <div class="fld-hint">Market rate for an experienced dairy assistant in Waikato is currently <strong style="color:var(--moss)">$50k–$65k</strong>. Your range is within market ✓</div>
+    </div>
+
+    <div class="form-group">
+      <label class="fld-label">Additional compensation</label>
+      <div class="chip-grid">
+        <div class="chip" onclick="toggleChip(this)">End of season bonus</div>
+        <div class="chip" onclick="toggleChip(this)">Production bonus</div>
+        <div class="chip" onclick="toggleChip(this)">Annual pay review</div>
+        <div class="chip sel" onclick="toggleChip(this)">DairyNZ training paid</div>
+        <div class="chip" onclick="toggleChip(this)">Fuel allowance</div>
+        <div class="chip" onclick="toggleChip(this)">Meat / produce share</div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goTo(4)">← Back</button>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" onclick="goTo(6)">Continue →</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════
+     SCREEN 6 — Verification
+════════════════════════════════════════════════════ -->
+<div class="screen center-screen" id="screen-6">
+  <div class="wizard-card">
+    <div class="step-dots"><div class="sd done"></div><div class="sd done"></div><div class="sd done"></div><div class="sd done"></div><div class="sd done"></div><div class="sd active"></div><div class="sd"></div><div class="sd"></div></div>
+    <div class="wizard-eyebrow">Step 6 of 8 · Verification</div>
+    <h2 class="wizard-title">Verify your farm profile</h2>
+    <p class="wizard-sub">Verified employers get a trust badge on every job listing — seekers apply 35% more readily to verified farms, and ghosting drops significantly.</p>
+
+    <div class="info-box ib-green" style="margin-bottom:18px">✅ Complete at least steps 1 &amp; 2 to become verified. Steps 3 &amp; 4 earn you a <strong>Premium Verified</strong> badge.</div>
+
+    <div class="verify-steps">
+
+      <div class="vs-item done">
+        <div class="vs-num">✓</div>
+        <div class="vs-body">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+            <div class="vs-title">Email verified</div>
+            <span class="vs-badge badge-done">Completed</span>
+          </div>
+          <div class="vs-desc">Your email address has been confirmed.</div>
+        </div>
+      </div>
+
+      <div class="vs-item active">
+        <div class="vs-num">2</div>
+        <div class="vs-body">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+            <div class="vs-title">Phone number verification</div>
+            <span class="vs-badge badge-required">Required for badge</span>
+          </div>
+          <div class="vs-desc">We'll send a 6-digit code to your mobile. Takes 30 seconds.</div>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+            <input type="tel" placeholder="+64 21 456 789" value="+64 21 456 789" style="max-width:200px">
+            <button class="btn btn-hay" style="padding:8px 14px;font-size:12px;white-space:nowrap">Send code →</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="vs-item">
+        <div class="vs-num">3</div>
+        <div class="vs-body">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+            <div class="vs-title">Business / NZBN verification</div>
+            <span class="vs-badge badge-trust">Boosts trust significantly</span>
+          </div>
+          <div class="vs-desc">Enter your New Zealand Business Number (NZBN) to verify your farm is a registered entity. Cross-referenced automatically with the Companies Register.</div>
+          <div style="margin-top:8px">
+            <input type="text" placeholder="NZBN — 13 digits e.g. 9429000000000">
+          </div>
+        </div>
+      </div>
+
+      <div class="vs-item">
+        <div class="vs-num">4</div>
+        <div class="vs-body">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+            <div class="vs-title">Upload a document</div>
+            <span class="vs-badge badge-trust">Premium Verified badge</span>
+          </div>
+          <div class="vs-desc">Upload one of: rates bill, land title, farm lease, or a letter from DairyNZ / B+LNZ confirming your farm. Reviewed within 1 business day.</div>
+          <div class="upload-zone uploaded" style="margin-top:10px">
+            <div class="uz-icon">📄</div>
+            <div class="uz-label">rates_notice_greenfield_2025.pdf</div>
+            <div class="uz-sub">Uploaded — awaiting review</div>
+          </div>
+          <div class="uploaded-file">
+            📄 rates_notice_greenfield_2025.pdf · 1.2 MB
+            <button class="uf-remove">✕</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="vs-item optional">
+        <div class="vs-num">5</div>
+        <div class="vs-body">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+            <div class="vs-title">Add a farm photo</div>
+            <span class="vs-badge badge-optional">Optional</span>
+          </div>
+          <div class="vs-desc">A photo of your farm, house, or shed makes your profile more personal and trustworthy. Used in job listings.</div>
+          <div class="upload-zone" style="margin-top:8px">
+            <div class="uz-icon">📷</div>
+            <div class="uz-label">Upload a farm photo</div>
+            <div class="uz-sub">JPG or PNG · max 5MB</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="info-box ib-purple" style="margin-top:16px">✨ You've uploaded a document — your profile will receive <strong>Premium Verified</strong> status within 1 business day of review. You can continue and post jobs right now.</div>
+
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goTo(5)">← Back</button>
+      <div class="spacer"></div>
+      <button class="btn btn-ghost" onclick="goTo(7)" style="font-size:12px">Skip for now</button>
+      <button class="btn btn-primary" onclick="goTo(7)">Continue →</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════
+     SCREEN 7 — Subscription / pricing
+════════════════════════════════════════════════════ -->
+<div class="screen center-screen" id="screen-7">
+  <div class="wizard-card" style="max-width:700px">
+    <div class="step-dots"><div class="sd done"></div><div class="sd done"></div><div class="sd done"></div><div class="sd done"></div><div class="sd done"></div><div class="sd done"></div><div class="sd active"></div><div class="sd"></div></div>
+    <div class="wizard-eyebrow">Step 7 of 8 · Choose a plan</div>
+    <h2 class="wizard-title">Pick a plan that suits your hiring needs</h2>
+    <p class="wizard-sub">No contracts, cancel anytime. All plans include AI match scoring, application pipeline management, and full candidate profiles.</p>
+
+    <div class="billing-toggle">
+      <span class="bt-label">Monthly</span>
+      <div class="bt-switch" id="billing-switch" onclick="toggleBilling(this)"></div>
+      <span class="bt-label active">Annual <span class="savings-badge">Save 20%</span></span>
+    </div>
+
+    <div class="pricing-grid">
+
+      <div class="price-card" onclick="selectPlan(this)">
+        <div class="pc-icon">📋</div>
+        <div class="pc-name">Pay-per-listing</div>
+        <div class="pc-price" id="p1-price">$100</div>
+        <div class="pc-period">per job listing</div>
+        <div class="pc-divider"></div>
+        <div class="pc-feats">
+          <div class="pc-feat yes">30-day listing</div>
+          <div class="pc-feat yes">AI match scoring</div>
+          <div class="pc-feat yes">Application pipeline</div>
+          <div class="pc-feat yes">Standard search placement</div>
+          <div class="pc-feat no">Featured listing option</div>
+          <div class="pc-feat no">Unlimited job posts</div>
+          <div class="pc-feat no">Candidate database access</div>
+        </div>
+      </div>
+
+      <div class="price-card popular sel" onclick="selectPlan(this)">
+        <div class="popular-badge">⭐ Most popular</div>
+        <div class="pc-icon">🌟</div>
+        <div class="pc-name">Seasonal</div>
+        <div class="pc-price" id="p2-price">$200</div>
+        <div class="pc-period" id="p2-period">/month · billed annually</div>
+        <div class="pc-divider"></div>
+        <div class="pc-feats">
+          <div class="pc-feat yes">Everything in Pay-per-listing</div>
+          <div class="pc-feat highlight">3 job posts per month</div>
+          <div class="pc-feat highlight">1 featured listing/month</div>
+          <div class="pc-feat yes">AI match scoring</div>
+          <div class="pc-feat yes">Application pipeline</div>
+          <div class="pc-feat yes">Basic candidate search</div>
+          <div class="pc-feat no">Unlimited posts</div>
+        </div>
+      </div>
+
+      <div class="price-card" onclick="selectPlan(this)">
+        <div class="pc-icon">🏢</div>
+        <div class="pc-name">Enterprise</div>
+        <div class="pc-price" id="p3-price">$350</div>
+        <div class="pc-period" id="p3-period">/month · billed annually</div>
+        <div class="pc-divider"></div>
+        <div class="pc-feats">
+          <div class="pc-feat yes">Everything in Seasonal</div>
+          <div class="pc-feat highlight">Unlimited job posts</div>
+          <div class="pc-feat highlight">Full candidate database search</div>
+          <div class="pc-feat highlight">Proactive matching alerts</div>
+          <div class="pc-feat yes">Priority support</div>
+          <div class="pc-feat yes">Multi-farm management</div>
+          <div class="pc-feat yes">Bulk operations + reporting</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="price-note">
+      💳 <strong>No payment required to complete setup.</strong> You'll choose and pay when you publish your first job listing. All prices include GST. Monthly billing available at a slight premium. Cancel anytime from your account settings.
+    </div>
+
+    <div class="info-box ib-green">✅ You've selected <strong>Seasonal ($200/month)</strong> — this includes 3 job posts and 1 featured listing per month, which suits most farm operations. You can change this before publishing your first job.</div>
+
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goTo(6)">← Back</button>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" onclick="goTo(8)">Confirm &amp; finish →</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════
+     SCREEN 8 — Completion + farm profile preview
+════════════════════════════════════════════════════ -->
+<div class="screen" id="screen-8" style="min-height:100vh;padding-top:56px;background:var(--cream);align-items:flex-start;justify-content:center">
+  <div style="width:100%;max-width:860px;padding:36px 24px;display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start">
+
+    <div class="complete-card" style="text-align:left;padding:36px 40px">
+      <div style="font-size:44px;margin-bottom:16px">🎉</div>
+      <h2 class="cc-title" style="font-family:'Fraunces',serif;font-size:26px;margin-bottom:6px">Your farm is <em>live</em> on TopFarms</h2>
+      <p style="font-size:13px;color:var(--mid);line-height:1.6;margin-bottom:22px">Greenfield Farms Ltd is now live and searchable by candidates. Here's what to do next to get your first hire.</p>
+
+      <div class="cc-checklist">
+        <div class="cc-check-title">What's been set up</div>
+        <div class="cc-check-item">Employer account created for Dave Henderson</div>
+        <div class="cc-check-item">Farm profile: Greenfield Farms Ltd · Rotary · 520 cows · Waikato</div>
+        <div class="cc-check-item">Accommodation: 3-bed house · couples welcome · power &amp; water included</div>
+        <div class="cc-check-item">Verification: Premium Verified pending document review (1 business day)</div>
+        <div class="cc-check-item">Plan selected: Seasonal · $200/month · payment on first listing</div>
+      </div>
+
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--mid);margin-bottom:12px">What to do now</div>
+      <div class="cc-actions">
+        <button class="btn btn-primary btn-full" style="font-size:14px;padding:13px" onclick="void(0)">🚀 Post your first job listing</button>
+        <button class="btn btn-hay btn-full" onclick="void(0)">👥 Browse matched candidates now</button>
+        <button class="btn btn-ghost btn-full" onclick="void(0)">📋 View and edit my farm profile</button>
+      </div>
+
+      <div class="info-box ib-purple" style="margin-top:18px;margin-bottom:0">✨ <strong>AI tip:</strong> Post a listing within 24 hours of sign-up — farms that post quickly appear higher in new-member candidate digests sent to seekers every Monday.</div>
+    </div>
+
+    <!-- Farm profile preview card -->
+    <div>
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--light);margin-bottom:10px;text-align:center">Your public farm profile</div>
+      <div class="farm-profile-preview">
+        <div class="fpp-header">
+          <div class="fpp-logo">🌿</div>
+          <div class="fpp-name">Greenfield Farms Ltd</div>
+          <div class="fpp-sub">Waikato · Est. 2000 · Owner-operated</div>
+          <div class="fpp-verified">✓ Verified (pending)</div>
+        </div>
+        <div class="fpp-body">
+          <div class="fpp-stat-row">
+            <div class="fpp-stat"><div class="fpp-stat-val">520</div><div class="fpp-stat-lbl">Cows</div></div>
+            <div class="fpp-stat"><div class="fpp-stat-val">210</div><div class="fpp-stat-lbl">Hectares</div></div>
+            <div class="fpp-stat"><div class="fpp-stat-val">3</div><div class="fpp-stat-lbl">Team</div></div>
+          </div>
+          <div class="fpp-tags">
+            <span class="fpp-tag fpp-tag-green">🥛 Dairy · Rotary</span>
+            <span class="fpp-tag fpp-tag-green">2× daily</span>
+            <span class="fpp-tag fpp-tag-hay">🏠 3-bed house</span>
+            <span class="fpp-tag fpp-tag-hay">👫 Couples OK</span>
+            <span class="fpp-tag fpp-tag-blue">DairyNZ support</span>
+          </div>
+          <div style="font-size:11px;color:var(--mid);line-height:1.5;margin-bottom:12px;border-top:1px solid var(--fog);padding-top:10px">"Family-owned operation, been in the family 25 years. We believe in work-life balance and looking after our team…"</div>
+          <div class="fpp-rating">
+            <div class="fpp-stars">★★★★★</div>
+            <span>New profile — no reviews yet</span>
+          </div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--light);text-align:center;margin-top:10px;line-height:1.5">This is how candidates see your farm. <span style="color:var(--fern);cursor:pointer">Edit profile →</span></div>
+    </div>
+
+  </div>
+</div>
+
+
+<script>
+const TOTAL = 8;
+const pct = [12, 25, 37, 50, 62, 75, 87, 100];
+
+function goTo(n) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const s = document.getElementById('screen-' + n);
+  if (s) { s.classList.add('active'); window.scrollTo({top:0, behavior:'smooth'}); }
+  document.getElementById('progress-fill').style.width = pct[n-1] + '%';
+  document.getElementById('step-indicator').textContent = n < TOTAL ? `Step ${n} of ${TOTAL-1}` : 'Done!';
+}
+
+function selectOne(el) {
+  // works for both .choice-card and .choice-card-h within the same parent container
+  const parent = el.closest('.choice-grid, .form-group, [style*="flex-direction:column"]');
+  if (parent) {
+    parent.querySelectorAll('.choice-card, .choice-card-h').forEach(c => c.classList.remove('sel'));
+  }
+  el.classList.add('sel');
+}
+
+function toggleChip(el) { el.classList.toggle('sel'); }
+
+function toggleTgl(row, revealId) {
+  row.classList.toggle('on');
+  row.querySelector('.tgl').classList.toggle('on');
+  if (revealId) {
+    const rev = document.getElementById(revealId);
+    if (rev) rev.classList.toggle('show');
+  }
+}
+
+function updateChar(el, countId, max) {
+  const c = document.getElementById(countId);
+  if (c) c.textContent = el.value.length + ' / ' + max;
+}
+
+function updatePw(el) {
+  const len = el.value.length;
+  const fill = document.getElementById('pw-fill');
+  const hint = document.getElementById('pw-hint');
+  if (!fill) return;
+  const w = Math.min(100, len * 8);
+  fill.style.width = w + '%';
+  if (len < 6) { fill.style.background = 'var(--red)'; if(hint){hint.textContent='Too short';hint.style.color='var(--red)';} }
+  else if (len < 9) { fill.style.background = 'var(--orange)'; if(hint){hint.textContent='Could be stronger';hint.style.color='var(--orange)';} }
+  else { fill.style.background = 'var(--moss)'; if(hint){hint.textContent='Strong password ✓';hint.style.color='var(--moss)';} }
+}
+
+function selectPlan(el) {
+  document.querySelectorAll('.price-card').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function toggleBilling(el) {
+  el.classList.toggle('monthly');
+  const isAnnual = !el.classList.contains('monthly');
+  // Toggle label active states
+  document.querySelectorAll('.bt-label').forEach((l, i) => {
+    l.classList.toggle('active', i === (isAnnual ? 1 : 0));
+  });
+  // Update prices
+  if (isAnnual) {
+    document.getElementById('p2-price').textContent = '$200';
+    document.getElementById('p2-period').textContent = '/month · billed annually';
+    document.getElementById('p3-price').textContent = '$350';
+    document.getElementById('p3-period').textContent = '/month · billed annually';
+  } else {
+    document.getElementById('p2-price').textContent = '$250';
+    document.getElementById('p2-period').textContent = '/month · billed monthly';
+    document.getElementById('p3-price').textContent = '$440';
+    document.getElementById('p3-period').textContent = '/month · billed monthly';
+  }
+}
+</script>
+</body>
+</html>

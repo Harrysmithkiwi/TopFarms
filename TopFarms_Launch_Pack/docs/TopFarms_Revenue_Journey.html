@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TopFarms — Revenue Journey & Protection Model</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --soil:#2C1A0E;--soil-deep:#1E1108;
+  --moss:#2D5016;--fern:#4A7C2F;--meadow:#7AAF3F;
+  --hay:#D4A843;--hay-lt:#FFF8E7;
+  --cream:#F7F2E8;--fog:#EEE8DC;--mist:#F2EEE6;
+  --ink:#1A1208;--mid:#6B5D4A;--light:#9E8E78;--white:#FFFFFF;
+  --red:#C0392B;--red-lt:#FDF0EE;
+  --blue:#1A5276;--blue-lt:#EAF4FB;
+  --orange:#E67E22;--orange-lt:#FEF5EC;
+  --purple:#6C3483;--purple-lt:#F5EEF8;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);
+  min-height:100vh;padding:48px clamp(16px,5vw,80px) 80px}
+
+/* ── HEADER ── */
+.doc-header{margin-bottom:52px;max-width:780px}
+.doc-eyebrow{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;
+  color:var(--meadow);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.doc-eyebrow::before{content:'';width:24px;height:2px;background:var(--meadow)}
+.doc-title{font-family:'Fraunces',serif;font-size:clamp(32px,4vw,52px);font-weight:900;
+  color:var(--ink);letter-spacing:-2px;line-height:1.0;margin-bottom:14px}
+.doc-title em{font-style:italic;color:var(--moss)}
+.doc-sub{font-size:15px;color:var(--mid);line-height:1.7;max-width:600px}
+
+/* ── REVENUE SUMMARY STRIP ── */
+.revenue-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;
+  background:var(--fog);border-radius:14px;overflow:hidden;margin-bottom:48px}
+.rs-item{background:var(--white);padding:20px 22px}
+.rs-item:first-child{border-radius:12px 0 0 12px}
+.rs-item:last-child{border-radius:0 12px 12px 0}
+.rs-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;
+  color:var(--light);margin-bottom:6px}
+.rs-val{font-family:'Fraunces',serif;font-size:24px;font-weight:700;color:var(--ink);
+  letter-spacing:-.5px;margin-bottom:3px}
+.rs-val em{font-style:italic;color:var(--moss)}
+.rs-desc{font-size:11px;color:var(--mid);line-height:1.4}
+.rs-risk{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;margin-top:6px;display:inline-block}
+.risk-none{background:rgba(45,80,22,.08);color:var(--moss)}
+.risk-high{background:var(--red-lt);color:var(--red)}
+
+/* ── MAIN TIMELINE ── */
+.timeline-section{margin-bottom:56px}
+.ts-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:var(--ink);
+  letter-spacing:-.3px;margin-bottom:28px;display:flex;align-items:center;gap:10px}
+.ts-title::after{content:'';flex:1;height:1.5px;background:var(--fog)}
+
+/* Timeline rail */
+.timeline{position:relative;padding-bottom:8px}
+.tl-rail{position:absolute;top:28px;left:27px;bottom:0;width:2px;
+  background:linear-gradient(to bottom,var(--fog) 0%,var(--fog) 100%);z-index:0}
+.tl-rail-fill{position:absolute;top:0;left:0;width:100%;
+  background:linear-gradient(to bottom,var(--meadow),var(--moss));
+  transition:height 1.2s cubic-bezier(.4,0,.2,1)}
+
+/* Timeline step */
+.tl-step{display:flex;gap:20px;margin-bottom:6px;position:relative;z-index:1}
+.tl-left{display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:56px}
+.tl-node{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:20px;border:3px solid var(--fog);
+  background:var(--white);flex-shrink:0;position:relative;
+  transition:border-color .3s,box-shadow .3s}
+.tl-node.revenue{border-color:var(--moss);background:rgba(45,80,22,.06)}
+.tl-node.revenue::after{content:'$';position:absolute;top:-6px;right:-6px;
+  width:18px;height:18px;background:var(--moss);color:white;border-radius:50%;
+  font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.tl-node.gate{border-color:var(--hay);background:var(--hay-lt)}
+.tl-node.gate::after{content:'🔒';position:absolute;top:-6px;right:-6px;
+  font-size:11px}
+.tl-node.warning{border-color:var(--orange);background:var(--orange-lt)}
+.tl-node.milestone{border-color:var(--blue);background:var(--blue-lt)}
+.tl-connector{flex:1;width:2px;min-height:20px;background:var(--fog);margin-top:2px}
+.tl-connector.filled{background:linear-gradient(to bottom,var(--meadow),var(--fern))}
+
+.tl-body{flex:1;padding-bottom:28px;padding-top:8px}
+.tl-step-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;
+  color:var(--light);margin-bottom:4px}
+.tl-step-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:var(--ink);
+  letter-spacing:-.3px;margin-bottom:6px}
+.tl-step-desc{font-size:13px;color:var(--mid);line-height:1.6;margin-bottom:10px;max-width:620px}
+
+/* Inline cards within steps */
+.step-card{border-radius:10px;padding:13px 16px;margin-top:10px;margin-bottom:4px;
+  border:1.5px solid}
+.sc-revenue{background:rgba(45,80,22,.04);border-color:rgba(45,80,22,.15)}
+.sc-gate{background:var(--hay-lt);border-color:rgba(212,168,67,.3)}
+.sc-warning{background:var(--orange-lt);border-color:rgba(230,126,34,.25)}
+.sc-blue{background:var(--blue-lt);border-color:rgba(26,82,118,.15)}
+.sc-purple{background:var(--purple-lt);border-color:rgba(108,52,131,.12)}
+.sc-title{font-size:11px;font-weight:700;margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.sc-title.green{color:var(--moss)}
+.sc-title.hay{color:#7A5C00}
+.sc-title.orange{color:var(--orange)}
+.sc-title.blue{color:var(--blue)}
+.sc-title.purple{color:var(--purple)}
+.sc-body{font-size:12px;line-height:1.55}
+.sc-body.green{color:#2A4A10}
+.sc-body.hay{color:#5A4000}
+.sc-body.orange{color:#7A3D00}
+.sc-body.blue{color:#0E3352}
+.sc-body.purple{color:#4A2D5C}
+
+/* Pricing tier row */
+.tier-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.tier-card{background:var(--white);border:1.5px solid var(--fog);border-radius:8px;
+  padding:12px;text-align:center}
+.tier-card.highlighted{border-color:var(--moss);background:rgba(45,80,22,.03)}
+.tc-price{font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:2px}
+.tc-name{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--light);margin-bottom:4px}
+.tc-feat{font-size:10px;color:var(--mid);line-height:1.4}
+.tc-feat strong{color:var(--moss)}
+
+/* Message scan illustration */
+.msg-scan{background:var(--white);border:1.5px solid var(--fog);border-radius:10px;
+  padding:14px;margin-top:10px}
+.msg-thread{display:flex;flex-direction:column;gap:8px}
+.msg-bubble{max-width:80%;padding:9px 12px;border-radius:10px;font-size:12px;line-height:1.45}
+.msg-bubble.seeker{background:var(--mist);color:var(--mid);border-radius:10px 10px 10px 2px;align-self:flex-start}
+.msg-bubble.employer{background:rgba(45,80,22,.08);color:var(--moss);border-radius:10px 10px 2px 10px;align-self:flex-end}
+.msg-bubble.blocked{background:var(--orange-lt);border:1.5px dashed rgba(230,126,34,.4);
+  color:var(--orange);border-radius:10px;align-self:flex-start;position:relative}
+.msg-block-banner{background:rgba(230,126,34,.12);border:1px solid rgba(230,126,34,.2);
+  border-radius:6px;padding:7px 10px;font-size:11px;color:#7A3D00;
+  margin-top:6px;display:flex;align-items:flex-start;gap:6px}
+.msg-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+  color:var(--light);margin-bottom:5px}
+
+/* Contact release gate */
+.contact-gate{background:var(--white);border:2px dashed rgba(212,168,67,.4);
+  border-radius:10px;padding:16px;margin-top:10px}
+.cg-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.cg-lock{width:36px;height:36px;border-radius:8px;background:var(--hay-lt);
+  display:flex;align-items:center;justify-content:center;font-size:16px}
+.cg-title{font-size:13px;font-weight:700;color:var(--ink)}
+.cg-sub{font-size:11px;color:var(--mid)}
+.cg-confirm{background:var(--hay-lt);border:1.5px solid rgba(212,168,67,.3);
+  border-radius:7px;padding:10px 13px;font-size:12px;color:#5A4000;
+  margin-bottom:10px;line-height:1.5}
+.cg-confirm strong{display:block;color:#3A2800;margin-bottom:3px}
+.cg-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;
+  background:var(--hay);color:var(--soil);border:none;border-radius:6px;
+  font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer}
+.cg-unlock{background:rgba(45,80,22,.05);border:1.5px solid rgba(45,80,22,.15);
+  border-radius:7px;padding:10px 13px;font-size:12px;color:var(--moss);
+  display:flex;align-items:center;gap:10px}
+.cg-phone{font-family:'Fraunces',serif;font-size:16px;font-weight:700;color:var(--ink)}
+
+/* Placement fee explainer */
+.placement-explainer{background:var(--white);border:1.5px solid rgba(45,80,22,.15);
+  border-radius:10px;padding:16px;margin-top:10px}
+.pe-row{display:flex;align-items:flex-start;gap:12px;padding:8px 0;
+  border-bottom:1px solid var(--fog)}
+.pe-row:last-child{border-bottom:none}
+.pe-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.pe-title{font-size:12px;font-weight:700;color:var(--ink);margin-bottom:2px}
+.pe-desc{font-size:11px;color:var(--mid);line-height:1.45}
+
+/* ── RISK MATRIX ── */
+.risk-section{background:var(--soil);border-radius:16px;padding:32px 36px;margin-bottom:48px;
+  position:relative;overflow:hidden}
+.risk-section::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 80% 20%,rgba(74,124,47,.15) 0%,transparent 55%)}
+.rs-head{font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--cream);
+  letter-spacing:-.3px;margin-bottom:6px;position:relative;z-index:1}
+.rs-head em{font-style:italic;color:var(--hay)}
+.rs-sub{font-size:13px;color:rgba(247,242,232,.5);margin-bottom:24px;position:relative;z-index:1}
+.risk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;position:relative;z-index:1}
+.risk-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;padding:16px}
+.risk-card.protected{border-color:rgba(122,175,63,.25);background:rgba(45,80,22,.15)}
+.risk-card.vulnerable{border-color:rgba(192,57,43,.3);background:rgba(192,57,43,.08)}
+.risk-card.mitigated{border-color:rgba(212,168,67,.25);background:rgba(212,168,67,.07)}
+.rk-icon{font-size:20px;margin-bottom:8px}
+.rk-title{font-size:12px;font-weight:700;color:var(--cream);margin-bottom:4px}
+.rk-status{font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;
+  display:inline-block;margin-bottom:8px}
+.rks-protected{background:rgba(122,175,63,.2);color:var(--meadow)}
+.rks-vulnerable{background:rgba(192,57,43,.2);color:#E88070}
+.rks-mitigated{background:rgba(212,168,67,.2);color:var(--hay)}
+.rk-desc{font-size:11px;color:rgba(247,242,232,.5);line-height:1.5}
+
+/* ── PRINCIPLES BOX ── */
+.principles{background:var(--white);border:1.5px solid var(--fog);border-radius:14px;
+  padding:28px 32px;margin-bottom:48px}
+.pr-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:var(--ink);
+  letter-spacing:-.3px;margin-bottom:20px;padding-bottom:14px;border-bottom:1.5px solid var(--fog)}
+.pr-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pr-item{display:flex;gap:12px}
+.pr-num{font-family:'Fraunces',serif;font-size:28px;font-weight:900;color:var(--fog);
+  line-height:1;flex-shrink:0;margin-top:-2px}
+.pr-body{}
+.pr-item-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.pr-item-desc{font-size:12px;color:var(--mid);line-height:1.5}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeUp .5s ease both}
+.fade-in-2{animation:fadeUp .5s ease .1s both}
+.fade-in-3{animation:fadeUp .5s ease .2s both}
+
+@media(max-width:720px){
+  .tier-row{grid-template-columns:1fr}
+  .risk-grid{grid-template-columns:1fr}
+  .pr-grid{grid-template-columns:1fr}
+  .revenue-strip{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="doc-header fade-in">
+  <div class="doc-eyebrow">TopFarms · Internal analysis</div>
+  <h1 class="doc-title">Revenue journey &<br><em>protection model</em></h1>
+  <p class="doc-sub">How listing fees, in-app messaging gates, and placement fees interact — and how contact-detail sharing is prevented from circumventing revenue at each stage.</p>
+</div>
+
+<!-- REVENUE SUMMARY -->
+<div class="revenue-strip fade-in-2">
+  <div class="rs-item">
+    <div class="rs-label">Revenue event 1</div>
+    <div class="rs-val">Listing <em>fee</em></div>
+    <div class="rs-desc">$0 first listing / $100–$200 subsequent. Paid before any matching or messaging begins.</div>
+    <span class="rs-risk risk-none">✓ Fully protected</span>
+  </div>
+  <div class="rs-item">
+    <div class="rs-label">Revenue event 2</div>
+    <div class="rs-val">Placement <em>fee</em></div>
+    <div class="rs-desc">% of first-year salary or flat fee. Paid when employer confirms a hire was made via TopFarms.</div>
+    <span class="rs-risk risk-high">⚠ Requires active protection</span>
+  </div>
+  <div class="rs-item">
+    <div class="rs-label">The risk</div>
+    <div class="rs-val">Off-platform <em>hire</em></div>
+    <div class="rs-desc">Employer and seeker exchange contact details via in-app messaging and complete the hire outside TopFarms.</div>
+    <span class="rs-risk risk-high">⚠ Revenue lost entirely</span>
+  </div>
+</div>
+
+
+<!-- MAIN TIMELINE -->
+<div class="timeline-section fade-in-3">
+  <div class="ts-title">The employer journey — revenue gates at each stage</div>
+
+  <div class="timeline">
+    <div class="tl-rail"><div class="tl-rail-fill" id="rail-fill" style="height:0%"></div></div>
+
+    <!-- STEP 1: Sign up (free) -->
+    <div class="tl-step">
+      <div class="tl-left">
+        <div class="tl-node milestone">👤</div>
+        <div class="tl-connector filled"></div>
+      </div>
+      <div class="tl-body">
+        <div class="tl-step-label">Stage 1 · Employer onboarding</div>
+        <div class="tl-step-title">Farm profile setup</div>
+        <div class="tl-step-desc">Employer creates account, sets up farm profile (shed type, herd size, region, accommodation). Free. No revenue event — this is acquisition.</div>
+        <div class="step-card sc-blue">
+          <div class="sc-title blue">ℹ️ Platform logic</div>
+          <div class="sc-body blue">No risk at this stage. Employer and seeker have not been introduced. Contact details not visible to either party.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2: First listing free -->
+    <div class="tl-step">
+      <div class="tl-left">
+        <div class="tl-node revenue">📋</div>
+        <div class="tl-connector filled"></div>
+      </div>
+      <div class="tl-body">
+        <div class="tl-step-label">Stage 2 · First listing · Revenue event 1</div>
+        <div class="tl-step-title">Post a job listing</div>
+        <div class="tl-step-desc">Employer posts their first role. First listing is <strong>free</strong> to reduce signup friction. Subsequent listings are paid — collected upfront before any candidates are shown.</div>
+        <div class="tier-row">
+          <div class="tier-card">
+            <div class="tc-name">First listing</div>
+            <div class="tc-price" style="color:var(--moss)">Free</div>
+            <div class="tc-feat">Acquisition driver · <strong>No payment</strong> required</div>
+          </div>
+          <div class="tier-card highlighted">
+            <div class="tc-name">Standard</div>
+            <div class="tc-price">$100</div>
+            <div class="tc-feat">30-day listing · standard placement · basic analytics</div>
+          </div>
+          <div class="tier-card highlighted">
+            <div class="tc-name">Featured</div>
+            <div class="tc-price">$150–$200</div>
+            <div class="tc-feat">Top placement · <strong>3× visibility</strong> · priority support</div>
+          </div>
+        </div>
+        <div class="step-card sc-revenue" style="margin-top:10px">
+          <div class="sc-title green">💰 Revenue protection at this stage</div>
+          <div class="sc-body green">Listing fee is collected before any candidate matching occurs. No circumvention risk — the employer hasn't seen any candidates yet and there is nothing to route around.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3: AI matching -->
+    <div class="tl-step">
+      <div class="tl-left">
+        <div class="tl-node milestone">🎯</div>
+        <div class="tl-connector filled"></div>
+      </div>
+      <div class="tl-body">
+        <div class="tl-step-label">Stage 3 · Matching</div>
+        <div class="tl-step-title">AI-ranked candidates appear</div>
+        <div class="tl-step-desc">Employer sees applicants ranked by match score. Full candidate profiles visible — experience, qualifications, shed history, living needs. <strong>Contact details are hidden at this stage.</strong></div>
+        <div class="step-card sc-gate">
+          <div class="sc-title hay">🔒 Contact gate — active</div>
+          <div class="sc-body hay">Phone numbers and email addresses are masked in all candidate profiles. The employer can see everything relevant to make a shortlisting decision — but cannot reach the candidate directly yet.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 4: In-app messaging -->
+    <div class="tl-step">
+      <div class="tl-left">
+        <div class="tl-node gate">💬</div>
+        <div class="tl-connector"></div>
+      </div>
+      <div class="tl-body">
+        <div class="tl-step-label">Stage 4 · In-app messaging · Revenue protection active</div>
+        <div class="tl-step-title">Gated enquiry messaging</div>
+        <div class="tl-step-desc">Both employer and seeker can exchange messages within TopFarms — tied to the specific listing. All messages are scanned for contact patterns in real time. The goal is to handle legitimate questions ("Is the house pet friendly?") without enabling off-platform exits.</div>
+
+        <!-- Message thread demo -->
+        <div class="msg-scan">
+          <div class="msg-label">Example conversation thread — Dairy Farm Assistant · Greenfield Farms</div>
+          <div class="msg-thread">
+            <div class="msg-bubble seeker">Hi, quick question — is the accommodation genuinely pet-friendly? We have a working dog and a cat.</div>
+            <div class="msg-bubble employer">Hi James, yes — working dogs absolutely fine, we have a kennel area. Cat fine inside the house too. What sort of rotary experience do you have?</div>
+            <div class="msg-bubble seeker">Great! 7 years, mostly 50-bail rotary. Last farm was 480 cows. I'm very interested — could I give you my number? It's 021...</div>
+            <div class="msg-block-banner">
+              ⚠️ <span><strong>Heads up:</strong> Looks like you're sharing contact details. On TopFarms, direct contact is released automatically when you're shortlisted — usually within 2–3 days. This keeps things organised for both sides. Keep chatting here and we'll connect you properly.</span>
+            </div>
+            <div class="msg-bubble employer" style="margin-top:4px">No worries — I'll shortlist you now and TopFarms will send through your details. Looking good so far.</div>
+          </div>
+        </div>
+
+        <div class="step-card sc-warning" style="margin-top:10px">
+          <div class="sc-title orange">🛡️ Scanning rules — what triggers a soft block</div>
+          <div class="sc-body orange">
+            NZ phone patterns (021, 022, 027, +64) · Email addresses · "text me", "DM me", "WhatsApp me" · Facebook / Instagram handles · Deliberate obfuscation ("zero two one", "021 XXX") triggers a secondary flag for manual review.
+            <br><br>
+            <strong>Soft block only — no hard rejection.</strong> Message is held and sender sees the nudge banner. Does not feel punitive. Determined bad actors can work around it, but most users won't bother.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 5: Shortlisting — contact release gate -->
+    <div class="tl-step">
+      <div class="tl-left">
+        <div class="tl-node gate">⭐</div>
+        <div class="tl-connector"></div>
+      </div>
+      <div class="tl-body">
+        <div class="tl-step-label">Stage 5 · Shortlisting · Contact release gate</div>
+        <div class="tl-step-title">Placement fee acknowledgement</div>
+        <div class="tl-step-desc">When the employer shortlists a candidate, a confirmation modal appears before contact details are released. This is the most important revenue protection moment in the entire journey.</div>
+
+        <div class="contact-gate">
+          <div class="cg-header">
+            <div class="cg-lock">🔓</div>
+            <div>
+              <div class="cg-title">Release contact details for James Tūhoe?</div>
+              <div class="cg-sub">You're about to shortlist this candidate and unlock direct contact</div>
+            </div>
+          </div>
+          <div class="cg-confirm">
+            <strong>📋 Placement fee notice</strong>
+            TopFarms charges a placement fee if you hire a candidate introduced through this platform. By releasing contact details, you confirm you understand and agree to this. <a href="#" style="color:#7A5C00">View fee schedule →</a>
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:12px">
+            <button class="cg-btn" onclick="revealContact(this)">✓ I understand — release contact details</button>
+            <button style="padding:8px 14px;background:transparent;border:1.5px solid var(--fog);border-radius:6px;font-size:11px;font-weight:600;color:var(--mid);cursor:pointer">Cancel</button>
+          </div>
+          <div class="cg-unlock" id="contact-revealed" style="display:none">
+            <div style="font-size:20px">📱</div>
+            <div>
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--moss);margin-bottom:2px">Contact details unlocked</div>
+              <div class="cg-phone">+64 21 456 789</div>
+              <div style="font-size:10px;color:var(--mid)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4b212a262e38653f0b2e262a222765282426">[email&#160;protected]</a> · Placement fee applies if hired</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-card sc-purple" style="margin-top:10px">
+          <div class="sc-title purple">✨ Why this works</div>
+          <div class="sc-body purple">The click-to-confirm creates a <strong>paper trail and sets clear expectations</strong> before the hire happens — not after, when disputes are harder to resolve. Most honest employers won't feel aggrieved by a fee they knowingly agreed to. The modal also reinforces that TopFarms made this match, which justifies the fee psychologically.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 6: Interview / farm visit -->
+    <div class="tl-step">
+      <div class="tl-left">
+        <div class="tl-node milestone">🤝</div>
+        <div class="tl-connector"></div>
+      </div>
+      <div class="tl-body">
+        <div class="tl-step-label">Stage 6 · Off-platform</div>
+        <div class="tl-step-title">Interview & farm visit</div>
+        <div class="tl-step-desc">At this point the parties communicate directly. TopFarms has no control here — this is intentional. The placement fee obligation was established at shortlist. The platform sends a reminder email to both parties 7 days after contact release: <em>"Did you hire James? Let us know and close the loop."</em></div>
+        <div class="step-card sc-blue">
+          <div class="sc-title blue">📧 Automated follow-up nudges</div>
+          <div class="sc-body blue">Day 7 after contact release: "Did you progress with James?" · Day 14: "Have you made a hire?" · If no response: flag for manual follow-up. Small NZ farming community — reputational incentive to pay is real.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 7: Placement fee -->
+    <div class="tl-step">
+      <div class="tl-left">
+        <div class="tl-node revenue">💰</div>
+      </div>
+      <div class="tl-body">
+        <div class="tl-step-label">Stage 7 · Hire confirmed · Revenue event 2</div>
+        <div class="tl-step-title">Placement fee collected</div>
+        <div class="tl-step-desc">Employer confirms hire in dashboard (or via follow-up prompt). Placement fee is invoiced. Seeker profile is marked as hired, their listing removed from search. Both parties receive a "Placed via TopFarms" confirmation.</div>
+
+        <div class="placement-explainer">
+          <div class="pe-row">
+            <div class="pe-icon">💰</div>
+            <div>
+              <div class="pe-title">Fee structure options</div>
+              <div class="pe-desc">Flat fee (e.g. $500–$1,500 depending on role seniority) or % of first-year salary (e.g. 5–8%). Flat fee is simpler to administer and less contentious. % model has higher ceiling for senior roles.</div>
+            </div>
+          </div>
+          <div class="pe-row">
+            <div class="pe-icon">🎁</div>
+            <div>
+              <div class="pe-title">Reporting incentive — "Placed" badge</div>
+              <div class="pe-desc">Employers who confirm hires receive a "Trusted Employer" badge boost and a discount on their next listing. This makes reporting feel like an upgrade, not a penalty. Meaningfully improves voluntary compliance.</div>
+            </div>
+          </div>
+          <div class="pe-row">
+            <div class="pe-icon">🤝</div>
+            <div>
+              <div class="pe-title">NZ community dynamic</div>
+              <div class="pe-desc">NZ agricultural sector is small — farmers talk. A reputation for dodging recruitment fees travels fast in Waikato dairy circles. This is a genuine deterrent that doesn't exist in anonymous city freelance markets.</div>
+            </div>
+          </div>
+          <div class="pe-row" style="border-bottom:none">
+            <div class="pe-icon">⚖️</div>
+            <div>
+              <div class="pe-title">Terms of service clause</div>
+              <div class="pe-desc">ToS explicitly states that placement fee applies to any hire of a candidate introduced through TopFarms within 12 months of contact release, even if the hire occurs off-platform. Standard recruitment agency practice.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end timeline -->
+</div>
+
+
+<!-- RISK MATRIX -->
+<div class="risk-section">
+  <div class="rs-head">Revenue circumvention <em>risk matrix</em></div>
+  <div class="rs-sub">Where the revenue is vulnerable and what's protecting it at each point</div>
+  <div class="risk-grid">
+    <div class="risk-card protected">
+      <div class="rk-icon">📋</div>
+      <div class="rk-title">Listing fee</div>
+      <div class="rk-status rks-protected">✓ Fully protected</div>
+      <div class="rk-desc">Collected before any candidate visibility. Nothing to route around. Zero circumvention risk.</div>
+    </div>
+    <div class="risk-card vulnerable">
+      <div class="rk-icon">💬</div>
+      <div class="rk-title">Messaging contact leak</div>
+      <div class="rk-status rks-mitigated">~ Mitigated — not eliminated</div>
+      <div class="rk-desc">Real-time pattern scanning + soft nudge banners catch ~85% of contact-sharing attempts. Determined users can obfuscate. Acceptable leakage for a trust-based community.</div>
+    </div>
+    <div class="risk-card mitigated">
+      <div class="rk-icon">🤝</div>
+      <div class="rk-title">Placement fee avoidance</div>
+      <div class="rk-status rks-mitigated">~ Mitigated via acknowledgement</div>
+      <div class="rk-desc">Click-to-confirm gate at shortlisting + ToS clause + NZ community reputation dynamic + "Trusted Employer" badge incentive. Not payment-enforced but legally and socially grounded.</div>
+    </div>
+    <div class="risk-card protected">
+      <div class="rk-icon">🔒</div>
+      <div class="rk-title">Pre-shortlist contact exposure</div>
+      <div class="rk-status rks-protected">✓ Fully protected</div>
+      <div class="rk-desc">Contact details masked at the data layer — not just CSS hidden. Cannot be extracted from page source. Released only on confirmed shortlist action.</div>
+    </div>
+    <div class="risk-card mitigated">
+      <div class="rk-icon">📧</div>
+      <div class="rk-title">Post-contact hire without reporting</div>
+      <div class="rk-status rks-mitigated">~ Mitigated — not enforced</div>
+      <div class="rk-desc">Automated 7 + 14 day follow-up emails. ToS 12-month lookback clause. Badge incentive for reporting. Manual follow-up for high-value placements. Relies on good faith + community norms.</div>
+    </div>
+    <div class="risk-card protected">
+      <div class="rk-icon">🌐</div>
+      <div class="rk-title">Off-platform first contact</div>
+      <div class="rk-status rks-protected">✓ Structurally prevented</div>
+      <div class="rk-desc">Messaging can only be initiated against an active listing. No cold-contact feature. Seekers cannot be messaged without a job listing context — preventing employer from using TopFarms as a pure CV database.</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- DESIGN PRINCIPLES -->
+<div class="principles">
+  <div class="pr-title">Four principles behind this model</div>
+  <div class="pr-grid">
+    <div class="pr-item">
+      <div class="pr-num">01</div>
+      <div class="pr-body">
+        <div class="pr-item-title">Friction before value, not after</div>
+        <div class="pr-item-desc">The listing fee and placement fee acknowledgement both happen before the employer gets what they want. This is psychologically easier to accept than a surprise invoice after the hire.</div>
+      </div>
+    </div>
+    <div class="pr-item">
+      <div class="pr-num">02</div>
+      <div class="pr-body">
+        <div class="pr-item-title">Make staying on-platform the easier path</div>
+        <div class="pr-item-desc">Messaging is purpose-built for farming enquiries, contact release is instant on shortlist, the hire reporting flow is one click. Circumventing requires more effort than just using the platform.</div>
+      </div>
+    </div>
+    <div class="pr-item">
+      <div class="pr-num">03</div>
+      <div class="pr-body">
+        <div class="pr-item-title">Soft detection, never hard blocking</div>
+        <div class="pr-item-desc">Hard-blocking contact details in messages feels hostile and creates false positives. Soft nudges preserve goodwill. The goal is discouragement, not enforcement — enforcement is in the ToS.</div>
+      </div>
+    </div>
+    <div class="pr-item">
+      <div class="pr-num">04</div>
+      <div class="pr-body">
+        <div class="pr-item-title">Lean on community trust in NZ ag</div>
+        <div class="pr-item-desc">The NZ farming sector is small and reputation-driven in a way that tech freelance markets are not. A "Trusted Employer" badge and word-of-mouth create genuine social incentives that compensate for unenforceable placement fees.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+function revealContact(btn) {
+  btn.parentElement.style.display = 'none';
+  document.querySelector('.cg-confirm').style.display = 'none';
+  document.getElementById('contact-revealed').style.display = 'flex';
+}
+
+// Animate timeline rail on scroll
+const rail = document.getElementById('rail-fill');
+function updateRail() {
+  const tl = document.querySelector('.timeline');
+  if (!tl) return;
+  const rect = tl.getBoundingClientRect();
+  const windowH = window.innerHeight;
+  const progress = Math.max(0, Math.min(1, (windowH - rect.t

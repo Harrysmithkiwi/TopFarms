@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TopFarms — Data Scraping Architecture</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --soil:#2C1A0E;--soil-deep:#1E1108;--soil-mid:#3D2712;
+  --moss:#2D5016;--fern:#4A7C2F;--meadow:#7AAF3F;--meadow-lt:rgba(122,175,63,.12);
+  --hay:#D4A843;--hay-lt:#FFF8E7;
+  --cream:#F7F2E8;--fog:#EEE8DC;--mist:#F2EEE6;
+  --ink:#1A1208;--mid:#6B5D4A;--light:#9E8E78;--white:#FFFFFF;
+  --red:#C0392B;--red-lt:#FDF0EE;
+  --blue:#1A5276;--blue-lt:#EAF4FB;
+  --orange:#E67E22;--orange-lt:#FEF5EC;
+  --purple:#6C3483;--purple-lt:#F5EEF8;
+  --teal:#0E7490;--teal-lt:#ECFEFF;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px;scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--soil-deep);color:var(--cream);
+  min-height:100vh;overflow-x:hidden}
+
+/* ── TOPOGRAPHIC BG ── */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;opacity:.04;
+  background-image:repeating-linear-gradient(0deg,transparent,transparent 38px,rgba(122,175,63,.6) 38px,rgba(122,175,63,.6) 39px),
+    repeating-linear-gradient(90deg,transparent,transparent 38px,rgba(122,175,63,.6) 38px,rgba(122,175,63,.6) 39px);
+  pointer-events:none}
+
+/* ── NAV ── */
+nav{position:sticky;top:0;height:56px;background:rgba(30,17,8,.92);
+  backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex;align-items:center;padding:0 32px;gap:16px;z-index:100}
+.logo{font-family:'Fraunces',serif;font-weight:700;font-size:19px;color:var(--cream);
+  display:flex;align-items:center;gap:7px}
+.logo-leaf{color:var(--meadow)}
+.nav-sep{width:1px;height:18px;background:rgba(255,255,255,.1)}
+.nav-doc{font-size:11px;color:rgba(247,242,232,.4);font-weight:500}
+.nav-badge{margin-left:auto;background:rgba(74,124,47,.2);border:1px solid rgba(122,175,63,.25);
+  color:var(--meadow);font-size:9px;font-weight:700;padding:3px 9px;border-radius:20px;
+  letter-spacing:.6px;text-transform:uppercase}
+
+/* ── PAGE WRAPPER ── */
+.page{position:relative;z-index:1;padding:48px 32px 100px;max-width:1320px;margin:0 auto}
+
+/* ── HEADER ── */
+.doc-header{margin-bottom:56px}
+.doc-eyebrow{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;
+  color:var(--meadow);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.doc-eyebrow::before{content:'';width:28px;height:2px;background:var(--meadow)}
+.doc-title{font-family:'Fraunces',serif;font-size:clamp(36px,4.5vw,58px);font-weight:900;
+  color:var(--cream);letter-spacing:-2.5px;line-height:.98;margin-bottom:16px}
+.doc-title em{font-style:italic;color:var(--meadow)}
+.doc-sub{font-size:14px;color:rgba(247,242,232,.45);line-height:1.7;max-width:540px}
+
+/* ── LAYER SYSTEM ── */
+.arch-diagram{display:flex;flex-direction:column;gap:0;position:relative}
+
+/* Flow connector between layers */
+.flow-connector{display:flex;justify-content:center;align-items:center;
+  height:52px;position:relative;z-index:2}
+.fc-line{width:2px;height:100%;background:linear-gradient(to bottom,rgba(122,175,63,.3),rgba(122,175,63,.6));
+  position:relative}
+.fc-arrow{position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);
+  width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;
+  border-top:8px solid rgba(122,175,63,.6)}
+.fc-label{position:absolute;left:50%;transform:translateX(calc(-50% + 16px));
+  white-space:nowrap;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;
+  color:rgba(122,175,63,.5);background:var(--soil-deep);padding:1px 6px}
+
+/* Layer wrapper */
+.layer{border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.06);
+  position:relative}
+.layer::before{content:attr(data-layer);position:absolute;top:14px;right:16px;
+  font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  opacity:.3;font-family:'DM Mono',monospace}
+
+/* Layer header */
+.layer-header{padding:16px 24px 14px;border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex;align-items:center;gap:12px}
+.lh-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;
+  justify-content:center;font-size:17px;flex-shrink:0}
+.lh-text{}
+.lh-number{font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+  margin-bottom:2px;opacity:.5;font-family:'DM Mono',monospace}
+.lh-title{font-family:'Fraunces',serif;font-size:17px;font-weight:700;letter-spacing:-.4px;color:var(--cream)}
+.lh-sub{font-size:11px;opacity:.45;margin-top:1px}
+.lh-right{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.lh-tag{font-size:9px;font-weight:700;padding:3px 8px;border-radius:5px;
+  border:1px solid;text-transform:uppercase;letter-spacing:.4px;font-family:'DM Mono',monospace}
+
+/* Layer body */
+.layer-body{padding:20px 24px}
+
+/* Nodes grid */
+.nodes-grid{display:grid;gap:12px}
+.nodes-3{grid-template-columns:repeat(3,1fr)}
+.nodes-4{grid-template-columns:repeat(4,1fr)}
+.nodes-2{grid-template-columns:repeat(2,1fr)}
+.nodes-5{grid-template-columns:repeat(5,1fr)}
+
+/* Node card */
+.node{border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,.07);
+  transition:border-color .25s,transform .2s;cursor:default;position:relative;
+  background:rgba(255,255,255,.03)}
+.node:hover{border-color:rgba(255,255,255,.14);transform:translateY(-2px)}
+.node-icon{font-size:20px;margin-bottom:8px;display:block}
+.node-title{font-size:12px;font-weight:700;color:var(--cream);margin-bottom:4px;line-height:1.2}
+.node-desc{font-size:10px;line-height:1.5;opacity:.45}
+.node-tag{font-size:8px;font-weight:700;padding:2px 6px;border-radius:4px;
+  margin-top:7px;display:inline-block;font-family:'DM Mono',monospace;
+  text-transform:uppercase;letter-spacing:.3px}
+.node-badge{position:absolute;top:8px;right:8px;font-size:8px;font-weight:700;
+  padding:2px 5px;border-radius:4px;font-family:'DM Mono',monospace}
+
+/* Source layer — dark soil */
+.layer-sources{background:linear-gradient(135deg,#1A0E06 0%,#2C1A0E 100%)}
+.layer-sources .lh-icon{background:rgba(212,168,67,.15)}
+.layer-sources .lh-tag{color:var(--hay);border-color:rgba(212,168,67,.25);background:rgba(212,168,67,.07)}
+.layer-sources .node{background:rgba(212,168,67,.04);border-color:rgba(212,168,67,.1)}
+.layer-sources .node:hover{border-color:rgba(212,168,67,.25)}
+.layer-sources .node-tag{background:rgba(212,168,67,.12);color:var(--hay)}
+
+/* Apify layer — deep blue-soil */
+.layer-apify{background:linear-gradient(135deg,#0D1A2E 0%,#1A2840 100%)}
+.layer-apify .lh-icon{background:rgba(26,82,118,.3)}
+.layer-apify .lh-tag{color:#64B5F6;border-color:rgba(100,181,246,.2);background:rgba(26,82,118,.15)}
+.layer-apify .node{background:rgba(26,82,118,.08);border-color:rgba(26,82,118,.2)}
+.layer-apify .node:hover{border-color:rgba(100,181,246,.3)}
+.layer-apify .node-tag{background:rgba(26,82,118,.2);color:#64B5F6}
+.layer-apify .node-badge{background:rgba(26,82,118,.3);color:#64B5F6;border:1px solid rgba(100,181,246,.2)}
+
+/* Queue/staging layer */
+.layer-queue{background:linear-gradient(135deg,#1A0E1A 0%,#2D1235 100%)}
+.layer-queue .lh-icon{background:rgba(108,52,131,.25)}
+.layer-queue .lh-tag{color:#CE93D8;border-color:rgba(206,147,216,.2);background:rgba(108,52,131,.12)}
+.layer-queue .node{background:rgba(108,52,131,.07);border-color:rgba(108,52,131,.18)}
+.layer-queue .node:hover{border-color:rgba(206,147,216,.3)}
+.layer-queue .node-tag{background:rgba(108,52,131,.18);color:#CE93D8}
+
+/* AI parsing layer — moss/green */
+.layer-ai{background:linear-gradient(135deg,#0A1A06 0%,#162A0A 100%)}
+.layer-ai .lh-icon{background:rgba(74,124,47,.25)}
+.layer-ai .lh-tag{color:var(--meadow);border-color:rgba(122,175,63,.2);background:rgba(45,80,22,.15)}
+.layer-ai .node{background:rgba(45,80,22,.08);border-color:rgba(45,80,22,.2)}
+.layer-ai .node:hover{border-color:rgba(122,175,63,.35)}
+.layer-ai .node-tag{background:rgba(45,80,22,.2);color:var(--meadow)}
+.layer-ai .node-badge{background:rgba(45,80,22,.25);color:var(--meadow);border:1px solid rgba(122,175,63,.2)}
+
+/* Supabase layer — teal */
+.layer-db{background:linear-gradient(135deg,#041A1A 0%,#0A2A2A 100%)}
+.layer-db .lh-icon{background:rgba(14,116,144,.25)}
+.layer-db .lh-tag{color:#67E8F9;border-color:rgba(103,232,249,.2);background:rgba(14,116,144,.12)}
+.layer-db .node{background:rgba(14,116,144,.08);border-color:rgba(14,116,144,.2)}
+.layer-db .node:hover{border-color:rgba(103,232,249,.3)}
+.layer-db .node-tag{background:rgba(14,116,144,.15);color:#67E8F9}
+
+/* Matching layer — moss */
+.layer-match{background:linear-gradient(135deg,#0D1A06 0%,#1A2E0A 100%)}
+.layer-match .lh-icon{background:rgba(74,124,47,.25)}
+.layer-match .lh-tag{color:var(--meadow);border-color:rgba(122,175,63,.2);background:rgba(45,80,22,.15)}
+.layer-match .node{background:rgba(45,80,22,.08);border-color:rgba(45,80,22,.18)}
+.layer-match .node:hover{border-color:rgba(122,175,63,.35)}
+.layer-match .node-tag{background:rgba(45,80,22,.2);color:var(--meadow)}
+
+/* App layer */
+.layer-app{background:linear-gradient(135deg,#1A0E06 0%,#2C1A0E 100%)}
+.layer-app .lh-icon{background:rgba(212,168,67,.15)}
+.layer-app .lh-tag{color:var(--hay);border-color:rgba(212,168,67,.25);background:rgba(212,168,67,.07)}
+.layer-app .node{background:rgba(212,168,67,.04);border-color:rgba(212,168,67,.1)}
+.layer-app .node:hover{border-color:rgba(212,168,67,.25)}
+.layer-app .node-tag{background:rgba(212,168,67,.1);color:var(--hay)}
+
+/* ── INLINE SCHEMA PREVIEW ── */
+.schema-preview{
+  background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);
+  border-radius:8px;padding:12px 14px;margin-top:12px;font-family:'DM Mono',monospace;
+  font-size:10px;line-height:1.8;color:rgba(247,242,232,.35);overflow-x:auto}
+.sp-key{color:#67E8F9}
+.sp-type{color:#CE93D8}
+.sp-val{color:#A5D6A7}
+.sp-comment{color:rgba(247,242,232,.2);font-style:italic}
+
+/* ── FIELD EXTRACTION VISUAL ── */
+.field-extract{display:grid;grid-template-columns:1fr auto 1fr;gap:0;
+  align-items:center;margin-top:12px}
+.fe-raw{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);
+  border-radius:8px;padding:10px 12px;font-size:10px;color:rgba(247,242,232,.4);
+  line-height:1.6;font-family:'DM Mono',monospace}
+.fe-raw mark{background:rgba(212,168,67,.15);color:var(--hay);border-radius:2px;padding:0 2px}
+.fe-arrow{padding:0 14px;text-align:center;color:rgba(122,175,63,.5);font-size:18px}
+.fe-fields{display:flex;flex-direction:column;gap:5px}
+.fe-field{background:rgba(45,80,22,.1);border:1px solid rgba(45,80,22,.2);
+  border-radius:5px;padding:5px 9px;display:flex;align-items:center;gap:7px;
+  font-size:9px;font-family:'DM Mono',monospace}
+.ff-key{color:#67E8F9;font-weight:500}
+.ff-val{color:var(--meadow);margin-left:auto}
+
+/* ── SCHEDULE STRIP ── */
+.schedule-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.sched-card{background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.06);
+  border-radius:7px;padding:10px 12px;text-align:center}
+.sc-time{font-family:'Fraunces',serif;font-size:16px;font-weight:700;color:var(--cream);margin-bottom:2px}
+.sc-label{font-size:9px;text-transform:uppercase;letter-spacing:.5px;opacity:.4;margin-bottom:4px}
+.sc-source{font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;
+  font-family:'DM Mono',monospace}
+
+/* ── QUALITY FLAGS ── */
+.quality-flags{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.qf-badge{font-size:9px;font-weight:700;padding:4px 9px;border-radius:5px;
+  font-family:'DM Mono',monospace;display:flex;align-items:center;gap:4px}
+.qf-pass{background:rgba(45,80,22,.15);border:1px solid rgba(122,175,63,.2);color:var(--meadow)}
+.qf-warn{background:rgba(230,126,34,.1);border:1px solid rgba(230,126,34,.2);color:var(--orange)}
+.qf-fail{background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.2);color:#E88070}
+
+/* ── SIDEBAR ANNOTATION ── */
+.with-sidebar{display:grid;grid-template-columns:1fr 240px;gap:12px;align-items:start}
+.ann-box{background:rgba(108,52,131,.07);border:1px solid rgba(108,52,131,.18);
+  border-radius:9px;padding:14px}
+.ann-eyebrow{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;
+  color:#CE93D8;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.ann-eyebrow::before{content:'';width:12px;height:1.5px;background:#CE93D8}
+.ann-title{font-size:12px;font-weight:700;color:var(--cream);margin-bottom:5px;line-height:1.3}
+.ann-body{font-size:10px;color:rgba(247,242,232,.45);line-height:1.55}
+.ann-body strong{color:rgba(247,242,232,.7)}
+
+/* ── STATS ROW ── */
+.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;
+  background:rgba(0,0,0,.2);border-radius:10px;padding:16px;margin-top:12px}
+.stat-item{text-align:center}
+.si-val{font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--cream);
+  letter-spacing:-.5px;margin-bottom:2px}
+.si-val.green{color:var(--meadow)}
+.si-val.hay{color:var(--hay)}
+.si-val.blue{color:#67E8F9}
+.si-label{font-size:9px;text-transform:uppercase;letter-spacing:.5px;
+  opacity:.35;font-family:'DM Mono',monospace}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:.8}}
+@keyframes flowDot{0%{transform:translateY(0);opacity:0}20%{opacity:1}80%{opacity:1}100%{transform:translateY(52px);opacity:0}}
+
+.layer{animation:fadeUp .5s ease both}
+.layer:nth-child(2){animation-delay:.05s}
+.layer:nth-child(4){animation-delay:.1s}
+.layer:nth-child(6){animation-delay:.15s}
+.layer:nth-child(8){animation-delay:.2s}
+.layer:nth-child(10){animation-delay:.25s}
+.layer:nth-child(12){animation-delay:.3s}
+.layer:nth-child(14){animation-delay:.35s}
+
+.flow-connector .fc-line::after{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:5px;height:5px;border-radius:50%;background:var(--meadow);
+  animation:flowDot 1.8s ease-in-out infinite}
+
+/* Live pulse dot */
+.live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;
+  background:var(--meadow);animation:pulse 2s ease-in-out infinite;margin-right:4px}
+
+@media(max-width:900px){
+  .nodes-3,.nodes-4,.nodes-5{grid-template-columns:repeat(2,1fr)}
+  .with-sidebar{grid-template-columns:1fr}
+  .stats-row{grid-template-columns:repeat(3,1fr)}
+  .schedule-strip{grid-template-columns:repeat(2,1fr)}
+  .field-extract{grid-template-columns:1fr;gap:8px}
+  .fe-arrow{transform:rotate(90deg);padding:4px 0}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo"><span class="logo-leaf">🌿</span> TopFarms</div>
+  <div class="nav-sep"></div>
+  <span class="nav-doc">Data Scraping Architecture</span>
+  <span class="nav-badge">Internal · Technical</span>
+</nav>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="doc-header">
+    <div class="doc-eyebrow">Architecture overview · v1.0</div>
+    <h1 class="doc-title">Data scraping &<br><em>ingestion pipeline</em></h1>
+    <p class="doc-sub">How raw job posts from Facebook, Seek, and TradeMe become structured, scored, and searchable listings inside TopFarms. Seven layers from source to seeker.</p>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row" style="margin-bottom:40px">
+    <div class="stat-item"><div class="si-val hay">3</div><div class="si-label">Data sources</div></div>
+    <div class="stat-item"><div class="si-val blue">7</div><div class="si-label">Pipeline layers</div></div>
+    <div class="stat-item"><div class="si-val green">~40</div><div class="si-label">Extracted fields</div></div>
+    <div class="stat-item"><div class="si-val green">Claude API</div><div class="si-label">AI parser</div></div>
+    <div class="stat-item"><div class="si-val blue">Supabase</div><div class="si-label">Database</div></div>
+  </div>
+
+  <div class="arch-diagram">
+
+    <!-- ══ LAYER 1: DATA SOURCES ══ -->
+    <div class="layer layer-sources" data-layer="LAYER 01">
+      <div class="layer-header">
+        <div class="lh-icon">🌐</div>
+        <div class="lh-text">
+          <div class="lh-number">01 · Sources</div>
+          <div class="lh-title">Raw data sources</div>
+          <div class="lh-sub">Where job posts originate — three platforms, different structures</div>
+        </div>
+        <div class="lh-right">
+          <span class="lh-tag">Public data</span>
+          <span class="lh-tag">Unstructured</span>
+        </div>
+      </div>
+      <div class="layer-body">
+        <div class="nodes-grid nodes-3">
+          <div class="node">
+            <span class="node-icon">👥</span>
+            <div class="node-title">Facebook Groups</div>
+            <div class="node-desc">NZ Farm Jobs, Dairy NZ Employment, regional farming groups. Free-text posts — highest signal, lowest structure. ~60% of seeder data.</div>
+            <span class="node-tag">Apify Actor</span>
+            <div class="node-badge" style="background:rgba(212,168,67,.12);color:var(--hay);border:1px solid rgba(212,168,67,.2)">PRIMARY</div>
+          </div>
+          <div class="node">
+            <span class="node-icon">💼</span>
+            <div class="node-title">Seek.co.nz</div>
+            <div class="node-desc">Structured job listings. Agriculture / farming category. Semi-structured HTML — easier to parse, less authentic signal. Fields map cleanly to schema.</div>
+            <span class="node-tag">HTTP Scraper</span>
+          </div>
+          <div class="node">
+            <span class="node-icon">🏷️</span>
+            <div class="node-title">TradeMe Jobs</div>
+            <div class="node-desc">NZ-specific job board. Farming & agriculture category. Structured listings with salary bands. Good for Canterbury / Southland coverage.</div>
+            <span class="node-tag">HTTP Scraper</span>
+          </div>
+        </div>
+        <div class="schedule-strip">
+          <div class="sched-card">
+            <div class="sc-label">Facebook</div>
+            <div class="sc-time">6h</div>
+            <div class="sc-label">poll interval</div>
+            <span class="sc-source" style="background:rgba(212,168,67,.1);color:var(--hay)">Apify · FB Group Scraper</span>
+          </div>
+          <div class="sched-card">
+            <div class="sc-label">Seek</div>
+            <div class="sc-time">12h</div>
+            <div class="sc-label">poll interval</div>
+            <span class="sc-source" style="background:rgba(26,82,118,.15);color:#64B5F6">Apify · Web Scraper</span>
+          </div>
+          <div class="sched-card">
+            <div class="sc-label">TradeMe</div>
+            <div class="sc-time">12h</div>
+            <div class="sc-label">poll interval</div>
+            <span class="sc-source" style="background:rgba(26,82,118,.15);color:#64B5F6">Apify · Web Scraper</span>
+          </div>
+          <div class="sched-card">
+            <div class="sc-label">Total runs/day</div>
+            <div class="sc-time">8×</div>
+            <div class="sc-label">scheduled</div>
+            <span class="sc-source" style="background:rgba(45,80,22,.15);color:var(--meadow)">Apify Scheduler</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONNECTOR -->
+    <div class="flow-connector">
+      <div style="display:flex;flex-direction:column;align-items:center;width:100%">
+        <div class="fc-line" style="height:52px;position:relative">
+          <div class="fc-arrow"></div>
+          <span class="fc-label">Raw HTML / JSON payload</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ LAYER 2: APIFY ACTORS ══ -->
+    <div class="layer layer-apify" data-layer="LAYER 02">
+      <div class="layer-header">
+        <div class="lh-icon">🤖</div>
+        <div class="lh-text">
+          <div class="lh-number">02 · Scraping</div>
+          <div class="lh-title">Apify actor fleet</div>
+          <div class="lh-sub">Headless browser + HTTP scraping, deduplication fingerprinting, rate limiting</div>
+        </div>
+        <div class="lh-right">
+          <span class="lh-tag">Apify Cloud</span>
+          <span class="lh-tag">Scheduled</span>
+        </div>
+      </div>
+      <div class="layer-body">
+        <div class="with-sidebar">
+          <div>
+            <div class="nodes-grid nodes-3">
+              <div class="node">
+                <span class="node-icon">🔵</span>
+                <div class="node-title">FB Group Actor</div>
+                <div class="node-desc">Playwright-based headless browser. Scrolls group feed, captures post text, author, timestamp, comments. Handles login session via stored cookies.</div>
+                <span class="node-tag">Playwright</span>
+                <div class="node-badge">6h cycle</div>
+              </div>
+              <div class="node">
+                <span class="node-icon">🔷</span>
+                <div class="node-title">Seek Actor</div>
+                <div class="node-desc">HTTP-based Cheerio scraper. Paginates agriculture listings. Extracts structured fields directly from DOM. Lower complexity — no JS rendering needed.</div>
+                <span class="node-tag">Cheerio HTTP</span>
+                <div class="node-badge">12h cycle</div>
+              </div>
+              <div class="node">
+                <span class="node-icon">🔹</span>
+                <div class="node-title">TradeMe Actor</div>
+                <div class="node-desc">HTTP scraper with API fallback. TradeMe has a partial public API for job listings — preferred over HTML scraping where available.</div>
+                <span class="node-tag">HTTP + API</span>
+                <div class="node-badge">12h cycle</div>
+              </div>
+            </div>
+            <div class="nodes-grid nodes-3" style="margin-top:10px">
+              <div class="node">
+                <span class="node-icon">🔑</span>
+                <div class="node-title">Deduplication</div>
+                <div class="node-desc">SHA-256 fingerprint of post content + source URL. Prevents reprocessing identical posts across runs. Stored in Apify KV store.</div>
+                <span class="node-tag">KV Store</span>
+              </div>
+              <div class="node">
+                <span class="node-icon">⏱️</span>
+                <div class="node-title">Rate limiter</div>
+                <div class="node-desc">Randomised request delays (2–8s). Max 200 req/run per domain. Respects robots.txt. Proxy rotation via Apify residential proxy pool.</div>
+                <span class="node-tag">Proxy Pool</span>
+              </div>
+              <div class="node">
+                <span class="node-icon">🚨</span>
+                <div class="node-title">Error handling</div>
+                <div class="node-desc">Failed runs auto-retry ×3. Slack alert on consecutive failures. Partial dataset saved to dataset even on crash. Run logs to Apify console.</div>
+                <span class="node-tag">Retry Logic</span>
+              </div>
+            </div>
+          </div>
+          <div class="ann-box">
+            <div class="ann-eyebrow">Apify config note</div>
+            <div class="ann-title">Actor output format</div>
+            <div class="ann-body">Each actor outputs a <strong>standardised JSON envelope</strong> regardless of source:<br><br>
+            <code style="font-family:'DM Mono',monospace;font-size:9px;color:#67E8F9">{ source, scraped_at, raw_text, url, post_id, author }</code><br><br>
+            Raw text is passed downstream untouched — no field extraction at this layer. That's Claude's job.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-connector">
+      <div style="display:flex;flex-direction:column;align-items:center;width:100%">
+        <div class="fc-line" style="height:52px;position:relative">
+          <div class="fc-arrow"></div>
+          <span class="fc-label">Standardised JSON envelope → Supabase staging table</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ LAYER 3: STAGING / QUEUE ══ -->
+    <div class="layer layer-queue" data-layer="LAYER 03">
+      <div class="layer-header">
+        <div class="lh-icon">📥</div>
+        <div class="lh-text">
+          <div class="lh-number">03 · Staging</div>
+          <div class="lh-title">Raw data queue</div>
+          <div class="lh-sub">Unprocessed posts land here before AI parsing — acts as a buffer and audit trail</div>
+        </div>
+        <div class="lh-right">
+          <span class="lh-tag">Supabase</span>
+          <span class="lh-tag">PostgreSQL</span>
+        </div>
+      </div>
+      <div class="layer-body">
+        <div class="with-sidebar">
+          <div>
+            <div class="schema-preview">
+<span class="sp-comment">-- raw_posts staging table</span>
+<span class="sp-key">id</span>          <span class="sp-type">uuid</span>          <span class="sp-comment">-- primary key</span>
+<span class="sp-key">source</span>      <span class="sp-type">text</span>          <span class="sp-comment">-- 'facebook' | 'seek' | 'trademe'</span>
+<span class="sp-key">post_id</span>     <span class="sp-type">text</span>          <span class="sp-comment">-- source-specific identifier</span>
+<span class="sp-key">raw_text</span>    <span class="sp-type">text</span>          <span class="sp-comment">-- full unprocessed post content</span>
+<span class="sp-key">url</span>         <span class="sp-type">text</span>          <span class="sp-comment">-- original post URL</span>
+<span class="sp-key">scraped_at</span>  <span class="sp-type">timestamptz</span>   <span class="sp-comment">-- when Apify collected it</span>
+<span class="sp-key">status</span>      <span class="sp-type">text</span>          <span class="sp-comment">-- 'pending' | 'processing' | 'done' | 'failed'</span>
+<span class="sp-key">fingerprint</span> <span class="sp-type">text</span>          <span class="sp-comment">-- SHA-256 dedup hash</span>
+<span class="sp-key">post_type</span>   <span class="sp-type">text</span>          <span class="sp-comment">-- 'employer' | 'seeker' | 'unknown'</span>
+<span class="sp-key">retry_count</span> <span class="sp-type">int</span>           <span class="sp-comment">-- AI parse attempts (max 3)</span>
+            </div>
+            <div class="quality-flags" style="margin-top:12px">
+              <span class="qf-pass">✓ Unique fingerprint</span>
+              <span class="qf-pass">✓ Source identified</span>
+              <span class="qf-pass">✓ Post type classified</span>
+              <span class="qf-warn">⚠ Low text length (&lt;80 chars)</span>
+              <span class="qf-warn">⚠ Duplicate URL detected</span>
+              <span class="qf-fail">✗ No contact info</span>
+              <span class="qf-fail">✗ Non-NZ location</span>
+              <span class="qf-fail">✗ Spam pattern match</span>
+            </div>
+          </div>
+          <div class="ann-box">
+            <div class="ann-eyebrow">Queue logic</div>
+            <div class="ann-title">Status-driven processing</div>
+            <div class="ann-body">A <strong>Supabase Edge Function</strong> polls for <code style="font-family:'DM Mono',monospace;font-size:9px;color:#67E8F9">status = 'pending'</code> rows every 5 minutes and dispatches batches to the AI parser.<br><br>Max batch size: <strong>50 posts</strong> per invocation. Failed rows retry up to ×3 before being flagged for manual review.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-connector">
+      <div style="display:flex;flex-direction:column;align-items:center;width:100%">
+        <div class="fc-line" style="height:52px;position:relative">
+          <div class="fc-arrow"></div>
+          <span class="fc-label">Pending batch → Claude API · structured extraction prompt</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ LAYER 4: AI PARSING ══ -->
+    <div class="layer layer-ai" data-layer="LAYER 04">
+      <div class="layer-header">
+        <div class="lh-icon">✨</div>
+        <div class="lh-text">
+          <div class="lh-number">04 · AI Parsing</div>
+          <div class="lh-title">Claude API extraction</div>
+          <div class="lh-sub">Unstructured post text → typed, validated field set. The intelligence layer.</div>
+        </div>
+        <div class="lh-right">
+          <span class="lh-tag">claude-sonnet-4</span>
+          <span class="lh-tag">JSON mode</span>
+          <span class="lh-tag">~40 fields</span>
+        </div>
+      </div>
+      <div class="layer-body">
+        <div class="nodes-grid nodes-4" style="margin-bottom:14px">
+          <div class="node">
+            <span class="node-icon">🏷️</span>
+            <div class="node-title">Post classifier</div>
+            <div class="node-desc">Determines if post is employer seeking worker, worker seeking work, or irrelevant. Sets <code style="font-family:'DM Mono',monospace;font-size:9px">post_type</code>.</div>
+            <span class="node-tag">Step 1</span>
+          </div>
+          <div class="node">
+            <span class="node-icon">📍</span>
+            <div class="node-title">Location extractor</div>
+            <div class="node-desc">NZ region normalisation. "7 minutes from Warkworth" → <code style="font-family:'DM Mono',monospace;font-size:9px">Northland</code>. Handles colloquialisms and farm names.</div>
+            <span class="node-tag">Step 2</span>
+          </div>
+          <div class="node">
+            <span class="node-icon">🐄</span>
+            <div class="node-title">Ag field extractor</div>
+            <div class="node-desc">Shed type, herd size, breed, milking frequency, mob size — the agriculture-specific fields generic platforms miss entirely.</div>
+            <span class="node-tag">Step 3</span>
+            <div class="node-badge">Critical</div>
+          </div>
+          <div class="node">
+            <span class="node-icon">🏠</span>
+            <div class="node-title">Accommodation parser</div>
+            <div class="node-desc">Housing type, pets allowed, couples/family, utilities included. "2BR house, dogs ok" → structured accommodation object.</div>
+            <span class="node-tag">Step 4</span>
+            <div class="node-badge">Critical</div>
+          </div>
+        </div>
+
+        <div class="field-extract">
+          <div class="fe-raw">
+"<mark>Dairy farm assistant wanted</mark> for <mark>450 cow</mark> <mark>rotary</mark> farm near <mark>Te Awamutu</mark>. <mark>$52k–$62k</mark> + <mark>3-bedroom house</mark>. <mark>Working dogs welcome</mark>, <mark>couples considered</mark>. Start <mark>June 1</mark>. DairyNZ <mark>Level 3</mark> preferred. Call <mark>Dave 021 xxx</mark>"
+          </div>
+          <div class="fe-arrow">→</div>
+          <div class="fe-fields">
+            <div class="fe-field"><span class="ff-key">role_type</span><span class="ff-val">farm_assistant</span></div>
+            <div class="fe-field"><span class="ff-key">sector</span><span class="ff-val">dairy</span></div>
+            <div class="fe-field"><span class="ff-key">herd_size</span><span class="ff-val">450</span></div>
+            <div class="fe-field"><span class="ff-key">shed_type</span><span class="ff-val">rotary</span></div>
+            <div class="fe-field"><span class="ff-key">region</span><span class="ff-val">waikato</span></div>
+            <div class="fe-field"><span class="ff-key">salary_min</span><span class="ff-val">52000</span></div>
+            <div class="fe-field"><span class="ff-key">salary_max</span><span class="ff-val">62000</span></div>
+            <div class="fe-field"><span class="ff-key">accommodation</span><span class="ff-val">house_3br</span></div>
+            <div class="fe-field"><span class="ff-key">pets_allowed</span><span class="ff-val">dogs</span></div>
+            <div class="fe-field"><span class="ff-key">couples_ok</span><span class="ff-val">true</span></div>
+            <div class="fe-field"><span class="ff-key">start_date</span><span class="ff-val">2025-06-01</span></div>
+            <div class="fe-field"><span class="ff-key">qualification_req</span><span class="ff-val">dairynz_l3</span></div>
+          </div>
+        </div>
+
+        <div class="ann-box" style="margin-top:12px">
+          <div class="ann-eyebrow">Prompt engineering note</div>
+          <div class="ann-title">JSON-only output enforced</div>
+          <div class="ann-body">System prompt instructs Claude to respond <strong>only with valid JSON matching the schema</strong> — no preamble, no markdown fences. Response is parsed directly into the <code style="font-family:'DM Mono',monospace;font-size:9px;color:#67E8F9">parsed_jobs</code> table. Confidence scores (0–1.0) are included per field to flag low-confidence extractions for manual review.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-connector">
+      <div style="display:flex;flex-direction:column;align-items:center;width:100%">
+        <div class="fc-line" style="height:52px;position:relative">
+          <div class="fc-arrow"></div>
+          <span class="fc-label">Structured JSON → Supabase upsert</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ LAYER 5: SUPABASE DB ══ -->
+    <div class="layer layer-db" data-layer="LAYER 05">
+      <div class="layer-header">
+        <div class="lh-icon">🗄️</div>
+        <div class="lh-text">
+          <div class="lh-number">05 · Database</div>
+          <div class="lh-title">Supabase / PostgreSQL</div>
+          <div class="lh-sub">Canonical data store — jobs, seekers, skills, match inputs</div>
+        </div>
+        <div class="lh-right">
+          <span class="lh-tag">Supabase</span>
+          <span class="lh-tag">Row-level security</span>
+          <span class="lh-tag">Realtime</span>
+        </div>
+      </div>
+      <div class="layer-body">
+        <div class="nodes-grid nodes-5">
+          <div class="node">
+            <span class="node-icon">💼</span>
+            <div class="node-title">jobs</div>
+            <div class="node-desc">All employer listings — scraped + manually posted. Sector, region, shed type, salary, accommodation, skills required.</div>
+            <span class="node-tag">Core table</span>
+          </div>
+          <div class="node">
+            <span class="node-icon">👤</span>
+            <div class="node-title">seeker_profiles</div>
+            <div class="node-desc">Registered seekers. Experience, visa status, region, life situation (housing, pets, partner), availability.</div>
+            <span class="node-tag">Core table</span>
+          </div>
+          <div class="node">
+            <span class="node-icon">🔧</span>
+            <div class="node-title">skills + job_skills</div>
+            <div class="node-desc">Normalised skill catalogue. job_skills links skills to jobs with Required / Preferred / Bonus weight. seeker_skills links to proficiency level.</div>
+            <span class="node-tag">Junction</span>
+          </div>
+          <div class="node">
+            <span class="node-icon">📊</span>
+            <div class="node-title">match_scores</div>
+            <div class="node-desc">Pre-computed scores per seeker × job pair. Refreshed on job update or seeker profile change. Powers instant search results.</div>
+            <span class="node-tag">Computed</span>
+          </div>
+          <div class="node">
+            <span class="node-icon">🔍</span>
+            <div class="node-title">raw_posts</div>
+            <div class="node-desc">Staging table — unprocessed scrape payloads. Permanent audit trail of everything collected before AI parsing.</div>
+            <span class="node-tag">Staging</span>
+          </div>
+        </div>
+        <div class="schema-preview" style="margin-top:14px">
+<span class="sp-comment">-- jobs table (core fields — ~40 total)</span>
+<span class="sp-key">id</span>                <span class="sp-type">uuid</span>          <span class="sp-comment">primary key</span>
+<span class="sp-key">source</span>            <span class="sp-type">text</span>          <span class="sp-comment">'scraped_facebook' | 'scraped_seek' | 'employer_posted'</span>
+<span class="sp-key">sector</span>            <span class="sp-type">text</span>          <span class="sp-comment">'dairy' | 'sheep_beef' — MVP only</span>
+<span class="sp-key">role_type</span>         <span class="sp-type">text</span>          <span class="sp-comment">'farm_assistant' | 'herd_manager' | '2ic' | ...</span>
+<span class="sp-key">region</span>            <span class="sp-type">text</span>          <span class="sp-comment">normalised NZ region</span>
+<span class="sp-key">shed_type</span>         <span class="sp-type">text[]</span>        <span class="sp-comment">['rotary','herringbone','ams','swing_over']</span>
+<span class="sp-key">herd_size_min</span>     <span class="sp-type">int</span>           <span class="sp-comment">lower bound of stated herd size</span>
+<span class="sp-key">salary_min</span>        <span class="sp-type">int</span>           <span class="sp-comment">NZD annual</span>
+<span class="sp-key">accommodation</span>     <span class="sp-type">jsonb</span>         <span class="sp-comment">{type, bedrooms, pets, couples, utilities}</span>
+<span class="sp-key">visa_sponsorship</span>  <span class="sp-type">bool</span>
+<span class="sp-key">couples_welcome</span>   <span class="sp-type">bool</span>
+<span class="sp-key">confidence_score</span>  <span class="sp-type">float</span>         <span class="sp-comment">AI extraction confidence — flags low-quality rows</span>
+<span class="sp-key">status</span>            <span class="sp-type">text</span>          <span class="sp-comment">'active' | 'expired' | 'filled' | 'pending_review'</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-connector">
+      <div style="display:flex;flex-direction:column;align-items:center;width:100%">
+        <div class="fc-line" style="height:52px;position:relative">
+          <div class="fc-arrow"></div>
+          <span class="fc-label">jobs + seeker_profiles → match scoring function</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ LAYER 6: MATCH SCORING ══ -->
+    <div class="layer layer-match" data-layer="LAYER 06">
+      <div class="layer-header">
+        <div class="lh-icon">🎯</div>
+        <div class="lh-text">
+          <div class="lh-number">06 · Matching</div>
+          <div class="lh-title">Match scoring engine</div>
+          <div class="lh-sub">Weighted multi-dimension scoring — produces the % match circles seekers see</div>
+        </div>
+        <div class="lh-right">
+          <span class="lh-tag">Postgres function</span>
+          <span class="lh-tag">Triggered on update</span>
+        </div>
+      </div>
+      <div class="layer-body">
+        <div class="nodes-grid nodes-4">
+          <div class="node">
+            <span class="node-icon">🔄</span>
+            <div class="node-title">Shed type match</div>
+            <div class="node-desc">Rotary ↔ Rotary = 100pts. Rotary ↔ HB = 40pts (transferable). AMS = separate pool. Highest single weight.</div>
+            <span class="node-tag">Weight: 25pts</span>
+            <div class="node-badge">Critical filter</div>
+          </div>
+          <div class="node">
+            <span class="node-icon">📍</span>
+            <div class="node-title">Location score</div>
+            <div class="node-desc">Same region = 100pts. Adjacent region = 60pts. Open to relocate = 80pts baseline. Inverse distance weighting on lat/lng.</div>
+            <span class="node-tag">Weight: 20pts</span>
+          </div>
+          <div class="node">
+            <span class="node-icon">🏠</span>
+            <div class="node-title">Accommodation match</div>
+            <div class="node-desc">Seeker needs housing + job offers housing = 100pts. Pet requirements, couples, family size all sub-scored separately.</div>
+            <span class="node-tag">Weight: 20pts</span>
+            <div class="node-badge">Critical filter</div>
+          </div>
+          <div class="node">
+            <span class="node-icon">📜</span>
+            <div class="node-title">Skills & quals</div>
+            <div class="node-desc">Required skills matched at full weight, preferred at 60%, bonus at 20%. DairyNZ level, tractor certs, herd size experience.</div>
+            <span class="node-tag">Weight: 20pts</span>
+          </div>
+        </div>
+        <div class="nodes-grid nodes-4" style="margin-top:10px">
+          <div class="node">
+            <span class="node-icon">💰</span>
+            <div class="node-title">Salary alignment</div>
+            <div class="node-desc">Seeker min salary vs job offer. Partial credit for close ranges. Jobs above seeker minimum always score full.</div>
+            <span class="node-tag">Weight: 10pts</span>
+          </div>
+          <div class="node">
+            <span class="node-icon">🛂</span>
+            <div class="node-title">Visa / eligibility</div>
+            <div class="node-desc">NZ citizen/resident = full eligibility. Working holiday, student visa, employer sponsorship required — all tracked separately.</div>
+            <span class="node-tag">Weight: 5pts</span>
+          </div>
+          <div class="node">
+            <span class="node-icon">👫</span>
+            <div class="node-title">Couples / family</div>
+            <div class="node-desc">Couple seeking work + employer open to couples = bonus points. Partner's sector background also factored if provided.</div>
+            <span class="node-tag">Bonus pts</span>
+          </div>
+          <div class="node">
+            <span class="node-icon">⚡</span>
+            <div class="node-title">Recency boost</div>
+            <div class="node-desc">Jobs posted in last 7 days get a small freshness multiplier. Prevents stale listings dominating results.</div>
+            <span class="node-tag">Multiplier</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-connector">
+      <div style="display:flex;flex-direction:column;align-items:center;width:100%">
+        <div class="fc-line" style="height:52px;position:relative">
+          <div class="fc-arrow"></div>
+          <span class="fc-label">Scored & ranked listings → TopFarms app layer</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ LAYER 7: APPLICATION LAYER ══ -->
+    <div class="layer layer-app" data-layer="LAYER 07">
+      <div class="layer-header">
+        <div class="lh-icon">🌿</div>
+        <div class="lh-text">
+          <div class="lh-number">07 · Application</div>
+          <div class="lh-title">TopFarms — live platform</div>
+          <div class="lh-sub">Where scraped, parsed, and scored data surfaces to real users</div>
+        </div>
+        <div class="lh-right">
+          <span class="lh-tag">React / TypeScript</span>
+          <span class="lh-tag">Supabase Realtime</span>
+        </div>
+      </div>
+      <div class="layer-body">
+        <div class="nodes-grid nodes-4">
+          <div class="node">
+            <span class="node-icon">🔍</span>
+            <div class="node-title">Seeker job search</div>
+            <div class="node-desc">Ranked results from <code style="font-family:'DM Mono',monospace;font-size:9px">match_scores</code>. Filters applied in real time. Match % circles driven by pre-computed scores.</div>
+            <span class="node-tag">Seeker-facing</span>
+          </div>
+          <div class="node">
+            <span class="node-icon">👥</span>
+            <div class="node-title">Employer dashboard</div>
+            <div class="node-desc">Scraped listings attributed to farm profiles where identifiable. Employer can claim and enhance scraped listings.</div>
+            <span class="node-tag">Employer-facing</span>
+          </div>
+          <div class="node">
+            <span class="node-icon">🛠️</span>
+            <div class="node-title">Admin pipeline monitor</div>
+            <div class="node-desc">Internal view of scrape health, queue depth, AI parse failures, data quality flags. Pending review queue for low-confidence rows.</div>
+            <span class="node-tag">Internal</span>
+          </div>
+          <div class="node">
+            <span class="node-icon"><span class="live-dot"></span>Live</span>
+            <div class="node-title">Realtime updates</div>
+            <div class="node-desc">Supabase Realtime subscriptions push new listings to active seeker search pages without refresh. New jobs appear within seconds of ingestion.</div>
+            <span class="node-tag">Supabase RT</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end arch-diagram -->
+
+  <!-- FOOTER NOTE -->
+  <div style="margin-top:48px;padding:24px;background:rgba(255,255,255,.03);
+    border:1px solid rgba(255,255,255,.06);border-radius:12px;
+    display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px">
+    <div>
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;
+        color:var(--meadow);margin-bottom:8px">Key dependencies</div>
+      <div style="font-size:11px;line-height:1.8;color:rgba(247,242,232,.4);font-family:'DM Mono',monospace">
+        Apify Cloud (scraping)<br>
+        Claude Sonnet API (parsing)<br>
+        Supabase (DB + Edge Functions)<br>
+        Supabase Realtime (live push)<br>
+        React / TypeScript (frontend)
+      </div>
+    </div>
+    <div>
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;
+        color:var(--meadow);margin-bottom:8px">MVP data scope</div>
+      <div style="font-size:11px;line-height:1.8;color:rgba(247,242,232,.4)">
+        Dairy cattle sector only at launch.<br>
+        Sheep &amp; beef: Phase 2.<br>
+        Horticulture/viticulture: Phase 3.<br>
+        Facebook groups: primary seed source.<br>
+        Seek + TradeMe: supplementary fill.
+      </div>
+    </div>
+    <div>
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;
+        color:var(--meadow);margin-bottom:8px">Data quality targets</div>
+      <div style="font-size:11px;line-height:1.8;color:rgba(247,242,232,.4)">
+        AI field extraction accuracy: &gt;85%<br>
+        Dedup collision rate: &lt;2%<br>
+        Parse failure rate: &lt;5%<br>
+        Staging queue latency: &lt;30 min<br>
+        Match score refresh: &lt;60 sec
+      </div>
+    </div>
+  </div>
+
+</div><!-- end page -->
+</body>
+</html>
