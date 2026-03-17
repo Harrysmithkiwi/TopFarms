@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 import { Tag } from '@/components/ui/Tag'
 import { MatchCircle } from '@/components/ui/MatchCircle'
 import { Select } from '@/components/ui/Select'
-import type { ApplicationStatus, MatchScore } from '@/types/domain'
+import type { ApplicationStatus, MatchScore, SeekerContact } from '@/types/domain'
 import { VALID_TRANSITIONS, APPLICATION_STATUS_LABELS } from '@/types/domain'
 
 type TagVariant = 'green' | 'hay' | 'blue' | 'grey' | 'orange' | 'purple' | 'red'
@@ -22,6 +22,7 @@ const STATUS_TAG_VARIANT: Record<ApplicationStatus, TagVariant> = {
 
 interface SeekerProfile {
   id: string
+  user_id?: string
   region?: string
   years_experience?: number
   sector_pref?: string[]
@@ -51,6 +52,7 @@ interface ApplicantPanelApplication {
 interface ApplicantPanelProps {
   application: ApplicantPanelApplication
   matchScore?: MatchScore | null
+  contacts?: SeekerContact | null
   onTransition: (applicationId: string, newStatus: ApplicationStatus, note?: string) => void
   expanded: boolean
   onToggle: () => void
@@ -84,6 +86,7 @@ function getMatchHighlights(score: MatchScore, profile: SeekerProfile): string[]
 export function ApplicantPanel({
   application,
   matchScore,
+  contacts,
   onTransition,
   expanded,
   onToggle,
@@ -98,7 +101,7 @@ export function ApplicantPanel({
 
   const transitionOptions = validNext.map((s) => ({
     value: s,
-    label: APPLICATION_STATUS_LABELS[s],
+    label: s === 'shortlisted' ? 'Shortlist — unlocks contact details' : APPLICATION_STATUS_LABELS[s],
   }))
 
   const seekerLabel = [
@@ -256,6 +259,42 @@ export function ApplicantPanel({
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Contact Details — only shown for shortlisted/offered/hired */}
+          {['shortlisted', 'offered', 'hired'].includes(application.status) && (
+            <div>
+              <p className="text-[11px] font-body font-semibold uppercase tracking-wide mb-2" style={{ color: 'var(--color-light)' }}>
+                Contact Details
+              </p>
+              <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+                <div>
+                  <span className="text-[11px] font-body text-light">Phone</span>
+                  {contacts ? (
+                    contacts.phone ? (
+                      <p className="text-[13px] font-body text-ink">{contacts.phone}</p>
+                    ) : (
+                      <p className="text-[13px] font-body text-light italic">Not provided</p>
+                    )
+                  ) : (
+                    <p className="font-mono text-[13px] text-mid select-none blur-sm">••• ••• ••••</p>
+                  )}
+                </div>
+                <div>
+                  <span className="text-[11px] font-body text-light">Email</span>
+                  {contacts ? (
+                    <p className="text-[13px] font-body text-ink">{contacts.email}</p>
+                  ) : (
+                    <p className="font-mono text-[13px] text-mid select-none blur-sm">j•••@gmail.com</p>
+                  )}
+                </div>
+              </div>
+              {!contacts && (
+                <p className="mt-2 text-[11px] font-body uppercase tracking-wide text-light italic">
+                  Contact details unlock when you shortlist this candidate.
+                </p>
+              )}
             </div>
           )}
 
