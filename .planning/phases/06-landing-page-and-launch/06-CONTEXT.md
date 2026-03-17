@@ -14,7 +14,6 @@ The public landing page is live with real platform data, all flows pass mobile Q
 ## Implementation Decisions
 
 ### Hero & CTA design
-- Full-bleed farm photograph background with dark overlay for text contrast
 - Headline tone: direct and practical (e.g., "Find your next farm role" / "Find skilled farm workers")
 - Dual CTA buttons: primary solid (seeker) + outline (employer), consistent with existing Home.tsx button pattern
 - Each CTA goes to /signup with role pre-selected via URL parameter
@@ -40,7 +39,8 @@ The public landing page is live with real platform data, all flows pass mobile Q
 - WCAG 2.1 AA compliance: focus indicators, alt text, color contrast, ARIA labels
 
 ### Claude's Discretion
-- Exact hero image selection and overlay opacity
+- Hero background approach: CSS-only (soil-deep + gradient blobs + topographic lines) or farm photograph with dark overlay — CSS-only recommended for launch (avoids LCP penalty, no image sourcing needed, wireframe uses this approach)
+- Exact hero image selection and overlay opacity (if photograph approach chosen)
 - Counter animation easing and duration
 - How-it-works step count and copy
 - Testimonial card layout and number of testimonials
