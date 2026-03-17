@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 06-01-PLAN.md
-last_updated: "2026-03-17T09:44:28.490Z"
+stopped_at: Completed 06-02-PLAN.md
+last_updated: "2026-03-17T09:50:11.541Z"
 last_activity: "2026-03-17 — Phase 5 complete: PlacementFeeModal + acknowledge Edge Function, HireConfirmModal + create-placement-invoice, stripe-webhook invoice handler, send-followup-emails"
 progress:
   total_phases: 6
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 27
-  completed_plans: 26
+  completed_plans: 27
   percent: 100
 ---
 
@@ -73,6 +73,7 @@ Progress: [████████████████████] 25/25 p
 | Phase 05-revenue-protection P03 | 5 | 2 tasks | 5 files |
 | Phase 05-revenue-protection P02 | 5 | 2 tasks | 4 files |
 | Phase 06-landing-page-and-launch P01 | 6 | 2 tasks | 13 files |
+| Phase 06-landing-page-and-launch P02 | 2 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -163,6 +164,8 @@ Recent decisions affecting current work:
 - [Phase 06-01]: FeaturedListings falls back to 3 most-recent active jobs when no featured/premium listings exist — page always shows content
 - [Phase 06-01]: get_platform_stats RPC uses SECURITY DEFINER to give anon users aggregate read access without direct table access on seeker_profiles/match_scores
 - [Phase 06-01]: SignUp role pre-selection: useSearchParams + initialRole state + useEffect setValue sync for react-hook-form compatibility
+- [Phase 06-02]: Use 'Review Matches' (employer-only step title) as assertion for employer tab switch — avoids ambiguity with multi-occurrence 'Post a Job' text
+- [Phase 06-02]: Test SignUp role pre-selection by checking email input presence (conditional on selectedRole) — avoids CSS-dependent style assertions in test env
 
 ### Pending Todos
 
@@ -175,6 +178,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-17T09:44:28.487Z
-Stopped at: Completed 06-01-PLAN.md
+Last session: 2026-03-17T09:50:11.539Z
+Stopped at: Completed 06-02-PLAN.md
 Resume file: None
