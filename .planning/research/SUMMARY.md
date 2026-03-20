@@ -1,17 +1,17 @@
 # Project Research Summary
 
-**Project:** TopFarms — NZ Agricultural Job Marketplace
-**Domain:** Two-sided vertical job marketplace (agricultural sector, NZ)
-**Researched:** 2026-03-15
+**Project:** TopFarms v1.1 — SPEC Compliance UI Gap-Closing
+**Domain:** Niche vertical job marketplace — NZ agricultural sector (dairy + sheep & beef)
+**Researched:** 2026-03-20
 **Confidence:** HIGH
 
 ## Executive Summary
 
-TopFarms is a niche, two-sided job marketplace replacing informal Facebook group hiring in the New Zealand agricultural sector (dairy cattle and sheep/beef). The product's competitive baseline is not Seek or TradeMe — it is the NZ ag Facebook group experience. Every design decision must make TopFarms demonstrably better than posting in a Facebook group, not better than a generic enterprise ATS. The stack is fully locked in SPEC.md v3.0 and is a modern, well-validated combination: React 19, TypeScript, Vite 8, Tailwind CSS v4, Supabase (Postgres + Auth + Storage + Edge Functions), Vercel, Stripe, Claude API, and Resend. All major library versions have been verified against the npm registry as of 2026-03-15.
+TopFarms v1.1 is a gap-closing milestone on a working MVP, not greenfield development. The existing React 19 + Supabase + Tailwind v4 stack is locked and proven; this research covers only the delta needed to close ~70 UI/UX gaps identified in SPEC v3.0 across eight product surfaces: onboarding wizards (employer + seeker), post-job wizard, job search, job detail, applicant dashboard, seeker My Applications, and the landing page. The competitive baseline remains a NZ agricultural Facebook group — every feature decision should be judged against "is this better than a Facebook post?", not against Seek or LinkedIn. Three net-new npm packages are required: `motion`, `react-intersection-observer`, and `@radix-ui/react-tabs`. Everything else — chips, pagination, star rating, timeline, map placeholder — is build-from-scratch with existing primitives already in the lockfile.
 
-The architecture is a standard React SPA backed by Supabase, with a critical pre-computed match scoring system as the primary value proposition. Match scores must be stored in a `match_scores` table and refreshed asynchronously via database triggers and scheduled Edge Functions — never computed at query time. Supabase Row Level Security is the primary security boundary for all data access, with particular emphasis on contact detail masking: seeker contact fields must be architecturally separated from their profiles and only accessible after a `placement_fees.acknowledged_at` record exists. The platform's revenue model depends entirely on this gate being enforced at the database layer, not in UI code.
+The recommended build approach is wave-based, driven by component dependencies rather than screen-by-screen delivery. Wave 1 builds nine primitive UI components (ChipSelector, RangeSlider, StatusBanner, Breadcrumb, etc.) that unblock all subsequent work in parallel. Wave 2 extends all three wizards simultaneously once primitives exist. Wave 3 handles page-level integrations (job search, job detail, applicant dashboard). Wave 4 is the landing page — fully independent, can run alongside any other wave at any time.
 
-The top risks are all schema-phase decisions that become expensive to retrofit: contact data separation (must not live in `seeker_profiles`), user role architecture (`user_roles` table, not JWT metadata), RLS circular policy design, and Stripe webhook idempotency. These are not optional refinements — building them wrong in Phase 1 costs days to reverse. The SPEC.md v3.0 is the authoritative source for all product decisions; research confirms the SPEC's choices are correct and consistent with established marketplace patterns.
+The highest risks are procedural rather than architectural. Wizard interface and DB schema must be extended before any step-level UI work, or new field data is silently lost and never reaches Supabase. Checkbox-to-chip upgrades require schema type verification before writing any component — existing boolean columns cannot accept string[] output without a migration. The applicant dashboard AI summaries must be pre-generated and cached in a DB column; calling Claude synchronously on dashboard load produces 3–10s blank screens. Scope creep is the meta-risk: every file touched in this milestone contains working v1.0 logic that is a regression target. An additions-only rule with diff review per phase is the primary defence.
 
 ---
 
@@ -19,212 +19,148 @@ The top risks are all schema-phase decisions that become expensive to retrofit: 
 
 ### Recommended Stack
 
-The stack is locked and verified. All versions are current stable releases as of 2026-03-15. The most significant version implications are: Tailwind v4 uses CSS-first configuration (no `tailwind.config.js`) and requires `@tailwindcss/vite` (not PostCSS) with `tailwind-merge` v3.x; React Router v7 unified `react-router-dom` into `react-router`; and Zod v4 requires `@hookform/resolvers` v5.x. These are breaking changes from prior versions — mixing old and new versions of any of these will cause silent failures or incompatible type errors.
+The core stack requires no changes for v1.1. Only three packages are net-new additions; the rationale for avoiding additional libraries is explicit and important.
 
-**Core technologies:**
-- React 19 + TypeScript 5.9: UI and type safety — stable, full lib support confirmed
-- Vite 8 + Tailwind CSS v4: build tooling — CSS-first config via `@theme` directive, `@tailwindcss/vite` plugin required
-- Supabase 2.99.1: Postgres DB, Auth, Storage, Edge Functions — RLS on all tables, service_role key in Edge Functions only
-- React Query 5.x + React Hook Form 7.x + Zod v4: data fetching and form state — uncontrolled inputs essential for 7-8 step wizards
-- Radix UI primitives (raw) + Sonner: accessible UI without design system opinions — shadcn/ui rejected because TopFarms has a bespoke design system
-- Stripe Node SDK 20 + Stripe.js 8: listing fees and placement invoicing — publishable key client-side only, secret key in Edge Functions
-- Claude API (claude-sonnet-4-20250514) via `@anthropic-ai/sdk` 0.78.0: AI match explanations — Edge Function only, never client-side
-- Resend 6.9 + React Email 5.2: transactional email — requires SPF/DKIM DNS configuration before first send
-- Motion 12 (formerly framer-motion): landing page entrance animations only — CSS transitions for all wizard/dashboard transitions
+**Net-new dependencies:**
+- `motion` ^12.0.0 — staggered fadeUp animations; CSS alone cannot orchestrate sibling sequencing; import from `motion/react` (not the legacy `framer-motion` name — they are different packages)
+- `react-intersection-observer` ^9.0.0 — scroll-triggered `triggerOnce` inView for multiple animated sections; the existing custom `useInView` hook in `CountersSection.tsx` stays as-is to avoid unnecessary refactors
+- `@radix-ui/react-tabs` ^1.1.0 — WCAG-compliant tab panels for expandable job search cards and the applicant dashboard; native `<details>` cannot meet the ARIA tablist/tabpanel + keyboard navigation requirement
 
-See `.planning/research/STACK.md` for full library manifest with versions, rationale, and alternatives considered.
+**Key existing packages used in new ways:**
+- `@radix-ui/react-slider` ^1.3.6 — already in FilterSidebar; extract salary slider into reusable `RangeSlider` component (no new dep)
+- `react-dropzone` ^15.0.0 — already in `FileDropzone.tsx`; reuse for seeker document upload
+- `lucide-react` ^0.487.0 — `Star` icon for StarRating; no rating library needed
+
+**Install command for new deps only:**
+```bash
+npm install motion react-intersection-observer @radix-ui/react-tabs
+```
+
+**Do not add:** react-select, react-paginate, react-rating, leaflet, any CSS animation library, @radix-ui/react-accordion (native `<details>` already works in FilterSidebar).
+
+See `.planning/research/STACK.md` for full rationale and alternatives rejected.
 
 ### Expected Features
 
-TopFarms must replace the NZ ag Facebook group experience, which means the baseline is free, frictionless, and mobile-first — not enterprise. Three NZ ag-specific dimensions have no analogue on generic job boards and are the core reason employers and seekers would switch: shed type (rotary vs herringbone vs AMS — the #1 dairy skill differentiator), accommodation sub-scoring (76% of dairy seekers require on-farm accommodation with pets/couples/family specifics), and DairyNZ qualification taxonomy (Level 2–5+ as the sector's credential system).
+**Must have (table stakes — missing these makes the product feel below any modern job board):**
+- Search hero with keyword input + region dropdown above results
+- Expandable result cards (accordion pattern, mobile-first standard)
+- Status variant banners for shortlisted / interview / offer / declined application states
+- Employer CTA band and final CTA section on landing page (two-sided marketplace requirement)
+- Breadcrumb navigation on job detail (WCAG 2.1 AA requirement)
+- Filter toolbar + sidebar nav on applicant dashboard (expected by anyone who has used Seek Employer)
+- All ~30 missing form fields across wizards — a posting wizard without breed, milking frequency, and visa details produces the same information quality as a Facebook post
 
-**Must have (table stakes) — without these the platform feels broken:**
-- Email/password auth with employer/seeker fork at signup
-- Persistent login sessions
-- Employer onboarding wizard (8 screens) + job posting wizard (7 screens)
-- Job detail page (visitor and logged-in states)
-- Seeker onboarding wizard (8 steps) + profile management
-- Job search with all ag-specific filters (shed type, region, DairyNZ quals, herd size, accommodation, visa, salary range)
-- Application submission and status tracking (8-stage pipeline)
-- Employer applicant dashboard with ranked candidates
-- Mobile-responsive design (320px minimum; filter becomes drawer on mobile)
-- Employer profile (public farm page) as trust signal
-- Salary transparency with NZ regional market rate hints
-- Job expiry and status management
-- Landing page with hero, dual CTA, live counters, testimonials
+**Should have (TopFarms differentiators that justify switching from Facebook groups):**
+- My Match tab in expandable search cards with per-dimension score breakdown
+- AI candidate summaries per applicant (employer perspective, cached in DB column)
+- Match pool estimate in live preview sidebar ("14 seekers in Waikato match this role") — no NZ agricultural platform provides this at posting time
+- Farm response indicator ("Viewed by employer X hours ago") — reduces anxiety that currently drives seekers back to Facebook
+- Agriculture-specific quick-filter pills ("House included", "Couples welcome", "Top match >=80%")
+- Seeker completion screen showing top 3 matched jobs immediately post-onboarding
 
-**Should have (differentiators that justify switching from Facebook groups):**
-- Pre-computed match scoring engine (100-point, 6 dimensions + couples bonus + recency multiplier)
-- AI match explanations via Claude API (2-3 sentence plain-English rationale per match)
-- Match score breakdown with per-dimension progress bars
-- 5-tier employer verification ladder (Tiers 1–4 minimum at launch)
-- Placement fee gate with RLS contact masking
-- Accommodation sub-scoring (pets, couples, family, utilities)
-- Couples-seeking matching (+5pt bonus)
-- Visa right-to-work hard filter
-- Listing tier differentiation (Standard / Featured / Premium)
-- Profile completeness nudge
-- Save search + email alerts (v1.x after validation)
+**Defer (within v1.1 or to v1.x):**
+- Match pool RPC for live preview sidebar — new backend piece; ship sidebar without pool estimate first
+- Interview scheduling tab — shell only, no calendar wiring (explicitly excluded in PROJECT.md)
+- In-app messaging — Growth Phase per PROJECT.md; render as coming-soon affordance, not dead button
+- Save search + email alerts — separate Resend Edge Function system; defer entirely or ship UI shell as coming-soon
+- CV Builder nav item — entirely separate product surface; not in the ~70 gap items
+- Seeker document upload — requires new private Storage bucket + RLS; not blocking any other gap; defer to end of milestone
+- Numbered pagination — load-more is functional; pagination is polish; defer if time-constrained
 
-**Defer to v2+:**
-- In-app messaging (contact release via fee gate covers MVP; messaging adds fee-bypass risk)
-- Social login / OAuth (email/password sufficient for validation)
-- Partner job matching (couples boolean covers 80% of use case)
-- Horticulture/viticulture sectors (schema is sector-aware; addition is additive)
-- Multi-user employer accounts (team roles)
-- Video interviews / calendar integration (farmers schedule by phone)
-- Native mobile apps (mobile web first)
-- Weekly AI job recommendation digest (requires 500+ active listings)
-
-See `.planning/research/FEATURES.md` for full dependency graph and prioritization matrix.
+See `.planning/research/FEATURES.md` for full feature dependency graph and complexity assessment by gap category.
 
 ### Architecture Approach
 
-The architecture is a React SPA on Vercel CDN backed by Supabase, with four layers: UI (pages and design system components), state (React Query for server state, useState for local UI only — no Redux/Zustand needed), data (typed Supabase client wrapped in hooks, never called directly from components), and a service layer for external APIs (Stripe, Claude, Resend). All secret-key operations (Stripe webhooks, Claude API calls, email sending) run in Supabase Edge Functions (Deno). The match scoring engine is implemented as a PostgreSQL stored procedure and pre-computes scores into a `match_scores` table, triggered by database webhooks on job and seeker profile changes. URL search params are the single source of truth for job search filter state.
+All v1.1 work is additive to the existing architecture. The three wizard shells (EmployerOnboarding, SeekerOnboarding, PostJob) all use an identical accumulate-and-upsert pattern via `useWizard`, with URL-synced filter state in JobSearch and a DashboardLayout shell shared across employer and seeker views. New fields integrate via four-touch changes: extend TypeScript interface → add to upsert payload → pass as defaultValues → step renders new component. No new hooks, no new context, no changes to useWizard. FilterSidebar's existing `onFilterChange(key, value)` interface handles all new filter groups without modification.
 
-**Major components:**
-1. Design system (`src/components/ui/`): stateless primitives — Button, Card, Tag, MatchCircle, InfoBox, Input, Toggle, ProgressBar — built once, consumed everywhere; must be completed before any screen
-2. Match scoring engine (`supabase/functions/match-score.sql` + `match-recalculate` Edge Function): PostgreSQL stored procedure writing to `match_scores` table; triggered by DB webhooks on job/profile updates; nightly batch for integrity
-3. WizardShell (`src/components/features/shared/WizardShell.tsx`): orchestrates multi-step employer onboarding and job posting; upserts draft data to Supabase on every "Next" to survive browser refresh
-4. Edge Functions (`supabase/functions/`): stripe-webhook (job activation), match-recalculate (score freshness), placement-followup (Day 7+14 emails via Resend), nightly-batch (full recompute integrity)
-5. RLS policies (`supabase/migrations/002_rls_policies.sql`): primary security boundary; `seeker_contacts` table (separate from `seeker_profiles`) with placement fee gate; `user_roles` table as role authority; security definer functions to break circular policy recursion
+**New components to build (net-new files):**
+1. `ChipSelector` — drop-in checkbox replacement; must use `string[]` value shape to avoid schema conflicts; used in 6+ wizard steps
+2. `RangeSlider` — extracted from FilterSidebar's salary block; wraps existing Radix Slider dep; used in FilterSidebar, SeekerStep5, JobStep4
+3. `ExpandableCardTabs` — Radix Tabs wrapper for job search cards; lazy-render active tab only (conditional render, not CSS visibility)
+4. `StatusBanner` — variant-mapped banner driven by `applications.status`; all colours already in Tailwind v4 `@theme`
+5. `LivePreviewSidebar` — reads PostJob wizard state via prop; no Supabase fetch; shown only on step 5 via conditional layout class in PostJob shell (`hidden md:block` for mobile)
+6. Five landing page sections (AiMatchingSection, FarmTypesSection, EmployerCtaSection, TrustedBySection, FinalCtaSection) — fully independent of wizard/dashboard
+7. `ApplicantDashboard` rebuild — highest complexity; left sidebar nav + filter toolbar + 4-tab panels + bulk actions + AI summary cached in `Map<applicantId, string>`
 
-See `.planning/research/ARCHITECTURE.md` for full project structure, data flow diagrams, and 5 architectural patterns.
+**Key architectural rules:**
+- Primitive components receive props only; all Supabase fetches stay in page-level components or hooks
+- `ActiveFilterPills` reads from URLSearchParams (single source of truth); never owns a copy of filter state
+- PostJob two-column layout only on step 5; all other steps keep existing `max-w-2xl mx-auto` wrapper
+
+See `.planning/research/ARCHITECTURE.md` for full wave-based build order, component prop contracts, and data flow diagrams.
 
 ### Critical Pitfalls
 
-1. **Contact fields in `seeker_profiles` instead of a separate `seeker_contacts` table** — Any employer can SELECT the seeker_profiles row for search results; if email/phone live there, they are fully readable before the placement fee gate is triggered. Separation into `seeker_contacts` with a placement-fee-gated RLS SELECT policy is mandatory. Build this in the first migration or face a multi-day data layer rewrite. The SPEC uses CSS/RLS framing — the correct implementation is data separation, not column masking.
+1. **Wizard interface/DB out of sync** — Adding fields to step components before updating `JobPostingData` interface and the Supabase INSERT call silently drops new field data. Users fill in breed information, see a success screen, but the jobs row has NULL. Prevention: extend interface + run DB migration first, before any step UI work; verify by inspecting the actual Supabase row after submission.
 
-2. **User role stored only in JWT metadata, not a `user_roles` table** — `auth.users.raw_user_meta_data.user_type` is client-readable and not a reliable RLS security signal. Create a `user_roles` table (user_id, role, created_at) and enforce all cross-role access decisions against it. This is a Phase 1 schema decision; retrofitting it touches every table's RLS policies.
+2. **Checkbox-to-chip schema mismatch** — Existing boolean columns (`visa_nz_citizen: boolean`) are incompatible with chip `string[]` output. Prevention: check column type before writing any chip component; write a `booleanColumnsToChipArray()` mapping utility for defaultValues on edit flows; migrate boolean columns to `text[]` in the same phase as the UI upgrade. Test by logging in as a v1.0 user and verifying chips pre-populate from saved boolean data.
 
-3. **RLS circular policy recursion** — Job marketplace schemas are circular (jobs → employers → applications → seekers → match_scores). Writing RLS policies that cross-reference tables creates `ERROR: infinite recursion detected in policy`. Use `security definer` functions to break recursion and test every policy with `SET ROLE` in psql before deployment.
+3. **URL filter state replacement** — Naive `setSearchParams({ newParam: value })` replaces all existing params, silently clearing active filters when a new one is applied. Prevention: always use the merge pattern (`setSearchParams(prev => ({ ...Object.fromEntries(prev), newParam: value }))`); audit existing calls before adding any new filter; reset page param to 1 on every filter change.
 
-4. **Stripe webhook processed without idempotency check** — Stripe delivers `payment_intent.succeeded` with at-least-once guarantees. Without a `UNIQUE` constraint on `listing_fees.stripe_payment_id` and an idempotency check at the top of every webhook handler, retries create duplicate job activations, duplicate fee rows, and revenue accounting errors. Add this before writing any payment flow code.
+4. **AI summaries blocking dashboard load** — Calling Claude Edge Function synchronously on dashboard load creates 3–10s blank screens. Prevention: pre-generate summaries async (store in `applications.ai_summary` text column); trigger regeneration on application status change; dashboard reads cache only; show "Generating..." skeleton for fresh applications without a cached summary.
 
-5. **Match scores never invalidated after seeker/job update** — Pre-computed scores go stale silently when a seeker updates visa status or an employer changes shed type requirements. Add a `stale` boolean to `match_scores` from the initial migration; use DB triggers on `jobs`, `seeker_profiles`, and `seeker_skills` to mark rows stale; run a scheduled Edge Function to recompute. Retrofitting a staleness mechanism into a working scorer requires a full trigger-chain rewrite.
+5. **Scope creep breaking v1.0 logic** — Touching wizard step files to add SPEC fields creates temptation to improve adjacent code. A single field name change to an existing accommodation field breaks the scoring trigger. Prevention: additions-only rule per phase; diff review before any phase closes; run full happy-path wizard flow (employer onboarding, post-job, seeker onboarding, search, apply) after every phase.
 
-See `.planning/research/PITFALLS.md` for full pitfall details, recovery strategies, and "looks done but isn't" checklist.
+See `.planning/research/PITFALLS.md` for full pitfall details, phase-specific warnings table, regression prevention checklist, and recovery strategies.
 
 ---
 
 ## Implications for Roadmap
 
-Based on combined research, the SPEC.md's milestone order is architecturally correct. The phase structure below follows the dependency graph from FEATURES.md, the build order rationale from ARCHITECTURE.md, and the phase-to-pitfall mapping from PITFALLS.md.
+Research points to a dependency-ordered wave structure, not a screen-by-screen sequence. Building primitives first unlocks all subsequent work to proceed in parallel. Five suggested phases:
 
-### Phase 1: Foundation — Schema, Auth, RLS, Design System
+### Phase 1: Foundation Primitives
 
-**Rationale:** Nothing is buildable without the database schema, security policies, and design system. All critical pitfalls (contact data separation, user roles, RLS recursion) must be resolved here. Mistakes in this phase require migrations and policy rewrites that cascade across every subsequent phase.
+**Rationale:** ChipSelector alone unblocks 6+ wizard steps across all three wizards. Building all nine primitive UI components first means wizard work and page integrations can proceed in parallel without inter-phase blocking. This is the highest-leverage work in the entire milestone — one component, six consumers.
+**Delivers:** ChipSelector, RangeSlider, StatusBanner, Breadcrumb, StatsStrip, Timeline, StarRating, ActiveFilterPills, Pagination
+**Addresses:** All chip-based form field upgrades (all wizards), application status banners (My Applications), job detail structural components, search pagination
+**Avoids:** Schema mismatch pitfall — ChipSelector built once with correct `string[]` contract before any wizard step uses it; wrong data shape not possible if the component is reviewed before use
 
-**Delivers:** Working auth with employer/seeker fork; all 12 database tables with RLS on every table; `user_roles` table; `seeker_contacts` table separate from `seeker_profiles`; skills master table seeded (~40 skills); complete design system components (Button, Card, Tag, MatchCircle, InfoBox, Input, Toggle, ProgressBar); React Router setup with route structure; Supabase client singleton with generated types.
+### Phase 2: Wizard Field Extensions (all three wizards in parallel)
 
-**Addresses:** Auth (email/password, user type fork, session persistence), WCAG 2.1 AA baseline, mobile-responsive layout shell.
+**Rationale:** All three wizards follow the same four-touch change pattern and share no inter-dependencies. Within each wizard, interface extension must precede step-level work to prevent silent data loss — this sequencing must be enforced in the phase plan.
+**Delivers:** ~30 new form fields across employer onboarding (career dev chips, nearest town, distance to town, accommodation internet extras), seeker onboarding (licences chips, certifications chips, salary range, availability date, notice period), and post-job wizard (breed, milking frequency, seniority, dairy experience, qualifications chips, visa chips, pay frequency, hours, roster); chip upgrades replacing boolean checkboxes
+**Uses:** ChipSelector, RangeSlider (Phase 1); existing useWizard, react-hook-form, zod
+**Avoids:** Wizard interface/DB sync pitfall — interface + migration run first within each wizard sub-track; boolean-to-chip schema mismatch — column type verified before each upgrade with booleanColumnsToChipArray() utility written upfront
 
-**Avoids:** Contact masking failure (Pitfall 1 + 6), multi-role auth confusion (Pitfall 5), RLS recursion (Pitfall 3), RLS not enabled on tables (integration gotcha).
+### Phase 3: Page-Level Integrations
 
-**Research flag:** Standard patterns — Supabase Auth + RLS + Vite setup are well-documented. Design system implementation follows bespoke patterns from SPEC wireframes. No phase research needed.
+**Rationale:** Depends on Phase 1 primitives; does not require Phase 2 wizard work. Job search, job detail, My Applications, and applicant dashboard improvements are page-level consumers of Phase 1 components. These are the highest-visibility changes for seekers and employers.
+**Delivers:** FilterSidebar new filter groups + RangeSlider refactor; ExpandableCardTabs in SearchJobCard (lazy-render); SearchHero + ActiveFilterPills + Pagination in JobSearch; Breadcrumb + StatsStrip + Timeline + farm profile card + similar jobs in JobDetail; StatusBanner integration in ApplicationCard + MyApplications; full ApplicantDashboard rebuild with sidebar nav, filter toolbar, 4-tab panels, bulk actions, and AI summary caching
+**Implements:** ExpandableCardTabs with conditional render (not CSS visibility); ApplicantDashboard `Map<applicantId, string>` cache for AI summaries; `hidden md:block` pattern for mobile-safe preview sidebar; URLSearchParams merge pattern for all new filter additions
+**Avoids:** URL filter replacement pitfall; expandable card DOM bloat (80 hidden blocks for 20-card page); AI summary blocking load; double-sidebar conflict on applicant dashboard (clarify SPEC intent before implementing)
 
----
+### Phase 4: Landing Page Sections
 
-### Phase 2: Employer Supply Side — Onboarding, Job Posting, Stripe
+**Rationale:** Fully independent of all other work — no dependency on wizard, search, or dashboard changes. Can run in parallel with any other phase or be batched as a standalone marketing delivery.
+**Delivers:** AiMatchingSection, FarmTypesSection, EmployerCtaSection, TrustedBySection, FinalCtaSection; HeroSection staggered fadeUp animation; stat blocks in TestimonialsSection; live pulsing dot on counters
+**Uses:** `motion` ^12.0.0, `react-intersection-observer` ^9.0.0 (only new packages required for this phase)
+**Avoids:** LCP regression — CSS/motion animation only, no video or unoptimised large SVG; lazy-load images on new sections; Lighthouse gate after each section addition
 
-**Rationale:** Employers create the supply side before seekers can search. The job posting wizard + Stripe integration + job detail page form the complete supply-side vertical slice. Stripe integration must be complete here because the placement fee acknowledgement gate (Phase 5) depends on it — and Stripe idempotency must be designed before writing any payment flow.
+### Phase 5: Deferred High-Complexity Backend Items
 
-**Delivers:** Employer onboarding wizard (8 screens) with draft persistence to Supabase; job posting wizard (7 screens) with live preview sidebar; Stripe listing fee PaymentIntent (client) + stripe-webhook Edge Function (server, with idempotency); job detail page (visitor state); public employer profile page; 5-tier employer verification UI (Tiers 1–4 minimum); listing tier differentiation (Standard / Featured / Premium).
-
-**Uses:** `react-hook-form` + Zod v4 for wizard forms; WizardShell with draft upsert pattern; Radix UI Select/Switch/Tabs/Progress primitives; `@stripe/react-stripe-js` PaymentElement; `react-dropzone` for document/photo uploads to Supabase Storage.
-
-**Implements:** WizardShell architecture pattern; Stripe Webhook → Database State Machine pattern; wizard draft persistence pattern.
-
-**Avoids:** Stripe without idempotency (Pitfall 4); `VITE_STRIPE_SECRET_KEY` anti-pattern; wizard state in React only (Anti-Pattern 4).
-
-**Research flag:** Stripe PaymentElement + webhook integration is well-documented but NZD cents handling and first-listing-free server-side enforcement need careful implementation verification. No full phase research needed; spot-check during implementation.
-
----
-
-### Phase 3: Seeker Demand Side — Onboarding, Job Search, Applications
-
-**Rationale:** Requires jobs existing from Phase 2. Seeker onboarding populates the profile data that the match scoring engine needs. Job search is the primary seeker value proposition — the ag-specific filter dimensions (shed type, DairyNZ quals, accommodation, herd size, couples, visa) are the reason seekers would use TopFarms over Facebook. Match scores can be stubbed with a simple calculation (Phase 4 refines them).
-
-**Delivers:** Seeker onboarding wizard (8 steps) with draft persistence; seeker profile management with completeness nudge; job search with full ag-specific filter sidebar (URL param state); JobCard and JobCardExpanded (Details/Match/Apply tabs) components; application submission; worker application view with 8-stage pipeline; job detail page (logged-in seeker state with match score display).
-
-**Uses:** FilterSidebar with `useSearchParams` (URL param pattern); `useJobs` hook with React Query stale-while-revalidate; Radix UI Slider for salary range; MatchCircle component (design system); Application CRUD via `useApplications` hook.
-
-**Implements:** URL params as filter state (Anti-Pattern 5 avoidance); React Query caching for search results.
-
-**Avoids:** Filter state in React only (Anti-Pattern 5); showing visa-incompatible jobs (UX pitfall); wizard state lost on refresh (UX pitfall).
-
-**Research flag:** Standard React Router + React Query patterns. Job search filter implementation (10+ dimensions) is complex but follows established URL param patterns. No phase research needed.
-
----
-
-### Phase 4: Match Scoring Engine — Pre-Computation, Triggers, AI Explanations
-
-**Rationale:** Requires both employer jobs (Phase 2) and seeker profiles (Phase 3) to exist. The PostgreSQL stored procedure and recalculation trigger chain are refinements of what Phase 3 stubbed. This phase makes the ranked search and AI explanations fully functional. The match engine is the primary differentiator — implement it completely with staleness handling before Phase 5 depends on ranked applicant dashboards.
-
-**Delivers:** `match_score()` PostgreSQL stored procedure (6 dimensions: shed type 25pts, location/region 20pts, accommodation 20pts, skills 20pts, visa 5pts, experience 5pts; + couples bonus 5pts; + recency multiplier 1.1x); `match_scores` table with `stale` boolean and `breakdown` JSONB; DB triggers on `jobs`, `seeker_profiles`, `seeker_skills`, `job_skills` to mark scores stale; `match-recalculate` Edge Function (triggered by DB webhooks, <60s SLA); `nightly-batch` Edge Function for integrity; Claude API match explanations (async, cached in `match_scores.explanation`, graceful degradation on API failure); employer applicant dashboard with ranked candidate list and expandable match breakdown panels.
-
-**Uses:** `@anthropic-ai/sdk` 0.78.0 in Supabase Edge Function (Deno import); `match_scores.breakdown` JSONB passed to Claude (not full profiles); `motion` entrance animation for MatchCircle reveal.
-
-**Implements:** Pre-Computed Match Scores pattern (Pattern 1); Edge Functions for All Secret-Key Operations pattern (Pattern 3); staleness tracking from PITFALLS.md.
-
-**Avoids:** Real-time match score computation at query time (Anti-Pattern 2 + Pitfall 2); client-side Claude API calls (Anti-Pattern, security violation); blocking search on Claude API response (Performance trap).
-
-**Research flag:** The scoring algorithm specifics (dimension weights, accommodation sub-scoring logic, couples bonus edge cases) are fully specified in SPEC.md. No external research needed. The `pg_cron` vs Supabase scheduled functions choice for the nightly batch needs verification during implementation.
-
----
-
-### Phase 5: Revenue Protection — Placement Fee Gate, Contact Masking, Dashboards
-
-**Rationale:** Depends on the full match pipeline (Phase 4) being functional because shortlisting (the placement fee trigger) happens in the ranked applicant dashboard. This phase wires the revenue model: shortlist action → placement fee acknowledgement modal → RLS contact release → Day 7 + Day 14 follow-up emails.
-
-**Delivers:** Placement fee acknowledgement modal with exact NZD amount, payment timeline, and invoice explanation; `placement_fees` table rows written atomically on acknowledgement; RLS contact release (employer can read `seeker_contacts` only after acknowledged_at set); contact card with click-to-call, mailto, and suggested intro message; Stripe Invoice creation Edge Function triggered on hire confirmation; `placement-followup` Edge Function with Day 7 + Day 14 Resend emails; structured contact card shown on contact release; seeker notification emails on pipeline status changes; application rate limiting (10 applications/day per seeker).
-
-**Uses:** `@radix-ui/react-dialog` for placement fee modal; Resend + React Email for follow-up emails; `supabase.auth.getUser()` from server context (not client) for placement fee verification.
-
-**Implements:** Shortlist + Contact Release data flow (from ARCHITECTURE.md); RLS as Primary Security Boundary pattern (Pattern 2); Hire Confirmation → Invoice data flow.
-
-**Avoids:** Placement fee in frontend state only (security mistake); contact masking at CSS/UI layer (Pitfall 6 + Architecture Anti-Pattern 1); admin role without server-side enforcement.
-
-**Research flag:** Resend SPF/DKIM DNS configuration must be done before any email reaches real users — flag for environment setup. Stripe Invoice API (different from PaymentIntent) needs implementation verification.
-
----
-
-### Phase 6: Landing Page, Polish, Launch Readiness
-
-**Rationale:** Depends on all prior phases being functionally complete. The landing page needs real data for live counters and featured listings. Mobile QA, accessibility audit, and E2E tests cover the full user journey end-to-end before production launch.
-
-**Delivers:** Landing page (full-bleed hero, dual employer/seeker CTA fork, `motion`-animated live counters on scroll reveal, How It Works section with seeker/employer tab toggle, featured listings carousel, testimonials, footer); save search + email alerts (Resend Edge Function triggered on new job publish); mobile QA across all flows (320px minimum, filter drawer on mobile); WCAG 2.1 AA audit; E2E test suite covering critical paths (auth, job post, apply, shortlist, contact release); production Vercel deployment; Stripe production keys; DNS/email configuration; performance audit (Lighthouse, search <1.5s target).
-
-**Uses:** `react-intersection-observer` for counter animation trigger; `motion` for hero `fadeUp` stagger; `react-intersection-observer` + `motion` for scroll reveal.
-
-**Implements:** Landing page trust signals; progressive enhancement pattern for AI explanations.
-
-**Avoids:** Expired listings not cleaned up by cron (pitfall checklist); emails landing in spam (SPF/DKIM not configured).
-
-**Research flag:** Save search + email alerts is the one v1.x feature that should be pulled into Phase 6 if capacity allows (medium complexity, medium value). E2E testing framework choice (Playwright vs Cypress) needs a decision — both are well-supported with Vite.
-
----
+**Rationale:** Items requiring new backend infrastructure (match pool RPC, seeker document Storage bucket) or explicitly excluded in PROJECT.md. Ship after core gaps are closed and validated in production.
+**Delivers:** LivePreviewSidebar match pool estimate (new Supabase RPC: `estimate_match_pool(shed_type[], region, accommodation) → INT`, debounced 500ms); seeker document upload (new private `seeker-documents` Storage bucket + RLS: seeker can upload, employer can read only after active application + shortlist); seeker completion screen matched-jobs query with async polling (30s timeout before "calculating" message); numbered pagination if load-more is validated as insufficient
+**Avoids:** Completion screen "0 matches" pitfall — async polling with timeout; document identity leak — dedicated private bucket with correct RLS from the start, never the employer photos bucket
 
 ### Phase Ordering Rationale
 
-- **Foundation before everything:** Schema and RLS decisions are irreversible without migrations. Contact separation and user_roles architecture must be correct before any profile or listing table is created. Design system must be built before any screen.
-- **Supply before demand:** Employers create jobs before seekers can search them. Phase 2 before Phase 3 is non-negotiable.
-- **Both sides before match engine:** The scoring function cannot run until both `jobs` (Phase 2) and `seeker_profiles` (Phase 3) are populated. Phase 4 is the integration phase.
-- **Match engine before revenue gate:** The placement fee trigger (shortlist action) is in the ranked applicant dashboard, which requires Phase 4 scores. Phase 5 cannot be built without ranked applicants to shortlist.
-- **All features before landing page polish:** Landing page live counters need real data. Mobile QA covers all flows. Phase 6 is validation and launch.
-- **Anti-patterns are avoided by phase order:** Wizards persist to Supabase (not React state) because persistence is designed into Phases 2–3. Filter state uses URL params from Phase 3. Contact data separation is built in Phase 1 schema, not retrofitted.
+- Primitives before all page/wizard work because ChipSelector is the highest-count shared dependency; building it once correctly eliminates the biggest class of inter-phase blocking
+- Phase 2 and Phase 3 can run in parallel teams; wizard extensions and page integrations share no dependencies once Phase 1 primitives exist
+- Phase 4 (landing) can run at any time — assign to a separate track if team size allows
+- Phase 5 deferred because it contains the only genuinely new backend pieces and two items (interview tab, in-app messaging) are explicitly excluded in PROJECT.md for this milestone
 
 ### Research Flags
 
-Phases needing deeper research during planning:
-- **Phase 4:** `pg_cron` vs Supabase scheduled functions availability in current Supabase tier — verify during implementation setup. Accommodation sub-scoring null/false handling edge cases are specified in pitfalls checklist but need explicit test coverage design.
-- **Phase 5:** Stripe Invoice API specifics (different from PaymentIntent flow) — spot-check during implementation. Resend DNS setup timing (must precede any user-facing email send).
+Phases needing explicit pre-implementation checks (not full research-phase, but verified decisions before code):
+- **Phase 3 (ApplicantDashboard):** Clarify before writing any code whether the SPEC sidebar nav replaces DashboardLayout's shell sidebar or is an in-content secondary nav. Double sidebar at tablet viewports is a layout bloat risk. One question, one answer — do not assume.
+- **Phase 2 (checkbox-to-chip upgrades):** Each chip upgrade is a per-field schema type audit. Plan this explicitly into the phase — it is not implicit in "replace checkbox with ChipSelector."
+- **Phase 5 (match pool RPC):** The only genuinely novel backend piece in the milestone. Estimate separately from UI work; the debounced live-query pattern on a partial form state is non-trivial.
 
-Phases with standard patterns (skip research-phase):
-- **Phase 1:** Supabase + Vite + React project scaffolding is well-documented. Tailwind v4 CSS-first setup pattern is fully covered in STACK.md.
-- **Phase 2:** React Hook Form wizard pattern with Supabase upsert is established. Stripe PaymentElement integration is standard.
-- **Phase 3:** React Query + Supabase search with URL params is a standard pattern.
-- **Phase 6:** Playwright/Vitest patterns are standard; Vercel deployment is zero-config.
+Phases with standard patterns (safe to proceed without deeper research):
+- **Phase 1 (primitives):** All nine components have clear prop contracts in ARCHITECTURE.md; patterns are straightforward Tailwind + React
+- **Phase 4 (landing):** Static content + motion animation; well-documented pattern; all new packages verified compatible with React 19 + Tailwind v4
 
 ---
 
@@ -232,42 +168,36 @@ Phases with standard patterns (skip research-phase):
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | All versions verified against npm registry 2026-03-15. Tailwind v4 + Vite 8 peer dep compatibility is MEDIUM — verify `@tailwindcss/vite` works with Vite 8 on project init (peer dep lists ^5-7 but v8 extends v7 pattern). Zod v4 + resolvers v5 pairing is MEDIUM — verify import paths on init. |
-| Features | HIGH | SPEC.md v3.0 is the primary source — authored by product owner, fully specified with wireframes. Competitor analysis is MEDIUM (not independently verified via live site checks; web access was unavailable during research). |
-| Architecture | HIGH | SPEC.md v3.0 provides authoritative schema, data flows, and RLS requirements. Architectural patterns (pre-computed scores, RLS masking, Edge Functions for secrets) are confirmed by well-established Supabase and marketplace conventions. URL param filter state pattern is MEDIUM (standard React Router pattern, validated against v6 docs). |
-| Pitfalls | MEDIUM | Supabase RLS recursion and Stripe idempotency patterns are HIGH confidence (core platform behaviors). Contact masking and two-sided marketplace patterns are MEDIUM (based on training data, not live external sources — web access unavailable). NZ-specific agricultural patterns are MEDIUM (from SPEC author research, not independently sourced). |
+| Stack | HIGH | Core stack verified against package.json (ground truth); new package versions from prior STACK.md research (2026-03-15); Tailwind v4 data attribute variant pattern confirmed from live codebase |
+| Features | HIGH | Primary sources are SPEC v3.0, WIREFRAME_SPECS_FULL.md, and PROJECT.md — authoritative; table stakes classification drawn from well-established platform patterns (Seek, Greenhouse, Lever) using training data |
+| Architecture | HIGH | Based on direct codebase inspection of all wizard shells, FilterSidebar, and full component inventory; confirmed patterns from live files, not inferred |
+| Pitfalls | HIGH | Derived from actual codebase analysis of PostJob.tsx interface pattern, FilterSidebar setSearchParams usage, and ApplicantDashboard structure; not speculative |
 
-**Overall confidence:** HIGH
+**Overall confidence: HIGH**
 
 ### Gaps to Address
 
-- **Vite 8 + `@tailwindcss/vite` peer dep:** The Tailwind v4 Vite plugin lists peer dep `vite: '^5.2.0 || ^6 || ^7'`; Vite 8 follows the v7 pattern but is not explicitly listed. Verify compatibility on `npm install` during Phase 1 project init. Fallback: downgrade to Vite 7 if incompatible.
-- **Zod v4 + `@hookform/resolvers` v5 import paths:** Resolver v5 adds Zod v4 support but import path changes need verification on first form implementation (Phase 2). Document the correct import pattern immediately.
-- **`pg_cron` vs Supabase scheduled functions for nightly batch:** Supabase's built-in scheduler has evolved; verify current availability in the project's Supabase plan tier during Phase 4 setup.
-- **Competitor feature verification:** Seek, TradeMe, and any NZ ag-specific job boards were not independently verified during research (web tools unavailable). The SPEC's competitive claims are the source. If competitive positioning changes during development, revisit FEATURES.md competitor analysis section.
-- **Claude API rate limits:** Rate limits can change post-training cutoff. Verify current `claude-sonnet-4-20250514` tier limits at https://docs.anthropic.com/en/api/rate-limits before Phase 4 implementation.
-- **Resend SPF/DKIM DNS lead time:** DNS propagation can take 24–48 hours. DNS configuration must be initiated before Phase 5 testing begins, not during it.
+- **`applications.status` column constraint type:** Before adding StatusBanner variants, confirm whether the status column uses a PostgreSQL ENUM or a CHECK constraint on text — determines the migration type. Check Supabase schema before Phase 3.
+- **ApplicantDashboard SPEC sidebar intent:** SPEC shows a sidebar nav on the applicant dashboard; DashboardLayout already renders a shell sidebar. Clarify intent before Phase 3 implementation — double sidebar breaks tablet layout.
+- **match_scores trigger timing:** The seeker completion screen requires match scores to exist immediately after onboarding. Verify whether the existing scoring trigger fires synchronously or asynchronously — determines whether the polling strategy in Phase 5 is required or scores are available instantly.
+- **New package version re-verification:** `motion` ^12.0.0, `react-intersection-observer` ^9.0.0, `@radix-ui/react-tabs` ^1.1.0 were last verified 2026-03-15. Re-verify on npm before installing — 5 days is low risk but worth a quick check.
 
 ---
 
 ## Sources
 
 ### Primary (HIGH confidence)
-- TopFarms SPEC.md v3.0 — product definition, schema, RLS requirements, wireframes, match scoring algorithm, Stripe integration, milestone structure
-- TopFarms PROJECT.md — project context and validated requirements
-- npm registry (queried 2026-03-15) — all stack versions verified via `npm info [pkg] dist-tags`
+- TopFarms SPEC v3.0 — authoritative feature and UI requirements
+- `WIREFRAME_SPECS_FULL.md` (2026-03-17) — gap-by-gap reference for all ~70 items
+- `WIREFRAME_SPECS.md` — as-built component audit (existing component inventory)
+- `PROJECT.md` — milestone definition, explicit out-of-scope items, constraints
+- `package.json` — ground truth for all installed package versions
+- Direct codebase inspection: `PostJob.tsx`, `EmployerOnboarding.tsx`, `SeekerOnboarding.tsx`, `JobSearch.tsx`, `FilterSidebar.tsx`, `CountersSection.tsx`, `FileDropzone.tsx`, full `src/components/ui/` inventory
 
 ### Secondary (MEDIUM confidence)
-- Supabase RLS documentation (official, training data Aug 2025) — RLS policy patterns, Edge Functions, Storage
-- PostgreSQL RLS recursive policy behavior — core PostgreSQL behavior, pg docs consistent
-- Stripe webhook delivery guarantees documentation — at-least-once delivery, consistent since 2019
-- React Query, React Hook Form, React Router v7 documentation — state management and routing patterns
-- Two-sided marketplace contact masking post-mortems — MEDIUM, from training data without live source verification
-
-### Tertiary (MEDIUM-LOW confidence)
-- NZ agricultural sector context (DairyNZ qualification taxonomy, accommodation norms, couples hiring rates) — derived from SPEC author's research; not independently verified via live sources
-- Competitor analysis (Seek, TradeMe, NZ ag Facebook groups) — SPEC Section 11 is the source; not independently verified via live site checks
+- Training data: UI pattern classification for job boards, ATS platforms, two-sided marketplaces (Seek, LinkedIn Jobs, Greenhouse, Lever, Workable, Glassdoor, Airbnb, Indeed) — web research tools unavailable during this research session; patterns are well-established pre-August 2025
+- Prior STACK.md research (2026-03-15) — version numbers for three new packages; not re-verified at time of this research (5-day-old data)
 
 ---
-*Research completed: 2026-03-15*
+*Research completed: 2026-03-20*
 *Ready for roadmap: yes*

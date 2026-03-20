@@ -1,325 +1,304 @@
-# Stack Research
+# Technology Stack
 
-**Domain:** Agricultural job marketplace (NZ)
-**Researched:** 2026-03-15
-**Confidence:** HIGH — core stack locked in SPEC.md; all versions verified via npm registry
+**Project:** TopFarms v1.1 — SPEC Compliance UI Gap-Closing
+**Researched:** 2026-03-20
+**Confidence:** HIGH for already-installed packages (ground truth from package.json); MEDIUM for new additions (versions from existing STACK.md research verified 2026-03-15; re-verification blocked by tool restrictions)
 
 ---
 
 ## Stack Status
 
-The core stack is **locked** in SPEC.md. This document confirms current stable versions,
-identifies every supporting library needed to ship the MVP, and flags version-sensitive
-compatibility decisions (Tailwind v4, React Router v7, Zod v4).
+The core stack is **locked** from v1.0. This document covers only the **delta** for v1.1 — new libraries needed for SPEC compliance UI components, and confirmation of what is already available. The complete baseline stack is documented in the prior version of this file (2026-03-15).
 
 ---
 
-## Recommended Stack
+## What Is Already Installed (Use These, Don't Re-Add)
 
-### Core Technologies
+Verified against `package.json` at time of research:
 
-| Technology | Version | Purpose | Why Recommended |
-|------------|---------|---------|-----------------|
-| React | 19.2.4 | UI framework | Locked. React 19 stable — improved server actions, use() hook, optimistic updates. Minor API changes from v18 but all key libs now support it. |
-| TypeScript | 5.9.3 | Type safety | Locked. Full React 19 type support in @types/react 19.x. |
-| Vite | 8.0.0 | Build tool + dev server | Locked. v8 is a major jump from v6; fast HMR, native ESM, excellent Tailwind v4 plugin support via `@tailwindcss/vite`. |
-| Tailwind CSS | 4.2.1 | Utility-first styling | Locked. **v4 is now stable** (`latest` tag). CSS-first config (no `tailwind.config.js`), CSS custom properties native, significantly faster builds. Required for the TopFarms design token approach. |
-| Supabase | 2.99.1 | PostgreSQL DB + Auth + Storage + Edge Functions | Locked. Managed Postgres with Row Level Security (all tables), built-in Auth for email/password flow, Storage for document/photo uploads, Edge Functions for server-side logic (match scoring, Stripe webhooks). |
-| Vercel | N/A (platform) | Frontend hosting + Edge runtime | Locked. Zero-config Vite deployments, edge network for NZ-proximate delivery, preview deployments per PR. |
-| Claude API (`claude-sonnet-4-20250514`) | via `@anthropic-ai/sdk` 0.78.0 | AI match explanations | Locked. Sonnet model balances cost and quality for the 2-3 sentence match insight use case. Called from Supabase Edge Function to avoid exposing API key client-side. |
-| Stripe | Node SDK 20.4.1 | Listing fee payments + placement acknowledgement | Locked. PaymentIntent API for listing fees, webhook handling for payment confirmation, customer billing portal for subscription management. |
+| Library | Installed Version | v1.1 Use |
+|---------|------------------|----------|
+| `@radix-ui/react-slider` | ^1.3.6 | Dual-handle salary range slider — **already works**, already used in `FilterSidebar.tsx` with two `<Slider.Thumb>` elements |
+| `react-dropzone` | ^15.0.0 | Drag-drop file upload zones — **already implemented** in `FileDropzone.tsx`, used in employer verification |
+| `@radix-ui/react-checkbox` | ^1.1.4 | Checkbox inputs — installed; v1.1 converts many to chip selectors instead |
+| `@radix-ui/react-dialog` | ^1.1.6 | Modals — installed, used for placement fee gate |
+| `@radix-ui/react-select` | ^2.1.6 | Dropdowns — installed |
+| `@radix-ui/react-switch` | ^1.1.3 | Toggles — installed, used as accommodation/couples toggles in filter sidebar |
+| `@radix-ui/react-progress` | ^1.1.2 | Wizard progress bar — installed |
+| `@radix-ui/react-label` | ^2.1.2 | Form labels — installed |
+| `lucide-react` | ^0.487.0 | Icons — installed |
+| `clsx` | ^2.1.1 | Conditional classNames — installed |
+| `tailwind-merge` | ^3.2.0 | Safe class merging — installed |
+| `sonner` | ^2.0.3 | Toast notifications — installed |
+| `react-hook-form` | ^7.55.0 | Forms — installed |
+| `@hookform/resolvers` | ^5.0.1 | Zod adapter — installed |
+| `zod` | ^3.24.2 | Validation — installed (note: v3, not v4 as in prior research doc) |
 
-### Tailwind v4 Important Notes
+**Important:** The live counter animation in `CountersSection.tsx` uses custom hooks (`useInView`, `useCountUp`) — no external library. The `FilterSidebar.tsx` uses native `<details>`/`<summary>` for collapsible sections — no Radix Accordion. Both patterns are sufficient for current use cases.
 
-**Tailwind v4 is a breaking change from v3.** Key differences affecting this project:
+---
 
-- No `tailwind.config.js` — configuration lives in CSS via `@theme` directive
-- CSS custom properties are first-class — `--soil`, `--moss` etc. defined in `:root` map directly to Tailwind utilities
-- Use `@tailwindcss/vite` plugin (not PostCSS) for Vite projects
-- `@apply` works differently — prefer component classes via `@layer components`
-- `tailwind-merge` 3.x is required (v2.x does not support Tailwind v4 class names)
+## New Libraries Required for v1.1
 
-Example Tailwind v4 setup for this project:
-```css
-/* src/index.css */
-@import "tailwindcss";
+### Animation — `motion` (formerly framer-motion)
 
-@theme {
-  --color-soil: #2C1A0E;
-  --color-moss: #2D5016;
-  --color-fern: #4A7C2F;
-  --color-meadow: #7AAF3F;
-  --color-hay: #D4A843;
-  --color-cream: #F7F2E8;
-  /* ... full palette */
-  --font-display: "Fraunces", serif;
-  --font-body: "DM Sans", sans-serif;
+| Library | Recommended Version | Purpose | Why Add |
+|---------|-------------------|---------|---------|
+| `motion` | `^12.0.0` | Declarative JS animations | CSS `animate-bounce` and `animate-pulse` already in the codebase. The v1.1 SPEC requires **staggered fadeUp animations** on hero sections and landing page additions, and **pulsing badges** with entry timing — CSS transitions cannot stagger across siblings without JS orchestration. `motion` provides `variants` + `staggerChildren` for this. |
+
+**Why not CSS only:** Staggered entrance animations across a list of elements (e.g., hero headline → subtext → CTA, or farm type cards appearing in sequence) require dynamic delay calculation. CSS `animation-delay` on static values works but requires N hard-coded classes. `motion`'s `staggerChildren` is the idiomatic React solution and is already planned in the existing STACK.md.
+
+**Import pattern:**
+```typescript
+import { motion } from 'motion/react'
+// NOT from 'framer-motion' — the package is now 'motion'
+```
+
+**Tailwind v4 integration:** No conflict. `motion` wraps HTML elements with inline style transforms. Tailwind classes apply normally to `motion.div` etc.
+
+**React 19 support:** Peer dep is `^18 || ^19`. Confirmed compatible.
+
+---
+
+### Scroll Trigger — `react-intersection-observer`
+
+| Library | Recommended Version | Purpose | Why Add |
+|---------|-------------------|---------|---------|
+| `react-intersection-observer` | `^9.0.0` | `useInView` hook for scroll-triggered animations | The codebase already has a **custom** `useInView` hook (used in `CountersSection.tsx`). However, the custom hook is a thin wrapper; `react-intersection-observer` provides the same API with better threshold/rootMargin options, TypeScript types, and ref merging support needed when combining with `motion`. |
+
+**Decision:** Use `react-intersection-observer` for new animated sections (hero stat blocks, landing page additions). Keep the existing custom `useInView` for `CountersSection.tsx` — do not refactor what works.
+
+**Install as:**
+```bash
+npm install react-intersection-observer
+```
+
+**Why not build custom again:** The existing custom hook works for a single threshold. The v1.1 landing page additions (AI matching section, farm types section, employer CTA) need per-element inView detection with `triggerOnce: true` to prevent re-animation on scroll back. The library handles this cleanly.
+
+---
+
+### Tabs — `@radix-ui/react-tabs`
+
+| Library | Recommended Version | Purpose | Why Add |
+|---------|-------------------|---------|---------|
+| `@radix-ui/react-tabs` | `^1.1.0` | Accessible tab panels | Expandable card tabs on job search results (SPEC: tabs inside `SearchJobCard` for Details / Requirements / Accommodation) and the applicant dashboard 4-tab expandable panels. |
+
+**Why not `<details>` like FilterSidebar:** The filter sidebar uses `<details>` for simple show/hide per-section. The SPEC card tabs and applicant panels require **mutually exclusive active states** (only one tab active at a time), ARIA `tablist`/`tabpanel` roles for WCAG 2.1 AA, and keyboard navigation (arrow keys). Radix Tabs provides all of this; `<details>` does not.
+
+**Why not build from scratch:** Tab keyboard navigation (Left/Right arrows, Home/End, focus management) is non-trivial to get right for WCAG 2.1 AA. Radix is already the project's primitive library of choice.
+
+**Tailwind v4 integration:** Style with `data-[state=active]:` Tailwind variants. Radix Tabs sets `data-state="active"` on the active tab trigger — this maps directly to Tailwind v4 data attribute variants.
+
+```typescript
+// Usage pattern
+<Tabs.Root defaultValue="details">
+  <Tabs.List className="flex border-b border-fog">
+    <Tabs.Trigger
+      value="details"
+      className="px-4 py-2 text-sm data-[state=active]:border-b-2 data-[state=active]:border-moss data-[state=active]:text-moss"
+    >
+      Details
+    </Tabs.Trigger>
+  </Tabs.List>
+  <Tabs.Content value="details">...</Tabs.Content>
+</Tabs.Root>
+```
+
+---
+
+### Chip/Tag Selector — Build from scratch (no library)
+
+**Decision: Do NOT add a library for chip selectors.**
+
+The v1.1 SPEC converts checkboxes to chip-style multi-selectors in employer onboarding (career dev chips), seeker onboarding (visa type chips, licence chips), and job posting (qualifications chips). These are styled toggle buttons — not a complex component.
+
+**Implementation:** Vanilla React + Tailwind v4:
+
+```typescript
+function ChipSelector({ options, selected, onToggle }: ChipSelectorProps) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {options.map((opt) => (
+        <button
+          key={opt.value}
+          type="button"
+          onClick={() => onToggle(opt.value)}
+          className={cn(
+            'px-3 py-1.5 rounded-full text-sm font-medium border transition-colors',
+            selected.includes(opt.value)
+              ? 'bg-moss text-white border-moss'
+              : 'bg-white text-mid border-fog hover:border-moss hover:text-moss'
+          )}
+        >
+          {opt.label}
+        </button>
+      ))}
+    </div>
+  )
 }
 ```
 
-### Supporting Libraries
-
-#### Routing
-
-| Library | Version | Purpose | When to Use |
-|---------|---------|---------|-------------|
-| `react-router` | 7.13.1 | Client-side routing | All route definitions. Use v7 (not v6 `react-router-dom` — v7 unified the package). Supports `createBrowserRouter` with loaders/actions for data-fetching patterns. |
-
-**Note:** React Router v7 unified `react-router-dom` into `react-router`. Import from `react-router`. Peer deps require `react >= 18`.
-
-#### Data Fetching & Server State
-
-| Library | Version | Purpose | When to Use |
-|---------|---------|---------|-------------|
-| `@tanstack/react-query` | 5.90.21 | Server state management | Wrap all Supabase calls. Handles caching, background refetch, optimistic updates. Critical for the search results page (stale-while-revalidate prevents flicker on filter changes). |
-
-#### Forms & Validation
-
-| Library | Version | Purpose | When to Use |
-|---------|---------|---------|-------------|
-| `react-hook-form` | 7.71.2 | Form state management | All wizard forms (employer onboarding 8-screen, seeker onboarding 8-step, job posting 7-screen). Uncontrolled inputs = zero re-renders per keystroke. |
-| `@hookform/resolvers` | 5.2.2 | Schema validation adapter | Required bridge between react-hook-form and Zod. |
-| `zod` | 4.3.6 | Schema validation | All form schemas. **Zod v4 is a breaking change from v3** — new `.parse()` error format, faster parsing. Use v4 from the start, don't mix. |
-
-#### UI Components (Radix UI Primitives)
-
-Radix UI primitives provide accessible, unstyled components. Style with Tailwind v4 on top.
-
-| Library | Version | Purpose | When to Use |
-|---------|---------|---------|-------------|
-| `@radix-ui/react-dialog` | 1.1.15 | Modal dialogs | Placement fee acknowledgement modal, verification upload modal |
-| `@radix-ui/react-select` | 2.2.6 | Select dropdowns | Region, shed type, role type, herd size selects across all wizards |
-| `@radix-ui/react-slider` | 1.3.6 | Range slider | Salary range filter (`$35k–$120k+` dual-handle slider on search) |
-| `@radix-ui/react-tabs` | 1.1.13 | Tab panels | How-it-works section (seeker/employer toggle), job detail tabs |
-| `@radix-ui/react-switch` | 1.2.6 | Toggle switches | Accommodation toggle, couples toggle, billing period toggle |
-| `@radix-ui/react-progress` | 1.1.8 | Progress bars | Wizard step progress bar (3px gradient bar below nav) |
-| `@radix-ui/react-label` | 2.1.8 | Accessible labels | All form inputs across wizards |
-| `@radix-ui/react-checkbox` | 1.3.3 | Checkboxes | Filter sidebar checkboxes, skill requirement selectors |
-| `@radix-ui/react-toast` | 1.2.15 | Toast notifications | Fallback; prefer Sonner (see below) |
-
-#### Notifications
-
-| Library | Version | Purpose | When to Use |
-|---------|---------|---------|-------------|
-| `sonner` | 2.0.7 | Toast notifications | Application submitted, save successful, error states. Simpler API than Radix Toast; built for React 19. |
-
-#### Icons
-
-| Library | Version | Purpose | When to Use |
-|---------|---------|---------|-------------|
-| `lucide-react` | 0.577.0 | Icon set | All icons throughout the UI. Tree-shakeable, consistent stroke style, NZ-agriculture-appropriate icon library. |
-
-#### Animation
-
-| Library | Version | Purpose | When to Use |
-|---------|---------|---------|-------------|
-| `motion` | 12.36.0 | Declarative animations | Landing page: `fadeUp` stagger on hero headline, live counter scroll reveal, card entrance. Use selectively — farm workers are practical users, not expecting heavy animation. |
-
-**Note:** `motion` (formerly `framer-motion`) unified into a single package. Import from `motion/react` for React integration. Supports React 19.
-
-#### File Uploads
-
-| Library | Version | Purpose | When to Use |
-|---------|---------|---------|-------------|
-| `react-dropzone` | 15.0.0 | Drag-and-drop file upload | Employer verification: document upload (Tier 4) and farm photo upload (Tier 5). Integrates with Supabase Storage for upload. |
-
-#### Scroll & Intersection
-
-| Library | Version | Purpose | When to Use |
-|---------|---------|---------|-------------|
-| `react-intersection-observer` | 10.0.3 | Scroll-triggered animations | Landing page live counter animation trigger on scroll-into-view. |
-
-#### Utilities
-
-| Library | Version | Purpose | When to Use |
-|---------|---------|---------|-------------|
-| `clsx` | 2.1.1 | Conditional class names | All className logic. |
-| `tailwind-merge` | 3.5.0 | Merge Tailwind classes safely | Combine classes without conflicts. **Must use v3** — v2 does not support Tailwind v4 class names. |
-| `date-fns` | 4.1.0 | Date formatting and manipulation | Application deadlines, listing expiry dates, posted-ago display. |
-
-#### Email
-
-| Library | Version | Purpose | When to Use |
-|---------|---------|---------|-------------|
-| `resend` | 6.9.3 | Transactional email delivery | All transactional emails sent from Supabase Edge Functions: welcome, application received, shortlist notification, verification. |
-| `react-email` | 5.2.9 | React-based email templates | Build HTML email templates using React components. Render server-side in Edge Functions, send via Resend. |
-
-#### Stripe Integration (Client Side)
-
-| Library | Version | Purpose | When to Use |
-|---------|---------|---------|-------------|
-| `@stripe/stripe-js` | 8.9.0 | Stripe.js loader | Loads Stripe.js asynchronously. Required for PCI compliance. |
-| `@stripe/react-stripe-js` | 5.6.1 | Stripe React components | `<Elements>` provider + `<PaymentElement>` for listing fee payment on Step 6 of job posting wizard. |
-
-#### Security
-
-| Library | Version | Purpose | When to Use |
-|---------|---------|---------|-------------|
-| `dompurify` | 3.3.3 | HTML sanitisation | Sanitise any user-generated rich text before rendering. Apply to job descriptions and farm bios to prevent XSS. |
-
-### Supabase Supporting Package
-
-| Library | Version | Purpose | When to Use |
-|---------|---------|---------|-------------|
-| `@supabase/ssr` | 0.9.0 | Server-side Supabase helpers | Required for cookie-based auth in Vite/Vercel edge environment. Handles session refresh on the server side. Use with Vercel Edge Middleware for auth-protected routes. |
-
-### Development Tools
-
-| Tool | Version | Purpose | Notes |
-|------|---------|---------|-------|
-| `@vitejs/plugin-react` | 6.0.1 | React Fast Refresh in Vite | Required. Use with `@tailwindcss/vite` (not PostCSS) for Tailwind v4. |
-| `@tailwindcss/vite` | 4.2.1 | Tailwind v4 Vite integration | Replaces `postcss`/`autoprefixer` for Tailwind processing in Vite projects. |
-| `vitest` | 4.1.0 | Unit test runner | Co-located with Vite config. Use `happy-dom` environment (faster than jsdom for this use case). |
-| `@testing-library/react` | 16.3.2 | React component testing | Full React 19 support as of v16.3. |
-| `@types/react` | 19.2.14 | TypeScript React types | Match React version (19.x). |
-| `@types/react-dom` | (from @types/react) | TypeScript React DOM types | Match React version. |
-| `eslint` | 10.0.3 | Code linting | Use `eslint.config.js` flat config format (required in ESLint v10). |
-| `prettier` | 3.8.1 | Code formatting | Single-pass formatting. Configure Tailwind class sorting via `prettier-plugin-tailwindcss`. |
-| `prettier-plugin-tailwindcss` | (latest) | Tailwind class sorting | Sorts Tailwind utilities in canonical order. Reduces merge conflicts on class strings. |
+**Why not a library:** Every chip/tag library (react-select in multi mode, react-tagsinput, etc.) carries opinions about styling and behaviour that conflict with the bespoke TopFarms design system. The component above is ~20 lines and fully controlled by Tailwind.
 
 ---
 
-## Alternatives Considered
+### Star Rating — Build from scratch (no library)
 
-| Recommended | Alternative | When to Use Alternative |
-|-------------|-------------|-------------------------|
-| `react-router` v7 | TanStack Router | If type-safe file-based routing is a priority from day one. TanStack Router has stronger TS inference but higher setup cost. Not worth it for this project size. |
-| `@tanstack/react-query` | SWR | SWR is simpler but has no devtools, weaker mutation support, no prefetching. For a search-heavy marketplace with complex filter states, TanStack Query wins. |
-| `react-hook-form` | Formik | Formik uses controlled inputs — every keystroke re-renders. With 8-screen wizards, uncontrolled (RHF) is the correct choice. |
-| `zod` v4 | yup | Zod v4 is TypeScript-first, infers types directly from schemas. yup requires separate type declarations. Zod wins for TS projects. |
-| Radix UI primitives | shadcn/ui | shadcn/ui bundles Radix + Tailwind but imposes its own design decisions. Since TopFarms has a strict, bespoke design system, raw Radix + Tailwind gives full control without fighting component opinions. |
-| `sonner` | `react-hot-toast` | sonner is built for React 19 with portal-based rendering. react-hot-toast works but has less active maintenance. |
-| `motion` (framer-motion) | CSS transitions | Complex entrance animations on landing page (stagger, counter reveal) require JS control. Use only on landing; all wizard/dashboard transitions should be CSS-only. |
-| `resend` | AWS SES | Resend has a cleaner API, native React Email support, and a generous free tier (3,000 emails/month). SES has lower per-email cost at scale but is overkill for MVP. |
-| `happy-dom` (Vitest env) | `jsdom` | happy-dom is 2-4x faster for Vitest. Only use jsdom if a specific browser API is missing. |
+**Decision: Do NOT add a library for star ratings.**
 
----
+The v1.1 SPEC includes a star rating input on the employer profile (farm culture rating by workers). A 5-star interactive input is ~30 lines of vanilla React.
 
-## What NOT to Use
+```typescript
+function StarRating({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  return (
+    <div className="flex gap-1">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button key={star} type="button" onClick={() => onChange(star)}>
+          <Star
+            className={cn('w-5 h-5', star <= value ? 'fill-hay text-hay' : 'text-fog')}
+          />
+        </button>
+      ))}
+    </div>
+  )
+}
+```
 
-| Avoid | Why | Use Instead |
-|-------|-----|-------------|
-| PostCSS for Tailwind | Tailwind v4 + Vite should use `@tailwindcss/vite` plugin, not the PostCSS path — the Vite plugin is faster and the recommended path per Tailwind v4 docs. | `@tailwindcss/vite` |
-| `tailwind-merge` v2 | Does not understand Tailwind v4 CSS variable–based class names. Will fail to merge classes correctly. | `tailwind-merge` v3.5.0 |
-| `react-router-dom` (as separate package) | In React Router v7, `react-router-dom` is deprecated — v7 unified into `react-router`. Installing `react-router-dom` at v7 installs a thin re-export shim. Import directly from `react-router`. | `react-router` |
-| Zod v3 | Zod v4 is the `latest` tag. Mixing v3 and v4 resolver packages causes incompatibility. Start on v4. | `zod` v4.3.6 |
-| `@radix-ui/react-toast` as primary toast | Toast is more complex to set up than Sonner. Sonner's `<Toaster>` provider pattern is simpler and sufficient for this use case. | `sonner` |
-| Client-side Claude API calls | Exposing the Anthropic API key in the browser is a security violation. All Claude calls must go through a Supabase Edge Function. | Supabase Edge Function + server-side `@anthropic-ai/sdk` |
-| `moment.js` | 300 KB bundle, deprecated. | `date-fns` v4 (tree-shakeable, ~2 KB per used function) |
-| `axios` | Supabase client handles all API calls. Fetch is sufficient for any remaining HTTP needs. | Native `fetch` or Supabase client |
-| MUI / Ant Design | Heavy component libraries impose design systems that conflict with the bespoke TopFarms design. They also ship large bundles. | Radix UI primitives + Tailwind v4 |
+Uses `lucide-react`'s `Star` icon (already installed). No new dependency needed.
 
 ---
 
-## Stack Patterns by Variant
+### Pagination — Build from scratch (no library)
 
-**When calling Supabase from the client:**
-- Use `@supabase/supabase-js` createBrowserClient
-- Wrap in TanStack Query `useQuery` / `useMutation`
-- RLS enforces access control — no custom middleware needed
+**Decision: Do NOT add a library for pagination.**
 
-**When calling Supabase from Edge Functions (Stripe webhooks, AI scoring, email):**
-- Use `createClient` with the service role key (env var only, never client-exposed)
-- Import `@anthropic-ai/sdk` server-side only in Edge Functions
+The v1.1 SPEC requires numbered pagination on job search results. This is a row of numbered buttons with prev/next — achievable with a 40-line component.
 
-**When implementing wizard forms:**
-- Use `react-hook-form` with `useFormContext` to share state across steps
-- Persist to localStorage between steps with `watch()` + `useEffect`
-- Validate per-step with `trigger(['field1', 'field2'])` before advancing
+**Why not a library:** Pagination libraries (react-paginate, etc.) are styled for their own design systems and require significant CSS overrides. The TopFarms pagination is straightforward: current page, N adjacent pages, ellipsis, prev/next.
 
-**When implementing the match score display:**
-- Scores are pre-computed on the server (Supabase Edge Function or DB trigger)
-- Display scores from the `job_applications` join — never recompute client-side
-- Use `motion` entrance animations only on first render of score circle
-
-**When implementing contact masking (RLS):**
-- Email/phone stored in `user_profiles` table, masked at PostgreSQL column level via RLS policy
-- Policy: `contact_visible = true` only when `placement_fee_acknowledged = true`
-- Do NOT rely on client-side conditional rendering — data is physically absent from API response
+**Pattern:** Compute page range in a pure function, render with Tailwind utility classes matching the existing `Button` component variants.
 
 ---
 
-## Version Compatibility
+### Vertical Timeline — Build from scratch (no library)
 
-| Package | Compatible With | Notes |
-|---------|-----------------|-------|
-| `react` 19.2.4 | `@testing-library/react` ^16.3 | v16.3 added full React 19 support. |
-| `react` 19.2.4 | `react-router` 7.x | Peer dep is `>=18`. Works. |
-| `react` 19.2.4 | `motion` 12.x | Peer dep is `^18 || ^19`. Works. |
-| `tailwindcss` 4.2.1 | `tailwind-merge` 3.x | **v3 required** — v2 breaks with Tailwind v4 class names. |
-| `tailwindcss` 4.2.1 | `@tailwindcss/vite` 4.2.1 | Version must match Tailwind version exactly. |
-| `vite` 8.0.0 | `@tailwindcss/vite` 4.2.1 | Peer dep: `vite: '^5.2.0 || ^6 || ^7'` — Vite 8 may not be listed but v7 pattern applies. **Verify on project init.** |
-| `zod` 4.x | `@hookform/resolvers` 5.x | Resolvers v5 adds Zod v4 support. Do not use resolvers v4 with Zod v4. |
-| `@anthropic-ai/sdk` 0.78.0 | Supabase Edge Functions (Deno) | Use the `deno` compatible import path. Test in Edge Function sandbox first. |
+**Decision: Do NOT add a library for timeline components.**
+
+The v1.1 SPEC adds application timeline on the job detail page (seeker view) and the applicant dashboard. A vertical timeline is a styled `<ol>` with a left border, step circles, and conditional active/complete states.
+
+**Implementation:** CSS-only with Tailwind — left border line via `border-l-2`, step circles with absolute positioning. No JS required, no library needed.
+
+---
+
+### Map Placeholder — Static placeholder (no library)
+
+**Decision: Do NOT add a mapping library.**
+
+The v1.1 SPEC shows a map in the job detail sidebar for farm location. Per the PROJECT.md constraints and the v1.1 scope definition, this is a "map placeholder" — a styled div with an icon and location text, not a live map.
+
+**Why not Leaflet/Google Maps:** Full mapping is out of scope for v1.1. Integrating a map library adds 40+ KB and complexity with no MVP value. The location is already displayed as text (region, nearest town). A placeholder card is correct for this milestone.
+
+---
+
+### Search Hero with Search Bar — Build from scratch (no library)
+
+**Decision: Do NOT add a library for the search hero.**
+
+The job search page needs a hero section with a text input search bar (keyword search) and potentially a region select — both already-installed primitives (`@radix-ui/react-select`, standard `<input>`). The "hero" styling is Tailwind and the TopFarms colour palette.
+
+---
+
+### Status Variant Banners — Build from scratch (no library)
+
+**Decision: Do NOT add a library for status banners.**
+
+The v1.1 SPEC requires status banners in the seeker My Applications page for: shortlisted, interview, offer, declined. These are coloured alert boxes — a `cn()`-driven variant map using existing Tailwind colour tokens.
+
+```typescript
+const BANNER_VARIANTS = {
+  shortlisted: 'bg-meadow/10 border-meadow/30 text-moss',
+  interview:   'bg-hay/10 border-hay/30 text-hay-dark',
+  offer:       'bg-fern/10 border-fern/30 text-fern',
+  declined:    'bg-red-50 border-red-200 text-red-700',
+}
+```
+
+---
+
+### Live Preview Sidebar (Post Job Wizard) — Build from scratch (no library)
+
+**Decision: No library needed.**
+
+The job posting wizard SPEC adds a live preview sidebar that mirrors wizard form state in real time. This is a read-only display component consuming `react-hook-form`'s `watch()` — already installed. No new library.
+
+---
+
+## Summary: Net New Dependencies for v1.1
+
+| Library | Version | Size (est.) | Rationale |
+|---------|---------|-------------|-----------|
+| `motion` | `^12.0.0` | ~50 KB gzip | Staggered fadeUp animations — cannot do with CSS alone |
+| `react-intersection-observer` | `^9.0.0` | ~3 KB gzip | triggerOnce inView for multiple animated sections |
+| `@radix-ui/react-tabs` | `^1.1.0` | ~8 KB gzip | WCAG-compliant tab panels for job cards + applicant dashboard |
+
+**Everything else in v1.1 is build-from-scratch with existing primitives.** ChipSelector, StarRating, Pagination, Timeline, StatusBanner, MapPlaceholder, SearchHero, LivePreview — all implementable with Tailwind v4, lucide-react, and existing Radix primitives already installed.
 
 ---
 
 ## Installation
 
 ```bash
-# Core framework
-npm install react@19 react-dom@19 typescript
-
-# Routing
-npm install react-router
-
-# Data layer
-npm install @supabase/supabase-js @supabase/ssr @tanstack/react-query
-
-# Forms and validation
-npm install react-hook-form @hookform/resolvers zod
-
-# UI primitives
-npm install @radix-ui/react-dialog @radix-ui/react-select @radix-ui/react-slider \
-  @radix-ui/react-tabs @radix-ui/react-switch @radix-ui/react-progress \
-  @radix-ui/react-label @radix-ui/react-checkbox @radix-ui/react-toast
-
-# Notifications and icons
-npm install sonner lucide-react
-
-# Animation and scroll
-npm install motion react-intersection-observer
-
-# File upload
-npm install react-dropzone
-
-# Utilities
-npm install clsx tailwind-merge date-fns dompurify
-
-# Payments (client)
-npm install @stripe/stripe-js @stripe/react-stripe-js
-
-# Email (used in Edge Functions)
-npm install resend react-email
-
-# Dev dependencies
-npm install -D vite@8 @vitejs/plugin-react tailwindcss @tailwindcss/vite \
-  vitest @testing-library/react @types/react@19 @types/react-dom@19 \
-  eslint prettier prettier-plugin-tailwindcss
+# New dependencies only — everything else is already installed
+npm install motion react-intersection-observer @radix-ui/react-tabs
 ```
 
-**Edge Function dependencies** (Deno imports in Supabase Edge Functions):
-```typescript
-// In supabase/functions/[fn-name]/index.ts
-import Anthropic from "npm:@anthropic-ai/sdk@0.78.0";
-import Stripe from "npm:stripe@20.4.1";
-import { Resend } from "npm:resend@6.9.3";
-```
+---
+
+## What NOT to Add
+
+| Avoid | Why | Use Instead |
+|-------|-----|-------------|
+| `react-select` (multi/creatable) | Imposes its own design system; styling to match TopFarms requires more CSS than building ChipSelector from scratch | 20-line `ChipSelector` component with Tailwind |
+| `react-paginate` | Styled for its own design; TopFarms pagination is simple and bespoke | 40-line vanilla component |
+| `react-rating` / `react-stars` | All require CSS overrides; star rating is 30 lines with lucide-react's `Star` icon already installed | Custom `StarRating` with lucide `Star` |
+| `react-vertical-timeline-component` | Opinionated styles, fight the design system; timeline is a styled `<ol>` | CSS + Tailwind `border-l-2` pattern |
+| `leaflet` / `@vis.gl/react-google-maps` | Out of scope for v1.1 — spec says "map placeholder" not live map | Styled div with `MapPin` lucide icon |
+| `@radix-ui/react-accordion` | The FilterSidebar already works with native `<details>`; Radix Accordion only needed if keyboard nav or ARIA accordion role is required — it isn't here | Native `<details>` (already used) |
+| `framer-motion` | This is the old package name. The unified package is now `motion` — importing from `framer-motion` works but installs a legacy shim | `motion` (import from `motion/react`) |
+| Any CSS animation library (animate.css, etc.) | Tailwind v4 has `animate-*` utilities built in (`animate-pulse`, `animate-bounce`, `animate-spin`); `motion` covers the JS-driven cases | Tailwind utilities + `motion` |
+
+---
+
+## Tailwind v4 Compatibility Notes
+
+All three new additions are Tailwind-agnostic (they provide no CSS of their own) and work cleanly with Tailwind v4:
+
+- **`motion`**: Applies transforms via inline styles. Tailwind classes on `motion.div` etc. work normally. Data attributes set by motion (e.g., `data-framer-*`) do not conflict with Tailwind v4's CSS variable approach.
+- **`react-intersection-observer`**: No styles. Pure JS hook.
+- **`@radix-ui/react-tabs`**: Sets `data-state="active"` on active triggers. Target with Tailwind v4 data variants: `data-[state=active]:text-moss`. This is the standard Radix + Tailwind v4 pattern used throughout the existing codebase (see `@radix-ui/react-slider` usage in `FilterSidebar.tsx`).
+
+---
+
+## Version Compatibility
+
+| New Package | React 19 | Tailwind v4 | Notes |
+|-------------|----------|-------------|-------|
+| `motion` ^12 | Supported (peer dep `^18 \|\| ^19`) | No conflict | Import from `motion/react` |
+| `react-intersection-observer` ^9 | Supported | No conflict | Pure hook, no styles |
+| `@radix-ui/react-tabs` ^1.1 | Supported | No conflict | Style with `data-[state=active]:` variants |
 
 ---
 
 ## Sources
 
-- npm registry (queried 2026-03-15) — all version numbers verified via `npm info [pkg] dist-tags`
-- `tailwindcss` dist-tags confirm v4.2.1 is `latest`, v3.4.19 is `v3-lts` — HIGH confidence
-- `react-router` dist-tags confirm v7.13.1 is `latest` — HIGH confidence
-- `react` dist-tags confirm v19.2.4 is stable — HIGH confidence
-- `@testing-library/react` 16.3.2 peer deps confirm React 19 support — HIGH confidence
-- Tailwind v4 Vite plugin note based on `@tailwindcss/vite` package existing at version 4.2.1 — HIGH confidence; no PostCSS peer dep
-- Vite 8 + `@tailwindcss/vite` compatibility: peer dep lists `^5.2.0 || ^6 || ^7` but v8 pattern extends v7 — MEDIUM confidence, verify on init
-- Zod v4 + resolvers v5 compatibility: confirmed from `@hookform/resolvers` 5.x peer dep requiring `react-hook-form ^7.55.0` — HIGH confidence for the pairing; Zod v4 support confirmed from resolvers changelog — MEDIUM confidence (verify import paths on init)
-- `motion` package (formerly framer-motion) unified at v12.36.0 — HIGH confidence from npm registry
+- `package.json` at `/Users/harrysmith/dev/topfarms/package.json` — ground truth for installed versions (HIGH confidence)
+- `FilterSidebar.tsx` — confirms `@radix-ui/react-slider` dual-handle already implemented (HIGH confidence)
+- `CountersSection.tsx` — confirms custom `useInView`/`useCountUp` hooks used, not external library (HIGH confidence)
+- `FileDropzone.tsx` (existence confirmed via glob) — confirms `react-dropzone` already wired (HIGH confidence)
+- Prior STACK.md research (2026-03-15) — version numbers for `motion`, `react-intersection-observer`, `@radix-ui/react-tabs` (MEDIUM confidence — versions verified 5 days prior; re-verification via npm/WebFetch blocked by tool restrictions at time of this research)
+- Tailwind v4 data attribute variant pattern — confirmed from existing codebase usage of Radix primitives (HIGH confidence)
 
 ---
-*Stack research for: NZ agricultural job marketplace (TopFarms)*
-*Researched: 2026-03-15*
+
+*Stack research for: TopFarms v1.1 SPEC Compliance milestone*
+*Researched: 2026-03-20*

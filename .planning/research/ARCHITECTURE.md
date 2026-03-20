@@ -1,549 +1,494 @@
-# Architecture Research
+# Architecture Patterns
 
-**Domain:** Two-sided agricultural job marketplace (employer/seeker)
-**Researched:** 2026-03-15
-**Confidence:** HIGH (SPEC.md provides authoritative schema, data flows, and component requirements; patterns derived from stack documentation and well-established React + Supabase marketplace conventions)
-
----
-
-## Standard Architecture
-
-### System Overview
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        CLIENT LAYER (Vercel CDN)                     │
-├──────────────┬──────────────┬──────────────┬────────────────────────┤
-│  Public Pages│  Seeker Pages│Employer Pages│   Auth / Onboarding    │
-│  / (landing) │  /jobs       │  /dashboard/ │   /onboarding/seeker   │
-│  /jobs/:id   │  /jobs/:id   │    employer  │   /onboarding/employer │
-│  /employers/ │  /dashboard/ │  /employers/ │                        │
-│     :id      │    seeker    │     :id      │                        │
-└──────┬───────┴──────┬───────┴──────┬───────┴───────────┬────────────┘
-       │              │              │                   │
-       ▼              ▼              ▼                   ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                     REACT APPLICATION LAYER                          │
-├──────────────┬──────────────┬──────────────┬────────────────────────┤
-│  UI Layer    │  State Layer │  Data Layer  │   Service Layer        │
-│  Pages/      │  React Query │  Supabase    │   stripeService.ts     │
-│  Components/ │  (server     │  client SDK  │   claudeService.ts     │
-│  Design      │  state) +    │  (typed      │   matchService.ts      │
-│  System      │  useState    │  queries)    │   emailService.ts      │
-│              │  (local UI)  │              │                        │
-└──────┬───────┴──────┬───────┴──────┬───────┴───────────┬────────────┘
-       │              │              │                   │
-       ▼              ▼              ▼                   ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                      SUPABASE BACKEND LAYER                          │
-├──────────────┬──────────────┬──────────────┬────────────────────────┤
-│  PostgreSQL  │  Auth        │  Storage     │   Edge Functions       │
-│  (12 tables, │  (email/     │  (documents, │   match-recalculate    │
-│  RLS on all) │   password)  │   farm photos│   stripe-webhook       │
-│              │              │   CVs)       │   placement-followup   │
-│              │              │              │   nightly-batch        │
-└──────┬───────┴──────────────┴──────────────┴────────────────────────┘
-       │
-       ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                      EXTERNAL SERVICES                               │
-├──────────────┬──────────────┬─────────────────────────────────────  │
-│  Stripe      │  Claude API  │  Resend (email)                       │
-│  PaymentInt. │  claude-     │  Transactional emails:                │
-│  Invoices    │  sonnet-4-   │  - Day 7 placement follow-up          │
-│  Webhooks    │  20250514    │  - Day 14 placement follow-up         │
-│              │  Match       │  - Job alert emails                   │
-│              │  explanations│  - Verification OTPs (via Supabase)  │
-└──────────────┴──────────────┴───────────────────────────────────────┘
-```
-
-### Component Responsibilities
-
-| Component | Responsibility | Typical Implementation |
-|-----------|----------------|------------------------|
-| Pages | Route-level components, data fetching orchestration, layout | React components in `src/pages/` — one file per route |
-| Design System | Reusable UI primitives (Button, Card, Tag, MatchCircle, Input, Toggle, InfoBox) | `src/components/ui/` — stateless, prop-driven |
-| Feature Components | Business-logic components assembled from design system primitives | `src/components/features/` grouped by domain |
-| Supabase Client | Typed query layer, auth session, realtime subscriptions | Singleton in `src/lib/supabase.ts` with generated types |
-| React Query | Server state management — caching, background refresh, optimistic updates | Query hooks in `src/hooks/` — one hook per data domain |
-| Service Layer | Isolates external API calls (Stripe, Claude, Resend) from UI | `src/services/` — each service is a typed module |
-| Edge Functions | Server-side logic: Stripe webhooks, match recalculation, scheduled jobs | Supabase Edge Functions (Deno) in `supabase/functions/` |
-| RLS Policies | Access control — enforces data isolation at database level | SQL policies in `supabase/migrations/` |
-| Match Engine | PostgreSQL function computing 100-point weighted scores | `supabase/functions/match-score.sql` or PG stored proc |
+**Domain:** TopFarms v1.1 SPEC Compliance — UI/UX gap-closing on existing React+Supabase app
+**Researched:** 2026-03-20
+**Confidence:** HIGH — based on direct codebase inspection of all relevant files
 
 ---
 
-## Recommended Project Structure
+## Existing Architecture (Confirmed from Codebase)
+
+### Confirmed Component Inventory
 
 ```
-topfarms/
-├── src/
-│   ├── pages/                    # Route-level components
-│   │   ├── Landing.tsx           # / — public landing page
-│   │   ├── jobs/
-│   │   │   ├── JobSearch.tsx     # /jobs — filter, search, ranked results
-│   │   │   └── JobDetail.tsx     # /jobs/:id — two states (seeker / visitor)
-│   │   ├── employers/
-│   │   │   └── EmployerProfile.tsx  # /employers/:id — public farm profile
-│   │   ├── dashboard/
-│   │   │   ├── EmployerDashboard.tsx   # /dashboard/employer — applicant mgmt
-│   │   │   └── SeekerDashboard.tsx     # /dashboard/seeker — application tracking
-│   │   └── onboarding/
-│   │       ├── EmployerOnboarding.tsx  # /onboarding/employer — 8-step wizard
-│   │       └── SeekerOnboarding.tsx    # /onboarding/seeker — 8-step wizard
-│   │
-│   ├── components/
-│   │   ├── ui/                   # Design system primitives (stateless)
-│   │   │   ├── Button.tsx        # 4 variants: primary, outline, ghost, hay
-│   │   │   ├── Card.tsx          # Standard card with border/radius
-│   │   │   ├── Tag.tsx           # 7 colour variants
-│   │   │   ├── MatchCircle.tsx   # Score circle — 3 sizes × 3 colour states
-│   │   │   ├── InfoBox.tsx       # 5 variants: blue, hay, green, purple, red
-│   │   │   ├── Input.tsx         # Fern focus ring, fog border
-│   │   │   ├── Toggle.tsx        # 34x18px pill switch
-│   │   │   └── ProgressBar.tsx   # Gradient 3px bar for wizards
-│   │   │
-│   │   ├── features/             # Business-logic assembled components
-│   │   │   ├── jobs/
-│   │   │   │   ├── JobCard.tsx           # Default / featured / new-post variants
-│   │   │   │   ├── JobCardExpanded.tsx   # Details / My Match / Apply tabs
-│   │   │   │   ├── FilterSidebar.tsx     # 280px sticky desktop, drawer mobile
-│   │   │   │   └── MatchBreakdown.tsx    # Per-dimension bars + AI insight
-│   │   │   ├── employer/
-│   │   │   │   ├── ApplicantCard.tsx     # Ranked candidate row, expandable panels
-│   │   │   │   ├── PlacementFeeModal.tsx # Acknowledgement gate
-│   │   │   │   ├── LivePreviewSidebar.tsx # Job posting wizard preview
-│   │   │   │   └── VerificationLadder.tsx # 5-tier verification UI
-│   │   │   ├── seeker/
-│   │   │   │   ├── ApplicationCard.tsx   # Pipeline stage variants
-│   │   │   │   ├── SkillChips.tsx        # Proficiency + willing-to-learn
-│   │   │   │   └── ProfileStrength.tsx   # Completeness nudge
-│   │   │   └── shared/
-│   │   │       ├── WizardShell.tsx       # Progress bar, step dots, nav
-│   │   │       └── StripePayment.tsx     # PaymentElement wrapper
-│   │   │
-│   │   └── layout/
-│   │       ├── Nav.tsx           # Soil 56px sticky, auth-aware
-│   │       └── Footer.tsx        # 4-column soil-deep footer
-│   │
-│   ├── hooks/                    # React Query hooks — one per data domain
-│   │   ├── useJobs.ts            # Job search, job detail queries
-│   │   ├── useMatchScores.ts     # Match score reads (pre-computed)
-│   │   ├── useApplications.ts    # Application CRUD, status updates
-│   │   ├── useEmployerProfile.ts # Employer profile read/write
-│   │   ├── useSeekerProfile.ts   # Seeker profile read/write
-│   │   └── useAuth.ts            # Auth session, user type, sign-in/out
-│   │
-│   ├── services/                 # External API wrappers
-│   │   ├── stripe.ts             # PaymentIntent, Checkout Session helpers
-│   │   ├── claude.ts             # Match explanation API calls
-│   │   └── email.ts             # Resend transactional email (via Edge Function)
-│   │
-│   ├── lib/
-│   │   ├── supabase.ts           # Supabase client singleton + Database type import
-│   │   └── constants.ts          # Region adjacency matrix, salary floors, skill weights
-│   │
-│   └── types/
-│       ├── database.types.ts     # Auto-generated by Supabase CLI
-│       └── domain.ts             # Application-level types (MatchBreakdown, etc.)
-│
-├── supabase/
-│   ├── migrations/               # All schema changes as SQL files
-│   │   ├── 001_initial_schema.sql   # 12 tables + indexes
-│   │   ├── 002_rls_policies.sql     # RLS on all tables
-│   │   └── 003_match_function.sql   # match_score() stored procedure
-│   │
-│   └── functions/                # Edge Functions (Deno)
-│       ├── stripe-webhook/       # Confirms payments → activates listings
-│       ├── match-recalculate/    # Triggered by job/seeker update
-│       ├── nightly-batch/        # Full recalculation for data integrity
-│       └── placement-followup/   # Day 7 + Day 14 emails via Resend
-│
-├── tailwind.config.ts            # All CSS custom properties as Tailwind tokens
-└── vite.config.ts
+src/
+  components/
+    ui/           — Button, Card, Tag, MatchCircle, InfoBox, ProgressBar, Input, Toggle,
+                    Checkbox, Select, StepIndicator, FileDropzone, SkillsPicker, TierCard,
+                    JobCard, VerificationBadge, FilterSidebar, SearchJobCard, ApplicationCard,
+                    MatchBreakdown, ApplicantPanel
+    layout/       — DashboardLayout, AuthLayout, Nav, Sidebar, ProtectedRoute
+    landing/      — HeroSection, CountersSection, HowItWorksSection, FeaturedListings,
+                    TestimonialsSection, LandingFooter
+    stripe/       — PaymentForm
+  pages/
+    auth/         — Login, SignUp, ForgotPassword, ResetPassword, VerifyEmail
+    onboarding/
+      EmployerOnboarding.tsx    — 8-step wizard shell (useWizard hook, upsert-per-step pattern)
+      steps/                    — Step1FarmType … Step8Complete
+      SeekerOnboarding.tsx      — 7-step wizard shell (same pattern, uses SeekerProfileData from types/domain)
+      steps/                    — SeekerStep1 … SeekerStep7Complete
+    jobs/
+      PostJob.tsx               — 8-step wizard shell (INSERT on step 1, UPDATE on steps 2–7)
+      steps/                    — JobStep1Basics … JobStep8Success
+      JobSearch.tsx             — URL-synced filters via useSearchParams, Radix Dialog mobile sidebar
+      JobDetail.tsx
+    dashboard/
+      EmployerDashboard.tsx, SeekerDashboard.tsx
+      employer/   — ApplicantDashboard, PlacementFeeModal, HireConfirmModal
+      seeker/     — MyApplications
+  hooks/          — useAuth, useWizard (confirmed in codebase)
+  types/          — domain.ts (SeekerProfileData, JobListing, MatchScore, EmployerVerification, TrustLevel)
+  lib/            — supabase.ts, constants.ts (NZ_REGIONS), utils.ts (cn)
 ```
 
-### Structure Rationale
+### Wizard Pattern (Canonical — All Three Wizards)
 
-- **`src/components/ui/`:** Stateless primitives must be isolated so the design system can be implemented once and consumed everywhere without business logic leaking into atoms.
-- **`src/components/features/`:** Domain-grouped feature components prevent circular imports and make it obvious which files to open when working on employer vs seeker flows.
-- **`src/hooks/`:** All Supabase queries live in hooks, not in components. This enables React Query caching and prevents duplicate network calls across the component tree.
-- **`src/services/`:** External APIs (Stripe, Claude) must never be called directly from components. The service layer provides typed interfaces that can be stubbed in tests.
-- **`supabase/migrations/`:** SQL migrations are version-controlled and applied in order. RLS lives in migrations, not in application code — data-layer security cannot be bypassed by frontend bugs.
-- **`supabase/functions/`:** Any code that needs a secret (Stripe secret key, Claude API key) runs in Edge Functions, not in the browser.
+```
+WizardShell (EmployerOnboarding | SeekerOnboarding | PostJob)
+  ├── State: profileData/jobData (TypeScript interface, accumulated across all steps)
+  ├── useWizard({ totalSteps, initialStep }) → { currentStep, nextStep, prevStep, goToStep }
+  ├── loadProfile() on mount — reads existing row, sets initialStep from onboarding_step field
+  ├── handleStepComplete(stepData, stepIndex):
+  │     merge stepData into accumulated state
+  │     → upsert/update Supabase row
+  │     → wizard.nextStep()
+  └── Renders: StepIndicator + conditional {currentStep === N && <StepN />}
+```
+
+PostJob differs from the two onboarding wizards: Step 1 does INSERT (creates the row and gets jobId), steps 2–7 do UPDATE. `jobId` is then threaded as a prop to steps that need direct DB access (JobStep3Skills, JobStep6Preview, JobStep7Payment).
+
+### Filter Pattern (FilterSidebar — Confirmed)
+
+URL-synced via React Router `useSearchParams`. `onFilterChange(key, value)` bubbles to `JobSearch.tsx` which calls `setSearchParams`. FilterSidebar reads all state from `searchParams` props — no internal filter state. Radix Slider (`@radix-ui/react-slider`) already imported for salary range. Radix Dialog (`@radix-ui/react-dialog`) used in JobSearch for mobile sidebar.
 
 ---
 
-## Architectural Patterns
+## New Components Required (v1.1)
 
-### Pattern 1: Pre-Computed Match Scores (Read-Heavy Optimisation)
+### Primitive UI Components (src/components/ui/)
 
-**What:** Match scores are computed and stored in the `match_scores` table when data changes, not at query time. Search queries join against pre-computed scores rather than executing the scoring algorithm live.
+| Component | Responsibility | Props Contract |
+|-----------|---------------|----------------|
+| `ChipSelector` | Multi-select chip group, replaces checkbox lists where SPEC requires chips | `options: {value,label}[], value: string[], onChange: (v: string[]) => void` |
+| `RangeSlider` | Dual-thumb slider, extracted from FilterSidebar salary block | `min, max, step: number, value: [number,number], onChange, formatLabel?` |
+| `StarRating` | 1–5 star input (experience/seniority indicator) | `value: number, onChange: (v: number) => void, readonly?: boolean` |
+| `Breadcrumb` | Route hierarchy nav strip | `items: {label: string, href?: string}[]` |
+| `StatsStrip` | Horizontal stat pills (herd size, shed type, location) | `stats: {icon?, label: string, value: string}[]` |
+| `LivePreviewSidebar` | Real-time job card preview in PostJob wizard | `jobData: JobPostingData` (reads from in-memory state, no Supabase fetch) |
+| `ExpandableCardTabs` | Tabbed expansion panel mounted inside SearchJobCard | `tabs: {label,content}[], defaultTab?: string` |
+| `StatusBanner` | Variant-styled banner for application status | `variant: 'shortlisted'|'interview'|'offer'|'declined'|'pending', message?: string` |
+| `Timeline` | Vertical step timeline for application stages | `stages: {label,date?,active,completed}[]` |
+| `ActiveFilterPills` | Removable pill row showing active filters | `searchParams: URLSearchParams, onRemove: (key,value) => void` |
+| `Pagination` | Page navigation (prev/next + page numbers) | `page, totalPages: number, onPageChange: (p: number) => void` |
 
-**When to use:** Any query that would otherwise compute expensive weighted joins across `jobs`, `seeker_profiles`, `seeker_skills`, and `job_skills` at request time. The NZ ag market is small enough that full recalculation on trigger (all seekers × one job, or one seeker × all active jobs) completes in <60 seconds.
+### Landing Page Section Components (src/components/landing/)
 
-**Trade-offs:** Scores can be momentarily stale after a profile update (maximum lag = recalculation trigger time, target <60s). This is acceptable — search is fast, staleness is brief.
+| Component | Responsibility |
+|-----------|---------------|
+| `AiMatchingSection` | Explains AI scoring, illustration + copy |
+| `FarmTypesSection` | Dairy vs sheep/beef sector cards |
+| `EmployerCtaSection` | Employer-facing CTA with platform stats |
+| `TrustedBySection` | Trust signals / partner logos |
+| `FinalCtaSection` | Bottom CTA above footer |
 
-**Example:**
-```typescript
-// hooks/useJobs.ts — read pre-computed scores, never compute in client
-const { data } = useQuery({
-  queryKey: ['jobs', filters, seekerId],
-  queryFn: () =>
-    supabase
-      .from('jobs')
-      .select(`
-        *,
-        employer_profiles!jobs_employer_id_fkey(farm_name, verification_tier),
-        match_scores!match_scores_job_id_fkey(total_score, breakdown)
-      `)
-      .eq('status', 'active')
-      .eq('match_scores.seeker_id', seekerId)
-      .order('match_scores.total_score', { ascending: false })
-})
+Landing sections are self-contained and import nothing from the wizard/dashboard layer. They can be built in any order, parallel to all other work.
+
+---
+
+## Existing Components Requiring Modification
+
+### Wizard Shells — Interface and Upsert Changes
+
+The interfaces declared in wizard shells control what data flows through all steps. These must be extended before step-level work begins.
+
+| Wizard | Interface | New Fields to Add | Upsert Change Complexity |
+|--------|-----------|-------------------|-------------------------|
+| `EmployerOnboarding.tsx` | `EmployerProfileData` | `career_dev_interests?: string[]`, `salary_range_min?: number`, `salary_range_max?: number`, `accommodation_internet?: boolean`, `accommodation_broadband?: boolean`, `calving_system?: string`, `nearest_town?: string`, `distance_to_town_km?: number` | Low — add to upsertPayload spread |
+| `PostJob.tsx` | `JobPostingData` | `breed?: string`, `milking_frequency?: string`, `dairy_experience_years?: number`, `seniority_level?: string`, `required_qualifications?: string[]`, `visa_types?: string[]`, `pay_frequency?: string`, `hours_per_week?: number`, `roster_type?: string` | Low — add to update() call |
+| `SeekerOnboarding.tsx` | `SeekerProfileData` (in types/domain.ts) | `licences?: string[]`, `certifications?: string[]`, `salary_expectation_min?: number`, `salary_expectation_max?: number`, `availability_date?: string`, `notice_period?: string` | Low — add to upsert |
+
+### Employer Onboarding Steps
+
+| Step File | Current Fields | Required Change | Complexity |
+|-----------|---------------|-----------------|------------|
+| `Step2FarmDetails.tsx` | farm_name, region, herd_size, shed_type, milking_frequency, breed, property_size_ha, ownership_type | Add `nearest_town` Input, `distance_to_town_km` RangeSlider | Low |
+| `Step3Culture.tsx` | culture_description, team_size, about_farm | Add `career_dev_interests` ChipSelector | Low |
+| `Step4Accommodation.tsx` | accommodation_available, type, pets, couples, family, utilities_included | Add internet/broadband/wifi Toggles; add `calving_system` Select | Low |
+
+### Post Job Wizard Steps
+
+| Step File | Current Fields | Required Change | Complexity |
+|-----------|---------------|-----------------|------------|
+| `JobStep1Basics.tsx` | title, sector, role_type, contract_type, start_date, region | Add `seniority_level` Select | Low |
+| `JobStep2FarmDetails.tsx` | shed_type, herd_size_min/max, visa_sponsorship, couples_welcome, accommodation | Add `breed` Select, `milking_frequency` Select | Low |
+| `JobStep3Skills.tsx` | job_skills junction table (direct DB writes with jobId prop) | Add `dairy_experience_years` (RangeSlider or Select), `required_qualifications` ChipSelector | Medium — introduces new field types alongside existing DB-direct skills flow |
+| `JobStep4Compensation.tsx` | salary_min, salary_max, benefits[] | Add `pay_frequency` ChipSelector, `hours_per_week` Input, `roster_type` ChipSelector | Low |
+| `JobStep6Preview.tsx` (+ PostJob shell layout) | Full-screen preview fetches from Supabase by jobId | Integrate LivePreviewSidebar — PostJob shell conditionally renders two-column layout on step 5 only | Medium — layout change in shell |
+
+### Seeker Onboarding Steps
+
+| Step File | Current Fields | Required Change | Complexity |
+|-----------|---------------|-----------------|------------|
+| `SeekerStep2Experience.tsx` | Experience fields | Add document upload section (FileDropzone already exists in ui/) | Low |
+| `SeekerStep3Qualifications.tsx` | DairyNZ levels, existing qualifications | Add `licences` ChipSelector, `certifications` ChipSelector | Low |
+| `SeekerStep5LifeSituation.tsx` | accommodation, couples, family | Add `salary_expectation` RangeSlider, `availability_date` Input, `notice_period` Select | Low |
+| `SeekerStep7Complete.tsx` | Completion screen | Add matched jobs fetch from match_scores + jobs; render top 3–5 matched JobCards | Medium — new Supabase query |
+
+### Search and Job Pages
+
+| Component | Current State | Required Change | Complexity |
+|-----------|--------------|-----------------|------------|
+| `FilterSidebar.tsx` | shed_type, region, contract_type, herd_size, salary Radix Slider | Add role_type filter, accommodation toggle, visa filter groups; refactor salary block to use new RangeSlider component | Medium — salary refactor + 3 new groups |
+| `SearchJobCard.tsx` | Fixed summary row with match circle | Add `isExpanded` local state; conditionally render ExpandableCardTabs below summary row | Medium — structural addition |
+| `JobSearch.tsx` | FilterSidebar + job card grid layout | Add SearchHero above sidebar/grid, ActiveFilterPills between hero and results, Pagination below results | Low — additive sections |
+| `JobDetail.tsx` | Full detail layout | Add Breadcrumb at top, StatsStrip below title, Timeline in sidebar area, similar jobs section, location map placeholder | Medium — 5 additions to existing layout |
+| `ApplicationCard.tsx` | Shows application status and stage | Integrate StatusBanner variant | Low |
+| `MyApplications.tsx` | Lists seeker applications | Add StatusBanner variants, farm response indicator, sidebar layout | Medium |
+| `ApplicantDashboard.tsx` | Flat applicant list per job | Full rebuild: left sidebar nav, filter toolbar, 4-tab expandable panels per applicant, bulk action bar, AI summary fetch | High |
+
+### Landing Page
+
+| Component | Required Change | Complexity |
+|-----------|-----------------|------------|
+| `Home.tsx` | Import and render 5 new section components in correct SPEC order | Low |
+| `HeroSection.tsx` | Add animation (CSS keyframes within existing component) | Low |
+| `CountersSection.tsx` | Verify stat blocks match SPEC layout | Low |
+
+---
+
+## Data Flow Changes
+
+### Pattern: Additive Field Addition to Wizard (No Structural Change)
+
+The wizard accumulation pattern absorbs new fields cleanly. All three wizards follow the same four-touch change:
+
 ```
-
-### Pattern 2: RLS as the Primary Security Boundary
-
-**What:** Contact masking, cross-user data isolation, and placement fee gating are enforced at the PostgreSQL RLS level, not in React or API route logic. No amount of frontend manipulation can expose masked data.
-
-**When to use:** Any field that must be conditionally visible based on user identity or business state. Specifically: seeker phone/email masked until `placement_fees.acknowledged_at` is set for the relevant job/seeker pair.
-
-**Trade-offs:** RLS policies must be tested as SQL, not in React tests. Requires discipline to write policies correctly. The payoff is that the security model cannot be bypassed by a frontend bug.
-
-**Example:**
-```sql
--- supabase/migrations/002_rls_policies.sql
--- Seekers can only read their own contact fields
--- Employers can read contact fields only after placement fee acknowledgement
-CREATE POLICY "seeker_contact_masking" ON seeker_profiles
-  FOR SELECT
-  USING (
-    auth.uid() = user_id  -- seeker reads own record always
-    OR
-    EXISTS (
-      SELECT 1 FROM placement_fees pf
-      JOIN applications a ON a.id = pf.application_id
-      JOIN jobs j ON j.id = a.job_id
-      JOIN employer_profiles ep ON ep.id = j.employer_id
-      WHERE ep.user_id = auth.uid()
-        AND a.seeker_id = seeker_profiles.id
-        AND pf.acknowledged_at IS NOT NULL
-    )
-  );
-```
-
-### Pattern 3: Edge Functions for All Secret-Key Operations
-
-**What:** Stripe webhook processing, Claude API calls for bulk match explanations, and Resend email sending all happen in Supabase Edge Functions (Deno runtime). The React client never holds Stripe secret keys or Claude API keys.
-
-**When to use:** Whenever the operation requires a secret key, needs to run on a schedule, or must be triggered by a database event (Supabase Database Webhooks → Edge Function).
-
-**Trade-offs:** Edge Functions add latency for AI insight generation (~1–3s for Claude). Mitigate by generating explanations asynchronously: match score is shown immediately, AI text loads 1–2 seconds later.
-
-**Example:**
-```typescript
-// supabase/functions/match-recalculate/index.ts
-// Triggered by database webhook when job or seeker_profile updates
-Deno.serve(async (req) => {
-  const { job_id, seeker_id, trigger_type } = await req.json()
-
-  if (trigger_type === 'job_updated') {
-    // Recalculate for all active seekers whose sector matches this job
-    await recalculateForJob(job_id)
-  } else if (trigger_type === 'seeker_updated') {
-    // Recalculate for all active jobs matching seeker's sector preferences
-    await recalculateForSeeker(seeker_id)
+Touch 1: Extend TypeScript interface in wizard shell
+  export interface EmployerProfileData {
+    career_dev_interests?: string[]   // NEW
   }
 
-  return new Response(JSON.stringify({ status: 'ok' }))
-})
+Touch 2: Add to upsertPayload in handleStepComplete
+  career_dev_interests: updatedData.career_dev_interests ?? null
+
+Touch 3: Pass as defaultValues to relevant step
+  <Step3Culture defaultValues={{ career_dev_interests: profileData.career_dev_interests }} />
+
+Touch 4: Step renders ChipSelector, includes field in onComplete(data) call
 ```
 
-### Pattern 4: Multi-Step Wizard with Persistent Draft State
+No new hooks, no new context, no changes to useWizard — purely additive.
 
-**What:** Both employer onboarding (8 screens) and job posting (7 screens) are multi-step wizards. Each step writes incrementally to the database as a draft, so browser refreshes or navigation away don't lose data. The wizard shell handles progress state; each step is a dumb form that reads/writes one logical section.
+### LivePreviewSidebar Data Flow
 
-**When to use:** Any wizard longer than 3 steps where losing form state would be frustrating. At 7–8 steps, in-browser state alone (useState) is too fragile.
+PostJob currently uses single-column layout (`max-w-2xl mx-auto`) for all 8 steps. The preview step (step 5, JobStep6Preview) needs a two-column layout with LivePreviewSidebar alongside it.
 
-**Trade-offs:** More database writes during onboarding. Drafts must be cleaned up if not completed (nightly job or expiry timestamp). Adds `status: 'draft'` requirement to jobs table (already in schema).
-
-**Example:**
-```typescript
-// components/features/employer/WizardShell.tsx
-// Parent orchestrates step rendering; each step auto-saves on blur/next
-const WizardShell = ({ steps, entityId }: WizardProps) => {
-  const [currentStep, setCurrentStep] = useState(0)
-
-  const handleNext = async (stepData: Partial<EmployerProfile>) => {
-    // Upsert draft data immediately — don't wait for wizard completion
-    await supabase.from('employer_profiles').upsert({ id: entityId, ...stepData })
-    setCurrentStep(prev => prev + 1)
-  }
-
-  return (
-    <div>
-      <ProgressBar current={currentStep + 1} total={steps.length} />
-      {steps[currentStep].component({ onNext: handleNext })}
+```
+PostJob shell layout logic:
+  currentStep < 5 or currentStep > 5:
+    <div className="max-w-2xl mx-auto">   ← existing layout, unchanged
+  currentStep === 5:
+    <div className="grid lg:grid-cols-[1fr_380px] gap-6 max-w-5xl mx-auto">
+      <div>{/* step form (JobStep6Preview content) */}</div>
+      <LivePreviewSidebar jobData={jobData} />   ← reads in-memory state, no fetch
     </div>
-  )
+```
+
+LivePreviewSidebar receives `jobData: JobPostingData` as a prop. It renders a live JobCard preview from the accumulated wizard state — no Supabase query needed.
+
+### FilterSidebar Extension
+
+The existing `onFilterChange(key: string, value: string | string[] | null)` interface handles all new filter groups without modification. New groups (role_type, accommodation, visa) use the same collapsible section pattern as existing groups.
+
+RangeSlider extraction: the existing inline salary slider code in FilterSidebar becomes `<RangeSlider>` with identical props. No functional change — refactor only.
+
+### ExpandableCardTabs in SearchJobCard
+
+```
+SearchJobCard (before):
+  [summary row — always visible]
+
+SearchJobCard (after):
+  [summary row — always visible]
+  [chevron toggle button]
+  {isExpanded && <ExpandableCardTabs tabs={[overview, requirements, match]} />}
+```
+
+`isExpanded` is local state in SearchJobCard. Tab selection is local state inside ExpandableCardTabs. No URL state, no context — card expansion is ephemeral.
+
+### ApplicantDashboard Architecture Change (Highest Complexity)
+
+Current `ApplicantDashboard.tsx` is a flat list component. The SPEC requires:
+
+```
+ApplicantDashboard
+  ├── Left sidebar nav (job selector or pipeline stage navigation)
+  ├── Main area:
+  │     ├── Filter toolbar (stage filter, search input, sort control)
+  │     ├── Applicant list
+  │     │     └── Each applicant row → expandable 4-tab panel:
+  │     │           Tab 1: Profile
+  │     │           Tab 2: Match breakdown (MatchBreakdown component already exists)
+  │     │           Tab 3: AI Summary (fetch from Claude Edge Function)
+  │     │           Tab 4: Application history
+  │     └── Bulk action bar (floats when ≥1 applicant selected)
+  └── [Existing PlacementFeeModal and HireConfirmModal remain]
+```
+
+AI Summary tab is the only location where a new data fetch pattern is needed: call the existing Claude Edge Function with the applicant's match breakdown, cache the result locally in component state per applicant to avoid re-fetching on tab switch.
+
+---
+
+## Patterns to Follow
+
+### Pattern 1: ChipSelector as Drop-In Checkbox Replacement
+
+ChipSelector must accept the same value shape as existing checkbox groups (`string[]`) and the same onChange signature. This makes targeted substitution possible without changing the parent step's form state.
+
+```typescript
+// New component contract
+interface ChipSelectorProps {
+  options: { value: string; label: string }[]
+  value: string[]
+  onChange: (selected: string[]) => void
+  className?: string
+}
+
+// Usage — replaces a group of Checkbox components
+<ChipSelector
+  options={CAREER_DEV_OPTIONS}
+  value={form.career_dev_interests ?? []}
+  onChange={(v) => setForm({ ...form, career_dev_interests: v })}
+/>
+```
+
+### Pattern 2: RangeSlider Wrapping Existing Radix Dependency
+
+`@radix-ui/react-slider` is already imported in FilterSidebar. Extract the salary slider pattern into a reusable component that works both in FilterSidebar and in wizard steps (SeekerStep5, JobStep4).
+
+```typescript
+interface RangeSliderProps {
+  min: number
+  max: number
+  step: number
+  value: [number, number]
+  onChange: (value: [number, number]) => void
+  formatLabel?: (v: number) => string
 }
 ```
 
-### Pattern 5: Stripe Webhook → Database State Machine
+No new npm dependency needed — Radix Slider is already in the lockfile.
 
-**What:** Listing status transitions are driven by Stripe webhook events, not by client-side confirmation. The client calls `stripe.createPaymentIntent()`, Stripe fires a webhook to the Edge Function, and the Edge Function sets `jobs.status = 'active'` and creates the `listing_fees` row. This prevents listings going live without confirmed payment.
+### Pattern 3: StatusBanner Variant System
 
-**When to use:** Any state transition that depends on external payment confirmation. This pattern prevents the race condition where a slow network causes a user to think they've paid when they haven't.
+Map application pipeline stages to the existing design palette:
 
-**Trade-offs:** Adds async delay (~2–5s) between Stripe payment confirmation and listing activation. Show a "Processing..." state in the UI. Stripe webhooks require correct endpoint secret configuration in production.
+```typescript
+type StatusVariant = 'shortlisted' | 'interview' | 'offer' | 'declined' | 'pending'
+
+const VARIANT_STYLES: Record<StatusVariant, string> = {
+  shortlisted: 'bg-moss/10 text-moss border-moss/20',
+  interview:   'bg-fern/10 text-fern border-fern/20',
+  offer:       'bg-hay/20 text-soil border-hay/40',
+  declined:    'bg-soil/10 text-soil border-soil/20',
+  pending:     'bg-fog text-mid border-fog',
+}
+```
+
+All colours already defined in the Tailwind v4 `@theme` block — no new CSS variables.
+
+### Pattern 4: Breadcrumb (Prop-Driven, No Router Coupling)
+
+JobDetail constructs the items array inline from its own data. Breadcrumb does not read from `useLocation` — it renders whatever it receives. This keeps it testable and reusable.
+
+```typescript
+// In JobDetail.tsx
+<Breadcrumb items={[
+  { label: 'Jobs', href: '/jobs' },
+  { label: job.title },  // no href = current page (not clickable)
+]} />
+```
+
+### Pattern 5: Conditional Layout in PostJob Shell
+
+Only the Preview step gets the two-column layout. All other steps keep the existing `max-w-2xl mx-auto` wrapper.
+
+```typescript
+// In PostJob.tsx
+const isPreviewStep = currentStep === 5
+
+return (
+  <DashboardLayout>
+    <div className={isPreviewStep
+      ? 'grid lg:grid-cols-[1fr_380px] gap-6 max-w-5xl mx-auto'
+      : 'max-w-2xl mx-auto space-y-8'
+    }>
+      {/* StepIndicator and step content */}
+      {isPreviewStep && <LivePreviewSidebar jobData={jobData} />}
+    </div>
+  </DashboardLayout>
+)
+```
 
 ---
 
-## Data Flow
+## Anti-Patterns to Avoid
 
-### Request Flow — Job Search (Most Critical Path)
+### Anti-Pattern 1: Refactoring Wizard State Management While Adding Fields
 
-```
-Seeker types filter selections
-    ↓
-FilterSidebar component updates URL search params
-    ↓
-useJobs hook re-runs (React Query cache-aware)
-    ↓
-Supabase query: jobs + employer_profiles + match_scores
-    WHERE status = 'active' AND sector matches
-    AND match_scores.seeker_id = current_user
-    ORDER BY match_scores.total_score DESC
-    ↓
-RLS validates: authenticated seeker can read active jobs
-    ↓
-Results returned (pre-computed scores — target <1.5s)
-    ↓
-JobCard components render with MatchCircle colour-coded
-    ↓
-[On expand to "My Match" tab]
-    ↓
-Claude Edge Function called with match_scores.breakdown jsonb
-    ↓
-2–3 sentence AI explanation returned and displayed
-```
+**What:** Converting wizard state to useReducer, Zustand, or React context at the same time as adding new fields.
+**Why bad:** The accumulation + upsert pattern across all three wizards is consistent and proven in 22 step files. Refactoring introduces regression risk across the entire wizard layer with no user-visible benefit.
+**Instead:** Add fields additively to existing interfaces and upsert payloads. The flat interface pattern handles 20+ fields without issues.
 
-### Request Flow — Shortlist + Contact Release (Revenue Critical Path)
+### Anti-Pattern 2: Fetching Data Inside New Primitive Components
 
-```
-Employer clicks "Shortlist" on ApplicantCard
-    ↓
-PlacementFeeModal renders — employer must confirm
-    ↓
-On "I understand" click:
-    ↓
-placement_fees row written (acknowledged_at = now())
-    ↓
-RLS policy on seeker_profiles now allows employer to read
-  phone and email for this seeker/job pair
-    ↓
-Contact details visible in dashboard
-    ↓
-[Async] Day 7 + Day 14 Edge Functions scheduled
-  via pg_cron or Supabase scheduled functions
-    ↓
-[Later] Employer clicks "Confirm hire"
-    ↓
-placement_fees.confirmed_at written
-    ↓
-Stripe Invoice created via Edge Function
-```
+**What:** ChipSelector, Breadcrumb, StatsStrip, StatusBanner, Timeline fetching their own data from Supabase.
+**Why bad:** These components become untestable in isolation, create duplicate network calls, and couple display to data concerns.
+**Instead:** All Supabase fetches stay in page-level components or hooks. Every new primitive component receives props only.
 
-### Request Flow — Match Score Recalculation
+### Anti-Pattern 3: Duplicating Filter State for ActiveFilterPills
 
-```
-Employer updates job (or seeker updates profile)
-    ↓
-Supabase Database Webhook fires
-    ↓
-match-recalculate Edge Function invoked
-    ↓
-PostgreSQL match_score() stored procedure runs:
-  SELECT all active seekers (or jobs) in matching sector
-  FOR EACH: compute 8-dimension weighted score
-  UPSERT into match_scores table
-    ↓
-Recalculation complete (target: <60 seconds)
-    ↓
-[Parallel] Nightly batch Edge Function re-runs all scores
-  for data integrity (catches any missed triggers)
-```
+**What:** Creating a separate state variable (or context) to track active filters, keeping it in sync with URL params.
+**Why bad:** FilterSidebar already reads from URLSearchParams which is the single source of truth. Duplicating it creates sync bugs when filters change via URL navigation.
+**Instead:** `ActiveFilterPills` receives `searchParams: URLSearchParams` and an `onRemove` callback — it reads from the same URL state, never its own copy.
 
-### State Management
+### Anti-Pattern 4: Global Two-Column Layout in PostJob
 
-```
-Supabase (source of truth)
-    ↓ (React Query fetch)
-useQuery hooks (server state cache)
-    ↓ (component subscription)
-Page components receive data
-    ↓
-Feature components receive via props
-    ↓
-UI primitives render
+**What:** Switching PostJob to a two-column layout for all 8 steps to accommodate LivePreviewSidebar.
+**Why bad:** Preview is only useful on the preview step. Two-column layout on form-entry steps (1–5) wastes space on desktop and breaks mobile layout.
+**Instead:** Conditional layout class gated on `currentStep === 5`. Form steps keep existing single-column layout.
 
-Local state (useState) → wizard step progress, modal open/close, filter sidebar open
-Server state (React Query) → all Supabase data
-No global client state store needed (no Redux/Zustand) — React Query + URL params handle all coordination
-```
+### Anti-Pattern 5: Replacing All Checkbox Usage with ChipSelector
 
-### Key Data Flows
+**What:** Globally replacing every `<Checkbox>` with `<ChipSelector>` across the whole codebase.
+**Why bad:** FilterSidebar uses checkboxes deliberately — they work well at sidebar density. Only the specific wizard fields the SPEC calls out as chips need changing.
+**Instead:** Keep `Checkbox` in FilterSidebar untouched. Add ChipSelector as a new component. Update only where SPEC specifies chip UI.
 
-1. **Profile → Match Scores:** Seeker profile update triggers recalculation of `match_scores` for all active jobs matching `sector_pref`. This is the trigger for ranked search to reflect updated seeker data.
-2. **Stripe Webhook → Job Activation:** Payment confirmed → Edge Function → `jobs.status = 'active'` → listing appears in search results. Stripe is the authority, not the client.
-3. **Shortlist Acknowledgement → Contact Visibility:** `placement_fees.acknowledged_at` written → RLS policy change → phone/email readable. The database row controls visibility, not UI state.
-4. **Hire Confirmation → Invoice:** `placement_fees.confirmed_at` → Edge Function → Stripe Invoice created and emailed to employer.
-5. **Filter Selection → URL Params → Query:** Filter state lives in URL, not component state, so links are shareable and browser back/forward work correctly.
+### Anti-Pattern 6: Re-fetching AI Summaries on Every Tab Switch in ApplicantDashboard
+
+**What:** Calling the Claude Edge Function every time the employer switches to the AI Summary tab for an applicant.
+**Why bad:** Edge Function calls cost money, add 1–3s latency, and create flickering UX.
+**Instead:** Cache the AI summary string in local component state (`Map<applicantId, string>`) after the first fetch. Show a loading skeleton on first open, then render from cache on subsequent tab switches.
 
 ---
 
-## Component Boundaries (What Talks to What)
+## Build Order (Dependency Graph)
 
-| Component | Communicates With | Direction |
-|-----------|-------------------|-----------|
-| React pages | Supabase client (via hooks) | Page reads/writes data through hooks only |
-| React pages | Service layer | Page calls stripe.ts, claude.ts via services |
-| Feature components | React Query hooks (via props or direct hook call) | Components read server state from hooks |
-| Feature components | UI primitives | One-way: features compose primitives |
-| Supabase client | PostgreSQL (via RLS) | All queries filtered by auth.uid() automatically |
-| Edge Functions | Stripe API | Uses Stripe secret key, never in browser |
-| Edge Functions | Claude API | Uses Claude API key, never in browser |
-| Edge Functions | Resend API | Sends transactional email with templates |
-| Edge Functions | PostgreSQL | Direct DB access via service_role key |
-| Stripe | Edge Function (stripe-webhook) | Stripe POSTs to Edge Function endpoint |
+Dependencies flow one direction: primitives → composites → page integrations. Landing sections are independent of all other work.
 
-**Hard rules:**
-- React components NEVER call Stripe secret key operations directly
-- React components NEVER call Claude API directly (API key would be exposed)
-- Contact details are NEVER fetched without RLS validation — there is no admin bypass in client code
-- All database mutations go through the typed Supabase client — no raw SQL from the frontend
+### Wave 1 — Foundation Primitives (Parallel, No Dependencies)
 
----
+Build first. Everything else depends on at least some of these.
 
-## Scaling Considerations
+| Order | Component | Why First |
+|-------|-----------|-----------|
+| 1 | `ChipSelector` | Used in 6+ wizard steps across all three wizards |
+| 2 | `RangeSlider` | Used in FilterSidebar (refactor), SeekerStep5, JobStep4 |
+| 3 | `StatusBanner` | Used in ApplicationCard + MyApplications |
+| 4 | `Breadcrumb` | Used in JobDetail, no deps |
+| 5 | `StatsStrip` | Used in JobDetail, no deps |
+| 6 | `Timeline` | Used in JobDetail + MyApplications |
+| 7 | `StarRating` | Used in seeker experience/seniority steps |
+| 8 | `ActiveFilterPills` | Used in JobSearch, reads URLSearchParams only |
+| 9 | `Pagination` | Used in JobSearch, no deps |
 
-| Scale | Architecture Adjustments |
-|-------|--------------------------|
-| 0–1k users | Current architecture is correct. Supabase free tier handles this. Match recalculation batch is small enough to run in a single Edge Function invocation. |
-| 1k–10k users | Add Supabase connection pooling (PgBouncer — built into Supabase). Consider caching match_scores reads in Redis or Supabase Realtime for hot jobs. Index `match_scores.total_score` for sort performance. |
-| 10k–100k users | Match recalculation must be chunked (batch seekers in pages of 500). Consider background queue (Supabase Queue or external). Claude AI insights become expensive — cache per job/seeker pair. |
-| 100k+ users | Not in scope for TopFarms MVP. NZ agriculture market caps well below this. |
+### Wave 2 — Wizard Interface Extensions (Parallel Across Wizards, Within Each Wizard Work Steps in Order)
 
-### Scaling Priorities
+Must happen after Wave 1 (steps use ChipSelector, RangeSlider). Interface extensions must happen before step-level work within each wizard.
 
-1. **First bottleneck: match recalculation volume.** As seeker count grows, "seeker profile updated → recalculate all active jobs" becomes expensive. Fix: implement incremental scoring and chunked background jobs before this becomes a problem (rough threshold: >5,000 active seekers).
-2. **Second bottleneck: Claude API costs.** At scale, generating AI explanations for every match combination becomes expensive. Cache in `match_scores.explanation` column. Regenerate only when `breakdown` jsonb changes.
+**Employer Onboarding** (extend interface first, then steps):
+1. Extend `EmployerProfileData` interface + upsert payload in `EmployerOnboarding.tsx`
+2. `Step2FarmDetails`: nearest_town Input + distance_to_town RangeSlider
+3. `Step3Culture`: career_dev_interests ChipSelector
+4. `Step4Accommodation`: internet/broadband/wifi Toggles + calving_system Select
 
----
+**Post Job Wizard** (extend interface first, then steps):
+1. Extend `JobPostingData` interface + update payload in `PostJob.tsx`
+2. `JobStep1Basics`: seniority_level Select
+3. `JobStep2FarmDetails`: breed Select + milking_frequency Select
+4. `JobStep3Skills`: dairy_experience_years RangeSlider + required_qualifications ChipSelector
+5. `JobStep4Compensation`: pay_frequency ChipSelector + hours_per_week Input + roster_type ChipSelector
+6. `LivePreviewSidebar` component creation + PostJob shell conditional layout (step 5 two-column)
 
-## Anti-Patterns
+**Seeker Onboarding** (extend SeekerProfileData type in types/domain.ts first, then steps):
+1. Extend `SeekerProfileData` + upsert payload in `SeekerOnboarding.tsx`
+2. `SeekerStep2Experience`: document upload (FileDropzone already exists)
+3. `SeekerStep3Qualifications`: licences ChipSelector + certifications ChipSelector
+4. `SeekerStep5LifeSituation`: salary_expectation RangeSlider + availability_date Input + notice_period Select
+5. `SeekerStep7Complete`: matched jobs Supabase fetch + JobCard display
 
-### Anti-Pattern 1: Contact Fields Masked in CSS Only
+### Wave 3 — Page-Level Integrations (After Wave 1; Wizard Steps Not Required)
 
-**What people do:** Blur or hide contact details with CSS/JavaScript and rely on the frontend to enforce the placement fee gate.
+| Order | Component | Dependencies |
+|-------|-----------|-------------|
+| 1 | `FilterSidebar` additions + RangeSlider refactor | RangeSlider (Wave 1) |
+| 2 | `ExpandableCardTabs` component creation | None |
+| 3 | `SearchJobCard` + ExpandableCardTabs integration | Wave 3.2 |
+| 4 | `JobSearch`: SearchHero + ActiveFilterPills + Pagination | ActiveFilterPills, Pagination (Wave 1); SearchJobCard (Wave 3.3) |
+| 5 | `JobDetail`: Breadcrumb + StatsStrip + Timeline + similar jobs | Breadcrumb, StatsStrip, Timeline (Wave 1) |
+| 6 | `ApplicationCard` + StatusBanner integration | StatusBanner (Wave 1) |
+| 7 | `MyApplications` layout + StatusBanner + Timeline | StatusBanner, Timeline (Wave 1) |
+| 8 | `ApplicantDashboard` rebuild | All primitives; ExpandableCardTabs (Wave 3.2); AI summary fetch |
 
-**Why it's wrong:** Any developer can inspect the DOM, disable JavaScript, or call the Supabase API directly and retrieve the raw data. The masking is trivially bypassed.
+### Wave 4 — Landing Page Sections (Fully Independent, Any Time)
 
-**Do this instead:** Enforce contact field access in the RLS policy. The `seeker_profiles` select policy must check for `placement_fees.acknowledged_at` before returning phone/email columns. Use a Supabase security definer function or column-level security to return NULL for masked fields.
+All five new sections are self-contained. No dependency on wizard or dashboard work.
 
-### Anti-Pattern 2: Computing Match Scores at Query Time
-
-**What people do:** Join `seeker_skills`, `job_skills`, `seeker_profiles`, and `jobs` on every search request and compute the weighted score in the query.
-
-**Why it's wrong:** A job search with 500 active jobs and a seeker with 15 skills would compute 500 × 15 skill comparisons + 500 × 8 dimension calculations on every page load. This violates the <1.5s search target.
-
-**Do this instead:** Pre-compute and store in `match_scores`. Trigger recalculation on data change events (job update, seeker profile update). The SPEC's decision here is correct — implement it exactly as specified.
-
-### Anti-Pattern 3: Stripe Secret Key in React Environment Variables
-
-**What people do:** Put the Stripe secret key in `VITE_STRIPE_SECRET_KEY` to make server-side Stripe calls from the client.
-
-**Why it's wrong:** Vite environment variables prefixed with `VITE_` are bundled into the JavaScript payload. The secret key is publicly readable in the browser.
-
-**Do this instead:** All Stripe secret key operations (creating PaymentIntents server-side, creating invoices, processing webhooks) run in Supabase Edge Functions. The client only uses the publishable key (`VITE_STRIPE_PUBLISHABLE_KEY`) and the Stripe.js library to collect card details.
-
-### Anti-Pattern 4: Wizard State in React Only (No Draft Persistence)
-
-**What people do:** Use `useState` or a context to hold 8 wizard steps of form data. If the user refreshes or navigates away, all data is lost.
-
-**Why it's wrong:** An 8-step employer onboarding wizard with farm details, accommodation toggles, and verification steps represents significant user effort. Losing this on a browser refresh creates real friction and churn.
-
-**Do this instead:** Upsert draft data to `employer_profiles` (or `jobs` with `status: 'draft'`) on each "Next" click. On wizard load, query for an existing draft and pre-populate. This also supports returning users who started but didn't finish.
-
-### Anti-Pattern 5: Filter State in React State Only
-
-**What people do:** Store job search filters in `useState` inside the FilterSidebar component.
-
-**Why it's wrong:** Users cannot bookmark filtered search results. The browser back button doesn't restore filters. Sharing a search URL requires additional work. Filter state is reset on any navigation.
-
-**Do this instead:** Sync filter state with URL search parameters (`?region=waikato&shed_type=rotary`). React Query key includes URL params. `useSearchParams` from React Router reads and writes filter state. Users can bookmark, share, and navigate with correct state.
+| Component | Notes |
+|-----------|-------|
+| `AiMatchingSection` | Static content + illustration |
+| `FarmTypesSection` | Static sector cards |
+| `EmployerCtaSection` | Static CTA with stats |
+| `TrustedBySection` | Logo/text trust signals |
+| `FinalCtaSection` | Static CTA above footer |
+| `Home.tsx` import order | Add new sections to Home in SPEC order after all are built |
+| HeroSection animation | Additive CSS change, any time |
 
 ---
 
-## Integration Points
+## Scalability Considerations
 
-### External Services
-
-| Service | Integration Pattern | Notes |
-|---------|---------------------|-------|
-| Stripe | PaymentElement (client) + Edge Function (server) | Client uses publishable key only. Edge Function holds secret key. Webhooks must be verified with `stripe.webhooks.constructEvent()`. |
-| Claude API | Edge Function only | Never called from client. Pass `match_scores.breakdown` jsonb to generate 2–3 sentence explanations. Cache result in `match_scores.explanation` column. |
-| Resend | Edge Function only | React Email templates for placement follow-ups and job alerts. Triggered via Supabase scheduled functions or database webhooks. |
-| Supabase Auth | Client SDK (`supabase.auth`) | Email/password only for MVP. User type (employer/seeker) stored in `user_metadata` at signup. |
-| Supabase Storage | Client SDK for upload, Edge Function for admin review notifications | Documents, farm photos, CVs stored in Supabase Storage buckets with appropriate access policies. |
-| Vercel | CI/CD via GitHub integration | Edge Functions live in `supabase/functions/`, not Vercel's runtime — do not confuse the two. Frontend deploys to Vercel CDN. |
-
-### Internal Boundaries
-
-| Boundary | Communication | Notes |
-|----------|---------------|-------|
-| React pages ↔ Supabase | React Query hooks wrapping Supabase JS SDK | Never call `supabase` directly in components — always through a hook |
-| React ↔ Stripe | Stripe.js PaymentElement + fetch to Edge Function | Client creates PaymentIntent via Edge Function, not directly |
-| Edge Function ↔ Database | Supabase service_role key | Full access — RLS bypassed for server operations. Use carefully. |
-| Job search page ↔ Filter sidebar | URL search params | Single source of truth for filter state — no prop drilling or context |
-| Employer dashboard ↔ Placement gate | Modal component + `applications` status mutation | Modal fires before any contact data is queried — avoid fetching then hiding |
+| Concern | v1.1 Impact | Mitigation |
+|---------|-------------|------------|
+| Wizard interface growth | +8–12 fields per wizard (3 wizards) | Flat interface pattern handles 30+ fields without issue; no structural change needed |
+| FilterSidebar group count | +3 new filter groups | No interface change needed; groups are internal; sidebar scrolls if needed on mobile |
+| JobDetail page complexity | +5 new sections | Extract sections as named sub-components within the file if it exceeds ~400 lines; no new routing needed |
+| ApplicantDashboard rebuild | Highest complexity item — tab state, bulk selection, AI fetch | Manage tab state per-applicant in a `Map` ref; bulk selection in local Set state; AI results cached in Map |
+| Bundle size | RangeSlider uses existing Radix Slider dep | No new runtime dependencies if Radix Slider and Dialog are already in the lockfile |
+| AI summary fetch cost | Multiple applicants on dashboard | Cache per applicant in component state; only fetch when tab first opened |
 
 ---
 
-## Suggested Build Order (Dependencies)
+## Integration Points Summary
 
-The SPEC's milestone order reflects correct dependency sequencing. The architectural rationale:
-
-1. **Foundation first (Milestone 1):** Schema + RLS + auth + design system. Nothing else is buildable without the database schema and security policies. Design system must be built before any screen. This is not negotiable.
-
-2. **Employer supply side (Milestone 2):** Employers create jobs before seekers can search them. The job posting wizard + Stripe integration + job detail page form the supply side. Build the full employer flow so there is data to search.
-
-3. **Seeker demand side (Milestone 3):** Seeker onboarding + job search + application. Depends on jobs existing (Milestone 2). Match scores are consumed here but can be stubbed with a simple calculation until Milestone 4.
-
-4. **Match engine (Milestone 4):** Depends on both employer jobs (Milestone 2) and seeker profiles (Milestone 3) existing. The scoring function and recalculation triggers are refinements to what Milestone 3 stubbed.
-
-5. **Revenue + verification (Milestone 5):** Depends on the full match pipeline (Milestone 4) because shortlisting (the placement fee trigger) happens in the ranked applicant dashboard. Stripe webhooks, RLS contact masking, and verification tiers are all isolated to this milestone.
-
-6. **Polish + launch (Milestone 6):** Landing page, mobile QA, E2E tests, production deployment. Depends on all prior milestones being functionally complete.
-
-**Build order principle:** Each milestone delivers a working vertical slice. Never build a layer (e.g., all database tables) separately from the feature that uses it — build schema + feature + RLS together per milestone.
+| Gap Category | Integration Point | Touch Points |
+|-------------|-------------------|-------------|
+| Employer onboarding fields | `EmployerProfileData` interface + upsert payload | 1 shell file + 3 step files |
+| Post job wizard fields | `JobPostingData` interface + update payload | 1 shell file + 4 step files |
+| Post job live preview | PostJob shell layout conditional + new LivePreviewSidebar | 1 shell file + 1 new component |
+| Seeker onboarding fields | `SeekerProfileData` type (in domain.ts) + upsert payload | 1 type file + 1 shell file + 4 step files |
+| Seeker completion screen | SeekerStep7Complete: new Supabase query for matched jobs | 1 step file |
+| FilterSidebar new filters | `FilterSidebar` internal groups + RangeSlider refactor | 1 component file |
+| Search page additions | `JobSearch` layout additions; SearchJobCard expansion | 2 page-level files + 2 new components |
+| Job detail additions | `JobDetail` layout additions | 1 page file + 3 new primitive components |
+| Application status banners | `ApplicationCard`, `MyApplications` | 2 files + 1 new StatusBanner component |
+| Applicant dashboard | `ApplicantDashboard` full rebuild | 1 file + ExpandableCardTabs component |
+| Landing sections | `Home.tsx` import additions | 5 new landing section files + 1 updated Home |
 
 ---
 
 ## Sources
 
-- SPEC.md v3.0 (authoritative): database schema, RLS requirements, match scoring algorithm, Stripe integration points, milestone breakdown — HIGH confidence
-- Supabase documentation (pattern validation): RLS policies, Edge Functions, Storage — HIGH confidence (well-established platform)
-- React Query documentation: server state patterns for Supabase — HIGH confidence (standard pattern)
-- Stripe documentation: PaymentElement, webhook verification pattern — HIGH confidence (official Stripe docs pattern)
-- Pattern confidence notes:
-  - Pre-computed match scores: HIGH — explicitly specified in SPEC, correct for <1.5s search target
-  - RLS contact masking: HIGH — specified in SPEC Section 13.2, correct architecture
-  - URL-param filter state: MEDIUM — standard React Router pattern, validated against React Router v6 conventions
-  - Wizard draft persistence: MEDIUM — standard UX practice, not explicitly specified but implied by 8-step wizard complexity
+- Codebase direct inspection (HIGH confidence):
+  - `/Users/harrysmith/dev/topfarms/src/pages/onboarding/EmployerOnboarding.tsx`
+  - `/Users/harrysmith/dev/topfarms/src/pages/jobs/PostJob.tsx`
+  - `/Users/harrysmith/dev/topfarms/src/pages/onboarding/SeekerOnboarding.tsx`
+  - `/Users/harrysmith/dev/topfarms/src/pages/jobs/JobSearch.tsx`
+  - `/Users/harrysmith/dev/topfarms/src/components/ui/FilterSidebar.tsx`
+  - Full component inventory via `src/components/ui/` and `src/pages/` glob
+- Confirmed Radix dependencies: `@radix-ui/react-slider` (FilterSidebar line 2), `@radix-ui/react-dialog` (JobSearch line 3)
+- Project context: `.planning/PROJECT.md` (v1.1 milestone targets confirmed)
 
----
-
-*Architecture research for: NZ agricultural job marketplace (TopFarms)*
-*Researched: 2026-03-15*
+*Architecture research for: TopFarms v1.1 SPEC Compliance milestone*
+*Researched: 2026-03-20*
