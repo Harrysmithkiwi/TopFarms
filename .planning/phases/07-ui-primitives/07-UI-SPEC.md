@@ -55,18 +55,19 @@ Source: REQUIREMENTS.md PRIM-03, PRIM-07, PRIM-09; CONTEXT.md LivePreviewSidebar
 
 | Role | Font | Size | Weight | Line Height | Usage |
 |------|------|------|--------|-------------|-------|
-| Body | DM Sans (`font-body`) | 14px | 400 (regular) | 1.5 | Chip labels, stat values, banner body copy, breadcrumb items, pagination numbers, timeline entry text |
-| Label | DM Sans (`font-body`) | 13px | 400 (regular) | 1.4 | Breadcrumb inactive items, stat labels below values, completeness meter percentage, AI tip text |
-| Subheading | DM Sans (`font-body`) | 16px | 600 (semibold) | 1.4 | StatusBanner title copy, SearchHero input placeholder, LivePreviewSidebar section headings |
-| Heading | Fraunces (`font-display`) | 28px | 300 (light) | 1.2 | SearchHero headline only |
+| Body | DM Sans (`font-body`) | 14px | 400 (regular) | 1.5 | Chip labels, stat values, banner body copy, breadcrumb items, pagination numbers, timeline entry text, match pool lines |
+| Label | DM Sans (`font-body`) | 13px | 400 (regular) | 1.4 | Breadcrumb inactive items, stat labels below values, completeness meter percentage, AI tip text, mini card farm name/location/salary, tag chips, match pool notes |
+| Subheading | DM Sans (`font-body`) | 16px | 600 (semibold) | 1.4 | StatusBanner title copy, SearchHero input placeholder, LivePreviewSidebar section headings, mini card title, stat values |
+| Heading | Fraunces (`font-display`) | 28px | 400 (regular) | 1.2 | SearchHero headline only — Fraunces renders at its native weight 300 (implementation note: use `font-normal` with `font-display`; the visual result is 300 because Fraunces has no 400 weight in the loaded subset) |
 
 Notes:
 - Exactly 4 sizes declared: 13px, 14px, 16px, 28px
-- Exactly 2 weights in active use across body roles: 400 (regular) and 600 (semibold). Fraunces 300 is used exclusively for the SearchHero headline.
+- Exactly 2 weight tokens in the scale: 400 (regular) and 600 (semibold). The Heading row uses `font-normal` (400) with `font-display`; because Fraunces is loaded as a variable font whose default is 300, the rendered weight appears light — this is a font-specific rendering behaviour, not a third weight token.
 - All body/label text uses `font-body` (DM Sans). Display heading uses `font-display` (Fraunces).
 - Breadcrumb SPEC notation "11px, light" refers to `text-[11px] text-light` (the `light` color token, not font-light weight) — use 13px body for readability minimum; the color token `--color-light` (#9e8e78) is what makes inactive crumbs appear lighter.
+- Previous 11px and 12px references (tag chips, stat labels, match pool notes) are collapsed to 13px Label. Previous 20px stat value reference is collapsed to 16px Subheading semibold.
 
-Source: CONTEXT.md, RESEARCH.md code examples (breadcrumb spec note), REQUIREMENTS.md PRIM-07 (font-body text-[13px]).
+Source: CONTEXT.md, RESEARCH.md code examples (breadcrumb spec note), REQUIREMENTS.md PRIM-07 (font-body text-[13px]); checker revision 2026-03-21.
 
 ---
 
@@ -119,7 +120,7 @@ Source: CONTEXT.md ChipSelector decisions; RESEARCH.md ChipSelector code example
 
 - Container: full-width, `rounded-[12px] border-[1.5px] p-4` layout
 - Shortlisted: `bg-hay-lt border-hay` — title "Great news — you've been shortlisted!" — no action buttons (informational only)
-- Interview: `bg-green-lt border-green` — title "You've got an interview invitation!" — CTA buttons: Accept (moss primary), Decline (ghost)
+- Interview: `bg-green-lt border-green` — title "You've got an interview invitation!" — CTA buttons: Accept Interview (moss primary), Decline Interview (ghost)
 - Offer: `bg-green-lt border-green` — title "Congratulations — you've received an offer!" — CTA button: Review Offer (moss primary)
 - Declined: `bg-red-lt/60 border-red-lt` — title "Unfortunately, this application wasn't successful." — no CTAs
 - Title: 16px semibold, color inherits from variant (dark text for hay/green, `text-red` for declined)
@@ -135,21 +136,22 @@ Source: CONTEXT.md StatusBanner decisions (exact copy strings, opacity requireme
 - Inactive item: `text-light hover:text-ink hover:underline` (clickable link)
 - Active/current item: `text-ink font-medium` (not a link — no `href`)
 - Separator: lucide `ChevronRight`, 14px, `text-light` — renders between each item pair
-- Save/Share buttons: positioned absolute right side of bar, `text-[13px] text-mid hover:text-ink` with lucide `Bookmark` (16px) and `Share2` (16px) icons
+- Save button: positioned absolute right side of bar, `text-[13px] text-mid hover:text-ink` with lucide `Bookmark` (16px) icon; aria-label="Save job listing"
+- Share button: positioned absolute right side of bar, `text-[13px] text-mid hover:text-ink` with lucide `Share2` (16px) icon; aria-label="Share job listing"
 - Maximum 4 items before truncation with `...` separator in middle position
 
-Source: CONTEXT.md (Claude's Discretion for separator/active treatment); REQUIREMENTS.md PRIM-03, JDET-01; RESEARCH.md Breadcrumb interface example.
+Source: CONTEXT.md (Claude's Discretion for separator/active treatment); REQUIREMENTS.md PRIM-03, JDET-01; RESEARCH.md Breadcrumb interface example; checker revision 2026-03-21.
 
 ### PRIM-04: StatsStrip
 
 - Container: CSS grid, `grid grid-cols-4 gap-0 border border-fog rounded-[12px] bg-white overflow-hidden`
 - Each stat cell: `flex flex-col items-center justify-center py-4 px-2 border-r border-fog last:border-r-0`
-- Stat value: `text-[20px] font-semibold text-ink font-body`
-- Stat label: `text-[12px] text-light font-body mt-1`
+- Stat value: `text-[16px] font-semibold text-ink font-body` (collapsed from 20px — uses Subheading size)
+- Stat label: `text-[13px] text-light font-body mt-1` (collapsed from 12px — uses Label size)
 - Responsive: at ≤860px → `grid-cols-2` with left-right pairs (Applications+Views, Salary+Posted)
 - Supports 3 or 4 columns — controlled by `columns` prop (default 4)
 
-Source: REQUIREMENTS.md PRIM-04, JDET-02; RESEARCH.md open question #1 (2-col breakpoint resolved to left-right pairs).
+Source: REQUIREMENTS.md PRIM-04, JDET-02; RESEARCH.md open question #1 (2-col breakpoint resolved to left-right pairs); checker revision 2026-03-21.
 
 ### PRIM-05: Timeline
 
@@ -194,11 +196,11 @@ Source: REQUIREMENTS.md PRIM-07; RESEARCH.md Pagination code example + open ques
 
 - Container: `relative overflow-hidden` with inline style gradient (CSS vars must compose gradient via style prop — not pure Tailwind)
 - Background: `linear-gradient(135deg, var(--color-soil) 0%, #1a3a10 100%)` + radial glow overlay `radial-gradient(ellipse at 30% 50%, rgba(74,124,47,0.25) 0%, transparent 60%)`
-- Headline: `font-display text-[28px] font-light text-white leading-[1.2]` — centered above search bar
+- Headline: `font-display text-[28px] font-normal text-white leading-[1.2]` — centered above search bar
 - Search bar container: `bg-white rounded-[12px] p-2 flex items-center gap-2 shadow-lg max-w-[680px] mx-auto`
 - Text input: reuse `Input` component, placeholder "Search jobs, roles, farms…"
 - Region select: reuse existing `Select` component, 8 NZ regions (Northland, Auckland, Waikato, Bay of Plenty, Hawke's Bay, Manawatu, Canterbury, Otago)
-- Search CTA button: `bg-moss text-white rounded-[8px] px-4 py-2 text-[14px] font-semibold` — "Search"
+- Search CTA button: `bg-moss text-white rounded-[8px] px-4 py-2 text-[14px] font-semibold` — "Search Jobs"
 - Quick-filter pills: below search bar, `flex flex-wrap gap-2 justify-center mt-4`
 - Pill default: `bg-white/15 text-white border border-white/30 rounded-full px-3 py-1 text-[13px] cursor-pointer hover:bg-white/25 transition-colors`
 - Pill active: `bg-white text-moss border-white`
@@ -213,13 +215,13 @@ Source: CONTEXT.md SearchHero decisions; REQUIREMENTS.md PRIM-08, SRCH-01; RESEA
 - Container: `sticky top-6 w-[320px] bg-white rounded-[14px] border border-fog overflow-hidden`
 - Section header text: `text-[13px] font-semibold text-light uppercase tracking-wide px-4 pt-4 pb-2`
 - Completeness meter section: percentage `text-[13px] font-body text-moss` + `ProgressBar` component (existing, moss→meadow gradient, `transition-all duration-300`)
-- Mini card preview: simplified job card showing title (16px semibold), farm name (13px mid), location + salary (13px light) with 2-3 tag chips (fog bg, ink text, 11px)
-- Match pool section: three static lines e.g. "47 seekers in region", "12 with shed experience", "8 actively looking" — `text-[14px] text-ink` + subtle note `text-[12px] text-light italic` "Estimates available soon"
+- Mini card preview: simplified job card showing title (`text-[16px] font-semibold` — Subheading size), farm name (`text-[13px] text-mid` — Label size), location + salary (`text-[13px] text-light` — Label size) with 2-3 tag chips (fog bg, ink text, `text-[13px]` — collapsed from 11px to Label size)
+- Match pool section: three static lines e.g. "47 seekers in region", "12 with shed experience", "8 actively looking" — `text-[14px] text-ink` + subtle note `text-[13px] text-light italic` "Estimates available soon" (collapsed from 12px to Label size)
 - AI tip box: `bg-purple-lt rounded-[8px] p-3 mx-4 mb-4` — tip text `text-[13px] text-ink` — static placeholder "Tip: Listings with accommodation details get 40% more applications"
 - Dividers between sections: `border-t border-fog`
 - No async state — all values passed as props; Phase 11 wires live data
 
-Source: CONTEXT.md LivePreviewSidebar decisions; REQUIREMENTS.md PRIM-09; RESEARCH.md Pattern 3 (composed component).
+Source: CONTEXT.md LivePreviewSidebar decisions; REQUIREMENTS.md PRIM-09; RESEARCH.md Pattern 3 (composed component); checker revision 2026-03-21.
 
 ---
 
@@ -227,10 +229,10 @@ Source: CONTEXT.md LivePreviewSidebar decisions; REQUIREMENTS.md PRIM-09; RESEAR
 
 | Element | Copy |
 |---------|------|
-| Primary CTA (SearchHero) | "Search" (verb only — label sits in a search bar context; noun is implicit) |
+| Primary CTA (SearchHero) | "Search Jobs" |
 | Primary CTA (StatusBanner interview) | "Accept Interview" |
 | Primary CTA (StatusBanner offer) | "Review Offer" |
-| Destructive CTA (StatusBanner interview) | "Decline" |
+| Destructive CTA (StatusBanner interview) | "Decline Interview" |
 | StatusBanner shortlisted title | "Great news — you've been shortlisted!" |
 | StatusBanner shortlisted body | "The employer has added you to their shortlist." |
 | StatusBanner interview title | "You've got an interview invitation!" |
@@ -248,10 +250,12 @@ Source: CONTEXT.md LivePreviewSidebar decisions; REQUIREMENTS.md PRIM-09; RESEAR
 | Empty state (SearchHero — no pills active) | Not applicable — SearchHero is a hero section, not a results view |
 | Pagination previous button aria-label | "Go to previous page" |
 | Pagination next button aria-label | "Go to next page" |
+| Breadcrumb Save button aria-label | "Save job listing" |
+| Breadcrumb Share button aria-label | "Share job listing" |
 
-No destructive confirmation dialogs in Phase 7 — StatusBanner "Decline" is a low-stakes dismiss that does not permanently delete data. No `window.confirm` or modal required.
+No destructive confirmation dialogs in Phase 7 — StatusBanner "Decline Interview" is a low-stakes dismiss that does not permanently delete data. No `window.confirm` or modal required.
 
-Source: CONTEXT.md StatusBanner decisions (exact copy strings locked); RESEARCH.md (copy strings in variant map code example). SearchHero headline is Claude's Discretion.
+Source: CONTEXT.md StatusBanner decisions (exact copy strings locked); RESEARCH.md (copy strings in variant map code example). SearchHero headline is Claude's Discretion. CTA labels and aria-labels updated per checker revision 2026-03-21.
 
 ---
 
