@@ -136,80 +136,80 @@ Deferred to future release. Not in current roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PRIM-01 | TBD | Pending |
-| PRIM-02 | TBD | Pending |
-| PRIM-03 | TBD | Pending |
-| PRIM-04 | TBD | Pending |
-| PRIM-05 | TBD | Pending |
-| PRIM-06 | TBD | Pending |
-| PRIM-07 | TBD | Pending |
-| PRIM-08 | TBD | Pending |
-| PRIM-09 | TBD | Pending |
-| EONB-01 | TBD | Pending |
-| EONB-02 | TBD | Pending |
-| EONB-03 | TBD | Pending |
-| EONB-04 | TBD | Pending |
-| EONB-05 | TBD | Pending |
-| EONB-06 | TBD | Pending |
-| EONB-07 | TBD | Pending |
-| EONB-08 | TBD | Pending |
-| EONB-09 | TBD | Pending |
-| PJOB-01 | TBD | Pending |
-| PJOB-02 | TBD | Pending |
-| PJOB-03 | TBD | Pending |
-| PJOB-04 | TBD | Pending |
-| PJOB-05 | TBD | Pending |
-| PJOB-06 | TBD | Pending |
-| PJOB-07 | TBD | Pending |
-| PJOB-08 | TBD | Pending |
-| SONB-01 | TBD | Pending |
-| SONB-02 | TBD | Pending |
-| SONB-03 | TBD | Pending |
-| SONB-04 | TBD | Pending |
-| SONB-05 | TBD | Pending |
-| SONB-06 | TBD | Pending |
-| SONB-07 | TBD | Pending |
-| SRCH-01 | TBD | Pending |
-| SRCH-02 | TBD | Pending |
-| SRCH-03 | TBD | Pending |
-| SRCH-04 | TBD | Pending |
-| SRCH-05 | TBD | Pending |
-| SRCH-06 | TBD | Pending |
-| SRCH-07 | TBD | Pending |
-| SRCH-08 | TBD | Pending |
-| JDET-01 | TBD | Pending |
-| JDET-02 | TBD | Pending |
-| JDET-03 | TBD | Pending |
-| JDET-04 | TBD | Pending |
-| JDET-05 | TBD | Pending |
-| JDET-06 | TBD | Pending |
-| JDET-07 | TBD | Pending |
-| JDET-08 | TBD | Pending |
-| JDET-09 | TBD | Pending |
-| ADSH-01 | TBD | Pending |
-| ADSH-02 | TBD | Pending |
-| ADSH-03 | TBD | Pending |
-| ADSH-04 | TBD | Pending |
-| ADSH-05 | TBD | Pending |
-| MAPP-01 | TBD | Pending |
-| MAPP-02 | TBD | Pending |
-| MAPP-03 | TBD | Pending |
-| LAND-01 | TBD | Pending |
-| LAND-02 | TBD | Pending |
-| LAND-03 | TBD | Pending |
-| LAND-04 | TBD | Pending |
-| LAND-05 | TBD | Pending |
-| LAND-06 | TBD | Pending |
-| LAND-07 | TBD | Pending |
-| LAND-08 | TBD | Pending |
-| LAND-09 | TBD | Pending |
-| LAND-10 | TBD | Pending |
+| PRIM-01 | Phase 7 | Pending |
+| PRIM-02 | Phase 7 | Pending |
+| PRIM-03 | Phase 7 | Pending |
+| PRIM-04 | Phase 7 | Pending |
+| PRIM-05 | Phase 7 | Pending |
+| PRIM-06 | Phase 7 | Pending |
+| PRIM-07 | Phase 7 | Pending |
+| PRIM-08 | Phase 7 | Pending |
+| PRIM-09 | Phase 7 | Pending |
+| EONB-01 | Phase 8 | Pending |
+| EONB-02 | Phase 8 | Pending |
+| EONB-03 | Phase 8 | Pending |
+| EONB-04 | Phase 8 | Pending |
+| EONB-05 | Phase 8 | Pending |
+| EONB-06 | Phase 8 | Pending |
+| EONB-07 | Phase 8 | Pending |
+| EONB-08 | Phase 8 | Pending |
+| EONB-09 | Phase 8 | Pending |
+| PJOB-01 | Phase 8 | Pending |
+| PJOB-02 | Phase 8 | Pending |
+| PJOB-03 | Phase 8 | Pending |
+| PJOB-04 | Phase 8 | Pending |
+| PJOB-05 | Phase 8 | Pending |
+| PJOB-06 | Phase 8 | Pending |
+| PJOB-07 | Phase 8 | Pending |
+| PJOB-08 | Phase 8 | Pending |
+| SONB-01 | Phase 8 | Pending |
+| SONB-02 | Phase 11 | Pending |
+| SONB-03 | Phase 8 | Pending |
+| SONB-04 | Phase 8 | Pending |
+| SONB-05 | Phase 8 | Pending |
+| SONB-06 | Phase 8 | Pending |
+| SONB-07 | Phase 8 | Pending |
+| SRCH-01 | Phase 9 | Pending |
+| SRCH-02 | Phase 9 | Pending |
+| SRCH-03 | Phase 9 | Pending |
+| SRCH-04 | Phase 9 | Pending |
+| SRCH-05 | Phase 9 | Pending |
+| SRCH-06 | Phase 9 | Pending |
+| SRCH-07 | Phase 9 | Pending |
+| SRCH-08 | Phase 9 | Pending |
+| JDET-01 | Phase 9 | Pending |
+| JDET-02 | Phase 9 | Pending |
+| JDET-03 | Phase 9 | Pending |
+| JDET-04 | Phase 9 | Pending |
+| JDET-05 | Phase 9 | Pending |
+| JDET-06 | Phase 9 | Pending |
+| JDET-07 | Phase 9 | Pending |
+| JDET-08 | Phase 9 | Pending |
+| JDET-09 | Phase 9 | Pending |
+| ADSH-01 | Phase 9 | Pending |
+| ADSH-02 | Phase 9 | Pending |
+| ADSH-03 | Phase 9 | Pending |
+| ADSH-04 | Phase 9 | Pending |
+| ADSH-05 | Phase 9 | Pending |
+| MAPP-01 | Phase 9 | Pending |
+| MAPP-02 | Phase 9 | Pending |
+| MAPP-03 | Phase 9 | Pending |
+| LAND-01 | Phase 10 | Pending |
+| LAND-02 | Phase 10 | Pending |
+| LAND-03 | Phase 10 | Pending |
+| LAND-04 | Phase 10 | Pending |
+| LAND-05 | Phase 10 | Pending |
+| LAND-06 | Phase 10 | Pending |
+| LAND-07 | Phase 10 | Pending |
+| LAND-08 | Phase 10 | Pending |
+| LAND-09 | Phase 10 | Pending |
+| LAND-10 | Phase 10 | Pending |
 
 **Coverage:**
 - v1.1 requirements: 60 total
-- Mapped to phases: 0
-- Unmapped: 60 ⚠️
+- Mapped to phases: 60
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-20*
-*Last updated: 2026-03-20 after initial definition*
+*Last updated: 2026-03-20 — traceability updated after roadmap creation (phases 7-11)*
