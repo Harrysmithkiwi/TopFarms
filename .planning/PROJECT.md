@@ -37,7 +37,20 @@ Farm employers and seekers can find each other through agriculture-specific matc
 
 ### Active
 
-(None — define with `/gsd:new-milestone`)
+#### Current Milestone: v1.1 SPEC Compliance
+
+**Goal:** Close all gaps between built MVP and SPEC v3.0 so every screen matches the wireframe specification — missing fields, missing UI sections, layout deviations, and component upgrades.
+
+**Target features:**
+- Employer onboarding: missing form fields (career dev chips, salary range, accommodation extras, calving, town/distance), layout corrections
+- Post job wizard: missing fields (breed, milking freq, dairy experience, seniority, qualifications, visa chips, pay freq, hours, roster), live preview sidebar
+- Landing page: 5 missing sections (AI matching, farm types, employer CTA, trusted-by, final CTA), hero animation, stat blocks
+- Job search: search hero section, role type filter, extras filters, expandable card tabs, active filter pills, pagination
+- Job detail: breadcrumb bar, stats strip, application timeline, similar jobs, location map, sidebar enhancements
+- Applicant dashboard: sidebar nav, filter toolbar, AI candidate summaries, bulk actions, 4-tab expandable panels
+- My applications: status variant banners (shortlisted/interview/offer/declined), farm response indicator, sidebar
+- Seeker onboarding: document upload, licences, certifications, salary/availability/notice period, completion screen with matched jobs
+- Component upgrades: checkboxes→chips where SPEC requires, char limit alignment
 
 ### Out of Scope
 
@@ -94,4 +107,4 @@ Tech stack: React 19, TypeScript, Vite 6, Tailwind v4, Supabase, Claude API, Str
 | Soft contact detection in messaging | Nudge banners not hard blocks — preserves goodwill (Growth Phase) | — Pending |
 
 ---
-*Last updated: 2026-03-17 after v1.0 milestone*
+*Last updated: 2026-03-20 after v1.1 milestone definition*
