@@ -39,7 +39,7 @@ export interface EmployerProfileData {
   milking_frequency?: string
   breed?: string
   property_size_ha?: number
-  ownership_type?: string
+  ownership_type?: string[]
   culture_description?: string
   team_size?: number
   about_farm?: string
