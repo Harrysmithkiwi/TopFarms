@@ -21,6 +21,32 @@ interface FilterSidebarProps {
   isMobile?: boolean
 }
 
+const ROLE_TYPES = [
+  { value: 'farm_manager', label: 'Farm Manager' },
+  { value: 'head_stockman', label: 'Head Stockman' },
+  { value: '2ic', label: '2IC' },
+  { value: 'herd_manager', label: 'Herd Manager' },
+  { value: 'dairy_assistant', label: 'Dairy Assistant' },
+  { value: 'trainee', label: 'Trainee' },
+  { value: 'relief_milker', label: 'Relief Milker' },
+  { value: 'couple', label: 'Couple Position' },
+]
+
+const EXTRAS_FILTERS = [
+  { key: 'mentorship', label: 'Mentorship available' },
+  { key: 'vehicle', label: 'Vehicle provided' },
+  { key: 'dairynz_pathway', label: 'DairyNZ pathway' },
+  { key: 'posted_recent', label: 'Posted in last 7 days' },
+]
+
+const ACCOMMODATION_OPTIONS = [
+  { value: 'house', label: 'House' },
+  { value: 'cottage', label: 'Cottage' },
+  { value: 'pet_friendly', label: 'Pet-friendly' },
+  { value: 'couples', label: 'Couples welcome' },
+  { value: 'family', label: 'Family-friendly' },
+]
+
 const CONTRACT_TYPES = [
   { value: 'permanent', label: 'Permanent' },
   { value: 'contract', label: 'Contract' },
@@ -53,14 +79,14 @@ export function FilterSidebar({
   const [showAllRegions, setShowAllRegions] = useState(false)
 
   // Read current filter values from URL params
+  const selectedRoleTypes = searchParams.getAll('role_type')
   const selectedShedTypes = searchParams.getAll('shed_type')
   const selectedRegions = searchParams.getAll('region')
   const selectedContractTypes = searchParams.getAll('contract_type')
   const selectedHerdSizes = searchParams.getAll('herd_size')
+  const selectedAccommodationTypes = searchParams.getAll('accommodation_type')
   const salaryMin = searchParams.get('salary_min')
   const salaryMax = searchParams.get('salary_max')
-  const accommodation = searchParams.get('accommodation')
-  const couples = searchParams.get('couples')
   const visa = searchParams.get('visa')
   const dairynzLevel = searchParams.get('dairynz_level')
 
@@ -84,22 +110,27 @@ export function FilterSidebar({
 
   function handleClearAll() {
     const keys = [
+      'role_type', 'mentorship', 'vehicle', 'dairynz_pathway', 'posted_recent',
       'shed_type', 'region', 'contract_type', 'herd_size',
-      'salary_min', 'salary_max', 'accommodation', 'couples',
-      'visa', 'dairynz_level', 'pets', 'family_friendly',
+      'salary_min', 'salary_max', 'accommodation_type',
+      'visa', 'dairynz_level',
     ]
     keys.forEach((key) => onFilterChange(key, null))
   }
 
   const hasActiveFilters =
+    selectedRoleTypes.length > 0 ||
+    selectedAccommodationTypes.length > 0 ||
+    searchParams.get('mentorship') !== null ||
+    searchParams.get('vehicle') !== null ||
+    searchParams.get('dairynz_pathway') !== null ||
+    searchParams.get('posted_recent') !== null ||
     selectedShedTypes.length > 0 ||
     selectedRegions.length > 0 ||
     selectedContractTypes.length > 0 ||
     selectedHerdSizes.length > 0 ||
     salaryMin !== null ||
     salaryMax !== null ||
-    accommodation !== null ||
-    couples !== null ||
     visa !== null ||
     dairynzLevel !== null
 
@@ -130,8 +161,46 @@ export function FilterSidebar({
       {/* Scrollable filter sections */}
       <div className={cn('flex-1 overflow-y-auto', isMobile ? 'px-4' : '')}>
 
-        {/* 1. Shed Type */}
+        {/* 1. Role Type */}
         <details open className="border-t border-fog first:border-t-0 py-4">
+          <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
+            <SectionHeader title="Role Type" />
+          </summary>
+          <div className="flex flex-col gap-2">
+            {ROLE_TYPES.map((type) => (
+              <Checkbox
+                key={type.value}
+                label={type.label}
+                checked={selectedRoleTypes.includes(type.value)}
+                onCheckedChange={() =>
+                  toggleMultiValue('role_type', selectedRoleTypes, type.value)
+                }
+              />
+            ))}
+          </div>
+        </details>
+
+        {/* 2. Extras */}
+        <details open className="border-t border-fog py-4">
+          <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
+            <SectionHeader title="Extras" />
+          </summary>
+          <div className="flex flex-col gap-3">
+            {EXTRAS_FILTERS.map((filter) => (
+              <Toggle
+                key={filter.key}
+                label={filter.label}
+                checked={searchParams.get(filter.key) === 'true'}
+                onCheckedChange={(val) =>
+                  onFilterChange(filter.key, val ? 'true' : null)
+                }
+              />
+            ))}
+          </div>
+        </details>
+
+        {/* 3. Shed Type */}
+        <details open className="border-t border-fog py-4">
           <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
             <SectionHeader title="Shed Type" />
           </summary>
@@ -149,7 +218,7 @@ export function FilterSidebar({
           </div>
         </details>
 
-        {/* 2. Region */}
+        {/* 4. Region */}
         <details open className="border-t border-fog py-4">
           <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
             <SectionHeader title="Region" />
@@ -177,7 +246,7 @@ export function FilterSidebar({
           )}
         </details>
 
-        {/* 3. Contract Type */}
+        {/* 5. Contract Type */}
         <details open className="border-t border-fog py-4">
           <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
             <SectionHeader title="Contract Type" />
@@ -196,7 +265,7 @@ export function FilterSidebar({
           </div>
         </details>
 
-        {/* 4. Salary Range */}
+        {/* 6. Salary Range */}
         <details open className="border-t border-fog py-4">
           <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
             <SectionHeader title="Salary Range" />
@@ -229,7 +298,7 @@ export function FilterSidebar({
           </div>
         </details>
 
-        {/* 5. Herd Size */}
+        {/* 7. Herd Size */}
         <details open className="border-t border-fog py-4">
           <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
             <SectionHeader title="Herd Size" />
@@ -248,48 +317,26 @@ export function FilterSidebar({
           </div>
         </details>
 
-        {/* 6. Accommodation */}
+        {/* 8. Accommodation */}
         <details open className="border-t border-fog py-4">
           <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
             <SectionHeader title="Accommodation" />
           </summary>
-          <div className="flex flex-col gap-3">
-            <Toggle
-              label="On-farm accommodation available"
-              checked={accommodation === 'true'}
-              onCheckedChange={(val) =>
-                onFilterChange('accommodation', val ? 'true' : null)
-              }
-            />
-            {accommodation === 'true' && (
-              <div className="pl-4 flex flex-col gap-2 border-l-2 border-moss/20">
-                <Toggle
-                  label="Couples welcome"
-                  checked={couples === 'true'}
-                  onCheckedChange={(val) =>
-                    onFilterChange('couples', val ? 'true' : null)
-                  }
-                />
-                <Toggle
-                  label="Pets welcome"
-                  checked={searchParams.get('pets') === 'true'}
-                  onCheckedChange={(val) =>
-                    onFilterChange('pets', val ? 'true' : null)
-                  }
-                />
-                <Toggle
-                  label="Family friendly"
-                  checked={searchParams.get('family_friendly') === 'true'}
-                  onCheckedChange={(val) =>
-                    onFilterChange('family_friendly', val ? 'true' : null)
-                  }
-                />
-              </div>
-            )}
+          <div className="flex flex-col gap-2">
+            {ACCOMMODATION_OPTIONS.map((option) => (
+              <Checkbox
+                key={option.value}
+                label={option.label}
+                checked={selectedAccommodationTypes.includes(option.value)}
+                onCheckedChange={() =>
+                  toggleMultiValue('accommodation_type', selectedAccommodationTypes, option.value)
+                }
+              />
+            ))}
           </div>
         </details>
 
-        {/* 7. Visa Sponsorship */}
+        {/* 9. Visa Sponsorship */}
         <details open className="border-t border-fog py-4">
           <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
             <SectionHeader title="Visa Sponsorship" />
@@ -301,7 +348,7 @@ export function FilterSidebar({
           />
         </details>
 
-        {/* 8. DairyNZ Level */}
+        {/* 10. DairyNZ Level */}
         <details open className="border-t border-fog py-4">
           <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
             <SectionHeader title="DairyNZ Level" />
@@ -321,22 +368,6 @@ export function FilterSidebar({
             }
           />
         </details>
-
-        {/* 9. Couples Welcome (standalone) */}
-        {accommodation !== 'true' && (
-          <details open className="border-t border-fog py-4">
-            <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
-              <SectionHeader title="Couples Welcome" />
-            </summary>
-            <Toggle
-              label="Couples welcome"
-              checked={couples === 'true'}
-              onCheckedChange={(val) =>
-                onFilterChange('couples', val ? 'true' : null)
-              }
-            />
-          </details>
-        )}
 
         {/* Clear All */}
         {hasActiveFilters && (
