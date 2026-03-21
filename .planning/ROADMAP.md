@@ -26,7 +26,7 @@ Full details: `.planning/milestones/v1.0-ROADMAP.md`
 **Milestone Goal:** Close all gaps between built MVP and SPEC v3.0 so every screen matches the wireframe specification — missing fields, missing UI sections, layout deviations, and component upgrades.
 
 - [ ] **Phase 7: UI Primitives** — Build the 9 shared components that unblock all subsequent wizard and page work
-- [x] **Phase 8: Wizard Field Extensions** — Add ~30 missing form fields across all three wizards (employer, job posting, seeker) (completed 2026-03-21)
+- [ ] **Phase 8: Wizard Field Extensions** — Add ~30 missing form fields across all three wizards (employer, job posting, seeker) + fix ownership_type column type mismatch
 - [ ] **Phase 9: Page-Level Integrations** — Upgrade job search, job detail, applicant dashboard, and My Applications with SPEC-compliant UI
 - [ ] **Phase 10: Landing Page** — Add 5 missing sections, hero animation, stat blocks, and pulsing live indicator
 - [ ] **Phase 11: Backend-Dependent Features** — Wire match pool RPC, seeker document upload Storage bucket, and completion screen matched-jobs query
@@ -60,13 +60,14 @@ Plans:
   3. Seeker onboarding step 1 shows all 6 sector chips; step 3 shows licence and certification chips; step 5 shows salary input, availability date, notice period, housing sub-option chips, and preferred regions multi-select chip grid
   4. Employer onboarding completion screen (step 8) and seeker completion screen (step 7) render the SPEC two-column layout with success checklist, CTAs, and matched content
   5. A v1.0 user can re-open any wizard and chips pre-populate correctly from saved data (no blank chips from boolean-to-string[] conversion errors)
-**Plans**: 4 plans
+**Plans**: 5 plans
 
 Plans:
-- [ ] 08-01-PLAN.md — Foundation: DB migration + TypeScript interfaces + wizardUtils + shell orchestrator updates + LivePreviewSidebar layout
-- [ ] 08-02-PLAN.md — Employer onboarding steps 2-5, step 7 billing toggle, step 8 completion screen
-- [ ] 08-03-PLAN.md — Post job wizard steps 1-5 field extensions + step 8 success stats
-- [ ] 08-04-PLAN.md — Seeker onboarding steps 1, 3, 5 field extensions + step 7 completion screen
+- [x] 08-01-PLAN.md — Foundation: DB migration + TypeScript interfaces + wizardUtils + shell orchestrator updates + LivePreviewSidebar layout
+- [x] 08-02-PLAN.md — Employer onboarding steps 2-5, step 7 billing toggle, step 8 completion screen
+- [x] 08-03-PLAN.md — Post job wizard steps 1-5 field extensions + step 8 success stats
+- [x] 08-04-PLAN.md — Seeker onboarding steps 1, 3, 5 field extensions + step 7 completion screen
+- [ ] 08-05-PLAN.md — Gap closure: ownership_type column text->text[] migration + TypeScript type fix
 
 ### Phase 9: Page-Level Integrations
 **Goal**: Job search, job detail, applicant dashboard, and My Applications match the SPEC layout and functionality for both seekers and employers
@@ -130,7 +131,7 @@ Plans:
 | 5. Revenue Protection | v1.0 | 4/4 | Complete | 2026-03-17 |
 | 6. Landing Page and Launch | v1.0 | 2/2 | Complete | 2026-03-17 |
 | 7. UI Primitives | v1.1 | 0/3 | Not started | - |
-| 8. Wizard Field Extensions | 4/4 | Complete   | 2026-03-21 | - |
+| 8. Wizard Field Extensions | v1.1 | 4/5 | Gap closure | - |
 | 9. Page-Level Integrations | v1.1 | 0/5 | Not started | - |
 | 10. Landing Page | v1.1 | 0/3 | Not started | - |
 | 11. Backend-Dependent Features | v1.1 | 0/2 | Not started | - |
