@@ -2,21 +2,23 @@ import { useForm, Controller } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Toggle } from '@/components/ui/Toggle'
-import { Checkbox } from '@/components/ui/Checkbox'
 import { Select } from '@/components/ui/Select'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
-import { NZ_REGIONS } from '@/lib/constants'
+import { ChipSelector } from '@/components/ui/ChipSelector'
+import { InfoBox } from '@/components/ui/InfoBox'
+import { HOUSING_SUB_OPTIONS, PREFERRED_REGION_OPTIONS } from '@/types/domain'
 import type { SeekerProfileData } from '@/types/domain'
 
 const schema = z.object({
   couples_seeking: z.boolean().optional(),
   partner_name: z.string().optional(),
   accommodation_needed: z.boolean().optional(),
-  pets_dogs: z.boolean().optional(),
-  family_has_children: z.boolean().optional(),
-  vehicle_parking: z.boolean().optional(),
-  region: z.string().optional(),
+  housing_sub_options: z.array(z.string()).optional(),
+  preferred_regions: z.array(z.string()).optional(),
+  min_salary: z.coerce.number().optional(),
+  availability_date: z.string().optional(),
+  notice_period_text: z.string().optional(),
 })
 
 type FormData = z.infer<typeof schema>
@@ -27,13 +29,13 @@ interface SeekerStep5Props {
   defaultValues?: {
     couples_seeking?: boolean
     accommodation_needed?: boolean
-    pets?: SeekerProfileData['pets']
-    family?: SeekerProfileData['family']
-    region?: string
+    housing_sub_options?: string[]
+    preferred_regions?: string[]
+    min_salary?: number
+    availability_date?: string
+    notice_period_text?: string
   }
 }
-
-const REGION_OPTIONS = NZ_REGIONS.map((r) => ({ value: r, label: r }))
 
 export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: SeekerStep5Props) {
   const { handleSubmit, control, watch, register } = useForm<FormData>({
@@ -42,10 +44,11 @@ export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: 
       couples_seeking: defaultValues?.couples_seeking ?? false,
       partner_name: '',
       accommodation_needed: defaultValues?.accommodation_needed ?? false,
-      pets_dogs: defaultValues?.pets?.dogs ?? false,
-      family_has_children: defaultValues?.family?.has_children ?? false,
-      vehicle_parking: false,
-      region: defaultValues?.region ?? '',
+      housing_sub_options: defaultValues?.housing_sub_options ?? [],
+      preferred_regions: defaultValues?.preferred_regions ?? [],
+      min_salary: defaultValues?.min_salary ?? undefined,
+      availability_date: defaultValues?.availability_date ?? '',
+      notice_period_text: defaultValues?.notice_period_text ?? '',
     },
   })
 
@@ -56,9 +59,13 @@ export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: 
     onComplete({
       couples_seeking: data.couples_seeking,
       accommodation_needed: data.accommodation_needed,
-      pets: data.pets_dogs ? { dogs: true } : undefined,
-      family: data.family_has_children ? { has_children: true } : undefined,
-      region: data.region || undefined,
+      housing_sub_options: data.housing_sub_options,
+      preferred_regions: data.preferred_regions,
+      min_salary: data.min_salary || undefined,
+      availability_date: data.availability_date || undefined,
+      notice_period_text: data.notice_period_text || undefined,
+      // Keep region as first preferred region for backward compatibility
+      region: data.preferred_regions?.[0] || undefined,
     })
   }
 
@@ -124,40 +131,20 @@ export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: 
           </div>
 
           {accommodationOn && (
-            <div className="space-y-2.5 pl-1">
-              <p className="font-body text-[12px] font-medium text-mid">
-                Accommodation requirements
+            <div className="space-y-3 pl-1">
+              <p className="font-body text-[13px] font-semibold text-ink mb-2">
+                Housing requirements
               </p>
               <Controller
                 control={control}
-                name="pets_dogs"
+                name="housing_sub_options"
                 render={({ field }) => (
-                  <Checkbox
-                    label="Pets (dogs)"
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                )}
-              />
-              <Controller
-                control={control}
-                name="family_has_children"
-                render={({ field }) => (
-                  <Checkbox
-                    label="Children / Family"
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                )}
-              />
-              <Controller
-                control={control}
-                name="vehicle_parking"
-                render={({ field }) => (
-                  <Checkbox
-                    label="Vehicle parking needed"
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
+                  <ChipSelector
+                    options={HOUSING_SUB_OPTIONS}
+                    value={field.value ?? []}
+                    onChange={field.onChange}
+                    mode="multi"
+                    columns={2}
                   />
                 )}
               />
@@ -165,24 +152,65 @@ export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: 
           )}
         </div>
 
-        {/* Region preference */}
+        {/* Preferred regions */}
         <div>
+          <p className="font-body text-[13px] font-semibold text-ink mb-2">Preferred regions</p>
+          <p className="text-[12px] mb-2" style={{ color: 'var(--color-mid)' }}>
+            Select all regions you'd work in
+          </p>
           <Controller
             control={control}
-            name="region"
+            name="preferred_regions"
+            render={({ field }) => (
+              <ChipSelector
+                options={PREFERRED_REGION_OPTIONS}
+                value={field.value ?? []}
+                onChange={field.onChange}
+                mode="multi"
+                columns={2}
+              />
+            )}
+          />
+        </div>
+
+        {/* Salary, availability, notice period */}
+        <div className="space-y-4">
+          <Input
+            label="Minimum salary expectation (NZD per annum)"
+            type="number"
+            placeholder="e.g. 55000"
+            {...register('min_salary')}
+          />
+
+          <Input
+            label="Available from"
+            type="date"
+            {...register('availability_date')}
+          />
+
+          <Controller
+            control={control}
+            name="notice_period_text"
             render={({ field }) => (
               <Select
-                label="Preferred region"
-                placeholder="Select a region (optional)"
-                options={REGION_OPTIONS}
+                label="Notice period"
+                placeholder="Select notice period"
+                options={[
+                  { value: 'immediately', label: 'Available immediately' },
+                  { value: '1_week', label: '1 week' },
+                  { value: '2_weeks', label: '2 weeks' },
+                  { value: '1_month', label: '1 month' },
+                  { value: '2_months', label: '2+ months' },
+                ]}
                 value={field.value}
                 onValueChange={field.onChange}
               />
             )}
           />
-          <p className="mt-1 text-[12px] font-body" style={{ color: 'var(--color-mid)' }}>
-            You can refine your region search after completing your profile
-          </p>
+
+          <InfoBox variant="blue">
+            Adding your availability helps employers plan — listings with dates get 30% more views
+          </InfoBox>
         </div>
       </div>
 

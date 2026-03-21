@@ -3,11 +3,14 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Select } from '@/components/ui/Select'
 import { Button } from '@/components/ui/Button'
-import { DAIRYNZ_LEVELS } from '@/types/domain'
+import { ChipSelector } from '@/components/ui/ChipSelector'
+import { DAIRYNZ_LEVELS, LICENCE_TYPE_OPTIONS, CERTIFICATION_OPTIONS } from '@/types/domain'
 import type { SeekerProfileData, DairyNZLevel } from '@/types/domain'
 
 const schema = z.object({
   dairynz_level: z.string().optional(),
+  licence_types: z.array(z.string()).optional(),
+  certifications: z.array(z.string()).optional(),
 })
 
 type FormData = z.infer<typeof schema>
@@ -15,7 +18,11 @@ type FormData = z.infer<typeof schema>
 interface SeekerStep3Props {
   onComplete: (data: Partial<SeekerProfileData>) => void
   onBack?: () => void
-  defaultValues?: { dairynz_level?: DairyNZLevel }
+  defaultValues?: {
+    dairynz_level?: DairyNZLevel
+    licence_types?: string[]
+    certifications?: string[]
+  }
 }
 
 const LEVEL_OPTIONS = DAIRYNZ_LEVELS.map((l) => ({ value: l.value, label: l.label }))
@@ -25,6 +32,8 @@ export function SeekerStep3Qualifications({ onComplete, onBack, defaultValues }:
     resolver: zodResolver(schema),
     defaultValues: {
       dairynz_level: defaultValues?.dairynz_level ?? '',
+      licence_types: defaultValues?.licence_types ?? [],
+      certifications: defaultValues?.certifications ?? [],
     },
   })
 
@@ -32,7 +41,11 @@ export function SeekerStep3Qualifications({ onComplete, onBack, defaultValues }:
   const selectedLevelInfo = DAIRYNZ_LEVELS.find((l) => l.value === selectedLevel)
 
   function onSubmit(data: FormData) {
-    onComplete({ dairynz_level: (data.dairynz_level || undefined) as DairyNZLevel | undefined })
+    onComplete({
+      dairynz_level: (data.dairynz_level || undefined) as DairyNZLevel | undefined,
+      licence_types: data.licence_types,
+      certifications: data.certifications,
+    })
   }
 
   return (
@@ -107,6 +120,42 @@ export function SeekerStep3Qualifications({ onComplete, onBack, defaultValues }:
             </div>
           ))}
         </div>
+      </div>
+
+      {/* NZ driver's licence */}
+      <div>
+        <p className="font-body text-[13px] font-semibold text-ink mb-2">NZ driver's licence</p>
+        <Controller
+          control={control}
+          name="licence_types"
+          render={({ field }) => (
+            <ChipSelector
+              options={LICENCE_TYPE_OPTIONS}
+              value={field.value ?? []}
+              onChange={field.onChange}
+              mode="multi"
+              columns="inline"
+            />
+          )}
+        />
+      </div>
+
+      {/* Certifications */}
+      <div>
+        <p className="font-body text-[13px] font-semibold text-ink mb-2">Certifications</p>
+        <Controller
+          control={control}
+          name="certifications"
+          render={({ field }) => (
+            <ChipSelector
+              options={CERTIFICATION_OPTIONS}
+              value={field.value ?? []}
+              onChange={field.onChange}
+              mode="multi"
+              columns="inline"
+            />
+          )}
+        />
       </div>
 
       <div className="flex justify-between pt-2">

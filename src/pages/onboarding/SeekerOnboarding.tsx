@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router'
 import { toast } from 'sonner'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { StepIndicator } from '@/components/ui/StepIndicator'
@@ -29,7 +28,6 @@ const TOTAL_STEPS = 7
 
 export function SeekerOnboarding() {
   const { session } = useAuth()
-  const navigate = useNavigate()
   const [profileData, setProfileData] = useState<Partial<SeekerProfileData>>({})
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -78,6 +76,11 @@ export function SeekerOnboarding() {
           visa_status: data.visa_status,
           min_salary: data.min_salary,
           availability_date: data.availability_date,
+          licence_types: data.licence_types,
+          certifications: data.certifications,
+          housing_sub_options: data.housing_sub_options,
+          preferred_regions: data.preferred_regions,
+          notice_period_text: data.notice_period_text,
         })
       }
 
@@ -124,16 +127,7 @@ export function SeekerOnboarding() {
       setSeekerProfileId(upsertData.id)
     }
 
-    if (isLastStep) {
-      const firstSector = updatedData.sector_pref?.[0] ?? ''
-      const region = updatedData.region ?? ''
-      const params = new URLSearchParams()
-      if (firstSector) params.set('sector', firstSector)
-      if (region) params.set('region', region)
-      const query = params.toString()
-      toast.success('Profile complete! Here are jobs matching your skills')
-      navigate(`/jobs${query ? `?${query}` : ''}`)
-    } else {
+    if (!isLastStep) {
       wizard.nextStep()
     }
   }
@@ -211,7 +205,11 @@ export function SeekerOnboarding() {
             <SeekerStep3Qualifications
               onComplete={(data) => handleStepComplete(data, 2)}
               onBack={() => wizard.prevStep()}
-              defaultValues={{ dairynz_level: profileData.dairynz_level }}
+              defaultValues={{
+                dairynz_level: profileData.dairynz_level,
+                licence_types: profileData.licence_types,
+                certifications: profileData.certifications,
+              }}
             />
           )}
 
@@ -231,9 +229,11 @@ export function SeekerOnboarding() {
               defaultValues={{
                 couples_seeking: profileData.couples_seeking,
                 accommodation_needed: profileData.accommodation_needed,
-                pets: profileData.pets,
-                family: profileData.family,
-                region: profileData.region,
+                housing_sub_options: profileData.housing_sub_options,
+                preferred_regions: profileData.preferred_regions,
+                min_salary: profileData.min_salary,
+                availability_date: profileData.availability_date,
+                notice_period_text: profileData.notice_period_text,
               }}
             />
           )}
@@ -247,7 +247,14 @@ export function SeekerOnboarding() {
           )}
 
           {currentStep === 6 && (
-            <SeekerStep7Complete />
+            <SeekerStep7Complete profileData={{
+              sector_pref: profileData.sector_pref,
+              years_experience: profileData.years_experience,
+              dairynz_level: profileData.dairynz_level,
+              accommodation_needed: profileData.accommodation_needed,
+              region: profileData.preferred_regions?.[0] ?? profileData.region,
+              visa_status: profileData.visa_status,
+            }} />
           )}
         </div>
       </div>
