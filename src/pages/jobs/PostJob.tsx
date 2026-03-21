@@ -3,9 +3,11 @@ import { useNavigate, useParams } from 'react-router'
 import { toast } from 'sonner'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { StepIndicator } from '@/components/ui/StepIndicator'
+import { LivePreviewSidebar } from '@/components/ui/LivePreviewSidebar'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/hooks/useAuth'
 import { useWizard } from '@/hooks/useWizard'
+import { computeJobCompleteness } from '@/lib/wizardUtils'
 import { JobStep1Basics } from './steps/JobStep1Basics'
 import { JobStep2FarmDetails } from './steps/JobStep2FarmDetails'
 import { JobStep3Skills } from './steps/JobStep3Skills'
@@ -31,12 +33,12 @@ const TOTAL_STEPS = 8
 export interface JobPostingData {
   // Step 1
   title?: string
-  sector?: 'dairy' | 'sheep_beef'
+  sector?: string
   role_type?: string
   contract_type?: 'permanent' | 'contract' | 'casual'
   start_date?: string
   region?: string
-  // Step 2
+  // Step 2 (existing + new)
   shed_type?: string[]
   herd_size_min?: number
   herd_size_max?: number
@@ -50,11 +52,27 @@ export interface JobPostingData {
     family?: boolean
     utilities_included?: boolean
   }
-  // Step 4
+  breed?: string
+  milking_frequency?: string
+  calving_system?: string
+  farm_area_ha?: number
+  nearest_town?: string
+  distance_from_town_km?: string
+  // Step 3 (new)
+  min_dairy_experience?: string
+  seniority_level?: string
+  qualifications?: string[]
+  visa_requirements?: string[]
+  // Step 4 (existing + new)
   salary_min?: number
   salary_max?: number
   benefits?: string[]
-  // Step 5
+  pay_frequency?: string
+  on_call_allowance?: boolean
+  hours_min?: number
+  hours_max?: number
+  weekend_roster?: string
+  // Step 5 (existing)
   description_overview?: string
   description_daytoday?: string
   description_offer?: string
@@ -69,10 +87,6 @@ export interface EmployerProfileDefaults {
   herd_size?: number
   accommodation_available?: boolean
   accommodation_type?: string
-  accommodation_pets?: boolean
-  accommodation_couples?: boolean
-  accommodation_family?: boolean
-  accommodation_utilities_included?: boolean
 }
 
 export function PostJob() {
@@ -123,10 +137,6 @@ export function PostJob() {
           herd_size: profile.herd_size,
           accommodation_available: profile.accommodation_available,
           accommodation_type: profile.accommodation_type,
-          accommodation_pets: profile.accommodation_pets,
-          accommodation_couples: profile.accommodation_couples,
-          accommodation_family: profile.accommodation_family,
-          accommodation_utilities_included: profile.accommodation_utilities_included,
         })
       }
 
@@ -164,6 +174,22 @@ export function PostJob() {
             description_daytoday: job.description_daytoday,
             description_offer: job.description_offer,
             description_ideal: job.description_ideal,
+            // Phase 8 new fields
+            breed: job.breed,
+            milking_frequency: job.milking_frequency,
+            calving_system: job.calving_system,
+            farm_area_ha: job.farm_area_ha,
+            nearest_town: job.nearest_town,
+            distance_from_town_km: job.distance_from_town_km,
+            min_dairy_experience: job.min_dairy_experience,
+            seniority_level: job.seniority_level,
+            qualifications: job.qualifications,
+            visa_requirements: job.visa_requirements,
+            pay_frequency: job.pay_frequency,
+            on_call_allowance: job.on_call_allowance,
+            hours_min: job.hours_min,
+            hours_max: job.hours_max,
+            weekend_roster: job.weekend_roster,
           })
           // Resume at step 1+ if we already have basics
           if (job.title && job.sector) {
@@ -271,6 +297,22 @@ export function PostJob() {
         description_daytoday: updatedData.description_daytoday ?? null,
         description_offer: updatedData.description_offer ?? null,
         description_ideal: updatedData.description_ideal ?? null,
+        // Phase 8 new fields:
+        breed: updatedData.breed ?? null,
+        milking_frequency: updatedData.milking_frequency ?? null,
+        calving_system: updatedData.calving_system ?? null,
+        farm_area_ha: updatedData.farm_area_ha ?? null,
+        nearest_town: updatedData.nearest_town ?? null,
+        distance_from_town_km: updatedData.distance_from_town_km ?? null,
+        min_dairy_experience: updatedData.min_dairy_experience ?? null,
+        seniority_level: updatedData.seniority_level ?? null,
+        qualifications: updatedData.qualifications ?? null,
+        visa_requirements: updatedData.visa_requirements ?? null,
+        pay_frequency: updatedData.pay_frequency ?? null,
+        on_call_allowance: updatedData.on_call_allowance ?? false,
+        hours_min: updatedData.hours_min ?? null,
+        hours_max: updatedData.hours_max ?? null,
+        weekend_roster: updatedData.weekend_roster ?? null,
       })
       .eq('id', jobId)
 
@@ -304,10 +346,12 @@ export function PostJob() {
   }
 
   const currentStep = wizard.currentStep
+  // Show LivePreviewSidebar for steps 2-5 (currentStep 1-4)
+  const showSidebar = currentStep >= 1 && currentStep <= 4
 
   return (
     <DashboardLayout>
-      <div className="max-w-2xl mx-auto space-y-8">
+      <div className={showSidebar ? 'max-w-5xl mx-auto space-y-8' : 'max-w-2xl mx-auto space-y-8'}>
         {/* Header */}
         <div>
           <h1
@@ -328,110 +372,139 @@ export function PostJob() {
           labels={STEP_LABELS}
         />
 
-        {/* Step content */}
-        <div className="bg-white rounded-[16px] border border-fog p-6 shadow-sm">
-          {saving && (
-            <div className="mb-4 flex items-center gap-2 text-sm" style={{ color: 'var(--color-moss)' }}>
-              <div
-                className="w-4 h-4 rounded-full border-[2px] border-t-transparent animate-spin"
-                style={{ borderColor: 'var(--color-moss)', borderTopColor: 'transparent' }}
+        {/* Step content — grid layout with sidebar for steps 2-5 */}
+        <div className={showSidebar ? 'grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 items-start' : ''}>
+          <div className="bg-white rounded-[16px] border border-fog p-6 shadow-sm">
+            {saving && (
+              <div className="mb-4 flex items-center gap-2 text-sm" style={{ color: 'var(--color-moss)' }}>
+                <div
+                  className="w-4 h-4 rounded-full border-[2px] border-t-transparent animate-spin"
+                  style={{ borderColor: 'var(--color-moss)', borderTopColor: 'transparent' }}
+                />
+                Saving...
+              </div>
+            )}
+
+            {currentStep === 0 && (
+              <JobStep1Basics
+                onComplete={handleStep1Complete}
+                defaultValues={{
+                  title: jobData.title,
+                  sector: jobData.sector,
+                  role_type: jobData.role_type,
+                  contract_type: jobData.contract_type,
+                  start_date: jobData.start_date,
+                  region: jobData.region ?? employerProfile.region,
+                }}
               />
-              Saving...
+            )}
+
+            {currentStep === 1 && (
+              <JobStep2FarmDetails
+                onComplete={(data) => handleStepComplete(data, 1)}
+                onBack={() => wizard.prevStep()}
+                defaultValues={{
+                  shed_type: jobData.shed_type ?? employerProfile.shed_type,
+                  herd_size_min: jobData.herd_size_min,
+                  herd_size_max: jobData.herd_size_max ?? employerProfile.herd_size,
+                  visa_sponsorship: jobData.visa_sponsorship ?? false,
+                  couples_welcome: jobData.couples_welcome ?? false,
+                  accommodation: jobData.accommodation ?? (employerProfile.accommodation_available !== undefined
+                    ? {
+                        available: employerProfile.accommodation_available ?? false,
+                        type: employerProfile.accommodation_type,
+                      }
+                    : undefined),
+                  breed: jobData.breed,
+                  milking_frequency: jobData.milking_frequency,
+                  calving_system: jobData.calving_system,
+                  farm_area_ha: jobData.farm_area_ha,
+                  nearest_town: jobData.nearest_town,
+                  distance_from_town_km: jobData.distance_from_town_km,
+                }}
+              />
+            )}
+
+            {currentStep === 2 && jobId && (
+              <JobStep3Skills
+                jobId={jobId}
+                sector={jobData.sector ?? 'dairy'}
+                onComplete={() => { wizard.nextStep() }}
+                onBack={() => wizard.prevStep()}
+              />
+            )}
+
+            {currentStep === 3 && (
+              <JobStep4Compensation
+                onComplete={(data) => handleStepComplete(data, 3)}
+                onBack={() => wizard.prevStep()}
+                defaultValues={{
+                  salary_min: jobData.salary_min,
+                  salary_max: jobData.salary_max,
+                  benefits: jobData.benefits ?? [],
+                  pay_frequency: jobData.pay_frequency,
+                  on_call_allowance: jobData.on_call_allowance,
+                  hours_min: jobData.hours_min,
+                  hours_max: jobData.hours_max,
+                  weekend_roster: jobData.weekend_roster,
+                }}
+              />
+            )}
+
+            {currentStep === 4 && (
+              <JobStep5Description
+                onComplete={(data) => handleStepComplete(data, 4)}
+                onBack={() => wizard.prevStep()}
+                defaultValues={{
+                  description_overview: jobData.description_overview,
+                  description_daytoday: jobData.description_daytoday,
+                  description_offer: jobData.description_offer,
+                  description_ideal: jobData.description_ideal,
+                }}
+              />
+            )}
+
+            {currentStep === 5 && jobId && (
+              <JobStep6Preview
+                jobId={jobId}
+                onComplete={handlePreviewComplete}
+                onBack={() => wizard.prevStep()}
+                onGoToStep={(step) => wizard.goToStep(step)}
+              />
+            )}
+
+            {currentStep === 6 && jobId && employerProfile.id && (
+              <JobStep7Payment
+                jobId={jobId}
+                employerId={employerProfile.id}
+                onComplete={() => wizard.nextStep()}
+                onBack={() => wizard.prevStep()}
+              />
+            )}
+
+            {currentStep === 7 && jobId && (
+              <JobStep8Success jobId={jobId} />
+            )}
+          </div>
+
+          {showSidebar && (
+            <div className="hidden lg:block">
+              <LivePreviewSidebar
+                completenessPercent={computeJobCompleteness(jobData)}
+                miniCard={jobData.title ? {
+                  title: jobData.title,
+                  farmName: employerProfile.farm_type ?? '',
+                  location: jobData.region ?? '',
+                  salaryRange: jobData.salary_min && jobData.salary_max
+                    ? `$${(jobData.salary_min / 1000).toFixed(0)}k - $${(jobData.salary_max / 1000).toFixed(0)}k`
+                    : undefined,
+                  tags: [
+                    ...(jobData.shed_type ?? []),
+                    ...(jobData.accommodation?.available ? ['Accommodation'] : []),
+                  ].filter(Boolean),
+                } : undefined}
+              />
             </div>
-          )}
-
-          {currentStep === 0 && (
-            <JobStep1Basics
-              onComplete={handleStep1Complete}
-              defaultValues={{
-                title: jobData.title,
-                sector: jobData.sector,
-                role_type: jobData.role_type,
-                contract_type: jobData.contract_type,
-                start_date: jobData.start_date,
-                region: jobData.region ?? employerProfile.region,
-              }}
-            />
-          )}
-
-          {currentStep === 1 && (
-            <JobStep2FarmDetails
-              onComplete={(data) => handleStepComplete(data, 1)}
-              onBack={() => wizard.prevStep()}
-              defaultValues={{
-                shed_type: jobData.shed_type ?? employerProfile.shed_type,
-                herd_size_min: jobData.herd_size_min,
-                herd_size_max: jobData.herd_size_max ?? employerProfile.herd_size,
-                visa_sponsorship: jobData.visa_sponsorship ?? false,
-                couples_welcome: jobData.couples_welcome ?? false,
-                accommodation: jobData.accommodation ?? (employerProfile.accommodation_available !== undefined
-                  ? {
-                      available: employerProfile.accommodation_available ?? false,
-                      type: employerProfile.accommodation_type,
-                      pets: employerProfile.accommodation_pets,
-                      couples: employerProfile.accommodation_couples,
-                      family: employerProfile.accommodation_family,
-                      utilities_included: employerProfile.accommodation_utilities_included,
-                    }
-                  : undefined),
-              }}
-            />
-          )}
-
-          {currentStep === 2 && jobId && (
-            <JobStep3Skills
-              jobId={jobId}
-              sector={jobData.sector ?? 'dairy'}
-              onComplete={() => { wizard.nextStep() }}
-              onBack={() => wizard.prevStep()}
-            />
-          )}
-
-          {currentStep === 3 && (
-            <JobStep4Compensation
-              onComplete={(data) => handleStepComplete(data, 3)}
-              onBack={() => wizard.prevStep()}
-              defaultValues={{
-                salary_min: jobData.salary_min,
-                salary_max: jobData.salary_max,
-                benefits: jobData.benefits ?? [],
-              }}
-            />
-          )}
-
-          {currentStep === 4 && (
-            <JobStep5Description
-              onComplete={(data) => handleStepComplete(data, 4)}
-              onBack={() => wizard.prevStep()}
-              defaultValues={{
-                description_overview: jobData.description_overview,
-                description_daytoday: jobData.description_daytoday,
-                description_offer: jobData.description_offer,
-                description_ideal: jobData.description_ideal,
-              }}
-            />
-          )}
-
-          {currentStep === 5 && jobId && (
-            <JobStep6Preview
-              jobId={jobId}
-              onComplete={handlePreviewComplete}
-              onBack={() => wizard.prevStep()}
-              onGoToStep={(step) => wizard.goToStep(step)}
-            />
-          )}
-
-          {currentStep === 6 && jobId && employerProfile.id && (
-            <JobStep7Payment
-              jobId={jobId}
-              employerId={employerProfile.id}
-              onComplete={() => wizard.nextStep()}
-              onBack={() => wizard.prevStep()}
-            />
-          )}
-
-          {currentStep === 7 && jobId && (
-            <JobStep8Success jobId={jobId} />
           )}
         </div>
       </div>

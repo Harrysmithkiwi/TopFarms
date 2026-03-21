@@ -6,6 +6,7 @@ import { StepIndicator } from '@/components/ui/StepIndicator'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/hooks/useAuth'
 import { useWizard } from '@/hooks/useWizard'
+import { booleanColumnsToChipArray } from '@/lib/wizardUtils'
 import { Step1FarmType } from './steps/Step1FarmType'
 import { Step2FarmDetails } from './steps/Step2FarmDetails'
 import { Step3Culture } from './steps/Step3Culture'
@@ -30,6 +31,7 @@ const TOTAL_STEPS = 8
 
 // Profile data accumulated across steps
 export interface EmployerProfileData {
+  // Existing fields
   farm_type?: string
   farm_name?: string
   region?: string
@@ -44,10 +46,23 @@ export interface EmployerProfileData {
   about_farm?: string
   accommodation_available?: boolean
   accommodation_type?: string
-  accommodation_pets?: boolean
-  accommodation_couples?: boolean
-  accommodation_family?: boolean
-  accommodation_utilities_included?: boolean
+  // Phase 8 new fields (replacing boolean accommodation columns):
+  accommodation_extras?: string[]
+  // Phase 8 new fields:
+  farm_types?: string[]
+  nearest_town?: string
+  distance_from_town_km?: string
+  calving_system?: string
+  career_development?: string[]
+  hiring_frequency?: string
+  couples_welcome?: boolean
+  partner_role?: string
+  vehicle_provided?: boolean
+  vehicle_types?: string[]
+  broadband_available?: boolean
+  salary_min?: number
+  salary_max?: number
+  billing_period?: string
 }
 
 export function EmployerOnboarding() {
@@ -98,10 +113,23 @@ export function EmployerOnboarding() {
           about_farm: data.about_farm,
           accommodation_available: data.accommodation_available,
           accommodation_type: data.accommodation_type,
-          accommodation_pets: data.accommodation_pets,
-          accommodation_couples: data.accommodation_couples,
-          accommodation_family: data.accommodation_family,
-          accommodation_utilities_included: data.accommodation_utilities_included,
+          // Phase 8 new fields: use accommodation_extras if present, otherwise
+          // fall back to booleanColumnsToChipArray for v1.0 user backward compat
+          accommodation_extras: data.accommodation_extras ?? booleanColumnsToChipArray(data as Record<string, boolean | unknown>),
+          farm_types: data.farm_types,
+          nearest_town: data.nearest_town,
+          distance_from_town_km: data.distance_from_town_km,
+          calving_system: data.calving_system,
+          career_development: data.career_development,
+          hiring_frequency: data.hiring_frequency,
+          couples_welcome: data.couples_welcome,
+          partner_role: data.partner_role,
+          vehicle_provided: data.vehicle_provided,
+          vehicle_types: data.vehicle_types,
+          broadband_available: data.broadband_available,
+          salary_min: data.salary_min,
+          salary_max: data.salary_max,
+          billing_period: data.billing_period,
         })
       }
 
@@ -219,6 +247,7 @@ export function EmployerOnboarding() {
                 breed: profileData.breed,
                 property_size_ha: profileData.property_size_ha,
                 ownership_type: profileData.ownership_type,
+                farm_types: profileData.farm_types,
               }}
             />
           )}
@@ -231,6 +260,9 @@ export function EmployerOnboarding() {
                 culture_description: profileData.culture_description,
                 team_size: profileData.team_size,
                 about_farm: profileData.about_farm,
+                calving_system: profileData.calving_system,
+                nearest_town: profileData.nearest_town,
+                distance_from_town_km: profileData.distance_from_town_km,
               }}
             />
           )}
@@ -242,10 +274,16 @@ export function EmployerOnboarding() {
               defaultValues={{
                 accommodation_available: profileData.accommodation_available,
                 accommodation_type: profileData.accommodation_type,
-                accommodation_pets: profileData.accommodation_pets,
-                accommodation_couples: profileData.accommodation_couples,
-                accommodation_family: profileData.accommodation_family,
-                accommodation_utilities_included: profileData.accommodation_utilities_included,
+                accommodation_extras: profileData.accommodation_extras,
+                career_development: profileData.career_development,
+                hiring_frequency: profileData.hiring_frequency,
+                couples_welcome: profileData.couples_welcome,
+                partner_role: profileData.partner_role,
+                vehicle_provided: profileData.vehicle_provided,
+                vehicle_types: profileData.vehicle_types,
+                broadband_available: profileData.broadband_available,
+                salary_min: profileData.salary_min,
+                salary_max: profileData.salary_max,
               }}
             />
           )}
