@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: SPEC Compliance
 status: executing
-stopped_at: Completed 07-03-PLAN.md
-last_updated: "2026-03-21T00:32:46.575Z"
+stopped_at: Completed 07-01-PLAN.md
+last_updated: "2026-03-21T00:33:23.465Z"
 last_activity: 2026-03-21 — Completed 07-01 ChipSelector + StatusBanner primitives
 progress:
   total_phases: 5
@@ -43,6 +43,8 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - Phase 9: Clarify before coding whether SPEC sidebar on ApplicantDashboard replaces DashboardLayout shell sidebar or is an in-content secondary nav — double sidebar breaks tablet layout
 - Phase 11: SONB-02 (document upload) deferred to Phase 11 — requires new private `seeker-documents` Storage bucket with dedicated RLS; do not reuse employer photos bucket
 - [Phase 07]: SearchHero uses plain input inside white search bar instead of Input component to avoid mist bg conflict
+- [Phase 07-01]: ChipSelector uses button elements for accessibility; StatusBanner titleColor varies per variant
+- [Phase 07]: StarRating uses custom SVG path from TestimonialsSection, not lucide Star, for visual consistency
 
 ### Blockers/Concerns
 
@@ -53,6 +55,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-03-21T00:32:46.573Z
-Stopped at: Completed 07-03-PLAN.md
+Last session: 2026-03-21T00:33:23.213Z
+Stopped at: Completed 07-01-PLAN.md
 Resume file: None
