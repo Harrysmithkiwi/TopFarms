@@ -1,8 +1,10 @@
+import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
+import { Toggle } from '@/components/ui/Toggle'
 import type { EmployerProfileData } from '../EmployerOnboarding'
 
 interface Step7Props {
-  onComplete: (data: Record<string, never>) => void
+  onComplete: (data: { billing_period?: string }) => void
   onBack?: () => void
   onGoToStep: (step: number) => void
   profileData: EmployerProfileData
@@ -81,9 +83,11 @@ const OWNERSHIP_LABELS: Record<string, string> = {
 }
 
 export function Step7Preview({ onComplete, onBack, onGoToStep, profileData }: Step7Props) {
+  const [billingPeriod, setBillingPeriod] = useState(profileData?.billing_period ?? 'monthly')
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    onComplete({})
+    onComplete({ billing_period: billingPeriod })
   }
 
   return (
@@ -162,6 +166,39 @@ export function Step7Preview({ onComplete, onBack, onGoToStep, profileData }: St
             )}
           </div>
         </PreviewSection>
+      </div>
+
+      {/* Billing period toggle (EONB-08) */}
+      <div className="flex items-center justify-between p-4 rounded-[10px] border-[1.5px] border-fog bg-mist">
+        <div className="flex items-center gap-2">
+          <p className="font-body text-[13px] font-semibold text-ink">Billing period</p>
+          {billingPeriod === 'annual' && (
+            <span
+              className="text-[11px] font-body font-semibold px-2 py-0.5 rounded"
+              style={{ backgroundColor: 'var(--color-hay-lt)', color: 'var(--color-soil)' }}
+            >
+              Save 20%
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          <span
+            className="text-[12px] font-body"
+            style={{ color: billingPeriod === 'monthly' ? 'var(--color-ink)' : 'var(--color-light)' }}
+          >
+            Monthly
+          </span>
+          <Toggle
+            checked={billingPeriod === 'annual'}
+            onCheckedChange={(checked) => setBillingPeriod(checked ? 'annual' : 'monthly')}
+          />
+          <span
+            className="text-[12px] font-body"
+            style={{ color: billingPeriod === 'annual' ? 'var(--color-ink)' : 'var(--color-light)' }}
+          >
+            Annual
+          </span>
+        </div>
       </div>
 
       <div className="flex justify-between pt-2">
