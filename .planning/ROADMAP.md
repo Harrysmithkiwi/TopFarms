@@ -80,14 +80,15 @@ Plans:
   4. Job detail page shows breadcrumb bar with Save/Share buttons, 4-column stats strip, application timeline, location map placeholder, similar jobs sidebar card, and farm profile sidebar card with 3-stat grid and rating
   5. Applicant dashboard shows 260px sidebar with listing selector, a filter toolbar with status chips, expandable 4-tab panels per applicant (CV / Match breakdown / Interview / Notes), AI candidate summary box per applicant, and a bulk actions bar
   6. My Applications page shows status variant banners matching the application state, a farm response indicator showing employer view time, and the sidebar with status summary and filter tabs
-**Plans**: TBD
+**Plans**: 6 plans
 
 Plans:
-- [ ] 09-01: Job search — SearchHero, ActiveFilterPills, pagination, new filter groups
-- [ ] 09-02: Job search cards — ExpandableCardTabs with Details / My Match / Apply
-- [ ] 09-03: Job detail — Breadcrumb, StatsStrip, Timeline, location map, sidebars
-- [ ] 09-04: Applicant dashboard — sidebar nav, filter toolbar, 4-tab panels, AI summaries, bulk actions
-- [ ] 09-05: My Applications — StatusBanner variants, farm response indicator, sidebar
+- [ ] 09-01-PLAN.md — Foundation: DB migration 015, DashboardLayout hideSidebar, AI Edge Function, useSavedJobs hook
+- [ ] 09-02-PLAN.md — Job search: SearchHero, filters (role type, extras, accommodation), ActiveFilterPills, pagination, sort expansion
+- [ ] 09-03-PLAN.md — Job search cards: accordion expansion, ExpandableCardTabs (Details/My Match/Apply), bookmark toggle
+- [ ] 09-04-PLAN.md — Job detail: Breadcrumb, StatsStrip, Timeline, skills legend, MapPlaceholder, JobDetailSidebar
+- [ ] 09-05-PLAN.md — Applicant dashboard: sidebar, filter toolbar, 4-tab panels, AICandidateSummary, BulkActionsBar
+- [ ] 09-06-PLAN.md — My Applications: StatusBanner variants, FarmResponseIndicator, MyApplicationsSidebar
 
 ### Phase 10: Landing Page
 **Goal**: The landing page includes all SPEC sections and animations that communicate TopFarms' value proposition to both employers and seekers
@@ -132,6 +133,6 @@ Plans:
 | 6. Landing Page and Launch | v1.0 | 2/2 | Complete | 2026-03-17 |
 | 7. UI Primitives | v1.1 | 0/3 | Not started | - |
 | 8. Wizard Field Extensions | 5/5 | Complete   | 2026-03-21 | - |
-| 9. Page-Level Integrations | v1.1 | 0/5 | Not started | - |
+| 9. Page-Level Integrations | v1.1 | 0/6 | Not started | - |
 | 10. Landing Page | v1.1 | 0/3 | Not started | - |
 | 11. Backend-Dependent Features | v1.1 | 0/2 | Not started | - |
