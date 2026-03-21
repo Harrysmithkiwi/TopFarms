@@ -54,14 +54,14 @@ Requirements for SPEC v3.0 compliance. Each maps to roadmap phases.
 
 ### Job Search
 
-- [ ] **SRCH-01**: Search hero section with gradient background, headline, search bar + region select + quick-filter pills
-- [ ] **SRCH-02**: Role type filter added to sidebar (8 options with counts)
-- [ ] **SRCH-03**: Extras toggle filters added (mentorship, vehicle, DairyNZ pathway, posted <7 days)
-- [ ] **SRCH-04**: Accommodation filter expanded to multi-option (house, cottage, pet-friendly, couples, family)
-- [ ] **SRCH-05**: Active filter pills displayed above results (moss tint bg, × remove)
+- [x] **SRCH-01**: Search hero section with gradient background, headline, search bar + region select + quick-filter pills
+- [x] **SRCH-02**: Role type filter added to sidebar (8 options with counts)
+- [x] **SRCH-03**: Extras toggle filters added (mentorship, vehicle, DairyNZ pathway, posted <7 days)
+- [x] **SRCH-04**: Accommodation filter expanded to multi-option (house, cottage, pet-friendly, couples, family)
+- [x] **SRCH-05**: Active filter pills displayed above results (moss tint bg, × remove)
 - [ ] **SRCH-06**: Expandable card tabs on job cards (Details / My Match / Apply)
-- [ ] **SRCH-07**: Sort options expanded (+ salary high-low, location nearest)
-- [ ] **SRCH-08**: Numbered pagination replaces "load more" button
+- [x] **SRCH-07**: Sort options expanded (+ salary high-low, location nearest)
+- [x] **SRCH-08**: Numbered pagination replaces "load more" button
 
 ### Job Detail
 
@@ -169,14 +169,14 @@ Deferred to future release. Not in current roadmap.
 | SONB-05 | Phase 8 | Complete |
 | SONB-06 | Phase 8 | Complete |
 | SONB-07 | Phase 8 | Complete |
-| SRCH-01 | Phase 9 | Pending |
-| SRCH-02 | Phase 9 | Pending |
-| SRCH-03 | Phase 9 | Pending |
-| SRCH-04 | Phase 9 | Pending |
-| SRCH-05 | Phase 9 | Pending |
+| SRCH-01 | Phase 9 | Complete |
+| SRCH-02 | Phase 9 | Complete |
+| SRCH-03 | Phase 9 | Complete |
+| SRCH-04 | Phase 9 | Complete |
+| SRCH-05 | Phase 9 | Complete |
 | SRCH-06 | Phase 9 | Pending |
-| SRCH-07 | Phase 9 | Pending |
-| SRCH-08 | Phase 9 | Pending |
+| SRCH-07 | Phase 9 | Complete |
+| SRCH-08 | Phase 9 | Complete |
 | JDET-01 | Phase 9 | Pending |
 | JDET-02 | Phase 9 | Pending |
 | JDET-03 | Phase 9 | Pending |

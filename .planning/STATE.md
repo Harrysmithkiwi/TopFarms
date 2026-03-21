@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: SPEC Compliance
 status: executing
-stopped_at: Phase 9 UI-SPEC approved
-last_updated: "2026-03-21T21:31:28.042Z"
-last_activity: 2026-03-21 — Completed 08-04 Seeker steps 1, 3, 5, 7 field extensions (SONB-01, 03-07)
+stopped_at: Completed 09-02 Job Search page integration (SearchHero, ActiveFilterPills, Pagination)
+last_updated: "2026-03-21T22:06:02.489Z"
+last_activity: 2026-03-22 — Completed 09-01 Phase 9 foundation (migration 015, hideSidebar, Edge Function, useSavedJobs)
 progress:
   total_phases: 5
   completed_phases: 2
-  total_plans: 8
-  completed_plans: 8
-  percent: 71
+  total_plans: 14
+  completed_plans: 10
+  percent: 75
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-20)
 
 **Core value:** Farm employers and seekers can find each other through agriculture-specific matching that no generic platform provides
-**Current focus:** v1.1 SPEC Compliance — Phase 8: Wizard Field Extensions
+**Current focus:** v1.1 SPEC Compliance — Phase 9: Page-Level Integrations
 
 ## Current Position
 
-Phase: 8 of 11 (Wizard Field Extensions)
-Plan: 4 of 4 complete
+Phase: 9 of 11 (Page-Level Integrations)
+Plan: 1 of 6 complete
 Status: Executing
-Last activity: 2026-03-21 — Completed 08-04 Seeker steps 1, 3, 5, 7 field extensions (SONB-01, 03-07)
+Last activity: 2026-03-22 — Completed 09-01 Phase 9 foundation (migration 015, hideSidebar, Edge Function, useSavedJobs)
 
-Progress: [███████░░░] 71%
+Progress: [███████░░░] 75%
 
 ## Accumulated Context
 
@@ -56,16 +56,16 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 08]: Step2 ownership_type widened from string to string[] to support multi-select ChipSelector; backward compat via Array.isArray check
 - [Phase 08]: Step8Complete uses useNavigate for CTAs instead of Link — EmployerOnboarding no longer navigates after last step
 - [Phase 08-wizard-field-extensions]: Migration 014 uses ARRAY[ownership_type] USING clause to wrap existing text values as single-element arrays — zero data loss on column type change
+- [Phase 09]: JobSearch dropped hasMore/page useState in favour of URL-synced pageParam — single source of truth for pagination state
+- [Phase 09]: ActiveFilterPills uses PILL_LABEL_MAP + SINGLE_VALUE_KEYS pattern to derive dismissible pills from URLSearchParams
 
 ### Blockers/Concerns
 
 - Resend SPF/DKIM DNS configuration needed for email deliverability in production
-- Phase 9 (ApplicantDashboard): Clarify SPEC sidebar intent before writing any code
-- Phase 9: Confirm `applications.status` column type (ENUM vs CHECK constraint) before adding StatusBanner variants
 - Phase 11: match_scores trigger timing unknown — verify sync vs async to determine if polling is required on seeker completion screen
 
 ## Session Continuity
 
-Last session: 2026-03-21T21:31:28.035Z
-Stopped at: Phase 9 UI-SPEC approved
-Resume file: .planning/phases/09-page-level-integrations/09-UI-SPEC.md
+Last session: 2026-03-21T22:06:02.487Z
+Stopped at: Completed 09-02 Job Search page integration (SearchHero, ActiveFilterPills, Pagination)
+Resume file: None
