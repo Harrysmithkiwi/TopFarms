@@ -44,13 +44,13 @@ Requirements for SPEC v3.0 compliance. Each maps to roadmap phases.
 
 ### Seeker Onboarding
 
-- [ ] **SONB-01**: Step 1 shows all 6 sector chips (+ Cropping, Deer, Mixed, Other beyond current 2)
+- [x] **SONB-01**: Step 1 shows all 6 sector chips (+ Cropping, Deer, Mixed, Other beyond current 2)
 - [ ] **SONB-02**: Step 3 includes document upload zone for CV/certificates/references (reuse FileDropzone)
-- [ ] **SONB-03**: Step 3 includes NZ driver's licence chips and other certification chips (ATV, tractor, 4WD, first aid)
-- [ ] **SONB-04**: Step 5 includes minimum salary input, availability date, notice period
-- [ ] **SONB-05**: Step 5 housing sub-options use chip grid (Single, Couple working, Couple not working, Family, Working dogs, Pets)
-- [ ] **SONB-06**: Step 5 preferred regions uses multi-select chip grid (8 NZ regions) instead of single select
-- [ ] **SONB-07**: Step 7 completion shows success screen with profile checklist, match pool preview, top 3 matched jobs with scores
+- [x] **SONB-03**: Step 3 includes NZ driver's licence chips and other certification chips (ATV, tractor, 4WD, first aid)
+- [x] **SONB-04**: Step 5 includes minimum salary input, availability date, notice period
+- [x] **SONB-05**: Step 5 housing sub-options use chip grid (Single, Couple working, Couple not working, Family, Working dogs, Pets)
+- [x] **SONB-06**: Step 5 preferred regions uses multi-select chip grid (8 NZ regions) instead of single select
+- [x] **SONB-07**: Step 7 completion shows success screen with profile checklist, match pool preview, top 3 matched jobs with scores
 
 ### Job Search
 
@@ -162,13 +162,13 @@ Deferred to future release. Not in current roadmap.
 | PJOB-06 | Phase 8 | Pending |
 | PJOB-07 | Phase 8 | Complete |
 | PJOB-08 | Phase 8 | Pending |
-| SONB-01 | Phase 8 | Pending |
+| SONB-01 | Phase 8 | Complete |
 | SONB-02 | Phase 11 | Pending |
-| SONB-03 | Phase 8 | Pending |
-| SONB-04 | Phase 8 | Pending |
-| SONB-05 | Phase 8 | Pending |
-| SONB-06 | Phase 8 | Pending |
-| SONB-07 | Phase 8 | Pending |
+| SONB-03 | Phase 8 | Complete |
+| SONB-04 | Phase 8 | Complete |
+| SONB-05 | Phase 8 | Complete |
+| SONB-06 | Phase 8 | Complete |
+| SONB-07 | Phase 8 | Complete |
 | SRCH-01 | Phase 9 | Pending |
 | SRCH-02 | Phase 9 | Pending |
 | SRCH-03 | Phase 9 | Pending |

@@ -130,7 +130,7 @@ Plans:
 | 5. Revenue Protection | v1.0 | 4/4 | Complete | 2026-03-17 |
 | 6. Landing Page and Launch | v1.0 | 2/2 | Complete | 2026-03-17 |
 | 7. UI Primitives | v1.1 | 0/3 | Not started | - |
-| 8. Wizard Field Extensions | 1/4 | In Progress|  | - |
+| 8. Wizard Field Extensions | 2/4 | In Progress|  | - |
 | 9. Page-Level Integrations | v1.1 | 0/5 | Not started | - |
 | 10. Landing Page | v1.1 | 0/3 | Not started | - |
 | 11. Backend-Dependent Features | v1.1 | 0/2 | Not started | - |

@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: SPEC Compliance
 status: executing
-stopped_at: "Completed 08-01-PLAN.md — DB migration, interfaces, wizard shells"
-last_updated: "2026-03-21T09:33:24Z"
-last_activity: "2026-03-21 — Completed 08-01 Phase 8 foundation layer"
+stopped_at: Completed 08-04-PLAN.md — Seeker steps 1, 3, 5, 7 field extensions
+last_updated: "2026-03-21T09:41:29.184Z"
+last_activity: 2026-03-21 — Completed 08-04 Seeker steps 1, 3, 5, 7 field extensions (SONB-01, 03-07)
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 7
-  completed_plans: 4
-  percent: 57
+  completed_plans: 6
+  percent: 71
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-20)
 ## Current Position
 
 Phase: 8 of 11 (Wizard Field Extensions)
-Plan: 1 of 4 complete
+Plan: 4 of 4 complete
 Status: Executing
-Last activity: 2026-03-21 — Completed 08-01 Phase 8 foundation (DB migration, interfaces, wizard shells)
+Last activity: 2026-03-21 — Completed 08-04 Seeker steps 1, 3, 5, 7 field extensions (SONB-01, 03-07)
 
-Progress: [████████░░░░░░░░░░░░] 1/4 plans (25%)
+Progress: [███████░░░] 71%
 
 ## Accumulated Context
 
@@ -48,6 +48,8 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 08-01]: Boolean accommodation columns (accommodation_pets etc.) dropped and migrated to text[] accommodation_extras; booleanColumnsToChipArray() provides v1.0 backward compat
 - [Phase 08-01]: JobPostingData.sector widened from union to string to support new sector values (cropping, deer, mixed, other)
 - [Phase 08-01]: LivePreviewSidebar shown only on PostJob steps 2-5 (showSidebar = currentStep >= 1 && currentStep <= 4)
+- [Phase 08]: Step 7 stays mounted — shell no longer auto-navigates to /jobs on last step; CTAs on step 7 handle navigation
+- [Phase 08]: SeekerStep5 drops pets/family/vehicle_parking schema; housing_sub_options ChipSelector replaces all three boolean checkboxes
 
 ### Blockers/Concerns
 
@@ -58,6 +60,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-03-21T09:33:24Z
-Stopped at: "Completed 08-01-PLAN.md — DB migration, interfaces, wizard shells"
-Resume file: .planning/phases/08-wizard-field-extensions/08-02-PLAN.md
+Last session: 2026-03-21T09:41:05.018Z
+Stopped at: Completed 08-04-PLAN.md — Seeker steps 1, 3, 5, 7 field extensions
+Resume file: None
