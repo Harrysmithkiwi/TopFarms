@@ -80,13 +80,13 @@ Requirements for SPEC v3.0 compliance. Each maps to roadmap phases.
 - [ ] **ADSH-01**: 260px sidebar with farm header, navigation, listing selector, quick stats
 - [ ] **ADSH-02**: Filter toolbar with search input, filter chips (All/New/Reviewed/Shortlisted/Declined), sort, view toggle
 - [ ] **ADSH-03**: Expandable 4-tab panels per applicant (CV, Match breakdown, Interview, Notes)
-- [ ] **ADSH-04**: AI candidate summary box per applicant (purple, cached in DB column)
+- [x] **ADSH-04**: AI candidate summary box per applicant (purple, cached in DB column)
 - [ ] **ADSH-05**: Bulk actions bar (Shortlist selected, Send message, Export)
 
 ### My Applications
 
 - [ ] **MAPP-01**: Status variant banners — shortlisted (hay-lt "You've been shortlisted!"), interview (green with Accept/Decline), offer (green + hay CTA), declined (60% opacity + red-lt message)
-- [ ] **MAPP-02**: Farm response indicator ("Viewed by employer X hours ago" or "Not yet viewed")
+- [x] **MAPP-02**: Farm response indicator ("Viewed by employer X hours ago" or "Not yet viewed")
 - [ ] **MAPP-03**: Sidebar with application status summary, filter tabs (All/Active/Shortlisted/Closed), saved jobs, profile strength nudge
 
 ### Landing Page
@@ -189,10 +189,10 @@ Deferred to future release. Not in current roadmap.
 | ADSH-01 | Phase 9 | Pending |
 | ADSH-02 | Phase 9 | Pending |
 | ADSH-03 | Phase 9 | Pending |
-| ADSH-04 | Phase 9 | Pending |
+| ADSH-04 | Phase 9 | Complete |
 | ADSH-05 | Phase 9 | Pending |
 | MAPP-01 | Phase 9 | Pending |
-| MAPP-02 | Phase 9 | Pending |
+| MAPP-02 | Phase 9 | Complete |
 | MAPP-03 | Phase 9 | Pending |
 | LAND-01 | Phase 10 | Pending |
 | LAND-02 | Phase 10 | Pending |

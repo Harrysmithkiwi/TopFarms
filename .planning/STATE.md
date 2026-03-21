@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: SPEC Compliance
 status: executing
-stopped_at: Completed 09-02 Job Search page integration (SearchHero, ActiveFilterPills, Pagination)
-last_updated: "2026-03-21T22:06:02.489Z"
+stopped_at: "Completed 09-01-PLAN.md"
+last_updated: "2026-03-22T00:05:00Z"
 last_activity: 2026-03-22 — Completed 09-01 Phase 9 foundation (migration 015, hideSidebar, Edge Function, useSavedJobs)
 progress:
   total_phases: 5
@@ -58,6 +58,8 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 08-wizard-field-extensions]: Migration 014 uses ARRAY[ownership_type] USING clause to wrap existing text values as single-element arrays — zero data loss on column type change
 - [Phase 09]: JobSearch dropped hasMore/page useState in favour of URL-synced pageParam — single source of truth for pagination state
 - [Phase 09]: ActiveFilterPills uses PILL_LABEL_MAP + SINGLE_VALUE_KEYS pattern to derive dismissible pills from URLSearchParams
+- [Phase 09-01]: Migration repair required before pushing 015 — ran `supabase migration repair --status applied 011 012 013 014` to align remote tracking with applied state
+- [Phase 09-01]: generate-candidate-summary uses cache-first pattern: checks applications.ai_summary before invoking Anthropic, preventing redundant AI calls
 
 ### Blockers/Concerns
 
@@ -66,6 +68,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-03-21T22:06:02.487Z
-Stopped at: Completed 09-02 Job Search page integration (SearchHero, ActiveFilterPills, Pagination)
-Resume file: None
+Last session: 2026-03-22T00:05:00Z
+Stopped at: Completed 09-01-PLAN.md
+Resume file: .planning/phases/09-page-level-integrations/09-01-SUMMARY.md
