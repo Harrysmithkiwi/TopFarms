@@ -39,7 +39,7 @@ Requirements for SPEC v3.0 compliance. Each maps to roadmap phases.
 - [ ] **PJOB-04**: Step 3 includes minimum dairy experience select, seniority level select, qualifications section, visa chip grid
 - [ ] **PJOB-05**: Step 4 includes market rate salary comparison hint, pay frequency, on-call allowance, hours range, weekend roster
 - [ ] **PJOB-06**: Step 5 textarea char limits match SPEC (175/400 for overview)
-- [ ] **PJOB-07**: Steps 2-5 show LivePreviewSidebar with completeness meter, mini card preview, match pool estimate
+- [x] **PJOB-07**: Steps 2-5 show LivePreviewSidebar with completeness meter, mini card preview, match pool estimate
 - [ ] **PJOB-08**: Step 8 success screen shows stats grid (avg days to first applicant, seekers in match pool, actively looking)
 
 ### Seeker Onboarding
@@ -160,7 +160,7 @@ Deferred to future release. Not in current roadmap.
 | PJOB-04 | Phase 8 | Pending |
 | PJOB-05 | Phase 8 | Pending |
 | PJOB-06 | Phase 8 | Pending |
-| PJOB-07 | Phase 8 | Pending |
+| PJOB-07 | Phase 8 | Complete |
 | PJOB-08 | Phase 8 | Pending |
 | SONB-01 | Phase 8 | Pending |
 | SONB-02 | Phase 11 | Pending |
