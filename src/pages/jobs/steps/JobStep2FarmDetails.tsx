@@ -6,9 +6,12 @@ import { Select } from '@/components/ui/Select'
 import { Checkbox } from '@/components/ui/Checkbox'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
+import { ChipSelector } from '@/components/ui/ChipSelector'
+import { InfoBox } from '@/components/ui/InfoBox'
+import { SHED_TYPES, CALVING_SYSTEM_OPTIONS, DISTANCE_OPTIONS } from '@/types/domain'
 
 const schema = z.object({
-  shed_type: z.array(z.string()).optional(),
+  shed_type: z.array(z.string()).min(1, 'Select shed type'),
   herd_size_min: z.coerce.number().min(0).optional(),
   herd_size_max: z.coerce.number().min(0).optional(),
   visa_sponsorship: z.boolean(),
@@ -23,6 +26,13 @@ const schema = z.object({
       utilities_included: z.boolean().optional(),
     })
     .optional(),
+  // Phase 8 new fields
+  breed: z.string().optional(),
+  milking_frequency: z.string().optional(),
+  calving_system: z.string().optional(),
+  farm_area_ha: z.coerce.number().optional(),
+  nearest_town: z.string().optional(),
+  distance_from_town_km: z.string().optional(),
 })
 
 type FormData = z.infer<typeof schema>
@@ -33,8 +43,6 @@ interface Step2Props {
   defaultValues?: Partial<FormData>
 }
 
-const SHED_TYPES = ['Rotary', 'Herringbone', 'Other']
-
 const ACCOMMODATION_TYPE_OPTIONS = [
   { value: 'house', label: 'House' },
   { value: 'flat', label: 'Flat' },
@@ -44,8 +52,15 @@ const ACCOMMODATION_TYPE_OPTIONS = [
   { value: 'other', label: 'Other' },
 ]
 
+const MILKING_FREQUENCY_OPTIONS = [
+  { value: 'twice_daily', label: 'Twice daily' },
+  { value: 'once_daily', label: 'Once a day (OAD)' },
+  { value: 'three_times', label: 'Three times daily' },
+  { value: 'robotic', label: 'Robotic (AMS)' },
+]
+
 export function JobStep2FarmDetails({ onComplete, onBack, defaultValues }: Step2Props) {
-  const { register, handleSubmit, control, watch, setValue } = useForm<FormData>({
+  const { register, handleSubmit, control, watch, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
       shed_type: defaultValues?.shed_type ?? [],
@@ -54,20 +69,19 @@ export function JobStep2FarmDetails({ onComplete, onBack, defaultValues }: Step2
       visa_sponsorship: defaultValues?.visa_sponsorship ?? false,
       couples_welcome: defaultValues?.couples_welcome ?? false,
       accommodation: defaultValues?.accommodation ?? { available: false },
+      breed: defaultValues?.breed ?? '',
+      milking_frequency: defaultValues?.milking_frequency ?? '',
+      calving_system: defaultValues?.calving_system ?? '',
+      farm_area_ha: defaultValues?.farm_area_ha,
+      nearest_town: defaultValues?.nearest_town ?? '',
+      distance_from_town_km: defaultValues?.distance_from_town_km ?? '',
     },
   })
 
-  const shedType = watch('shed_type') ?? []
   const accommodation = watch('accommodation')
   const accommodationAvailable = accommodation?.available ?? false
-
-  function toggleShedType(type: string) {
-    if (shedType.includes(type)) {
-      setValue('shed_type', shedType.filter((t) => t !== type))
-    } else {
-      setValue('shed_type', [...shedType, type])
-    }
-  }
+  const distance = watch('distance_from_town_km')
+  const showDistanceWarning = distance === '>30km' || distance === '>50km'
 
   return (
     <form onSubmit={handleSubmit(onComplete)} className="space-y-6">
@@ -81,19 +95,104 @@ export function JobStep2FarmDetails({ onComplete, onBack, defaultValues }: Step2
       </div>
 
       <div className="space-y-5">
-        {/* Shed type */}
+        {/* Shed type — ChipSelector (5 options, inline, multi) */}
         <div>
-          <p className="font-body text-[13px] font-medium text-ink mb-2">Shed type</p>
-          <div className="flex flex-wrap gap-3">
-            {SHED_TYPES.map((type) => (
-              <Checkbox
-                key={type}
-                label={type}
-                checked={shedType.includes(type)}
-                onCheckedChange={() => toggleShedType(type)}
+          <p className="font-body text-[13px] font-semibold text-ink mb-2">Shed type *</p>
+          <Controller
+            control={control}
+            name="shed_type"
+            render={({ field }) => (
+              <ChipSelector
+                options={SHED_TYPES}
+                value={field.value ?? []}
+                onChange={field.onChange}
+                mode="multi"
+                columns="inline"
               />
-            ))}
-          </div>
+            )}
+          />
+          {errors.shed_type && (
+            <p className="text-red text-[12px] mt-1">{errors.shed_type.message}</p>
+          )}
+        </div>
+
+        {/* Breed */}
+        <Input
+          label="Breed"
+          placeholder="e.g., Jersey, Friesian, Crossbred"
+          {...register('breed')}
+        />
+
+        {/* Milking frequency */}
+        <Controller
+          control={control}
+          name="milking_frequency"
+          render={({ field }) => (
+            <Select
+              label="Milking frequency"
+              placeholder="Select frequency"
+              options={MILKING_FREQUENCY_OPTIONS}
+              value={field.value}
+              onValueChange={field.onChange}
+            />
+          )}
+        />
+
+        {/* Calving system */}
+        <Controller
+          control={control}
+          name="calving_system"
+          render={({ field }) => (
+            <Select
+              label="Calving system"
+              placeholder="Select calving system"
+              options={CALVING_SYSTEM_OPTIONS}
+              value={field.value}
+              onValueChange={field.onChange}
+            />
+          )}
+        />
+
+        {/* Farm area */}
+        <div>
+          <Input
+            label="Farm area"
+            type="number"
+            placeholder="e.g., 250"
+            {...register('farm_area_ha')}
+          />
+          <p className="text-[12px] mt-0.5" style={{ color: 'var(--color-light)' }}>hectares</p>
+        </div>
+
+        {/* Nearest town */}
+        <Input
+          label="Nearest town"
+          placeholder="e.g., Matamata"
+          {...register('nearest_town')}
+        />
+
+        {/* Distance from town with hay warning */}
+        <div>
+          <Controller
+            control={control}
+            name="distance_from_town_km"
+            render={({ field }) => (
+              <Select
+                label="Distance from town"
+                placeholder="Select distance"
+                options={DISTANCE_OPTIONS}
+                value={field.value}
+                onValueChange={field.onChange}
+              />
+            )}
+          />
+          {showDistanceWarning && (
+            <div className="mt-2">
+              <InfoBox variant="hay">
+                Remote locations may receive fewer applicants. Consider highlighting accommodation and transport options.
+              </InfoBox>
+            </div>
+          )}
         </div>
 
         {/* Herd size range */}

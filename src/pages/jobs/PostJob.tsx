@@ -429,7 +429,15 @@ export function PostJob() {
               <JobStep3Skills
                 jobId={jobId}
                 sector={jobData.sector ?? 'dairy'}
-                onComplete={() => { wizard.nextStep() }}
+                defaultValues={{
+                  min_dairy_experience: jobData.min_dairy_experience,
+                  seniority_level: jobData.seniority_level,
+                  qualifications: jobData.qualifications,
+                  visa_requirements: jobData.visa_requirements,
+                }}
+                onComplete={(data) => {
+                  handleStepComplete(data as Partial<JobPostingData>, 2)
+                }}
                 onBack={() => wizard.prevStep()}
               />
             )}
