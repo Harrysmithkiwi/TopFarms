@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { SearchHero } from '@/components/ui/SearchHero'
+import { LivePreviewSidebar } from '@/components/ui/LivePreviewSidebar'
 
 describe('SearchHero', () => {
   it('renders the headline text', () => {
@@ -54,5 +55,78 @@ describe('SearchHero', () => {
     expect(screen.getByText('Viticulture')).toBeInTheDocument()
     expect(screen.getByText('Horticulture')).toBeInTheDocument()
     expect(screen.queryByText('Dairy')).not.toBeInTheDocument()
+  })
+})
+
+describe('LivePreviewSidebar', () => {
+  it('renders with 320px width class', () => {
+    const { container } = render(<LivePreviewSidebar completenessPercent={65} />)
+    const aside = container.querySelector('aside')
+    expect(aside).toBeInTheDocument()
+    expect(aside?.className).toContain('w-[320px]')
+  })
+
+  it('renders Listing Preview heading', () => {
+    render(<LivePreviewSidebar completenessPercent={65} />)
+    expect(screen.getByText('Listing Preview')).toBeInTheDocument()
+  })
+
+  it('renders completeness percentage as text', () => {
+    render(<LivePreviewSidebar completenessPercent={65} />)
+    expect(screen.getByText('65%')).toBeInTheDocument()
+  })
+
+  it('renders Match Pool Estimate heading', () => {
+    render(<LivePreviewSidebar completenessPercent={50} />)
+    expect(screen.getByText('Match Pool Estimate')).toBeInTheDocument()
+  })
+
+  it('renders static match pool numbers', () => {
+    render(<LivePreviewSidebar completenessPercent={50} />)
+    expect(screen.getByText(/47 seekers in region/)).toBeInTheDocument()
+    expect(screen.getByText(/12 with shed experience/)).toBeInTheDocument()
+    expect(screen.getByText(/8 actively looking/)).toBeInTheDocument()
+  })
+
+  it('renders Estimates available soon note', () => {
+    render(<LivePreviewSidebar completenessPercent={50} />)
+    expect(screen.getByText('Estimates available soon')).toBeInTheDocument()
+  })
+
+  it('renders AI tip box with purple-lt background', () => {
+    render(<LivePreviewSidebar completenessPercent={50} />)
+    const tipText = screen.getByText(/40% more applications/)
+    expect(tipText).toBeInTheDocument()
+    // Check that the tip box parent has purple-lt bg
+    const tipBox = tipText.closest('[class*="bg-purple-lt"]')
+    expect(tipBox).toBeInTheDocument()
+  })
+
+  it('renders mini card when miniCard prop is provided', () => {
+    render(
+      <LivePreviewSidebar
+        completenessPercent={75}
+        miniCard={{
+          title: 'Farm Manager',
+          farmName: 'Green Pastures Ltd',
+          location: 'Waikato',
+        }}
+      />,
+    )
+    expect(screen.getByText('Farm Manager')).toBeInTheDocument()
+    expect(screen.getByText('Green Pastures Ltd')).toBeInTheDocument()
+    expect(screen.getByText('Waikato')).toBeInTheDocument()
+  })
+
+  it('renders placeholder when miniCard is not provided', () => {
+    render(<LivePreviewSidebar completenessPercent={20} />)
+    expect(screen.getByText('Complete fields to see preview')).toBeInTheDocument()
+  })
+
+  it('renders sticky positioning class', () => {
+    const { container } = render(<LivePreviewSidebar completenessPercent={50} />)
+    const aside = container.querySelector('aside')
+    expect(aside?.className).toContain('sticky')
+    expect(aside?.className).toContain('top-6')
   })
 })
