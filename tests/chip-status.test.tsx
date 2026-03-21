@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ChipSelector } from '@/components/ui/ChipSelector'
+import { StatusBanner } from '@/components/ui/StatusBanner'
 
 describe('ChipSelector', () => {
   const options = [
@@ -135,5 +136,53 @@ describe('ChipSelector', () => {
       />,
     )
     expect(screen.getByTestId('dairy-icon')).toBeTruthy()
+  })
+})
+
+describe('StatusBanner', () => {
+  it('variant="shortlisted" renders correct title text', () => {
+    render(<StatusBanner variant="shortlisted" />)
+    expect(screen.getByText(/Great news/)).toBeTruthy()
+    expect(screen.getByText(/you've been shortlisted!/)).toBeTruthy()
+  })
+
+  it('variant="interview" renders correct title text', () => {
+    render(<StatusBanner variant="interview" />)
+    expect(screen.getByText(/You've got an interview invitation!/)).toBeTruthy()
+  })
+
+  it('variant="offer" renders correct title text', () => {
+    render(<StatusBanner variant="offer" />)
+    expect(screen.getByText(/Congratulations/)).toBeTruthy()
+    expect(screen.getByText(/you've received an offer!/)).toBeTruthy()
+  })
+
+  it('variant="declined" renders correct title text', () => {
+    render(<StatusBanner variant="declined" />)
+    expect(screen.getByText(/Unfortunately, this application wasn't successful\./)).toBeTruthy()
+  })
+
+  it('variant="shortlisted" container has bg-hay-lt class', () => {
+    const { container } = render(<StatusBanner variant="shortlisted" />)
+    const wrapper = container.firstElementChild
+    expect(wrapper?.className).toMatch(/bg-hay-lt/)
+  })
+
+  it('variant="declined" container has bg-red-lt\/60 class (not opacity-60)', () => {
+    const { container } = render(<StatusBanner variant="declined" />)
+    const wrapper = container.firstElementChild
+    expect(wrapper?.className).toMatch(/bg-red-lt\/60/)
+    expect(wrapper?.className).not.toMatch(/opacity-60/)
+  })
+
+  it('renders children passed via actions prop', () => {
+    render(
+      <StatusBanner
+        variant="interview"
+        actions={<button data-testid="accept-btn">Accept Interview</button>}
+      />,
+    )
+    expect(screen.getByTestId('accept-btn')).toBeTruthy()
+    expect(screen.getByText('Accept Interview')).toBeTruthy()
   })
 })
