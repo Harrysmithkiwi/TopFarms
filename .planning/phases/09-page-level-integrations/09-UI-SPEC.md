@@ -47,7 +47,7 @@ Declared values (multiples of 4):
 **Exceptions:**
 
 - Breadcrumb bar: fixed height 44px (accessibility touch target) — source: JDET-01 / CONTEXT.md
-- Pagination buttons: fixed 34×34px — source: PRIM-07, existing `Pagination.tsx`
+- Pagination buttons: fixed 34×34px — **locked existing value**: `Pagination.tsx` was shipped in Phase 7 with 34×34px buttons; changing to 32px or 36px would require a visual regression audit of all pagination usages and is out of scope for this phase. This value is exempt from the 4-multiple grid rule. Implementation must not change the button dimensions.
 - Applicant dashboard sidebar: fixed width 260px — source: ADSH-01 / CONTEXT.md
 - My Applications sidebar: fixed width 260px — source: MAPP-03 / CONTEXT.md
 - Job detail location map placeholder: fixed height 160px — source: JDET-06 / CONTEXT.md
@@ -57,19 +57,21 @@ Declared values (multiples of 4):
 
 ## Typography
 
+**Primary scale (4 sizes, 2 weights — all implementation must use only these):**
+
 | Role | Size | Weight | Line Height | Font | Usage |
 |------|------|--------|-------------|------|-------|
 | Body | 14px | 400 (regular) | 1.5 | DM Sans | Body text, descriptions, meta, card copy |
-| Label | 13px | 600 (semibold) | 1.4 | DM Sans | Section labels, filter group headers, tab labels, status text |
-| Heading | 15px | 600 (semibold) | 1.35 | DM Sans | Card titles, panel headings, sidebar headings |
-| Display | 20px | 700 (bold) | 1.2 | Fraunces | Page headings, hero headline inside SearchHero |
+| Label | 13px | 600 (semibold) | 1.4 | DM Sans | Section labels, filter group headers, tab labels, status text, micro-labels (uppercase, tracking-wide) |
+| Heading | 16px | 600 (semibold) | 1.35 | DM Sans | Card titles, panel headings, sidebar headings, StatusBanner title text |
+| Display | 20px | 600 (semibold) | 1.2 | Fraunces | Page headings, hero headline inside SearchHero |
 
-**Supporting sizes (established in codebase — do not create new sizes):**
+**Implementation notes (not declared spec values — do not add new sizes):**
 
-- 11px / regular / tracking-wide — Uppercase micro-labels within panels (e.g. "Match Highlights", "Seeker Profile") — `text-light` colour
-- 12px / regular — Button text (sm variant), helper text
-- 16px / semibold — StatusBanner title text
-- 28px / bold / Fraunces — SearchHero primary headline (gradient hero context)
+- 11px and 12px usages: render as Label (13px) or Body (14px) — if an existing component already outputs these exact sizes in committed code, preserve them; do not introduce them in new code written for Phase 9.
+- 28px Fraunces gradient headline in SearchHero: this is an existing committed value in `SearchHero.tsx`; preserve as-is but do not replicate the pattern elsewhere. It is not a declared spec size.
+- Button text (sm variant) and helper text ship at 12px in existing `Button.tsx` — preserve; do not change.
+- All new code written in Phase 9 must use one of the 4 primary scale sizes above.
 
 **Source:** Extracted from `SearchJobCard.tsx`, `ApplicantPanel.tsx`, `ApplicationCard.tsx`, `StatusBanner.tsx`, `Button.tsx`
 
@@ -181,7 +183,7 @@ New components built in Phase 9:
 
 - **Position:** Centered below the results list
 - **Sync:** Page number in URL param `?page=N`
-- **Component:** Use existing `Pagination` component (34×34px buttons, fog border, active = moss bg)
+- **Component:** Use existing `Pagination` component (34×34px buttons — locked existing value, see Spacing Exceptions; fog border, active = moss bg)
 - **Load More button:** Remove entirely; replace with `Pagination`
 
 ### Job Detail — Breadcrumb Bar (JDET-01)
@@ -281,6 +283,7 @@ New components built in Phase 9:
 | StatusBanner — declined | "Unfortunately, this application wasn't successful." |
 | Active filter pill — remove aria-label | "Remove [filter name] filter" |
 | Breadcrumb save button — aria-label | "Save this job" / "Job saved" (toggle) |
+| Breadcrumb share button — aria-label | "Share this job" |
 | Map placeholder | "Map coming soon" |
 | Interview tab placeholder | "Interview scheduling is coming in a future release." |
 
