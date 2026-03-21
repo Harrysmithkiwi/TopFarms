@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router'
 import { toast } from 'sonner'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { StepIndicator } from '@/components/ui/StepIndicator'
@@ -67,7 +66,6 @@ export interface EmployerProfileData {
 
 export function EmployerOnboarding() {
   const { session } = useAuth()
-  const navigate = useNavigate()
   const [profileData, setProfileData] = useState<EmployerProfileData>({})
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -169,12 +167,10 @@ export function EmployerOnboarding() {
       return
     }
 
-    if (isLastStep) {
-      // Step 8 handles its own display — navigate after setting onboarding_complete
-      navigate('/dashboard/employer')
-    } else {
+    if (!isLastStep) {
       wizard.nextStep()
     }
+    // Step 8 (isLastStep) handles its own navigation via CTAs in Step8Complete
   }
 
   if (loading) {
@@ -312,7 +308,13 @@ export function EmployerOnboarding() {
           )}
 
           {currentStep === 7 && (
-            <Step8Complete />
+            <Step8Complete profileData={{
+              farm_name: profileData.farm_name,
+              region: profileData.region,
+              farm_types: profileData.farm_types,
+              accommodation_available: profileData.accommodation_available,
+              about_farm: profileData.about_farm,
+            }} />
           )}
         </div>
       </div>
