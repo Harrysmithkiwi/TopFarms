@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: SPEC Compliance
 status: executing
-stopped_at: Completed 08-04-PLAN.md — Seeker steps 1, 3, 5, 7 field extensions
-last_updated: "2026-03-21T09:41:29.184Z"
+stopped_at: Completed 08-03-PLAN.md — wizard step field extensions (steps 1-5 and 8)
+last_updated: "2026-03-21T09:41:42.183Z"
 last_activity: 2026-03-21 — Completed 08-04 Seeker steps 1, 3, 5, 7 field extensions (SONB-01, 03-07)
 progress:
   total_phases: 5
@@ -50,6 +50,9 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 08-01]: LivePreviewSidebar shown only on PostJob steps 2-5 (showSidebar = currentStep >= 1 && currentStep <= 4)
 - [Phase 08]: Step 7 stays mounted — shell no longer auto-navigates to /jobs on last step; CTAs on step 7 handle navigation
 - [Phase 08]: SeekerStep5 drops pets/family/vehicle_parking schema; housing_sub_options ChipSelector replaces all three boolean checkboxes
+- [Phase 08]: Step 1 sector radio cards replaced with Select using FARM_TYPE_OPTIONS to support expanded sector types without UI sprawl
+- [Phase 08]: JobStep3Skills uses useState for new fields alongside existing SkillsPicker pattern; onComplete returns field data to PostJob handleStepComplete
+- [Phase 08]: Step 8 stats grid uses static placeholder numbers — Phase 11 wires real data from match_scores
 
 ### Blockers/Concerns
 
@@ -60,6 +63,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-03-21T09:41:05.018Z
-Stopped at: Completed 08-04-PLAN.md — Seeker steps 1, 3, 5, 7 field extensions
+Last session: 2026-03-21T09:41:42.181Z
+Stopped at: Completed 08-03-PLAN.md — wizard step field extensions (steps 1-5 and 8)
 Resume file: None

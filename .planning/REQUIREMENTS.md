@@ -33,14 +33,14 @@ Requirements for SPEC v3.0 compliance. Each maps to roadmap phases.
 
 ### Post Job Wizard
 
-- [ ] **PJOB-01**: Step 1 uses two-column layout (soil left panel with stats, cream right form)
-- [ ] **PJOB-02**: Step 2 includes breed select, milking frequency, calving system, farm area, nearest town, distance with warning
-- [ ] **PJOB-03**: Step 2 shed type uses ChipSelector with 5 options instead of 3 checkboxes
-- [ ] **PJOB-04**: Step 3 includes minimum dairy experience select, seniority level select, qualifications section, visa chip grid
-- [ ] **PJOB-05**: Step 4 includes market rate salary comparison hint, pay frequency, on-call allowance, hours range, weekend roster
-- [ ] **PJOB-06**: Step 5 textarea char limits match SPEC (175/400 for overview)
+- [x] **PJOB-01**: Step 1 uses two-column layout (soil left panel with stats, cream right form)
+- [x] **PJOB-02**: Step 2 includes breed select, milking frequency, calving system, farm area, nearest town, distance with warning
+- [x] **PJOB-03**: Step 2 shed type uses ChipSelector with 5 options instead of 3 checkboxes
+- [x] **PJOB-04**: Step 3 includes minimum dairy experience select, seniority level select, qualifications section, visa chip grid
+- [x] **PJOB-05**: Step 4 includes market rate salary comparison hint, pay frequency, on-call allowance, hours range, weekend roster
+- [x] **PJOB-06**: Step 5 textarea char limits match SPEC (175/400 for overview)
 - [x] **PJOB-07**: Steps 2-5 show LivePreviewSidebar with completeness meter, mini card preview, match pool estimate
-- [ ] **PJOB-08**: Step 8 success screen shows stats grid (avg days to first applicant, seekers in match pool, actively looking)
+- [x] **PJOB-08**: Step 8 success screen shows stats grid (avg days to first applicant, seekers in match pool, actively looking)
 
 ### Seeker Onboarding
 
@@ -154,14 +154,14 @@ Deferred to future release. Not in current roadmap.
 | EONB-07 | Phase 8 | Pending |
 | EONB-08 | Phase 8 | Pending |
 | EONB-09 | Phase 8 | Pending |
-| PJOB-01 | Phase 8 | Pending |
-| PJOB-02 | Phase 8 | Pending |
-| PJOB-03 | Phase 8 | Pending |
-| PJOB-04 | Phase 8 | Pending |
-| PJOB-05 | Phase 8 | Pending |
-| PJOB-06 | Phase 8 | Pending |
+| PJOB-01 | Phase 8 | Complete |
+| PJOB-02 | Phase 8 | Complete |
+| PJOB-03 | Phase 8 | Complete |
+| PJOB-04 | Phase 8 | Complete |
+| PJOB-05 | Phase 8 | Complete |
+| PJOB-06 | Phase 8 | Complete |
 | PJOB-07 | Phase 8 | Complete |
-| PJOB-08 | Phase 8 | Pending |
+| PJOB-08 | Phase 8 | Complete |
 | SONB-01 | Phase 8 | Complete |
 | SONB-02 | Phase 11 | Pending |
 | SONB-03 | Phase 8 | Complete |
