@@ -16,8 +16,8 @@ Requirements for SPEC v3.0 compliance. Each maps to roadmap phases.
 - [ ] **PRIM-05**: Timeline component renders vertical timeline with meadow dots and connecting lines
 - [ ] **PRIM-06**: StarRating component supports 1-5 star input with yellow/grey states
 - [ ] **PRIM-07**: Pagination component renders numbered page buttons (34x34px, fog border, active = moss bg)
-- [ ] **PRIM-08**: SearchHero component renders gradient hero with search bar, region select, and quick-filter pills
-- [ ] **PRIM-09**: LivePreviewSidebar component renders sticky 320px sidebar with completeness meter, mini card preview, and match pool estimate
+- [x] **PRIM-08**: SearchHero component renders gradient hero with search bar, region select, and quick-filter pills
+- [x] **PRIM-09**: LivePreviewSidebar component renders sticky 320px sidebar with completeness meter, mini card preview, and match pool estimate
 
 ### Employer Onboarding
 
@@ -143,8 +143,8 @@ Deferred to future release. Not in current roadmap.
 | PRIM-05 | Phase 7 | Pending |
 | PRIM-06 | Phase 7 | Pending |
 | PRIM-07 | Phase 7 | Pending |
-| PRIM-08 | Phase 7 | Pending |
-| PRIM-09 | Phase 7 | Pending |
+| PRIM-08 | Phase 7 | Complete |
+| PRIM-09 | Phase 7 | Complete |
 | EONB-01 | Phase 8 | Pending |
 | EONB-02 | Phase 8 | Pending |
 | EONB-03 | Phase 8 | Pending |
