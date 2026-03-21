@@ -4,6 +4,8 @@ import userEvent from '@testing-library/user-event'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 import { StatsStrip } from '@/components/ui/StatsStrip'
 import { Timeline } from '@/components/ui/Timeline'
+import { StarRating } from '@/components/ui/StarRating'
+import { Pagination } from '@/components/ui/Pagination'
 
 describe('Breadcrumb', () => {
   const items = [
@@ -132,5 +134,93 @@ describe('Timeline', () => {
     render(<Timeline entries={entries} />)
     expect(screen.getByText('Application submitted')).toBeInTheDocument()
     expect(screen.getByText('Added to shortlist')).toBeInTheDocument()
+  })
+})
+
+describe('StarRating', () => {
+  it('renders exactly 5 stars', () => {
+    const { container } = render(<StarRating value={3} />)
+    const stars = container.querySelectorAll('svg')
+    expect(stars.length).toBe(5)
+  })
+
+  it('renders first N stars with hay fill and rest with fog fill', () => {
+    const { container } = render(<StarRating value={4} />)
+    const paths = container.querySelectorAll('path')
+    // First 4 should have hay fill, 5th should have fog fill
+    expect(paths[0]).toHaveAttribute('fill', 'var(--color-hay)')
+    expect(paths[1]).toHaveAttribute('fill', 'var(--color-hay)')
+    expect(paths[2]).toHaveAttribute('fill', 'var(--color-hay)')
+    expect(paths[3]).toHaveAttribute('fill', 'var(--color-hay)')
+    expect(paths[4]).toHaveAttribute('fill', 'var(--color-fog)')
+  })
+
+  it('clicking star 3 calls onChange(3)', async () => {
+    const onChange = vi.fn()
+    const user = userEvent.setup()
+    render(<StarRating value={1} onChange={onChange} />)
+    const buttons = screen.getAllByRole('button')
+    await user.click(buttons[2]) // 3rd star (0-indexed)
+    expect(onChange).toHaveBeenCalledWith(3)
+  })
+
+  it('uses the same SVG path as TestimonialsSection', () => {
+    const { container } = render(<StarRating value={1} />)
+    const path = container.querySelector('path')
+    expect(path?.getAttribute('d')).toContain('M8 1.5l1.854')
+  })
+
+  it('renders without buttons in display-only mode (no onChange)', () => {
+    render(<StarRating value={3} />)
+    const buttons = screen.queryAllByRole('button')
+    expect(buttons.length).toBe(0)
+  })
+})
+
+describe('Pagination', () => {
+  it('renders numbered page buttons', () => {
+    render(<Pagination currentPage={1} totalPages={5} onPageChange={vi.fn()} />)
+    expect(screen.getByText('1')).toBeInTheDocument()
+    expect(screen.getByText('2')).toBeInTheDocument()
+    expect(screen.getByText('5')).toBeInTheDocument()
+  })
+
+  it('active page button has bg-moss and text-white classes', () => {
+    render(<Pagination currentPage={3} totalPages={5} onPageChange={vi.fn()} />)
+    const activeButton = screen.getByText('3')
+    expect(activeButton.className).toContain('bg-moss')
+    expect(activeButton.className).toContain('text-white')
+  })
+
+  it('inactive page button has border-fog class', () => {
+    render(<Pagination currentPage={1} totalPages={5} onPageChange={vi.fn()} />)
+    const inactiveButton = screen.getByText('2')
+    expect(inactiveButton.className).toContain('border-fog')
+  })
+
+  it('clicking page 3 calls onPageChange(3)', async () => {
+    const onPageChange = vi.fn()
+    const user = userEvent.setup()
+    render(<Pagination currentPage={1} totalPages={5} onPageChange={onPageChange} />)
+    await user.click(screen.getByText('3'))
+    expect(onPageChange).toHaveBeenCalledWith(3)
+  })
+
+  it('prev button is disabled on first page', () => {
+    render(<Pagination currentPage={1} totalPages={5} onPageChange={vi.fn()} />)
+    const prevButton = screen.getByLabelText('Go to previous page')
+    expect(prevButton).toBeDisabled()
+  })
+
+  it('next button is disabled on last page', () => {
+    render(<Pagination currentPage={5} totalPages={5} onPageChange={vi.fn()} />)
+    const nextButton = screen.getByLabelText('Go to next page')
+    expect(nextButton).toBeDisabled()
+  })
+
+  it('shows ellipsis for large page counts', () => {
+    render(<Pagination currentPage={10} totalPages={20} onPageChange={vi.fn()} />)
+    const ellipses = screen.getAllByText('...')
+    expect(ellipses.length).toBeGreaterThanOrEqual(1)
   })
 })
