@@ -11,11 +11,11 @@ Requirements for SPEC v3.0 compliance. Each maps to roadmap phases.
 
 - [x] **PRIM-01**: ChipSelector component supports single/multi-select with selected state (moss border + rgba bg + checkmark)
 - [x] **PRIM-02**: StatusBanner component renders shortlisted (hay-lt), interview (green), offer (green), declined (red-lt, 60% opacity) variants
-- [ ] **PRIM-03**: Breadcrumb component renders path with separator and active/inactive states
-- [ ] **PRIM-04**: StatsStrip component renders 3-4 column stat grid with labels and values
-- [ ] **PRIM-05**: Timeline component renders vertical timeline with meadow dots and connecting lines
-- [ ] **PRIM-06**: StarRating component supports 1-5 star input with yellow/grey states
-- [ ] **PRIM-07**: Pagination component renders numbered page buttons (34x34px, fog border, active = moss bg)
+- [x] **PRIM-03**: Breadcrumb component renders path with separator and active/inactive states
+- [x] **PRIM-04**: StatsStrip component renders 3-4 column stat grid with labels and values
+- [x] **PRIM-05**: Timeline component renders vertical timeline with meadow dots and connecting lines
+- [x] **PRIM-06**: StarRating component supports 1-5 star input with yellow/grey states
+- [x] **PRIM-07**: Pagination component renders numbered page buttons (34x34px, fog border, active = moss bg)
 - [x] **PRIM-08**: SearchHero component renders gradient hero with search bar, region select, and quick-filter pills
 - [x] **PRIM-09**: LivePreviewSidebar component renders sticky 320px sidebar with completeness meter, mini card preview, and match pool estimate
 
@@ -138,11 +138,11 @@ Deferred to future release. Not in current roadmap.
 |-------------|-------|--------|
 | PRIM-01 | Phase 7 | Complete |
 | PRIM-02 | Phase 7 | Complete |
-| PRIM-03 | Phase 7 | Pending |
-| PRIM-04 | Phase 7 | Pending |
-| PRIM-05 | Phase 7 | Pending |
-| PRIM-06 | Phase 7 | Pending |
-| PRIM-07 | Phase 7 | Pending |
+| PRIM-03 | Phase 7 | Complete |
+| PRIM-04 | Phase 7 | Complete |
+| PRIM-05 | Phase 7 | Complete |
+| PRIM-06 | Phase 7 | Complete |
+| PRIM-07 | Phase 7 | Complete |
 | PRIM-08 | Phase 7 | Complete |
 | PRIM-09 | Phase 7 | Complete |
 | EONB-01 | Phase 8 | Pending |
