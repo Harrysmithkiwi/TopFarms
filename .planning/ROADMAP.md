@@ -43,7 +43,7 @@ Full details: `.planning/milestones/v1.0-ROADMAP.md`
   3. Breadcrumb, StatsStrip, Timeline, StarRating, and Pagination each render correctly in isolation with their documented prop shapes
   4. SearchHero renders gradient background with search bar, region select, and quick-filter pills
   5. LivePreviewSidebar renders sticky 320px sidebar with completeness meter, mini card preview, and a static match pool placeholder (backend wired in Phase 11)
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
 - [ ] 07-01: ChipSelector, StatusBanner (highest-dependency primitives first)
