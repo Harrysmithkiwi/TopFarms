@@ -111,7 +111,7 @@ export const COMPLETED_STATUSES: ApplicationStatus[] = ['hired', 'declined', 'wi
 export type DairyNZLevel = 'none' | 'level_1' | 'level_2' | 'level_3' | 'level_4'
 export type VisaStatus = 'nz_citizen' | 'permanent_resident' | 'working_holiday' | 'student' | 'needs_sponsorship'
 export type HerdSizeBucket = '<200' | '200-500' | '500-1000' | '1000+'
-export type ShedType = 'rotary' | 'herringbone' | 'other'
+export type ShedType = 'rotary' | 'herringbone' | 'ams' | 'swing_over' | 'tiestall' | 'other'
 
 export const DAIRYNZ_LEVELS: { value: DairyNZLevel; label: string; description: string }[] = [
   { value: 'none',    label: 'None',    description: 'No DairyNZ qualification' },
@@ -139,6 +139,9 @@ export const HERD_SIZE_BUCKETS: { value: HerdSizeBucket; label: string }[] = [
 export const SHED_TYPES: { value: ShedType; label: string }[] = [
   { value: 'rotary',      label: 'Rotary' },
   { value: 'herringbone', label: 'Herringbone' },
+  { value: 'ams',         label: 'AMS' },
+  { value: 'swing_over',  label: 'Swing-Over' },
+  { value: 'tiestall',    label: 'Tiestall' },
   { value: 'other',       label: 'Other' },
 ]
 
@@ -159,7 +162,168 @@ export interface SeekerProfileData {
   visa_status?: VisaStatus
   min_salary?: number
   availability_date?: string
+  // Phase 8 new fields
+  licence_types?: string[]
+  certifications?: string[]
+  housing_sub_options?: string[]
+  preferred_regions?: string[]
+  notice_period_text?: string
 }
+
+// ============================================================
+// Phase 8 — Wizard Field Extension types
+// ============================================================
+export type FarmType = 'dairy' | 'sheep_beef' | 'cropping' | 'deer' | 'mixed' | 'other'
+export type OwnershipType = 'owner_operator' | 'corporate' | 'sharemilker' | 'equity_partner'
+export type CalvingSystem = 'spring' | 'autumn' | 'split' | 'year_round'
+export type DistanceFromTown = '<5km' | '5-15km' | '15-30km' | '>30km' | '>50km'
+export type HiringFrequency = 'rarely' | 'annually' | 'seasonally' | 'ongoing'
+export type PayFrequency = 'weekly' | 'fortnightly' | 'monthly'
+export type SeniorityLevel = 'entry' | 'mid' | 'senior' | 'management'
+export type MinDairyExperience = 'none' | '1_year' | '2_years' | '3_years' | '5_plus'
+export type WeekendRoster = 'every_weekend' | 'alternate' | 'one_in_three' | 'occasional' | 'none'
+
+export const FARM_TYPE_OPTIONS: { value: FarmType; label: string }[] = [
+  { value: 'dairy',      label: 'Dairy' },
+  { value: 'sheep_beef', label: 'Sheep & Beef' },
+  { value: 'cropping',   label: 'Cropping' },
+  { value: 'deer',       label: 'Deer' },
+  { value: 'mixed',      label: 'Mixed' },
+  { value: 'other',      label: 'Other' },
+]
+
+export const OWNERSHIP_TYPE_OPTIONS: { value: OwnershipType; label: string }[] = [
+  { value: 'owner_operator',  label: 'Owner Operator' },
+  { value: 'corporate',       label: 'Corporate' },
+  { value: 'sharemilker',     label: 'Sharemilker' },
+  { value: 'equity_partner',  label: 'Equity Partner' },
+]
+
+export const CALVING_SYSTEM_OPTIONS: { value: CalvingSystem; label: string }[] = [
+  { value: 'spring',     label: 'Spring' },
+  { value: 'autumn',     label: 'Autumn' },
+  { value: 'split',      label: 'Split' },
+  { value: 'year_round', label: 'Year Round' },
+]
+
+export const DISTANCE_OPTIONS: { value: DistanceFromTown; label: string }[] = [
+  { value: '<5km',   label: 'Less than 5km' },
+  { value: '5-15km', label: '5 - 15km' },
+  { value: '15-30km', label: '15 - 30km' },
+  { value: '>30km',  label: 'More than 30km' },
+  { value: '>50km',  label: 'More than 50km' },
+]
+
+export const HIRING_FREQUENCY_OPTIONS: { value: HiringFrequency; label: string }[] = [
+  { value: 'rarely',     label: 'Rarely' },
+  { value: 'annually',   label: 'Annually' },
+  { value: 'seasonally', label: 'Seasonally' },
+  { value: 'ongoing',    label: 'Ongoing' },
+]
+
+export const PAY_FREQUENCY_OPTIONS: { value: PayFrequency; label: string }[] = [
+  { value: 'weekly',      label: 'Weekly' },
+  { value: 'fortnightly', label: 'Fortnightly' },
+  { value: 'monthly',     label: 'Monthly' },
+]
+
+export const SENIORITY_OPTIONS: { value: SeniorityLevel; label: string }[] = [
+  { value: 'entry',      label: 'Entry Level' },
+  { value: 'mid',        label: 'Mid Level' },
+  { value: 'senior',     label: 'Senior' },
+  { value: 'management', label: 'Management' },
+]
+
+export const MIN_DAIRY_EXPERIENCE_OPTIONS: { value: MinDairyExperience; label: string }[] = [
+  { value: 'none',    label: 'No minimum' },
+  { value: '1_year',  label: '1+ year' },
+  { value: '2_years', label: '2+ years' },
+  { value: '3_years', label: '3+ years' },
+  { value: '5_plus',  label: '5+ years' },
+]
+
+export const WEEKEND_ROSTER_OPTIONS: { value: WeekendRoster; label: string }[] = [
+  { value: 'every_weekend', label: 'Every weekend' },
+  { value: 'alternate',     label: 'Alternate weekends' },
+  { value: 'one_in_three',  label: '1 in 3 weekends' },
+  { value: 'occasional',    label: 'Occasional' },
+  { value: 'none',          label: 'No weekends' },
+]
+
+export const CAREER_DEV_OPTIONS: { value: string; label: string }[] = [
+  { value: 'dairynz_pathway',      label: 'DairyNZ Pathway' },
+  { value: 'mentoring',            label: 'Mentoring' },
+  { value: 'training_courses',     label: 'Training courses' },
+  { value: 'conference_attendance', label: 'Conference attendance' },
+  { value: 'progression_plan',     label: 'Progression plan' },
+  { value: 'study_support',        label: 'Study support' },
+]
+
+export const ACCOMMODATION_EXTRAS_OPTIONS: { value: string; label: string }[] = [
+  { value: 'Pets allowed',        label: 'Pets allowed' },
+  { value: 'Couples welcome',     label: 'Couples welcome' },
+  { value: 'Family welcome',      label: 'Family welcome' },
+  { value: 'Utilities included',  label: 'Utilities included' },
+  { value: 'Furnished',           label: 'Furnished' },
+  { value: 'Garden',              label: 'Garden' },
+  { value: 'Garage',              label: 'Garage' },
+  { value: 'Internet included',   label: 'Internet included' },
+]
+
+export const QUALIFICATION_OPTIONS: { value: string; label: string }[] = [
+  { value: 'dairynz_level_1', label: 'DairyNZ Level 1' },
+  { value: 'dairynz_level_2', label: 'DairyNZ Level 2' },
+  { value: 'dairynz_level_3', label: 'DairyNZ Level 3' },
+  { value: 'dairynz_level_4', label: 'DairyNZ Level 4' },
+  { value: 'trade_cert',      label: 'Trade Certificate' },
+  { value: 'diploma',         label: 'Diploma in Agriculture' },
+  { value: 'degree',          label: 'Degree in Agriculture' },
+]
+
+export const VISA_CHIP_OPTIONS: { value: string; label: string }[] = [
+  { value: 'nz_citizen',           label: 'NZ Citizen' },
+  { value: 'permanent_resident',   label: 'Permanent Resident' },
+  { value: 'working_holiday',      label: 'Working Holiday' },
+  { value: 'student',              label: 'Student Visa' },
+  { value: 'accredited_employer',  label: 'Accredited Employer Work Visa' },
+  { value: 'open_work',            label: 'Open Work Visa' },
+]
+
+export const LICENCE_TYPE_OPTIONS: { value: string; label: string }[] = [
+  { value: 'class_1', label: 'Class 1 (Car)' },
+  { value: 'class_2', label: 'Class 2 (Medium rigid)' },
+  { value: 'class_4', label: 'Class 4 (Heavy rigid)' },
+  { value: 'class_5', label: 'Class 5 (Heavy combination)' },
+]
+
+export const CERTIFICATION_OPTIONS: { value: string; label: string }[] = [
+  { value: 'atv',       label: 'ATV' },
+  { value: 'tractor',   label: 'Tractor' },
+  { value: '4wd',       label: '4WD' },
+  { value: 'first_aid', label: 'First Aid' },
+  { value: 'growsafe',  label: 'Growsafe' },
+  { value: 'chainsaw',  label: 'Chainsaw' },
+]
+
+export const HOUSING_SUB_OPTIONS: { value: string; label: string }[] = [
+  { value: 'single',               label: 'Single' },
+  { value: 'couple_working',       label: 'Couple (both working)' },
+  { value: 'couple_not_working',   label: 'Couple (one working)' },
+  { value: 'family',               label: 'Family' },
+  { value: 'working_dogs',         label: 'Working dogs' },
+  { value: 'pets',                 label: 'Pets' },
+]
+
+export const PREFERRED_REGION_OPTIONS: { value: string; label: string }[] = [
+  { value: 'Waikato',             label: 'Waikato' },
+  { value: 'Canterbury',          label: 'Canterbury' },
+  { value: 'Southland',           label: 'Southland' },
+  { value: 'Taranaki',            label: 'Taranaki' },
+  { value: 'Manawatu-Whanganui',  label: 'Manawatu-Whanganui' },
+  { value: 'Otago',               label: 'Otago' },
+  { value: 'Bay of Plenty',       label: 'Bay of Plenty' },
+  { value: 'Northland',           label: 'Northland' },
+]
 
 // Match scoring types
 export interface MatchBreakdown {
