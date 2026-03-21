@@ -7,6 +7,9 @@ import { useAuth } from '@/hooks/useAuth'
 import { FilterSidebar } from '@/components/ui/FilterSidebar'
 import { SearchJobCard } from '@/components/ui/SearchJobCard'
 import { Button } from '@/components/ui/Button'
+import { SearchHero } from '@/components/ui/SearchHero'
+import { Pagination } from '@/components/ui/Pagination'
+import { ActiveFilterPills } from '@/components/ui/ActiveFilterPills'
 import type { JobListing, MatchScore, EmployerVerification, TrustLevel } from '@/types/domain'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -80,14 +83,16 @@ export function JobSearch() {
     Map<string, EmployerVerificationMap>
   >(new Map())
   const [loading, setLoading] = useState(true)
-  const [page, setPage] = useState(0)
-  const [hasMore, setHasMore] = useState(false)
+  const [totalCount, setTotalCount] = useState(0)
   const [drawerOpen, setDrawerOpen] = useState(false)
+
+  // Read page from URL (1-indexed)
+  const pageParam = Number(searchParams.get('page') ?? '1')
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE)
 
   // ─── Filter change handler ──────────────────────────────────────────────────
   const handleFilterChange = useCallback(
     (key: string, value: string | string[] | null) => {
-      setPage(0)
       setSearchParams(
         (prev) => {
           const next = new URLSearchParams(prev)
@@ -105,6 +110,7 @@ export function JobSearch() {
             } else {
               next.set('salary_max', max)
             }
+            next.delete('page')
             return next
           }
 
@@ -116,6 +122,7 @@ export function JobSearch() {
           } else {
             next.set(key, value)
           }
+          next.delete('page') // reset to page 1 on filter change
           return next
         },
         { replace: true },
@@ -124,19 +131,45 @@ export function JobSearch() {
     [setSearchParams],
   )
 
+  // ─── Remove filter handler (for ActiveFilterPills) ─────────────────────────
+  function handleRemoveFilter(key: string, value?: string) {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev)
+      if (value) {
+        const vals = next.getAll(key).filter(v => v !== value)
+        next.delete(key)
+        vals.forEach(v => next.append(key, v))
+      } else {
+        next.delete(key)
+      }
+      next.delete('page') // reset to page 1 on filter remove
+      return next
+    }, { replace: true })
+  }
+
+  // ─── Page change handler ────────────────────────────────────────────────────
+  function handlePageChange(newPage: number) {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev)
+      if (newPage === 1) next.delete('page')
+      else next.set('page', String(newPage))
+      return next
+    }, { replace: true })
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   // ─── Data fetching ──────────────────────────────────────────────────────────
   const fetchJobs = useCallback(
-    async (pageNum: number) => {
+    async () => {
       setLoading(true)
       try {
-        const from = pageNum * PAGE_SIZE
+        const from = (pageParam - 1) * PAGE_SIZE
         const to = from + PAGE_SIZE - 1
 
         let query = supabase
           .from('jobs')
-          .select('*, employer_profiles(id, farm_name, region)')
+          .select('*, employer_profiles(id, farm_name, region)', { count: 'exact' })
           .eq('status', 'active')
-          .order('created_at', { ascending: false })
           .range(from, to)
 
         // Apply filters from URL params
@@ -188,14 +221,22 @@ export function JobSearch() {
           }
         }
 
-        const accommodation = searchParams.get('accommodation')
-        if (accommodation === 'true') {
-          query = query.contains('accommodation', { available: true })
+        // Role type filter
+        const roleTypes = searchParams.getAll('role_type')
+        if (roleTypes.length === 1) query = query.eq('role_type', roleTypes[0])
+        else if (roleTypes.length > 1) query = query.in('role_type', roleTypes)
+
+        // Accommodation multi-option filter
+        const accommodationTypes = searchParams.getAll('accommodation_type')
+        if (accommodationTypes.length > 0) {
+          query = query.overlaps('accommodation_extras', accommodationTypes)
         }
 
-        const couples = searchParams.get('couples')
-        if (couples === 'true') {
-          query = query.eq('couples_welcome', true)
+        // Posted recent filter (last 7 days)
+        const postedRecent = searchParams.get('posted_recent')
+        if (postedRecent === 'true') {
+          const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+          query = query.gte('created_at', sevenDaysAgo)
         }
 
         const visa = searchParams.get('visa')
@@ -203,18 +244,23 @@ export function JobSearch() {
           query = query.eq('visa_sponsorship', true)
         }
 
-        const { data, error } = await query
+        // Sort handling
+        const sortParam = searchParams.get('sort') ?? 'match'
+        if (sortParam === 'salary_desc') query = query.order('salary_max', { ascending: false, nullsFirst: false })
+        else if (sortParam === 'location_nearest') query = query.order('region', { ascending: true })
+        else if (sortParam === 'recent') query = query.order('created_at', { ascending: false })
+        else query = query.order('created_at', { ascending: false }) // default — match sort happens client-side after scores
+
+        const { data, count, error } = await query
 
         if (error) {
           console.error('JobSearch: query error', error)
           return
         }
 
-        const fetchedJobs = (data ?? []) as JobWithEmployer[]
-        setHasMore(fetchedJobs.length === PAGE_SIZE)
+        setTotalCount(count ?? 0)
 
-        // Append or replace
-        const allJobs = pageNum === 0 ? fetchedJobs : [...jobs, ...fetchedJobs]
+        const fetchedJobs = (data ?? []) as JobWithEmployer[]
 
         // Fetch match scores for logged-in seekers
         if (session?.user && role === 'seeker' && fetchedJobs.length > 0) {
@@ -242,7 +288,7 @@ export function JobSearch() {
             setScores(newScores)
 
             // Sort with match scores: best first, then by recency
-            allJobs.sort((a, b) => {
+            fetchedJobs.sort((a, b) => {
               const scoreA = newScores.get(a.id)?.total_score ?? -1
               const scoreB = newScores.get(b.id)?.total_score ?? -1
               if (scoreB !== scoreA) return scoreB - scoreA
@@ -272,32 +318,27 @@ export function JobSearch() {
           setEmployerVerifications(newVerificationMap)
         }
 
-        setJobs(allJobs)
+        setJobs(fetchedJobs)
       } finally {
         setLoading(false)
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [searchParams, session, role],
+    [searchParams, session, role, pageParam],
   )
 
-  // Re-fetch when searchParams change
+  // Re-fetch when searchParams change (includes page changes)
   useEffect(() => {
-    fetchJobs(0)
-    setPage(0)
+    fetchJobs()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams])
-
-  function handleLoadMore() {
-    const nextPage = page + 1
-    setPage(nextPage)
-    fetchJobs(nextPage)
-  }
 
   const sortParam = searchParams.get('sort') ?? 'match'
 
   return (
     <div className="min-h-screen bg-mist">
+      <SearchHero />
+
       <div className="max-w-[1200px] mx-auto px-4 py-6">
 
         {/* Mobile: sticky header with filter icon */}
@@ -352,10 +393,13 @@ export function JobSearch() {
               scores={scores}
               employerVerifications={employerVerifications}
               loading={loading}
-              hasMore={hasMore}
-              onLoadMore={handleLoadMore}
               sortParam={sortParam}
               onSortChange={(sort) => handleFilterChange('sort', sort)}
+              searchParams={searchParams}
+              onRemoveFilter={handleRemoveFilter}
+              totalPages={totalPages}
+              currentPage={pageParam}
+              onPageChange={handlePageChange}
             />
           </main>
         </div>
@@ -367,10 +411,13 @@ export function JobSearch() {
             scores={scores}
             employerVerifications={employerVerifications}
             loading={loading}
-            hasMore={hasMore}
-            onLoadMore={handleLoadMore}
             sortParam={sortParam}
             onSortChange={(sort) => handleFilterChange('sort', sort)}
+            searchParams={searchParams}
+            onRemoveFilter={handleRemoveFilter}
+            totalPages={totalPages}
+            currentPage={pageParam}
+            onPageChange={handlePageChange}
           />
         </div>
       </div>
@@ -385,10 +432,13 @@ interface ResultsAreaProps {
   scores: Map<string, MatchScore>
   employerVerifications: Map<string, EmployerVerificationMap>
   loading: boolean
-  hasMore: boolean
-  onLoadMore: () => void
   sortParam: string
   onSortChange: (sort: string) => void
+  searchParams: URLSearchParams
+  onRemoveFilter: (key: string, value?: string) => void
+  totalPages: number
+  currentPage: number
+  onPageChange: (page: number) => void
 }
 
 function ResultsArea({
@@ -396,13 +446,19 @@ function ResultsArea({
   scores,
   employerVerifications,
   loading,
-  hasMore,
-  onLoadMore,
   sortParam,
   onSortChange,
+  searchParams,
+  onRemoveFilter,
+  totalPages,
+  currentPage,
+  onPageChange,
 }: ResultsAreaProps) {
   return (
     <div>
+      {/* Active filter pills */}
+      <ActiveFilterPills searchParams={searchParams} onRemove={onRemoveFilter} />
+
       {/* Header: count + sort */}
       <div className="flex items-center justify-between mb-4">
         <p className="text-[14px] font-body text-mid">
@@ -425,6 +481,8 @@ function ResultsArea({
           >
             <option value="match">Match Score</option>
             <option value="recent">Most Recent</option>
+            <option value="salary_desc">Salary: High to Low</option>
+            <option value="location_nearest">Location: Nearest</option>
           </select>
         </div>
       </div>
@@ -445,10 +503,10 @@ function ResultsArea({
             <X className="w-8 h-8 text-light" />
           </div>
           <h3 className="text-[17px] font-body font-semibold text-ink mb-2">
-            No jobs match your filters
+            No jobs match your filters.
           </h3>
           <p className="text-[14px] font-body text-mid max-w-[280px]">
-            Try adjusting your filters to see more results
+            Try broadening your search or removing a filter.
           </p>
         </div>
       )}
@@ -471,12 +529,10 @@ function ResultsArea({
         </div>
       )}
 
-      {/* Load more */}
-      {hasMore && !loading && (
+      {/* Numbered pagination */}
+      {totalPages > 1 && (
         <div className="flex justify-center mt-6">
-          <Button variant="outline" size="md" onClick={onLoadMore}>
-            Load more jobs
-          </Button>
+          <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} />
         </div>
       )}
 
