@@ -21,15 +21,15 @@ Requirements for SPEC v3.0 compliance. Each maps to roadmap phases.
 
 ### Employer Onboarding
 
-- [ ] **EONB-01**: Step 2 shows 6 farm types in 2x3 chip grid + 4 ownership structure chips
-- [ ] **EONB-02**: Step 3 includes calving system select, nearest town input, distance-from-town select with >30km hay warning
-- [ ] **EONB-03**: Step 3 shed type uses ChipSelector with 5 options (Rotary, Herringbone, AMS, Swing-Over, Tiestall)
-- [ ] **EONB-04**: Step 4 includes career development chip grid, hiring frequency select, couples toggle with partner sub-select
-- [ ] **EONB-05**: Step 4 textarea char limits match SPEC (175/400 for about farm)
-- [ ] **EONB-06**: Step 5 includes blue info box ("76% of seekers need accommodation"), full 8+ extras chip grid, vehicle toggle with chips, broadband toggle
-- [ ] **EONB-07**: Step 5 includes salary range min/max NZD inputs with market rate comparison hint
-- [ ] **EONB-08**: Step 7 includes annual/monthly billing toggle with "Save 20%" messaging
-- [ ] **EONB-09**: Step 8 shows two-col completion with success checklist, 3 CTAs, AI tip, and live profile preview
+- [x] **EONB-01**: Step 2 shows 6 farm types in 2x3 chip grid + 4 ownership structure chips
+- [x] **EONB-02**: Step 3 includes calving system select, nearest town input, distance-from-town select with >30km hay warning
+- [x] **EONB-03**: Step 3 shed type uses ChipSelector with 5 options (Rotary, Herringbone, AMS, Swing-Over, Tiestall)
+- [x] **EONB-04**: Step 4 includes career development chip grid, hiring frequency select, couples toggle with partner sub-select
+- [x] **EONB-05**: Step 4 textarea char limits match SPEC (175/400 for about farm)
+- [x] **EONB-06**: Step 5 includes blue info box ("76% of seekers need accommodation"), full 8+ extras chip grid, vehicle toggle with chips, broadband toggle
+- [x] **EONB-07**: Step 5 includes salary range min/max NZD inputs with market rate comparison hint
+- [x] **EONB-08**: Step 7 includes annual/monthly billing toggle with "Save 20%" messaging
+- [x] **EONB-09**: Step 8 shows two-col completion with success checklist, 3 CTAs, AI tip, and live profile preview
 
 ### Post Job Wizard
 
@@ -145,15 +145,15 @@ Deferred to future release. Not in current roadmap.
 | PRIM-07 | Phase 7 | Complete |
 | PRIM-08 | Phase 7 | Complete |
 | PRIM-09 | Phase 7 | Complete |
-| EONB-01 | Phase 8 | Pending |
-| EONB-02 | Phase 8 | Pending |
-| EONB-03 | Phase 8 | Pending |
-| EONB-04 | Phase 8 | Pending |
-| EONB-05 | Phase 8 | Pending |
-| EONB-06 | Phase 8 | Pending |
-| EONB-07 | Phase 8 | Pending |
-| EONB-08 | Phase 8 | Pending |
-| EONB-09 | Phase 8 | Pending |
+| EONB-01 | Phase 8 | Complete |
+| EONB-02 | Phase 8 | Complete |
+| EONB-03 | Phase 8 | Complete |
+| EONB-04 | Phase 8 | Complete |
+| EONB-05 | Phase 8 | Complete |
+| EONB-06 | Phase 8 | Complete |
+| EONB-07 | Phase 8 | Complete |
+| EONB-08 | Phase 8 | Complete |
+| EONB-09 | Phase 8 | Complete |
 | PJOB-01 | Phase 8 | Complete |
 | PJOB-02 | Phase 8 | Complete |
 | PJOB-03 | Phase 8 | Complete |
