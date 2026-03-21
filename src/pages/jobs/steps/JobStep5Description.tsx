@@ -7,10 +7,10 @@ const schema = z.object({
   description_overview: z
     .string()
     .min(20, 'Please write at least 20 characters')
-    .max(5000, 'Maximum 5000 characters'),
-  description_daytoday: z.string().max(3000, 'Maximum 3000 characters').optional(),
-  description_offer: z.string().max(3000, 'Maximum 3000 characters').optional(),
-  description_ideal: z.string().max(3000, 'Maximum 3000 characters').optional(),
+    .max(175, 'Maximum 175 characters'),
+  description_daytoday: z.string().max(400, 'Maximum 400 characters').optional(),
+  description_offer: z.string().max(400, 'Maximum 400 characters').optional(),
+  description_ideal: z.string().max(400, 'Maximum 400 characters').optional(),
 })
 
 type FormData = z.infer<typeof schema>
@@ -107,7 +107,7 @@ export function JobStep5Description({ onComplete, onBack, defaultValues }: Step5
           label="Role Overview"
           required
           placeholder="Describe the role and what you're looking for..."
-          maxLength={5000}
+          maxLength={175}
           value={overview}
           error={errors.description_overview?.message}
           registration={register('description_overview')}
@@ -116,7 +116,7 @@ export function JobStep5Description({ onComplete, onBack, defaultValues }: Step5
         <TextAreaField
           label="Day-to-Day"
           placeholder="What does a typical day look like?"
-          maxLength={3000}
+          maxLength={400}
           value={daytoday}
           error={errors.description_daytoday?.message}
           registration={register('description_daytoday')}
@@ -125,7 +125,7 @@ export function JobStep5Description({ onComplete, onBack, defaultValues }: Step5
         <TextAreaField
           label="What We Offer"
           placeholder="What makes this role and your farm special?"
-          maxLength={3000}
+          maxLength={400}
           value={offer}
           error={errors.description_offer?.message}
           registration={register('description_offer')}
@@ -134,7 +134,7 @@ export function JobStep5Description({ onComplete, onBack, defaultValues }: Step5
         <TextAreaField
           label="Ideal Candidate"
           placeholder="Describe the ideal person for this role..."
-          maxLength={3000}
+          maxLength={400}
           value={ideal}
           error={errors.description_ideal?.message}
           registration={register('description_ideal')}

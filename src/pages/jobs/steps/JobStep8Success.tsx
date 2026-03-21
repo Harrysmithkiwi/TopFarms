@@ -68,6 +68,22 @@ export function JobStep8Success({ jobId }: JobStep8SuccessProps) {
         )}
       </div>
 
+      {/* Stats grid */}
+      <div className="grid grid-cols-3 gap-4 w-full max-w-md">
+        <div className="text-center p-4 rounded-[10px] border border-fog bg-mist">
+          <p className="text-2xl font-semibold font-body" style={{ color: 'var(--color-moss)' }}>3</p>
+          <p className="text-[12px] font-body mt-1" style={{ color: 'var(--color-mid)' }}>avg days to first applicant</p>
+        </div>
+        <div className="text-center p-4 rounded-[10px] border border-fog bg-mist">
+          <p className="text-2xl font-semibold font-body" style={{ color: 'var(--color-moss)' }}>120+</p>
+          <p className="text-[12px] font-body mt-1" style={{ color: 'var(--color-mid)' }}>seekers in match pool</p>
+        </div>
+        <div className="text-center p-4 rounded-[10px] border border-fog bg-mist">
+          <p className="text-2xl font-semibold font-body" style={{ color: 'var(--color-moss)' }}>85%</p>
+          <p className="text-[12px] font-body mt-1" style={{ color: 'var(--color-mid)' }}>actively looking</p>
+        </div>
+      </div>
+
       {/* Actions */}
       <div className="w-full max-w-xs space-y-3">
         <Link
