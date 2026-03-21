@@ -43,7 +43,7 @@ Declared values (multiples of 4):
 | 3xl | 64px | Not used in wizard context |
 
 Exceptions:
-- Chip buttons: `px-3 py-2` (12px × 8px) — consistent with Phase 7 ChipSelector contract
+- Chip buttons: `px-4 py-2` (16px × 8px) — horizontal 16px, vertical 8px, both standard set values
 - InfoBox: `p-4` (16px) — established by InfoBox component
 - Breadcrumb bar height (Phase 9): 44px — out of scope for Phase 8
 - Toggle row container: `p-4` (16px) with fog border — established pattern from Step4Accommodation
@@ -247,9 +247,12 @@ Source: CONTEXT.md decisions — "Calculating your matches message (with loading
 
 ### Wizard nav buttons
 
-- All steps: `flex justify-between pt-2` footer — Back (ghost) left, Continue/Submit (primary) right
+- All steps: `flex justify-between pt-2` footer — Back (ghost) left, Continue/final CTA (primary) right
 - First step: Continue only, `ml-auto`
-- Final step: Submit button triggers save + navigate to completion screen
+- Final step per wizard: primary button triggers save + navigate to completion screen
+  - Employer onboarding final step: "Complete Profile"
+  - Seeker onboarding final step: "Start Finding Jobs"
+  - Post job wizard final step: "Post Job"
 - Disabled state: `opacity-50 cursor-not-allowed` — built into Button component
 
 ---
@@ -278,7 +281,9 @@ Source: CONTEXT.md decisions — "Calculating your matches message (with loading
 | Chip pre-populate loading | No user-facing notice — silent migration |
 | Step Continue button | "Continue" (all mid-wizard steps) |
 | Step Back button | "Back" |
-| Wizard final step | "Submit" |
+| Employer onboarding final step CTA | "Complete Profile" |
+| Seeker onboarding final step CTA | "Start Finding Jobs" |
+| Post job wizard final step CTA | "Post Job" |
 
 **Destructive actions:** None in Phase 8. No confirmation dialogs required.
 
