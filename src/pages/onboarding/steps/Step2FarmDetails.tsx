@@ -3,18 +3,20 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
-import { Checkbox } from '@/components/ui/Checkbox'
 import { Button } from '@/components/ui/Button'
+import { ChipSelector } from '@/components/ui/ChipSelector'
+import { FARM_TYPE_OPTIONS, OWNERSHIP_TYPE_OPTIONS, SHED_TYPES } from '@/types/domain'
 
 const schema = z.object({
-  farm_name: z.string().min(2, 'Farm name required'),
-  region: z.string().min(1, 'Select a region'),
-  herd_size: z.coerce.number().min(1, 'Enter herd size').optional(),
-  shed_type: z.array(z.string()).optional(),
+  farm_name: z.string().min(1, 'Farm name is required'),
+  region: z.string().min(1, 'Region is required'),
+  farm_types: z.array(z.string()).min(1, 'Select at least one farm type'),
+  ownership_type: z.array(z.string()).optional(),
+  shed_type: z.array(z.string()).min(1, 'Select shed type'),
+  herd_size: z.coerce.number().optional(),
   milking_frequency: z.string().optional(),
   breed: z.string().optional(),
   property_size_ha: z.coerce.number().optional(),
-  ownership_type: z.string().optional(),
 })
 
 type FormData = z.infer<typeof schema>
@@ -22,7 +24,10 @@ type FormData = z.infer<typeof schema>
 interface Step2Props {
   onComplete: (data: FormData) => void
   onBack?: () => void
-  defaultValues?: Partial<FormData>
+  defaultValues?: Partial<Omit<FormData, 'ownership_type'>> & {
+    ownership_type?: string | string[]
+    farm_types?: string[]
+  }
 }
 
 const NZ_REGIONS = [
@@ -44,19 +49,10 @@ const NZ_REGIONS = [
   'Southland',
 ]
 
-const SHED_TYPES = ['Rotary', 'Herringbone', 'Other']
-
 const MILKING_FREQUENCY_OPTIONS = [
   { value: 'once_a_day', label: 'Once-a-day' },
   { value: 'twice_a_day', label: 'Twice-a-day' },
   { value: 'three_a_day', label: 'Three-a-day' },
-]
-
-const OWNERSHIP_TYPE_OPTIONS = [
-  { value: 'owner_operator', label: 'Owner-operator' },
-  { value: 'corporate', label: 'Corporate' },
-  { value: 'sharemilker', label: 'Sharemilker' },
-  { value: 'contract_milker', label: 'Contract milker' },
 ]
 
 export function Step2FarmDetails({ onComplete, onBack, defaultValues }: Step2Props) {
@@ -64,33 +60,25 @@ export function Step2FarmDetails({ onComplete, onBack, defaultValues }: Step2Pro
     register,
     handleSubmit,
     control,
-    watch,
-    setValue,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
       farm_name: defaultValues?.farm_name ?? '',
       region: defaultValues?.region ?? '',
-      herd_size: defaultValues?.herd_size,
+      farm_types: defaultValues?.farm_types ?? [],
+      ownership_type: Array.isArray(defaultValues?.ownership_type)
+        ? defaultValues.ownership_type
+        : defaultValues?.ownership_type
+          ? [defaultValues.ownership_type]
+          : [],
       shed_type: defaultValues?.shed_type ?? [],
+      herd_size: defaultValues?.herd_size,
       milking_frequency: defaultValues?.milking_frequency ?? '',
       breed: defaultValues?.breed ?? '',
       property_size_ha: defaultValues?.property_size_ha,
-      ownership_type: defaultValues?.ownership_type ?? '',
     },
   })
-
-  const shedType = watch('shed_type') ?? []
-
-  function toggleShedType(type: string) {
-    const current = shedType
-    if (current.includes(type)) {
-      setValue('shed_type', current.filter((t) => t !== type))
-    } else {
-      setValue('shed_type', [...current, type])
-    }
-  }
 
   return (
     <form onSubmit={handleSubmit(onComplete)} className="space-y-6">
@@ -104,6 +92,45 @@ export function Step2FarmDetails({ onComplete, onBack, defaultValues }: Step2Pro
       </div>
 
       <div className="space-y-4">
+        {/* Farm type chips — 2-column grid, multi-select */}
+        <div>
+          <p className="font-body text-[13px] font-semibold text-ink mb-2">Farm type *</p>
+          <Controller
+            control={control}
+            name="farm_types"
+            render={({ field }) => (
+              <ChipSelector
+                options={FARM_TYPE_OPTIONS}
+                value={field.value ?? []}
+                onChange={field.onChange}
+                mode="multi"
+                columns={2}
+              />
+            )}
+          />
+          {errors.farm_types && (
+            <p className="text-red text-[12px] mt-1">{errors.farm_types.message}</p>
+          )}
+        </div>
+
+        {/* Ownership structure chips — 2-column grid, multi-select */}
+        <div>
+          <p className="font-body text-[13px] font-semibold text-ink mb-2">Ownership structure</p>
+          <Controller
+            control={control}
+            name="ownership_type"
+            render={({ field }) => (
+              <ChipSelector
+                options={OWNERSHIP_TYPE_OPTIONS}
+                value={field.value ?? []}
+                onChange={field.onChange}
+                mode="multi"
+                columns={2}
+              />
+            )}
+          />
+        </div>
+
         <Input
           label="Farm name *"
           placeholder="e.g. Green Valley Farm"
@@ -134,19 +161,25 @@ export function Step2FarmDetails({ onComplete, onBack, defaultValues }: Step2Pro
           {...register('herd_size')}
         />
 
-        {/* Shed type multi-select */}
+        {/* Shed type chips — inline, multi-select */}
         <div>
-          <p className="font-body text-[13px] font-medium text-ink mb-2">Shed type</p>
-          <div className="flex flex-wrap gap-3">
-            {SHED_TYPES.map((type) => (
-              <Checkbox
-                key={type}
-                label={type}
-                checked={shedType.includes(type)}
-                onCheckedChange={() => toggleShedType(type)}
+          <p className="font-body text-[13px] font-semibold text-ink mb-2">Shed type *</p>
+          <Controller
+            control={control}
+            name="shed_type"
+            render={({ field }) => (
+              <ChipSelector
+                options={SHED_TYPES}
+                value={field.value ?? []}
+                onChange={field.onChange}
+                mode="multi"
+                columns="inline"
               />
-            ))}
-          </div>
+            )}
+          />
+          {errors.shed_type && (
+            <p className="text-red text-[12px] mt-1">{errors.shed_type.message}</p>
+          )}
         </div>
 
         <Controller
@@ -183,20 +216,6 @@ export function Step2FarmDetails({ onComplete, onBack, defaultValues }: Step2Pro
             ha
           </span>
         </div>
-
-        <Controller
-          control={control}
-          name="ownership_type"
-          render={({ field }) => (
-            <Select
-              label="Ownership type"
-              placeholder="Select ownership type"
-              options={OWNERSHIP_TYPE_OPTIONS}
-              value={field.value}
-              onValueChange={field.onChange}
-            />
-          )}
-        />
       </div>
 
       <div className="flex justify-between pt-2">
