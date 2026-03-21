@@ -60,12 +60,13 @@ Plans:
   3. Seeker onboarding step 1 shows all 6 sector chips; step 3 shows licence and certification chips; step 5 shows salary input, availability date, notice period, housing sub-option chips, and preferred regions multi-select chip grid
   4. Employer onboarding completion screen (step 8) and seeker completion screen (step 7) render the SPEC two-column layout with success checklist, CTAs, and matched content
   5. A v1.0 user can re-open any wizard and chips pre-populate correctly from saved data (no blank chips from boolean-to-string[] conversion errors)
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 08-01: Employer onboarding — extend TypeScript interface + DB migration, then steps 2-5 field additions
-- [ ] 08-02: Post job wizard — extend TypeScript interface + DB migration, then steps 2-5 field additions + LivePreviewSidebar integration
-- [ ] 08-03: Seeker onboarding — extend TypeScript interface + DB migration, then steps 1, 3, 5 field additions + completion screen
+- [ ] 08-01-PLAN.md — Foundation: DB migration + TypeScript interfaces + wizardUtils + shell orchestrator updates + LivePreviewSidebar layout
+- [ ] 08-02-PLAN.md — Employer onboarding steps 2-5, step 7 billing toggle, step 8 completion screen
+- [ ] 08-03-PLAN.md — Post job wizard steps 1-5 field extensions + step 8 success stats
+- [ ] 08-04-PLAN.md — Seeker onboarding steps 1, 3, 5 field extensions + step 7 completion screen
 
 ### Phase 9: Page-Level Integrations
 **Goal**: Job search, job detail, applicant dashboard, and My Applications match the SPEC layout and functionality for both seekers and employers
@@ -129,7 +130,7 @@ Plans:
 | 5. Revenue Protection | v1.0 | 4/4 | Complete | 2026-03-17 |
 | 6. Landing Page and Launch | v1.0 | 2/2 | Complete | 2026-03-17 |
 | 7. UI Primitives | v1.1 | 0/3 | Not started | - |
-| 8. Wizard Field Extensions | v1.1 | 0/3 | Not started | - |
+| 8. Wizard Field Extensions | v1.1 | 0/4 | Not started | - |
 | 9. Page-Level Integrations | v1.1 | 0/5 | Not started | - |
 | 10. Landing Page | v1.1 | 0/3 | Not started | - |
 | 11. Backend-Dependent Features | v1.1 | 0/2 | Not started | - |
