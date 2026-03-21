@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: SPEC Compliance
 status: executing
-stopped_at: Completed 08-02-PLAN.md — wizard step UI extensions (Steps 2-5, 7, 8)
-last_updated: "2026-03-21T09:42:18.593Z"
+stopped_at: Completed 08-05-PLAN.md — ownership_type text to text[] migration fix
+last_updated: "2026-03-21T09:58:29.496Z"
 last_activity: 2026-03-21 — Completed 08-04 Seeker steps 1, 3, 5, 7 field extensions (SONB-01, 03-07)
 progress:
   total_phases: 5
   completed_phases: 2
-  total_plans: 7
-  completed_plans: 7
+  total_plans: 8
+  completed_plans: 8
   percent: 71
 ---
 
@@ -55,6 +55,7 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 08]: Step 8 stats grid uses static placeholder numbers — Phase 11 wires real data from match_scores
 - [Phase 08]: Step2 ownership_type widened from string to string[] to support multi-select ChipSelector; backward compat via Array.isArray check
 - [Phase 08]: Step8Complete uses useNavigate for CTAs instead of Link — EmployerOnboarding no longer navigates after last step
+- [Phase 08-wizard-field-extensions]: Migration 014 uses ARRAY[ownership_type] USING clause to wrap existing text values as single-element arrays — zero data loss on column type change
 
 ### Blockers/Concerns
 
@@ -65,6 +66,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-03-21T09:42:18.591Z
-Stopped at: Completed 08-02-PLAN.md — wizard step UI extensions (Steps 2-5, 7, 8)
+Last session: 2026-03-21T09:58:29.494Z
+Stopped at: Completed 08-05-PLAN.md — ownership_type text to text[] migration fix
 Resume file: None
