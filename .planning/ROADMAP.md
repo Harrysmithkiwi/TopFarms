@@ -115,11 +115,11 @@ Plans:
   1. An employer filling out the post job wizard sees the match pool estimate update in the LivePreviewSidebar as they fill in shed type, region, and accommodation fields — estimate is debounced 500ms and shows "Calculating..." while the RPC is in flight
   2. A seeker can drag-and-drop or click to upload CV, certificates, and references in step 3 of seeker onboarding — files are stored in a private `seeker-documents` bucket and are not accessible via the employer photos bucket
   3. The seeker completion screen shows the top 3 matched jobs with scores within 30 seconds of onboarding finishing — if match scores have not yet computed, the screen shows a "We're calculating your matches" message instead of 0 results
-**Plans**: 3 plans
+**Plans**: 2 plans
 
 Plans:
-- [ ] 11-01: Match pool RPC (Supabase function + LivePreviewSidebar wiring)
-- [ ] 11-02: Seeker document upload (private Storage bucket + RLS + step 3 integration)
+- [ ] 11-01-PLAN.md — Migration (bucket + RLS + column + RPC) + FileDropzone multi-file extension + SeekerStep3 document upload
+- [ ] 11-02-PLAN.md — LivePreviewSidebar match pool RPC wiring + SeekerStep7Complete matched-jobs polling
 
 ## Progress
 
