@@ -19,6 +19,12 @@ import { useAuth } from '@/hooks/useAuth'
 import { VerificationBadge } from '@/components/ui/VerificationBadge'
 import { MatchBreakdown } from '@/components/ui/MatchBreakdown'
 import { MatchCircle } from '@/components/ui/MatchCircle'
+import { Breadcrumb } from '@/components/ui/Breadcrumb'
+import { StatsStrip } from '@/components/ui/StatsStrip'
+import { Timeline } from '@/components/ui/Timeline'
+import { JobDetailSidebar } from '@/components/ui/JobDetailSidebar'
+import { MapPlaceholder } from '@/components/ui/MapPlaceholder'
+import { useSavedJobs } from '@/hooks/useSavedJobs'
 import type {
   JobListing,
   EmployerVerification,
@@ -53,6 +59,16 @@ interface JobSkill {
     name: string
     category: string
   }
+}
+
+interface SimilarJob {
+  id: string
+  title: string
+  farm_name: string
+  region: string
+  salary_min?: number
+  salary_max?: number
+  matchScore?: number
 }
 
 interface JobDetailData extends JobListing {
@@ -135,6 +151,12 @@ export function JobDetail() {
   const [coverNote, setCoverNote] = useState('')
   const [applying, setApplying] = useState(false)
 
+  // New: similar jobs and application count
+  const [similarJobs, setSimilarJobs] = useState<SimilarJob[]>([])
+  const [applicationCount, setApplicationCount] = useState(0)
+
+  const { isSaved, toggleSave } = useSavedJobs(session?.user?.id ?? null)
+
   useEffect(() => {
     if (!jobId) {
       setNotFound(true)
@@ -206,7 +228,33 @@ export function JobDetail() {
         setVerifications((verifData as EmployerVerification[]) ?? [])
       }
 
-      // 4. Seeker-specific: fetch match score + check prior application
+      // 4. Application count for this job
+      const { count: appCount } = await supabase
+        .from('applications')
+        .select('id', { count: 'exact', head: true })
+        .eq('job_id', jobId)
+      setApplicationCount(appCount ?? 0)
+
+      // 5. Similar jobs: 3 active jobs in same region, excluding current
+      const { data: similarData } = await supabase
+        .from('jobs')
+        .select('id, title, salary_min, salary_max, employer_profiles(farm_name, region)')
+        .eq('status', 'active')
+        .eq('region', loadedJob.region ?? '')
+        .neq('id', jobId)
+        .limit(3)
+      setSimilarJobs(
+        ((similarData ?? []) as any[]).map((j) => ({
+          id: j.id,
+          title: j.title,
+          farm_name: j.employer_profiles?.farm_name ?? '',
+          region: j.employer_profiles?.region ?? '',
+          salary_min: j.salary_min,
+          salary_max: j.salary_max,
+        })),
+      )
+
+      // 6. Seeker-specific: fetch match score + check prior application
       if (session && role === 'seeker') {
         const { data: profile } = await supabase
           .from('seeker_profiles')
@@ -336,9 +384,6 @@ export function JobDetail() {
   const isSeeker = session && role === 'seeker'
   const isOwnerEmployer =
     session && role === 'employer' // Simplified — in Phase 2 all employers see edit for any job (ownership check deferred)
-  // Actually check via employer_id — need employer's profile id
-  // We can't easily get the logged-in employer profile id here, so show edit link for all employers viewing own listing
-  // A proper ownership check requires loading the employer profile. We keep it simple here.
 
   const isFeatured = job.listing_tier === 2
   const isPremium = job.listing_tier === 3
@@ -377,65 +422,25 @@ export function JobDetail() {
       className="min-h-screen pb-24"
       style={{ backgroundColor: 'var(--color-cream)' }}
     >
-      {/* Top nav bar (minimal) */}
-      <nav
-        className="sticky top-0 z-30 border-b border-fog"
-        style={{ backgroundColor: 'white' }}
-      >
-        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link
-            to="/"
-            className="font-display text-lg font-semibold"
-            style={{ color: 'var(--color-soil)' }}
-          >
-            TopFarms
-          </Link>
-          {isVisitor && (
-            <div className="flex items-center gap-2">
-              <Link
-                to="/login"
-                className={cn(
-                  'font-body font-bold rounded-[8px] transition-all duration-200 inline-flex items-center justify-center',
-                  'bg-white border border-moss text-moss hover:bg-mist',
-                  'px-3 py-1.5 text-[12px]',
-                )}
-              >
-                Log In
-              </Link>
-              <Link
-                to="/signup"
-                className={cn(
-                  'font-body font-bold rounded-[8px] transition-all duration-200 inline-flex items-center justify-center',
-                  'bg-moss text-white hover:bg-fern',
-                  'px-3 py-1.5 text-[12px]',
-                )}
-              >
-                Sign Up
-              </Link>
-            </div>
-          )}
-          {isOwnerEmployer && (
-            <Link
-              to={`/jobs/${job.id}/edit`}
-              className={cn(
-                'font-body font-bold rounded-[8px] transition-all duration-200 inline-flex items-center justify-center',
-                'bg-white border border-moss text-moss hover:bg-mist',
-                'px-3 py-1.5 text-[12px]',
-              )}
-            >
-              Edit Listing
-            </Link>
-          )}
-        </div>
-      </nav>
+      {/* Breadcrumb bar — replaces old minimal nav */}
+      <div className="sticky top-0 z-30">
+        <Breadcrumb
+          items={[
+            { label: 'Jobs', href: '/jobs' },
+            { label: job.title },
+          ]}
+          onSave={() => jobId && toggleSave(jobId)}
+          onShare={() => {
+            navigator.clipboard.writeText(window.location.href)
+            toast.success('Link copied to clipboard')
+          }}
+        />
+      </div>
 
       {/* Main content */}
-      <main className="max-w-4xl mx-auto px-4 py-8">
-        <div className={cn(
-          'gap-8',
-          (isSeeker || isVisitor) ? 'lg:grid lg:grid-cols-[1fr_280px]' : '',
-        )}>
-          {/* Left column — all existing sections */}
+      <main className="max-w-5xl mx-auto px-4 py-8">
+        <div className="lg:grid lg:grid-cols-[1fr_320px] gap-8">
+          {/* Left column — all content sections */}
           <div className="space-y-8">
 
             {/* Header section */}
@@ -501,6 +506,14 @@ export function JobDetail() {
               </div>
             </section>
 
+            {/* Stats strip (JDET-02) */}
+            <StatsStrip stats={[
+              { label: 'Applications', value: applicationCount },
+              { label: 'Views', value: '-' },
+              { label: 'Salary', value: formatSalary(job.salary_min, job.salary_max) },
+              { label: 'Posted', value: formatDate(job.created_at) ?? '-' },
+            ]} />
+
             {/* Description sections */}
             {(job.description_overview ||
               job.description_daytoday ||
@@ -521,6 +534,7 @@ export function JobDetail() {
                       </p>
                     </div>
                   )}
+                  {/* Day-to-day: bulleted list with meadow dots (JDET-03) */}
                   {job.description_daytoday && (
                     <div>
                       <h2
@@ -529,9 +543,14 @@ export function JobDetail() {
                       >
                         Day-to-Day
                       </h2>
-                      <p className="text-sm leading-relaxed whitespace-pre-line" style={{ color: 'var(--color-mid)' }}>
-                        {job.description_daytoday}
-                      </p>
+                      <ul className="space-y-1.5">
+                        {job.description_daytoday.split('\n').filter(Boolean).map((line, i) => (
+                          <li key={i} className="flex items-start gap-2 text-sm leading-relaxed" style={{ color: 'var(--color-mid)' }}>
+                            <span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--color-meadow)' }} />
+                            {line.replace(/^[-*]\s*/, '')}
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   )}
                   {job.description_offer && (
@@ -579,43 +598,87 @@ export function JobDetail() {
                   {preferredCount > 0 && `${preferredCount} preferred`}
                 </p>
 
-                <div className="bg-white border-[1.5px] border-fog rounded-[12px] p-6 space-y-5">
-                  {Object.entries(skillsByCategory).map(([category, categorySkills]) => (
-                    <div key={category}>
-                      <p
-                        className="text-[11px] font-body font-semibold uppercase tracking-wide mb-2"
-                        style={{ color: 'var(--color-light)' }}
-                      >
-                        {category}
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {categorySkills.map((s) => (
-                          <span
-                            key={s.skill_id}
-                            className={cn(
-                              'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-body font-semibold',
-                              s.requirement_level === 'required'
-                                ? 'bg-[rgba(74,124,47,0.12)] text-moss'
-                                : 'bg-fog text-mid',
-                            )}
-                          >
-                            {s.skills?.name}
+                <div className="bg-white border-[1.5px] border-fog rounded-[12px] p-6">
+                  {/* Legend row (JDET-04) */}
+                  <div className="flex items-center gap-4 mb-4 pb-3 border-b border-fog">
+                    <span className="inline-flex items-center gap-1.5 text-[12px] font-body">
+                      <span className="w-2 h-2 rounded-full bg-moss" /> Required
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 text-[12px] font-body">
+                      <span className="w-2 h-2 rounded-full bg-fog" /> Preferred
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 text-[12px] font-body">
+                      <span className="w-2 h-2 rounded-full bg-hay" /> Bonus
+                    </span>
+                  </div>
+
+                  {/* 2-column skills grid */}
+                  <div className="grid grid-cols-2 gap-4">
+                    {Object.entries(skillsByCategory).map(([category, categorySkills]) => (
+                      <div key={category}>
+                        <p
+                          className="text-[11px] font-body font-semibold uppercase tracking-wide mb-2"
+                          style={{ color: 'var(--color-light)' }}
+                        >
+                          {category}
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {categorySkills.map((s) => (
                             <span
+                              key={s.skill_id}
                               className={cn(
-                                'text-[10px]',
-                                s.requirement_level === 'required' ? 'text-moss/70' : 'text-light',
+                                'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-body font-semibold',
+                                s.requirement_level === 'required'
+                                  ? 'bg-[rgba(74,124,47,0.12)] text-moss'
+                                  : 'bg-fog text-mid',
                               )}
                             >
-                              {s.requirement_level === 'required' ? 'required' : 'preferred'}
+                              {s.skills?.name}
+                              <span
+                                className={cn(
+                                  'text-[10px]',
+                                  s.requirement_level === 'required' ? 'text-moss/70' : 'text-light',
+                                )}
+                              >
+                                {s.requirement_level === 'required' ? 'required' : 'preferred'}
+                              </span>
                             </span>
-                          </span>
-                        ))}
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </section>
             )}
+
+            {/* Application Timeline (JDET-05) */}
+            <section>
+              <h2
+                className="text-[17px] font-body font-bold mb-4"
+                style={{ color: 'var(--color-ink)' }}
+              >
+                Application Timeline
+              </h2>
+              <Timeline entries={[
+                { title: 'Job posted', date: formatDate(job.created_at) ?? undefined },
+                { title: 'Applications open' },
+                { title: 'Review period' },
+                { title: 'Interviews' },
+                { title: 'Offers extended' },
+              ]} />
+            </section>
+
+            {/* Location / Map (JDET-06) */}
+            <section>
+              <h2
+                className="text-[17px] font-body font-bold mb-4"
+                style={{ color: 'var(--color-ink)' }}
+              >
+                Location
+              </h2>
+              <MapPlaceholder region={employer?.region} />
+            </section>
 
             {/* Compensation & Benefits */}
             {(job.salary_min || job.salary_max || (job.benefits && job.benefits.length > 0)) && (
@@ -760,36 +823,48 @@ export function JobDetail() {
                 </div>
               </section>
             )}
-          </div>
 
-          {/* Right column — match breakdown sidebar (desktop) */}
-          {isSeeker && matchScore && (
-            <div className="hidden lg:block">
-              <div className="sticky top-20">
+            {/* Mobile match breakdown (below main content) */}
+            {isSeeker && matchScore && (
+              <div className="lg:hidden">
                 <MatchBreakdown score={matchScore} />
               </div>
-            </div>
-          )}
-          {isVisitor && (
-            <div className="hidden lg:block">
-              <div className="sticky top-20">
+            )}
+            {isVisitor && (
+              <div className="lg:hidden">
                 <MatchBreakdown score={VISITOR_TEASER_SCORE} blurred={true} />
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
 
-        {/* Mobile match breakdown (below content on small screens) */}
-        {isSeeker && matchScore && (
-          <div className="lg:hidden mt-8">
-            <MatchBreakdown score={matchScore} />
+          {/* Right column — match breakdown + full sidebar (JDET-07/08/09) */}
+          <div className="hidden lg:block">
+            <div className="sticky top-20 space-y-4">
+              {/* Match breakdown for seekers */}
+              {isSeeker && matchScore && <MatchBreakdown score={matchScore} />}
+              {isVisitor && <MatchBreakdown score={VISITOR_TEASER_SCORE} blurred={true} />}
+
+              {/* Sidebar: quick facts, similar jobs, farm profile */}
+              <JobDetailSidebar
+                job={job}
+                farm={{
+                  id: employer?.id ?? '',
+                  farm_name: employer?.farm_name ?? '',
+                  region: employer?.region ?? '',
+                  farm_type: employer?.farm_type,
+                  herd_size: employer?.herd_size,
+                }}
+                similarJobs={similarJobs}
+                isSaved={jobId ? isSaved(jobId) : false}
+                onSaveToggle={() => jobId && toggleSave(jobId)}
+                onShare={() => {
+                  navigator.clipboard.writeText(window.location.href)
+                  toast.success('Link copied to clipboard')
+                }}
+              />
+            </div>
           </div>
-        )}
-        {isVisitor && (
-          <div className="lg:hidden mt-8">
-            <MatchBreakdown score={VISITOR_TEASER_SCORE} blurred={true} />
-          </div>
-        )}
+        </div>
       </main>
 
       {/* Sticky CTA bar — visitor */}
@@ -798,7 +873,7 @@ export function JobDetail() {
           className="fixed bottom-0 left-0 right-0 z-30 border-t border-fog shadow-lg"
           style={{ backgroundColor: 'white' }}
         >
-          <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
+          <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
             <p className="text-sm font-body font-semibold" style={{ color: 'var(--color-ink)' }}>
               Sign up to see how you match and apply
             </p>
@@ -834,7 +909,7 @@ export function JobDetail() {
           className="fixed bottom-0 left-0 right-0 z-30 border-t border-fog shadow-lg"
           style={{ backgroundColor: 'white' }}
         >
-          <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
+          <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
             {matchScore && (
               <div className="flex items-center gap-2 lg:hidden">
                 <MatchCircle score={matchScore.total_score} size="sm" />
