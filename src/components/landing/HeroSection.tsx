@@ -1,4 +1,15 @@
 import { Link } from 'react-router'
+import { motion } from 'motion/react'
+
+const containerVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.18 } },
+}
+
+const lineVariants = {
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] } },
+}
 
 export function HeroSection() {
   return (
@@ -55,22 +66,30 @@ export function HeroSection() {
           </div>
 
           {/* Headline */}
-          <h1
+          <motion.h1
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
             className="font-display font-bold leading-[1.05] tracking-tight"
             style={{
               fontSize: 'clamp(48px, 6.5vw, 82px)',
               color: 'var(--color-cream)',
             }}
           >
-            Where New Zealand's{' '}
-            <em
-              className="not-italic"
+            <motion.span variants={lineVariants} className="block">
+              Where New Zealand's
+            </motion.span>
+            <motion.span
+              variants={lineVariants}
+              className="block"
               style={{ color: 'var(--color-hay)', fontStyle: 'italic' }}
             >
               Best Farms
-            </em>{' '}
-            Find Their Next Team
-          </h1>
+            </motion.span>
+            <motion.span variants={lineVariants} className="block">
+              Find Their Next Team
+            </motion.span>
+          </motion.h1>
 
           {/* Subtext */}
           <p
@@ -83,8 +102,8 @@ export function HeroSection() {
 
           {/* Dual CTA fork */}
           <div
-            className="flex flex-col sm:flex-row rounded-2xl border overflow-hidden"
-            style={{ borderColor: 'rgba(255,255,255,0.12)' }}
+            className="flex flex-col sm:flex-row border overflow-hidden"
+            style={{ borderColor: 'rgba(255,255,255,0.12)', borderRadius: '14px' }}
           >
             {/* Seeker side */}
             <div
