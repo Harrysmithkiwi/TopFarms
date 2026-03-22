@@ -1,10 +1,14 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { CheckCircle } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { MatchCircle } from '@/components/ui/MatchCircle'
+import { supabase } from '@/lib/supabase'
 import type { SeekerProfileData } from '@/types/domain'
 
 interface SeekerStep7CompleteProps {
   profileData?: Partial<SeekerProfileData>
+  seekerProfileId?: string
 }
 
 const CHECKLIST_ITEMS = [
@@ -14,8 +18,72 @@ const CHECKLIST_ITEMS = [
   { label: 'Life situation details added', key: 'accommodation_needed' },
 ]
 
-export function SeekerStep7Complete({ profileData }: SeekerStep7CompleteProps) {
+interface MatchedJob {
+  total_score: number
+  jobs: {
+    id: string
+    title: string
+    region: string
+    salary_min: number | null
+    salary_max: number | null
+    employer_profiles: {
+      farm_name: string
+    }
+  }
+}
+
+function useMatchScoresPoll(seekerProfileId: string | null) {
+  const [matches, setMatches] = useState<MatchedJob[]>([])
+  const [loading, setLoading] = useState(true)
+  const [timedOut, setTimedOut] = useState(false)
+
+  useEffect(() => {
+    if (!seekerProfileId) return
+
+    let attempts = 0
+    const MAX_ATTEMPTS = 10 // 10 × 3s = 30s
+
+    const poll = async () => {
+      attempts++
+      const { data } = await supabase
+        .from('match_scores')
+        .select(`
+          total_score,
+          jobs (
+            id, title, region, salary_min, salary_max,
+            employer_profiles ( farm_name )
+          )
+        `)
+        .eq('seeker_id', seekerProfileId)
+        .order('total_score', { ascending: false })
+        .limit(3)
+
+      if (data && data.length > 0) {
+        setMatches(data as unknown as MatchedJob[])
+        setLoading(false)
+        clearInterval(interval)
+        return
+      }
+      if (attempts >= MAX_ATTEMPTS) {
+        setTimedOut(true)
+        setLoading(false)
+        clearInterval(interval)
+      }
+    }
+
+    // First poll immediately
+    poll()
+    const interval = setInterval(poll, 3000)
+
+    return () => clearInterval(interval)
+  }, [seekerProfileId])
+
+  return { matches, loading, timedOut }
+}
+
+export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep7CompleteProps) {
   const navigate = useNavigate()
+  const { matches, loading: matchesLoading, timedOut } = useMatchScoresPoll(seekerProfileId ?? null)
 
   function isItemComplete(key: string): boolean {
     if (!profileData) return false
@@ -78,20 +146,78 @@ export function SeekerStep7Complete({ profileData }: SeekerStep7CompleteProps) {
           })}
         </div>
 
-        {/* Match pool loading state (Phase 11 wires real data) */}
+        {/* Your matches — polling state */}
         <div className="p-4 rounded-[10px] border border-fog bg-mist">
           <p className="text-[16px] font-semibold font-body" style={{ color: 'var(--color-ink)' }}>
             Your matches
           </p>
-          <div className="flex items-center gap-2 mt-2">
-            <div
-              className="w-5 h-5 rounded-full border-[2px] border-t-transparent animate-spin"
-              style={{ borderColor: 'var(--color-fern)', borderTopColor: 'transparent' }}
-            />
-            <p className="text-[13px] font-body" style={{ color: 'var(--color-mid)' }}>
-              We're calculating your matches
-            </p>
-          </div>
+
+          {matchesLoading ? (
+            <div className="flex items-center gap-2 mt-2">
+              <div
+                className="w-5 h-5 rounded-full border-[2px] border-t-transparent animate-spin"
+                style={{ borderColor: 'var(--color-fern)', borderTopColor: 'transparent' }}
+              />
+              <p className="text-[13px] font-body" style={{ color: 'var(--color-mid)' }}>
+                We're calculating your matches
+              </p>
+            </div>
+          ) : timedOut && matches.length === 0 ? (
+            <div className="mt-2">
+              <p className="text-[13px] font-body" style={{ color: 'var(--color-mid)' }}>
+                We're calculating your matches — check back soon!
+              </p>
+              <button
+                type="button"
+                onClick={() => navigate('/jobs')}
+                className="mt-2 text-[13px] font-body font-semibold underline"
+                style={{ color: 'var(--color-moss)' }}
+              >
+                Browse Jobs
+              </button>
+            </div>
+          ) : (
+            <ul className="mt-3 space-y-3">
+              {matches.map((match) => (
+                <li
+                  key={match.jobs.id}
+                  className="flex items-center gap-3 p-3 bg-white rounded-[10px] border border-fog cursor-pointer hover:border-moss transition-colors"
+                  onClick={() => navigate(`/jobs/${match.jobs.id}`)}
+                >
+                  <MatchCircle score={match.total_score} size="sm" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[14px] font-semibold font-body truncate" style={{ color: 'var(--color-ink)' }}>
+                      {match.jobs.title}
+                    </p>
+                    <p className="text-[12px] font-body" style={{ color: 'var(--color-mid)' }}>
+                      {match.jobs.employer_profiles.farm_name} · {match.jobs.region}
+                    </p>
+                    {(match.jobs.salary_min || match.jobs.salary_max) && (
+                      <p className="text-[12px] font-body" style={{ color: 'var(--color-light)' }}>
+                        {match.jobs.salary_min && match.jobs.salary_max
+                          ? `$${(match.jobs.salary_min / 1000).toFixed(0)}k - $${(match.jobs.salary_max / 1000).toFixed(0)}k`
+                          : match.jobs.salary_min
+                            ? `From $${(match.jobs.salary_min / 1000).toFixed(0)}k`
+                            : `Up to $${((match.jobs.salary_max ?? 0) / 1000).toFixed(0)}k`}
+                      </p>
+                    )}
+                  </div>
+                </li>
+              ))}
+              {matches.length > 0 && matches.length < 3 && (
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => navigate('/jobs')}
+                    className="text-[13px] font-body font-semibold underline"
+                    style={{ color: 'var(--color-moss)' }}
+                  >
+                    Browse all jobs
+                  </button>
+                </li>
+              )}
+            </ul>
+          )}
         </div>
 
         {/* CTAs */}

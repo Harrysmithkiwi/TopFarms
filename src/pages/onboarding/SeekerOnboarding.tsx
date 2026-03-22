@@ -249,14 +249,17 @@ export function SeekerOnboarding() {
           )}
 
           {currentStep === 6 && (
-            <SeekerStep7Complete profileData={{
-              sector_pref: profileData.sector_pref,
-              years_experience: profileData.years_experience,
-              dairynz_level: profileData.dairynz_level,
-              accommodation_needed: profileData.accommodation_needed,
-              region: profileData.preferred_regions?.[0] ?? profileData.region,
-              visa_status: profileData.visa_status,
-            }} />
+            <SeekerStep7Complete
+              profileData={{
+                sector_pref: profileData.sector_pref,
+                years_experience: profileData.years_experience,
+                dairynz_level: profileData.dairynz_level,
+                accommodation_needed: profileData.accommodation_needed,
+                region: profileData.preferred_regions?.[0] ?? profileData.region,
+                visa_status: profileData.visa_status,
+              }}
+              seekerProfileId={seekerProfileId ?? undefined}
+            />
           )}
         </div>
       </div>
