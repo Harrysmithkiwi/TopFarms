@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: SPEC Compliance
 status: executing
-stopped_at: Phase 10 context gathered
-last_updated: "2026-03-22T05:12:24.948Z"
+stopped_at: Completed 10-02 AIMatchingSection, FarmTypesStrip, EmployerCTABand
+last_updated: "2026-03-22T05:51:43.938Z"
 last_activity: 2026-03-22 — Completed 09-06 My Applications StatusBanner + sidebar integration (FarmResponseIndicator, MyApplicationsSidebar, hideSidebar, sidebar filter)
 progress:
   total_phases: 5
   completed_phases: 3
-  total_plans: 14
-  completed_plans: 14
+  total_plans: 17
+  completed_plans: 15
   percent: 86
 ---
 
@@ -68,6 +68,7 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 09-06]: StatusBanner uses hardcoded title/body from bannerVariants — ApplicationCard passes only variant to avoid text duplication
 - [Phase 09-06]: Interview Accept fires toast only (no DB write) — interview_accepted not a valid ApplicationStatus; Decline writes declined to DB
 - [Phase 09-06]: MyApplications replaced active/completed split with single filteredApplications list controlled by sidebar filter tabs
+- [Phase 10]: getAllByText used in FarmTypesStrip test — Dairy appears multiple times in DOM (sector card + FeaturedListings filter chip)
 
 ### Blockers/Concerns
 
@@ -76,6 +77,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-03-22T05:12:24.937Z
-Stopped at: Phase 10 context gathered
-Resume file: .planning/phases/10-landing-page/10-CONTEXT.md
+Last session: 2026-03-22T05:51:43.936Z
+Stopped at: Completed 10-02 AIMatchingSection, FarmTypesStrip, EmployerCTABand
+Resume file: None
