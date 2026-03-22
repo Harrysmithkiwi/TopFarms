@@ -65,6 +65,9 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 09]: hasApplied hardcoded to false in JobSearch — batch application status check deferred to a future plan
 - [Phase 09-05]: STATUS_LABELS map decouples DB enum values (applied, review) from SPEC display labels (New, Reviewed) — chip buttons show display labels
 - [Phase 09-05]: ApplicantDashboard passes hideSidebar to DashboardLayout; uses dedicated 260px ApplicantDashboardSidebar with farm header, listing selector, and quick stats
+- [Phase 09-06]: StatusBanner uses hardcoded title/body from bannerVariants — ApplicationCard passes only variant to avoid text duplication
+- [Phase 09-06]: Interview Accept fires toast only (no DB write) — interview_accepted not a valid ApplicationStatus; Decline writes declined to DB
+- [Phase 09-06]: MyApplications replaced active/completed split with single filteredApplications list controlled by sidebar filter tabs
 
 ### Blockers/Concerns
 
@@ -73,6 +76,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-03-22T04:41:43.280Z
-Stopped at: Completed 09-05-PLAN.md
-Resume file: None
+Last session: 2026-03-22T04:37:32Z
+Stopped at: Completed 09-06-PLAN.md
+Resume file: .planning/phases/09-page-level-integrations/09-06-SUMMARY.md
