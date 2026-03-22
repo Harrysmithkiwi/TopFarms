@@ -511,6 +511,11 @@ export function PostJob() {
                     ...(jobData.accommodation?.available ? ['Accommodation'] : []),
                   ].filter(Boolean),
                 } : undefined}
+                matchCriteria={{
+                  region: jobData.region,
+                  shedTypes: jobData.shed_type,
+                  hasAccommodation: jobData.accommodation?.available,
+                }}
               />
             </div>
           )}

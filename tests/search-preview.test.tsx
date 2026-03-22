@@ -81,16 +81,9 @@ describe('LivePreviewSidebar', () => {
     expect(screen.getByText('Match Pool Estimate')).toBeInTheDocument()
   })
 
-  it('renders static match pool numbers', () => {
+  it('renders fill-in prompt when no matchCriteria provided', () => {
     render(<LivePreviewSidebar completenessPercent={50} />)
-    expect(screen.getByText(/47 seekers in region/)).toBeInTheDocument()
-    expect(screen.getByText(/12 with shed experience/)).toBeInTheDocument()
-    expect(screen.getByText(/8 actively looking/)).toBeInTheDocument()
-  })
-
-  it('renders Estimates available soon note', () => {
-    render(<LivePreviewSidebar completenessPercent={50} />)
-    expect(screen.getByText('Estimates available soon')).toBeInTheDocument()
+    expect(screen.getByText('Fill in fields to see estimates')).toBeInTheDocument()
   })
 
   it('renders AI tip box with purple-lt background', () => {

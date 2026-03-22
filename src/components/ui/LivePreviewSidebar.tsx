@@ -1,5 +1,8 @@
+import { useEffect, useState } from 'react'
+import { Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ProgressBar } from '@/components/ui/ProgressBar'
+import { supabase } from '@/lib/supabase'
 
 interface MiniCardData {
   title: string
@@ -9,9 +12,16 @@ interface MiniCardData {
   tags?: string[]
 }
 
+interface MatchCriteria {
+  region?: string
+  shedTypes?: string[]
+  hasAccommodation?: boolean
+}
+
 interface LivePreviewSidebarProps {
   completenessPercent: number
   miniCard?: MiniCardData
+  matchCriteria?: MatchCriteria
   className?: string
 }
 
@@ -62,18 +72,70 @@ function MiniCardPlaceholder() {
   )
 }
 
-function MatchPoolEstimate() {
+interface EstimateData {
+  seekers_in_region: number
+  seekers_with_shed: number
+  seekers_active: number
+}
+
+type EstimateState = 'idle' | 'loading' | 'done' | 'error'
+
+function MatchPoolEstimate({ criteria }: { criteria?: MatchCriteria }) {
+  const [estimate, setEstimate] = useState<EstimateData | null>(null)
+  const [state, setState] = useState<EstimateState>('idle')
+
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      setState('loading')
+      const { data, error } = await supabase.rpc('estimate_match_pool', {
+        p_region: criteria?.region ?? null,
+        p_shed_types: criteria?.shedTypes ?? null,
+        p_accommodation: criteria?.hasAccommodation ?? null,
+      })
+      if (!error && data) {
+        setEstimate(data as EstimateData)
+        setState('done')
+      } else {
+        setState('error')
+      }
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [criteria?.region, criteria?.shedTypes?.join(','), criteria?.hasAccommodation])
+
+  const noMatches =
+    estimate &&
+    estimate.seekers_in_region === 0 &&
+    estimate.seekers_with_shed === 0 &&
+    estimate.seekers_active === 0
+
   return (
     <div className="px-4 py-3">
       <h3 className="text-[13px] font-semibold text-light uppercase tracking-wide pb-2">
         Match Pool Estimate
       </h3>
-      <ul className="space-y-1">
-        <li className="text-[14px] text-ink font-body">47 seekers in region</li>
-        <li className="text-[14px] text-ink font-body">12 with shed experience</li>
-        <li className="text-[14px] text-ink font-body">8 actively looking</li>
-      </ul>
-      <p className="text-[13px] text-light italic font-body mt-2">Estimates available soon</p>
+      {state === 'loading' ? (
+        <div className="flex items-center gap-2">
+          <Loader2 className="w-4 h-4 text-fern animate-spin" />
+          <p className="text-[13px] font-body text-mid">Calculating...</p>
+        </div>
+      ) : estimate ? (
+        <>
+          <ul className="space-y-1">
+            <li className="text-[14px] text-ink font-body">{estimate.seekers_in_region} seekers in region</li>
+            <li className="text-[14px] text-ink font-body">{estimate.seekers_with_shed} with shed experience</li>
+            <li className="text-[14px] text-ink font-body">{estimate.seekers_active} actively looking</li>
+          </ul>
+          {noMatches && (
+            <p className="text-[13px] text-mid italic font-body mt-2">
+              Post your listing to attract seekers in this area
+            </p>
+          )}
+        </>
+      ) : (
+        <p className="text-[13px] text-light italic font-body">
+          Fill in fields to see estimates
+        </p>
+      )}
     </div>
   )
 }
@@ -100,6 +162,7 @@ function AITipBox() {
 export function LivePreviewSidebar({
   completenessPercent,
   miniCard,
+  matchCriteria,
   className,
 }: LivePreviewSidebarProps) {
   return (
@@ -117,7 +180,7 @@ export function LivePreviewSidebar({
 
       <div className="border-t border-fog" />
 
-      <MatchPoolEstimate />
+      <MatchPoolEstimate criteria={matchCriteria} />
 
       <div className="border-t border-fog" />
 
