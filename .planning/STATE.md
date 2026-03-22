@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: SPEC Compliance
 status: executing
-stopped_at: Phase 11 plans verified
-last_updated: "2026-03-22T22:22:49.351Z"
-last_activity: 2026-03-22 — Completed 10-01 Landing page SPEC compliance (motion animation, Live badge, match scores)
+stopped_at: Completed 11-01-PLAN.md
+last_updated: "2026-03-22T22:28:12.474Z"
+last_activity: 2026-03-22 — Completed 11-01 seeker-documents bucket, FileDropzone multi-mode, SeekerStep3 document upload
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 19
-  completed_plans: 17
-  percent: 94
+  completed_plans: 18
+  percent: 95
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-03-20)
 
 ## Current Position
 
-Phase: 10 of 11 (Landing Page)
-Plan: 1 of 3 complete
+Phase: 11 of 11 (Backend-Dependent Features)
+Plan: 1 of 2 complete
 Status: Executing
-Last activity: 2026-03-22 — Completed 10-01 Landing page SPEC compliance (motion animation, Live badge, match scores)
+Last activity: 2026-03-22 — Completed 11-01 seeker-documents bucket, FileDropzone multi-mode, SeekerStep3 document upload
 
-Progress: [█████████░] 94%
+Progress: [█████████░] 95%
 
 ## Accumulated Context
 
@@ -71,6 +71,8 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 10]: getAllByText used in FarmTypesStrip test — Dairy appears multiple times in DOM (sector card + FeaturedListings filter chip)
 - [Phase 10]: No motion mock needed in tests — motion/react renders fine in jsdom without mocking
 - [Phase 10]: getAllByRole used for Find Farm Work/Post a Job in tests — links appear in both HeroSection and FinalCTASection
+- [Phase 11]: [Phase 11-01]: FileDropzone multi-file mode stores storage paths (not public URLs) for private seeker-documents bucket; onUploadsComplete returns paths, privateMode prop controls this
+- [Phase 11]: [Phase 11-01]: estimate_match_pool RPC uses DEFAULT NULL params — callable with any combination of region/shed_types/accommodation filters for Plan 02 widget
 
 ### Blockers/Concerns
 
@@ -79,6 +81,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-03-22T22:22:49.345Z
-Stopped at: Phase 11 plans verified
-Resume file: .planning/phases/11-backend-dependent-features/11-01-PLAN.md
+Last session: 2026-03-22T22:28:12.472Z
+Stopped at: Completed 11-01-PLAN.md
+Resume file: None

@@ -45,7 +45,7 @@ Requirements for SPEC v3.0 compliance. Each maps to roadmap phases.
 ### Seeker Onboarding
 
 - [x] **SONB-01**: Step 1 shows all 6 sector chips (+ Cropping, Deer, Mixed, Other beyond current 2)
-- [ ] **SONB-02**: Step 3 includes document upload zone for CV/certificates/references (reuse FileDropzone)
+- [x] **SONB-02**: Step 3 includes document upload zone for CV/certificates/references (reuse FileDropzone)
 - [x] **SONB-03**: Step 3 includes NZ driver's licence chips and other certification chips (ATV, tractor, 4WD, first aid)
 - [x] **SONB-04**: Step 5 includes minimum salary input, availability date, notice period
 - [x] **SONB-05**: Step 5 housing sub-options use chip grid (Single, Couple working, Couple not working, Family, Working dogs, Pets)
@@ -163,7 +163,7 @@ Deferred to future release. Not in current roadmap.
 | PJOB-07 | Phase 8 | Complete |
 | PJOB-08 | Phase 8 | Complete |
 | SONB-01 | Phase 8 | Complete |
-| SONB-02 | Phase 11 | Pending |
+| SONB-02 | Phase 11 | Complete |
 | SONB-03 | Phase 8 | Complete |
 | SONB-04 | Phase 8 | Complete |
 | SONB-05 | Phase 8 | Complete |
