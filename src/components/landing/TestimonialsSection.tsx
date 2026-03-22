@@ -26,6 +26,13 @@ const testimonials: Testimonial[] = [
   },
 ]
 
+const stats = [
+  { value: '500+', label: 'Farms' },
+  { value: '2,000+', label: 'Workers' },
+  { value: '48hr', label: 'Avg Match Time' },
+  { value: '95%', label: 'Satisfaction' },
+]
+
 function StarRating() {
   return (
     <div className="flex gap-0.5 mb-4">
@@ -52,6 +59,33 @@ export function TestimonialsSection() {
   return (
     <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-soil)' }}>
       <div className="max-w-6xl mx-auto">
+        {/* Stat blocks row — above the testimonial heading/cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+          {stats.map((stat, i) => (
+            <div
+              key={stat.label}
+              className="text-center py-6 md:border-r"
+              style={{
+                borderColor: 'rgba(255,255,255,0.12)',
+                borderRight: i === stats.length - 1 ? 'none' : undefined,
+              }}
+            >
+              <p
+                className="text-3xl md:text-4xl font-bold font-display mb-1"
+                style={{ color: 'var(--color-cream)' }}
+              >
+                {stat.value}
+              </p>
+              <p
+                className="text-sm uppercase tracking-wider"
+                style={{ color: 'rgba(247,242,232,0.5)' }}
+              >
+                {stat.label}
+              </p>
+            </div>
+          ))}
+        </div>
+
         {/* Title */}
         <div className="text-center mb-12">
           <h2
