@@ -100,12 +100,12 @@ Plans:
   3. AI matching section renders a mock browser window with 4 feature bullet points; farm types strip shows 5 sector cards with listing counts; employer CTA band shows mini dashboard preview with 4-point checklist
   4. Testimonials section includes 4 connected stat blocks alongside existing testimonials; trusted-by strip and final CTA section render with correct copy and dual buttons
   5. Featured job listing cards show match score circles; CTA fork card has 14px border radius and SPEC button copy
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 10-01: Hero animation, live counter pulse dot, featured listings match scores, CTA fork fix
-- [ ] 10-02: AI matching section, farm types strip, employer CTA band
-- [ ] 10-03: Social proof stat blocks, trusted-by strip, final CTA section
+- [ ] 10-01-PLAN.md — Hero animation, live counter pulse dot, featured listings match scores, CTA fork fix
+- [ ] 10-02-PLAN.md — AI matching section, farm types strip, employer CTA band
+- [ ] 10-03-PLAN.md — Social proof stat blocks, trusted-by strip, final CTA section
 
 ### Phase 11: Backend-Dependent Features
 **Goal**: LivePreviewSidebar shows a live match pool estimate, seeker document upload works against a private Storage bucket, and the seeker completion screen surfaces matched jobs immediately after onboarding
@@ -115,7 +115,7 @@ Plans:
   1. An employer filling out the post job wizard sees the match pool estimate update in the LivePreviewSidebar as they fill in shed type, region, and accommodation fields — estimate is debounced 500ms and shows "Calculating..." while the RPC is in flight
   2. A seeker can drag-and-drop or click to upload CV, certificates, and references in step 3 of seeker onboarding — files are stored in a private `seeker-documents` bucket and are not accessible via the employer photos bucket
   3. The seeker completion screen shows the top 3 matched jobs with scores within 30 seconds of onboarding finishing — if match scores have not yet computed, the screen shows a "We're calculating your matches" message instead of 0 results
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
 - [ ] 11-01: Match pool RPC (Supabase function + LivePreviewSidebar wiring)
