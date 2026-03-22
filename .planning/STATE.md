@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-03-20)
 ## Current Position
 
 Phase: 9 of 11 (Page-Level Integrations)
-Plan: 4 of 6 complete
+Plan: 6 of 6 complete
 Status: Executing
-Last activity: 2026-03-22 — Completed 09-04 Job detail SPEC compliance (Breadcrumb, StatsStrip, Timeline, MapPlaceholder, JobDetailSidebar)
+Last activity: 2026-03-22 — Completed 09-06 My Applications StatusBanner + sidebar integration (FarmResponseIndicator, MyApplicationsSidebar, hideSidebar, sidebar filter)
 
 Progress: [█████████░] 86%
 
@@ -63,6 +63,8 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 09-04]: Timeline component uses entries/title prop shape — plan specified events/label but actual component uses entries/title; JobDetail.tsx correctly matches component interface
 - [Phase 09]: SearchJobCard outer wrapper changed from Link to div — navigation via View Full Listing link inside Details tab
 - [Phase 09]: hasApplied hardcoded to false in JobSearch — batch application status check deferred to a future plan
+- [Phase 09-05]: STATUS_LABELS map decouples DB enum values (applied, review) from SPEC display labels (New, Reviewed) — chip buttons show display labels
+- [Phase 09-05]: ApplicantDashboard passes hideSidebar to DashboardLayout; uses dedicated 260px ApplicantDashboardSidebar with farm header, listing selector, and quick stats
 
 ### Blockers/Concerns
 
@@ -71,6 +73,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-03-22T04:41:08.752Z
-Stopped at: Completed 09-03-PLAN.md
+Last session: 2026-03-22T04:41:43.280Z
+Stopped at: Completed 09-05-PLAN.md
 Resume file: None

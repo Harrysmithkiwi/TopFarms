@@ -77,11 +77,11 @@ Requirements for SPEC v3.0 compliance. Each maps to roadmap phases.
 
 ### Applicant Dashboard
 
-- [ ] **ADSH-01**: 260px sidebar with farm header, navigation, listing selector, quick stats
-- [ ] **ADSH-02**: Filter toolbar with search input, filter chips (All/New/Reviewed/Shortlisted/Declined), sort, view toggle
-- [ ] **ADSH-03**: Expandable 4-tab panels per applicant (CV, Match breakdown, Interview, Notes)
+- [x] **ADSH-01**: 260px sidebar with farm header, navigation, listing selector, quick stats
+- [x] **ADSH-02**: Filter toolbar with search input, filter chips (All/New/Reviewed/Shortlisted/Declined), sort, view toggle
+- [x] **ADSH-03**: Expandable 4-tab panels per applicant (CV, Match breakdown, Interview, Notes)
 - [x] **ADSH-04**: AI candidate summary box per applicant (purple, cached in DB column)
-- [ ] **ADSH-05**: Bulk actions bar (Shortlist selected, Send message, Export)
+- [x] **ADSH-05**: Bulk actions bar (Shortlist selected, Send message, Export)
 
 ### My Applications
 
@@ -186,11 +186,11 @@ Deferred to future release. Not in current roadmap.
 | JDET-07 | Phase 9 | Complete |
 | JDET-08 | Phase 9 | Complete |
 | JDET-09 | Phase 9 | Complete |
-| ADSH-01 | Phase 9 | Pending |
-| ADSH-02 | Phase 9 | Pending |
-| ADSH-03 | Phase 9 | Pending |
+| ADSH-01 | Phase 9 | Complete |
+| ADSH-02 | Phase 9 | Complete |
+| ADSH-03 | Phase 9 | Complete |
 | ADSH-04 | Phase 9 | Complete |
-| ADSH-05 | Phase 9 | Pending |
+| ADSH-05 | Phase 9 | Complete |
 | MAPP-01 | Phase 9 | Pending |
 | MAPP-02 | Phase 9 | Complete |
 | MAPP-03 | Phase 9 | Pending |
