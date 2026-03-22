@@ -2,8 +2,8 @@
 phase: 11
 slug: backend-dependent-features
 status: draft
-nyquist_compliant: false
-wave_0_complete: false
+nyquist_compliant: true
+wave_0_complete: true
 created: 2026-03-23
 ---
 
@@ -38,8 +38,9 @@ created: 2026-03-23
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 11-01-01 | 01 | 1 | SONB-02 | unit | `npx vitest run src/components/ui/FileDropzone.test.tsx -x` | Partial | ⬜ pending |
-| 11-01-02 | 01 | 1 | SONB-02 | unit | `npx vitest run src/pages/onboarding/steps/SeekerStep3Qualifications.test.tsx -x` | Wave 0 | ⬜ pending |
+| 11-01-00 | 01 | 0 | SONB-02 | scaffold | `test -f tests/file-dropzone-multi.test.tsx && test -f tests/seeker-step3-documents.test.tsx` | Wave 0 creates | ⬜ pending |
+| 11-01-01 | 01 | 1 | SONB-02 | unit | `grep -c "seeker-documents" supabase/migrations/016_phase11_backend_features.sql` | N/A (SQL) | ⬜ pending |
+| 11-01-02 | 01 | 1 | SONB-02 | unit | `npx vitest run tests/file-dropzone-multi.test.tsx tests/seeker-step3-documents.test.tsx --reporter=verbose` | Wave 0 | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -47,8 +48,8 @@ created: 2026-03-23
 
 ## Wave 0 Requirements
 
-- [ ] `src/pages/onboarding/steps/SeekerStep3Qualifications.test.tsx` — covers SONB-02 upload zone render
-- [ ] `src/components/ui/FileDropzone.test.tsx` — covers multiple mode behavior (check if exists first)
+- [x] `tests/file-dropzone-multi.test.tsx` — covers FileDropzone multiple mode: rendering, existingPaths display, maxFiles limit, backward compat (created by Plan 01, Task 0)
+- [x] `tests/seeker-step3-documents.test.tsx` — covers SeekerStep3 document upload: Documents section render, FileDropzone presence, document_urls in onComplete (created by Plan 01, Task 0)
 
 *Existing infrastructure covers framework setup.*
 
@@ -66,11 +67,11 @@ created: 2026-03-23
 
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all MISSING references
-- [ ] No watch-mode flags
-- [ ] Feedback latency < 15s
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] All tasks have `<automated>` verify or Wave 0 dependencies
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] Wave 0 covers all MISSING references
+- [x] No watch-mode flags
+- [x] Feedback latency < 15s
+- [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending
+**Approval:** approved
