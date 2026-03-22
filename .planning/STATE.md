@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: SPEC Compliance
 status: executing
-stopped_at: Completed 10-02 AIMatchingSection, FarmTypesStrip, EmployerCTABand
-last_updated: "2026-03-22T05:51:43.938Z"
+stopped_at: Completed 10-01 Landing page SPEC compliance (motion animation, Live badge, match scores)
+last_updated: "2026-03-22T05:52:05.742Z"
 last_activity: 2026-03-22 — Completed 09-06 My Applications StatusBanner + sidebar integration (FarmResponseIndicator, MyApplicationsSidebar, hideSidebar, sidebar filter)
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 17
-  completed_plans: 15
+  completed_plans: 16
   percent: 86
 ---
 
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-03-20)
 
 ## Current Position
 
-Phase: 9 of 11 (Page-Level Integrations)
-Plan: 6 of 6 complete
+Phase: 10 of 11 (Landing Page)
+Plan: 1 of 3 complete
 Status: Executing
-Last activity: 2026-03-22 — Completed 09-06 My Applications StatusBanner + sidebar integration (FarmResponseIndicator, MyApplicationsSidebar, hideSidebar, sidebar filter)
+Last activity: 2026-03-22 — Completed 10-01 Landing page SPEC compliance (motion animation, Live badge, match scores)
 
-Progress: [█████████░] 86%
+Progress: [█████████░] 94%
 
 ## Accumulated Context
 
@@ -69,6 +69,7 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 09-06]: Interview Accept fires toast only (no DB write) — interview_accepted not a valid ApplicationStatus; Decline writes declined to DB
 - [Phase 09-06]: MyApplications replaced active/completed split with single filteredApplications list controlled by sidebar filter tabs
 - [Phase 10]: getAllByText used in FarmTypesStrip test — Dairy appears multiple times in DOM (sector card + FeaturedListings filter chip)
+- [Phase 10]: No motion mock needed in tests — motion/react renders fine in jsdom without mocking
 
 ### Blockers/Concerns
 
@@ -77,6 +78,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-03-22T05:51:43.936Z
-Stopped at: Completed 10-02 AIMatchingSection, FarmTypesStrip, EmployerCTABand
+Last session: 2026-03-22T05:52:05.740Z
+Stopped at: Completed 10-01 Landing page SPEC compliance (motion animation, Live badge, match scores)
 Resume file: None
