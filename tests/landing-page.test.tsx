@@ -129,6 +129,41 @@ describe('Landing Page', () => {
     })
   })
 
+  describe('LAND-02: Counter section - Live badge', () => {
+    it('CountersSection renders Live badge', () => {
+      renderHome()
+      expect(screen.getByText('Live')).toBeInTheDocument()
+      const pulseDot = document.querySelector('.animate-pulse')
+      expect(pulseDot).toBeInTheDocument()
+    })
+  })
+
+  describe('LAND-04b: AI Matching section', () => {
+    it('AIMatchingSection renders feature bullet points', () => {
+      renderHome()
+      expect(screen.getByText(/Skills-based matching/i)).toBeInTheDocument()
+    })
+  })
+
+  describe('LAND-04c: Farm Types strip', () => {
+    it('FarmTypesStrip renders 5 sector cards', () => {
+      renderHome()
+      expect(screen.getAllByText('Dairy').length).toBeGreaterThan(0)
+      expect(screen.getAllByText('Sheep & Beef').length).toBeGreaterThan(0)
+      expect(screen.getAllByText('Horticulture').length).toBeGreaterThan(0)
+      expect(screen.getAllByText('Viticulture').length).toBeGreaterThan(0)
+      expect(screen.getAllByText('Arable').length).toBeGreaterThan(0)
+    })
+  })
+
+  describe('LAND-04d: Employer CTA band', () => {
+    it('EmployerCTABand renders CTA and checklist', () => {
+      renderHome()
+      expect(screen.getByText('Post Your First Job')).toBeInTheDocument()
+      expect(screen.getByText('Post a job in under 5 minutes')).toBeInTheDocument()
+    })
+  })
+
   describe('LAND-05: Testimonials section', () => {
     it('renders 3 testimonial cards', () => {
       renderHome()
