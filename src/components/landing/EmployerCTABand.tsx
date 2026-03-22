@@ -55,7 +55,7 @@ export function EmployerCTABand() {
             </ul>
 
             <Link
-              to="/employer/onboarding"
+              to="/onboarding/employer"
               className="inline-block rounded-full px-8 py-3 font-semibold transition-opacity hover:opacity-90"
               style={{
                 backgroundColor: 'var(--color-meadow)',
