@@ -2,8 +2,10 @@ import { useEffect, useState, useCallback } from 'react'
 import { useSearchParams } from 'react-router'
 import * as Dialog from '@radix-ui/react-dialog'
 import { SlidersHorizontal, X } from 'lucide-react'
+import { toast } from 'sonner'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/hooks/useAuth'
+import { useSavedJobs } from '@/hooks/useSavedJobs'
 import { FilterSidebar } from '@/components/ui/FilterSidebar'
 import { SearchJobCard } from '@/components/ui/SearchJobCard'
 import { Button } from '@/components/ui/Button'
@@ -85,6 +87,9 @@ export function JobSearch() {
   const [loading, setLoading] = useState(true)
   const [totalCount, setTotalCount] = useState(0)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [expandedId, setExpandedId] = useState<string | null>(null)
+
+  const { isSaved, toggleSave } = useSavedJobs(session?.user?.id ?? null)
 
   // Read page from URL (1-indexed)
   const pageParam = Number(searchParams.get('page') ?? '1')
@@ -335,6 +340,30 @@ export function JobSearch() {
 
   const sortParam = searchParams.get('sort') ?? 'match'
 
+  // ─── Inline apply handler ───────────────────────────────────────────────────
+  async function handleInlineApply(jobId: string, coverNote: string) {
+    if (!session?.user) return
+    const { data: profile } = await supabase
+      .from('seeker_profiles')
+      .select('id')
+      .eq('user_id', session.user.id)
+      .single()
+    if (!profile) { toast.error('Complete your profile before applying'); return }
+    const { error } = await supabase.from('applications').insert({
+      job_id: jobId,
+      seeker_id: profile.id,
+      cover_note: coverNote || null,
+      status: 'applied',
+    })
+    if (error) {
+      if (error.code === '23505') toast.error('You have already applied to this job')
+      else throw error
+      return
+    }
+    toast.success('Application submitted!')
+    setExpandedId(null) // collapse card after successful apply
+  }
+
   return (
     <div className="min-h-screen bg-mist">
       <SearchHero />
@@ -400,6 +429,12 @@ export function JobSearch() {
               totalPages={totalPages}
               currentPage={pageParam}
               onPageChange={handlePageChange}
+              expandedId={expandedId}
+              onToggle={(jobId) => setExpandedId((prev) => (prev === jobId ? null : jobId))}
+              isLoggedIn={!!session && role === 'seeker'}
+              isSaved={isSaved}
+              onSaveToggle={toggleSave}
+              onApply={handleInlineApply}
             />
           </main>
         </div>
@@ -418,6 +453,12 @@ export function JobSearch() {
             totalPages={totalPages}
             currentPage={pageParam}
             onPageChange={handlePageChange}
+            expandedId={expandedId}
+            onToggle={(jobId) => setExpandedId((prev) => (prev === jobId ? null : jobId))}
+            isLoggedIn={!!session && role === 'seeker'}
+            isSaved={isSaved}
+            onSaveToggle={toggleSave}
+            onApply={handleInlineApply}
           />
         </div>
       </div>
@@ -439,6 +480,12 @@ interface ResultsAreaProps {
   totalPages: number
   currentPage: number
   onPageChange: (page: number) => void
+  expandedId: string | null
+  onToggle: (jobId: string) => void
+  isLoggedIn: boolean
+  isSaved: (jobId: string) => boolean
+  onSaveToggle: (jobId: string) => void
+  onApply: (jobId: string, coverNote: string) => Promise<void>
 }
 
 function ResultsArea({
@@ -453,6 +500,12 @@ function ResultsArea({
   totalPages,
   currentPage,
   onPageChange,
+  expandedId,
+  onToggle,
+  isLoggedIn,
+  isSaved,
+  onSaveToggle,
+  onApply,
 }: ResultsAreaProps) {
   return (
     <div>
@@ -523,6 +576,13 @@ function ResultsArea({
                 matchScore={scores.get(job.id) ?? null}
                 verifications={empData?.verifications ?? []}
                 trustLevel={empData?.trustLevel ?? 'unverified'}
+                isExpanded={expandedId === job.id}
+                onToggle={() => onToggle(job.id)}
+                isLoggedIn={isLoggedIn}
+                hasApplied={false}
+                onApply={(coverNote) => onApply(job.id, coverNote)}
+                isSaved={isSaved(job.id)}
+                onSaveToggle={() => onSaveToggle(job.id)}
               />
             )
           })}
