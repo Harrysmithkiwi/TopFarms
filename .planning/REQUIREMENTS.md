@@ -59,21 +59,21 @@ Requirements for SPEC v3.0 compliance. Each maps to roadmap phases.
 - [x] **SRCH-03**: Extras toggle filters added (mentorship, vehicle, DairyNZ pathway, posted <7 days)
 - [x] **SRCH-04**: Accommodation filter expanded to multi-option (house, cottage, pet-friendly, couples, family)
 - [x] **SRCH-05**: Active filter pills displayed above results (moss tint bg, × remove)
-- [ ] **SRCH-06**: Expandable card tabs on job cards (Details / My Match / Apply)
+- [x] **SRCH-06**: Expandable card tabs on job cards (Details / My Match / Apply)
 - [x] **SRCH-07**: Sort options expanded (+ salary high-low, location nearest)
 - [x] **SRCH-08**: Numbered pagination replaces "load more" button
 
 ### Job Detail
 
-- [ ] **JDET-01**: Breadcrumb bar (44px, white bg) with path and Save/Share buttons
-- [ ] **JDET-02**: Stats strip below header (4-col: Applications, Views, Salary, Posted)
-- [ ] **JDET-03**: Day-to-day section renders as bulleted list with meadow dot bullets
-- [ ] **JDET-04**: Skills section uses 2-column grid with legend row (Required/Preferred/Bonus badges)
-- [ ] **JDET-05**: Application timeline component (vertical, meadow dots + connecting lines)
-- [ ] **JDET-06**: Location section with map placeholder (160px, mist bg) and distance badge
-- [ ] **JDET-07**: Similar jobs card in sidebar (3 entries with title, meta, salary, match badge)
-- [ ] **JDET-08**: Sidebar quick facts list, save/share buttons, deadline notice (hay-lt)
-- [ ] **JDET-09**: Farm profile card in sidebar (soil header, 3-stat grid, tags, rating, view link)
+- [x] **JDET-01**: Breadcrumb bar (44px, white bg) with path and Save/Share buttons
+- [x] **JDET-02**: Stats strip below header (4-col: Applications, Views, Salary, Posted)
+- [x] **JDET-03**: Day-to-day section renders as bulleted list with meadow dot bullets
+- [x] **JDET-04**: Skills section uses 2-column grid with legend row (Required/Preferred/Bonus badges)
+- [x] **JDET-05**: Application timeline component (vertical, meadow dots + connecting lines)
+- [x] **JDET-06**: Location section with map placeholder (160px, mist bg) and distance badge
+- [x] **JDET-07**: Similar jobs card in sidebar (3 entries with title, meta, salary, match badge)
+- [x] **JDET-08**: Sidebar quick facts list, save/share buttons, deadline notice (hay-lt)
+- [x] **JDET-09**: Farm profile card in sidebar (soil header, 3-stat grid, tags, rating, view link)
 
 ### Applicant Dashboard
 
@@ -174,18 +174,18 @@ Deferred to future release. Not in current roadmap.
 | SRCH-03 | Phase 9 | Complete |
 | SRCH-04 | Phase 9 | Complete |
 | SRCH-05 | Phase 9 | Complete |
-| SRCH-06 | Phase 9 | Pending |
+| SRCH-06 | Phase 9 | Complete |
 | SRCH-07 | Phase 9 | Complete |
 | SRCH-08 | Phase 9 | Complete |
-| JDET-01 | Phase 9 | Pending |
-| JDET-02 | Phase 9 | Pending |
-| JDET-03 | Phase 9 | Pending |
-| JDET-04 | Phase 9 | Pending |
-| JDET-05 | Phase 9 | Pending |
-| JDET-06 | Phase 9 | Pending |
-| JDET-07 | Phase 9 | Pending |
-| JDET-08 | Phase 9 | Pending |
-| JDET-09 | Phase 9 | Pending |
+| JDET-01 | Phase 9 | Complete |
+| JDET-02 | Phase 9 | Complete |
+| JDET-03 | Phase 9 | Complete |
+| JDET-04 | Phase 9 | Complete |
+| JDET-05 | Phase 9 | Complete |
+| JDET-06 | Phase 9 | Complete |
+| JDET-07 | Phase 9 | Complete |
+| JDET-08 | Phase 9 | Complete |
+| JDET-09 | Phase 9 | Complete |
 | ADSH-01 | Phase 9 | Pending |
 | ADSH-02 | Phase 9 | Pending |
 | ADSH-03 | Phase 9 | Pending |

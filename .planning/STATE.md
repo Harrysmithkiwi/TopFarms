@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: SPEC Compliance
 status: executing
-stopped_at: "Completed 09-01-PLAN.md"
-last_updated: "2026-03-22T00:05:00Z"
-last_activity: 2026-03-22 — Completed 09-01 Phase 9 foundation (migration 015, hideSidebar, Edge Function, useSavedJobs)
+stopped_at: Completed 09-06-PLAN.md
+last_updated: "2026-03-22T04:37:32Z"
+last_activity: 2026-03-22 — Completed 09-06 My Applications StatusBanner + sidebar integration (FarmResponseIndicator, MyApplicationsSidebar, hideSidebar, sidebar filter)
 progress:
   total_phases: 5
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 14
-  completed_plans: 10
-  percent: 75
+  completed_plans: 14
+  percent: 86
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-20)
 ## Current Position
 
 Phase: 9 of 11 (Page-Level Integrations)
-Plan: 1 of 6 complete
+Plan: 4 of 6 complete
 Status: Executing
-Last activity: 2026-03-22 — Completed 09-01 Phase 9 foundation (migration 015, hideSidebar, Edge Function, useSavedJobs)
+Last activity: 2026-03-22 — Completed 09-04 Job detail SPEC compliance (Breadcrumb, StatsStrip, Timeline, MapPlaceholder, JobDetailSidebar)
 
-Progress: [███████░░░] 75%
+Progress: [█████████░] 86%
 
 ## Accumulated Context
 
@@ -60,6 +60,9 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 09]: ActiveFilterPills uses PILL_LABEL_MAP + SINGLE_VALUE_KEYS pattern to derive dismissible pills from URLSearchParams
 - [Phase 09-01]: Migration repair required before pushing 015 — ran `supabase migration repair --status applied 011 012 013 014` to align remote tracking with applied state
 - [Phase 09-01]: generate-candidate-summary uses cache-first pattern: checks applications.ai_summary before invoking Anthropic, preventing redundant AI calls
+- [Phase 09-04]: Timeline component uses entries/title prop shape — plan specified events/label but actual component uses entries/title; JobDetail.tsx correctly matches component interface
+- [Phase 09]: SearchJobCard outer wrapper changed from Link to div — navigation via View Full Listing link inside Details tab
+- [Phase 09]: hasApplied hardcoded to false in JobSearch — batch application status check deferred to a future plan
 
 ### Blockers/Concerns
 
@@ -68,6 +71,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-03-22T00:05:00Z
-Stopped at: Completed 09-01-PLAN.md
-Resume file: .planning/phases/09-page-level-integrations/09-01-SUMMARY.md
+Last session: 2026-03-22T04:41:08.752Z
+Stopped at: Completed 09-03-PLAN.md
+Resume file: None
