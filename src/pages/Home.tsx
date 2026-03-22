@@ -7,6 +7,8 @@ import { FarmTypesStrip } from '@/components/landing/FarmTypesStrip'
 import { FeaturedListings } from '@/components/landing/FeaturedListings'
 import { EmployerCTABand } from '@/components/landing/EmployerCTABand'
 import { TestimonialsSection } from '@/components/landing/TestimonialsSection'
+import { TrustedByStrip } from '@/components/landing/TrustedByStrip'
+import { FinalCTASection } from '@/components/landing/FinalCTASection'
 import { LandingFooter } from '@/components/landing/LandingFooter'
 
 export function Home() {
@@ -21,6 +23,8 @@ export function Home() {
       <FeaturedListings />
       <EmployerCTABand />
       <TestimonialsSection />
+      <TrustedByStrip />
+      <FinalCTASection />
       <LandingFooter />
     </div>
   )

@@ -188,6 +188,29 @@ describe('Landing Page', () => {
     })
   })
 
+  describe('LAND-08: Testimonials stat blocks', () => {
+    it('TestimonialsSection renders social proof stat blocks', () => {
+      renderHome()
+      expect(screen.getByText('500+')).toBeInTheDocument()
+      expect(screen.getByText('Satisfaction')).toBeInTheDocument()
+    })
+  })
+
+  describe('LAND-09: Trusted-by strip', () => {
+    it('TrustedByStrip renders farm brand placeholders', () => {
+      renderHome()
+      expect(screen.getByText('Fonterra Sharemilkers')).toBeInTheDocument()
+    })
+  })
+
+  describe('LAND-09b: Final CTA section', () => {
+    it('FinalCTASection renders dual CTA buttons', () => {
+      renderHome()
+      expect(screen.getAllByRole('link', { name: /find farm work/i }).length).toBeGreaterThan(0)
+      expect(screen.getAllByRole('link', { name: /post a job/i }).length).toBeGreaterThan(0)
+    })
+  })
+
   describe('LAND-06: Footer', () => {
     it('renders link to /jobs', () => {
       renderHome()
