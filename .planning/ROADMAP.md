@@ -25,7 +25,7 @@ Full details: `.planning/milestones/v1.0-ROADMAP.md`
 
 **Milestone Goal:** Close all gaps between built MVP and SPEC v3.0 so every screen matches the wireframe specification — missing fields, missing UI sections, layout deviations, and component upgrades.
 
-- [ ] **Phase 7: UI Primitives** — Build the 9 shared components that unblock all subsequent wizard and page work
+- [x] **Phase 7: UI Primitives** — Build the 9 shared components that unblock all subsequent wizard and page work (completed 2026-03-22)
 - [x] **Phase 8: Wizard Field Extensions** — Add ~30 missing form fields across all three wizards (employer, job posting, seeker) + fix ownership_type column type mismatch (completed 2026-03-21)
 - [x] **Phase 9: Page-Level Integrations** — Upgrade job search, job detail, applicant dashboard, and My Applications with SPEC-compliant UI (completed 2026-03-22)
 - [x] **Phase 10: Landing Page** — Add 5 missing sections, hero animation, stat blocks, and pulsing live indicator (completed 2026-03-22)
@@ -131,7 +131,7 @@ Plans:
 | 4. Match Scoring Engine | v1.0 | 4/4 | Complete | 2026-03-16 |
 | 5. Revenue Protection | v1.0 | 4/4 | Complete | 2026-03-17 |
 | 6. Landing Page and Launch | v1.0 | 2/2 | Complete | 2026-03-17 |
-| 7. UI Primitives | v1.1 | 0/3 | Not started | - |
+| 7. UI Primitives | v1.1 | Complete    | 2026-03-22 | - |
 | 8. Wizard Field Extensions | 5/5 | Complete   | 2026-03-21 | - |
 | 9. Page-Level Integrations | 6/6 | Complete   | 2026-03-22 | - |
 | 10. Landing Page | 3/3 | Complete    | 2026-03-22 | - |
