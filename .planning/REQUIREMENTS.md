@@ -93,13 +93,13 @@ Requirements for SPEC v3.0 compliance. Each maps to roadmap phases.
 
 - [x] **LAND-01**: Hero headline matches SPEC copy with staggered fadeUp animation (motion library)
 - [x] **LAND-02**: Live counter strip includes animated pulsing "Live" green dot badge
-- [ ] **LAND-03**: Social proof section includes 4 connected stat blocks alongside testimonials
+- [x] **LAND-03**: Social proof section includes 4 connected stat blocks alongside testimonials
 - [x] **LAND-04**: AI matching features section with mock browser window + 4 feature bullet points
 - [x] **LAND-05**: Farm types strip with 5 sector cards and listing counts
 - [x] **LAND-06**: Featured job listings include match score circles on cards
 - [x] **LAND-07**: Employer CTA band with mini dashboard preview + "Post your first job" CTA + 4-point checklist
-- [ ] **LAND-08**: Trusted-by strip with farm brand name placeholders
-- [ ] **LAND-09**: Final CTA section with centered headline + dual buttons
+- [x] **LAND-08**: Trusted-by strip with farm brand name placeholders
+- [x] **LAND-09**: Final CTA section with centered headline + dual buttons
 - [x] **LAND-10**: CTA fork card border radius corrected to 14px, button text matches SPEC
 
 ## v2 Requirements
@@ -196,13 +196,13 @@ Deferred to future release. Not in current roadmap.
 | MAPP-03 | Phase 9 | Complete |
 | LAND-01 | Phase 10 | Complete |
 | LAND-02 | Phase 10 | Complete |
-| LAND-03 | Phase 10 | Pending |
+| LAND-03 | Phase 10 | Complete |
 | LAND-04 | Phase 10 | Complete |
 | LAND-05 | Phase 10 | Complete |
 | LAND-06 | Phase 10 | Complete |
 | LAND-07 | Phase 10 | Complete |
-| LAND-08 | Phase 10 | Pending |
-| LAND-09 | Phase 10 | Pending |
+| LAND-08 | Phase 10 | Complete |
+| LAND-09 | Phase 10 | Complete |
 | LAND-10 | Phase 10 | Complete |
 
 **Coverage:**

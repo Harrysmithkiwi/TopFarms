@@ -28,7 +28,7 @@ Full details: `.planning/milestones/v1.0-ROADMAP.md`
 - [ ] **Phase 7: UI Primitives** — Build the 9 shared components that unblock all subsequent wizard and page work
 - [x] **Phase 8: Wizard Field Extensions** — Add ~30 missing form fields across all three wizards (employer, job posting, seeker) + fix ownership_type column type mismatch (completed 2026-03-21)
 - [x] **Phase 9: Page-Level Integrations** — Upgrade job search, job detail, applicant dashboard, and My Applications with SPEC-compliant UI (completed 2026-03-22)
-- [ ] **Phase 10: Landing Page** — Add 5 missing sections, hero animation, stat blocks, and pulsing live indicator
+- [x] **Phase 10: Landing Page** — Add 5 missing sections, hero animation, stat blocks, and pulsing live indicator (completed 2026-03-22)
 - [ ] **Phase 11: Backend-Dependent Features** — Wire match pool RPC, seeker document upload Storage bucket, and completion screen matched-jobs query
 
 ## Phase Details
@@ -134,5 +134,5 @@ Plans:
 | 7. UI Primitives | v1.1 | 0/3 | Not started | - |
 | 8. Wizard Field Extensions | 5/5 | Complete   | 2026-03-21 | - |
 | 9. Page-Level Integrations | 6/6 | Complete   | 2026-03-22 | - |
-| 10. Landing Page | 2/3 | In Progress|  | - |
+| 10. Landing Page | 3/3 | Complete   | 2026-03-22 | - |
 | 11. Backend-Dependent Features | v1.1 | 0/2 | Not started | - |

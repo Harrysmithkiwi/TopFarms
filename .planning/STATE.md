@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: SPEC Compliance
 status: executing
-stopped_at: Completed 10-01 Landing page SPEC compliance (motion animation, Live badge, match scores)
-last_updated: "2026-03-22T05:52:05.742Z"
-last_activity: 2026-03-22 — Completed 09-06 My Applications StatusBanner + sidebar integration (FarmResponseIndicator, MyApplicationsSidebar, hideSidebar, sidebar filter)
+stopped_at: Completed 10-03 Social proof stat blocks, TrustedByStrip, FinalCTASection
+last_updated: "2026-03-22T05:55:22.640Z"
+last_activity: 2026-03-22 — Completed 10-01 Landing page SPEC compliance (motion animation, Live badge, match scores)
 progress:
   total_phases: 5
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 17
-  completed_plans: 16
-  percent: 86
+  completed_plans: 17
+  percent: 94
 ---
 
 # Project State
@@ -70,6 +70,7 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 09-06]: MyApplications replaced active/completed split with single filteredApplications list controlled by sidebar filter tabs
 - [Phase 10]: getAllByText used in FarmTypesStrip test — Dairy appears multiple times in DOM (sector card + FeaturedListings filter chip)
 - [Phase 10]: No motion mock needed in tests — motion/react renders fine in jsdom without mocking
+- [Phase 10]: getAllByRole used for Find Farm Work/Post a Job in tests — links appear in both HeroSection and FinalCTASection
 
 ### Blockers/Concerns
 
@@ -78,6 +79,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-03-22T05:52:05.740Z
-Stopped at: Completed 10-01 Landing page SPEC compliance (motion animation, Live badge, match scores)
+Last session: 2026-03-22T05:55:18.498Z
+Stopped at: Completed 10-03 Social proof stat blocks, TrustedByStrip, FinalCTASection
 Resume file: None
