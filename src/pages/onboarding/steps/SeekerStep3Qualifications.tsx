@@ -1,9 +1,12 @@
+import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Select } from '@/components/ui/Select'
 import { Button } from '@/components/ui/Button'
 import { ChipSelector } from '@/components/ui/ChipSelector'
+import { FileDropzone } from '@/components/ui/FileDropzone'
+import { useAuth } from '@/hooks/useAuth'
 import { DAIRYNZ_LEVELS, LICENCE_TYPE_OPTIONS, CERTIFICATION_OPTIONS } from '@/types/domain'
 import type { SeekerProfileData, DairyNZLevel } from '@/types/domain'
 
@@ -22,12 +25,16 @@ interface SeekerStep3Props {
     dairynz_level?: DairyNZLevel
     licence_types?: string[]
     certifications?: string[]
+    document_urls?: string[]
   }
 }
 
 const LEVEL_OPTIONS = DAIRYNZ_LEVELS.map((l) => ({ value: l.value, label: l.label }))
 
 export function SeekerStep3Qualifications({ onComplete, onBack, defaultValues }: SeekerStep3Props) {
+  const { session } = useAuth()
+  const [documentPaths, setDocumentPaths] = useState<string[]>(defaultValues?.document_urls ?? [])
+
   const { handleSubmit, control, watch } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -45,6 +52,7 @@ export function SeekerStep3Qualifications({ onComplete, onBack, defaultValues }:
       dairynz_level: (data.dairynz_level || undefined) as DairyNZLevel | undefined,
       licence_types: data.licence_types,
       certifications: data.certifications,
+      document_urls: documentPaths,
     })
   }
 
@@ -156,6 +164,36 @@ export function SeekerStep3Qualifications({ onComplete, onBack, defaultValues }:
             />
           )}
         />
+      </div>
+
+      {/* Documents */}
+      <div>
+        <p className="font-body text-[13px] font-semibold text-ink mb-1">Documents</p>
+        <p className="text-[12px] font-body mb-3" style={{ color: 'var(--color-mid)' }}>
+          Upload your CV, certificates, and references (PDF, DOC, DOCX, JPG, PNG — max 10MB each,
+          up to 5 files)
+        </p>
+        {session?.user && (
+          <FileDropzone
+            bucket="seeker-documents"
+            path={`${session.user.id}/documents`}
+            accept={{
+              'application/pdf': ['.pdf'],
+              'application/msword': ['.doc'],
+              'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+              'image/jpeg': ['.jpg', '.jpeg'],
+              'image/png': ['.png'],
+            }}
+            maxSize={10 * 1024 * 1024}
+            multiple
+            maxFiles={5}
+            privateMode
+            existingPaths={defaultValues?.document_urls}
+            onUploadsComplete={(paths) => setDocumentPaths(paths)}
+            onUploadComplete={() => {}}
+            label="Drag and drop files, or click to select"
+          />
+        )}
       </div>
 
       <div className="flex justify-between pt-2">

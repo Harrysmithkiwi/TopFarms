@@ -81,6 +81,7 @@ export function SeekerOnboarding() {
           housing_sub_options: data.housing_sub_options,
           preferred_regions: data.preferred_regions,
           notice_period_text: data.notice_period_text,
+          document_urls: data.document_urls,
         })
       }
 
@@ -209,6 +210,7 @@ export function SeekerOnboarding() {
                 dairynz_level: profileData.dairynz_level,
                 licence_types: profileData.licence_types,
                 certifications: profileData.certifications,
+                document_urls: profileData.document_urls,
               }}
             />
           )}

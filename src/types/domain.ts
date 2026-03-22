@@ -168,6 +168,8 @@ export interface SeekerProfileData {
   housing_sub_options?: string[]
   preferred_regions?: string[]
   notice_period_text?: string
+  // Phase 11 — document upload
+  document_urls?: string[]
 }
 
 // ============================================================
