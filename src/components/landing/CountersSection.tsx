@@ -65,6 +65,24 @@ export function CountersSection() {
       style={{ backgroundColor: 'var(--color-soil)' }}
     >
       <div className="max-w-5xl mx-auto px-4">
+        {/* Live badge */}
+        <div className="flex justify-center mb-4 pt-8">
+          <div
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-semibold tracking-widest uppercase"
+            style={{
+              borderColor: 'rgba(122,175,63,0.3)',
+              backgroundColor: 'rgba(122,175,63,0.08)',
+              color: 'var(--color-meadow)',
+            }}
+          >
+            <span
+              className="w-2 h-2 rounded-full animate-pulse"
+              style={{ backgroundColor: 'var(--color-meadow)' }}
+            />
+            Live
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x"
           style={{ divideColor: 'rgba(255,255,255,0.08)' }}
         >

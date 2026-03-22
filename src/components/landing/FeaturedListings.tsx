@@ -37,11 +37,14 @@ function getTierBadge(tier: string | number): { label: string; color: string; bg
   return null
 }
 
+const MOCK_MATCH_SCORES = [94, 87, 91, 82]
+
 interface JobCardProps {
   job: FeaturedJob
+  matchScore: number
 }
 
-function JobCard({ job }: JobCardProps) {
+function JobCard({ job, matchScore }: JobCardProps) {
   const badge = getTierBadge(job.listing_tier)
   const farmName = job.employer_profiles?.farm_name ?? 'Farm'
   const region = job.employer_profiles?.region ?? job.region
@@ -49,15 +52,27 @@ function JobCard({ job }: JobCardProps) {
   return (
     <Link
       to={`/jobs/${job.id}`}
-      className="block rounded-2xl p-5 transition-shadow hover:shadow-md"
+      className="relative block rounded-2xl p-5 transition-shadow hover:shadow-md"
       style={{
         backgroundColor: 'var(--color-white)',
         border: '1px solid var(--color-fog)',
       }}
     >
+      {/* Match score circle */}
+      <div
+        className="absolute top-3 right-3 w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold"
+        style={{
+          backgroundColor: 'rgba(122,175,63,0.2)',
+          color: 'var(--color-meadow)',
+          border: '2px solid var(--color-meadow)',
+        }}
+      >
+        {matchScore}%
+      </div>
+
       {/* Badge row */}
       <div className="flex items-start justify-between mb-3">
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 pr-14">
           <h3
             className="font-display font-semibold text-base leading-snug mb-0.5 truncate"
             style={{ color: 'var(--color-soil)' }}
@@ -222,8 +237,8 @@ export function FeaturedListings() {
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {featuredJobs.map((job) => (
-                <JobCard key={job.id} job={job} />
+              {featuredJobs.map((job, index) => (
+                <JobCard key={job.id} job={job} matchScore={MOCK_MATCH_SCORES[index % MOCK_MATCH_SCORES.length]} />
               ))}
             </div>
 
