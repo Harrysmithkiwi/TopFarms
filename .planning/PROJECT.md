@@ -2,7 +2,7 @@
 
 ## What This Is
 
-TopFarms is a New Zealand agricultural job marketplace connecting farm employers with skilled workers. It replaces informal hiring via Facebook groups with a structured platform featuring agriculture-specific filters (shed type, accommodation, DairyNZ qualifications), AI-powered match scoring, and verified employer profiles — purpose-built for the NZ ag sector.
+TopFarms is a New Zealand agricultural job marketplace connecting farm employers with skilled workers. It replaces informal hiring via Facebook groups with a structured platform featuring agriculture-specific filters (shed type, accommodation, DairyNZ qualifications), AI-powered match scoring, verified employer profiles, and full SPEC v3.0 compliant UI — purpose-built for the NZ ag sector.
 
 ## Core Value
 
@@ -34,23 +34,20 @@ Farm employers and seekers can find each other through agriculture-specific matc
 - ✓ Automated follow-up emails (Day 7/14) via Resend — v1.0
 - ✓ Landing page: hero, live counters, how-it-works, featured listings, testimonials, footer — v1.0
 - ✓ Mobile-responsive design (320px minimum) — v1.0
+- ✓ 9 UI primitives (ChipSelector, StatusBanner, Breadcrumb, StatsStrip, Timeline, StarRating, Pagination, SearchHero, LivePreviewSidebar) — v1.1
+- ✓ Full wizard field compliance: employer onboarding, post job, seeker onboarding match SPEC v3.0 field sets — v1.1
+- ✓ Job search: SearchHero, role type/extras/accommodation filters, expandable card tabs, active filter pills, pagination — v1.1
+- ✓ Job detail: breadcrumb bar, stats strip, application timeline, similar jobs sidebar, farm profile card, location map placeholder — v1.1
+- ✓ Applicant dashboard: 260px sidebar, filter toolbar, 4-tab expandable panels, AI candidate summaries, bulk actions bar — v1.1
+- ✓ My Applications: status variant banners (shortlisted/interview/offer/declined), farm response indicator, sidebar with filter tabs — v1.1
+- ✓ Landing page SPEC sections: hero animation, live pulse dot, AI matching, farm types strip, employer CTA band, social proof stats, trusted-by, final CTA — v1.1
+- ✓ Seeker document upload to private Storage bucket with RLS — v1.1
+- ✓ LivePreviewSidebar with live match pool estimate via RPC — v1.1
+- ✓ Seeker completion screen with matched-jobs polling — v1.1
 
 ### Active
 
-#### Current Milestone: v1.1 SPEC Compliance
-
-**Goal:** Close all gaps between built MVP and SPEC v3.0 so every screen matches the wireframe specification — missing fields, missing UI sections, layout deviations, and component upgrades.
-
-**Target features:**
-- Employer onboarding: missing form fields (career dev chips, salary range, accommodation extras, calving, town/distance), layout corrections
-- Post job wizard: missing fields (breed, milking freq, dairy experience, seniority, qualifications, visa chips, pay freq, hours, roster), live preview sidebar
-- Landing page: 5 missing sections (AI matching, farm types, employer CTA, trusted-by, final CTA), hero animation, stat blocks
-- Job search: search hero section, role type filter, extras filters, expandable card tabs, active filter pills, pagination
-- Job detail: breadcrumb bar, stats strip, application timeline, similar jobs, location map, sidebar enhancements
-- Applicant dashboard: sidebar nav, filter toolbar, AI candidate summaries, bulk actions, 4-tab expandable panels
-- My applications: status variant banners (shortlisted/interview/offer/declined), farm response indicator, sidebar
-- Seeker onboarding: document upload, licences, certifications, salary/availability/notice period, completion screen with matched jobs
-- Component upgrades: checkboxes→chips where SPEC requires, char limit alignment
+(No active requirements — next milestone not yet defined)
 
 ### Out of Scope
 
@@ -69,8 +66,9 @@ Farm employers and seekers can find each other through agriculture-specific matc
 
 ## Context
 
-Shipped v1.0 MVP with 17,234 LOC TypeScript across 214 files in 3 days.
+Shipped v1.1 SPEC Compliance with 19,931 LOC TypeScript across 58 modified files in 5 days.
 Tech stack: React 19, TypeScript, Vite 6, Tailwind v4, Supabase, Claude API, Stripe, Resend, Vercel.
+Added: motion library for landing page animations.
 
 - NZ agricultural sector is small and reputation-driven — social enforcement mechanisms inform platform design
 - 86% of NZ ag Facebook job posts are dairy — primary target sector
@@ -78,6 +76,7 @@ Tech stack: React 19, TypeScript, Vite 6, Tailwind v4, Supabase, Claude API, Str
 - Shed type (rotary vs herringbone) is the primary skill differentiator in dairy
 - 28% of seekers are couples — couples matching is a significant filter
 - All 8 MVP screens are fully wireframed as interactive HTML files in `TopFarms_Launch_Pack/wireframes/`
+- v1.1 tech debt: hasApplied hardcoded to false in JobSearch, interview Accept is toast-only (no DB write), document viewing via signed URL not yet implemented
 
 ## Constraints
 
@@ -105,6 +104,12 @@ Tech stack: React 19, TypeScript, Vite 6, Tailwind v4, Supabase, Claude API, Str
 | Tailwind v4 CSS-first (@theme directive) | No tailwind.config.js, cleaner DX | ✓ Shipped v1.0 |
 | seeker_contacts as separate table | Contact masking enforced at schema level, not view layer | ✓ Shipped v1.0 |
 | Soft contact detection in messaging | Nudge banners not hard blocks — preserves goodwill (Growth Phase) | — Pending |
+| Boolean→string[] chip migration | booleanColumnsToChipArray() for backward compat, cleaner data model | ✓ Shipped v1.1 |
+| ChipSelector string[] value shape | Uniform interface for single/multi select, avoids boolean column proliferation | ✓ Shipped v1.1 |
+| Private seeker-documents bucket | Separate from employer photos, dedicated RLS, document privacy | ✓ Shipped v1.1 |
+| estimate_match_pool RPC with DEFAULT NULL params | Callable with any filter combination, debounced 500ms in UI | ✓ Shipped v1.1 |
+| AI candidate summary cache-first | Check applications.ai_summary before invoking Anthropic, prevents redundant calls | ✓ Shipped v1.1 |
+| motion library for animations | Lightweight, React-native integration, stagger variants for hero | ✓ Shipped v1.1 |
 
 ---
-*Last updated: 2026-03-20 after v1.1 milestone definition*
+*Last updated: 2026-03-23 after v1.1 milestone*
