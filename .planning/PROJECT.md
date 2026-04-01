@@ -47,7 +47,25 @@ Farm employers and seekers can find each other through agriculture-specific matc
 
 ### Active
 
-(No active requirements — next milestone not yet defined)
+- [ ] Google OAuth signup/login
+- [ ] Facebook OAuth signup/login
+- [ ] Resend SPF/DKIM DNS configuration for production email deliverability
+- [ ] hasApplied batch check in JobSearch (currently hardcoded false)
+- [ ] Document viewing via signed URLs (upload works, viewing doesn't)
+- [ ] Auto-ghosting prevention email when employer marks job filled
+- [ ] Saved search (seeker saves and reloads filter criteria)
+
+## Current Milestone: v2.0 Launch Readiness
+
+**Goal:** Close the 6 launch-critical gaps so TopFarms can go live without major hiccups.
+
+**Target features:**
+- Google + Facebook OAuth (primary acquisition channel is Facebook groups)
+- Production email deliverability (SPF/DKIM DNS)
+- Fix hasApplied duplicate application UX bug
+- Document viewing via signed URLs for employer CV review
+- Auto-ghosting prevention email on job filled
+- Saved search for seekers
 
 ### Out of Scope
 
@@ -66,7 +84,8 @@ Farm employers and seekers can find each other through agriculture-specific matc
 
 ## Context
 
-Shipped v1.1 SPEC Compliance with 19,931 LOC TypeScript across 58 modified files in 5 days.
+Shipped v1.0 MVP + v1.1 SPEC Compliance with ~20k LOC TypeScript across 116 files.
+MILESTONE_LAUNCH.md is the authoritative launch guide — all gaps assessed against it.
 Tech stack: React 19, TypeScript, Vite 6, Tailwind v4, Supabase, Claude API, Stripe, Resend, Vercel.
 Added: motion library for landing page animations.
 
@@ -112,4 +131,4 @@ Added: motion library for landing page animations.
 | motion library for animations | Lightweight, React-native integration, stagger variants for hero | ✓ Shipped v1.1 |
 
 ---
-*Last updated: 2026-03-23 after v1.1 milestone*
+*Last updated: 2026-04-02 after v2.0 milestone initialization*
