@@ -30,6 +30,11 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
     return <Navigate to="/login" replace />
   }
 
+  // New OAuth user: has session but no role yet — redirect to role selection
+  if (!role) {
+    return <Navigate to="/auth/select-role" replace />
+  }
+
   if (requiredRole && role !== requiredRole) {
     return <Navigate to={`/dashboard/${role}`} replace />
   }
