@@ -10,6 +10,7 @@ import { SignUp } from '@/pages/auth/SignUp'
 import { VerifyEmail } from '@/pages/auth/VerifyEmail'
 import { ForgotPassword } from '@/pages/auth/ForgotPassword'
 import { ResetPassword } from '@/pages/auth/ResetPassword'
+import { SelectRole } from '@/pages/auth/SelectRole'
 import { EmployerDashboard } from '@/pages/dashboard/EmployerDashboard'
 import { SeekerDashboard } from '@/pages/dashboard/SeekerDashboard'
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
@@ -49,6 +50,10 @@ const router = createBrowserRouter([
   {
     path: '/auth/reset',
     element: <ResetPassword />,
+  },
+  {
+    path: '/auth/select-role',
+    element: <SelectRole />,
   },
 
   // ─── Jobs ───────────────────────────────────────────────────────────────────
