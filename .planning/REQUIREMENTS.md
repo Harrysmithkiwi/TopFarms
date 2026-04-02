@@ -9,8 +9,8 @@ Requirements for Launch Readiness. Each maps to roadmap phases.
 
 ### Authentication
 
-- [ ] **AUTH-06**: User can sign up and log in with Google OAuth via Supabase Auth
-- [ ] **AUTH-07**: User can sign up and log in with Facebook OAuth via Supabase Auth
+- [x] **AUTH-06**: User can sign up and log in with Google OAuth via Supabase Auth
+- [x] **AUTH-07**: User can sign up and log in with Facebook OAuth via Supabase Auth
 - [ ] **AUTH-08**: OAuth users are prompted to select role (Employer/Seeker) on first login and routed to role-appropriate onboarding
 
 ### Email Deliverability
@@ -73,8 +73,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-06 | Phase 12 | Pending |
-| AUTH-07 | Phase 12 | Pending |
+| AUTH-06 | Phase 12 | Complete |
+| AUTH-07 | Phase 12 | Complete |
 | AUTH-08 | Phase 12 | Pending |
 | MAIL-01 | Phase 13 | Pending |
 | MAIL-02 | Phase 13 | Pending |

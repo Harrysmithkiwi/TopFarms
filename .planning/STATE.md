@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: planning
-stopped_at: Phase 12 context gathered
-last_updated: "2026-04-02T07:02:13.109Z"
+stopped_at: Completed 12-oauth-authentication-01-PLAN.md
+last_updated: "2026-04-02T12:21:43.780Z"
 last_activity: 2026-04-02 — Roadmap created (4 phases, 10 requirements)
 progress:
   total_phases: 4
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_plans: 2
+  completed_plans: 1
 ---
 
 # Project State
@@ -34,6 +34,8 @@ Last activity: 2026-04-02 — Roadmap created (4 phases, 10 requirements)
 ### Decisions
 
 Decisions are logged in PROJECT.md Key Decisions table.
+- [Phase 12-oauth-authentication]: OAuth redirectTo set to /auth/select-role so both new and returning OAuth users can set/verify role
+- [Phase 12-oauth-authentication]: Facebook OAuth requires scopes: 'email' explicitly; Google has email/profile by default via OpenID
 
 ### Blockers/Concerns
 
@@ -42,6 +44,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-04-02T07:02:13.106Z
-Stopped at: Phase 12 context gathered
-Resume file: .planning/phases/12-oauth-authentication/12-CONTEXT.md
+Last session: 2026-04-02T12:21:43.778Z
+Stopped at: Completed 12-oauth-authentication-01-PLAN.md
+Resume file: None
