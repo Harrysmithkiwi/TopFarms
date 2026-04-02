@@ -38,8 +38,8 @@ created: 2026-04-03
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 13-01-01 | 01 | 1 | MAIL-01 | manual | N/A (DNS config) | N/A | ⬜ pending |
-| 13-02-01 | 02 | 1 | MAIL-02 | unit+integration | `npx vitest run tests/notify-job-filled.test.ts` | ❌ W0 | ⬜ pending |
+| 13-01-01 | 01 | 1 | MAIL-02 | unit+integration | `npx vitest run tests/notify-job-filled.test.ts` | ❌ W0 | ⬜ pending |
+| 13-02-01 | 02 | 1 | MAIL-01 | manual | N/A (DNS config) | N/A | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
