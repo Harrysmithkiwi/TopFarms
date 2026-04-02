@@ -33,7 +33,7 @@ Full details: `.planning/milestones/v1.1-ROADMAP.md`
 
 **Milestone Goal:** Close 6 launch-critical gaps so TopFarms can go live — OAuth signup, production email, bug fixes, and saved search.
 
-- [ ] **Phase 12: OAuth Authentication** — Add Google and Facebook OAuth with role selection for new OAuth users
+- [x] **Phase 12: OAuth Authentication** — Add Google and Facebook OAuth with role selection for new OAuth users (completed 2026-04-02)
 - [ ] **Phase 13: Email & Notifications** — Production email deliverability and auto-ghosting prevention
 - [ ] **Phase 14: Bug Fixes** — hasApplied badge and document viewing via signed URLs
 - [ ] **Phase 15: Saved Search** — Seeker can save, load, and delete filter combinations
@@ -44,7 +44,7 @@ Full details: `.planning/milestones/v1.1-ROADMAP.md`
 **Goal**: A user can sign up and log in with Google or Facebook, select their role on first OAuth login, and be routed to the correct onboarding — matching the existing email/password flow
 **Depends on**: Nothing (first phase)
 **Requirements**: AUTH-06, AUTH-07, AUTH-08
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 Plans:
 - [ ] 12-01-PLAN.md — OAuth buttons on Login/SignUp, useAuth extensions, Wave 0 test scaffolds
 - [ ] 12-02-PLAN.md — SelectRole page, ProtectedRoute role-null redirect, route wiring
@@ -90,7 +90,7 @@ Plans:
 |-------|-----------|----------------|--------|-----------|
 | 1-6 | v1.0 | 27/27 | Complete | 2026-03-17 |
 | 7-11 | v1.1 | 19/19 | Complete | 2026-03-23 |
-| 12. OAuth Authentication | 1/2 | In Progress|  | — |
+| 12. OAuth Authentication | 2/2 | Complete   | 2026-04-02 | — |
 | 13. Email & Notifications | v2.0 | 0/? | Pending | — |
 | 14. Bug Fixes | v2.0 | 0/? | Pending | — |
 | 15. Saved Search | v2.0 | 0/? | Pending | — |

@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: planning
-stopped_at: Completed 12-oauth-authentication-01-PLAN.md
-last_updated: "2026-04-02T12:21:43.780Z"
+stopped_at: Completed 12-oauth-authentication-02-PLAN.md
+last_updated: "2026-04-02T12:25:09.248Z"
 last_activity: 2026-04-02 — Roadmap created (4 phases, 10 requirements)
 progress:
   total_phases: 4
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 2
-  completed_plans: 1
+  completed_plans: 2
 ---
 
 # Project State
@@ -36,6 +36,8 @@ Last activity: 2026-04-02 — Roadmap created (4 phases, 10 requirements)
 Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 12-oauth-authentication]: OAuth redirectTo set to /auth/select-role so both new and returning OAuth users can set/verify role
 - [Phase 12-oauth-authentication]: Facebook OAuth requires scopes: 'email' explicitly; Google has email/profile by default via OpenID
+- [Phase 12-oauth-authentication]: /auth/select-role is a public route — SelectRole self-guards so session+null-role users can access it without being rejected by ProtectedRoute
+- [Phase 12-oauth-authentication]: ProtectedRoute null-role guard inserted after !session and before requiredRole to catch authenticated OAuth users with no role yet
 
 ### Blockers/Concerns
 
@@ -44,6 +46,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-04-02T12:21:43.778Z
-Stopped at: Completed 12-oauth-authentication-01-PLAN.md
+Last session: 2026-04-02T12:25:03.689Z
+Stopped at: Completed 12-oauth-authentication-02-PLAN.md
 Resume file: None
