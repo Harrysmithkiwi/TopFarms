@@ -131,6 +131,8 @@ if (error) {
 
 **Critical:** The `redirectTo` URL must be added to the Supabase Dashboard allow list (Authentication > URL Configuration > Redirect URLs). The value should be `http://localhost:5173/**` for dev and `https://topfarms.co.nz/**` (or similar) for prod.
 
+**Returning users and redirectTo:** Setting `redirectTo` to `/auth/select-role` means returning OAuth users (who already have a role) will land on `SelectRole`, detect their existing role, and immediately redirect to their dashboard — one extra client-side hop. This is a deliberate tradeoff; do not try to optimize it away with a separate callback route.
+
 ### Pattern 2: Session Recovery on Return (Already Handled)
 
 After the provider redirects back, `detectSessionInUrl: true` in `src/lib/supabase.ts` automatically processes the URL hash. The existing `onAuthStateChange` listener in `useAuth` fires with event `SIGNED_IN` and the new session. No additional code needed in the auth callback path — the hook already handles it.
@@ -199,9 +201,34 @@ export function SelectRole() {
 }
 ```
 
-**Note:** After `user_roles` insert, `useAuth`'s `loadRole()` will return the new role on the next auth state change or manual call. The navigation to onboarding happens immediately — `ProtectedRoute` will verify role on subsequent page loads via `INITIAL_SESSION`.
+**Critical timing fix:** After inserting into `user_roles`, `useAuth` still has `role = null` in memory. `onAuthStateChange` does not re-fire from a DB insert — only from session events. If `SelectRole` navigates directly to `/onboarding/employer`, `ProtectedRoute` will see `role !== 'employer'` (because role is still null in React state) and redirect to `/dashboard/null`. See Pattern 6 below for the required `refreshRole()` solution.
 
-### Pattern 5: OAuth Button UI
+### Pattern 5: refreshRole — Required After user_roles Insert (useAuth Extension)
+
+**What:** Expose a `refreshRole()` function from `useAuth` that re-queries `user_roles` and updates the React state. Call it after the `user_roles` insert in `SelectRole`, before navigating to onboarding.
+
+**Why required:** `ProtectedRoute` reads `role` from `useAuth` React state. After `user_roles` insert, state is still null until refreshed. Without this call, onboarding routes reject the user because `requiredRole !== null`.
+
+**Change to useAuth.ts:**
+```typescript
+// Add to useAuth.ts — inside useAuth function, before return
+const refreshRole = async () => {
+  if (session?.user) {
+    const userRole = await loadRole(session.user.id)
+    setRole(userRole)
+  }
+}
+// Add refreshRole to the return object and AuthHookReturn interface
+```
+
+**Usage in SelectRole.tsx after insert:**
+```typescript
+// After successful user_roles insert:
+await refreshRole()                                    // sync role into React state
+navigate(`/onboarding/${selectedRole}`, { replace: true })  // ProtectedRoute now sees the role
+```
+
+### Pattern 6: OAuth Button UI
 
 Follow brand guidelines (locked decision). Use plain `<button>` elements — no third-party OAuth button libraries needed.
 
@@ -341,9 +368,10 @@ if (session && !role && !loading) {
 }
 ```
 
-### user_roles insert in SelectRole page
+### user_roles insert in SelectRole page (with required refreshRole call)
 ```typescript
 // Source: pattern from existing signUpWithRole in useAuth.ts
+// IMPORTANT: refreshRole() must be called before navigate — see Pattern 5
 const { error } = await supabase
   .from('user_roles')
   .insert({ user_id: session.user.id, role: selectedRole })
@@ -351,6 +379,7 @@ if (error) {
   toast.error('Failed to save your role. Please try again.')
   return
 }
+await refreshRole()  // sync role into React state before ProtectedRoute evaluates it
 navigate(`/onboarding/${selectedRole}`, { replace: true })
 ```
 
@@ -410,12 +439,7 @@ These cannot be automated — a developer must complete them before testing OAut
    - What's unclear: Whether this is on by default or requires a Dashboard toggle — official docs mention "automatic linking" without specifying a config location
    - Recommendation: Verify in Supabase Dashboard > Authentication > Settings — look for "Allow linking" or identity linking toggle. If not found, treat as automatic and test empirically.
 
-2. **SelectRole page — `useAuth` re-render timing after `user_roles` insert**
-   - What we know: `useAuth` sets role via `loadRole()` in `onAuthStateChange` — this fires on SIGNED_IN but not on DB changes
-   - What's unclear: After `SelectRole` inserts into `user_roles` and navigates to `/onboarding/employer`, will `ProtectedRoute` see the new role immediately?
-   - Recommendation: After insert + navigate, `useAuth` still has `role = null` in memory. `ProtectedRoute` for `/onboarding/employer` requires `requiredRole="employer"` — it will redirect back. Fix: either (a) force a `supabase.auth.refreshSession()` call after insert to trigger `onAuthStateChange` re-run, or (b) navigate after a state update confirms the role. Simplest: call `supabase.auth.getUser()` after insert then manually setRole in context — or expose a `refreshRole()` function from `useAuth`.
-
-3. **Facebook OAuth on localhost**
+2. **Facebook OAuth on localhost**
    - What we know: Facebook allows HTTP for localhost in Development mode
    - What's unclear: Exact port (5173 for Vite) — whether `http://localhost:5173` works or if HTTPS proxy is needed
    - Recommendation: Test directly; if blocked, use ngrok as fallback for local Facebook testing.
