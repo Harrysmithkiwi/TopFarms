@@ -73,22 +73,22 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-06 | — | Pending |
-| AUTH-07 | — | Pending |
-| AUTH-08 | — | Pending |
-| MAIL-01 | — | Pending |
-| MAIL-02 | — | Pending |
-| BFIX-01 | — | Pending |
-| BFIX-02 | — | Pending |
-| SRCH-13 | — | Pending |
-| SRCH-14 | — | Pending |
-| SRCH-15 | — | Pending |
+| AUTH-06 | Phase 12 | Pending |
+| AUTH-07 | Phase 12 | Pending |
+| AUTH-08 | Phase 12 | Pending |
+| MAIL-01 | Phase 13 | Pending |
+| MAIL-02 | Phase 13 | Pending |
+| BFIX-01 | Phase 14 | Pending |
+| BFIX-02 | Phase 14 | Pending |
+| SRCH-13 | Phase 15 | Pending |
+| SRCH-14 | Phase 15 | Pending |
+| SRCH-15 | Phase 15 | Pending |
 
 **Coverage:**
 - v2.0 requirements: 10 total
-- Mapped to phases: 0
-- Unmapped: 10
+- Mapped to phases: 10
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-04-02*
-*Last updated: 2026-04-02 after milestone v2.0 initialization*
+*Last updated: 2026-04-02 after roadmap creation — all requirements mapped*
