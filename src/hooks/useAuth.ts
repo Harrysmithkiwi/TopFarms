@@ -12,6 +12,8 @@ interface AuthHookReturn {
   signOut: () => Promise<void>
   resetPassword: (email: string) => Promise<ReturnType<typeof supabase.auth.resetPasswordForEmail>>
   updatePassword: (newPassword: string) => Promise<ReturnType<typeof supabase.auth.updateUser>>
+  signInWithOAuth: (provider: 'google' | 'facebook') => Promise<void>
+  refreshRole: () => Promise<UserRole | null>
 }
 
 async function loadRole(userId: string): Promise<UserRole | null> {
@@ -91,6 +93,26 @@ export function useAuth(): AuthHookReturn {
     return supabase.auth.updateUser({ password: newPassword })
   }
 
+  const signInWithOAuth = async (provider: 'google' | 'facebook') => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}/auth/select-role`,
+        scopes: provider === 'facebook' ? 'email' : undefined,
+      },
+    })
+    if (error) throw error
+  }
+
+  const refreshRole = async () => {
+    if (session?.user) {
+      const userRole = await loadRole(session.user.id)
+      setRole(userRole)
+      return userRole
+    }
+    return null
+  }
+
   return {
     session,
     role,
@@ -100,5 +122,7 @@ export function useAuth(): AuthHookReturn {
     signOut,
     resetPassword,
     updatePassword,
+    signInWithOAuth,
+    refreshRole,
   }
 }
