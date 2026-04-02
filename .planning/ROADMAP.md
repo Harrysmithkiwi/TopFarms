@@ -90,7 +90,7 @@ Plans:
 |-------|-----------|----------------|--------|-----------|
 | 1-6 | v1.0 | 27/27 | Complete | 2026-03-17 |
 | 7-11 | v1.1 | 19/19 | Complete | 2026-03-23 |
-| 12. OAuth Authentication | 2/2 | Complete   | 2026-04-02 | — |
+| 12. OAuth Authentication | 2/2 | Complete    | 2026-04-02 | — |
 | 13. Email & Notifications | v2.0 | 0/? | Pending | — |
 | 14. Bug Fixes | v2.0 | 0/? | Pending | — |
 | 15. Saved Search | v2.0 | 0/? | Pending | — |
