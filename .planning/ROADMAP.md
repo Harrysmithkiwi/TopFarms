@@ -58,6 +58,10 @@ Plans:
 **Goal**: Transactional emails reliably reach inboxes (not spam) and applicants are automatically notified when a job they applied to is marked as filled
 **Depends on**: Nothing (independent of Phase 12)
 **Requirements**: MAIL-01, MAIL-02
+**Plans:** 2 plans
+Plans:
+- [ ] 13-01-PLAN.md — MarkFilledModal race condition fix, notify-job-filled Edge Function, database webhook migration
+- [ ] 13-02-PLAN.md — SPF/DKIM DNS configuration and verification (human-action checkpoint)
 **Success Criteria** (what must be TRUE):
   1. SPF and DKIM DNS records are configured for the Resend sending domain and pass verification — confirmed via Resend dashboard showing "Verified" status
   2. A test email sent via Resend from the configured domain arrives in Gmail/Outlook inbox (not spam folder)
@@ -91,6 +95,6 @@ Plans:
 | 1-6 | v1.0 | 27/27 | Complete | 2026-03-17 |
 | 7-11 | v1.1 | 19/19 | Complete | 2026-03-23 |
 | 12. OAuth Authentication | 2/2 | Complete    | 2026-04-02 | — |
-| 13. Email & Notifications | v2.0 | 0/? | Pending | — |
+| 13. Email & Notifications | v2.0 | 0/2 | Planning | — |
 | 14. Bug Fixes | v2.0 | 0/? | Pending | — |
 | 15. Saved Search | v2.0 | 0/? | Pending | — |
