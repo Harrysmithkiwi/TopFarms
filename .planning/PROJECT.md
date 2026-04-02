@@ -47,8 +47,9 @@ Farm employers and seekers can find each other through agriculture-specific matc
 
 ### Active
 
-- [ ] Google OAuth signup/login
-- [ ] Facebook OAuth signup/login
+- ✓ Google OAuth signup/login — Phase 12
+- ✓ Facebook OAuth signup/login — Phase 12
+- ✓ OAuth role selection for new users — Phase 12
 - [ ] Resend SPF/DKIM DNS configuration for production email deliverability
 - [ ] hasApplied batch check in JobSearch (currently hardcoded false)
 - [ ] Document viewing via signed URLs (upload works, viewing doesn't)
@@ -72,7 +73,7 @@ Farm employers and seekers can find each other through agriculture-specific matc
 - Data scraping pipeline (Apify/Claude) — separate build track and document
 - Messaging / Expressions of Interest — Growth Phase, wireframe exists but do not build
 - Horticulture and viticulture sectors — future milestone
-- Social media login (Google/Facebook OAuth) — email/password only for MVP
+- Social media login (Google/Facebook OAuth) — shipped Phase 12
 - Mobile native apps (iOS/Android) — mobile web only
 - Partner job matching (separate role for seeker's partner)
 - Video interviews or calendar integration
@@ -102,7 +103,7 @@ Added: motion library for landing page animations.
 - **Tech stack**: React + TypeScript + Vite, Tailwind CSS, Supabase, Claude API, Stripe, Vercel — locked, no deviations
 - **Design system**: Fraunces + DM Sans fonts, specific colour palette (soil/moss/fern/meadow/hay/cream), component standards — non-negotiable
 - **MVP sectors**: Dairy cattle + sheep & beef ONLY
-- **Auth**: Email/password only for MVP (no OAuth)
+- **Auth**: Email/password + Google/Facebook OAuth with role selection
 - **Performance**: Search results <1.5s, page load <2s on 4G, match recalculation <60s
 - **Security**: RLS on ALL Supabase tables, contact details masked until placement fee acknowledged
 - **Accessibility**: WCAG 2.1 AA target
@@ -129,6 +130,9 @@ Added: motion library for landing page animations.
 | estimate_match_pool RPC with DEFAULT NULL params | Callable with any filter combination, debounced 500ms in UI | ✓ Shipped v1.1 |
 | AI candidate summary cache-first | Check applications.ai_summary before invoking Anthropic, prevents redundant calls | ✓ Shipped v1.1 |
 | motion library for animations | Lightweight, React-native integration, stagger variants for hero | ✓ Shipped v1.1 |
+| OAuth redirectTo → /auth/select-role | Both new and returning OAuth users hit role selection; returning users auto-redirect to dashboard | ✓ Shipped v2.0 |
+| SelectRole as public route (self-guarded) | Session+null-role users would be rejected by ProtectedRoute; SelectRole handles own auth check | ✓ Shipped v2.0 |
+| Facebook OAuth requires explicit email scope | Google includes email via OpenID by default; Facebook needs scopes: 'email' | ✓ Shipped v2.0 |
 
 ---
-*Last updated: 2026-04-02 after v2.0 milestone initialization*
+*Last updated: 2026-04-03 after Phase 12*
