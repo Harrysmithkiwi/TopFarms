@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: planning
-stopped_at: Phase 13 context gathered
-last_updated: "2026-04-02T22:26:30.361Z"
+stopped_at: Completed 13-01-PLAN.md — notify-job-filled Edge Function, migration, and MarkFilledModal race condition fix
+last_updated: "2026-04-03T05:15:05.547Z"
 last_activity: 2026-04-03 — Phase 12 OAuth Authentication complete (2/2 plans)
 progress:
   total_phases: 4
   completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
+  total_plans: 4
+  completed_plans: 3
 ---
 
 # Project State
@@ -38,6 +38,9 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 12-oauth-authentication]: Facebook OAuth requires scopes: 'email' explicitly; Google has email/profile by default via OpenID
 - [Phase 12-oauth-authentication]: /auth/select-role is a public route — SelectRole self-guards so session+null-role users can access it without being rejected by ProtectedRoute
 - [Phase 12-oauth-authentication]: ProtectedRoute null-role guard inserted after !session and before requiredRole to catch authenticated OAuth users with no role yet
+- [Phase 13]: notify-job-filled: hired applicant updated before job status change to prevent race condition with webhook trigger
+- [Phase 13]: notify-job-filled: NOTIFY_STATUSES matches domain.ts ACTIVE_STATUSES exactly (applied/review/interview/shortlisted/offered)
+- [Phase 13]: notify-job-filled: CTA links to /jobs to encourage new searches rather than viewing stale applications
 
 ### Blockers/Concerns
 
@@ -46,6 +49,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-04-02T22:26:30.359Z
-Stopped at: Phase 13 context gathered
-Resume file: .planning/phases/13-email-notifications/13-CONTEXT.md
+Last session: 2026-04-03T05:15:05.544Z
+Stopped at: Completed 13-01-PLAN.md — notify-job-filled Edge Function, migration, and MarkFilledModal race condition fix
+Resume file: None

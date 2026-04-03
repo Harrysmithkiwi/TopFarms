@@ -16,7 +16,7 @@ Requirements for Launch Readiness. Each maps to roadmap phases.
 ### Email Deliverability
 
 - [ ] **MAIL-01**: Resend sending domain has SPF and DKIM DNS records configured and verified for production email delivery
-- [ ] **MAIL-02**: When employer marks a job as filled, all applicants with unresolved status (applied, reviewed, interview, shortlisted) receive an automated notification email
+- [x] **MAIL-02**: When employer marks a job as filled, all applicants with unresolved status (applied, reviewed, interview, shortlisted) receive an automated notification email
 
 ### Bug Fixes
 
@@ -77,7 +77,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-07 | Phase 12 | Complete |
 | AUTH-08 | Phase 12 | Complete |
 | MAIL-01 | Phase 13 | Pending |
-| MAIL-02 | Phase 13 | Pending |
+| MAIL-02 | Phase 13 | Complete |
 | BFIX-01 | Phase 14 | Pending |
 | BFIX-02 | Phase 14 | Pending |
 | SRCH-13 | Phase 15 | Pending |
