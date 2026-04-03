@@ -34,7 +34,7 @@ Full details: `.planning/milestones/v1.1-ROADMAP.md`
 **Milestone Goal:** Close 6 launch-critical gaps so TopFarms can go live — OAuth signup, production email, bug fixes, and saved search.
 
 - [x] **Phase 12: OAuth Authentication** — Add Google and Facebook OAuth with role selection for new OAuth users (completed 2026-04-02)
-- [ ] **Phase 13: Email & Notifications** — Production email deliverability and auto-ghosting prevention
+- [x] **Phase 13: Email & Notifications** — Production email deliverability and auto-ghosting prevention (completed 2026-04-03)
 - [ ] **Phase 14: Bug Fixes** — hasApplied badge and document viewing via signed URLs
 - [ ] **Phase 15: Saved Search** — Seeker can save, load, and delete filter combinations
 
@@ -58,7 +58,7 @@ Plans:
 **Goal**: Transactional emails reliably reach inboxes (not spam) and applicants are automatically notified when a job they applied to is marked as filled
 **Depends on**: Nothing (independent of Phase 12)
 **Requirements**: MAIL-01, MAIL-02
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 Plans:
 - [ ] 13-01-PLAN.md — MarkFilledModal race condition fix, notify-job-filled Edge Function, database webhook migration
 - [ ] 13-02-PLAN.md — SPF/DKIM DNS configuration and verification (human-action checkpoint)
@@ -95,6 +95,6 @@ Plans:
 | 1-6 | v1.0 | 27/27 | Complete | 2026-03-17 |
 | 7-11 | v1.1 | 19/19 | Complete | 2026-03-23 |
 | 12. OAuth Authentication | 2/2 | Complete    | 2026-04-02 | — |
-| 13. Email & Notifications | 1/2 | In Progress|  | — |
+| 13. Email & Notifications | 2/2 | Complete   | 2026-04-03 | — |
 | 14. Bug Fixes | v2.0 | 0/? | Pending | — |
 | 15. Saved Search | v2.0 | 0/? | Pending | — |
