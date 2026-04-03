@@ -64,7 +64,23 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
     setSubmitting(true)
 
     try {
-      // 1. Mark job as filled
+      // 1. If an applicant was selected, mark their application as hired FIRST
+      //    (before job status triggers the notify-job-filled webhook, so the hired
+      //    applicant is already excluded from the ghosting-prevention emails)
+      if (selectedApplicantId) {
+        const { error: appError } = await supabase
+          .from('applications')
+          .update({ status: 'hired' })
+          .eq('id', selectedApplicantId)
+
+        if (appError) {
+          console.error('MarkFilledModal: application update error', appError)
+          toast.error('Failed to update applicant status. Please try again.')
+          return
+        }
+      }
+
+      // 2. Mark job as filled (this triggers the notify-job-filled webhook)
       const { error: jobError } = await supabase
         .from('jobs')
         .update({ status: 'filled' })
@@ -74,19 +90,6 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
         toast.error('Failed to mark listing as filled. Please try again.')
         console.error('MarkFilledModal: job update error', jobError)
         return
-      }
-
-      // 2. If an applicant was selected, mark their application as hired
-      if (selectedApplicantId) {
-        const { error: appError } = await supabase
-          .from('applications')
-          .update({ status: 'hired' })
-          .eq('id', selectedApplicantId)
-
-        if (appError) {
-          console.error('MarkFilledModal: application update error', appError)
-          // Non-fatal — job is already marked filled
-        }
       }
 
       toast.success('Listing marked as filled')
