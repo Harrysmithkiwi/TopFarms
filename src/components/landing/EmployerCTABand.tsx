@@ -54,16 +54,25 @@ export function EmployerCTABand() {
               ))}
             </ul>
 
-            <Link
-              to="/onboarding/employer"
-              className="inline-block rounded-full px-8 py-3 font-semibold transition-opacity hover:opacity-90"
-              style={{
-                backgroundColor: 'var(--color-meadow)',
-                color: 'var(--color-soil)',
-              }}
-            >
-              Post Your First Job
-            </Link>
+            <div className="flex flex-wrap items-center gap-5">
+              <Link
+                to="/onboarding/employer"
+                className="inline-block rounded-full px-8 py-3 font-semibold transition-opacity hover:opacity-90"
+                style={{
+                  backgroundColor: 'var(--color-meadow)',
+                  color: 'var(--color-soil)',
+                }}
+              >
+                Post Your First Job
+              </Link>
+              <Link
+                to="/for-employers"
+                className="inline-block text-sm font-semibold transition-opacity hover:opacity-80"
+                style={{ color: 'var(--color-meadow)' }}
+              >
+                Learn more →
+              </Link>
+            </div>
           </div>
 
           {/* Right: mini dashboard mockup */}

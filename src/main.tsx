@@ -21,6 +21,8 @@ import { JobDetail } from '@/pages/jobs/JobDetail'
 import { EmployerVerification } from '@/pages/verification/EmployerVerification'
 import { DocumentUpload } from '@/pages/verification/DocumentUpload'
 import { FarmPhotoUpload } from '@/pages/verification/FarmPhotoUpload'
+import { ForEmployers } from '@/pages/ForEmployers'
+import { Pricing } from '@/pages/Pricing'
 import { JobSearch } from '@/pages/jobs/JobSearch'
 import { MyApplications } from '@/pages/dashboard/seeker/MyApplications'
 import { ApplicantDashboard } from '@/pages/dashboard/employer/ApplicantDashboard'
@@ -59,6 +61,14 @@ const router = createBrowserRouter([
   // ─── Jobs ───────────────────────────────────────────────────────────────────
   // NOTE: /jobs/new MUST be declared before /jobs/:id to prevent React Router
   // from treating "new" as a dynamic :id param.
+  {
+    path: '/for-employers',
+    element: <ForEmployers />,
+  },
+  {
+    path: '/pricing',
+    element: <Pricing />,
+  },
   {
     path: '/jobs',
     element: <JobSearch />,

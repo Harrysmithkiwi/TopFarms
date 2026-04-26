@@ -526,6 +526,9 @@ Each wireframe is an HTML file. Claude Code should read the file to extract exac
 ### 5.9 Messaging — `TopFarms_Messaging.html`
 **DO NOT BUILD UI.** This is Growth Phase. Create database tables only (`message_threads`, `messages`). The wireframe is reference-only.
 
+### 5.10 Marketing Pages (added outside GSD on 2026-04-26)
+- `/for-employers` (`src/pages/ForEmployers.tsx`) and `/pricing` (`src/pages/Pricing.tsx`) were built as pre-launch marketing scope **outside GSD phase tracking**. No wireframe in `TopFarms_Launch_Pack/` and no `*-PLAN.md`. Documented here for an honest audit trail; not retroactively backfilled into a phase. If further marketing pages are needed, fold them into a future GSD phase rather than continuing to extend ad-hoc.
+
 ---
 
 ## 6. GSD Milestones (from PRD v3.0 §13)
