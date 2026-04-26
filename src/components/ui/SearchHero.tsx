@@ -7,6 +7,7 @@ import { Select } from '@/components/ui/Select'
 const DEFAULT_PILLS = ['Dairy', 'Sheep & Beef', 'Farm Manager', 'Herd Manager', 'Relief Milker']
 
 const NZ_REGIONS = [
+  { value: 'all', label: 'All Regions' },
   { value: 'northland', label: 'Northland' },
   { value: 'auckland', label: 'Auckland' },
   { value: 'waikato', label: 'Waikato' },
@@ -31,10 +32,10 @@ export function SearchHero({
   className,
 }: SearchHeroProps) {
   const [query, setQuery] = useState('')
-  const [region, setRegion] = useState('')
+  const [region, setRegion] = useState('all')
 
   const handleSearch = () => {
-    onSearch?.(query, region)
+    onSearch?.(query, region === 'all' ? '' : region)
   }
 
   return (

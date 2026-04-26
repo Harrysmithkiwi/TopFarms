@@ -359,12 +359,12 @@ export function FilterSidebar({
           <Select
             placeholder="Any level"
             options={[
-              { value: '', label: 'Any level' },
+              { value: 'all', label: 'Any level' },
               ...DAIRYNZ_LEVELS.map((l) => ({ value: l.value, label: l.label })),
             ]}
-            value={dairynzLevel ?? ''}
+            value={dairynzLevel ?? 'all'}
             onValueChange={(val) =>
-              onFilterChange('dairynz_level', val || null)
+              onFilterChange('dairynz_level', val === 'all' ? null : val)
             }
           />
         </details>
