@@ -44,6 +44,10 @@ Deferred to post-launch. Tracked but not in current roadmap.
 
 - **PERF-01**: AbortController on `JobSearch.tsx` `fetchJobs` useEffect. Currently no abort on filter rapid-change — slow first response can overwrite a fresh second response. Low-priority quality fix; not a launch blocker. Logged 2026-04-27 during StrictMode investigation.
 
+### Testing
+
+- **TEST-01**: Playwright smoke specs for Phase 14 deliverables (BFIX-01 badge + BFIX-02 employer doc view + BFIX-03 categorization). Install `@playwright/test` + chromium binary, write specs covering primary success criterion of each phase, wire into CI gate. Deferred from Phase 14 in favour of manual you-click UAT during pre-launch development. Reasoning: pre-launch with ~15 active screens, manual UAT works at this scale; smoke specs add 75-140 LOC/plan (~30% bloat) for regression coverage we don't yet need. Playwright value comes at scale (multiple devs, regression risk, CI gates) — post-launch territory. Logged 2026-04-27.
+
 ### Bug Fixes (Post-Launch)
 
 - **HOMEBUG-01**: Home page calls `get_platform_stats` RPC which returns 404. Function may be missing, renamed, or never deployed in Supabase. Affected: home page platform stats widget renders silently empty. Logged 2026-04-27 from prod-build smoke (`localhost:4173/`).
