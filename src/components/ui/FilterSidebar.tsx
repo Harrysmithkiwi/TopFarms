@@ -295,6 +295,7 @@ export function FilterSidebar({
         </details>
 
         {/* 7. Herd Size */}
+        {/* herd_size: multi-select with OR semantics. See KNOWN_QUIRKS.md QUIRK-01. */}
         <details open className="border-t border-fog py-4">
           <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
             <SectionHeader title="Herd Size" />

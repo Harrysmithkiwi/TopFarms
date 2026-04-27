@@ -47,6 +47,7 @@ Deferred to post-launch. Tracked but not in current roadmap.
 
 - **HOMEBUG-01**: Home page calls `get_platform_stats` RPC which returns 404. Function may be missing, renamed, or never deployed in Supabase. Affected: home page platform stats widget renders silently empty. Logged 2026-04-27 from prod-build smoke (`localhost:4173/`).
 - **HOMEBUG-02**: Home page `jobs?select=id,title,region,...` query returns 400 (likely malformed). Affected: home page featured jobs preview renders silently empty. Investigate query construction in landing page component. Logged 2026-04-27 from prod-build smoke.
+- **HOMEBUG-03**: FilterSidebar Couples and Accommodation filters trigger backend errors when activated. Likely a UI/backend mismatch — filter UI exists but the corresponding query parameter or database column may be missing or named differently. Investigate: (1) does the UI emit the right query param, (2) does the jobs query handler accept it, (3) does the underlying jobs table have the necessary column. Affected: seeker job search filters (Couples + Accommodation sub-options). Logged 2026-04-27 from Bug 1 UAT side-finding.
 
 ### Email Automation
 
