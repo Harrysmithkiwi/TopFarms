@@ -112,7 +112,7 @@ Three v1.1 tech-debt items resolved:
 - `src/pages/jobs/JobSearch.tsx` — line 582 hardcode `hasApplied={false}`; lines 100-137 setSearchParams pattern; lines 167-339 fetchJobs/useEffect
 - `src/components/ui/SearchJobCard.tsx` — `hasApplied?: boolean` prop (line 20) → must change to `appliedStatus`; line 187 prop forwarding to ExpandableCardTabs
 - `src/components/ui/ExpandableCardTabs.tsx` — `hasApplied: boolean` prop (line 16); Apply-tab gating logic (lines 26, 132)
-- `src/types/domain.ts` — `ApplicationStatus` type, `ACTIVE_STATUSES` constant (per Phase 13 decision log: applied | reviewed | interview | shortlisted | offered)
+- `src/types/domain.ts` — `ApplicationStatus` type, `ACTIVE_STATUSES` constant (verified `domain.ts:107`: applied | review | interview | shortlisted | offered)
 - `src/hooks/useAuth.ts` — current seeker_id derivation pattern (auth.uid → user_roles → seeker_profile.id)
 
 ### BFIX-02 + BFIX-03 (documents)
