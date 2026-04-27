@@ -35,6 +35,7 @@ Requirements for Launch Readiness. Each maps to roadmap phases.
 Items that **block v2.0 launch**. Surfaced during pre-Phase-14 stabilisation. Not assigned to a phase yet — must be scheduled before go-live.
 
 - [ ] **UXBUG-01** *(pre-launch blocker)*: `Step7Preview.tsx` references `accommodation_pets`, `accommodation_couples`, `accommodation_family`, `accommodation_utilities_included` on `EmployerProfileData`, but those properties don't exist on the type. At runtime these access `undefined` and render as empty fields on the employer onboarding preview step (Step 7). Every employer hitting onboarding sees a half-broken preview before publishing. Investigate whether the fields were renamed during a migration, never added to the type, or never persisted at all. Found via `tsc -b` errors at `Step7Preview.tsx:129,161-164` (2026-04-27).
+- [ ] **AUTH-01** *(pre-launch blocker)*: Google OAuth login fails on signup/login flow. Email signup works. Likely Supabase Auth provider config issue — check Google OAuth client_id/secret + whitelisted redirect URIs (localhost:5173, https://top-farms.vercel.app, future custom domain). Pre-launch blocker. Logged 2026-04-28 from 14-01 UAT prep.
 
 ## Future Requirements
 
