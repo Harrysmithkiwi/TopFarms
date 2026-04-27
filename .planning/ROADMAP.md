@@ -69,14 +69,16 @@ Plans:
   4. Applicants who already have a terminal status (hired, declined, withdrawn) do NOT receive the filled notification
 
 ### Phase 14: Bug Fixes
-**Goal**: Two known v1.1 tech debt items are resolved — seekers see which jobs they've applied to, and employers can view uploaded documents
+**Goal**: Three v1.1 tech debt items are resolved — seekers see which jobs they've applied to, employers can view applicant documents via signed URLs, and seeker documents are categorized so identity documents are never exposed to employers.
 **Depends on**: Nothing (independent)
-**Requirements**: BFIX-01, BFIX-02
+**Requirements**: BFIX-01, BFIX-02, BFIX-03
 **Success Criteria** (what must be TRUE):
-  1. A logged-in seeker viewing job search results sees an "Applied" badge on every job card they have already submitted an application to
+  1. A logged-in seeker viewing job search results sees an "Applied" badge on every job card they have already submitted an application to. The badge is visible for any application status; copy distinguishes terminal states (e.g. "Applied · Declined"). The Apply tab is re-enabled when the seeker's most recent application is in a terminal status, allowing re-apply.
   2. The applied status is fetched efficiently (single batch query for all visible job IDs, not per-card)
-  3. An employer viewing an applicant's panel in the applicant dashboard can click to view the seeker's uploaded CV, certificates, and references — documents open via Supabase Storage signed URLs
-  4. Signed URLs expire after a reasonable time window (e.g., 60 minutes) and are not permanently accessible
+  3. An employer viewing an applicant's panel in the applicant dashboard can click to view the seeker's uploaded CV, certificates, and references — documents open via Supabase Storage signed URLs minted by an Edge Function (service role) that validates the employer→job→application→seeker relationship server-side
+  4. Signed URLs are per-click ephemeral with 15-minute expiry; URLs are not pre-generated, cached, or persisted
+  5. Seeker documents are categorized by type at upload (CV / certificate / reference / identity / other). Existing untagged documents are migrated as 'other' and re-classifiable from the seeker UI
+  6. Identity documents are NEVER exposed to employers. The document-access Edge Function filters out `document_type='identity'` server-side before minting any signed URL — enforcement at the data-access layer, not just hidden in the UI. Employer view is sectioned by non-identity category (CV / Certificates / References)
 
 ### Phase 15: Saved Search
 **Goal**: A seeker can save their current filter state as a named search, reload it later, and delete searches they no longer need

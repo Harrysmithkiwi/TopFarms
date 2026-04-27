@@ -20,8 +20,9 @@ Requirements for Launch Readiness. Each maps to roadmap phases.
 
 ### Bug Fixes
 
-- [ ] **BFIX-01**: Job search cards show "Applied" badge when the logged-in seeker has already applied to that job (replace hardcoded false)
-- [ ] **BFIX-02**: Employers can view seeker-uploaded documents (CV, certificates, references) via Supabase Storage signed URLs in the applicant dashboard
+- [ ] **BFIX-01**: Job search cards show "Applied" badge when the logged-in seeker has already applied to that job (replace hardcoded false). Badge appears for any application status (active or terminal); status-suffixed copy distinguishes (e.g. "Applied · Declined"). Apply tab is re-enabled for terminal statuses (re-apply allowed).
+- [ ] **BFIX-02**: Employers can view seeker-uploaded documents (CV, certificates, references) via Supabase Storage signed URLs in the applicant dashboard. URL minting goes through an Edge Function with service role; URLs are per-click ephemeral with 15-minute expiry.
+- [ ] **BFIX-03**: Seeker-uploaded documents are categorized by type at upload (CV / certificate / reference / identity / other). Existing untagged documents migrate as 'other' and are re-classifiable by the seeker. Identity documents are NEVER exposed to employers — the document-access Edge Function filters out `document_type='identity'` server-side before minting any signed URL. Employer view in the applicant dashboard is sectioned by non-identity category.
 
 ### Job Search
 
@@ -96,15 +97,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MAIL-02 | Phase 13 | Complete |
 | BFIX-01 | Phase 14 | Pending |
 | BFIX-02 | Phase 14 | Pending |
+| BFIX-03 | Phase 14 | Pending |
 | SRCH-13 | Phase 15 | Pending |
 | SRCH-14 | Phase 15 | Pending |
 | SRCH-15 | Phase 15 | Pending |
 
 **Coverage:**
-- v2.0 requirements: 10 total
-- Mapped to phases: 10
+- v2.0 requirements: 11 total
+- Mapped to phases: 11
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-04-02*
-*Last updated: 2026-04-02 after roadmap creation — all requirements mapped*
+*Last updated: 2026-04-27 — added BFIX-03 (document categorization + identity exclusion) to Phase 14 scope; tightened BFIX-01/02 wording to reflect locked Phase 14 decisions*
