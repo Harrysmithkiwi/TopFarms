@@ -16,6 +16,7 @@ import { NZ_REGIONS } from '@/lib/constants'
 interface FilterSidebarProps {
   searchParams: URLSearchParams
   onFilterChange: (key: string, value: string | string[] | null) => void
+  onClearAll: () => void
   resultCount?: number
   onClose?: () => void
   isMobile?: boolean
@@ -72,6 +73,7 @@ function SectionHeader({ title }: { title: string }) {
 export function FilterSidebar({
   searchParams,
   onFilterChange,
+  onClearAll,
   resultCount,
   onClose,
   isMobile = false,
@@ -109,13 +111,7 @@ export function FilterSidebar({
   }
 
   function handleClearAll() {
-    const keys = [
-      'role_type', 'mentorship', 'vehicle', 'dairynz_pathway', 'posted_recent',
-      'shed_type', 'region', 'contract_type', 'herd_size',
-      'salary_min', 'salary_max', 'accommodation_type',
-      'visa', 'dairynz_level',
-    ]
-    keys.forEach((key) => onFilterChange(key, null))
+    onClearAll()
   }
 
   const hasActiveFilters =

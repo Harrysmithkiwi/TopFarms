@@ -152,6 +152,24 @@ export function JobSearch() {
     }, { replace: true })
   }
 
+  // ─── Clear-all handler ──────────────────────────────────────────────────────
+  // Atomic URL-params wipe in a single setSearchParams update. Sequential
+  // setSearchParams calls in a forEach do not chain reliably with react-router's
+  // updater the way useState does — they collapse to the last update.
+  const handleClearAll = useCallback(() => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev)
+      const filterKeys = [
+        'role_type', 'mentorship', 'vehicle', 'dairynz_pathway', 'posted_recent',
+        'shed_type', 'region', 'contract_type', 'herd_size',
+        'salary_min', 'salary_max', 'accommodation_type',
+        'visa', 'dairynz_level', 'page',
+      ]
+      filterKeys.forEach((key) => next.delete(key))
+      return next
+    }, { replace: true })
+  }, [setSearchParams])
+
   // ─── Page change handler ────────────────────────────────────────────────────
   function handlePageChange(newPage: number) {
     setSearchParams((prev) => {
@@ -395,6 +413,7 @@ export function JobSearch() {
                 <FilterSidebar
                   searchParams={searchParams}
                   onFilterChange={handleFilterChange}
+                  onClearAll={handleClearAll}
                   resultCount={jobs.length}
                   onClose={() => setDrawerOpen(false)}
                   isMobile={true}
@@ -411,6 +430,7 @@ export function JobSearch() {
             <FilterSidebar
               searchParams={searchParams}
               onFilterChange={handleFilterChange}
+              onClearAll={handleClearAll}
               resultCount={jobs.length}
             />
           </aside>
