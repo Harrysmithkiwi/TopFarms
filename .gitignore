@@ -10,6 +10,9 @@ dist-ssr/
 .env.local
 .env.production
 
+# Local MCP config (project-specific server config; secrets via env var)
+.mcp.json
+
 # Editor
 .DS_Store
 .vscode/
