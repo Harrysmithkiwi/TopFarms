@@ -31,9 +31,7 @@ export function SelectRole() {
   const handleRoleSelect = async (selectedRole: 'employer' | 'seeker') => {
     setIsSubmitting(true)
     try {
-      const { error } = await supabase
-        .from('user_roles')
-        .insert({ user_id: session.user.id, role: selectedRole })
+      const { error } = await supabase.rpc('set_user_role', { p_role: selectedRole })
       if (error) {
         toast.error('Failed to save your role. Please try again.')
         return

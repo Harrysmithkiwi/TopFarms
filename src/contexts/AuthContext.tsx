@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
-import type { Session } from '@supabase/supabase-js'
+import { AuthError, type Session } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import type { UserRole } from '@/types/domain'
 
@@ -131,7 +131,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     password,
     userRole,
   ) => {
-    return supabase.auth.signUp({
+    const result = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -139,6 +139,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         emailRedirectTo: `${window.location.origin}/auth/verify`,
       },
     })
+
+    // Defensive backfill: when signUp returns an immediate session (email
+    // confirmation disabled, or auto-confirmed flow), verify the
+    // handle_new_user trigger created a user_roles row. If not, backfill
+    // via the set_user_role RPC. The email-verification flow is covered
+    // separately by SelectRole.tsx if the trigger ever drops a row.
+    if (!result.error && result.data.session && result.data.user) {
+      const { data: existingRow } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', result.data.user.id)
+        .maybeSingle()
+
+      if (!existingRow) {
+        const { error: rpcError } = await supabase.rpc('set_user_role', {
+          p_role: userRole,
+        })
+        if (rpcError) {
+          return {
+            data: result.data,
+            error: new AuthError(
+              `Account created but role setup failed: ${rpcError.message}. Please contact support.`,
+              500,
+              'role_backfill_failed',
+            ),
+          }
+        }
+      }
+    }
+
+    return result
   }
 
   const signIn: AuthHookReturn['signIn'] = async (email, password) => {
