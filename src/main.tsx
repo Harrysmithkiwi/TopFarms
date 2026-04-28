@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router'
 import { Toaster } from 'sonner'
+import { AuthProvider } from '@/contexts/AuthContext'
 import './index.css'
 
 import { Home } from '@/pages/Home'
@@ -179,7 +180,9 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
     <Toaster position="top-right" richColors />
   </StrictMode>,
 )
