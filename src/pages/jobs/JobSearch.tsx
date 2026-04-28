@@ -6,13 +6,14 @@ import { toast } from 'sonner'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/hooks/useAuth'
 import { useSavedJobs } from '@/hooks/useSavedJobs'
+import { useSeekerProfileId } from '@/hooks/useSeekerProfileId'
+import { useAppliedStatuses } from '@/hooks/useAppliedStatuses'
 import { FilterSidebar } from '@/components/ui/FilterSidebar'
 import { SearchJobCard } from '@/components/ui/SearchJobCard'
-import { Button } from '@/components/ui/Button'
 import { SearchHero } from '@/components/ui/SearchHero'
 import { Pagination } from '@/components/ui/Pagination'
 import { ActiveFilterPills } from '@/components/ui/ActiveFilterPills'
-import type { JobListing, MatchScore, EmployerVerification, TrustLevel } from '@/types/domain'
+import type { JobListing, MatchScore, EmployerVerification, TrustLevel, ApplicationStatus } from '@/types/domain'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -77,7 +78,7 @@ function SkeletonCard() {
 
 export function JobSearch() {
   const [searchParams, setSearchParams] = useSearchParams()
-  const { session, role } = useAuth()
+  const { session, role, loading: authLoading } = useAuth()
 
   const [jobs, setJobs] = useState<JobWithEmployer[]>([])
   const [scores, setScores] = useState<Map<string, MatchScore>>(new Map())
@@ -90,6 +91,13 @@ export function JobSearch() {
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
   const { isSaved, toggleSave } = useSavedJobs(session?.user?.id ?? null)
+
+  // BFIX-01: real per-(seeker, job) lookup for the Applied badge + Apply-tab gating
+  const seekerProfileId = useSeekerProfileId()
+  const appliedStatuses = useAppliedStatuses(
+    jobs.map((j) => j.id),
+    seekerProfileId,
+  )
 
   // Read page from URL (1-indexed)
   const pageParam = Number(searchParams.get('page') ?? '1')
@@ -350,11 +358,14 @@ export function JobSearch() {
     [searchParams, session, role, pageParam],
   )
 
-  // Re-fetch when searchParams change (includes page changes)
+  // Re-fetch when searchParams change (includes page changes).
+  // Gate on authLoading so fetchJobs fires ONCE after auth resolves (anonymous OR signed-in),
+  // not three times as session/role hydrate independently — that races the supabase auth lock.
   useEffect(() => {
+    if (authLoading) return
     fetchJobs()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams])
+  }, [searchParams, authLoading])
 
   const sortParam = searchParams.get('sort') ?? 'match'
 
@@ -441,6 +452,7 @@ export function JobSearch() {
               jobs={jobs}
               scores={scores}
               employerVerifications={employerVerifications}
+              appliedStatuses={appliedStatuses}
               loading={loading}
               sortParam={sortParam}
               onSortChange={(sort) => handleFilterChange('sort', sort)}
@@ -465,6 +477,7 @@ export function JobSearch() {
             jobs={jobs}
             scores={scores}
             employerVerifications={employerVerifications}
+            appliedStatuses={appliedStatuses}
             loading={loading}
             sortParam={sortParam}
             onSortChange={(sort) => handleFilterChange('sort', sort)}
@@ -492,6 +505,7 @@ interface ResultsAreaProps {
   jobs: JobWithEmployer[]
   scores: Map<string, MatchScore>
   employerVerifications: Map<string, EmployerVerificationMap>
+  appliedStatuses: Map<string, ApplicationStatus>
   loading: boolean
   sortParam: string
   onSortChange: (sort: string) => void
@@ -512,6 +526,7 @@ function ResultsArea({
   jobs,
   scores,
   employerVerifications,
+  appliedStatuses,
   loading,
   sortParam,
   onSortChange,
@@ -599,7 +614,7 @@ function ResultsArea({
                 isExpanded={expandedId === job.id}
                 onToggle={() => onToggle(job.id)}
                 isLoggedIn={isLoggedIn}
-                hasApplied={false}
+                appliedStatus={appliedStatuses.get(job.id) ?? null}
                 onApply={(coverNote) => onApply(job.id, coverNote)}
                 isSaved={isSaved(job.id)}
                 onSaveToggle={() => onSaveToggle(job.id)}

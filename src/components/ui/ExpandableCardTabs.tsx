@@ -4,7 +4,8 @@ import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { MatchCircle } from '@/components/ui/MatchCircle'
 import { Button } from '@/components/ui/Button'
-import type { MatchScore, JobListing } from '@/types/domain'
+import type { MatchScore, JobListing, ApplicationStatus } from '@/types/domain'
+import { ACTIVE_STATUSES } from '@/types/domain'
 
 type TabId = 'details' | 'match' | 'apply'
 
@@ -13,17 +14,22 @@ interface ExpandableCardTabsProps {
   matchBreakdown: MatchScore['breakdown'] | null
   totalScore: number | null
   isLoggedIn: boolean
-  hasApplied: boolean
+  appliedStatus: ApplicationStatus | null
   onApply: (coverNote: string) => Promise<void>
 }
 
 export function ExpandableCardTabs({
-  job, matchBreakdown, totalScore, isLoggedIn, hasApplied, onApply,
+  job, matchBreakdown, totalScore, isLoggedIn, appliedStatus, onApply,
 }: ExpandableCardTabsProps) {
+  // Apply tab is hidden only when an ACTIVE application exists.
+  // Terminal statuses (declined / withdrawn / hired) re-enable the Apply tab — re-apply allowed.
+  const hasActiveApplication =
+    appliedStatus !== null && ACTIVE_STATUSES.includes(appliedStatus)
+
   // Determine available tabs
   const tabs: { id: TabId; label: string }[] = [{ id: 'details', label: 'Details' }]
   if (isLoggedIn && totalScore !== null) tabs.push({ id: 'match', label: 'My Match' })
-  if (isLoggedIn && !hasApplied) tabs.push({ id: 'apply', label: 'Apply' })
+  if (isLoggedIn && !hasActiveApplication) tabs.push({ id: 'apply', label: 'Apply' })
 
   const [activeTab, setActiveTab] = useState<TabId>('details')
   const [coverNote, setCoverNote] = useState('')
@@ -129,7 +135,7 @@ export function ExpandableCardTabs({
         )}
 
         {/* Apply tab */}
-        {activeTab === 'apply' && !hasApplied && (
+        {activeTab === 'apply' && !hasActiveApplication && (
           <div className="space-y-3">
             <textarea
               value={coverNote}

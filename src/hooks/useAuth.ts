@@ -27,6 +27,20 @@ async function loadRole(userId: string): Promise<UserRole | null> {
   return data.role as UserRole
 }
 
+// Wraps loadRole in a 3s timeout so a hung supabase auth lock cannot keep
+// useAuth.loading stuck at true. Lock contention root-cause is tracked in AUTH-FIX.
+async function loadRoleWithTimeout(userId: string): Promise<UserRole | null> {
+  return Promise.race([
+    loadRole(userId),
+    new Promise<UserRole | null>((resolve) =>
+      setTimeout(() => {
+        console.warn('[useAuth] loadRole timeout after 3s, defaulting to null')
+        resolve(null)
+      }, 3000),
+    ),
+  ])
+}
+
 export function useAuth(): AuthHookReturn {
   const [session, setSession] = useState<Session | null>(null)
   const [role, setRole] = useState<UserRole | null>(null)
@@ -34,20 +48,25 @@ export function useAuth(): AuthHookReturn {
 
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(async ({ data: { session: initialSession } }) => {
-      setSession(initialSession)
-      if (initialSession?.user) {
-        const userRole = await loadRole(initialSession.user.id)
-        setRole(userRole)
-      }
-      setLoading(false)
-    })
+    supabase.auth.getSession()
+      .then(async ({ data: { session: initialSession } }) => {
+        setSession(initialSession)
+        if (initialSession?.user) {
+          const userRole = await loadRoleWithTimeout(initialSession.user.id)
+          setRole(userRole)
+        }
+        setLoading(false)
+      })
+      .catch((err) => {
+        console.error('[useAuth] getSession chain failed', err)
+        setLoading(false)
+      })
 
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
       setSession(newSession)
       if (newSession?.user) {
-        const userRole = await loadRole(newSession.user.id)
+        const userRole = await loadRoleWithTimeout(newSession.user.id)
         setRole(userRole)
       } else {
         setRole(null)

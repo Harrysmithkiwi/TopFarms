@@ -4,7 +4,8 @@ import { MatchCircle } from '@/components/ui/MatchCircle'
 import { VerificationBadge } from '@/components/ui/VerificationBadge'
 import { Tag } from '@/components/ui/Tag'
 import { ExpandableCardTabs } from '@/components/ui/ExpandableCardTabs'
-import type { JobListing, MatchScore, EmployerVerification, TrustLevel } from '@/types/domain'
+import type { JobListing, MatchScore, EmployerVerification, TrustLevel, ApplicationStatus } from '@/types/domain'
+import { APPLICATION_STATUS_LABELS, COMPLETED_STATUSES } from '@/types/domain'
 
 interface SearchJobCardProps {
   job: JobListing & {
@@ -17,7 +18,7 @@ interface SearchJobCardProps {
   isExpanded?: boolean
   onToggle?: () => void
   isLoggedIn?: boolean
-  hasApplied?: boolean
+  appliedStatus?: ApplicationStatus | null
   onApply?: (coverNote: string) => Promise<void>
   isSaved?: boolean
   onSaveToggle?: () => void
@@ -53,11 +54,19 @@ export function SearchJobCard({
   isExpanded = false,
   onToggle,
   isLoggedIn = false,
-  hasApplied = false,
+  appliedStatus = null,
   onApply,
   isSaved = false,
   onSaveToggle,
 }: SearchJobCardProps) {
+  const isTerminalApplication =
+    appliedStatus !== null && COMPLETED_STATUSES.includes(appliedStatus)
+  const appliedBadgeLabel =
+    appliedStatus === null
+      ? null
+      : isTerminalApplication
+        ? `Applied · ${APPLICATION_STATUS_LABELS[appliedStatus]}`
+        : 'Applied'
   const salary = formatSalaryRange(job.salary_min, job.salary_max)
   const shedTypes: string[] = Array.isArray((job as unknown as Record<string, unknown>).shed_type)
     ? ((job as unknown as Record<string, unknown>).shed_type as string[])
@@ -100,6 +109,21 @@ export function SearchJobCard({
                   trustLevel={trustLevel}
                   expandable={false}
                 />
+              )}
+              {appliedBadgeLabel !== null && (
+                <span
+                  className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-body font-semibold"
+                  style={{
+                    backgroundColor: isTerminalApplication
+                      ? 'var(--color-fog)'
+                      : 'var(--color-meadow)',
+                    color: isTerminalApplication
+                      ? 'var(--color-mid)'
+                      : 'var(--color-soil)',
+                  }}
+                >
+                  {appliedBadgeLabel}
+                </span>
               )}
             </div>
 
@@ -184,7 +208,7 @@ export function SearchJobCard({
           matchBreakdown={matchScore?.breakdown ?? null}
           totalScore={matchScore?.total_score ?? null}
           isLoggedIn={isLoggedIn}
-          hasApplied={hasApplied}
+          appliedStatus={appliedStatus}
           onApply={onApply ?? (async () => {})}
         />
       </div>
