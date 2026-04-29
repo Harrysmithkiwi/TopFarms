@@ -31,8 +31,8 @@ Verified against `mcp__supabase__list_migrations` on 2026-04-29. Migrations 001�
 | Disk filename | Live version | Live name | Applied | Notes |
 |---|---|---|---|---|
 | `001_initial_schema.sql` … `015_phase9_schema.sql` | `001` … `015` | unprefixed (`initial_schema`, etc.) | various 2026-03 | Plain integer versions, name has no `NNN_` prefix |
-| `016_phase11_backend_features.sql` | **NOT IN REGISTRY** | — | — | **Deploy gap.** Disk file dated 2026-03-23. Widens DEPLOY-01. Investigate whether this was applied via a separate path or never applied. |
-| `017_notify_job_filled_webhook.sql` | **NOT IN REGISTRY** | — | — | Deploy gap — cleanup-backlog item 6 covers the apply |
+| `016_phase11_backend_features.sql` | **NOT IN REGISTRY** (runtime artefacts presumably present — Phase 11 features have been working in production) | — | applied via non-MCP path (likely Studio / Dashboard) before 2026-04-29 | Studio-applied migrations don't write `supabase_migrations.schema_migrations` rows — that table is only updated by CLI / MCP `apply_migration`. So `list_migrations` is not the full source of truth for what's deployed. |
+| `017_notify_job_filled_webhook.sql` | **NOT IN REGISTRY** (runtime artefacts confirmed: pg_net extension, public.handle_job_filled function, on_job_filled trigger on public.jobs) | — | applied via Studio SQL Editor 2026-04-29 (cleanup-session) | Same Studio-vs-registry pattern as 016. Apply was forced via Studio because `/mcp Reconnect` doesn't respawn the MCP subprocess with new `--read-only` args — see CLAUDE.md rule 2 for the corrected protocol. |
 | `018_set_user_role_rpc.sql` | `20260428043338` | `set_user_role_rpc` | 2026-04-28 (cdc9df7) | AUTH-02 fix. `name` was passed without `018_` prefix. |
 | `019_seeker_documents.sql` | `20260428053314` | `019_seeker_documents` | 2026-04-28 (5a228e0) | BFIX-03. `name` was passed *with* `019_` prefix. |
 | `020_seeker_documents_employer_policy.sql` | `20260429031148` | `seeker_documents_employer_policy` | 2026-04-29 (e8f0882) | BFIX-02 employer SELECT RLS policy. `name` was passed without `020_` prefix. |

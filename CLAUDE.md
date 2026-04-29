@@ -15,8 +15,9 @@ The full prose (incident chain, why each rule exists) lives in `.planning/retros
 ## 2. `--read-only` ON by default
 
 - The Supabase MCP runs with `--read-only` ON unless a known DB write is in flight.
-- To perform a DB write: flip `--read-only` OFF in `.mcp.json` → show the diff → `/mcp Reconnect` → run the write → flip back ON → show the diff again → `/mcp Reconnect`.
-- Both flag-flip directions show a diff. No silent state changes.
+- **Empirical truth (discovered cleanup-session 2026-04-29):** `/mcp Reconnect` re-establishes the connection but does NOT respawn the MCP subprocess with new args. Editing `--read-only` in `.mcp.json` and reconnecting will leave the server running with whatever flag it was originally spawned with. Flag changes only propagate on a full Claude Code restart.
+- **Preferred path for one-off DB writes: Supabase Studio SQL Editor.** Paste the SQL body inline, run, then verify via read-only MCP queries (`list_migrations`, `execute_sql` with SELECT). Avoids the restart cycle entirely. Particularly recommended for migrations using `pg_net` or extensions that resist transactional wrapping. Note: Studio-applied migrations don't write `supabase_migrations.schema_migrations` rows — verify via runtime artefacts (`pg_extension`, `pg_proc`, `pg_trigger`) rather than `list_migrations`.
+- **If the restart cycle is genuinely required:** flip `--read-only` OFF in `.mcp.json` → show the diff → quit and relaunch Claude Code → run the write → flip back ON → show the diff → quit and relaunch again. Both flag-flip directions show a diff. No silent state changes.
 
 ## 3. Diagnose before fix
 

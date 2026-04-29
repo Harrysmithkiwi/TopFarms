@@ -136,4 +136,16 @@ This pattern is now codified in CLAUDE.md item 5 and is the recommended approach
 
 - **UAT-04** — Google OAuth → SelectRole → `user_roles` round-trip empirical test. ~5 min. Run before MVP public launch or on first real OAuth user.
 - **PRIV-02** — B.9 identity-bypass empirical test against deployed `get-applicant-document-url`. Public-launch blocker. Test snippet + expected response in REQUIREMENTS.md.
-- **DEPLOY-01** — 4 Edge Functions on disk are not deployed live (`acknowledge-placement-fee`, `create-placement-invoice`, `notify-job-filled`, `send-followup-emails`). Out of phase scope; cleanup backlog item 6 covers migration 017's deploy.
+- **DEPLOY-01** — 4 Edge Functions on disk are not deployed live (`acknowledge-placement-fee`, `create-placement-invoice`, `notify-job-filled`, `send-followup-emails`). Migration 017 was applied in cleanup-session via Studio (the trigger is now live; `notify-job-filled` Edge Function deploy still pending — trigger fires-but-fails-silently until then).
+
+---
+
+## Footnote: MCP `--read-only` flag-flip protocol nuance (cleanup-session 2026-04-29)
+
+Phase 14 work appeared to use `--read-only` flag-flips successfully via the documented `/mcp Reconnect` cycle. The cleanup-session re-attempt for migration 017 surfaced that **`/mcp Reconnect` does NOT respawn the MCP subprocess** — it only re-establishes the connection. Flag changes in `.mcp.json` don't propagate via reconnect alone; only a full Claude Code restart picks up new args.
+
+This contradicts the apparently-working flips from Phase 14. Two plausible explanations:
+1. The Phase 14 flips happened across implicit session restarts (Claude Code reload, machine sleep/wake, etc.) that respawned the subprocess incidentally. The user attributed success to `/mcp Reconnect` when the real mechanism was the underlying restart.
+2. Some `--read-only` writes in Phase 14 were actually rejected by the server but the failure mode was less obvious than migration 017's clear "Cannot apply migration in read-only mode" error.
+
+CLAUDE.md rule 2 has been corrected to reflect the empirical reality. Preferred path for one-off DB writes is now **Supabase Studio SQL Editor** (no flag-flip needed; verify runtime artefacts via read-only MCP queries instead of relying on `list_migrations`, since Studio doesn't write registry rows).
