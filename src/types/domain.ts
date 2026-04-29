@@ -169,7 +169,44 @@ export interface SeekerProfileData {
   preferred_regions?: string[]
   notice_period_text?: string
   // Phase 11 — document upload
+  /** @deprecated Replaced by `seeker_documents` table (migration 019, Phase 14 BFIX-03).
+   *  New uploads write to `seeker_documents` only; this column is preserved for
+   *  backfill traceability. Drop in a follow-up cleanup phase (target: post-Phase 15)
+   *  once all readers are confirmed migrated. */
   document_urls?: string[]
+}
+
+// ============================================================
+// Phase 14 BFIX-03 — Document categorization
+// ============================================================
+
+export type DocumentType = 'cv' | 'certificate' | 'reference' | 'identity' | 'other'
+
+export const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
+  cv:          'CV',
+  certificate: 'Certificate',
+  reference:   'Reference',
+  identity:    'Identity Document',
+  other:       'Other',
+}
+
+/**
+ * Document types that may be exposed to employers via the applicant dashboard.
+ * Identity documents are NEVER in this list — defense-in-depth alongside the
+ * server-side filter in get-applicant-document-url Edge Function (Phase 14 BFIX-02 / 14-03).
+ * Mirrors the CHECK constraint on seeker_documents.document_type — if you add a
+ * value here, also update migration 019 and 14-03's employer-side RLS policy.
+ */
+export const EMPLOYER_VISIBLE_DOCUMENT_TYPES: DocumentType[] = ['cv', 'certificate', 'reference']
+
+export interface SeekerDocument {
+  id: string
+  seeker_id: string
+  storage_path: string
+  document_type: DocumentType
+  filename: string
+  uploaded_at: string
+  file_size_bytes: number | null
 }
 
 // ============================================================

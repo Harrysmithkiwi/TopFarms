@@ -60,7 +60,7 @@ Three v1.1 tech-debt items resolved:
       WHERE sd.storage_path = doc.path AND sd.seeker_id = sp.id
     );
   ```
-- **Migration file**: `supabase/migrations/018_seeker_documents.sql`. Confirmed next free number (017 is the Phase 13 `notify_job_filled_webhook.sql`).
+- **Migration file**: `supabase/migrations/019_seeker_documents.sql`. Renumbered from 018 because slot 018 was consumed in 2026-04-28 by `018_set_user_role_rpc.sql` (AUTH-02 fix in cdc9df7) before Phase 14-02 executed.
 - **Keep `seeker_profiles.document_urls` for now** — deprecated, drop in a follow-up cleanup phase. No dual-write needed; new uploads write to `seeker_documents` only.
 - **Per-file document type picker, LOCKED**: each file gets its own type at upload. A seeker uploading a CV alongside reference letters needs different types per file. Implementation: per-file picker shown after drop in the files-list section of `FileDropzone` (or a wrapper around it). Required before upload commits to storage.
 - **Re-categorization UI**: seekers can change `document_type` of existing documents. Single dropdown per row, instant save (no submit button). Location locked — see OD-1 below.
@@ -154,7 +154,7 @@ Three v1.1 tech-debt items resolved:
 - `useAppliedStatuses(jobIds, seekerId)` hook (NEW) — single batch query against `applications`, returns `Map<jobId, ApplicationStatus>`. Wires into `JobSearch.tsx` after seeker_profile_id is loaded.
 - `useApplicantDocumentUrl()` hook (NEW) — invokes the `get-applicant-document-url` Edge Function on click, returns the signed URL.
 - New Edge Function `supabase/functions/get-applicant-document-url/` — sits alongside `send-followup-emails` and `notify-job-filled`.
-- Migration `018_seeker_documents.sql` — new table + backfill; `seeker_profiles.document_urls` column is preserved (deprecated comment added).
+- Migration `019_seeker_documents.sql` — new table + backfill; `seeker_profiles.document_urls` column is preserved (deprecated comment added).
 - `SeekerStep3Qualifications.tsx` — wrapped/extended FileDropzone usage; downstream effect on EmployerOnboarding wizard validation if any (none expected).
 - New route `/dashboard/seeker/documents` registered in `src/main.tsx` — host for the re-categorization UI.
 

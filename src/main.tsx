@@ -26,6 +26,7 @@ import { ForEmployers } from '@/pages/ForEmployers'
 import { Pricing } from '@/pages/Pricing'
 import { JobSearch } from '@/pages/jobs/JobSearch'
 import { MyApplications } from '@/pages/dashboard/seeker/MyApplications'
+import { SeekerDocuments } from '@/pages/dashboard/seeker/SeekerDocuments'
 import { ApplicantDashboard } from '@/pages/dashboard/employer/ApplicantDashboard'
 
 const router = createBrowserRouter([
@@ -147,6 +148,14 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute requiredRole="seeker">
         <MyApplications />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/dashboard/seeker/documents',
+    element: (
+      <ProtectedRoute requiredRole="seeker">
+        <SeekerDocuments />
       </ProtectedRoute>
     ),
   },
