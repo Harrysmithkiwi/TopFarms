@@ -174,13 +174,17 @@ export function ApplicantDashboard() {
         .eq('employer_id', empProfile.id)
         .eq('status', 'active')
 
-      // Load applicants with seeker profiles (including user_id and first_name for contact lookup)
+      // Load applicants with seeker profiles (user_id used for contact lookup post-shortlist)
+      // Note: 'first_name' was previously selected here but the column doesn't exist
+      // on seeker_profiles — query rejected silently, applicants list was empty.
+      // BFIX-04 (2026-04-29). Type def at line 24 + reference at line ~431 are now
+      // dead semantics (always null); cleanup deferred.
       const { data: appData, error: appError } = await supabase
         .from('applications')
         .select(`
           id, status, cover_note, created_at, viewed_at, application_notes,
           seeker_profiles(
-            id, user_id, first_name, region, years_experience, sector_pref, visa_status,
+            id, user_id, region, years_experience, sector_pref, visa_status,
             dairynz_level, couples_seeking, accommodation_needed,
             shed_types_experienced, herd_sizes_worked
           )

@@ -7,6 +7,7 @@ import { MatchCircle } from '@/components/ui/MatchCircle'
 import { Select } from '@/components/ui/Select'
 import { AICandidateSummary } from '@/components/ui/AICandidateSummary'
 import { MatchBreakdown } from '@/components/ui/MatchBreakdown'
+import { ApplicantDocuments } from '@/components/ui/ApplicantDocuments'
 import { supabase } from '@/lib/supabase'
 import type { ApplicationStatus, MatchScore, SeekerContact } from '@/types/domain'
 import { VALID_TRANSITIONS, APPLICATION_STATUS_LABELS } from '@/types/domain'
@@ -342,6 +343,14 @@ export function ApplicantPanel({
                   </div>
                 </div>
               )}
+
+              {/* Documents — visible to employer for any application status.
+                  Identity exclusion enforced at three layers: Edge Function +
+                  listing query filter + bucketing loop. See ApplicantDocuments. */}
+              <ApplicantDocuments
+                applicationId={application.id}
+                seekerId={application.seeker_profiles.id}
+              />
 
               {/* Contact Details — only shown for shortlisted/offered/hired */}
               {['shortlisted', 'offered', 'hired'].includes(application.status) && (

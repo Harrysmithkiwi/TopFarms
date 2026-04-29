@@ -6,13 +6,13 @@ import { useAuth } from '@/hooks/useAuth'
 const employerLinks = [
   { to: '/dashboard/employer', label: 'Dashboard' },
   { to: '/listings', label: 'My Listings' },
-  { to: '/applications', label: 'Applications' },
+  // 'Applications' link removed — employer flow is per-job, no aggregate page. NAV-02.
   { to: '/settings', label: 'Settings' },
 ]
 
 const seekerLinks = [
   { to: '/jobs', label: 'Find Work' },
-  { to: '/my-applications', label: 'My Applications' },
+  { to: '/dashboard/seeker/applications', label: 'My Applications' },
   { to: '/profile', label: 'My Profile' },
   { to: '/settings', label: 'Settings' },
 ]

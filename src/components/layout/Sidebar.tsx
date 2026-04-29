@@ -2,7 +2,6 @@ import { NavLink } from 'react-router'
 import {
   LayoutDashboard,
   Briefcase,
-  Users,
   Building2,
   Settings,
   Search,
@@ -20,7 +19,8 @@ interface NavItem {
 const employerItems: NavItem[] = [
   { to: '/dashboard/employer', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/listings', label: 'My Listings', icon: Briefcase },
-  { to: '/applications', label: 'Applications', icon: Users },
+  // 'Applications' link removed — employer flow is per-job at
+  // /dashboard/employer/jobs/:id/applicants, no aggregate page exists. NAV-02.
   { to: '/farm-profile', label: 'Farm Profile', icon: Building2 },
   { to: '/settings', label: 'Settings', icon: Settings },
 ]
