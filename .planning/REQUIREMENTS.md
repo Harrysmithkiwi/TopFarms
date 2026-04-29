@@ -15,13 +15,13 @@ Requirements for Launch Readiness. Each maps to roadmap phases.
 
 ### Email Deliverability
 
-- [x] **MAIL-01**: Resend sending domain has SPF and DKIM DNS records configured and verified for production email delivery
-- [x] **MAIL-02**: When employer marks a job as filled, all applicants with unresolved status (applied, reviewed, interview, shortlisted) receive an automated notification email
+- [ ] **MAIL-01**: Resend sending domain has SPF and DKIM DNS records configured and verified for production email delivery (reset 2026-04-29 from `[x]` — Phase 13 missing VERIFICATION.md; reassigned to Phase 15 for verification backfill)
+- [ ] **MAIL-02**: When employer marks a job as filled, all applicants with unresolved status (applied, reviewed, interview, shortlisted) receive an automated notification email (reset 2026-04-29 from `[x]` — `notify-job-filled` Edge Function not deployed live; trigger fires-but-fails-silently. Reassigned to Phase 15)
 
 ### Bug Fixes
 
 - [x] **BFIX-01**: Job search cards show "Applied" badge when the logged-in seeker has already applied to that job (replace hardcoded false). Badge appears for any application status (active or terminal); status-suffixed copy distinguishes (e.g. "Applied · Declined"). Apply tab is re-enabled for terminal statuses (re-apply allowed).
-- [x] **BFIX-02**: Employers can view seeker-uploaded documents (CV, certificates, references) via Supabase Storage signed URLs in the applicant dashboard. URL minting goes through an Edge Function with service role; URLs are per-click ephemeral with 15-minute expiry.
+- [ ] **BFIX-02**: Employers can view seeker-uploaded documents (CV, certificates, references) via Supabase Storage signed URLs in the applicant dashboard. URL minting goes through an Edge Function with service role; URLs are per-click ephemeral with 15-minute expiry. (reset 2026-04-29 from `[x]` — code shipped + 14-VERIFICATION.md sub-phase 14-03 PARTIAL; PRIV-02 B.9 empirical identity-bypass test deferred. Reassigned to Phase 16)
 - [x] **BFIX-03**: Seeker-uploaded documents are categorized by type at upload (CV / certificate / reference / identity / other). Existing untagged documents migrate as 'other' and are re-classifiable by the seeker. Identity documents are NEVER exposed to employers — the document-access Edge Function filters out `document_type='identity'` server-side before minting any signed URL. Employer view in the applicant dashboard is sectioned by non-identity category.
 
 ### Job Search
@@ -136,14 +136,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-06 | Phase 12 | Complete |
 | AUTH-07 | Phase 12 | Complete |
 | AUTH-08 | Phase 12 | Complete |
-| MAIL-01 | Phase 13 | Complete |
-| MAIL-02 | Phase 13 | Complete |
+| MAIL-01 | Phase 15 | Pending (reassigned 2026-04-29 from Phase 13 — VERIFICATION backfill) |
+| MAIL-02 | Phase 15 | Pending (reassigned 2026-04-29 from Phase 13 — function deploy + verify) |
 | BFIX-01 | Phase 14 | Complete |
-| BFIX-02 | Phase 14 | Complete |
+| BFIX-02 | Phase 16 | Pending (reassigned 2026-04-29 from Phase 14 — PRIV-02 empirical test) |
 | BFIX-03 | Phase 14 | Complete |
-| SRCH-13 | Phase 15 | Pending |
-| SRCH-14 | Phase 15 | Pending |
-| SRCH-15 | Phase 15 | Pending |
+| SRCH-13 | Phase 17 | Pending (reassigned 2026-04-29 from Phase 15) |
+| SRCH-14 | Phase 17 | Pending (reassigned 2026-04-29 from Phase 15) |
+| SRCH-15 | Phase 17 | Pending (reassigned 2026-04-29 from Phase 15) |
 
 **Coverage:**
 - v2.0 requirements: 11 total
@@ -152,4 +152,6 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-02*
-*Last updated: 2026-04-29 — closed Phase 14-03 BFIX-02 (employer document viewer with 5-layer privacy gate; identity hard-filtered at three layers — RLS / Edge Function whitelist / listing-query filter; B.9 privacy bypass test deferred to PRIV-02 — blocker for public launch). Logged BFIX-04 (silent applicants query failure from non-existent column), NAV-02 (broken /applications + /my-applications routes), BFIX-05 (Edge Function `verify_jwt` + service-role `auth.getUser` quirk — pattern check required for all future verify_jwt functions), CORS-01 (scope Allow-Origin post-launch), PRIV-01 (404/403 unification post-launch), DOC-TAB-01 (dedicated docs tab post-launch UX polish). Widened DEPLOY-01 with Edge Function deploy drift (4 functions on disk, none deployed). Earlier same-day: closed Phase 14-02 BFIX-03 (seeker_documents migration + per-file categorization + re-categorize page); logged AUTH-FIX-02 (mitigated symptom of c6066ea 3s timeout) and MCP-QUIRK-01 (Supabase MCP list_tables Zod bug)*
+*Last updated: 2026-04-29 — gap closure planning per `/gsd:audit-milestone` v2.0-MILESTONE-AUDIT.md. Reset MAIL-01/MAIL-02/BFIX-02 from `[x]` to `[ ]` and reassigned to gap closure phases: MAIL-01 + MAIL-02 → Phase 15 (Email Pipeline Deploy & Verify), BFIX-02 → Phase 16 (Privacy Bypass Empirical Test). Renumbered Saved Search Phase 15 → Phase 17. Added Phase 18 (Tech Debt Cleanup) per cleanup-pass discipline (drift risks compound; better than v2.1 defer). BFIX-01 + BFIX-03 retained `[x]` (verification PASS; SUMMARY frontmatter cosmetic gap to be addressed in Phase 18).*
+
+*Earlier same-day: closed Phase 14-03 BFIX-02 code (employer document viewer with 5-layer privacy gate; identity hard-filtered at three layers — RLS / Edge Function whitelist / listing-query filter; B.9 privacy bypass test deferred to PRIV-02 — blocker for public launch). Logged BFIX-04 (silent applicants query failure from non-existent column), NAV-02 (broken /applications + /my-applications routes), BFIX-05 (Edge Function `verify_jwt` + service-role `auth.getUser` quirk — pattern check required for all future verify_jwt functions), CORS-01 (scope Allow-Origin post-launch), PRIV-01 (404/403 unification post-launch), DOC-TAB-01 (dedicated docs tab post-launch UX polish). Widened DEPLOY-01 with Edge Function deploy drift (4 functions on disk, none deployed). Earlier same-day: closed Phase 14-02 BFIX-03 (seeker_documents migration + per-file categorization + re-categorize page); logged AUTH-FIX-02 (mitigated symptom of c6066ea 3s timeout) and MCP-QUIRK-01 (Supabase MCP list_tables Zod bug)*

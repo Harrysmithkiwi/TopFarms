@@ -34,9 +34,12 @@ Full details: `.planning/milestones/v1.1-ROADMAP.md`
 **Milestone Goal:** Close 6 launch-critical gaps so TopFarms can go live — OAuth signup, production email, bug fixes, and saved search.
 
 - [x] **Phase 12: OAuth Authentication** — Add Google and Facebook OAuth with role selection for new OAuth users (completed 2026-04-02)
-- [x] **Phase 13: Email & Notifications** — Production email deliverability and auto-ghosting prevention (completed 2026-04-03)
-- [ ] **Phase 14: Bug Fixes** — hasApplied badge and document viewing via signed URLs
-- [ ] **Phase 15: Saved Search** — Seeker can save, load, and delete filter combinations
+- [x] **Phase 13: Email & Notifications** — Production email deliverability and auto-ghosting prevention (completed 2026-04-03 — VERIFICATION.md backfill scheduled in Phase 15)
+- [x] **Phase 14: Bug Fixes** — hasApplied badge and document viewing via signed URLs (completed 2026-04-29 with PRIV-02 deferral to Phase 16)
+- [ ] **Phase 15: Email Pipeline Deploy & Verify** — Gap closure: deploy `notify-job-filled` + 3 disk-only Edge Functions, add Vercel CI deploy step, confirm Resend `Verified`, backfill Phase 13 VERIFICATION.md
+- [ ] **Phase 16: Privacy Bypass Empirical Test** — Gap closure: execute PRIV-02 B.9 from authenticated employer JWT against deployed function; flip BFIX-02 sub-phase 14-03 PARTIAL → PASS
+- [ ] **Phase 17: Saved Search** — Seeker can save, load, and delete filter combinations (reordered from Phase 15)
+- [ ] **Phase 18: Tech Debt Cleanup** — Gap closure: `EMPLOYER_VISIBLE_DOCUMENT_TYPES` canonical source, dead-semantics removal, AUTH-FIX-02 root-cause investigation, VALIDATION/SUMMARY frontmatter backfill
 
 ## Phase Details
 
@@ -80,15 +83,55 @@ Plans:
   5. Seeker documents are categorized by type at upload (CV / certificate / reference / identity / other). Existing untagged documents are migrated as 'other' and re-classifiable from the seeker UI
   6. Identity documents are NEVER exposed to employers. The document-access Edge Function filters out `document_type='identity'` server-side before minting any signed URL — enforcement at the data-access layer, not just hidden in the UI. Employer view is sectioned by non-identity category (CV / Certificates / References)
 
-### Phase 15: Saved Search
+### Phase 15: Email Pipeline Deploy & Verify
+**Goal**: Production email pipeline (MAIL-02 trigger → notification email) is empirically wired and verified, all in-repo Edge Functions are deployed live, and Vercel CI gains a migration + function deploy step so this drift cannot recur. Phase 13 VERIFICATION.md is backfilled against working code.
+**Depends on**: Phase 13 (which shipped the trigger + function source); blocks Phase 16 (PRIV-02 test runs against deployed function)
+**Requirements**: MAIL-02 (unsatisfied → satisfied), MAIL-01 (partial → satisfied), DEPLOY-01 (closed)
+**Gap Closure**: Closes audit gaps MAIL-02 unsatisfied, MAIL-01 partial verification, Phase 13 missing VERIFICATION.md, broken flow "Job filled → email", DEPLOY-01 cross-cutting CI gap
+**Success Criteria** (what must be TRUE):
+  1. `notify-job-filled` Edge Function deployed live; `on_job_filled` trigger fire produces a 2xx response and a notification email arrives in a test inbox (not 404 silent failure)
+  2. The 3 other disk-only Edge Functions (`acknowledge-placement-fee`, `create-placement-invoice`, `send-followup-emails`) are deployed live; cross-reference of `supabase.functions.invoke` callsites in `src/` against `list_edge_functions` shows zero undeployed callees
+  3. Vercel CI pipeline gains a migration-apply + function-deploy step gated behind a dry-run check. **This task is a gated sub-decision** — pause within Phase 15 to confirm before implementation: (a) what triggers it (push to main / tag / manual), (b) what it deploys (migrations / functions / both), (c) what permissions it needs (service role key in CI env), (d) failure mode (block merge / notify-only / rollback)
+  4. Resend dashboard shows `Verified` status for SPF/DKIM; screenshot or curl evidence captured in 13-VERIFICATION.md
+  5. 13-VERIFICATION.md exists; verdicts MAIL-01 + MAIL-02 satisfied with empirical proof; goal-backward verification ran against deployed code
+
+### Phase 16: Privacy Bypass Empirical Test
+**Goal**: PRIV-02 B.9 empirical test executed from an authenticated employer JWT against the deployed `get-applicant-document-url` Edge Function, confirming identity-doc requests return 403 (or acceptable 4xx without `signed_url`). 14-VERIFICATION.md sub-phase 14-03 verdict flips PARTIAL → PASS.
+**Depends on**: Phase 15 (function must be deployed before empirical test can run against production)
+**Requirements**: BFIX-02 (partial → satisfied via PRIV-02 closure)
+**Gap Closure**: Closes audit gaps BFIX-02 partial, broken flow "BFIX-02 employer document view (B.9 empirical identity-bypass)", PRIV-02 public-launch blocker
+**Success Criteria** (what must be TRUE):
+  1. REQUIREMENTS.md:76-89 test snippet executed from an authenticated employer browser console at `top-farms.vercel.app`; HTTP status + body captured. Expected: `403 {"error":"Identity documents are not accessible to employers"}`. Acceptable: `404` (if PRIV-01 unification applied) or any 4xx without `signed_url`/`url` field. Hard fail: `200` with signed URL
+  2. Test artefact (response body, timestamp, employer JWT subject, target application_id + document_id) recorded under `.planning/phases/16-privacy-bypass-test/`
+  3. 14-VERIFICATION.md sub-phase 14-03 refreshed: PARTIAL → PASS
+  4. PRIV-02 marked closed in REQUIREMENTS.md Deferred Validations
+  5. (Optional, decide at plan time) PRIV-01 status-code unification (404 → 403) bundled if scope permits
+
+### Phase 17: Saved Search
 **Goal**: A seeker can save their current filter state as a named search, reload it later, and delete searches they no longer need
-**Depends on**: Nothing (independent)
+**Depends on**: Nothing (independent feature work; reordered after gap closure phases)
 **Requirements**: SRCH-13, SRCH-14, SRCH-15
+**Note**: Reordered from former Phase 15. Gap closure phases (15, 16) execute first because MAIL-02 is silently broken in production now and PRIV-02 is a public-launch blocker. **Plan this phase right before execution** — not now — to avoid burning context on stale planning and to absorb any architectural learnings from the email pipeline work (notification patterns may inform saved-search alert delivery).
 **Success Criteria** (what must be TRUE):
   1. A logged-in seeker with active filters can click "Save search", enter a name, and have the current filter combination persisted to the database
   2. A seeker can view their list of saved searches and click one to restore all filter state — the URL updates and results refresh to match
   3. A seeker can delete a saved search from their list — it is removed from the database and no longer appears
   4. Saved searches persist across sessions — a seeker who logs out and back in can still access their saved searches
+
+### Phase 18: Tech Debt Cleanup
+**Goal**: Eliminate sync-drift risks, dead semantics, and process-residue items the v2.0 audit surfaced before launch. AUTH-FIX-02 root cause investigated.
+**Depends on**: Phases 15 + 16 (executes last — not time-pressured); independent of Phase 17
+**Requirements**: None directly satisfied (no REQ-IDs); reduces compound debt risk for post-launch
+**Gap Closure**: Closes audit integration findings (stale comment, nav discoverability, EMPLOYER_VISIBLE_DOCUMENT_TYPES drift) and tech-debt items (BFIX-01/03 SUMMARY frontmatter, ApplicantDashboard `first_name` dead semantics, migration 020 disk/registry mismatch, Phase 12/13 VALIDATION.md nyquist finalisation)
+**Success Criteria** (what must be TRUE):
+  1. `EMPLOYER_VISIBLE_DOCUMENT_TYPES` has a single canonical declaration (TS) with RLS migration + Edge Function deriving from it (or an automated cross-layer consistency check) — 3-way drift risk eliminated
+  2. Stale `getUser` comment in `supabase/functions/get-applicant-document-url/index.ts:8` updated to reflect the BFIX-05 gateway-trust pattern
+  3. Seeker nav (`Nav.tsx` + `Sidebar.tsx`) gains a `My Documents` link to `/dashboard/seeker/documents` (BFIX-03 discoverability)
+  4. `ApplicantDashboard.tsx` dead `first_name` semantics (lines 24, 435) removed
+  5. Migration 020 disk filename / live registry version mismatch resolved (rename or document per `supabase/migrations/NAMING.md`)
+  6. BFIX-01/03 SUMMARY.md frontmatter `requirements_completed` field backfilled (or `tags:[bfix-XX]` convention codified as house standard)
+  7. Phase 12/13 VALIDATION.md `nyquist_compliant` status finalised (true/false with rationale; no lingering `draft` state)
+  8. AUTH-FIX-02 root cause investigated — diagnostic captured (loadRole > 3s under normal nav after AuthProvider centralisation), fix landed or deliberately deferred with rationale
 
 ## Progress
 
@@ -98,5 +141,8 @@ Plans:
 | 7-11 | v1.1 | 19/19 | Complete | 2026-03-23 |
 | 12. OAuth Authentication | 2/2 | Complete    | 2026-04-02 | — |
 | 13. Email & Notifications | 2/2 | Complete   | 2026-04-03 | — |
-| 14. Bug Fixes | v2.0 | 0/? | Pending | — |
-| 15. Saved Search | v2.0 | 0/? | Pending | — |
+| 14. Bug Fixes | v2.0 | 3/3 | Complete (PRIV-02 deferred to Phase 16) | 2026-04-29 |
+| 15. Email Pipeline Deploy & Verify | v2.0 | 0/? | Pending (gap closure) | — |
+| 16. Privacy Bypass Empirical Test | v2.0 | 0/? | Pending (gap closure) | — |
+| 17. Saved Search | v2.0 | 0/? | Pending | — |
+| 18. Tech Debt Cleanup | v2.0 | 0/? | Pending (gap closure) | — |
