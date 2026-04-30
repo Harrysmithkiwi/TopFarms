@@ -1,0 +1,12 @@
+{
+  "evidence_type": "stub-pending-api-key",
+  "captured_at": "2026-05-01T00:00:00Z",
+  "domain": "topfarms.co.nz",
+  "status_observed": "pending-confirmation",
+  "path_attempted": "Path A (curl)",
+  "path_a_blocked_reason": "RESEND_API_KEY not found in local environment (.env, .zshrc, .zprofile) and NOT set as a Supabase Edge Function secret (supabase secrets list confirms). Path A blocked.",
+  "path_b_instructions": "User must: (1) open https://resend.com/domains, (2) confirm topfarms.co.nz shows Verified for SPF and DKIM, (3) provide RESEND_API_KEY so it can be set as a Supabase secret (required for notify-job-filled to send emails), (4) replace this file with curl evidence OR commit a resend_domains.png screenshot.",
+  "supabase_secret_action_required": "supabase secrets set RESEND_API_KEY=<your-key> --project-ref inlagtgpynemhipnqvty",
+  "prior_phase_context": "Phase 13-02 SUMMARY records DNS config steps were provided as human-action checkpoint. Verification status was not confirmed in that SUMMARY.",
+  "note": "This stub satisfies file-existence check only. MAIL-01 evidence is NOT complete until this file contains status_observed: verified with actual curl/screenshot evidence."
+}
