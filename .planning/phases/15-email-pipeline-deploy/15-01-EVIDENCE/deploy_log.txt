@@ -1,0 +1,26 @@
+supabase functions deploy --use-api --project-ref inlagtgpynemhipnqvty
+--- Deploy started at 2026-04-30T22:43:36Z ---
+--- Supabase CLI version: 2.90.0 ---
+--- Project ref: inlagtgpynemhipnqvty ---
+Deploying Function: notify-job-filled
+Uploading asset (notify-job-filled): supabase/functions/notify-job-filled/index.ts
+Deploying Function: send-followup-emails
+Uploading asset (send-followup-emails): supabase/functions/send-followup-emails/index.ts
+Deploying Function: acknowledge-placement-fee
+Uploading asset (acknowledge-placement-fee): supabase/functions/acknowledge-placement-fee/index.ts
+Deploying Function: create-payment-intent
+Uploading asset (create-payment-intent): supabase/functions/create-payment-intent/index.ts
+Deploying Function: create-placement-invoice
+Uploading asset (create-placement-invoice): supabase/functions/create-placement-invoice/index.ts
+Deploying Function: generate-candidate-summary
+Uploading asset (generate-candidate-summary): supabase/functions/generate-candidate-summary/index.ts
+Deploying Function: generate-match-explanation
+Uploading asset (generate-match-explanation): supabase/functions/generate-match-explanation/index.ts
+Deploying Function: get-applicant-document-url
+Uploading asset (get-applicant-document-url): supabase/functions/get-applicant-document-url/index.ts
+Deploying Function: stripe-webhook
+Uploading asset (stripe-webhook): supabase/functions/stripe-webhook/index.ts
+Deployed Functions on project inlagtgpynemhipnqvty: acknowledge-placement-fee, create-payment-intent, create-placement-invoice, generate-candidate-summary, generate-match-explanation, get-applicant-document-url, notify-job-filled, send-followup-emails, stripe-webhook
+You can inspect your deployment in the Dashboard: https://supabase.com/dashboard/project/inlagtgpynemhipnqvty/functions
+A new version of Supabase CLI is available: v2.95.4 (currently installed v2.90.0)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli

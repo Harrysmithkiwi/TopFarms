@@ -1,0 +1,83 @@
+[
+  {
+    "id": "b2078480-dde5-4438-b6bf-a4417b3bbf78",
+    "name": "create-payment-intent",
+    "slug": "create-payment-intent",
+    "status": "ACTIVE",
+    "version": 3,
+    "updated_at": "2026-04-30T22:43:45Z",
+    "note": "previously deployed"
+  },
+  {
+    "id": "e0abbfd3-78fc-437a-9f7e-c42ae2a22c08",
+    "name": "stripe-webhook",
+    "slug": "stripe-webhook",
+    "status": "ACTIVE",
+    "version": 3,
+    "updated_at": "2026-04-30T22:43:45Z",
+    "note": "previously deployed"
+  },
+  {
+    "id": "038a0740-0f28-46a9-887a-f9ee78636af8",
+    "name": "generate-match-explanation",
+    "slug": "generate-match-explanation",
+    "status": "ACTIVE",
+    "version": 3,
+    "updated_at": "2026-04-30T22:43:45Z",
+    "note": "previously deployed"
+  },
+  {
+    "id": "a955449b-a594-4c0b-954d-bf9340b70f12",
+    "name": "generate-candidate-summary",
+    "slug": "generate-candidate-summary",
+    "status": "ACTIVE",
+    "version": 2,
+    "updated_at": "2026-04-30T22:43:45Z",
+    "note": "previously deployed"
+  },
+  {
+    "id": "c270ca8a-d913-4de3-b49a-c35653028461",
+    "name": "get-applicant-document-url",
+    "slug": "get-applicant-document-url",
+    "status": "ACTIVE",
+    "version": 3,
+    "updated_at": "2026-04-30T22:43:45Z",
+    "note": "previously deployed; BFIX-05 fixed"
+  },
+  {
+    "id": "60bceba3-667f-461f-ab49-fa6d823caf27",
+    "name": "notify-job-filled",
+    "slug": "notify-job-filled",
+    "status": "ACTIVE",
+    "version": 1,
+    "updated_at": "2026-04-30T22:43:45Z",
+    "note": "NEW DEPLOYMENT — closes MAIL-02 silent failure"
+  },
+  {
+    "id": "570de80c-422a-4335-b82b-728cb432ba43",
+    "name": "send-followup-emails",
+    "slug": "send-followup-emails",
+    "status": "ACTIVE",
+    "version": 1,
+    "updated_at": "2026-04-30T22:43:45Z",
+    "note": "NEW DEPLOYMENT — v1.0 cron-driven follow-ups"
+  },
+  {
+    "id": "b803fbd8-2ca4-440e-9831-1e5a34585ad9",
+    "name": "acknowledge-placement-fee",
+    "slug": "acknowledge-placement-fee",
+    "status": "ACTIVE",
+    "version": 1,
+    "updated_at": "2026-04-30T22:43:45Z",
+    "note": "NEW DEPLOYMENT — placement fee acknowledgement flow"
+  },
+  {
+    "id": "fa7f0f75-9c0a-44db-a13e-40abc81b5452",
+    "name": "create-placement-invoice",
+    "slug": "create-placement-invoice",
+    "status": "ACTIVE",
+    "version": 1,
+    "updated_at": "2026-04-30T22:43:45Z",
+    "note": "NEW DEPLOYMENT — Stripe invoice mint"
+  }
+]
