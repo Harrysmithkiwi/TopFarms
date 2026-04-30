@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: planning
-stopped_at: Paused at 13-02-PLAN.md checkpoint — awaiting DNS configuration and Resend verification for SPF/DKIM
-last_updated: "2026-04-03T05:16:36.511Z"
+stopped_at: Phase 15 context gathered
+last_updated: "2026-04-30T22:02:20.770Z"
 last_activity: 2026-04-03 — Phase 12 OAuth Authentication complete (2/2 plans)
 progress:
-  total_phases: 4
-  completed_phases: 2
-  total_plans: 4
-  completed_plans: 4
+  total_phases: 7
+  completed_phases: 3
+  total_plans: 7
+  completed_plans: 7
 ---
 
 # Project State
@@ -20,14 +20,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-03)
 
 **Core value:** Farm employers and seekers can find each other through agriculture-specific matching that no generic platform provides
-**Current focus:** Email & Notifications (Phase 13)
+**Current focus:** Email Pipeline Deploy & Verify (Phase 15) — gap closure for MAIL-02 prod-silent failure + DEPLOY-01 CI gap
 
 ## Current Position
 
-Phase: 13 of 15 — Email & Notifications
-Plan: Not yet planned
+Phase: 15 of 18 — Email Pipeline Deploy & Verify
+Plan: Not yet planned (CONTEXT.md captured 2026-05-01)
 Status: Ready to plan
-Last activity: 2026-04-03 — Phase 12 OAuth Authentication complete (2/2 plans)
+Last activity: 2026-05-01 — Phase 15 context captured; Phase 14 closed 2026-04-29; v2.0 gap closure phases 15-18 added 2026-04-30
 
 ## Accumulated Context
 
@@ -44,11 +44,13 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ### Blockers/Concerns
 
-- Resend SPF/DKIM DNS configuration needed for email deliverability in production
-- v1.1 tech debt: hasApplied hardcoded to false, interview Accept toast-only, document viewing via signed URL not implemented
+- MAIL-02 silently failing in prod (`notify-job-filled` Edge Function not deployed — DB trigger fires `pg_net` POST that hits 404) — Phase 15 closes this
+- DEPLOY-01 cross-cutting CI gap (4 functions on disk + 0 deployed) — Phase 15 adds GH Actions deploy step
+- MAIL-01 Resend `Verified` status not yet captured in artefacts — Phase 15 captures evidence + backfills 13-VERIFICATION.md
+- PRIV-02 public-launch blocker (B.9 empirical identity-bypass test never executed) — Phase 16 (depends on Phase 15)
 
 ## Session Continuity
 
-Last session: 2026-04-03T05:16:36.509Z
-Stopped at: Paused at 13-02-PLAN.md checkpoint — awaiting DNS configuration and Resend verification for SPF/DKIM
-Resume file: None
+Last session: 2026-04-30T22:02:20.760Z
+Stopped at: Phase 15 context gathered
+Resume file: .planning/phases/15-email-pipeline-deploy/15-CONTEXT.md
