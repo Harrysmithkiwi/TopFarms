@@ -1,0 +1,85 @@
+# Source: adapted from https://supabase.com/docs/guides/functions/examples/github-actions
+# TopFarms Phase 15 plan 15-03 — DEPLOY-01 closure.
+#
+# Migration registry quirk handling (see plan 15-01 SUMMARY §Migration Registry Quirk Decision):
+# Migrations 018-020 were applied via MCP `apply_migration` which generated timestamp-style
+# version IDs (20260428043338, 20260428053314, 20260429031148), but local disk files use the
+# sequence-prefix style (018_set_user_role_rpc.sql, etc.). Running `db push` without first
+# repairing the registry will fail with "Remote migration versions not found in local
+# migrations directory."
+#
+# REQUIRED ONE-TIME ACTION before this workflow first runs migrations:
+#   Run in Supabase Studio SQL Editor or via supabase CLI (logged-in dev machine):
+#   supabase migration repair --status applied 20260428043338 20260428053314 20260429031148 \
+#     --project-ref inlagtgpynemhipnqvty
+# This anchors the remote timestamp versions as applied so db push can proceed cleanly.
+# See .planning/phases/15-email-pipeline-deploy/15-01-SUMMARY.md §Migration Registry Quirk Decision.
+#
+# Approved decision tuple (plan 15-03 Task 1 — user approved "default"):
+#   (a) Trigger: push to main with path filter on supabase/migrations/** OR supabase/functions/**; plus workflow_dispatch
+#   (b) Deploy scope: BOTH migrations AND functions; migrations job first, functions job depends on it
+#   (c) Permissions: SUPABASE_ACCESS_TOKEN (PAT topfarms-ci-deploy) + SUPABASE_DB_PASSWORD; service role key NOT in CI
+#   (d) Failure mode: BLOCK on migration failure (loud); NOTIFY-ONLY on function-deploy failure (continue-on-error: true); no auto-rollback
+
+name: Supabase Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/**'
+      - 'supabase/functions/**'
+  workflow_dispatch:
+
+concurrency:
+  group: supabase-deploy
+  cancel-in-progress: false   # never cancel mid-deploy; queue instead
+
+env:
+  SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+  SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+  PROJECT_ID: inlagtgpynemhipnqvty
+
+jobs:
+  migrations:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.95.4
+
+      - name: Link to Supabase project
+        run: supabase link --project-ref $PROJECT_ID
+
+      - name: Dry-run migration preview
+        # NOTE: If 018-020 timestamp-vs-sequence-prefix mismatch is not yet repaired, this
+        # step will fail. See the REQUIRED ONE-TIME ACTION comment at the top of this file.
+        # After running `supabase migration repair --status applied ...` once, this becomes stable.
+        run: supabase db push --linked --dry-run
+
+      - name: Apply migrations
+        run: supabase db push --linked
+        # SUPABASE_DB_PASSWORD env satisfies the password prompt non-interactively
+
+  functions:
+    runs-on: ubuntu-latest
+    needs: migrations
+    continue-on-error: true   # Per CONTEXT.md: notify-only on function-deploy failure (no auto-rollback)
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.95.4
+
+      - name: Deploy all functions
+        # `supabase functions deploy` (no name) deploys all functions in supabase/functions/ since CLI v1.62.0.
+        # `--use-api` is REQUIRED in CI: server-side bundling, no Docker, fixes parallel-deploy race.
+        run: supabase functions deploy --use-api --project-ref $PROJECT_ID
+
+      - name: Surface deploy outcome
+        if: always()
+        run: |
+          echo "::notice::Function deploy finished with status: ${{ job.status }}"

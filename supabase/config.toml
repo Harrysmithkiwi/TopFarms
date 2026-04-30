@@ -1,0 +1,20 @@
+# TopFarms Supabase project config
+# Created in Phase 15 plan 15-03 to pin per-function deploy-time settings explicitly.
+# See https://supabase.com/docs/guides/functions/function-configuration
+
+[functions.notify-job-filled]
+# Called by pg_net trigger with service_role JWT — gateway-trust + local atob decode pattern (CLAUDE.md §5).
+# In Phase 15-01 BFIX-05 audit, this function was confirmed NOT to use the auth.getUser(token) antipattern.
+verify_jwt = true
+
+[functions.send-followup-emails]
+# Cron-driven; called with service_role JWT.
+verify_jwt = true
+
+[functions.acknowledge-placement-fee]
+# Called from authenticated employer client (src/pages/dashboard/employer/ApplicantDashboard.tsx:361).
+verify_jwt = true
+
+[functions.create-placement-invoice]
+# Called from authenticated employer client (src/pages/dashboard/employer/ApplicantDashboard.tsx:423).
+verify_jwt = true

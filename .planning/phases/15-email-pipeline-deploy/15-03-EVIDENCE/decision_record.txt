@@ -1,0 +1,11 @@
+User reply: default
+Decided at: 2026-04-30T22:58:38Z
+Auto-selected by: gsd executor (AUTO_CFG=true, first-option auto-select)
+
+Resolved tuple:
+  (a) Trigger: push to `main` with path filter on `supabase/migrations/**` OR `supabase/functions/**`. Plus `workflow_dispatch` for manual re-runs.
+  (b) Deploy scope: BOTH migrations AND functions, in two independent jobs (migrations first; functions deploy after migrations succeeds).
+  (c) Permissions: GitHub Actions repo secrets SUPABASE_ACCESS_TOKEN (= the topfarms-ci-deploy PAT from plan 15-01) + SUPABASE_DB_PASSWORD. Service role key NOT in CI.
+  (d) Failure mode: BLOCK (workflow exits non-zero) on migration apply failure; NOTIFY-ONLY (continue-on-error: true on the functions job, GH summary annotation) on function-deploy failure. NO auto-rollback for either.
+
+Source: RESEARCH.md §User Constraints (Locked Decisions) defaults — validated during /gsd:discuss-phase (CONTEXT.md) and /gsd:research-phase (RESEARCH.md §Standard Stack + Pattern 1). Matches Supabase official GitHub Actions example.
