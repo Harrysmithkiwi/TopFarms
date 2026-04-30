@@ -1,0 +1,51 @@
+# BFIX-05 Antipattern Audit
+# Date: 2026-05-01
+# Scope: 4 disk-only Edge Functions pre-deploy audit
+# Rule: CLAUDE.md §5 — no auth.getUser(token) with service-role-keyed client in verify_jwt: true functions
+
+# --- RAW GREP OUTPUT ---
+# grep -nE "auth\.getUser\(|verify_jwt" supabase/functions/notify-job-filled/index.ts
+#   supabase/functions/send-followup-emails/index.ts
+#   supabase/functions/acknowledge-placement-fee/index.ts
+#   supabase/functions/create-placement-invoice/index.ts
+# RESULT: Zero matches for auth.getUser( across all 4 files. No verify_jwt directives in source.
+
+# --- PER-FUNCTION ANALYSIS ---
+
+# notify-job-filled/index.ts:
+#   - Auth model: pg_net trigger sends service_role JWT in Authorization header
+#   - verify_jwt: true (Supabase default — gateway validates JWT upstream)
+#   - Does NOT call auth.getUser(token) — service-role client used ONLY for DB queries
+#   - BFIX-05 status: SAFE (gateway-trust pattern, no re-validation)
+
+# send-followup-emails/index.ts:
+#   - Auth model: cron-invoked by Supabase with service_role JWT
+#   - verify_jwt: true (Supabase default)
+#   - Does NOT call auth.getUser(token) — uses auth.admin.getUserById(employer.user_id)
+#     for email lookup (line 322). DIFFERENT from BFIX-05 antipattern:
+#       * BFIX-05 antipattern: auth.getUser(jwtToken) — re-validates the caller's JWT
+#       * This pattern: auth.admin.getUserById(userId) — looks up a DB user record by ID
+#     The getUserById call is a data fetch (employer email), NOT JWT re-validation.
+#     Uses service-role admin client which is correct for this operation.
+#   - BFIX-05 status: SAFE
+
+# acknowledge-placement-fee/index.ts:
+#   - Auth model: authenticated employer client invokes via supabase.functions.invoke
+#   - verify_jwt: true (Supabase default — gateway validates employer JWT upstream)
+#   - Does NOT call auth.getUser(token)
+#   - BFIX-05 status: SAFE
+
+# create-placement-invoice/index.ts:
+#   - Auth model: authenticated employer client invokes via supabase.functions.invoke
+#   - verify_jwt: true (Supabase default)
+#   - Does NOT call auth.getUser(token)
+#   - BFIX-05 status: SAFE
+
+# --- CONCLUSION ---
+# All 4 disk-only functions confirmed safe:
+#   - Zero matches for auth.getUser( (the BFIX-05 antipattern)
+#   - verify_jwt setting left at default (true) — no --no-verify-jwt needed
+#   - send-followup-emails uses auth.admin.getUserById for email lookup (not JWT re-validation)
+#   - All functions use service-role client for DB queries only
+
+AUDIT RESULT: PASS — all 4 functions safe to deploy

@@ -1,0 +1,28 @@
+src/components/ui/AICandidateSummary.tsx:32:        const { data, error: fnError } = await supabase.functions.invoke('generate-candidate-summary', {
+src/pages/dashboard/employer/ApplicantDashboard.tsx:361:    const { error: fnError } = await supabase.functions.invoke('acknowledge-placement-fee', {
+src/pages/dashboard/employer/ApplicantDashboard.tsx:423:    const { error } = await supabase.functions.invoke('create-placement-invoice', {
+src/pages/jobs/JobDetail.tsx:279:            supabase.functions.invoke('generate-match-explanation', {
+src/pages/jobs/steps/JobStep7Payment.tsx:66:    const { data, error } = await supabase.functions.invoke('create-payment-intent', {
+src/hooks/useApplicantDocumentUrl.ts:25:      'get-applicant-document-url',
+
+# NOTE: get-applicant-document-url was captured via separate grep
+# (multi-line invoke call; name on separate line from supabase.functions.invoke)
+
+# --- CALLSITE CROSS-REFERENCE SUMMARY ---
+# Functions invoked from src/:
+#   generate-candidate-summary       - DEPLOYED (already live)
+#   generate-match-explanation       - DEPLOYED (already live)
+#   acknowledge-placement-fee        - DISK-ONLY (in scope for this plan)
+#   create-placement-invoice         - DISK-ONLY (in scope for this plan)
+#   create-payment-intent            - DEPLOYED (already live)
+#   get-applicant-document-url       - DEPLOYED (already live; BFIX-05 fixed)
+#
+# Functions NOT in src/ (invoked by infrastructure):
+#   notify-job-filled                - pg_net trigger (migration 017); DISK-ONLY (in scope)
+#   send-followup-emails             - Supabase cron; DISK-ONLY (in scope)
+#   stripe-webhook                   - Stripe webhook; DEPLOYED (already live)
+#
+# DIFF = empty set: every src/ callsite either references a deployed function
+#         OR references one of the 4 in-scope functions being deployed this plan.
+# NO surprise undeployed-callees found outside the 4 already in CONTEXT.md scope.
+# CALLSITE AUDIT RESULT: PASS
