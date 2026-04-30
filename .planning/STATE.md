@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: planning
-stopped_at: Phase 15 context gathered
-last_updated: "2026-04-30T22:02:20.770Z"
-last_activity: 2026-04-03 — Phase 12 OAuth Authentication complete (2/2 plans)
+stopped_at: Completed 15-01-PLAN.md — 4 functions deployed; RESEND_API_KEY gap documented
+last_updated: "2026-04-30T22:52:39.317Z"
+last_activity: 2026-05-01 — Phase 15 context captured; Phase 14 closed 2026-04-29; v2.0 gap closure phases 15-18 added 2026-04-30
 progress:
   total_phases: 7
   completed_phases: 3
-  total_plans: 7
-  completed_plans: 7
+  total_plans: 11
+  completed_plans: 8
 ---
 
 # Project State
@@ -41,6 +41,8 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 13]: notify-job-filled: hired applicant updated before job status change to prevent race condition with webhook trigger
 - [Phase 13]: notify-job-filled: NOTIFY_STATUSES matches domain.ts ACTIVE_STATUSES exactly (applied/review/interview/shortlisted/offered)
 - [Phase 13]: notify-job-filled: CTA links to /jobs to encourage new searches rather than viewing stale applications
+- [Phase 15]: BFIX-05 audit PASS: send-followup-emails uses auth.admin.getUserById(userId) for email lookup (data fetch, not JWT re-validation) — all 4 disk-only functions safe to deploy
+- [Phase 15]: Migration registry: Option B chosen (trust idempotency). Dry-run reveals timestamp-vs-sequence-prefix mismatch for 018-020 — plan 15-03 must run supabase migration repair before enabling db push in CI
 
 ### Blockers/Concerns
 
@@ -51,6 +53,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-04-30T22:02:20.760Z
-Stopped at: Phase 15 context gathered
-Resume file: .planning/phases/15-email-pipeline-deploy/15-CONTEXT.md
+Last session: 2026-04-30T22:52:39.314Z
+Stopped at: Completed 15-01-PLAN.md — 4 functions deployed; RESEND_API_KEY gap documented
+Resume file: None

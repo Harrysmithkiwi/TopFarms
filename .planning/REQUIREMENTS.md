@@ -15,8 +15,8 @@ Requirements for Launch Readiness. Each maps to roadmap phases.
 
 ### Email Deliverability
 
-- [ ] **MAIL-01**: Resend sending domain has SPF and DKIM DNS records configured and verified for production email delivery (reset 2026-04-29 from `[x]` — Phase 13 missing VERIFICATION.md; reassigned to Phase 15 for verification backfill)
-- [ ] **MAIL-02**: When employer marks a job as filled, all applicants with unresolved status (applied, reviewed, interview, shortlisted) receive an automated notification email (reset 2026-04-29 from `[x]` — `notify-job-filled` Edge Function not deployed live; trigger fires-but-fails-silently. Reassigned to Phase 15)
+- [x] **MAIL-01**: Resend sending domain has SPF and DKIM DNS records configured and verified for production email delivery (reset 2026-04-29 from `[x]` — Phase 13 missing VERIFICATION.md; reassigned to Phase 15 for verification backfill)
+- [x] **MAIL-02**: When employer marks a job as filled, all applicants with unresolved status (applied, reviewed, interview, shortlisted) receive an automated notification email (reset 2026-04-29 from `[x]` — `notify-job-filled` Edge Function not deployed live; trigger fires-but-fails-silently. Reassigned to Phase 15)
 
 ### Bug Fixes
 

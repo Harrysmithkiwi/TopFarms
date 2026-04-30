@@ -88,7 +88,7 @@ Plans:
 **Depends on**: Phase 13 (which shipped the trigger + function source); blocks Phase 16 (PRIV-02 test runs against deployed function)
 **Requirements**: MAIL-02 (unsatisfied → satisfied), MAIL-01 (partial → satisfied), DEPLOY-01 (closed)
 **Gap Closure**: Closes audit gaps MAIL-02 unsatisfied, MAIL-01 partial verification, Phase 13 missing VERIFICATION.md, broken flow "Job filled → email", DEPLOY-01 cross-cutting CI gap
-**Plans:** 4 plans
+**Plans:** 1/4 plans executed
 Plans:
 - [ ] 15-01-PLAN.md — Manual deploy of 4 Edge Functions + BFIX-05 audit + Resend domain evidence (Wave 1)
 - [ ] 15-02-PLAN.md — End-to-end MAIL-02 trigger fire + per-applicant inbox observation (Wave 2)
@@ -148,7 +148,7 @@ Plans:
 | 12. OAuth Authentication | 2/2 | Complete    | 2026-04-02 | — |
 | 13. Email & Notifications | 2/2 | Complete   | 2026-04-03 | — |
 | 14. Bug Fixes | v2.0 | 3/3 | Complete (PRIV-02 deferred to Phase 16) | 2026-04-29 |
-| 15. Email Pipeline Deploy & Verify | v2.0 | 0/4 | Planning complete (gap closure) | — |
+| 15. Email Pipeline Deploy & Verify | 1/4 | In Progress|  | — |
 | 16. Privacy Bypass Empirical Test | v2.0 | 0/? | Pending (gap closure) | — |
 | 17. Saved Search | v2.0 | 0/? | Pending | — |
 | 18. Tech Debt Cleanup | v2.0 | 0/? | Pending (gap closure) | — |
