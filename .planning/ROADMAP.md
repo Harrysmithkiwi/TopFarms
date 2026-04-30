@@ -88,6 +88,12 @@ Plans:
 **Depends on**: Phase 13 (which shipped the trigger + function source); blocks Phase 16 (PRIV-02 test runs against deployed function)
 **Requirements**: MAIL-02 (unsatisfied → satisfied), MAIL-01 (partial → satisfied), DEPLOY-01 (closed)
 **Gap Closure**: Closes audit gaps MAIL-02 unsatisfied, MAIL-01 partial verification, Phase 13 missing VERIFICATION.md, broken flow "Job filled → email", DEPLOY-01 cross-cutting CI gap
+**Plans:** 4 plans
+Plans:
+- [ ] 15-01-PLAN.md — Manual deploy of 4 Edge Functions + BFIX-05 audit + Resend domain evidence (Wave 1)
+- [ ] 15-02-PLAN.md — End-to-end MAIL-02 trigger fire + per-applicant inbox observation (Wave 2)
+- [ ] 15-03-PLAN.md — GitHub Actions supabase-deploy.yml + supabase/config.toml (Wave 2; gated decision checkpoint)
+- [ ] 15-04-PLAN.md — Backfill 13-VERIFICATION.md + flip MAIL-01/MAIL-02 in REQUIREMENTS.md/ROADMAP.md (Wave 3)
 **Success Criteria** (what must be TRUE):
   1. `notify-job-filled` Edge Function deployed live; `on_job_filled` trigger fire produces a 2xx response and a notification email arrives in a test inbox (not 404 silent failure)
   2. The 3 other disk-only Edge Functions (`acknowledge-placement-fee`, `create-placement-invoice`, `send-followup-emails`) are deployed live; cross-reference of `supabase.functions.invoke` callsites in `src/` against `list_edge_functions` shows zero undeployed callees
@@ -142,7 +148,7 @@ Plans:
 | 12. OAuth Authentication | 2/2 | Complete    | 2026-04-02 | — |
 | 13. Email & Notifications | 2/2 | Complete   | 2026-04-03 | — |
 | 14. Bug Fixes | v2.0 | 3/3 | Complete (PRIV-02 deferred to Phase 16) | 2026-04-29 |
-| 15. Email Pipeline Deploy & Verify | v2.0 | 0/? | Pending (gap closure) | — |
+| 15. Email Pipeline Deploy & Verify | v2.0 | 0/4 | Planning complete (gap closure) | — |
 | 16. Privacy Bypass Empirical Test | v2.0 | 0/? | Pending (gap closure) | — |
 | 17. Saved Search | v2.0 | 0/? | Pending | — |
 | 18. Tech Debt Cleanup | v2.0 | 0/? | Pending (gap closure) | — |
