@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: planning
-stopped_at: Completed 15-01-PLAN.md — 4 functions deployed; RESEND_API_KEY gap documented
-last_updated: "2026-04-30T22:52:39.317Z"
-last_activity: 2026-05-01 — Phase 15 context captured; Phase 14 closed 2026-04-29; v2.0 gap closure phases 15-18 added 2026-04-30
+stopped_at: Completed 15-03-PLAN.md — CI deploy workflow committed; migration registry repaired; secrets seeded; smoke test deferred pending git push
+last_updated: "2026-05-01T00:00:00.000Z"
+last_activity: 2026-05-01 — Phase 15 plan 15-03 complete; supabase-deploy.yml + config.toml committed; DEPLOY-01 CI gap closed
 progress:
   total_phases: 7
   completed_phases: 3
   total_plans: 11
-  completed_plans: 8
+  completed_plans: 9
 ---
 
 # Project State
@@ -25,9 +25,9 @@ See: .planning/PROJECT.md (updated 2026-04-03)
 ## Current Position
 
 Phase: 15 of 18 — Email Pipeline Deploy & Verify
-Plan: Not yet planned (CONTEXT.md captured 2026-05-01)
-Status: Ready to plan
-Last activity: 2026-05-01 — Phase 15 context captured; Phase 14 closed 2026-04-29; v2.0 gap closure phases 15-18 added 2026-04-30
+Plan: 15-03 complete — moving to 15-04
+Status: In progress (plan 15-04 next)
+Last activity: 2026-05-01 — 15-03 complete; CI deploy workflow + config.toml committed; migration registry repaired; DEPLOY-01 CI gap closed; RESEND_API_KEY still unset (15-04)
 
 ## Accumulated Context
 
@@ -43,16 +43,19 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 13]: notify-job-filled: CTA links to /jobs to encourage new searches rather than viewing stale applications
 - [Phase 15]: BFIX-05 audit PASS: send-followup-emails uses auth.admin.getUserById(userId) for email lookup (data fetch, not JWT re-validation) — all 4 disk-only functions safe to deploy
 - [Phase 15]: Migration registry: Option B chosen (trust idempotency). Dry-run reveals timestamp-vs-sequence-prefix mismatch for 018-020 — plan 15-03 must run supabase migration repair before enabling db push in CI
+- [Phase 15-03]: CI decision tuple accepted (all defaults): push-to-main path-filtered + workflow_dispatch; migrations+functions sequential jobs; BLOCK on migration failure; NOTIFY-ONLY on function failure; service-role key NOT in CI
+- [Phase 15-03]: Migration registry repair: Studio SQL INSERT into supabase_migrations.schema_migrations is the correct approach — CLI supabase migration repair fails on timestamp-vs-sequence-prefix drift; NAMING.md update deferred to 15-04
+- [Phase 15-03]: First workflow smoke test deferred — 12 local commits not yet pushed to origin/main; user must push before first run
 
 ### Blockers/Concerns
 
-- MAIL-02 silently failing in prod (`notify-job-filled` Edge Function not deployed — DB trigger fires `pg_net` POST that hits 404) — Phase 15 closes this
-- DEPLOY-01 cross-cutting CI gap (4 functions on disk + 0 deployed) — Phase 15 adds GH Actions deploy step
+- MAIL-02 silently failing (RESEND_API_KEY unset — functions deployed but email sends skip) — plan 15-04 closes this
+- DEPLOY-01 CI gap: workflow committed locally but not yet pushed to origin/main — user must `git push` to activate CI
 - MAIL-01 Resend `Verified` status not yet captured in artefacts — Phase 15 captures evidence + backfills 13-VERIFICATION.md
 - PRIV-02 public-launch blocker (B.9 empirical identity-bypass test never executed) — Phase 16 (depends on Phase 15)
 
 ## Session Continuity
 
-Last session: 2026-04-30T22:52:39.314Z
-Stopped at: Completed 15-01-PLAN.md — 4 functions deployed; RESEND_API_KEY gap documented
+Last session: 2026-05-01T00:00:00.000Z
+Stopped at: Completed 15-03-PLAN.md — CI deploy workflow committed; migration registry repaired; secrets seeded; smoke test deferred pending git push
 Resume file: None

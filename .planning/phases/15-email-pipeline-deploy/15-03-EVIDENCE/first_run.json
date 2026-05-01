@@ -1,0 +1,11 @@
+{
+  "status": "deferred",
+  "reason": "workflow not yet on main — local branch is 12 commits ahead of origin/main; gh workflow run requires the workflow file to exist on the remote default branch before workflow_dispatch can be triggered",
+  "local_commit": "edcde3a",
+  "workflow_file": ".github/workflows/supabase-deploy.yml",
+  "trigger_attempted": "gh workflow run supabase-deploy.yml --ref main",
+  "error_received": "HTTP 404: workflow supabase-deploy.yml not found on the default branch",
+  "constraint_applied": "critical_constraint: DO NOT push to main from this agent",
+  "next_action": "User must run `git push` to push all 12 local commits to origin/main. After push, the workflow will be indexed by GitHub Actions. Then run: `gh workflow run supabase-deploy.yml --ref main` to trigger the first smoke test. Alternatively, the push-to-main path filter will trigger the workflow automatically when the push includes changes to supabase/migrations/** or supabase/functions/**.",
+  "recorded_at": "2026-05-01"
+}
