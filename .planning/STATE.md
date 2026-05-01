@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
-status: planning
-stopped_at: Completed 15-03-PLAN.md — CI deploy workflow committed; migration registry repaired; secrets seeded; smoke test deferred pending git push
-last_updated: "2026-05-01T00:00:00.000Z"
-last_activity: 2026-05-01 — Phase 15 plan 15-03 complete; supabase-deploy.yml + config.toml committed; DEPLOY-01 CI gap closed
+status: executing
+stopped_at: Completed 15-04-PLAN.md — Phase 15 closeout; 13-VERIFICATION.md backfilled; MAIL-01/02 partial-close; NAMING.md updated; milestone audit carryforward added
+last_updated: "2026-05-01T01:40:21.666Z"
+last_activity: 2026-05-01 — 15-03 complete; CI deploy workflow + config.toml committed; migration registry repaired; DEPLOY-01 CI gap closed; RESEND_API_KEY still unset (15-04)
 progress:
   total_phases: 7
   completed_phases: 3
   total_plans: 11
-  completed_plans: 9
+  completed_plans: 10
 ---
 
 # Project State
@@ -46,6 +46,9 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 15-03]: CI decision tuple accepted (all defaults): push-to-main path-filtered + workflow_dispatch; migrations+functions sequential jobs; BLOCK on migration failure; NOTIFY-ONLY on function failure; service-role key NOT in CI
 - [Phase 15-03]: Migration registry repair: Studio SQL INSERT into supabase_migrations.schema_migrations is the correct approach — CLI supabase migration repair fails on timestamp-vs-sequence-prefix drift; NAMING.md update deferred to 15-04
 - [Phase 15-03]: First workflow smoke test deferred — 12 local commits not yet pushed to origin/main; user must push before first run
+- [Phase 15-04]: MAIL-01/02 kept [ ] (not [x]) — truthful partial-close pending RESEND_API_KEY + plan 15-02 E2E verification
+- [Phase 15-04]: 13-VERIFICATION.md backfilled with PARTIAL/DEFERRED verdicts for all 4 Phase 13 ROADMAP criteria — no hand-wave verdicts
+- [Phase 15-04]: NAMING.md migration registry repair section: Studio SQL INSERT is canonical approach; CLI supabase migration repair incompatible with sequence-prefix disk convention
 
 ### Blockers/Concerns
 
@@ -56,6 +59,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-01T00:00:00.000Z
-Stopped at: Completed 15-03-PLAN.md — CI deploy workflow committed; migration registry repaired; secrets seeded; smoke test deferred pending git push
+Last session: 2026-05-01T01:40:21.664Z
+Stopped at: Completed 15-04-PLAN.md — Phase 15 closeout; 13-VERIFICATION.md backfilled; MAIL-01/02 partial-close; NAMING.md updated; milestone audit carryforward added
 Resume file: None
