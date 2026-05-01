@@ -52,6 +52,39 @@ This makes the live `name` field self-describing and matches the disk filename �
 
 Update the lookup table above when applying a new migration. For migrations 001–017, the live versions match the disk numbering closely enough that no per-row lookup is needed beyond the deploy-gap notes already captured.
 
+## Supabase Migration Registry Repair
+
+When `supabase migration repair` CLI fails due to filename-vs-registry drift (sequence-prefix on disk, timestamp in remote), repair via Supabase Studio SQL Editor:
+
+```sql
+INSERT INTO supabase_migrations.schema_migrations (version, name, statements)
+VALUES ('<timestamp>', '<filename-stem>', ARRAY[]::text[])
+ON CONFLICT (version) DO NOTHING;
+```
+
+**Why CLI repair fails for this project:** `supabase migration repair` attempts to glob-match disk files by version ID. TopFarms uses sequence-prefix naming on disk (`018_set_user_role_rpc.sql`); MCP-applied migrations generate timestamp version IDs (`20260428043338`). These two conventions are incompatible with the CLI's file-glob matching logic — the CLI cannot find a file named `20260428043338*.sql` and errors out.
+
+**Verify with:**
+```sql
+SELECT version, name FROM supabase_migrations.schema_migrations WHERE version = '<timestamp>';
+```
+
+**Example (executed 2026-05-01, plan 15-03):**
+```sql
+INSERT INTO supabase_migrations.schema_migrations (version, name, statements)
+VALUES
+  ('20260428043338', 'set_user_role_rpc', ARRAY[]::text[]),
+  ('20260428053314', '019_seeker_documents', ARRAY[]::text[]),
+  ('20260429031148', 'seeker_documents_employer_policy', ARRAY[]::text[])
+ON CONFLICT (version) DO NOTHING;
+```
+
+Full incident record and verification SELECT output: `.planning/phases/15-email-pipeline-deploy/15-03-EVIDENCE/registry_repair_method.md`
+
+Established in plan 15-03. See also CLAUDE.md §2 (MCP `--read-only` flag-flip protocol).
+
+---
+
 ## When to revisit this decision
 
 - If the project picks up multiple concurrent contributors writing migrations simultaneously, switch to timestamp-style on disk to avoid number collisions during PR rebasing. At that point, rename all existing migrations as a single atomic commit to keep the directory consistent.
