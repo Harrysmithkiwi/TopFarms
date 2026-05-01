@@ -36,7 +36,7 @@ Full details: `.planning/milestones/v1.1-ROADMAP.md`
 - [x] **Phase 12: OAuth Authentication** — Add Google and Facebook OAuth with role selection for new OAuth users (completed 2026-04-02)
 - [x] **Phase 13: Email & Notifications** — Production email deliverability and auto-ghosting prevention (completed 2026-04-03 — VERIFICATION.md backfill scheduled in Phase 15)
 - [x] **Phase 14: Bug Fixes** — hasApplied badge and document viewing via signed URLs (completed 2026-04-29 with PRIV-02 deferral to Phase 16)
-- [ ] **Phase 15: Email Pipeline Deploy & Verify** — Gap closure: deploy `notify-job-filled` + 3 disk-only Edge Functions, add Vercel CI deploy step, confirm Resend `Verified`, backfill Phase 13 VERIFICATION.md
+- [x] **Phase 15: Email Pipeline Deploy & Verify** — Gap closure: deploy `notify-job-filled` + 3 disk-only Edge Functions, add Supabase CI deploy step, backfill Phase 13 VERIFICATION.md (completed 2026-05-01; MAIL-01/02 partial-close — RESEND_API_KEY unset, plan 15-02 deferred; see carryforward in v2.0-MILESTONE-AUDIT.md)
 - [ ] **Phase 16: Privacy Bypass Empirical Test** — Gap closure: execute PRIV-02 B.9 from authenticated employer JWT against deployed function; flip BFIX-02 sub-phase 14-03 PARTIAL → PASS
 - [ ] **Phase 17: Saved Search** — Seeker can save, load, and delete filter combinations (reordered from Phase 15)
 - [ ] **Phase 18: Tech Debt Cleanup** — Gap closure: `EMPLOYER_VISIBLE_DOCUMENT_TYPES` canonical source, dead-semantics removal, AUTH-FIX-02 root-cause investigation, VALIDATION/SUMMARY frontmatter backfill
@@ -88,12 +88,12 @@ Plans:
 **Depends on**: Phase 13 (which shipped the trigger + function source); blocks Phase 16 (PRIV-02 test runs against deployed function)
 **Requirements**: MAIL-02 (unsatisfied → satisfied), MAIL-01 (partial → satisfied), DEPLOY-01 (closed)
 **Gap Closure**: Closes audit gaps MAIL-02 unsatisfied, MAIL-01 partial verification, Phase 13 missing VERIFICATION.md, broken flow "Job filled → email", DEPLOY-01 cross-cutting CI gap
-**Plans:** 2/4 plans executed
+**Plans:** 3/4 plans executed (15-02 deferred — RESEND_API_KEY unset)
 Plans:
-- [ ] 15-01-PLAN.md — Manual deploy of 4 Edge Functions + BFIX-05 audit + Resend domain evidence (Wave 1)
-- [ ] 15-02-PLAN.md — End-to-end MAIL-02 trigger fire + per-applicant inbox observation (Wave 2)
-- [ ] 15-03-PLAN.md — GitHub Actions supabase-deploy.yml + supabase/config.toml (Wave 2; gated decision checkpoint)
-- [ ] 15-04-PLAN.md — Backfill 13-VERIFICATION.md + flip MAIL-01/MAIL-02 in REQUIREMENTS.md/ROADMAP.md (Wave 3)
+- [x] 15-01-PLAN.md — Manual deploy of 4 Edge Functions + BFIX-05 audit + Resend domain evidence (Wave 1)
+- [ ] 15-02-PLAN.md — End-to-end MAIL-02 trigger fire + per-applicant inbox observation (Wave 2) — DEFERRED; awaiting RESEND_API_KEY
+- [x] 15-03-PLAN.md — GitHub Actions supabase-deploy.yml + supabase/config.toml (Wave 2; gated decision checkpoint)
+- [x] 15-04-PLAN.md — Backfill 13-VERIFICATION.md + partial-close MAIL-01/MAIL-02 in REQUIREMENTS.md/ROADMAP.md (Wave 3)
 **Success Criteria** (what must be TRUE):
   1. `notify-job-filled` Edge Function deployed live; `on_job_filled` trigger fire produces a 2xx response and a notification email arrives in a test inbox (not 404 silent failure)
   2. The 3 other disk-only Edge Functions (`acknowledge-placement-fee`, `create-placement-invoice`, `send-followup-emails`) are deployed live; cross-reference of `supabase.functions.invoke` callsites in `src/` against `list_edge_functions` shows zero undeployed callees
@@ -148,7 +148,7 @@ Plans:
 | 12. OAuth Authentication | 2/2 | Complete    | 2026-04-02 | — |
 | 13. Email & Notifications | 2/2 | Complete   | 2026-04-03 | — |
 | 14. Bug Fixes | v2.0 | 3/3 | Complete (PRIV-02 deferred to Phase 16) | 2026-04-29 |
-| 15. Email Pipeline Deploy & Verify | 2/4 | In Progress|  | — |
+| 15. Email Pipeline Deploy & Verify | v2.0 | 4/4 | Complete (MAIL-01/02 partial-close; 15-02 deferred) | 2026-05-01 |
 | 16. Privacy Bypass Empirical Test | v2.0 | 0/? | Pending (gap closure) | — |
 | 17. Saved Search | v2.0 | 0/? | Pending | — |
 | 18. Tech Debt Cleanup | v2.0 | 0/? | Pending (gap closure) | — |
