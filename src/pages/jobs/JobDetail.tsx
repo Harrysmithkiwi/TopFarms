@@ -45,11 +45,6 @@ interface EmployerProfile {
   herd_size?: number
   accommodation_available?: boolean
   accommodation_type?: string
-  accommodation_pets?: boolean
-  accommodation_couples?: boolean
-  accommodation_family?: boolean
-  accommodation_utilities_included?: boolean
-  // post-013: replaces the four booleans above
   accommodation_extras?: string[]
   culture_description?: string
 }
@@ -719,21 +714,13 @@ export function JobDetail() {
                   )}
                   <div className="flex flex-wrap gap-3">
                     {(() => {
-                      const chips = employer.accommodation_extras?.length
-                        ? employer.accommodation_extras
-                        : ([
-                            employer.accommodation_pets && 'Pets allowed',
-                            employer.accommodation_couples && 'Couples welcome',
-                            employer.accommodation_family && 'Family welcome',
-                            employer.accommodation_utilities_included && 'Utilities included',
-                          ].filter(Boolean) as string[])
                       const ICON_MAP: Record<string, typeof PawPrint> = {
                         'Pets allowed': PawPrint,
                         'Couples welcome': Users,
                         'Family welcome': Users,
                         'Utilities included': Zap,
                       }
-                      return chips.map((chip) => {
+                      return (employer.accommodation_extras ?? []).map((chip) => {
                         const Icon = ICON_MAP[chip] ?? Tag
                         return (
                           <span key={chip} className="flex items-center gap-1.5 text-sm" style={{ color: 'var(--color-mid)' }}>

@@ -126,7 +126,7 @@ export function Step7Preview({ onComplete, onBack, onGoToStep, profileData }: St
             />
             <DataRow
               label="Ownership type"
-              value={profileData.ownership_type ? OWNERSHIP_LABELS[profileData.ownership_type] ?? profileData.ownership_type : undefined}
+              value={profileData.ownership_type?.length ? profileData.ownership_type.map((v) => OWNERSHIP_LABELS[v] ?? v).join(', ') : undefined}
             />
           </div>
         </PreviewSection>
@@ -158,10 +158,10 @@ export function Step7Preview({ onComplete, onBack, onGoToStep, profileData }: St
             {profileData.accommodation_available && (
               <>
                 <DataRow label="Type" value={profileData.accommodation_type} />
-                <DataRow label="Pets allowed" value={profileData.accommodation_pets ?? profileData.accommodation_extras?.includes('Pets allowed')} />
-                <DataRow label="Couples" value={profileData.accommodation_couples ?? profileData.accommodation_extras?.includes('Couples welcome')} />
-                <DataRow label="Families" value={profileData.accommodation_family ?? profileData.accommodation_extras?.includes('Family welcome')} />
-                <DataRow label="Utilities included" value={profileData.accommodation_utilities_included ?? profileData.accommodation_extras?.includes('Utilities included')} />
+                <DataRow label="Pets allowed" value={profileData.accommodation_extras?.includes('Pets allowed')} />
+                <DataRow label="Couples" value={profileData.accommodation_extras?.includes('Couples welcome')} />
+                <DataRow label="Families" value={profileData.accommodation_extras?.includes('Family welcome')} />
+                <DataRow label="Utilities included" value={profileData.accommodation_extras?.includes('Utilities included')} />
               </>
             )}
           </div>

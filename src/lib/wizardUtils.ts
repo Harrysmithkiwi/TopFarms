@@ -3,31 +3,6 @@
 // Phase 8 — Wizard utility helpers
 // ============================================================
 
-const ACCOMMODATION_CHIP_MAP: Record<string, string> = {
-  accommodation_pets: 'Pets allowed',
-  accommodation_couples: 'Couples welcome',
-  accommodation_family: 'Family welcome',
-  accommodation_utilities_included: 'Utilities included',
-}
-
-/**
- * Maps legacy boolean accommodation columns to chip string[] values.
- * Used for backward-compatible chip preloading when existing profile
- * has old boolean columns but no accommodation_extras array yet.
- *
- * @param profile - The raw profile record from Supabase
- * @param columnMap - Map of DB column names to chip label strings
- * @returns string[] of chip values that are true in the profile
- */
-export function booleanColumnsToChipArray(
-  profile: Record<string, boolean | unknown>,
-  columnMap: Record<string, string> = ACCOMMODATION_CHIP_MAP,
-): string[] {
-  return Object.entries(columnMap)
-    .filter(([col]) => profile[col] === true)
-    .map(([, chipValue]) => chipValue)
-}
-
 /**
  * Computes job listing completeness as a rounded-to-nearest-5 percentage.
  * Used by LivePreviewSidebar to show progress to employers as they fill

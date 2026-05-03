@@ -199,7 +199,7 @@ export function JobSearch() {
 
         let query = supabase
           .from('jobs')
-          .select('*, employer_profiles(id, farm_name, region)', { count: 'exact' })
+          .select('*, employer_profiles!inner(id, farm_name, region, accommodation_extras)', { count: 'exact' })
           .eq('status', 'active')
           .range(from, to)
 
@@ -257,13 +257,13 @@ export function JobSearch() {
         if (roleTypes.length === 1) query = query.eq('role_type', roleTypes[0])
         else if (roleTypes.length > 1) query = query.in('role_type', roleTypes)
 
-        // Accommodation multi-option filter — silently broken since v1.1 ship.
-        // jobs.accommodation_extras does not exist (013 was meant to add it to employer_profiles, not jobs;
-        // and 013 has not actually applied to prod despite registry claiming otherwise).
-        // TODO post-013-reconciliation: restore via embed filter:
-        //   query = query.filter('employer_profiles.accommodation_extras', 'ov', `{${accommodationTypes.join(',')}}`)
+        // Accommodation multi-option filter — operates on employer_profiles.accommodation_extras
+        // via PostgREST embed filter. Requires the !inner hint on the employer_profiles select above
+        // so the filter prunes the parent jobs result, not just the embedded employer rows.
         const accommodationTypes = searchParams.getAll('accommodation_type')
-        void accommodationTypes // intentionally not applied — preserves URL parameter handling without 400ing
+        if (accommodationTypes.length > 0) {
+          query = query.overlaps('employer_profiles.accommodation_extras', accommodationTypes)
+        }
 
         // Posted recent filter (last 7 days)
         const postedRecent = searchParams.get('posted_recent')

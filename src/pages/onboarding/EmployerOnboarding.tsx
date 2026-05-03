@@ -5,7 +5,6 @@ import { StepIndicator } from '@/components/ui/StepIndicator'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/hooks/useAuth'
 import { useWizard } from '@/hooks/useWizard'
-import { booleanColumnsToChipArray } from '@/lib/wizardUtils'
 import { Step1FarmType } from './steps/Step1FarmType'
 import { Step2FarmDetails } from './steps/Step2FarmDetails'
 import { Step3Culture } from './steps/Step3Culture'
@@ -45,12 +44,7 @@ export interface EmployerProfileData {
   about_farm?: string
   accommodation_available?: boolean
   accommodation_type?: string
-  // Pre-013 boolean accommodation fields — still present in prod until 013 migration applies
-  accommodation_pets?: boolean
-  accommodation_couples?: boolean
-  accommodation_family?: boolean
-  accommodation_utilities_included?: boolean
-  // Phase 8 new fields (replacing boolean accommodation columns once 013 lands):
+  // Phase 8 array form (013 dropped the four pre-013 booleans; this is the canonical shape)
   accommodation_extras?: string[]
   // Phase 8 new fields:
   farm_types?: string[]
@@ -117,8 +111,7 @@ export function EmployerOnboarding() {
           accommodation_available: data.accommodation_available,
           accommodation_type: data.accommodation_type,
           // Phase 8 new fields: use accommodation_extras if present, otherwise
-          // fall back to booleanColumnsToChipArray for v1.0 user backward compat
-          accommodation_extras: data.accommodation_extras ?? booleanColumnsToChipArray(data as Record<string, boolean | unknown>),
+          accommodation_extras: data.accommodation_extras ?? [],
           farm_types: data.farm_types,
           nearest_town: data.nearest_town,
           distance_from_town_km: data.distance_from_town_km,
