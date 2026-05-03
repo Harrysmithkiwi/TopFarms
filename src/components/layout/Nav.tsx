@@ -5,16 +5,17 @@ import { useAuth } from '@/hooks/useAuth'
 
 const employerLinks = [
   { to: '/dashboard/employer', label: 'Dashboard' },
-  { to: '/listings', label: 'My Listings' },
-  // 'Applications' link removed — employer flow is per-job, no aggregate page. NAV-02.
-  { to: '/settings', label: 'Settings' },
+  // 'Applications' link removed 2026-04-29 (NAV-02 — employer flow is per-job, no aggregate page).
+  // 'My Listings' (/listings) and 'Settings' (/settings) removed 2026-05-04 (UAT-04 — routes
+  // unregistered in main.tsx; pages don't exist yet). Employer hub is /dashboard/employer.
 ]
 
 const seekerLinks = [
   { to: '/jobs', label: 'Find Work' },
   { to: '/dashboard/seeker/applications', label: 'My Applications' },
-  { to: '/profile', label: 'My Profile' },
-  { to: '/settings', label: 'Settings' },
+  // 'My Profile' (/profile) and 'Settings' (/settings) removed 2026-05-04 (UAT-04 — routes
+  // unregistered in main.tsx; pages don't exist yet). Seeker profile editing is via sidebar
+  // 'Edit Profile' → /onboarding/seeker.
 ]
 
 const publicLinks = [
@@ -104,23 +105,8 @@ export function Nav() {
                       borderColor: 'var(--color-fog)',
                     }}
                   >
-                    <Link
-                      to="/profile"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="block px-4 py-2 text-sm hover:bg-fog transition-colors"
-                      style={{ color: 'var(--color-ink)' }}
-                    >
-                      Profile
-                    </Link>
-                    <Link
-                      to="/settings"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="block px-4 py-2 text-sm hover:bg-fog transition-colors"
-                      style={{ color: 'var(--color-ink)' }}
-                    >
-                      Settings
-                    </Link>
-                    <hr style={{ borderColor: 'var(--color-fog)' }} className="my-1" />
+                    {/* Profile + Settings dropdown items removed 2026-05-04 (UAT-04 — pages don't exist).
+                        Add back when /profile and /settings routes are registered in main.tsx. */}
                     <button
                       onClick={() => {
                         setUserMenuOpen(false)

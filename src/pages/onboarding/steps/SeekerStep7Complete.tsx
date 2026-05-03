@@ -45,11 +45,14 @@ function useMatchScoresPoll(seekerProfileId: string | null) {
 
     const poll = async () => {
       attempts++
+      // !inner on jobs: RLS policy 'jobs: authenticated users view active' (status='active')
+      // hides non-active jobs from the embed, returning the parent row with jobs=null. !inner
+      // drops those rows server-side instead — prevents null-crash in render. See Phase 18 cleanup.
       const { data } = await supabase
         .from('match_scores')
         .select(`
           total_score,
-          jobs (
+          jobs!inner (
             id, title, region, salary_min, salary_max,
             employer_profiles ( farm_name )
           )

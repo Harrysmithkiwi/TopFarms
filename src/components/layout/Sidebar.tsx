@@ -1,9 +1,6 @@
 import { NavLink } from 'react-router'
 import {
   LayoutDashboard,
-  Briefcase,
-  Building2,
-  Settings,
   Search,
   FileText,
   User,
@@ -18,11 +15,10 @@ interface NavItem {
 
 const employerItems: NavItem[] = [
   { to: '/dashboard/employer', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/listings', label: 'My Listings', icon: Briefcase },
-  // 'Applications' link removed — employer flow is per-job at
-  // /dashboard/employer/jobs/:id/applicants, no aggregate page exists. NAV-02.
-  { to: '/farm-profile', label: 'Farm Profile', icon: Building2 },
-  { to: '/settings', label: 'Settings', icon: Settings },
+  // 'Applications' link removed 2026-04-29 (NAV-02 — employer flow is per-job at
+  // /dashboard/employer/jobs/:id/applicants, no aggregate page exists).
+  // 'My Listings' (/listings), 'Farm Profile' (/farm-profile), 'Settings' (/settings) removed
+  // 2026-05-04 (UAT-04 — routes unregistered in main.tsx; pages don't exist yet).
 ]
 
 const seekerItems: NavItem[] = [
