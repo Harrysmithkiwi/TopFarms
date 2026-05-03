@@ -21,7 +21,7 @@ Requirements for Launch Readiness. Each maps to roadmap phases.
 ### Bug Fixes
 
 - [x] **BFIX-01**: Job search cards show "Applied" badge when the logged-in seeker has already applied to that job (replace hardcoded false). Badge appears for any application status (active or terminal); status-suffixed copy distinguishes (e.g. "Applied · Declined"). Apply tab is re-enabled for terminal statuses (re-apply allowed).
-- [ ] **BFIX-02**: Employers can view seeker-uploaded documents (CV, certificates, references) via Supabase Storage signed URLs in the applicant dashboard. URL minting goes through an Edge Function with service role; URLs are per-click ephemeral with 15-minute expiry. (reset 2026-04-29 from `[x]` — code shipped + 14-VERIFICATION.md sub-phase 14-03 PARTIAL; PRIV-02 B.9 empirical identity-bypass test deferred. Reassigned to Phase 16)
+- [x] **BFIX-02** *(closed 2026-05-04 — full empirical PASS)*: Employers can view seeker-uploaded documents (CV, certificates, references) via Supabase Storage signed URLs in the applicant dashboard. URL minting goes through an Edge Function with service role; URLs are per-click ephemeral with 15-minute expiry. **§7-satisfied:** PRIV-02 empirical identity-bypass test executed 2026-05-04 against deployed function from authenticated-employer browser console — primary expected response `403 {"error":"Identity documents are not accessible to employers"}` observed; no signed_url minted; 5-layer privacy gate held under direct API attack. See `.planning/phases/16-privacy-bypass-test/16-PRIV02-EVIDENCE.md`. (closure history: original `[x]` 2026-04-29 from 14-03 code ship; reset 2026-04-29 — 14-VERIFICATION sub-phase 14-03 PARTIAL pending PRIV-02; reassigned to Phase 16; closed 2026-05-04 empirical PASS)
 - [x] **BFIX-03**: Seeker-uploaded documents are categorized by type at upload (CV / certificate / reference / identity / other). Existing untagged documents migrate as 'other' and are re-classifiable by the seeker. Identity documents are NEVER exposed to employers — the document-access Edge Function filters out `document_type='identity'` server-side before minting any signed URL. Employer view in the applicant dashboard is sectioned by non-identity category.
 
 ### Job Search
@@ -73,20 +73,7 @@ Deferred to post-launch. Tracked but not in current roadmap.
 ### Deferred Validations
 
 - **UAT-04**: AUTH-02 OAuth end-to-end smoke test deferred. AUTH-01 validated at OAuth handshake layer (UAT 1-3 in 2026-04-28 session, Google consent screen reachable, no 400). AUTH-02 `set_user_role` RPC independently validated by UAT 5 (idempotency) and UAT 6.1/6.2/6.3 (negative cases). The `SelectRole.tsx` RPC integration is unexercised end-to-end. To run when first real user signs up via Google, OR before MVP public launch — whichever comes first. ~5 min: clear site data → Google OAuth → SelectRole → verify `user_roles` row has chosen role (not default 'seeker'). Test idempotency on second login.
-- **PRIV-02**: BFIX-02 UAT step B.9 (privacy bypass test) deferred from Phase 14-03 UAT. The `get-applicant-document-url` Edge Function defends against authenticated identity-doc requests via the document_type whitelist + explicit identity exclusion at the function layer (defence-in-depth — RLS already filters identity from the listing payload), but empirical confirmation by direct API attack from an authenticated employer JWT was not run before commit. **Must execute against the deployed function before public launch.** Test snippet (run in employer-authenticated browser console at top-farms.vercel.app):
-   ```js
-   const tokenJson = localStorage.getItem('sb-inlagtgpynemhipnqvty-auth-token')
-   const sess = JSON.parse(tokenJson)
-   await fetch('https://inlagtgpynemhipnqvty.supabase.co/functions/v1/get-applicant-document-url', {
-     method: 'POST',
-     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${sess.access_token}` },
-     body: JSON.stringify({
-       application_id: '2a91e3db-a02a-4f44-96e7-2be9897bcadf',
-       document_id: '31ed32e7-5581-4f26-930a-8051f40049a3'
-     })
-   }).then(async r => `${r.status} ${JSON.stringify(await r.json())}`)
-   ```
-   Expected: `403 {"error":"Identity documents are not accessible to employers"}`. Acceptable variants: `404` (if PRIV-01 unification applied), or any 4xx without a `signed_url`/`url` field. **Hard fail: 200 with signed URL.** Owner: harry. **Blocker for: public launch.** Logged 2026-04-29.
+- ~~**PRIV-02**~~ *(CLOSED 2026-05-04 — empirical PASS)*: BFIX-02 UAT step B.9 (privacy bypass test) executed against deployed function from authenticated-employer browser console. **Result:** `403 {"error":"Identity documents are not accessible to employers"}` — primary expected response. 5-layer privacy gate held under direct API attack from legitimate-employer JWT; no signed URL minted. Public-launch privacy blocker resolved. Full evidence: `.planning/phases/16-privacy-bypass-test/16-PRIV02-EVIDENCE.md`. Logged 2026-04-29; closed 2026-05-04.
 
 ### Operations
 
@@ -139,7 +126,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MAIL-01 | Phase 15 | Partial-close (2026-05-01) — code deployed; awaiting RESEND_API_KEY + plan 15-02 E2E before full satisfaction |
 | MAIL-02 | Phase 15 | Partial-close (2026-05-01) — notify-job-filled deployed, trigger live; awaiting RESEND_API_KEY + plan 15-02 E2E before full satisfaction |
 | BFIX-01 | Phase 14 | Complete |
-| BFIX-02 | Phase 16 | Pending (reassigned 2026-04-29 from Phase 14 — PRIV-02 empirical test) |
+| BFIX-02 | Phase 16 | Complete (PRIV-02 empirical PASS 2026-05-04 — see 16-PRIV02-EVIDENCE.md) |
 | BFIX-03 | Phase 14 | Complete |
 | SRCH-13 | Phase 17 | Pending (reassigned 2026-04-29 from Phase 15) |
 | SRCH-14 | Phase 17 | Pending (reassigned 2026-04-29 from Phase 15) |
@@ -161,3 +148,5 @@ Which phases cover which requirements. Updated during roadmap creation.
 *2026-05-03 — Stage 5 planning capture: discovered 011/012/013/014 phantom-applied range; reconciled all four via BLOCK 1/2/3 Studio SQL applies. UXBUG-01 reframed (original framing was schema-state-inferred-from-files; corrected to schema-vs-types drift); kept `[ ]` per §7 — production E2E pending push + UAT. HOMEBUG-01 root cause identified (012 phantom-applied), remediated; awaiting same E2E confirmation. MAIL-01/02 partial-close notes extended — placement_fees + cron + Resend infrastructure confirmed in place; status unchanged (RESEND_API_KEY + 15-02 E2E still gating). Captured `rls_auto_enable` + `ensure_rls` in migration 021 (`daedb41`). Full evidence in `.planning/DRIFT-AUDIT-2026-05-03.md`.*
 
 *2026-05-03 evening — Phase 15-02 closeout: MAIL-01 + MAIL-02 flipped from `[ ]` to `[x]` per CLAUDE.md §7 partial-close discipline. All four §7 evidence artefacts captured: pg_net 200 response (`pg_net_response.json`); inbox observation (verbal confirmation during live test — both expected emails received in Gmail); DKIM=pass headers (`email_headers.txt` with `d=topfarms.co.nz`; Authentication-Results: dkim=pass; spf=pass; dmarc=pass); per-applicant verdict (4/4 CORRECT — 2 RECEIVED matches expected NOTIFY count, 2 NOT RECEIVED matches expected exclusion including race-fix). Test surfaced 4 latent bugs in the chain (pg_net signature drift, vault unpopulated, legacy JWT gateway rejection, modal non-atomic UPDATE), 3 fixed tonight (migration 022 + `vault.create_secret` + `verify_jwt=false` redeploy), 1 logged Phase 18 (modal). Full evidence: `.planning/phases/15-email-pipeline-deploy/15-02-SUMMARY.md`.*
+
+*2026-05-04 — Phase 16 PRIV-02 closure: BFIX-02 flipped from `[ ]` to `[x]` per CLAUDE.md §7. Empirical identity-bypass test executed against deployed `get-applicant-document-url` function from authenticated-employer browser console. Primary expected response observed: `403 {"error":"Identity documents are not accessible to employers"}`. No signed URL minted. 5-layer privacy gate held under direct API attack from legitimate-employer JWT (Test Farm UAT employer attempting to fetch harry-passport.pdf identity document of harry.moonshot, who legitimately applied to Test Farm's Job 1). Last public-launch privacy blocker resolved. Full evidence: `.planning/phases/16-privacy-bypass-test/16-PRIV02-EVIDENCE.md`.*
