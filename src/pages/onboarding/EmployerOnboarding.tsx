@@ -45,7 +45,12 @@ export interface EmployerProfileData {
   about_farm?: string
   accommodation_available?: boolean
   accommodation_type?: string
-  // Phase 8 new fields (replacing boolean accommodation columns):
+  // Pre-013 boolean accommodation fields — still present in prod until 013 migration applies
+  accommodation_pets?: boolean
+  accommodation_couples?: boolean
+  accommodation_family?: boolean
+  accommodation_utilities_included?: boolean
+  // Phase 8 new fields (replacing boolean accommodation columns once 013 lands):
   accommodation_extras?: string[]
   // Phase 8 new fields:
   farm_types?: string[]

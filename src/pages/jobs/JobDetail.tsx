@@ -11,6 +11,7 @@ import {
   Users,
   Zap,
   Star,
+  Tag,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
@@ -48,6 +49,8 @@ interface EmployerProfile {
   accommodation_couples?: boolean
   accommodation_family?: boolean
   accommodation_utilities_included?: boolean
+  // post-013: replaces the four booleans above
+  accommodation_extras?: string[]
   culture_description?: string
 }
 
@@ -172,21 +175,7 @@ export function JobDetail() {
         .from('jobs')
         .select(
           `*,
-          employer_profiles(
-            id,
-            farm_name,
-            region,
-            farm_type,
-            shed_type,
-            herd_size,
-            accommodation_available,
-            accommodation_type,
-            accommodation_pets,
-            accommodation_couples,
-            accommodation_family,
-            accommodation_utilities_included,
-            culture_description
-          )`,
+          employer_profiles(*)`,
         )
         .eq('id', jobId)
         .single()
@@ -729,30 +718,31 @@ export function JobDetail() {
                     </div>
                   )}
                   <div className="flex flex-wrap gap-3">
-                    {employer.accommodation_pets && (
-                      <span className="flex items-center gap-1.5 text-sm" style={{ color: 'var(--color-mid)' }}>
-                        <PawPrint className="w-4 h-4" />
-                        Pets welcome
-                      </span>
-                    )}
-                    {employer.accommodation_couples && (
-                      <span className="flex items-center gap-1.5 text-sm" style={{ color: 'var(--color-mid)' }}>
-                        <Users className="w-4 h-4" />
-                        Couples welcome
-                      </span>
-                    )}
-                    {employer.accommodation_family && (
-                      <span className="flex items-center gap-1.5 text-sm" style={{ color: 'var(--color-mid)' }}>
-                        <Users className="w-4 h-4" />
-                        Family-friendly
-                      </span>
-                    )}
-                    {employer.accommodation_utilities_included && (
-                      <span className="flex items-center gap-1.5 text-sm" style={{ color: 'var(--color-mid)' }}>
-                        <Zap className="w-4 h-4" />
-                        Utilities included
-                      </span>
-                    )}
+                    {(() => {
+                      const chips = employer.accommodation_extras?.length
+                        ? employer.accommodation_extras
+                        : ([
+                            employer.accommodation_pets && 'Pets allowed',
+                            employer.accommodation_couples && 'Couples welcome',
+                            employer.accommodation_family && 'Family welcome',
+                            employer.accommodation_utilities_included && 'Utilities included',
+                          ].filter(Boolean) as string[])
+                      const ICON_MAP: Record<string, typeof PawPrint> = {
+                        'Pets allowed': PawPrint,
+                        'Couples welcome': Users,
+                        'Family welcome': Users,
+                        'Utilities included': Zap,
+                      }
+                      return chips.map((chip) => {
+                        const Icon = ICON_MAP[chip] ?? Tag
+                        return (
+                          <span key={chip} className="flex items-center gap-1.5 text-sm" style={{ color: 'var(--color-mid)' }}>
+                            <Icon className="w-4 h-4" />
+                            {chip}
+                          </span>
+                        )
+                      })
+                    })()}
                   </div>
                 </div>
               </section>

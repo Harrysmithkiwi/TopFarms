@@ -158,10 +158,10 @@ export function Step7Preview({ onComplete, onBack, onGoToStep, profileData }: St
             {profileData.accommodation_available && (
               <>
                 <DataRow label="Type" value={profileData.accommodation_type} />
-                <DataRow label="Pets allowed" value={profileData.accommodation_pets} />
-                <DataRow label="Couples" value={profileData.accommodation_couples} />
-                <DataRow label="Families" value={profileData.accommodation_family} />
-                <DataRow label="Utilities included" value={profileData.accommodation_utilities_included} />
+                <DataRow label="Pets allowed" value={profileData.accommodation_pets ?? profileData.accommodation_extras?.includes('Pets allowed')} />
+                <DataRow label="Couples" value={profileData.accommodation_couples ?? profileData.accommodation_extras?.includes('Couples welcome')} />
+                <DataRow label="Families" value={profileData.accommodation_family ?? profileData.accommodation_extras?.includes('Family welcome')} />
+                <DataRow label="Utilities included" value={profileData.accommodation_utilities_included ?? profileData.accommodation_extras?.includes('Utilities included')} />
               </>
             )}
           </div>
