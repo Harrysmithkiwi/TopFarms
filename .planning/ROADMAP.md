@@ -143,6 +143,7 @@ Plans:
   11. `jobs.benefits` declared/actual mismatch documented — 013 declared `text[]`, live schema has `jsonb`. Functionally equivalent at JS layer; intent-vs-reality mismatch captured in migration comment or NAMING.md
   12. `couples_welcome` (boolean) vs `accommodation_extras['Couples welcome']` (text[] member) — semantic distinction confirmed and source-of-truth documented (boolean preference vs accommodation feature)
   13. Stripe production-mode posture verified before first real placement charge — `STRIPE_SECRET_KEY` confirmed `sk_live_*` in prod secrets, webhook endpoint registered in live Stripe dashboard, `.env.example` documents Stripe env vars
+  14. Cloudflare MCP installed for Claude Code — install per `cloudflare/mcp-server-cloudflare` repo + `developers.cloudflare.com/agent-setup/claude-code/`. Enables future DNS / SSL / firewall management directly from Claude sessions (added 2026-05-03 evening after Phase 15-02 was found blocked on DNS records that should have been added in Cloudflare). Not blocking — manual dashboard works for one-off records — but eliminates context-switching cost on subsequent DNS ops and enables programmatic DNS verification in future pre-flight checks.
 
 ## Progress
 
