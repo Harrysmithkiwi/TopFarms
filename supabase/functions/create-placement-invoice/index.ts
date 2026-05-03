@@ -6,6 +6,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+const FROM_EMAIL = Deno.env.get('RESEND_FROM_EMAIL') ?? 'TopFarms <hello@topfarms.co.nz>'
+
 Deno.serve(async (req) => {
   // Handle OPTIONS preflight request
   if (req.method === 'OPTIONS') {
@@ -176,7 +178,7 @@ Deno.serve(async (req) => {
               'Authorization': `Bearer ${RESEND_API_KEY}`,
             },
             body: JSON.stringify({
-              from: 'TopFarms <noreply@topfarms.co.nz>',
+              from: FROM_EMAIL,
               to: [seeker_email],
               subject: `Congratulations! You've been hired for ${job_title ?? 'a position'}`,
               html: `

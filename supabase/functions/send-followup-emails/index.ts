@@ -6,7 +6,7 @@ const corsHeaders = {
 }
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
-const FROM_EMAIL = Deno.env.get('RESEND_FROM_EMAIL') ?? 'TopFarms <noreply@topfarms.co.nz>'
+const FROM_EMAIL = Deno.env.get('RESEND_FROM_EMAIL') ?? 'TopFarms <hello@topfarms.co.nz>'
 const APP_URL = Deno.env.get('APP_URL') ?? 'https://topfarms.co.nz'
 
 // ---------------------------------------------------------------------------
