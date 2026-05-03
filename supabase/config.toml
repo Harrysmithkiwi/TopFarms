@@ -3,13 +3,20 @@
 # See https://supabase.com/docs/guides/functions/function-configuration
 
 [functions.notify-job-filled]
-# Called by pg_net trigger with service_role JWT — gateway-trust + local atob decode pattern (CLAUDE.md §5).
-# In Phase 15-01 BFIX-05 audit, this function was confirmed NOT to use the auth.getUser(token) antipattern.
-verify_jwt = true
+# Called server-side by DB trigger on_job_filled (migration 017/022). No user-context auth needed —
+# function looks up applicants by job_id, no caller-bound logic.
+# Gateway JWT check disabled because legacy service_role JWT is rejected by the new gateway as
+# UNAUTHORIZED_LEGACY_JWT (discovered 2026-05-03 Phase 15-02 fire — Supabase migrated this project's
+# gateway to require non-legacy JWTs at some point between 017's deploy and now).
+# Phase 18 hardening: add X-Webhook-Secret header validation inside function code to restore
+# defence-in-depth lost by verify_jwt = false.
+verify_jwt = false
 
 [functions.send-followup-emails]
-# Cron-driven; called with service_role JWT.
-verify_jwt = true
+# Cron-driven (placement-fee-followup-job from migration 011). Same legacy JWT issue as
+# notify-job-filled — gateway check disabled. Function does not use caller-bound logic.
+# Phase 18 hardening: add X-Webhook-Secret header validation inside function code.
+verify_jwt = false
 
 [functions.acknowledge-placement-fee]
 # Called from authenticated employer client (src/pages/dashboard/employer/ApplicantDashboard.tsx:361).

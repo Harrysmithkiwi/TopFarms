@@ -1,0 +1,90 @@
+{
+  "captured_at": "2026-05-03T20:30:00+12:00",
+  "job_id": "b00254c7-b9e0-4865-80fb-756d570d9a66",
+  "job_title": "UAT Farm Assistant — Applied",
+  "pre_fire_status": "active",
+  "employer": {
+    "employer_profile_id": "60b9728d-a01b-4071-9cfb-94b808baaeeb",
+    "auth_user_id": "5634f2fb-ad12-4f5e-8d48-833373c77691",
+    "auth_email": "harry.symmans.smith@gmail.com",
+    "farm_name": "Test Farm (UAT)"
+  },
+  "applicants": [
+    {
+      "application_id": "2a91e3db-a02a-4f44-96e7-2be9897bcadf",
+      "seeker_id": "e94e8930-1db3-467f-b290-650ffb90940e",
+      "user_id": "e89983d5-8efa-48f1-baa2-741033a6b9dd",
+      "bucket": "existing-applied",
+      "pre_fire_status": "applied",
+      "post_fire_status_expected": "applied",
+      "email": "harry.symmans.smith+notify-applied@gmail.com",
+      "expected_email": true,
+      "notes": "Existing UAT seeker (seeded 2026-04-27). Got seeker_contacts row added 2026-05-03. region NULL."
+    },
+    {
+      "application_id": "71e415b1-fafd-4b17-aeb6-6efee039ae7d",
+      "seeker_id": "b0000001-0000-0000-0000-000000000001",
+      "user_id": "a0000001-0000-0000-0000-000000000001",
+      "bucket": "shortlisted",
+      "pre_fire_status": "shortlisted",
+      "post_fire_status_expected": "shortlisted",
+      "email": "harry.symmans.smith+notify-shortlisted@gmail.com",
+      "expected_email": true,
+      "notes": "Seeded 2026-05-03 with test_seed=15-02-2026-05-03. region NULL."
+    },
+    {
+      "application_id": "dd396022-1698-4e8a-8a75-cb52580dd20b",
+      "seeker_id": "b0000001-0000-0000-0000-000000000002",
+      "user_id": "a0000001-0000-0000-0000-000000000002",
+      "bucket": "offered",
+      "pre_fire_status": "offered",
+      "post_fire_status_expected": "hired",
+      "email": "harry.symmans.smith+notify-offered@gmail.com",
+      "expected_email": false,
+      "notes": "Seeded 2026-05-03. Will be transitioned offered -> hired during Task 2 fire (the 'winner'). Race-fix exercise: status set to hired BEFORE jobs.status set to filled, so trigger sees them excluded."
+    },
+    {
+      "application_id": "5b019b63-f5ac-4020-a602-b355a497992f",
+      "seeker_id": "b0000001-0000-0000-0000-000000000003",
+      "user_id": "a0000001-0000-0000-0000-000000000003",
+      "bucket": "declined",
+      "pre_fire_status": "declined",
+      "post_fire_status_expected": "declined",
+      "email": "harry.symmans.smith+notify-declined@gmail.com",
+      "expected_email": false,
+      "notes": "Seeded 2026-05-03. Already-terminal pre-fire — different exclusion path from #3."
+    }
+  ],
+  "expected_post_fire_state": {
+    "job_status": "filled",
+    "notify_count": 2,
+    "terminal_count": 2,
+    "function_response": {
+      "status_code": 200,
+      "body_shape": {"sent": 2, "failed": 0, "job_id": "b00254c7-b9e0-4865-80fb-756d570d9a66"}
+    },
+    "expected_emails_sent": [
+      "harry.symmans.smith+notify-applied@gmail.com",
+      "harry.symmans.smith+notify-shortlisted@gmail.com"
+    ],
+    "expected_emails_NOT_sent": [
+      "harry.symmans.smith+notify-offered@gmail.com",
+      "harry.symmans.smith+notify-declined@gmail.com"
+    ]
+  },
+  "email_template_notes": {
+    "subject_pattern": "Update on your application — UAT Farm Assistant — Applied at Test Farm (UAT)",
+    "salutation_with_null_region": "Hi Job seeker,",
+    "from_email": "TopFarms <hello@topfarms.co.nz>",
+    "dkim_d_param_expected": "topfarms.co.nz"
+  },
+  "seed_metadata": {
+    "test_seed_tag": "15-02-2026-05-03",
+    "cleanup_via": "DELETE FROM auth.users WHERE raw_user_meta_data->>'test_seed' = '15-02-2026-05-03' (CASCADE handles seeker_profiles + seeker_contacts + applications). Existing seeker (e89983d5...) preserved.",
+    "seeded_user_ids": [
+      "a0000001-0000-0000-0000-000000000001",
+      "a0000001-0000-0000-0000-000000000002",
+      "a0000001-0000-0000-0000-000000000003"
+    ]
+  }
+}

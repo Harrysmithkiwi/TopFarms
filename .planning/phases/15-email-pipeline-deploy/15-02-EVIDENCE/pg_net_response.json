@@ -1,0 +1,78 @@
+{
+  "captured_at": "2026-05-03T12:02:30+00:00",
+  "captured_via": "mcp__supabase__execute_sql (read-only) against net._http_response on project inlagtgpynemhipnqvty",
+  "query": "SELECT id, status_code, content_type, content::text AS content_full, error_msg, created FROM net._http_response ORDER BY created DESC LIMIT 3",
+  "responses": [
+    {
+      "id": 4,
+      "status_code": 200,
+      "content_type": "application/json",
+      "content": {
+        "sent": 2,
+        "failed": 0,
+        "job_id": "b00254c7-b9e0-4865-80fb-756d570d9a66"
+      },
+      "error_msg": null,
+      "created": "2026-05-03T12:01:46.481928+00:00",
+      "verdict": "PASS — primary MAIL-02 trigger-side evidence",
+      "interpretation": "notify-job-filled Edge Function executed successfully, queried applications by job_id, found 2 applicants in NOTIFY_STATUSES (existing seeker in 'applied' + new seeker A in 'shortlisted'), called Resend twice, both succeeded. Job_id matches test_setup.json. sent:2 matches the expected partition (3 NOTIFY pre-fire minus 1 'offered' transitioned to 'hired' during fire = 2 receivers)."
+    },
+    {
+      "id": 3,
+      "status_code": 401,
+      "content_type": "application/json",
+      "content": {
+        "code": "UNAUTHORIZED_LEGACY_JWT",
+        "message": "Invalid JWT"
+      },
+      "error_msg": null,
+      "created": "2026-05-03T11:52:36.883830+00:00",
+      "verdict": "FAIL (historical) — second-fire response, captured for traceability",
+      "interpretation": "Second fire (post-022 + vault-populated) reached the Supabase Edge Functions gateway but was rejected with UNAUTHORIZED_LEGACY_JWT. Root cause: legacy HS256 service_role JWT no longer accepted by gateway for verify_jwt:true functions. Resolved by setting verify_jwt:false on notify-job-filled in supabase/config.toml and redeploying (commit pending — Task 4 atomic commit). Phase 18: investigate JWT signing key migration to restore defence-in-depth."
+    }
+  ],
+  "test_context": {
+    "fire_timestamp_utc": "~2026-05-03T12:01:30+00:00",
+    "fire_method": "Path B — direct Studio SQL UPDATE (race-fix order: applications.status='hired' for dd396022, then jobs.status='filled' for b00254c7)",
+    "fire_method_rationale": "Path A (MarkFilledModal UI) was abandoned after first fire surfaced (a) modal applicant labels show only #<8-char-uuid> with no name/status context — easy mis-click; (b) modal performs UPDATE applications and UPDATE jobs as separate non-transactional PostgREST calls — left orphan-hired application when trigger errored",
+    "preconditions_satisfied": {
+      "migration_022_applied": true,
+      "vault_supabase_url_set": true,
+      "vault_service_role_key_set": true,
+      "verify_jwt_false_for_notify_job_filled": true,
+      "function_redeployed_post_config_change": true,
+      "cold_cache_wait_60s_observed": true
+    },
+    "iterations_to_success": 3,
+    "bugs_diagnosed_per_iteration": [
+      {
+        "iteration": 1,
+        "method": "Path A — MarkFilledModal UI",
+        "failure": "function net.http_post(url=>text, headers=>jsonb, body=>text) does not exist",
+        "root_cause": "pg_net 0.20.0 only exposes body jsonb; migration 017 used legacy `body := payload::text`",
+        "fix": "migration 022 — drop ::text cast",
+        "side_effects": "left application 2a91e3db in orphan 'hired' state due to modal's non-atomic UPDATE sequence (subsequently restored via Studio SQL)"
+      },
+      {
+        "iteration": 2,
+        "method": "Path B — direct Studio SQL (post-022)",
+        "failure": "null value in column \"url\" of relation \"http_request_queue\" violates not-null constraint",
+        "root_cause": "vault.secrets was empty — vault.decrypted_secrets lookup for 'supabase_url' returned NULL, NULL || '/functions/v1/notify-job-filled' = NULL (Postgres NULL propagation)",
+        "fix": "vault.create_secret() for both supabase_url and service_role_key in Studio (one-off, never committed)"
+      },
+      {
+        "iteration": 3,
+        "method": "Path B — direct Studio SQL (post-022, post-vault-populated)",
+        "failure": "401 UNAUTHORIZED_LEGACY_JWT from Supabase Edge Functions gateway",
+        "root_cause": "Service_role JWT is legacy HS256 format; Supabase migrated this project's gateway to require non-legacy JWTs at some point between 017 deploy and 2026-05-03",
+        "fix": "verify_jwt:false in supabase/config.toml for notify-job-filled and send-followup-emails; redeploy via supabase functions deploy --use-api"
+      },
+      {
+        "iteration": 4,
+        "method": "Path B — direct Studio SQL (post-022, post-vault-populated, post-verify_jwt:false)",
+        "failure": null,
+        "result": "PASS — pg_net 200, sent:2, failed:0; emails landing in Gmail inbox (per Harry's inbox observation in Task 3)"
+      }
+    ]
+  }
+}
