@@ -85,6 +85,57 @@ Established in plan 15-03. See also CLAUDE.md §2 (MCP `--read-only` flag-flip p
 
 ---
 
+## Phantom-applied migration class
+
+A migration is **phantom-applied** when `supabase_migrations.schema_migrations` has a row for it (with `statements` column containing the full SQL body) but the schema effects are absent from the live database. The registry says "applied"; the schema says "no it didn't."
+
+**Detection:** mismatch surfaces when comparing layers — registry row exists, but `information_schema.columns` / `pg_proc` / `cron.job` / etc. don't reflect the migration's effects. Comprehensive 9-layer audit recommended (migration files / registry / schema / functions / triggers / extensions / RLS / cron / Edge Functions). See `.planning/DRIFT-AUDIT-2026-05-03.md` §"Audit Method" for the layer list.
+
+**Pattern hypothesis (2026-05-03 incident):** consecutive registry-as-applied + schema-not-applied for migrations 011–014 was consistent with a database restore from a snapshot pre-dating the migrations, with the registry rows preserved separately. Awaiting Supabase support confirmation.
+
+**Distinct from the 016/017 class above:** 016/017 had files on disk + schema effects in place + no registry rows (Studio-applied without registry insert). Phantom-applied is the inverse — registry rows present + schema effects absent.
+
+**Remediation pattern:** re-apply the migration body via Supabase Studio SQL Editor with a pre-flight guard that aborts cleanly if state has diverged since the investigation. The guard checks **both directions** — target state absent AND prerequisite source state present — so a re-run against an already-reconciled DB or against a DB that has drifted further does not silently re-apply or partially apply.
+
+```sql
+-- Pre-flight guard: bidirectional state check
+DO $guard$
+BEGIN
+  -- Abort if target state already present (migration appears already applied)
+  IF EXISTS (<state-check matching what the migration would create>) THEN
+    RAISE EXCEPTION 'Pre-flight: target state already present — investigation outdated. Halting.';
+  END IF;
+
+  -- Abort if prerequisite source state missing (schema not in expected pre-migration state)
+  IF NOT EXISTS (<state-check confirming migration's prerequisites>) THEN
+    RAISE EXCEPTION 'Pre-flight: schema not in expected pre-migration state. Halting.';
+  END IF;
+END;
+$guard$;
+
+-- Migration body verbatim from the original NNN_*.sql file
+-- (drop inner BEGIN/COMMIT inside Studio paste — Studio's implicit
+-- transaction wraps the whole script; explicit BEGIN raises a
+-- "transaction already in progress" warning. See CLAUDE.md §2.)
+<migration body sans wrapper BEGIN/COMMIT>
+
+-- Post-verify: confirm migration body produced expected state
+DO $verify$
+BEGIN
+  IF NOT EXISTS (<state-check confirming migration landed>) THEN
+    RAISE EXCEPTION 'Post-verify failed: migration body did not produce expected state.';
+  END IF;
+  RAISE NOTICE 'Post-verify OK.';
+END;
+$verify$;
+```
+
+**Critical:** do NOT INSERT into `supabase_migrations.schema_migrations` for a phantom-applied re-apply. The original row is still there and still valid (the registry was never wrong; the schema effects went missing, not the registry record). This distinguishes phantom-applied remediation from the registry-repair pattern above (which is for the inverse drift class).
+
+**Precedent:** 2026-05-03 — migrations 011/012/013/014 reconciled via BLOCK 1/2/3 sequence. Full evidence in `.planning/DRIFT-AUDIT-2026-05-03.md`.
+
+---
+
 ## When to revisit this decision
 
 - If the project picks up multiple concurrent contributors writing migrations simultaneously, switch to timestamp-style on disk to avoid number collisions during PR rebasing. At that point, rename all existing migrations as a single atomic commit to keep the directory consistent.

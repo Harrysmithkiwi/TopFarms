@@ -138,6 +138,11 @@ Plans:
   6. BFIX-01/03 SUMMARY.md frontmatter `requirements_completed` field backfilled (or `tags:[bfix-XX]` convention codified as house standard)
   7. Phase 12/13 VALIDATION.md `nyquist_compliant` status finalised (true/false with rationale; no lingering `draft` state)
   8. AUTH-FIX-02 root cause investigated — diagnostic captured (loadRole > 3s under normal nav after AuthProvider centralisation), fix landed or deliberately deferred with rationale
+  9. 011/012/013/014 phantom-applied root cause investigated — confirmed cause from Supabase support response captured in `.planning/DRIFT-AUDIT-2026-05-03.md` (or successor doc), with prevention measures identified if applicable
+  10. Performance advisor lints addressed — 33 `auth_rls_initplan` instances (RLS policies use `(select auth.uid())` pattern instead of bare `auth.uid()`) and 14 `unindexed_foreign_keys` (index added per advisor recommendation)
+  11. `jobs.benefits` declared/actual mismatch documented — 013 declared `text[]`, live schema has `jsonb`. Functionally equivalent at JS layer; intent-vs-reality mismatch captured in migration comment or NAMING.md
+  12. `couples_welcome` (boolean) vs `accommodation_extras['Couples welcome']` (text[] member) — semantic distinction confirmed and source-of-truth documented (boolean preference vs accommodation feature)
+  13. Stripe production-mode posture verified before first real placement charge — `STRIPE_SECRET_KEY` confirmed `sk_live_*` in prod secrets, webhook endpoint registered in live Stripe dashboard, `.env.example` documents Stripe env vars
 
 ## Progress
 
