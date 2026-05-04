@@ -120,3 +120,11 @@ Per CLAUDE.md §2 and the existing 016/017 precedent in `supabase/migrations/NAM
 The 6 baseline counts captured pre-apply (jobs_active=1, match_scores=3, applications=2, jobs=2, employers=1, seekers=2) are **identical** to the post-apply re-run of the same SELECTs. Migration 023 added new SECURITY DEFINER RPCs and three new tables; none of its statements touched RLS policies or `GRANT`s on existing tables. The matched row counts are therefore the empirical proof that the existing RLS scopes for seekers (jobs visibility, match_scores visibility) and employers (applications visibility, jobs ownership) were not widened by this migration.
 
 **Verdict: RLS not widened (counts identical).** This is the load-bearing Phase 20 verification per `20-VALIDATION.md` "Critical Validation: RLS Not-Widened Proof".
+
+## Self-Check: PASSED
+
+- File `supabase/migrations/023_admin_rpcs.sql` exists
+- File `supabase/migrations/NAMING.md` exists with 023 row + all 5 runtime artefact keywords (admin_audit_log, admin_notes, admin_metrics_cache, _admin_gate, is_active) — 1 grep match each
+- File `.planning/phases/20-super-admin-dashboard/20-02-SUMMARY.md` exists with `status: complete` + `completed_at: 2026-05-04T21:42:10Z` in frontmatter
+- File `.planning/STATE.md` updated with closing decision + session info
+- All 5 commits present in git log: `f1e6e08` (Task 1), `aa9fa80` (Task 2), `5daf1bd` (Task 3 finalize), `f35ed2c` (Task 4 NAMING), `d6dd8df` (plan close)
