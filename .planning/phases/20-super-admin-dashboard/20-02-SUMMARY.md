@@ -41,9 +41,9 @@ One-liner: Single atomic migration (023) introducing the SECURITY DEFINER admin 
 ## Status
 
 **Wave 1 / Task 1 — Pre-migration RLS baseline capture: COMPLETE**
-**Wave 1 / Task 2 — Migration 023_admin_rpcs.sql write: PENDING**
-**Wave 1 / Task 3 — Studio SQL Editor apply: AWAITING OPERATOR (after Task 2)**
-**Wave 1 / Task 4 — NAMING.md update: PENDING**
+**Wave 1 / Task 2 — Migration 023_admin_rpcs.sql write: COMPLETE (commit `aa9fa80`)**
+**Wave 1 / Task 3 — Studio SQL Editor apply: COMPLETE (operator-applied 2026-05-04T21:40:47Z)**
+**Wave 1 / Task 4 — NAMING.md update: COMPLETE**
 
 This is the load-bearing ADMIN-RLS-NEG-1/2 ground truth per VALIDATION.md. The operator (Harry) ran the 6 baseline SELECTs in Supabase Studio SQL Editor for project `inlagtgpynemhipnqvty` BEFORE migration 023 was applied; integers captured below.
 
@@ -73,20 +73,44 @@ SELECT count(*) AS seekers_total FROM public.seeker_profiles;
 
 | # | Metric | Pre-migration count | Post-migration count | Match? |
 |---|--------|---------------------|----------------------|--------|
-| 1 | jobs (status='active') | 1 | _TBD_ | _TBD_ |
-| 2 | match_scores (all rows) | 3 | _TBD_ | _TBD_ |
-| 3 | applications (all rows) | 2 | _TBD_ | _TBD_ |
-| 4 | jobs (all rows) | 2 | _TBD_ | _TBD_ |
-| 5 | employer_profiles | 1 | _TBD_ | _TBD_ |
-| 6 | seeker_profiles | 2 | _TBD_ | _TBD_ |
+| 1 | jobs (status='active') | 1 | 1 | yes |
+| 2 | match_scores (all rows) | 3 | 3 | yes |
+| 3 | applications (all rows) | 2 | 2 | yes |
+| 4 | jobs (all rows) | 2 | 2 | yes |
+| 5 | employer_profiles | 1 | 1 | yes |
+| 6 | seeker_profiles | 2 | 2 | yes |
 
 Captured at: 2026-05-04T21:24:48Z (ISO8601 UTC timestamp)
 Operator confirmation: `approved: baselines=[jobs_active=1, match_scores=3, applications=2, jobs=2, employers=1, seekers=2]` (received 2026-05-04T21:24:48Z)
 
-## 023_admin_rpcs.sql apply (TBD)
+## 023_admin_rpcs.sql apply
 
-_Pending Task 3 (Studio apply checkpoint). This section populated when migration is live._
+**Apply timestamp:** 2026-05-04T21:40:47Z (ISO8601 UTC)
+**Apply path:** Supabase Studio SQL Editor for project `inlagtgpynemhipnqvty` (CLAUDE.md §2 — Studio is the preferred path for one-off DB writes; avoids the `--read-only` flag-flip restart cycle).
+**Apply mode:** entire body of `supabase/migrations/023_admin_rpcs.sql` pasted into a single SQL Editor query and Run; transaction committed via the migration's wrapping `BEGIN; ... COMMIT;`.
+**Operator confirmation:** `applied: artefacts=[3 tables, is_active column, 10 RPCs + _admin_gate helper], baselines unchanged: [1, 3, 2, 2, 1, 2]` (received 2026-05-04T21:40:47Z).
+
+### Runtime artefacts confirmed (post-apply)
+
+Verified via read-only Supabase MCP `execute_sql` queries 5a-5d as defined in 20-02-PLAN.md Task 3:
+
+| Artefact | Verification | Result |
+|---|---|---|
+| `public.admin_audit_log` table | `SELECT tablename FROM pg_tables WHERE schemaname='public' AND tablename IN (...)` (5a) | present |
+| `public.admin_notes` table | (5a) | present |
+| `public.admin_metrics_cache` table | (5a) | present |
+| `public.user_roles.is_active` column | `SELECT column_name FROM information_schema.columns WHERE ... AND column_name='is_active'` (5b) | present |
+| 10 admin_* RPCs + `_admin_gate` helper | `SELECT proname FROM pg_proc WHERE proname LIKE 'admin\_%' OR proname='_admin_gate'` (5c) | 11 names returned (`_admin_gate`, `admin_add_note`, `admin_get_daily_briefing`, `admin_get_system_alerts`, `admin_get_user_audit`, `admin_get_user_profile`, `admin_list_employers`, `admin_list_jobs`, `admin_list_placements`, `admin_list_seekers`, `admin_set_user_active`) |
+| `authenticated` role EXECUTE on `admin_get_daily_briefing` | `SELECT has_function_privilege('authenticated', 'public.admin_get_daily_briefing()', 'EXECUTE')` (5d) | true |
+
+### Registry note
+
+Per CLAUDE.md §2 and the existing 016/017 precedent in `supabase/migrations/NAMING.md`, Studio-applied migrations do NOT write rows to `supabase_migrations.schema_migrations`. Migration 023 is therefore **not in the live registry** — its presence is verifiable only through the runtime artefacts enumerated above (and is documented as such in the NAMING.md row added by Task 4).
 
 ## ADMIN-RLS-NEG verdict
 
-_Pending baseline diff. Both ADMIN-RLS-NEG-1 and ADMIN-RLS-NEG-2 will be marked empirically green when pre/post integers match exactly._
+**Empirically green: ADMIN-RLS-NEG-1 and ADMIN-RLS-NEG-2 are PASS.**
+
+The 6 baseline counts captured pre-apply (jobs_active=1, match_scores=3, applications=2, jobs=2, employers=1, seekers=2) are **identical** to the post-apply re-run of the same SELECTs. Migration 023 added new SECURITY DEFINER RPCs and three new tables; none of its statements touched RLS policies or `GRANT`s on existing tables. The matched row counts are therefore the empirical proof that the existing RLS scopes for seekers (jobs visibility, match_scores visibility) and employers (applications visibility, jobs ownership) were not widened by this migration.
+
+**Verdict: RLS not widened (counts identical).** This is the load-bearing Phase 20 verification per `20-VALIDATION.md` "Critical Validation: RLS Not-Widened Proof".
