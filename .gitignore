@@ -28,3 +28,6 @@ npm-debug.log*
 # Vitest
 coverage/
 supabase/.temp/
+
+# Deno (Edge Function local typecheck cache; Supabase CLI handles deps at deploy time)
+deno.lock
