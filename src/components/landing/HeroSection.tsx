@@ -82,7 +82,7 @@ export function HeroSection() {
             <motion.span
               variants={lineVariants}
               className="block"
-              style={{ color: 'var(--color-hay)', fontStyle: 'italic' }}
+              style={{ color: 'var(--color-brand-50)', fontStyle: 'italic' }}
             >
               Best Farms
             </motion.span>
