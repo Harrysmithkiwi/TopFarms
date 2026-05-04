@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: executing
-stopped_at: "Phase 20-05 complete — 3 reusable admin components (AdminTable, ProfileDrawer, AdminNotesField) + 11 shape-contract tests green; next: plan 20-06 (employer + seeker list pages)"
-last_updated: "2026-05-04T22:01:44.854Z"
-last_activity: 2026-05-04 — 20-05 complete; 3 reusable admin components shipped (AdminTable 194 lines, ProfileDrawer 494 lines, AdminNotesField 103 lines); 4 shape-contract test files filled (11 tests green replacing it.todo stubs from plan 20-01); tsc clean. Wave 4 collapses 8+ would-be-tasks into 3 reusable artefacts that waves 5-6 list-view pages drop into via composition.
+stopped_at: "Phase 20-06 complete — 3 admin pages real (DailyBriefing, EmployerList, SeekerList) + RTL render-test proves MAIL-02 honest-copy renders on unavailable Resend cache; next: plan 20-07 (jobs + placement pipeline)"
+last_updated: "2026-05-04T22:12:47.441Z"
+last_activity: 2026-05-04 — 20-06 complete; DailyBriefing replaced with full StatsStrip+Alerts+Resend+Revenue layout, EmployerList + SeekerList composed from AdminTable + ProfileDrawer with locked UI-SPEC copy, /admin/employers and /admin/seekers wired to real components. 13 admin tests green (replacing 12 it.todo + 1 net-new RTL render test for honest-copy proof). Plan 20-07 (jobs + placements) is pure composition from same primitives.
 progress:
   total_phases: 10
   completed_phases: 4
   total_plans: 19
-  completed_plans: 16
+  completed_plans: 17
 ---
 
 # Project State
@@ -25,9 +25,9 @@ See: .planning/PROJECT.md (updated 2026-04-03)
 ## Current Position
 
 Phase: 20 of 20+ — Super Admin Dashboard
-Plan: 20-05 complete — moving to 20-06 (next plan)
-Status: In progress (plan 20-06 next)
-Last activity: 2026-05-04 — 20-05 complete; 3 reusable admin components shipped (AdminTable, ProfileDrawer, AdminNotesField) + 11 shape-contract tests green. Wave 5 (employer + seeker list pages) is pure composition from these primitives — no architectural decisions remain.
+Plan: 20-06 complete — moving to 20-07 (next plan)
+Status: In progress (plan 20-07 next)
+Last activity: 2026-05-04 — 20-06 complete; DailyBriefing real (StatsStrip + alerts + Resend + revenue), EmployerList + SeekerList composed from AdminTable + ProfileDrawer, /admin/employers + /admin/seekers wired. 13 tests green including new RTL render test asserting MAIL-02 honest-copy literal. Plan 20-07 (JobsManagement + PlacementPipeline) is pure composition from same primitives.
 
 ## Accumulated Context
 
@@ -63,6 +63,9 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 20-05]: supabase.rpc admin_* type assertion via `as never` — admin_* RPCs not in supabase-js generated function-name union (plan 20-02 was applied via Studio SQL Editor which doesn't update JS types). `as never` collapses to a no-op once types regenerate post-deploy. Cleaner than @ts-expect-error directives.
 - [Phase 20-05]: Shape-contract tests (mocked supabase) for 4 admin test files — assert SHAPE the frontend code requires from RPCs, not live integration. 11 tests green; live RPC integration deferred to plan 20-08 manual UAT (ADMIN-BOOTSTRAP-1) per plan instruction. Decouples wave 4 from infrastructure readiness.
 - [Phase 20-05]: Drawer-internal confirm row (no modal) for destructive admin actions — Toggle reveals confirm row inside drawer with heading 15px/600 + body 13px/muted (max 60ch) + ghost Cancel + warn (suspend) / primary (reactivate) Confirm CTAs; Escape collapses; no focus trap. Aligns with PRODUCT.md anti-chrome paranoia.
+- [Phase 20-06]: ResendIndicator branches structurally on { unavailable | stale | fresh } so the literal MAIL-02 honest-copy "Delivery data unavailable. Check Resend dashboard." surfaces as the explicit unavailable branch — RTL render-test asserts the exact string with mocked unavailable cache. Visible side of the v2.0 Phase 15 carryforward; live-data half deferred to plan 20-08 UAT.
+- [Phase 20-06]: vi.hoisted required for RTL tests that statically import the SUT — `const { rpcMock } = vi.hoisted(() => ({ rpcMock: vi.fn() }))` is the canonical pattern. Shape-contract tests dodge this by lazy-importing supabase via `await import()` after the const is initialised; render tests can't dodge it because the SUT import transitively pulls supabase before the const exists.
+- [Phase 20-06]: Page-level drawer state pattern — EmployerList + SeekerList hold `{drawerUserId, drawerActive}` at the page component, passed to <ProfileDrawer initialActive onActiveChanged onClose/>. Drawer's Toggle dispatches onActiveChanged so the page can refresh row tags without table refetch. Pattern reused by plan 20-07's JobsManagement + PlacementPipeline if their drawer integration follows.
 
 ### Blockers/Concerns
 
@@ -73,6 +76,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-04T22:01:44.851Z
-Stopped at: Phase 20-05 complete — 3 reusable admin components (AdminTable, ProfileDrawer, AdminNotesField) + 11 shape-contract tests green; next: plan 20-06 (employer + seeker list pages)
+Last session: 2026-05-04T22:11:00.000Z
+Stopped at: Phase 20-06 complete — 3 admin pages real (DailyBriefing, EmployerList, SeekerList) + RTL render-test proves MAIL-02 honest-copy renders on unavailable Resend cache; next: plan 20-07 (jobs + placement pipeline)
 Resume file: None
