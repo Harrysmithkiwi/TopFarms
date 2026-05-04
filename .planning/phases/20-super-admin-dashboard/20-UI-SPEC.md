@@ -37,7 +37,7 @@ All six primitives below are live in production. Admin pages compose from them d
 | `StatsStrip` | `src/components/ui/StatsStrip.tsx` | Daily briefing yesterday-at-a-glance header |
 | `Timeline` | `src/components/ui/Timeline.tsx` | `admin_audit_log` drawer display |
 | `Toggle` | `src/components/ui/Toggle.tsx` | Suspend/reactivate control on employer + seeker rows |
-| `Input` | `src/components/ui/Input.tsx` | Table search bar, admin notes textarea |
+| `Input` | `src/components/ui/Input.tsx` | Table search bar only (renders `<input>` — no textarea support) |
 
 ---
 
@@ -54,11 +54,20 @@ Source: `DESIGN.md` spacing tokens + `TopFarms_Brand_Spec_v2.md §4`. No new val
 | xl | 32px | Layout gaps, page-level top padding |
 | 2xl | 48px | Major section breaks |
 
-Exceptions:
-- Table row height: 52px (desktop) — enough vertical breathing room for a toggle + tag on one line without crowding
-- Admin sidebar width: 224px (matches existing `Sidebar.tsx` `w-60` = 240px; AdminSidebar uses 224px for tighter nav feel)
-- Profile drawer width: 400px at `lg:` breakpoint, full-width below (see Layout section)
-- Touch targets: 44×44px minimum on all interactive elements per `PRODUCT.md` accessibility §
+---
+
+## Component Dimensions
+
+Component-level dimensions used in this phase. These are not spacing-scale exceptions; they are constants on specific components. Spacing Scale tokens above remain canonical for layout gaps and padding.
+
+| Component | Dimension | Source/rationale |
+|-----------|-----------|------------------|
+| Admin table row height | 52px (desktop) | Vertical breathing room for Tag + Toggle on one line without crowding |
+| AdminSidebar width | 240px (`w-60`) | Matches existing `Sidebar.tsx` for chrome consistency |
+| Profile drawer width (desktop) | 400px at `lg:` breakpoint, full-width below | Right-anchored drawer; matches v2 motion + shadow spec |
+| Touch targets | 44×44px minimum on all interactive elements | PRODUCT.md accessibility § |
+| Confirm row padding | 16px | Inline drawer-internal confirm; see §Suspend / reactivate UX |
+| Admin notes textarea height | `min-h-[44px]` initial / `max-h-[160px]` before scroll | 44px matches Input tap-target token; 160px caps growth before in-textarea scroll engages |
 
 ---
 
@@ -86,18 +95,18 @@ Source: `DESIGN.md` + `TopFarms_Brand_Spec_v2.md §3`. No new hex values introdu
 
 | Role | Value | Usage |
 |------|-------|-------|
-| Dominant (60%) | `#FAFBF9` (`--bg`) | Admin page background |
-| Secondary (30%) | `#FFFFFF` (`--surface`) + `#F3F5F0` (`--surface-2`) | AdminLayout sidebar, cards, table rows, input fills |
-| Accent (10%) | `#16A34A` (`--brand`) | See reserved-for list below |
-| Destructive | `#DC2626` (`--danger`) | Suspend confirmation button only |
+| Dominant | `#FAFBF9` (`--bg`) | Admin page background |
+| Secondary | `#FFFFFF` (`--surface`) + `#F3F5F0` (`--surface-2`) | AdminLayout sidebar, cards, table rows, input fills |
+| Accent | `#16A34A` (`--brand`) | See reserved-for list below |
+| Destructive | `#DC2626` (`--danger`) | Inline error text + suspended-state Tag exclusively |
 
 **Accent reserved for:**
 - Active sidebar nav item (brand text + brand-50 background)
 - Toggle checked state (already wired in `Toggle.tsx: data-[state=checked]:bg-brand`)
 - Pagination active page button (already wired in `Pagination.tsx`)
-- Resend delivery-rate indicator when rate is healthy (≥95%)
+- Resend delivery-rate indicator when rate is healthy (>=95%)
 - "Active" status Tag (use `Tag variant="green"`)
-- Focus rings on all interactive elements (2px `--brand` outline, 2px offset)
+- Focus rings: 2px `--brand` outline on `:focus-visible` (keyboard focus only), 2px offset, applied universally on interactive elements per WCAG 2.1 AA. This is an accessibility primitive distinct from resting accent use; it does not consume the "Accent ≤10%" budget
 
 **Semantic color assignments for admin-specific states:**
 
@@ -109,15 +118,16 @@ Source: `DESIGN.md` + `TopFarms_Brand_Spec_v2.md §3`. No new hex values introdu
 | Hire confirmed | `--brand` | `Tag variant="green"` |
 | Hire pending | `--surface-2` / `--text-muted` | `Tag variant="grey"` |
 | Edge Function error | `--danger-bg` | `Tag variant="red"` |
-| Resend healthy (≥95%) | `--brand` | `Tag variant="green"` |
-| Resend degraded (80–94%) | `--warn` | `Tag variant="warn"` |
+| Resend healthy (>=95%) | `--brand` | `Tag variant="green"` |
+| Resend degraded (80-94%) | `--warn` | `Tag variant="warn"` |
 | Resend critical (<80%) | `--danger` | `Tag variant="red"` |
 
 **Hard rules (from PHASE-19-KNOWN-STATE.md and Brand Spec):**
 - Do NOT introduce new amber-dark hardcoded hex values. Use existing `warn` Tag variant which carries `text-[#7A5C00]` (already established in `Tag.tsx`)
 - Do NOT use `#000` or `#fff` for text — use `--text` (`#0B1F10`) and `--text-on-brand` (`#FFFFFF`)
 - Do NOT use `--brand-900` as a competing element alongside `--brand` on the same surface
-- The AdminLayout top nav uses `--brand-900` background (inheriting the existing `Nav.tsx` pattern)
+- **Do NOT** use `--danger` as a button background. Button has no `destructive` variant in the v2 library; destructive intent on buttons is communicated via `Button variant="warn"` (amber) plus explicit copy ("This action is logged.")
+- The AdminLayout omits the top `<Nav />` — see §Layout
 
 ---
 
@@ -125,35 +135,38 @@ Source: `DESIGN.md` + `TopFarms_Brand_Spec_v2.md §3`. No new hex values introdu
 
 ### AdminLayout structure
 
-Clone `DashboardLayout.tsx` structure. Key differences from the existing layout:
-
 ```
 AdminLayout
-├── <Nav /> (existing — unchanged, already renders brand-900 dark bar)
-└── <div className="flex">
-    ├── <AdminSidebar /> (new — left rail, 224px wide, desktop-only)
-    └── <main className="flex-1 p-6">
+└── <div className="flex min-h-screen">
+    ├── <AdminSidebar /> (left rail, 240px wide, desktop-only sticky top)
+    └── <main className="flex-1 px-6 py-8">
         └── <div className="max-w-[1200px] mx-auto">
             {children}
         </div>
     </main>
 ```
 
-**Decision: Left side rail, not top tabs.**
+**Decision: Single sidebar, no top app-nav.**
 
-Rationale: The existing `Sidebar.tsx` pattern is already the convention for role-specific navigation. Admin has 5 distinct views. Top tabs constrain to ~5 labels on a narrow bar — workable, but the sidebar pattern is already coded, accessible, and matches the role-aware navigation convention. AdminSidebar is a straight composition of the existing pattern with admin-specific nav items.
+Rationale: PRODUCT.md anti-chrome paranoia — the existing top `<Nav />` carries seeker/employer navigation that is irrelevant on `/admin/*` for an internal tool. Stripe Dashboard and Linear admin (both cited in CONTEXT.md as precedent) use a single sidebar. Doubling chrome layers without role for the second one is decoration.
+
+AdminSidebar header includes a small "Back to app" link (Body 15px, `--text-muted`, `hover:--text`) above the nav items, routing to `/dashboard/${role}` based on the operator's primary role (still resolved from AuthContext, since the admin can also be a seeker/employer in the same auth account).
+
+**Mobile scope:** Phase 20 admin is desktop-primary (≥768px / `md:` breakpoint). Below `md:`, admin pages render single-column with the AdminSidebar collapsing to a top-of-page nav strip. Full mobile-optimized admin (off-canvas drawer, tap-friendly density) is explicitly out of scope for Phase 20 MVP; it is added if/when a second admin operator joins (CONTEXT.md §Deferred to Phase 21+). Harry's primary admin device is desktop.
 
 ### AdminSidebar nav items
 
 | Label | Route | Icon (lucide-react) |
 |-------|-------|---------------------|
+| Back to app | `/dashboard/${role}` | `ArrowLeft` |
+| (8px divider) | — | — |
 | Daily Briefing | `/admin` | `LayoutDashboard` |
 | Employers | `/admin/employers` | `Building2` |
 | Seekers | `/admin/seekers` | `Users` |
 | Jobs | `/admin/jobs` | `Briefcase` |
 | Placement Pipeline | `/admin/placements` | `DollarSign` |
 
-Active state: brand text (`--brand`) + `--brand-50` background fill. Matches existing `Sidebar.tsx` active style.
+The "Back to app" link uses Body 15px / 400 / `--text-muted` styling. It does NOT get the brand-50 active state — it is a top-of-list escape hatch, not part of the admin section. The remaining items use the standard active state: brand text (`--brand`) + `--brand-50` background fill. Matches existing `Sidebar.tsx` active style.
 
 ### Profile drawer
 
@@ -169,10 +182,62 @@ Active state: brand text (`--brand`) + `--brand-50` background fill. Matches exi
 - `prefers-reduced-motion: reduce` respected — no slide animation, drawer appears instantly
 
 **Drawer sections (pure inspector — read-only):**
-1. Profile header: name + role tag + join date + region
+
+1. Profile header (role-keyed — see expanded spec below)
 2. Account state: active/suspended Tag + Toggle (suspend/reactivate) + last action timestamp
-3. Admin notes: inline textarea (see Admin Notes UX below)
-4. Audit log: `<Timeline>` entries from `admin_audit_log` for this user (most recent first)
+3. Inline confirm row (appears when Toggle is clicked — see §Suspend / reactivate UX)
+4. Admin notes: inline textarea (see §Admin notes UX)
+5. Audit log: `<Timeline>` entries from `admin_audit_log` for this user (most recent first)
+
+#### Drawer sections — Profile header (role-keyed)
+
+**Employer drawer fields (in this exact order):**
+- Name (Title 20px / 600)
+- Email (Body 15px / 400, `--text-muted`)
+- Verification tier — `Tag` with the appropriate variant + label (see §Copywriting Contract for full tier value mapping)
+- Join date (Small 13px / 400, `--text-muted`, format: "Joined 14 Mar 2026")
+- Region (Small 13px / 400, `--text-muted`)
+- Total jobs posted (Small 13px / 400, `--text-muted`, format: "12 jobs posted")
+- Last sign-in (Small 13px / 400, `--text-subtle`, format: "Last sign-in 2 days ago")
+
+**Seeker drawer fields (in this exact order):**
+- Name (Title 20px / 600)
+- Email (Body 15px / 400, `--text-muted`)
+- Region (Small 13px / 400, `--text-muted`)
+- Onboarding state — `Tag variant="green"` "Onboarding complete" or `Tag variant="warn"` "Step 3 of 7"
+- Match scores computed — `Tag variant="green"` "Scores ready" or `Tag variant="grey"` "Scores pending"
+- Join date (Small 13px / 400, `--text-muted`, format: "Joined 14 Mar 2026")
+- Last sign-in (Small 13px / 400, `--text-subtle`, format: "Last sign-in 2 days ago")
+
+All fields stack vertically with 8px gap between rows. Email and date rows use 4px gap from their label inline (label + value on same line where short).
+
+---
+
+## SECURITY DEFINER RPC contract — drawer payload
+
+This section locks ONLY the drawer-payload contract because the drawer is the spec's most field-specific surface. Phase 20 needs additional admin RPCs (suspend/reactivate, list-fetchers per view, daily-briefing, save-note, resend-stats reader, etc.); their full contracts are enumerated in PLAN.md, not here. Every admin RPC follows the same pattern: `SECURITY DEFINER`, `STABLE` (or `VOLATILE` for mutations), gated server-side via `get_user_role(auth.uid()) = 'admin'`, returns `jsonb`.
+
+The drawer requires the SECURITY DEFINER RPC (`admin_get_user_profile(user_id)`) to return the following JSONB shape. Planner must spec the migration accordingly.
+
+```jsonc
+{
+  "role": "employer" | "seeker",
+  "name": "...",
+  "email": "...",
+  "region": "...",
+  "join_date": "ISO8601 timestamp",
+  "last_sign_in": "ISO8601 timestamp | null",
+  // Employer-only:
+  "verification_tier": "unverified" | "email" | "nzbn" | "featured",
+  "total_jobs_posted": "integer",
+  // Seeker-only:
+  "onboarding_complete": "boolean",
+  "onboarding_step": "integer 1..7",
+  "match_scores_computed": "boolean"
+}
+```
+
+This is the contract the planner picks up to design `023_admin_rpcs.sql`.
 
 ---
 
@@ -180,42 +245,40 @@ Active state: brand text (`--brand`) + `--brand-50` background fill. Matches exi
 
 ### Suspend / reactivate UX
 
-**Decision: Toggle in drawer + danger confirmation dialog before committing.**
+**Decision: Toggle in drawer + inline drawer-internal confirm row before committing.**
 
-The `Toggle` component (`src/components/ui/Toggle.tsx`) already wraps Radix Switch with correct a11y. Inline toggles on table rows invite accidental taps — a drawer-first pattern adds one intentional step before the confirmation dialog.
+The `Toggle` component (`src/components/ui/Toggle.tsx`) already wraps Radix Switch with correct a11y. Inline toggles on table rows invite accidental taps — a drawer-first pattern adds one intentional step before the confirm row appears inline.
 
 **Full interaction flow:**
 
-1. Operator clicks any employer or seeker row → profile drawer opens
+1. Operator clicks any employer or seeker row — profile drawer opens
 2. Drawer shows current state: active `Tag variant="green"` or suspended `Tag variant="red"`, with `Toggle` reflecting current state
-3. Operator clicks Toggle to change state
-4. Confirmation dialog appears (NOT an inline undo toast — this is a consequential action):
-   - **Suspending:** Dialog title: "Suspend this account?" — Body: "Harry will not be able to log in or use TopFarms until reactivated. This action is logged." — CTA: `Button variant="warn"` "Suspend account" + `Button variant="ghost"` "Cancel"
-   - **Reactivating:** Dialog title: "Reactivate this account?" — Body: "Harry will regain full access immediately." — CTA: `Button variant="primary"` "Reactivate account" + `Button variant="ghost"` "Cancel"
+3. Operator clicks Toggle to initiate state change. The toggle does NOT immediately fire the RPC — it reveals a confirm row below
+4. **Confirm row appears below the toggle, inline within the drawer** (no overlay, no focus trap, no modal):
+   - Heading text (15px body, weight 600): "Suspend this account?" / "Reactivate this account?"
+   - Body text (13px small, `--text-muted`, max 60ch): "{Name} will not be able to log in or use TopFarms until reactivated. This action is logged." / "{Name} will regain full access immediately. This action is logged."
+   - Buttons (right-aligned, 8px gap):
+     - Cancel: `Button variant="ghost" size="sm"` "Cancel" (collapses confirm row, reverts toggle)
+     - Confirm suspend: `Button variant="warn" size="sm"` "Suspend account"
+     - Confirm reactivate: `Button variant="primary" size="sm"` "Reactivate account"
+   - Confirm row container: `--surface-2` background, 12px radius, 16px padding, `--border` 1px border, 12px top margin from toggle
 5. On confirm: RPC `admin_set_user_active(user_id, active)` fires, `admin_audit_log` row written server-side
-6. On success: Tag and Toggle update, Timeline in drawer refreshes
-7. On error: `StatusBanner` (existing `src/components/ui/StatusBanner.tsx`) — "Failed to update account status. Try again." — error text colour `--danger`
-8. Toggle reverts to pre-attempt state on error
-
-**Dialog specs:**
-- Background: `--surface`, 12px radius, `--shadow-lg`
-- Width: 400px max, centred
-- Backdrop: `rgba(11, 31, 16, 0.4)` overlay
-- Focus trap active while open
-- `Escape` key cancels
-- No auto-close — operator must take an explicit action
+6. On success: confirm row collapses, Tag and Toggle update to new state, Timeline section in drawer refreshes
+7. On error: `StatusBanner` (`src/components/ui/StatusBanner.tsx`) appears at top of drawer with copy "Failed to update account status. Try again." and `--danger` text color. Toggle reverts to pre-attempt state. Confirm row stays open so operator can retry or cancel.
+8. `Escape` key collapses the confirm row when it is open. No focus trap (it is a drawer-internal panel, not a modal).
 
 ### Admin notes UX
 
 **Decision: Textarea pinned inside the profile drawer — minimum clicks, no separate page.**
 
-- Single `<textarea>` inside the drawer, below account-state section
-- 44px minimum height, expands to content (up to 160px before scroll)
+- Native `<textarea>` element styled with these exact Tailwind classes: `bg-surface-2 rounded-md border-[1.5px] border-border focus:border-2 focus:border-brand focus:outline-none px-[14px] py-3 text-[15px] leading-6 w-full resize-none`
 - Placeholder: "Add a note… (visible to admins only)"
+- Initial height: `min-h-[44px]` (matches Input tap-target token), expands to content via `field-sizing: content` or JS auto-grow up to `max-h-[160px]` before scroll
 - Save: `Button variant="outline" size="sm"` "Save note" — appears only when content has changed (dirty state)
-- Additive only — no delete affordance on notes (CONTEXT.md: additive only)
-- Notes rendered as a list of saved entries above the textarea (most recent first), each with timestamp in `--text-subtle` and content in 15px body
-- Empty state: no notes list rendered — textarea placeholder carries the intent
+- Additive only — no delete affordance on saved notes (CONTEXT.md: additive only)
+- Saved notes rendered as a list above the textarea (most recent first), each with timestamp in `--text-subtle` (13px small) and content in 15px body
+- Empty state: textarea placeholder carries intent; no separate empty-state copy rendered
+- Auth gate: note read/write RPCs are SECURITY DEFINER with `get_user_role(auth.uid()) = 'admin'` check (matches all admin RPCs); the "(visible to admins only)" placeholder copy reflects the actual server-side enforcement, not just frontend chrome
 
 ### Table search
 
@@ -235,10 +298,13 @@ Rationale: A solo operator scanning for failures in a morning briefing needs to 
 - `Status` Tag: `variant="red"` for active error, `variant="grey"` for resolved (no errors in last hour)
 - Table capped at 10 rows on daily briefing — "View all system events" link to a future Phase 21 log view
 - If no errors in 24h: empty state — single row spanning all columns, `--text-subtle` "No system alerts in the last 24 hours"
+- Data source: planner-defined SECURITY DEFINER RPC reading recent Edge Function error logs (Supabase logs table or cached projection); exact source TBD in PLAN.md
 
 ### Daily briefing card layout
 
 **Decision: StatsStrip for yesterday's activity numbers (top) + Card grid for alerts + Resend indicator.**
+
+**Primary focal point: `<StatsStrip>`.** This is the operator's first scan target — yesterday's four key numbers across the full content width. The card grid below answers the "is anything broken?" follow-up question. Visual hierarchy: StatsStrip (primary) > System Alerts card (secondary, left column, taller) > Resend + Revenue cards (tertiary, right column stack). PRODUCT.md Principle 5 (trust via clarity): the StatsStrip surfaces defensible numbers first; chrome stays out of the way.
 
 **Layout (top to bottom):**
 1. `<StatsStrip>` — 4-slot strip: Yesterday's Signups | Jobs Posted | Applications | Ack'd Placements
@@ -284,7 +350,7 @@ The Resend API does not expose a delivery-rate endpoint suitable for direct RPC 
 | System alerts empty state | "No system alerts in the last 24 hours" |
 | Resend card title | "Email Delivery" |
 | Resend healthy | "{rate}% delivery rate" |
-| Resend data unavailable | "Delivery data unavailable — check Resend dashboard" |
+| Resend data unavailable | "Delivery data unavailable. Check Resend dashboard." |
 | Revenue card title | "Revenue" |
 
 #### Employer list (`/admin/employers`)
@@ -297,6 +363,10 @@ The Resend API does not expose a delivery-rate endpoint suitable for direct RPC 
 | Empty state body | "Employers will appear here once they sign up." |
 | Error state | "Failed to load employers. Refresh the page or check your connection." |
 | Column: verification tier | "Tier" |
+| Tier value: unverified | "Unverified" — `Tag variant="grey"` |
+| Tier value: email-verified | "Email" — `Tag variant="blue"` |
+| Tier value: NZBN-verified | "NZBN" — `Tag variant="green"` |
+| Tier value: featured | "Featured" — `Tag variant="warn"` |
 | Column: account status | "Status" |
 | Column: date joined | "Joined" |
 | Column: job count | "Jobs" |
@@ -357,16 +427,18 @@ The Resend API does not expose a delivery-rate endpoint suitable for direct RPC 
 | Close button aria-label | "Close profile" |
 | Notes textarea placeholder | "Add a note… (visible to admins only)" |
 | Save note button | "Save note" |
-| Notes empty state | (no rendered text — placeholder carries intent) |
+| Notes empty state | (no rendered text; placeholder carries intent) |
 | Audit log section title | "Activity" |
 | Audit log empty | "No activity recorded yet." |
 
 ### Destructive actions
 
-| Action | Dialog title | Dialog body | Confirm CTA | Cancel CTA |
-|--------|-------------|-------------|-------------|------------|
-| Suspend account | "Suspend this account?" | "{Name} will not be able to log in or use TopFarms until reactivated. This action is logged." | "Suspend account" (`Button variant="warn"`) | "Cancel" (`Button variant="ghost"`) |
-| Reactivate account | "Reactivate this account?" | "{Name} will regain full access immediately. This action is logged." | "Reactivate account" (`Button variant="primary"`) | "Cancel" (`Button variant="ghost"`) |
+| Action | Confirm heading | Confirm body | Confirm CTA | Cancel CTA |
+|--------|----------------|--------------|-------------|------------|
+| Suspend account | "Suspend this account?" | "{Name} will not be able to log in or use TopFarms until reactivated. This action is logged." | "Suspend account" (`Button variant="warn" size="sm"`) | "Cancel" (`Button variant="ghost" size="sm"`) |
+| Reactivate account | "Reactivate this account?" | "{Name} will regain full access immediately. This action is logged." | "Reactivate account" (`Button variant="primary" size="sm"`) | "Cancel" (`Button variant="ghost" size="sm"`) |
+
+Note: These confirm interactions are rendered as an inline confirm row inside the profile drawer — not as a modal dialog. See §Suspend / reactivate UX.
 
 ---
 
@@ -389,16 +461,15 @@ All components needed. None require new design primitives.
 
 | Component | Path | Composed from |
 |-----------|------|---------------|
-| `AdminLayout` | `src/components/layout/AdminLayout.tsx` | Clone `DashboardLayout.tsx` + `AdminSidebar` |
-| `AdminSidebar` | `src/components/layout/AdminSidebar.tsx` | Clone `Sidebar.tsx` pattern with admin nav items |
-| `ProfileDrawer` | `src/components/admin/ProfileDrawer.tsx` | `Card`, `Tag`, `Toggle`, `Timeline`, `Button`, `Input` |
-| `ConfirmDialog` | `src/components/admin/ConfirmDialog.tsx` | Native dialog or Radix Dialog (already in project via Toggle dep chain) |
-| `AdminNotesField` | `src/components/admin/AdminNotesField.tsx` | `Input` (textarea mode), `Button` |
+| `AdminLayout` | `src/components/layout/AdminLayout.tsx` | No top `<Nav />` — single sidebar layout only |
+| `AdminSidebar` | `src/components/layout/AdminSidebar.tsx` | Clone `Sidebar.tsx` pattern with admin nav items + "Back to app" escape link |
+| `ProfileDrawer` | `src/components/admin/ProfileDrawer.tsx` | `Card`, `Tag`, `Toggle`, `Timeline`, `Button` |
+| `AdminNotesField` | `src/components/admin/AdminNotesField.tsx` | Native `<textarea>` (Input tokens applied via Tailwind classes), `Button` |
 | `AdminTable` | `src/components/admin/AdminTable.tsx` | Reusable table shell with search + `Pagination` |
 
 ### Reused without modification
 
-`Tag`, `Card`, `Button`, `Pagination`, `StatsStrip`, `Timeline`, `Toggle`, `Input`, `Nav`, `ProtectedRoute` (after one-line type extension)
+`Tag`, `Card`, `Button`, `Pagination`, `StatsStrip`, `Timeline`, `Toggle`, `Input`, `ProtectedRoute` (after one-line type extension)
 
 ---
 
