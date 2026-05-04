@@ -33,6 +33,7 @@ import { AdminLayout } from '@/components/layout/AdminLayout'
 import { DailyBriefing } from '@/pages/admin/DailyBriefing'
 import { EmployerList } from '@/pages/admin/EmployerList'
 import { SeekerList } from '@/pages/admin/SeekerList'
+import { JobsManagement } from '@/pages/admin/JobsManagement'
 
 const router = createBrowserRouter([
   // ─── Public routes ──────────────────────────────────────────────────────────
@@ -242,7 +243,7 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute requiredRole="admin">
         <AdminLayout>
-          <DailyBriefing />
+          <JobsManagement />
         </AdminLayout>
       </ProtectedRoute>
     ),
