@@ -41,8 +41,8 @@ interface SystemAlertsPayload {
  * admin_metrics_cache row exposed by admin_get_daily_briefing.
  *
  * Three branches per UI-SPEC §"Resend delivery-rate approach":
- *   - unavailable → honest copy "Delivery data unavailable. Check Resend dashboard."
- *     This is the visible side of the MAIL-02 carryforward (CONTEXT.md item 1).
+ *   - unavailable → renders the honest "Delivery data unavailable" copy below
+ *     (visible side of the MAIL-02 carryforward; see CONTEXT.md item 1).
  *   - stale     → rate + "Stale · Last checked …"
  *   - fresh     → rate + "Last checked …"
  *

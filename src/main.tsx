@@ -31,6 +31,8 @@ import { SeekerDocuments } from '@/pages/dashboard/seeker/SeekerDocuments'
 import { ApplicantDashboard } from '@/pages/dashboard/employer/ApplicantDashboard'
 import { AdminLayout } from '@/components/layout/AdminLayout'
 import { DailyBriefing } from '@/pages/admin/DailyBriefing'
+import { EmployerList } from '@/pages/admin/EmployerList'
+import { SeekerList } from '@/pages/admin/SeekerList'
 
 const router = createBrowserRouter([
   // ─── Public routes ──────────────────────────────────────────────────────────
@@ -220,7 +222,7 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute requiredRole="admin">
         <AdminLayout>
-          <DailyBriefing />
+          <EmployerList />
         </AdminLayout>
       </ProtectedRoute>
     ),
@@ -230,7 +232,7 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute requiredRole="admin">
         <AdminLayout>
-          <DailyBriefing />
+          <SeekerList />
         </AdminLayout>
       </ProtectedRoute>
     ),
