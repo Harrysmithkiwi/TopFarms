@@ -3,9 +3,9 @@ phase: 20-super-admin-dashboard
 plan: 02
 subsystem: admin-rpc-backend
 tags: [admin, rpc, security-definer, audit-log, rls-not-widened]
-status: in-progress
+status: complete
 started_at: 2026-05-04T11:39:12Z
-completed_at: null
+completed_at: 2026-05-04T21:42:10Z
 requires:
   - "Migration 022 applied (most recent baseline)"
   - "public.get_user_role(uuid) helper from 002_rls_policies.sql"
@@ -28,10 +28,16 @@ key-files:
     - supabase/migrations/023_admin_rpcs.sql
   modified:
     - supabase/migrations/NAMING.md
-decisions: []
+decisions:
+  - "Single atomic migration (023) wraps schema additions + 10 RPCs + audit log in one BEGIN/COMMIT — atomic rollback per CONTEXT.md audit-governance decision; no incremental partial state if any RPC body fails."
+  - "Applied via Supabase Studio SQL Editor (CLAUDE.md §2 preferred path) instead of MCP `apply_migration` to avoid the `--read-only` flag-flip + Claude Code restart cycle. Same path used for 016 and 017."
+  - "NOT IN REGISTRY (`supabase_migrations.schema_migrations`) — Studio applies do not write registry rows. Verifiability is via runtime artefacts (3 tables, is_active column, 11 functions) enumerated in NAMING.md row, not via `list_migrations`."
+  - "RLS not widened (empirical proof): 6 baseline row counts identical pre/post (jobs_active=1, match_scores=3, applications=2, jobs=2, employers=1, seekers=2) — closes ADMIN-RLS-NEG-1/2 per 20-VALIDATION.md."
+  - "`_admin_gate()` helper extracted as a SECURITY DEFINER STABLE function called via `PERFORM` from every admin RPC (DRY enforcement of the 'auth.uid() IS NOT NULL AND get_user_role(auth.uid())=admin' contract). Not granted to any role — only callable from inside other SECURITY DEFINER bodies."
+  - "Suspension state stored as `user_roles.is_active boolean NOT NULL DEFAULT true` (RESEARCH.md Pitfall 2 option b) rather than a separate `user_suspensions` table — keeps the suspend/reactivate hot-path on the role-lookup row that every protected request already reads."
 metrics:
-  duration: TBD
-  completed_date: TBD
+  duration: ~10 hours wall-clock (2026-05-04T11:39:12Z → 2026-05-04T21:42:10Z, including Studio-apply checkpoint wait)
+  completed_date: 2026-05-04
 ---
 
 # Phase 20 Plan 02: Admin RPC Backend Summary

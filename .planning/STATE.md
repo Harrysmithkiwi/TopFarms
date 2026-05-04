@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: executing
-stopped_at: Phase 20-03 complete (get-resend-stats Edge Function source + config.toml)
-last_updated: "2026-05-04T11:44:28Z"
-last_activity: 2026-05-04 — 20-03 complete; get-resend-stats Edge Function source written + verify_jwt=false registered in supabase/config.toml; deploy + cron deferred to 20-08
+stopped_at: Phase 20-02 complete (migration 023 applied via Studio; RLS not widened; NAMING.md updated)
+last_updated: "2026-05-04T21:43:30.600Z"
+last_activity: 2026-05-04 — 20-02 complete; migration 023_admin_rpcs.sql applied via Studio SQL Editor (3 tables, is_active column, 10 admin RPCs + _admin_gate helper); 6 RLS baseline counts identical pre/post (empirical ADMIN-RLS-NEG-1/2 ground truth); NAMING.md row added.
 progress:
   total_phases: 10
   completed_phases: 4
@@ -25,9 +25,9 @@ See: .planning/PROJECT.md (updated 2026-04-03)
 ## Current Position
 
 Phase: 20 of 20+ — Super Admin Dashboard
-Plan: 20-03 complete — moving to 20-04 (next plan)
+Plan: 20-02 + 20-03 complete — moving to 20-04 (next plan)
 Status: In progress (plan 20-04 next)
-Last activity: 2026-05-04 — 20-03 complete; get-resend-stats Edge Function source written (119 lines, deno check passes), verify_jwt=false registered in supabase/config.toml; deploy + pg_cron schedule deferred to 20-08
+Last activity: 2026-05-04 — 20-02 complete; migration 023_admin_rpcs.sql applied via Studio SQL Editor (3 tables, is_active column, 10 admin RPCs + _admin_gate helper); 6 RLS baseline counts identical pre/post (empirical ADMIN-RLS-NEG-1/2 ground truth); NAMING.md row added.
 
 ## Accumulated Context
 
@@ -54,6 +54,8 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 20-03]: deno.lock gitignored — local typecheck artefact, Supabase CLI handles dependency resolution at deploy time; no prior deno.lock in repo history. Installed Deno 2.7.14 via Homebrew (Rule 3 deviation; required for `deno check` acceptance criterion).
 - [Phase 20-03]: get-resend-stats RESEND_API_KEY-unset path writes {unavailable: true} cache marker rather than erroring — preserves daily-briefing render path during MAIL-02-style outages, matching 20-UI-SPEC.md "Delivery data unavailable" copy.
 - [Phase 20-03]: delivered = delivered + opened + clicked when aggregating Resend last_event — Resend events progress monotonically (opened/clicked imply delivered), so summing all three captures the true delivery total without double-counting.
+- [Phase 20-02]: Phase 20-02 Task 1 complete — pre-migration RLS baselines captured (jobs_active=1, match_scores=3, applications=2, jobs=2, employers=1, seekers=2). These are the empirical reference for ADMIN-RLS-NEG-1/2 post-migration drift check (Task 3).
+- [Phase 20-02]: Phase 20-02 complete — migration 023 applied via Studio SQL Editor for project inlagtgpynemhipnqvty (3 tables: admin_audit_log/admin_notes/admin_metrics_cache, user_roles.is_active column, 10 admin_* SECURITY DEFINER RPCs + _admin_gate helper); RLS not widened (post-baselines [1,3,2,2,1,2] match pre exactly — empirical ADMIN-RLS-NEG-1/2 ground truth).
 
 ### Blockers/Concerns
 
@@ -64,6 +66,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-04T11:44:28Z
-Stopped at: Phase 20-03 complete (get-resend-stats Edge Function source + config.toml; deploy deferred to 20-08)
+Last session: 2026-05-04T21:42:54.611Z
+Stopped at: Phase 20-02 complete (migration 023 applied via Studio; RLS not widened; NAMING.md updated)
 Resume file: None
