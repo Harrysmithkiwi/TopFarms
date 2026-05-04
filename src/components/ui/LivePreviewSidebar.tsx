@@ -53,7 +53,7 @@ function MiniJobCard({ title, farmName, location, salaryRange, tags }: MiniCardD
           {tags.map((tag) => (
             <span
               key={tag}
-              className="bg-fog text-text text-[13px] rounded-full px-2 py-0.5 font-body"
+              className="bg-surface-2 text-text text-[13px] rounded-full px-2 py-0.5 font-body"
             >
               {tag}
             </span>

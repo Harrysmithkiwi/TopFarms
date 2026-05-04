@@ -38,7 +38,7 @@ export function TierCard({
         'flex flex-col gap-4',
         isSelected
           ? 'border-brand-hover bg-[rgba(74,124,47,0.06)] shadow-sm'
-          : 'border-border bg-surface hover:border-mid hover:shadow-sm',
+          : 'border-border bg-surface hover:border-border-strong hover:shadow-sm',
       )}
     >
       {/* Popular badge */}

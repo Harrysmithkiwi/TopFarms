@@ -117,7 +117,7 @@ export function FarmPhotoUpload() {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center py-16">
-          <Loader2 className="w-6 h-6 text-moss animate-spin" />
+          <Loader2 className="w-6 h-6 text-brand animate-spin" />
         </div>
       </DashboardLayout>
     )
@@ -129,7 +129,7 @@ export function FarmPhotoUpload() {
         {/* Back navigation */}
         <Link
           to="/dashboard/employer/verification"
-          className="inline-flex items-center gap-1.5 text-[13px] font-body text-mid hover:text-ink transition-colors"
+          className="inline-flex items-center gap-1.5 text-[13px] font-body text-text-muted hover:text-text transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           Back to Verification
@@ -137,10 +137,10 @@ export function FarmPhotoUpload() {
 
         {/* Page header */}
         <div>
-          <h1 className="font-display text-3xl font-semibold" style={{ color: 'var(--color-soil)' }}>
+          <h1 className="font-display text-3xl font-semibold" style={{ color: 'var(--color-brand-900)' }}>
             Upload Farm Photos
           </h1>
-          <p className="mt-1 text-sm" style={{ color: 'var(--color-mid)' }}>
+          <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
             Show seekers what your farm looks like — photos help build trust and attract better
             candidates
           </p>
@@ -148,8 +148,8 @@ export function FarmPhotoUpload() {
 
         {/* Upload card */}
         <Card className="p-6">
-          <h2 className="text-[14px] font-body font-semibold text-ink mb-1">Add Farm Photo</h2>
-          <p className="text-[12px] font-body text-mid mb-4">
+          <h2 className="text-[14px] font-body font-semibold text-text mb-1">Add Farm Photo</h2>
+          <p className="text-[12px] font-body text-text-muted mb-4">
             Accepted formats: JPG, PNG, WEBP. Maximum file size: 10MB.
           </p>
 
@@ -163,17 +163,17 @@ export function FarmPhotoUpload() {
               onUploadComplete={handleUploadComplete}
             />
           ) : (
-            <p className="text-[13px] font-body text-mid">Please log in to upload photos.</p>
+            <p className="text-[13px] font-body text-text-muted">Please log in to upload photos.</p>
           )}
         </Card>
 
         {/* Photo gallery */}
         {(loadingPhotos || photos.length > 0) && (
           <Card className="p-5">
-            <h3 className="text-[13px] font-body font-semibold text-ink mb-3">
+            <h3 className="text-[13px] font-body font-semibold text-text mb-3">
               Uploaded Photos
               {farmPhotoVerification?.status === 'verified' && (
-                <span className="ml-2 text-[11px] font-body font-normal text-moss">
+                <span className="ml-2 text-[11px] font-body font-normal text-brand">
                   (verified)
                 </span>
               )}
@@ -181,7 +181,7 @@ export function FarmPhotoUpload() {
 
             {loadingPhotos ? (
               <div className="flex items-center justify-center py-8">
-                <Loader2 className="w-5 h-5 text-moss animate-spin" />
+                <Loader2 className="w-5 h-5 text-brand animate-spin" />
               </div>
             ) : photos.length > 0 ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -191,7 +191,7 @@ export function FarmPhotoUpload() {
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block aspect-square rounded-[8px] overflow-hidden bg-fog hover:opacity-90 transition-opacity"
+                    className="block aspect-square rounded-[8px] overflow-hidden bg-surface-2 hover:opacity-90 transition-opacity"
                   >
                     <img
                       src={url}
@@ -202,16 +202,16 @@ export function FarmPhotoUpload() {
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center py-8 rounded-[8px] bg-mist">
-                <ImageIcon className="w-8 h-8 text-light mb-2" />
-                <p className="text-[12px] font-body text-light">No photos uploaded yet</p>
+              <div className="flex flex-col items-center justify-center py-8 rounded-[8px] bg-surface-2">
+                <ImageIcon className="w-8 h-8 text-text-subtle mb-2" />
+                <p className="text-[12px] font-body text-text-subtle">No photos uploaded yet</p>
               </div>
             )}
           </Card>
         )}
 
         {/* Help text */}
-        <p className="text-[12px] font-body text-light">
+        <p className="text-[12px] font-body text-text-subtle">
           Great farm photos include: milking shed, paddocks, accommodation, farm equipment, and
           scenic views. Authentic photos help seekers make informed decisions.
         </p>

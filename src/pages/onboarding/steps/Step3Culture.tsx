@@ -170,7 +170,7 @@ export function Step3Culture({ onComplete, onBack, defaultValues }: Step3Props) 
           />
           {showDistanceWarning && (
             <div className="mt-2">
-              <InfoBox variant="hay">
+              <InfoBox variant="warn">
                 Remote locations may receive fewer applicants. Consider highlighting accommodation and transport options.
               </InfoBox>
             </div>

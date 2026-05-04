@@ -52,11 +52,11 @@ export function AICandidateSummary({
   return (
     <div
       className="border rounded-[12px] p-4 mb-4"
-      style={{ backgroundColor: 'var(--color-purple-lt)', borderColor: 'rgba(108, 52, 131, 0.2)' }}
+      style={{ backgroundColor: 'var(--color-ai-bg)', borderColor: 'rgba(108, 52, 131, 0.2)' }}
     >
       <p
         className="text-[11px] font-body font-semibold uppercase tracking-wide mb-2"
-        style={{ color: 'var(--color-purple)' }}
+        style={{ color: 'var(--color-ai)' }}
       >
         AI Summary
       </p>
@@ -65,18 +65,18 @@ export function AICandidateSummary({
           <div className="h-3 rounded animate-pulse" style={{ backgroundColor: 'rgba(108, 52, 131, 0.1)' }} />
           <div className="h-3 rounded animate-pulse w-4/5" style={{ backgroundColor: 'rgba(108, 52, 131, 0.1)' }} />
           <div className="h-3 rounded animate-pulse w-3/5" style={{ backgroundColor: 'rgba(108, 52, 131, 0.1)' }} />
-          <p className="text-[12px] font-body mt-1" style={{ color: 'var(--color-purple)' }}>
+          <p className="text-[12px] font-body mt-1" style={{ color: 'var(--color-ai)' }}>
             Analyzing candidate fit...
           </p>
         </div>
       )}
       {error && (
-        <p className="text-[13px] font-body text-mid">
+        <p className="text-[13px] font-body text-text-muted">
           Summary unavailable. Expand this panel again to retry.
         </p>
       )}
       {summary && !loading && (
-        <p className="text-[13px] font-body text-ink leading-relaxed">{summary}</p>
+        <p className="text-[13px] font-body text-text leading-relaxed">{summary}</p>
       )}
     </div>
   )

@@ -159,7 +159,7 @@ export function SearchJobCard({
 
               {/* Couples welcome */}
               {job.couples_welcome && (
-                <Tag variant="hay">Couples welcome</Tag>
+                <Tag variant="warn">Couples welcome</Tag>
               )}
             </div>
 

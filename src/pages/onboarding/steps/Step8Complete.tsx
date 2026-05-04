@@ -60,7 +60,7 @@ export function Step8Complete({ profileData }: Step8CompleteProps) {
             return (
               <div key={item.key} className="flex items-center gap-3">
                 <div
-                  className={`w-5 h-5 rounded-full flex items-center justify-center ${complete ? 'bg-brand-hover' : 'bg-fog'}`}
+                  className={`w-5 h-5 rounded-full flex items-center justify-center ${complete ? 'bg-brand-hover' : 'bg-surface-2'}`}
                 >
                   {complete && (
                     <svg

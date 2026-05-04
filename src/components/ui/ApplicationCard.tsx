@@ -8,11 +8,11 @@ import { Button } from '@/components/ui/Button'
 import type { Application, ApplicationStatus, MatchScore, JobListing } from '@/types/domain'
 import { ACTIVE_STATUSES } from '@/types/domain'
 
-type TagVariant = 'green' | 'hay' | 'blue' | 'grey' | 'orange' | 'purple' | 'red'
+type TagVariant = 'green' | 'warn' | 'blue' | 'grey' | 'orange' | 'purple' | 'red'
 
 const STATUS_TAG_VARIANT: Record<ApplicationStatus, TagVariant> = {
   applied:     'blue',
-  review:      'hay',
+  review:      'warn',
   interview:   'orange',
   shortlisted: 'purple',
   offered:     'green',

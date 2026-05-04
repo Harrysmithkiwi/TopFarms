@@ -207,7 +207,7 @@ export function DocumentUploader({
             'flex flex-col items-center justify-center gap-3 min-h-[120px]',
             isDragActive
               ? 'border-brand-hover bg-[rgba(74,124,47,0.06)]'
-              : 'border-border bg-surface-2 hover:border-mid',
+              : 'border-border bg-surface-2 hover:border-border-strong',
             anyUploading && 'pointer-events-none opacity-60',
           )}
         >

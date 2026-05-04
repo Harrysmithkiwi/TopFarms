@@ -48,7 +48,7 @@ function VerificationCard({
         <div
           className={cn(
             'w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0',
-            isVerified ? 'bg-[rgba(74,124,47,0.10)]' : 'bg-fog',
+            isVerified ? 'bg-brand/10' : 'bg-surface-2',
           )}
         >
           <span className={cn('w-4 h-4', isVerified ? 'text-brand' : 'text-text-muted')}>{icon}</span>
@@ -61,7 +61,7 @@ function VerificationCard({
 
             {/* Status badge */}
             {isVerified && (
-              <span className="flex items-center gap-1 text-[11px] font-body font-semibold text-brand bg-[rgba(74,124,47,0.10)] px-2 py-0.5 rounded-full">
+              <span className="flex items-center gap-1 text-[11px] font-body font-semibold text-brand bg-brand/10 px-2 py-0.5 rounded-full">
                 <Check className="w-3 h-3 stroke-[3]" />
                 Verified
               </span>
@@ -73,7 +73,7 @@ function VerificationCard({
               </span>
             )}
             {!verification && (
-              <span className="text-[11px] font-body text-text-subtle bg-fog px-2 py-0.5 rounded-full">
+              <span className="text-[11px] font-body text-text-subtle bg-surface-2 px-2 py-0.5 rounded-full">
                 Not started
               </span>
             )}
@@ -279,8 +279,8 @@ export function EmployerVerification() {
                 className={cn(
                   'w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0',
                   verificationMap.get('document')?.status === 'verified'
-                    ? 'bg-[rgba(74,124,47,0.10)]'
-                    : 'bg-fog',
+                    ? 'bg-brand/10'
+                    : 'bg-surface-2',
                 )}
               >
                 <FileText
@@ -296,12 +296,12 @@ export function EmployerVerification() {
                     Verification Documents
                   </h3>
                   {verificationMap.get('document')?.status === 'verified' ? (
-                    <span className="flex items-center gap-1 text-[11px] font-body font-semibold text-brand bg-[rgba(74,124,47,0.10)] px-2 py-0.5 rounded-full">
+                    <span className="flex items-center gap-1 text-[11px] font-body font-semibold text-brand bg-brand/10 px-2 py-0.5 rounded-full">
                       <Check className="w-3 h-3 stroke-[3]" />
                       Verified
                     </span>
                   ) : (
-                    <span className="text-[11px] font-body text-text-subtle bg-fog px-2 py-0.5 rounded-full">
+                    <span className="text-[11px] font-body text-text-subtle bg-surface-2 px-2 py-0.5 rounded-full">
                       Not started
                     </span>
                   )}
@@ -329,8 +329,8 @@ export function EmployerVerification() {
                 className={cn(
                   'w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0',
                   verificationMap.get('farm_photo')?.status === 'verified'
-                    ? 'bg-[rgba(74,124,47,0.10)]'
-                    : 'bg-fog',
+                    ? 'bg-brand/10'
+                    : 'bg-surface-2',
                 )}
               >
                 <Camera
@@ -344,12 +344,12 @@ export function EmployerVerification() {
                 <div className="flex items-center justify-between gap-2 flex-wrap">
                   <h3 className="text-[14px] font-body font-semibold text-text">Farm Photos</h3>
                   {verificationMap.get('farm_photo')?.status === 'verified' ? (
-                    <span className="flex items-center gap-1 text-[11px] font-body font-semibold text-brand bg-[rgba(74,124,47,0.10)] px-2 py-0.5 rounded-full">
+                    <span className="flex items-center gap-1 text-[11px] font-body font-semibold text-brand bg-brand/10 px-2 py-0.5 rounded-full">
                       <Check className="w-3 h-3 stroke-[3]" />
                       Verified
                     </span>
                   ) : (
-                    <span className="text-[11px] font-body text-text-subtle bg-fog px-2 py-0.5 rounded-full">
+                    <span className="text-[11px] font-body text-text-subtle bg-surface-2 px-2 py-0.5 rounded-full">
                       Not started
                     </span>
                   )}

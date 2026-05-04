@@ -89,10 +89,10 @@ export function JobStep3Skills({ jobId, sector, onComplete, onBack, defaultValue
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-ink)' }}>
+        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Required skills
         </h2>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-mid)' }}>
+        <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
           Select skills and whether they are required or preferred for this role
         </p>
       </div>
@@ -124,7 +124,7 @@ export function JobStep3Skills({ jobId, sector, onComplete, onBack, defaultValue
 
       {/* Qualifications */}
       <div>
-        <p className="font-body text-[13px] font-semibold text-ink mb-2">Qualifications</p>
+        <p className="font-body text-[13px] font-semibold text-text mb-2">Qualifications</p>
         <ChipSelector
           options={QUALIFICATION_OPTIONS}
           value={qualifications}
@@ -136,7 +136,7 @@ export function JobStep3Skills({ jobId, sector, onComplete, onBack, defaultValue
 
       {/* Visa requirements */}
       <div>
-        <p className="font-body text-[13px] font-semibold text-ink mb-2">Visa requirements</p>
+        <p className="font-body text-[13px] font-semibold text-text mb-2">Visa requirements</p>
         <ChipSelector
           options={VISA_CHIP_OPTIONS}
           value={visaRequirements}

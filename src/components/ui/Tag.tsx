@@ -2,12 +2,12 @@ import { HTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
 
 interface TagProps extends HTMLAttributes<HTMLSpanElement> {
-  variant: 'green' | 'hay' | 'blue' | 'grey' | 'orange' | 'purple' | 'red'
+  variant: 'green' | 'warn' | 'blue' | 'grey' | 'orange' | 'purple' | 'red'
 }
 
 const variantClasses = {
   green: 'bg-brand-50 text-brand',
-  hay: 'bg-warn-bg text-[#7A5C00]',
+  warn: 'bg-warn-bg text-[#7A5C00]',
   blue: 'bg-info-bg text-info',
   grey: 'bg-surface-2 text-text-muted',
   orange: 'bg-warn-bg text-warn',

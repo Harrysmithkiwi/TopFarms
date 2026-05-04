@@ -72,7 +72,7 @@ export function DocumentUpload() {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center py-16">
-          <Loader2 className="w-6 h-6 text-moss animate-spin" />
+          <Loader2 className="w-6 h-6 text-brand animate-spin" />
         </div>
       </DashboardLayout>
     )
@@ -84,7 +84,7 @@ export function DocumentUpload() {
         {/* Back navigation */}
         <Link
           to="/dashboard/employer/verification"
-          className="inline-flex items-center gap-1.5 text-[13px] font-body text-mid hover:text-ink transition-colors"
+          className="inline-flex items-center gap-1.5 text-[13px] font-body text-text-muted hover:text-text transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           Back to Verification
@@ -92,20 +92,20 @@ export function DocumentUpload() {
 
         {/* Page header */}
         <div>
-          <h1 className="font-display text-3xl font-semibold" style={{ color: 'var(--color-soil)' }}>
+          <h1 className="font-display text-3xl font-semibold" style={{ color: 'var(--color-brand-900)' }}>
             Upload Verification Documents
           </h1>
-          <p className="mt-1 text-sm" style={{ color: 'var(--color-mid)' }}>
+          <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
             Upload business registration, farm ownership, or other verification documents
           </p>
         </div>
 
         {/* Upload card */}
         <Card className="p-6">
-          <h2 className="text-[14px] font-body font-semibold text-ink mb-1">
+          <h2 className="text-[14px] font-body font-semibold text-text mb-1">
             Verification Document
           </h2>
-          <p className="text-[12px] font-body text-mid mb-4">
+          <p className="text-[12px] font-body text-text-muted mb-4">
             Accepted formats: JPG, PNG, PDF. Maximum file size: 10MB.
           </p>
 
@@ -123,23 +123,23 @@ export function DocumentUpload() {
               onUploadComplete={handleUploadComplete}
             />
           ) : (
-            <p className="text-[13px] font-body text-mid">Please log in to upload documents.</p>
+            <p className="text-[13px] font-body text-text-muted">Please log in to upload documents.</p>
           )}
         </Card>
 
         {/* Currently uploaded document */}
         {existingDocumentUrl && (
           <Card className="p-5">
-            <h3 className="text-[13px] font-body font-semibold text-ink mb-3">
+            <h3 className="text-[13px] font-body font-semibold text-text mb-3">
               Uploaded Document
             </h3>
-            <div className="flex items-center gap-3 p-3 bg-mist rounded-[8px]">
+            <div className="flex items-center gap-3 p-3 bg-surface-2 rounded-[8px]">
               <div className="w-8 h-8 rounded-lg bg-[rgba(74,124,47,0.10)] flex items-center justify-center flex-shrink-0">
-                <FileText className="w-4 h-4 text-moss" />
+                <FileText className="w-4 h-4 text-brand" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-body text-ink truncate">Verification document</p>
-                <p className="text-[11px] font-body text-light">
+                <p className="text-[13px] font-body text-text truncate">Verification document</p>
+                <p className="text-[11px] font-body text-text-subtle">
                   Verified — uploaded to secure storage
                 </p>
               </div>
@@ -147,7 +147,7 @@ export function DocumentUpload() {
                 href={existingDocumentUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[11px] font-body text-moss hover:text-fern transition-colors flex-shrink-0"
+                className="text-[11px] font-body text-brand hover:text-brand-hover transition-colors flex-shrink-0"
               >
                 View
               </a>
@@ -156,7 +156,7 @@ export function DocumentUpload() {
         )}
 
         {/* Help text */}
-        <p className="text-[12px] font-body text-light">
+        <p className="text-[12px] font-body text-text-subtle">
           Acceptable documents include: business registration certificate, farm lease or ownership
           deed, RMA consent, or similar official business documents.
         </p>

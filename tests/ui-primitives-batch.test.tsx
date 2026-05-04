@@ -144,15 +144,15 @@ describe('StarRating', () => {
     expect(stars.length).toBe(5)
   })
 
-  it('renders first N stars with hay fill and rest with fog fill', () => {
+  it('renders first N stars with warn fill and rest with border fill', () => {
     const { container } = render(<StarRating value={4} />)
     const paths = container.querySelectorAll('path')
     // First 4 should have hay fill, 5th should have fog fill
-    expect(paths[0]).toHaveAttribute('fill', 'var(--color-hay)')
-    expect(paths[1]).toHaveAttribute('fill', 'var(--color-hay)')
-    expect(paths[2]).toHaveAttribute('fill', 'var(--color-hay)')
-    expect(paths[3]).toHaveAttribute('fill', 'var(--color-hay)')
-    expect(paths[4]).toHaveAttribute('fill', 'var(--color-fog)')
+    expect(paths[0]).toHaveAttribute('fill', 'var(--color-warn)')
+    expect(paths[1]).toHaveAttribute('fill', 'var(--color-warn)')
+    expect(paths[2]).toHaveAttribute('fill', 'var(--color-warn)')
+    expect(paths[3]).toHaveAttribute('fill', 'var(--color-warn)')
+    expect(paths[4]).toHaveAttribute('fill', 'var(--color-border)')
   })
 
   it('clicking star 3 calls onChange(3)', async () => {

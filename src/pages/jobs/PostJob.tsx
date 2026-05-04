@@ -338,7 +338,7 @@ export function PostJob() {
         <div className="flex items-center justify-center min-h-[400px]">
           <div
             className="w-8 h-8 rounded-full border-[3px] border-t-transparent animate-spin"
-            style={{ borderColor: 'var(--color-fern)', borderTopColor: 'transparent' }}
+            style={{ borderColor: 'var(--color-brand-hover)', borderTopColor: 'transparent' }}
           />
         </div>
       </DashboardLayout>
@@ -356,11 +356,11 @@ export function PostJob() {
         <div>
           <h1
             className="font-display text-2xl font-semibold"
-            style={{ color: 'var(--color-soil)' }}
+            style={{ color: 'var(--color-brand-900)' }}
           >
             Post a job
           </h1>
-          <p className="mt-1 text-sm" style={{ color: 'var(--color-mid)' }}>
+          <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
             Complete all steps to publish your job listing
           </p>
         </div>
@@ -374,12 +374,12 @@ export function PostJob() {
 
         {/* Step content — grid layout with sidebar for steps 2-5 */}
         <div className={showSidebar ? 'grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 items-start' : ''}>
-          <div className="bg-white rounded-[16px] border border-fog p-6 shadow-sm">
+          <div className="bg-surface rounded-[16px] border border-border p-6 shadow-sm">
             {saving && (
-              <div className="mb-4 flex items-center gap-2 text-sm" style={{ color: 'var(--color-moss)' }}>
+              <div className="mb-4 flex items-center gap-2 text-sm" style={{ color: 'var(--color-brand)' }}>
                 <div
                   className="w-4 h-4 rounded-full border-[2px] border-t-transparent animate-spin"
-                  style={{ borderColor: 'var(--color-moss)', borderTopColor: 'transparent' }}
+                  style={{ borderColor: 'var(--color-brand)', borderTopColor: 'transparent' }}
                 />
                 Saving...
               </div>

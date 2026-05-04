@@ -38,33 +38,9 @@
   --color-ai: #8b5cf6;
   --color-ai-bg: #f5f3ff;
 
-  /* === v1 legacy aliases — incremental migration scaffold ===
-     Phases 1-5 migrate components off these names; Phase 6 deletes this block.
-     Aliases use chained var() resolution so a single edit propagates everywhere.
-     If chained resolution fails on Tailwind v4, fallback is to inline v2 hex below. */
-  --color-soil: var(--color-brand-900);
-  --color-soil-deep: var(--color-brand-900);
-  --color-moss: var(--color-brand);
-  --color-fern: var(--color-brand-hover);
-  --color-meadow: var(--color-brand);
-  --color-hay: var(--color-warn);
-  --color-hay-lt: var(--color-warn-bg);
-  --color-cream: var(--color-bg);
-  --color-fog: var(--color-border);
-  --color-mist: var(--color-surface-2);
-  --color-ink: var(--color-text);
-  --color-mid: var(--color-text-muted);
-  --color-light: var(--color-text-subtle);
-  --color-white: var(--color-surface);
-  --color-red: var(--color-danger);
-  --color-red-lt: var(--color-danger-bg);
-  --color-blue: var(--color-info);
-  --color-blue-lt: var(--color-info-bg);
-  --color-orange: var(--color-warn);
-  --color-orange-lt: var(--color-warn-bg);
-  --color-purple: var(--color-ai);
-  --color-purple-lt: var(--color-ai-bg);
-  --color-green-lt: var(--color-brand-50);
+  /* === v1 legacy aliases REMOVED in Phase 6 (2026-05-04) ===
+     All consumers migrated to canonical v2 token names across Phases 1-5 + 19b.
+     Final grep sweep verified zero v1 token references in src/ before this block was deleted. */
 
   /* Typography — both --font-display and --font-body point at Inter
      (Migration Audit Decision 2: keep two CSS variables to avoid font find/replace

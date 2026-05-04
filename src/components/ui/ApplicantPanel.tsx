@@ -12,11 +12,11 @@ import { supabase } from '@/lib/supabase'
 import type { ApplicationStatus, MatchScore, SeekerContact } from '@/types/domain'
 import { VALID_TRANSITIONS, APPLICATION_STATUS_LABELS } from '@/types/domain'
 
-type TagVariant = 'green' | 'hay' | 'blue' | 'grey' | 'orange' | 'purple' | 'red'
+type TagVariant = 'green' | 'warn' | 'blue' | 'grey' | 'orange' | 'purple' | 'red'
 
 const STATUS_TAG_VARIANT: Record<ApplicationStatus, TagVariant> = {
   applied:     'blue',
-  review:      'hay',
+  review:      'warn',
   interview:   'orange',
   shortlisted: 'purple',
   offered:     'green',
@@ -71,7 +71,7 @@ interface ApplicantPanelProps {
 
 const PROFICIENCY_VARIANT: Record<string, TagVariant> = {
   basic:        'grey',
-  intermediate: 'hay',
+  intermediate: 'warn',
   advanced:     'green',
 }
 
@@ -458,7 +458,7 @@ export function ApplicantPanel({
                         'px-4 py-2 rounded-[8px] text-[13px] font-body font-semibold transition-colors',
                         selectedStatus
                           ? 'bg-brand text-white hover:bg-brand-hover'
-                          : 'bg-fog text-text-subtle cursor-not-allowed',
+                          : 'bg-surface-2 text-text-subtle cursor-not-allowed',
                       )}
                     >
                       Update Status

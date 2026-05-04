@@ -31,19 +31,19 @@ export function HireConfirmModal({ candidateName, feeDisplayAmount, onConfirm, o
       {/* Container */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         {/* Card */}
-        <div className="bg-white rounded-[16px] shadow-xl w-full max-w-md border-[1.5px] border-fog">
+        <div className="bg-surface rounded-[16px] shadow-xl w-full max-w-md border-[1.5px] border-border">
           {/* Header */}
-          <div className="flex items-center gap-2.5 px-6 pt-6 pb-4 border-b border-fog">
-            <CheckCircle className="w-5 h-5 text-moss flex-shrink-0" style={{ color: 'var(--color-moss)' }} />
-            <h2 className="flex-1 text-[16px] font-semibold font-body" style={{ color: 'var(--color-ink)' }}>
+          <div className="flex items-center gap-2.5 px-6 pt-6 pb-4 border-b border-border">
+            <CheckCircle className="w-5 h-5 text-brand flex-shrink-0" style={{ color: 'var(--color-brand)' }} />
+            <h2 className="flex-1 text-[16px] font-semibold font-body" style={{ color: 'var(--color-text)' }}>
               Confirm Hire
             </h2>
             <button
               type="button"
               onClick={onCancel}
               aria-label="Close"
-              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-fog transition-colors"
-              style={{ color: 'var(--color-mid)' }}
+              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-2 transition-colors"
+              style={{ color: 'var(--color-text-muted)' }}
             >
               <X className="w-4 h-4" />
             </button>
@@ -52,25 +52,25 @@ export function HireConfirmModal({ candidateName, feeDisplayAmount, onConfirm, o
           {/* Body */}
           <div className="px-6 py-5 space-y-5">
             {/* Candidate label */}
-            <p className="text-[14px] font-body" style={{ color: 'var(--color-mid)' }}>
-              Confirm hire of <span className="font-semibold" style={{ color: 'var(--color-ink)' }}>{candidateName}</span>?
+            <p className="text-[14px] font-body" style={{ color: 'var(--color-text-muted)' }}>
+              Confirm hire of <span className="font-semibold" style={{ color: 'var(--color-text)' }}>{candidateName}</span>?
             </p>
 
             {/* Invoice warning box */}
             <div
               className="rounded-[10px] p-4 border-[1.5px]"
-              style={{ backgroundColor: 'rgba(212,168,67,0.1)', borderColor: 'var(--color-hay)' }}
+              style={{ backgroundColor: 'rgba(245,158,11,0.1)', borderColor: 'var(--color-warn)' }}
             >
-              <p className="text-[13px] font-body" style={{ color: 'var(--color-mid)' }}>
+              <p className="text-[13px] font-body" style={{ color: 'var(--color-text-muted)' }}>
                 A placement fee invoice of{' '}
-                <span className="font-semibold" style={{ color: 'var(--color-ink)' }}>
+                <span className="font-semibold" style={{ color: 'var(--color-text)' }}>
                   {feeDisplayAmount} NZD
                 </span>{' '}
                 will be generated and sent to your email.
               </p>
               <p
                 className="text-[11px] uppercase tracking-wide mt-1.5"
-                style={{ color: 'var(--color-light)' }}
+                style={{ color: 'var(--color-text-subtle)' }}
               >
                 Payment due within 14 days.
               </p>
@@ -80,7 +80,7 @@ export function HireConfirmModal({ candidateName, feeDisplayAmount, onConfirm, o
             <div className="space-y-2">
               <p
                 className="text-[11px] uppercase tracking-wide font-body"
-                style={{ color: 'var(--color-light)' }}
+                style={{ color: 'var(--color-text-subtle)' }}
               >
                 Rate your matching experience (optional)
               </p>
@@ -97,13 +97,13 @@ export function HireConfirmModal({ candidateName, feeDisplayAmount, onConfirm, o
                       className={cn(
                         'w-4 h-4',
                         (rating ?? 0) >= n
-                          ? 'fill-hay text-hay'
-                          : 'text-fog',
+                          ? 'fill-warn text-warn'
+                          : 'text-border-strong',
                       )}
                       style={
                         (rating ?? 0) >= n
-                          ? { fill: 'var(--color-hay)', color: 'var(--color-hay)' }
-                          : { color: 'var(--color-fog)' }
+                          ? { fill: 'var(--color-warn)', color: 'var(--color-warn)' }
+                          : { color: 'var(--color-border)' }
                       }
                     />
                   </button>

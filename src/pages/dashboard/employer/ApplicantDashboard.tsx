@@ -74,9 +74,9 @@ function SkeletonRow() {
   return (
     <div className="bg-surface border-[1.5px] border-border rounded-[12px] p-4 animate-pulse">
       <div className="flex items-center gap-4">
-        <div className="flex-1 h-4 bg-fog rounded" />
-        <div className="w-9 h-9 bg-fog rounded-full" />
-        <div className="w-20 h-5 bg-fog rounded-full" />
+        <div className="flex-1 h-4 bg-surface-2 rounded" />
+        <div className="w-9 h-9 bg-surface-2 rounded-full" />
+        <div className="w-20 h-5 bg-surface-2 rounded-full" />
       </div>
     </div>
   )
@@ -557,7 +557,7 @@ export function ApplicantDashboard() {
                       'px-3 py-1 rounded-full text-[12px] font-body font-semibold transition-colors border',
                       statusFilter === status
                         ? 'bg-brand/10 border-brand text-brand'
-                        : 'bg-surface border-border text-text-muted hover:border-mid',
+                        : 'bg-surface border-border text-text-muted hover:border-border-strong',
                     )}
                   >
                     {label}

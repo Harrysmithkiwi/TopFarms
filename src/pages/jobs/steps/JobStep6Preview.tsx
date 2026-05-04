@@ -57,13 +57,13 @@ interface SectionProps {
 
 function PreviewSection({ title, stepIndex, onGoToStep, children }: SectionProps) {
   return (
-    <div className="border-b border-fog pb-4 last:border-0 last:pb-0">
+    <div className="border-b border-border pb-4 last:border-0 last:pb-0">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-body font-semibold text-[14px] text-ink">{title}</h3>
+        <h3 className="font-body font-semibold text-[14px] text-text">{title}</h3>
         <button
           type="button"
           onClick={() => onGoToStep(stepIndex)}
-          className="text-[12px] font-body text-fern hover:text-moss transition-colors"
+          className="text-[12px] font-body text-brand-hover hover:text-brand transition-colors"
         >
           Edit
         </button>
@@ -99,10 +99,10 @@ function DataRow({ label, value }: DataRowProps) {
 
   return (
     <div className="flex gap-2 text-[12px]">
-      <span style={{ color: 'var(--color-mid)' }} className="min-w-[160px]">
+      <span style={{ color: 'var(--color-text-muted)' }} className="min-w-[160px]">
         {label}
       </span>
-      <span className="text-ink font-body">{displayValue}</span>
+      <span className="text-text font-body">{displayValue}</span>
     </div>
   )
 }
@@ -111,8 +111,8 @@ function DescriptionBlock({ label, text }: { label: string; text?: string }) {
   if (!text?.trim()) return null
   return (
     <div className="space-y-1">
-      <p className="font-body text-[12px] font-semibold text-ink">{label}</p>
-      <p className="text-[12px] text-ink font-body whitespace-pre-line leading-relaxed">{text}</p>
+      <p className="font-body text-[12px] font-semibold text-text">{label}</p>
+      <p className="text-[12px] text-text font-body whitespace-pre-line leading-relaxed">{text}</p>
     </div>
   )
 }
@@ -166,7 +166,7 @@ export function JobStep6Preview({ jobId, onComplete, onBack, onGoToStep }: Step6
       <div className="flex items-center justify-center py-16">
         <div
           className="w-8 h-8 rounded-full border-[3px] border-t-transparent animate-spin"
-          style={{ borderColor: 'var(--color-fern)', borderTopColor: 'transparent' }}
+          style={{ borderColor: 'var(--color-brand-hover)', borderTopColor: 'transparent' }}
         />
       </div>
     )
@@ -174,7 +174,7 @@ export function JobStep6Preview({ jobId, onComplete, onBack, onGoToStep }: Step6
 
   if (!job) {
     return (
-      <div className="py-8 text-center text-[13px]" style={{ color: 'var(--color-mid)' }}>
+      <div className="py-8 text-center text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
         Could not load job preview.
       </div>
     )
@@ -188,10 +188,10 @@ export function JobStep6Preview({ jobId, onComplete, onBack, onGoToStep }: Step6
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-ink)' }}>
+        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Preview your listing
         </h2>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-mid)' }}>
+        <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
           Review all details before choosing your listing plan
         </p>
       </div>
@@ -200,23 +200,23 @@ export function JobStep6Preview({ jobId, onComplete, onBack, onGoToStep }: Step6
         {/* Header */}
         <PreviewSection title="Job Basics" stepIndex={0} onGoToStep={onGoToStep}>
           <div className="space-y-1">
-            <p className="font-body font-semibold text-[15px] text-ink">{job.title}</p>
+            <p className="font-body font-semibold text-[15px] text-text">{job.title}</p>
             <div className="flex flex-wrap gap-2 mt-1">
               <span
-                className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-body font-medium bg-mist"
-                style={{ color: 'var(--color-mid)' }}
+                className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-body font-medium bg-surface-2"
+                style={{ color: 'var(--color-text-muted)' }}
               >
                 {SECTOR_LABELS[job.sector] ?? job.sector}
               </span>
               <span
-                className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-body font-medium bg-mist"
-                style={{ color: 'var(--color-mid)' }}
+                className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-body font-medium bg-surface-2"
+                style={{ color: 'var(--color-text-muted)' }}
               >
                 {job.role_type}
               </span>
               <span
-                className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-body font-medium bg-mist"
-                style={{ color: 'var(--color-mid)' }}
+                className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-body font-medium bg-surface-2"
+                style={{ color: 'var(--color-text-muted)' }}
               >
                 {job.region}
               </span>
@@ -277,7 +277,7 @@ export function JobStep6Preview({ jobId, onComplete, onBack, onGoToStep }: Step6
               !job.visa_sponsorship &&
               !job.couples_welcome &&
               !job.accommodation?.available && (
-                <p className="text-[12px]" style={{ color: 'var(--color-light)' }}>
+                <p className="text-[12px]" style={{ color: 'var(--color-text-subtle)' }}>
                   No farm details added
                 </p>
               )}
@@ -287,14 +287,14 @@ export function JobStep6Preview({ jobId, onComplete, onBack, onGoToStep }: Step6
         {/* Skills */}
         <PreviewSection title="Skills" stepIndex={2} onGoToStep={onGoToStep}>
           {requiredSkills.length === 0 && preferredSkills.length === 0 ? (
-            <p className="text-[12px]" style={{ color: 'var(--color-light)' }}>
+            <p className="text-[12px]" style={{ color: 'var(--color-text-subtle)' }}>
               No skills selected
             </p>
           ) : (
             <div className="space-y-3">
               {requiredSkills.length > 0 && (
                 <div>
-                  <p className="text-[11px] font-body font-semibold text-mid uppercase tracking-wide mb-1.5">
+                  <p className="text-[11px] font-body font-semibold text-text-muted uppercase tracking-wide mb-1.5">
                     Required
                   </p>
                   <div className="flex flex-wrap gap-1.5">
@@ -302,7 +302,7 @@ export function JobStep6Preview({ jobId, onComplete, onBack, onGoToStep }: Step6
                       <span
                         key={js.skills.id}
                         className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-body font-medium bg-[rgba(74,124,47,0.1)]"
-                        style={{ color: 'var(--color-fern)' }}
+                        style={{ color: 'var(--color-brand-hover)' }}
                       >
                         {js.skills.name}
                       </span>
@@ -312,15 +312,15 @@ export function JobStep6Preview({ jobId, onComplete, onBack, onGoToStep }: Step6
               )}
               {preferredSkills.length > 0 && (
                 <div>
-                  <p className="text-[11px] font-body font-semibold text-mid uppercase tracking-wide mb-1.5">
+                  <p className="text-[11px] font-body font-semibold text-text-muted uppercase tracking-wide mb-1.5">
                     Preferred
                   </p>
                   <div className="flex flex-wrap gap-1.5">
                     {preferredSkills.map((js) => (
                       <span
                         key={js.skills.id}
-                        className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-body font-medium bg-mist"
-                        style={{ color: 'var(--color-mid)' }}
+                        className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-body font-medium bg-surface-2"
+                        style={{ color: 'var(--color-text-muted)' }}
                       >
                         {js.skills.name}
                       </span>
@@ -338,7 +338,7 @@ export function JobStep6Preview({ jobId, onComplete, onBack, onGoToStep }: Step6
             {salaryDisplay ? (
               <DataRow label="Salary" value={salaryDisplay} />
             ) : (
-              <p className="text-[12px]" style={{ color: 'var(--color-light)' }}>
+              <p className="text-[12px]" style={{ color: 'var(--color-text-subtle)' }}>
                 Salary not specified
               </p>
             )}
@@ -354,7 +354,7 @@ export function JobStep6Preview({ jobId, onComplete, onBack, onGoToStep }: Step6
           !job.description_daytoday &&
           !job.description_offer &&
           !job.description_ideal ? (
-            <p className="text-[12px]" style={{ color: 'var(--color-light)' }}>
+            <p className="text-[12px]" style={{ color: 'var(--color-text-subtle)' }}>
               No description added
             </p>
           ) : (

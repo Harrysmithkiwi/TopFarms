@@ -408,7 +408,7 @@ export function JobSearch() {
             <Dialog.Trigger asChild>
               <button
                 type="button"
-                className="flex items-center gap-2 px-3 py-2 border border-border rounded-[8px] bg-surface text-[13px] font-body text-text-muted hover:border-mid transition-colors"
+                className="flex items-center gap-2 px-3 py-2 border border-border rounded-[8px] bg-surface text-[13px] font-body text-text-muted hover:border-border-strong transition-colors"
               >
                 <SlidersHorizontal className="w-4 h-4" />
                 Filters

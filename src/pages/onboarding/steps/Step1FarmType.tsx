@@ -69,7 +69,7 @@ export function Step1FarmType({ onComplete, defaultValues }: Step1Props) {
               'flex flex-col items-center text-center gap-3',
               selectedType === type.value
                 ? 'border-brand-hover bg-[rgba(74,124,47,0.06)]'
-                : 'border-border bg-surface hover:border-mid',
+                : 'border-border bg-surface hover:border-border-strong',
             )}
           >
             <span className="text-4xl">{type.icon}</span>

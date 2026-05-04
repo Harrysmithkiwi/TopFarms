@@ -73,7 +73,7 @@ export function MyApplicationsSidebar({
                 'px-3 py-1 rounded-full text-[12px] font-body font-semibold transition-colors border',
                 activeFilter === tab.value
                   ? 'bg-brand/10 border-brand text-brand'
-                  : 'bg-surface border-border text-text-muted hover:border-mid',
+                  : 'bg-surface border-border text-text-muted hover:border-border-strong',
               )}
             >
               {tab.label}

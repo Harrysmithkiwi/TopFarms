@@ -2,7 +2,7 @@ import { HTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
 
 interface InfoBoxProps extends HTMLAttributes<HTMLDivElement> {
-  variant: 'blue' | 'hay' | 'green' | 'purple' | 'red'
+  variant: 'blue' | 'warn' | 'green' | 'purple' | 'red'
   title?: string
 }
 
@@ -11,7 +11,7 @@ const variantClasses = {
     container: 'bg-info-bg border-info/20',
     title: 'text-info',
   },
-  hay: {
+  warn: {
     container: 'bg-warn-bg border-warn/30',
     title: 'text-[#7A5C00]',
   },
