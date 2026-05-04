@@ -15,7 +15,7 @@ export function StatsStrip({ stats, className, ...props }: StatsStripProps) {
   return (
     <div
       className={cn(
-        'grid grid-cols-4 max-[860px]:grid-cols-2 gap-0 border border-fog rounded-[12px] bg-white overflow-hidden',
+        'grid grid-cols-4 max-[860px]:grid-cols-2 gap-0 border border-border rounded-[12px] bg-surface overflow-hidden',
         className,
       )}
       {...props}
@@ -23,12 +23,12 @@ export function StatsStrip({ stats, className, ...props }: StatsStripProps) {
       {stats.map((stat, index) => (
         <div
           key={index}
-          className="flex flex-col items-center justify-center py-4 px-2 border-r border-fog last:border-r-0"
+          className="flex flex-col items-center justify-center py-4 px-2 border-r border-border last:border-r-0"
         >
-          <span className="text-[16px] font-semibold text-ink font-body">
+          <span className="text-[16px] font-semibold text-text font-body">
             {stat.value}
           </span>
-          <span className="text-[13px] text-light font-body mt-1">
+          <span className="text-[13px] text-text-subtle font-body mt-1">
             {stat.label}
           </span>
         </div>

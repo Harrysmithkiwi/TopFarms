@@ -103,15 +103,15 @@ describe('Timeline', () => {
     expect(screen.getByText('Shortlisted')).toBeInTheDocument()
   })
 
-  it('renders meadow dots', () => {
+  it('renders brand-coloured dots', () => {
     const { container } = render(<Timeline entries={entries} />)
-    const dots = container.querySelectorAll('.bg-meadow')
+    const dots = container.querySelectorAll('.bg-brand')
     expect(dots.length).toBe(3)
   })
 
-  it('renders connecting lines with bg-fog', () => {
+  it('renders connecting lines with bg-border', () => {
     const { container } = render(<Timeline entries={entries} />)
-    const lines = container.querySelectorAll('.bg-fog')
+    const lines = container.querySelectorAll('.bg-border')
     // Last item should NOT have a connecting line, so 2 lines for 3 entries
     expect(lines.length).toBe(2)
   })
@@ -120,7 +120,7 @@ describe('Timeline', () => {
     const { container } = render(<Timeline entries={entries} />)
     const listItems = container.querySelectorAll('li')
     const lastItem = listItems[listItems.length - 1]
-    const line = lastItem.querySelector('.bg-fog')
+    const line = lastItem.querySelector('.bg-border')
     expect(line).toBeNull()
   })
 

@@ -52,7 +52,7 @@ export function ActiveFilterPills({ searchParams, onRemove }: ActiveFilterPillsP
           key={`${pill.key}-${pill.value}-${i}`}
           type="button"
           onClick={() => onRemove(pill.key, SINGLE_VALUE_KEYS.has(pill.key) ? undefined : pill.value)}
-          className="inline-flex items-center gap-1.5 bg-moss/10 border border-moss/30 text-moss text-[12px] rounded-full px-3 py-1 hover:bg-moss/20 transition-colors"
+          className="inline-flex items-center gap-1.5 bg-brand/10 border border-brand/30 text-brand text-[12px] rounded-full px-3 py-1 hover:bg-brand/20 transition-colors"
           aria-label={`Remove ${pill.label} filter`}
         >
           {pill.label}
