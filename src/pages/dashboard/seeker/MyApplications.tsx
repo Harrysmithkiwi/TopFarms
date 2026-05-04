@@ -16,14 +16,14 @@ type ApplicationWithJob = Application & {
 
 function SkeletonCard() {
   return (
-    <div className="bg-white border-[1.5px] border-fog rounded-[12px] p-4 animate-pulse">
+    <div className="bg-surface border-[1.5px] border-border rounded-[12px] p-4 animate-pulse">
       <div className="flex gap-3">
         <div className="flex-1 space-y-2">
-          <div className="h-4 bg-fog rounded w-3/4" />
-          <div className="h-3 bg-fog rounded w-1/2" />
-          <div className="h-3 bg-fog rounded w-1/3" />
+          <div className="h-4 bg-surface-2 rounded w-3/4" />
+          <div className="h-3 bg-surface-2 rounded w-1/2" />
+          <div className="h-3 bg-surface-2 rounded w-1/3" />
         </div>
-        <div className="w-9 h-9 bg-fog rounded-full flex-shrink-0" />
+        <div className="w-9 h-9 bg-surface-2 rounded-full flex-shrink-0" />
       </div>
     </div>
   )
@@ -193,14 +193,14 @@ export function MyApplications() {
           <div className="flex items-center gap-3">
             <h1
               className="font-display text-3xl font-semibold"
-              style={{ color: 'var(--color-soil)' }}
+              style={{ color: 'var(--color-brand-900)' }}
             >
               My Applications
             </h1>
             {!loading && applications.length > 0 && (
               <span
                 className="px-2.5 py-1 rounded-full text-[12px] font-body font-semibold"
-                style={{ backgroundColor: 'var(--color-fog)', color: 'var(--color-mid)' }}
+                style={{ backgroundColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
               >
                 {applications.length}
               </span>
@@ -220,17 +220,17 @@ export function MyApplications() {
           {!loading && applications.length === 0 && (
             <div
               className="rounded-[12px] p-12 text-center"
-              style={{ backgroundColor: 'var(--color-mist)' }}
+              style={{ backgroundColor: 'var(--color-surface-2)' }}
             >
-              <p className="text-base font-body font-semibold mb-2" style={{ color: 'var(--color-ink)' }}>
+              <p className="text-base font-body font-semibold mb-2" style={{ color: 'var(--color-text)' }}>
                 You haven't applied to any jobs yet.
               </p>
-              <p className="text-sm mb-4" style={{ color: 'var(--color-mid)' }}>
+              <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>
                 Browse open roles to find your next farm position.
               </p>
               <Link
                 to="/jobs"
-                className="text-sm font-body font-semibold text-moss hover:underline"
+                className="text-sm font-body font-semibold text-brand hover:underline"
               >
                 Browse jobs
               </Link>
@@ -257,9 +257,9 @@ export function MyApplications() {
           {!loading && applications.length > 0 && filteredApplications.length === 0 && (
             <div
               className="rounded-[12px] p-8 text-center"
-              style={{ backgroundColor: 'var(--color-mist)' }}
+              style={{ backgroundColor: 'var(--color-surface-2)' }}
             >
-              <p className="text-sm font-body text-mid">No applications match this filter.</p>
+              <p className="text-sm font-body text-text-muted">No applications match this filter.</p>
             </div>
           )}
         </div>

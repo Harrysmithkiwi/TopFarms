@@ -56,21 +56,21 @@ export function ForgotPassword() {
           <div className="flex justify-center">
             <div
               className="w-16 h-16 rounded-full flex items-center justify-center"
-              style={{ backgroundColor: 'var(--color-hay-lt)' }}
+              style={{ backgroundColor: 'var(--color-warn-bg)' }}
             >
-              <Mail size={32} style={{ color: 'var(--color-hay)' }} />
+              <Mail size={32} style={{ color: '#7A5C00' }} />
             </div>
           </div>
 
           <div className="text-center space-y-2">
-            <p className="text-sm" style={{ color: 'var(--color-mid)' }}>
+            <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
               We've sent a password reset link to{' '}
-              <span className="font-medium" style={{ color: 'var(--color-ink)' }}>
+              <span className="font-medium" style={{ color: 'var(--color-text)' }}>
                 {sentTo}
               </span>
               . Click the link to set a new password.
             </p>
-            <p className="text-xs" style={{ color: 'var(--color-light)' }}>
+            <p className="text-xs" style={{ color: 'var(--color-text-subtle)' }}>
               The link expires after 1 hour. Check your spam folder if you don't see it.
             </p>
           </div>
@@ -78,7 +78,7 @@ export function ForgotPassword() {
           <Link
             to="/login"
             className="flex items-center justify-center gap-2 text-sm font-medium underline"
-            style={{ color: 'var(--color-soil)' }}
+            style={{ color: 'var(--color-brand-900)' }}
           >
             <ArrowLeft size={14} />
             Back to login
@@ -99,7 +99,7 @@ export function ForgotPassword() {
           <label
             htmlFor="email"
             className="block text-sm font-medium mb-1.5"
-            style={{ color: 'var(--color-ink)' }}
+            style={{ color: 'var(--color-text)' }}
           >
             Email address
           </label>
@@ -110,13 +110,13 @@ export function ForgotPassword() {
             {...register('email')}
             className="w-full px-3.5 py-2.5 rounded-lg border text-sm outline-none transition-colors"
             style={{
-              borderColor: errors.email ? 'var(--color-red)' : 'var(--color-fog)',
-              backgroundColor: 'var(--color-white)',
-              color: 'var(--color-ink)',
+              borderColor: errors.email ? 'var(--color-danger)' : 'var(--color-border)',
+              backgroundColor: 'var(--color-surface)',
+              color: 'var(--color-text)',
             }}
           />
           {errors.email && (
-            <p className="text-xs mt-1" style={{ color: 'var(--color-red)' }}>
+            <p className="text-xs mt-1" style={{ color: 'var(--color-danger)' }}>
               {errors.email.message}
             </p>
           )}
@@ -128,8 +128,8 @@ export function ForgotPassword() {
           disabled={isSubmitting}
           className="w-full py-2.5 px-4 rounded-lg text-sm font-semibold transition-opacity disabled:opacity-60"
           style={{
-            backgroundColor: 'var(--color-soil)',
-            color: 'var(--color-cream)',
+            backgroundColor: 'var(--color-brand-900)',
+            color: 'var(--color-text-on-brand)',
           }}
         >
           {isSubmitting ? 'Sending...' : 'Send reset link'}
@@ -139,7 +139,7 @@ export function ForgotPassword() {
         <Link
           to="/login"
           className="flex items-center justify-center gap-2 text-sm font-medium underline"
-          style={{ color: 'var(--color-soil)' }}
+          style={{ color: 'var(--color-brand-900)' }}
         >
           <ArrowLeft size={14} />
           Back to login

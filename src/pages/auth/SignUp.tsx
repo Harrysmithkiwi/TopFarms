@@ -25,10 +25,10 @@ function getPasswordStrength(password: string): { score: number; label: string; 
   if (/[a-z]/.test(password)) score++
   if (/[0-9]/.test(password)) score++
 
-  if (score <= 1) return { score: 25, label: 'Weak', color: 'var(--color-red)' }
-  if (score === 2) return { score: 50, label: 'Fair', color: 'var(--color-orange)' }
-  if (score === 3) return { score: 75, label: 'Good', color: 'var(--color-hay)' }
-  return { score: 100, label: 'Strong', color: 'var(--color-moss)' }
+  if (score <= 1) return { score: 25, label: 'Weak', color: 'var(--color-danger)' }
+  if (score === 2) return { score: 50, label: 'Fair', color: 'var(--color-warn)' }
+  if (score === 3) return { score: 75, label: 'Good', color: 'var(--color-warn)' }
+  return { score: 100, label: 'Strong', color: 'var(--color-brand)' }
 }
 
 export function SignUp() {
@@ -110,9 +110,9 @@ export function SignUp() {
             disabled={oauthLoading}
             className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-lg border text-sm font-medium transition-colors disabled:opacity-60"
             style={{
-              borderColor: 'var(--color-fog)',
-              backgroundColor: 'var(--color-white)',
-              color: 'var(--color-ink)',
+              borderColor: 'var(--color-border)',
+              backgroundColor: 'var(--color-surface)',
+              color: 'var(--color-text)',
             }}
           >
             <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
@@ -143,14 +143,14 @@ export function SignUp() {
 
         {/* OR divider */}
         <div className="relative flex items-center gap-3">
-          <div className="flex-1 h-px" style={{ backgroundColor: 'var(--color-fog)' }} />
-          <span className="text-xs" style={{ color: 'var(--color-light)' }}>or</span>
-          <div className="flex-1 h-px" style={{ backgroundColor: 'var(--color-fog)' }} />
+          <div className="flex-1 h-px" style={{ backgroundColor: 'var(--color-border)' }} />
+          <span className="text-xs" style={{ color: 'var(--color-text-subtle)' }}>or</span>
+          <div className="flex-1 h-px" style={{ backgroundColor: 'var(--color-border)' }} />
         </div>
 
         {/* Role Selection */}
         <div>
-          <p className="text-sm font-medium mb-3" style={{ color: 'var(--color-ink)' }}>
+          <p className="text-sm font-medium mb-3" style={{ color: 'var(--color-text)' }}>
             I am joining as...
           </p>
           <div className="grid grid-cols-2 gap-3">
@@ -160,22 +160,22 @@ export function SignUp() {
               onClick={() => onRoleSelect('employer')}
               className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 text-left transition-all"
               style={{
-                borderColor: selectedRole === 'employer' ? 'var(--color-soil)' : 'var(--color-fog)',
-                backgroundColor: selectedRole === 'employer' ? 'var(--color-hay-lt)' : 'var(--color-white)',
+                borderColor: selectedRole === 'employer' ? 'var(--color-brand-900)' : 'var(--color-border)',
+                backgroundColor: selectedRole === 'employer' ? 'var(--color-warn-bg)' : 'var(--color-surface)',
               }}
             >
               <Building2
                 size={28}
-                style={{ color: selectedRole === 'employer' ? 'var(--color-soil)' : 'var(--color-light)' }}
+                style={{ color: selectedRole === 'employer' ? 'var(--color-brand-900)' : 'var(--color-text-subtle)' }}
               />
               <div>
                 <p
                   className="font-semibold text-sm text-center"
-                  style={{ color: selectedRole === 'employer' ? 'var(--color-soil)' : 'var(--color-ink)' }}
+                  style={{ color: selectedRole === 'employer' ? 'var(--color-brand-900)' : 'var(--color-text)' }}
                 >
                   Employer
                 </p>
-                <p className="text-xs text-center mt-0.5" style={{ color: 'var(--color-mid)' }}>
+                <p className="text-xs text-center mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
                   Post farm jobs
                 </p>
               </div>
@@ -187,29 +187,29 @@ export function SignUp() {
               onClick={() => onRoleSelect('seeker')}
               className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 text-left transition-all"
               style={{
-                borderColor: selectedRole === 'seeker' ? 'var(--color-soil)' : 'var(--color-fog)',
-                backgroundColor: selectedRole === 'seeker' ? 'var(--color-hay-lt)' : 'var(--color-white)',
+                borderColor: selectedRole === 'seeker' ? 'var(--color-brand-900)' : 'var(--color-border)',
+                backgroundColor: selectedRole === 'seeker' ? 'var(--color-warn-bg)' : 'var(--color-surface)',
               }}
             >
               <User
                 size={28}
-                style={{ color: selectedRole === 'seeker' ? 'var(--color-soil)' : 'var(--color-light)' }}
+                style={{ color: selectedRole === 'seeker' ? 'var(--color-brand-900)' : 'var(--color-text-subtle)' }}
               />
               <div>
                 <p
                   className="font-semibold text-sm text-center"
-                  style={{ color: selectedRole === 'seeker' ? 'var(--color-soil)' : 'var(--color-ink)' }}
+                  style={{ color: selectedRole === 'seeker' ? 'var(--color-brand-900)' : 'var(--color-text)' }}
                 >
                   Seeker
                 </p>
-                <p className="text-xs text-center mt-0.5" style={{ color: 'var(--color-mid)' }}>
+                <p className="text-xs text-center mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
                   Find farm work
                 </p>
               </div>
             </button>
           </div>
           {errors.role && (
-            <p className="text-xs mt-1" style={{ color: 'var(--color-red)' }}>
+            <p className="text-xs mt-1" style={{ color: 'var(--color-danger)' }}>
               {errors.role.message}
             </p>
           )}
@@ -225,7 +225,7 @@ export function SignUp() {
               <label
                 htmlFor="email"
                 className="block text-sm font-medium mb-1.5"
-                style={{ color: 'var(--color-ink)' }}
+                style={{ color: 'var(--color-text)' }}
               >
                 Email address
               </label>
@@ -236,13 +236,13 @@ export function SignUp() {
                 {...register('email')}
                 className="w-full px-3.5 py-2.5 rounded-lg border text-sm outline-none transition-colors"
                 style={{
-                  borderColor: errors.email ? 'var(--color-red)' : 'var(--color-fog)',
-                  backgroundColor: 'var(--color-white)',
-                  color: 'var(--color-ink)',
+                  borderColor: errors.email ? 'var(--color-danger)' : 'var(--color-border)',
+                  backgroundColor: 'var(--color-surface)',
+                  color: 'var(--color-text)',
                 }}
               />
               {errors.email && (
-                <p className="text-xs mt-1" style={{ color: 'var(--color-red)' }}>
+                <p className="text-xs mt-1" style={{ color: 'var(--color-danger)' }}>
                   {errors.email.message}
                 </p>
               )}
@@ -253,7 +253,7 @@ export function SignUp() {
               <label
                 htmlFor="password"
                 className="block text-sm font-medium mb-1.5"
-                style={{ color: 'var(--color-ink)' }}
+                style={{ color: 'var(--color-text)' }}
               >
                 Password
               </label>
@@ -265,23 +265,23 @@ export function SignUp() {
                   {...register('password')}
                   className="w-full px-3.5 py-2.5 pr-10 rounded-lg border text-sm outline-none transition-colors"
                   style={{
-                    borderColor: errors.password ? 'var(--color-red)' : 'var(--color-fog)',
-                    backgroundColor: 'var(--color-white)',
-                    color: 'var(--color-ink)',
+                    borderColor: errors.password ? 'var(--color-danger)' : 'var(--color-border)',
+                    backgroundColor: 'var(--color-surface)',
+                    color: 'var(--color-text)',
                   }}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2"
-                  style={{ color: 'var(--color-light)' }}
+                  style={{ color: 'var(--color-text-subtle)' }}
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
               {errors.password && (
-                <p className="text-xs mt-1" style={{ color: 'var(--color-red)' }}>
+                <p className="text-xs mt-1" style={{ color: 'var(--color-danger)' }}>
                   {errors.password.message}
                 </p>
               )}
@@ -291,7 +291,7 @@ export function SignUp() {
                 <div className="mt-2">
                   <div
                     className="h-[3px] rounded-full overflow-hidden"
-                    style={{ backgroundColor: 'var(--color-fog)' }}
+                    style={{ backgroundColor: 'var(--color-border)' }}
                   >
                     <div
                       className="h-full rounded-full transition-all duration-300"
@@ -315,21 +315,21 @@ export function SignUp() {
                 type="checkbox"
                 {...register('terms')}
                 className="mt-0.5 rounded"
-                style={{ accentColor: 'var(--color-soil)' }}
+                style={{ accentColor: 'var(--color-brand-900)' }}
               />
-              <label htmlFor="terms" className="text-sm" style={{ color: 'var(--color-mid)' }}>
+              <label htmlFor="terms" className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
                 I agree to the{' '}
-                <span className="underline cursor-pointer" style={{ color: 'var(--color-soil)' }}>
+                <span className="underline cursor-pointer" style={{ color: 'var(--color-brand-900)' }}>
                   Terms of Service
                 </span>{' '}
                 and{' '}
-                <span className="underline cursor-pointer" style={{ color: 'var(--color-soil)' }}>
+                <span className="underline cursor-pointer" style={{ color: 'var(--color-brand-900)' }}>
                   Privacy Policy
                 </span>
               </label>
             </div>
             {errors.terms && (
-              <p className="text-xs -mt-4" style={{ color: 'var(--color-red)' }}>
+              <p className="text-xs -mt-4" style={{ color: 'var(--color-danger)' }}>
                 {errors.terms.message}
               </p>
             )}
@@ -340,8 +340,8 @@ export function SignUp() {
               disabled={isSubmitting}
               className="w-full py-2.5 px-4 rounded-lg text-sm font-semibold transition-opacity disabled:opacity-60"
               style={{
-                backgroundColor: 'var(--color-soil)',
-                color: 'var(--color-cream)',
+                backgroundColor: 'var(--color-brand-900)',
+                color: 'var(--color-text-on-brand)',
               }}
             >
               {isSubmitting ? 'Creating account...' : 'Create account'}
@@ -350,12 +350,12 @@ export function SignUp() {
         )}
 
         {/* Login link */}
-        <p className="text-center text-sm" style={{ color: 'var(--color-mid)' }}>
+        <p className="text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
           Already have an account?{' '}
           <Link
             to="/login"
             className="font-medium underline"
-            style={{ color: 'var(--color-soil)' }}
+            style={{ color: 'var(--color-brand-900)' }}
           >
             Log in
           </Link>

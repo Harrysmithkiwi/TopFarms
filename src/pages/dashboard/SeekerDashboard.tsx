@@ -124,7 +124,7 @@ export function SeekerDashboard() {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center py-20">
-          <p className="text-sm" style={{ color: 'var(--color-light)' }}>
+          <p className="text-sm" style={{ color: 'var(--color-text-subtle)' }}>
             Loading...
           </p>
         </div>
@@ -153,11 +153,11 @@ export function SeekerDashboard() {
             <div>
               <h1
                 className="font-display text-3xl font-semibold"
-                style={{ color: 'var(--color-soil)' }}
+                style={{ color: 'var(--color-brand-900)' }}
               >
                 Welcome to TopFarms
               </h1>
-              <p className="mt-1 text-sm" style={{ color: 'var(--color-mid)' }}>
+              <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
                 Your job seeker dashboard
               </p>
             </div>
@@ -166,23 +166,23 @@ export function SeekerDashboard() {
               <div className="flex flex-col md:flex-row md:items-center gap-6">
                 <div
                   className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0 text-3xl"
-                  style={{ backgroundColor: 'var(--color-green-lt)' }}
+                  style={{ backgroundColor: 'var(--color-brand-50)' }}
                 >
                   🧑‍🌾
                 </div>
                 <div className="flex-1 min-w-0">
                   <h2
                     className="text-lg font-semibold mb-1"
-                    style={{ color: 'var(--color-ink)' }}
+                    style={{ color: 'var(--color-text)' }}
                   >
                     Complete your profile to start matching with jobs
                   </h2>
-                  <p className="text-sm mb-4" style={{ color: 'var(--color-mid)' }}>
+                  <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>
                     Tell us about your experience, skills, and what you're looking for to get
                     matched with the best roles
                   </p>
                   <ProgressBar progress={onboardingProgress} className="mb-2" />
-                  <p className="text-xs" style={{ color: 'var(--color-light)' }}>
+                  <p className="text-xs" style={{ color: 'var(--color-text-subtle)' }}>
                     {onboardingStep} of 7 steps completed
                   </p>
                 </div>
@@ -191,7 +191,7 @@ export function SeekerDashboard() {
                     to="/onboarding/seeker"
                     className={cn(
                       'font-body font-bold rounded-[8px] transition-all duration-200 inline-flex items-center justify-center',
-                      'bg-moss text-white hover:bg-fern',
+                      'bg-brand text-white hover:bg-brand-hover',
                       'px-4 py-2 text-[13px]',
                     )}
                   >
@@ -210,11 +210,11 @@ export function SeekerDashboard() {
             <div>
               <h1
                 className="font-display text-3xl font-semibold"
-                style={{ color: 'var(--color-soil)' }}
+                style={{ color: 'var(--color-brand-900)' }}
               >
                 Welcome back{profile?.region ? ` — ${profile.region}` : ''}
               </h1>
-              <p className="mt-1 text-sm" style={{ color: 'var(--color-mid)' }}>
+              <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
                 Your job seeker dashboard
               </p>
             </div>
@@ -224,13 +224,13 @@ export function SeekerDashboard() {
               <div className="flex flex-col sm:flex-row sm:items-start gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-3">
-                    <h2 className="text-base font-semibold" style={{ color: 'var(--color-ink)' }}>
+                    <h2 className="text-base font-semibold" style={{ color: 'var(--color-text)' }}>
                       Your Profile
                     </h2>
                     <Link
                       to="/onboarding/seeker"
                       className="text-sm font-body font-semibold"
-                      style={{ color: 'var(--color-moss)' }}
+                      style={{ color: 'var(--color-brand)' }}
                     >
                       Edit Profile
                     </Link>
@@ -238,40 +238,40 @@ export function SeekerDashboard() {
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
                     {profile?.years_experience != null && (
                       <div>
-                        <p className="text-[11px] uppercase tracking-wide font-semibold" style={{ color: 'var(--color-light)' }}>
+                        <p className="text-[11px] uppercase tracking-wide font-semibold" style={{ color: 'var(--color-text-subtle)' }}>
                           Experience
                         </p>
-                        <p className="text-sm font-semibold mt-0.5" style={{ color: 'var(--color-ink)' }}>
+                        <p className="text-sm font-semibold mt-0.5" style={{ color: 'var(--color-text)' }}>
                           {profile.years_experience}y
                         </p>
                       </div>
                     )}
                     {profile?.dairynz_level && profile.dairynz_level !== 'none' && (
                       <div>
-                        <p className="text-[11px] uppercase tracking-wide font-semibold" style={{ color: 'var(--color-light)' }}>
+                        <p className="text-[11px] uppercase tracking-wide font-semibold" style={{ color: 'var(--color-text-subtle)' }}>
                           DairyNZ
                         </p>
-                        <p className="text-sm font-semibold mt-0.5 capitalize" style={{ color: 'var(--color-ink)' }}>
+                        <p className="text-sm font-semibold mt-0.5 capitalize" style={{ color: 'var(--color-text)' }}>
                           {profile.dairynz_level.replace('_', ' ')}
                         </p>
                       </div>
                     )}
                     {profile?.region && (
                       <div>
-                        <p className="text-[11px] uppercase tracking-wide font-semibold" style={{ color: 'var(--color-light)' }}>
+                        <p className="text-[11px] uppercase tracking-wide font-semibold" style={{ color: 'var(--color-text-subtle)' }}>
                           Region
                         </p>
-                        <p className="text-sm font-semibold mt-0.5" style={{ color: 'var(--color-ink)' }}>
+                        <p className="text-sm font-semibold mt-0.5" style={{ color: 'var(--color-text)' }}>
                           {profile.region}
                         </p>
                       </div>
                     )}
                     {profile?.visa_status && (
                       <div>
-                        <p className="text-[11px] uppercase tracking-wide font-semibold" style={{ color: 'var(--color-light)' }}>
+                        <p className="text-[11px] uppercase tracking-wide font-semibold" style={{ color: 'var(--color-text-subtle)' }}>
                           Visa
                         </p>
-                        <p className="text-sm font-semibold mt-0.5 capitalize" style={{ color: 'var(--color-ink)' }}>
+                        <p className="text-sm font-semibold mt-0.5 capitalize" style={{ color: 'var(--color-text)' }}>
                           {profile.visa_status.replace(/_/g, ' ')}
                         </p>
                       </div>
@@ -279,10 +279,10 @@ export function SeekerDashboard() {
                   </div>
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <p className="text-xs" style={{ color: 'var(--color-mid)' }}>
+                      <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
                         Profile strength
                       </p>
-                      <p className="text-xs font-semibold" style={{ color: 'var(--color-moss)' }}>
+                      <p className="text-xs font-semibold" style={{ color: 'var(--color-brand)' }}>
                         {profileStrength}%
                       </p>
                     </div>
@@ -297,33 +297,33 @@ export function SeekerDashboard() {
               <Card className="p-5">
                 <p
                   className="text-[12px] font-body font-semibold uppercase tracking-wide mb-1"
-                  style={{ color: 'var(--color-light)' }}
+                  style={{ color: 'var(--color-text-subtle)' }}
                 >
                   Active Applications
                 </p>
-                <p className="text-3xl font-display font-semibold" style={{ color: 'var(--color-soil)' }}>
+                <p className="text-3xl font-display font-semibold" style={{ color: 'var(--color-brand-900)' }}>
                   {activeApplicationCount}
                 </p>
               </Card>
               <Card className="p-5">
                 <p
                   className="text-[12px] font-body font-semibold uppercase tracking-wide mb-1"
-                  style={{ color: 'var(--color-light)' }}
+                  style={{ color: 'var(--color-text-subtle)' }}
                 >
                   Profile Views
                 </p>
-                <p className="text-3xl font-display font-semibold" style={{ color: 'var(--color-soil)' }}>
+                <p className="text-3xl font-display font-semibold" style={{ color: 'var(--color-brand-900)' }}>
                   0
                 </p>
               </Card>
               <Card className="p-5">
                 <p
                   className="text-[12px] font-body font-semibold uppercase tracking-wide mb-1"
-                  style={{ color: 'var(--color-light)' }}
+                  style={{ color: 'var(--color-text-subtle)' }}
                 >
                   Profile Strength
                 </p>
-                <p className="text-3xl font-display font-semibold" style={{ color: 'var(--color-soil)' }}>
+                <p className="text-3xl font-display font-semibold" style={{ color: 'var(--color-brand-900)' }}>
                   {profileStrength}%
                 </p>
               </Card>
@@ -332,13 +332,13 @@ export function SeekerDashboard() {
             {/* Recent Applications */}
             <Card className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-base font-semibold" style={{ color: 'var(--color-ink)' }}>
+                <h2 className="text-base font-semibold" style={{ color: 'var(--color-text)' }}>
                   Recent Applications
                 </h2>
                 <Link
                   to="/dashboard/seeker/applications"
                   className="text-sm font-body font-semibold"
-                  style={{ color: 'var(--color-moss)' }}
+                  style={{ color: 'var(--color-brand)' }}
                 >
                   View all
                 </Link>
@@ -346,14 +346,14 @@ export function SeekerDashboard() {
 
               {recentApplications.length === 0 ? (
                 <div className="text-center py-8">
-                  <p className="text-sm mb-3" style={{ color: 'var(--color-mid)' }}>
+                  <p className="text-sm mb-3" style={{ color: 'var(--color-text-muted)' }}>
                     No applications yet
                   </p>
                   <Link
                     to="/jobs"
                     className={cn(
                       'font-body font-bold rounded-[8px] transition-all duration-200 inline-flex items-center justify-center',
-                      'bg-moss text-white hover:bg-fern',
+                      'bg-brand text-white hover:bg-brand-hover',
                       'px-4 py-2 text-[13px]',
                     )}
                   >

@@ -40,15 +40,15 @@ function formatDate(iso: string): string {
 
 function SkeletonRow() {
   return (
-    <div className="bg-white border-[1.5px] border-fog rounded-[12px] p-4 animate-pulse">
+    <div className="bg-surface border-[1.5px] border-border rounded-[12px] p-4 animate-pulse">
       <div className="flex items-center gap-3">
-        <div className="w-5 h-5 rounded bg-fog flex-shrink-0" />
+        <div className="w-5 h-5 rounded bg-surface-2 flex-shrink-0" />
         <div className="flex-1 space-y-2">
-          <div className="h-4 bg-fog rounded w-2/3" />
-          <div className="h-3 bg-fog rounded w-1/3" />
+          <div className="h-4 bg-surface-2 rounded w-2/3" />
+          <div className="h-3 bg-surface-2 rounded w-1/3" />
         </div>
-        <div className="w-[160px] h-9 bg-fog rounded" />
-        <div className="w-9 h-9 bg-fog rounded" />
+        <div className="w-[160px] h-9 bg-surface-2 rounded" />
+        <div className="w-9 h-9 bg-surface-2 rounded" />
       </div>
     </div>
   )
@@ -156,21 +156,21 @@ export function SeekerDocuments() {
         <div className="flex items-center gap-3">
           <h1
             className="font-display text-3xl font-semibold"
-            style={{ color: 'var(--color-soil)' }}
+            style={{ color: 'var(--color-brand-900)' }}
           >
             My Documents
           </h1>
           {showList && (
             <span
               className="px-2.5 py-1 rounded-full text-[12px] font-body font-semibold"
-              style={{ backgroundColor: 'var(--color-fog)', color: 'var(--color-mid)' }}
+              style={{ backgroundColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
             >
               {docs!.length}
             </span>
           )}
         </div>
 
-        <p className="text-sm" style={{ color: 'var(--color-mid)' }}>
+        <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
           Manage your uploaded documents. Identity documents are kept private and are never
           shown to employers.
         </p>
@@ -188,20 +188,20 @@ export function SeekerDocuments() {
         {showHookFallback && (
           <div
             className="rounded-[12px] p-12 text-center"
-            style={{ backgroundColor: 'var(--color-mist)' }}
+            style={{ backgroundColor: 'var(--color-surface-2)' }}
           >
             <p
               className="text-base font-body font-semibold mb-2"
-              style={{ color: 'var(--color-ink)' }}
+              style={{ color: 'var(--color-text)' }}
             >
               Set up your seeker profile first.
             </p>
-            <p className="text-sm mb-4" style={{ color: 'var(--color-mid)' }}>
+            <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>
               You need to complete onboarding before you can manage documents.
             </p>
             <Link
               to="/onboarding/seeker"
-              className="text-sm font-body font-semibold text-moss hover:underline"
+              className="text-sm font-body font-semibold text-brand hover:underline"
             >
               Complete onboarding
             </Link>
@@ -212,9 +212,9 @@ export function SeekerDocuments() {
         {showError && (
           <div
             className="rounded-[12px] p-8 text-center"
-            style={{ backgroundColor: 'var(--color-mist)' }}
+            style={{ backgroundColor: 'var(--color-surface-2)' }}
           >
-            <p className="text-sm font-body text-mid">{errorState}</p>
+            <p className="text-sm font-body text-text-muted">{errorState}</p>
           </div>
         )}
 
@@ -222,15 +222,15 @@ export function SeekerDocuments() {
         {showEmpty && (
           <div
             className="rounded-[12px] p-12 text-center"
-            style={{ backgroundColor: 'var(--color-mist)' }}
+            style={{ backgroundColor: 'var(--color-surface-2)' }}
           >
             <p
               className="text-base font-body font-semibold mb-2"
-              style={{ color: 'var(--color-ink)' }}
+              style={{ color: 'var(--color-text)' }}
             >
               No documents uploaded yet.
             </p>
-            <p className="text-sm" style={{ color: 'var(--color-mid)' }}>
+            <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
               Add some during onboarding or from your profile.
             </p>
           </div>
@@ -242,14 +242,14 @@ export function SeekerDocuments() {
             {docs!.map((doc) => (
               <li
                 key={doc.id}
-                className="bg-white border-[1.5px] border-fog rounded-[12px] p-4 flex items-center gap-3"
+                className="bg-surface border-[1.5px] border-border rounded-[12px] p-4 flex items-center gap-3"
               >
-                <FileText className="w-5 h-5 text-fern flex-shrink-0" />
+                <FileText className="w-5 h-5 text-brand-hover flex-shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-body font-semibold text-ink truncate">
+                  <p className="text-[13px] font-body font-semibold text-text truncate">
                     {doc.filename}
                   </p>
-                  <p className="text-[11px] font-body text-light">
+                  <p className="text-[11px] font-body text-text-subtle">
                     {formatBytes(doc.file_size_bytes)} · Uploaded {formatDate(doc.uploaded_at)}
                   </p>
                 </div>
@@ -263,7 +263,7 @@ export function SeekerDocuments() {
                 <button
                   type="button"
                   onClick={() => handleDelete(doc)}
-                  className="text-light hover:text-red p-1 transition-colors"
+                  className="text-text-subtle hover:text-danger p-1 transition-colors"
                   aria-label={`Delete ${doc.filename}`}
                 >
                   <Trash2 className="w-4 h-4" />
