@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: executing
-stopped_at: "Phase 20-06 complete — 3 admin pages real (DailyBriefing, EmployerList, SeekerList) + RTL render-test proves MAIL-02 honest-copy renders on unavailable Resend cache; next: plan 20-07 (jobs + placement pipeline)"
-last_updated: "2026-05-04T22:12:47.441Z"
-last_activity: 2026-05-04 — 20-06 complete; DailyBriefing replaced with full StatsStrip+Alerts+Resend+Revenue layout, EmployerList + SeekerList composed from AdminTable + ProfileDrawer with locked UI-SPEC copy, /admin/employers and /admin/seekers wired to real components. 13 admin tests green (replacing 12 it.todo + 1 net-new RTL render test for honest-copy proof). Plan 20-07 (jobs + placements) is pure composition from same primitives.
+stopped_at: "Phase 20-07 complete — 5 admin pages real (DailyBriefing, EmployerList, SeekerList, JobsManagement, PlacementPipeline); JobsManagement wires drawer-on-employer-behind-job; PlacementPipeline read-only with Stripe click-through; ADMIN-VIEW-JOBS + ADMIN-VIEW-PLAC tests green; next: plan 20-08 (manual UAT bootstrap + 3 live-RPC integration test files)"
+last_updated: "2026-05-04T22:21:10.179Z"
+last_activity: 2026-05-04 — 20-07 complete; JobsManagement + PlacementPipeline pages composed from AdminTable. JobsManagement wires ProfileDrawer to row.employer_id (drawer-on-view-4 pattern, initialActive=true safe default). PlacementPipeline does NOT wire drawer (placements aren't people) — Stripe click-through with no-prefix URLs (RESEARCH.md Pitfall 6) replaces profile drill-down. All 5 admin routes now point to real components. 6 new shape-contract assertions green (3 ADMIN-VIEW-JOBS + 3 ADMIN-VIEW-PLAC); 11 of 14 admin test files have real bodies (3 live-RPC integration tests deferred to plan 20-08 UAT per plan 20-05 decision).
 progress:
   total_phases: 10
   completed_phases: 4
   total_plans: 19
-  completed_plans: 17
+  completed_plans: 18
 ---
 
 # Project State
@@ -25,9 +25,9 @@ See: .planning/PROJECT.md (updated 2026-04-03)
 ## Current Position
 
 Phase: 20 of 20+ — Super Admin Dashboard
-Plan: 20-06 complete — moving to 20-07 (next plan)
-Status: In progress (plan 20-07 next)
-Last activity: 2026-05-04 — 20-06 complete; DailyBriefing real (StatsStrip + alerts + Resend + revenue), EmployerList + SeekerList composed from AdminTable + ProfileDrawer, /admin/employers + /admin/seekers wired. 13 tests green including new RTL render test asserting MAIL-02 honest-copy literal. Plan 20-07 (JobsManagement + PlacementPipeline) is pure composition from same primitives.
+Plan: 20-07 complete — moving to 20-08 (next plan, final)
+Status: In progress (plan 20-08 next — manual UAT + live-RPC integration tests + Edge Function deploy)
+Last activity: 2026-05-04 — 20-07 complete; JobsManagement + PlacementPipeline pages composed from AdminTable. JobsManagement wires ProfileDrawer to row.employer_id (drawer-on-view-4 pattern, initialActive=true safe default). PlacementPipeline does NOT wire drawer (placements aren't people) — Stripe click-through with no-prefix URLs (RESEARCH.md Pitfall 6) replaces profile drill-down. All 5 admin routes now point to real components. 6 new shape-contract assertions green (3 ADMIN-VIEW-JOBS + 3 ADMIN-VIEW-PLAC); 11 of 14 admin test files have real bodies (3 live-RPC integration tests deferred to plan 20-08 UAT per plan 20-05 decision).
 
 ## Accumulated Context
 
@@ -66,6 +66,9 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 20-06]: ResendIndicator branches structurally on { unavailable | stale | fresh } so the literal MAIL-02 honest-copy "Delivery data unavailable. Check Resend dashboard." surfaces as the explicit unavailable branch — RTL render-test asserts the exact string with mocked unavailable cache. Visible side of the v2.0 Phase 15 carryforward; live-data half deferred to plan 20-08 UAT.
 - [Phase 20-06]: vi.hoisted required for RTL tests that statically import the SUT — `const { rpcMock } = vi.hoisted(() => ({ rpcMock: vi.fn() }))` is the canonical pattern. Shape-contract tests dodge this by lazy-importing supabase via `await import()` after the const is initialised; render tests can't dodge it because the SUT import transitively pulls supabase before the const exists.
 - [Phase 20-06]: Page-level drawer state pattern — EmployerList + SeekerList hold `{drawerUserId, drawerActive}` at the page component, passed to <ProfileDrawer initialActive onActiveChanged onClose/>. Drawer's Toggle dispatches onActiveChanged so the page can refresh row tags without table refetch. Pattern reused by plan 20-07's JobsManagement + PlacementPipeline if their drawer integration follows.
+- [Phase 20]: Phase 20-07: JobsManagement drawer wired to row.employer_id with initialActive=true safe default (JobRow has no employer is_active flag); ProfileDrawer refetches via admin_get_user_profile on mount. CONTEXT.md MVP scope item 6 (drawer on views 2/3/4) honored.
+- [Phase 20]: Phase 20-07: PlacementPipeline does NOT wire ProfileDrawer (placements are not people). Stripe click-through replaces the profile drill-down for view 5; stripeUrl() helper uses no-prefix form (RESEARCH.md Pitfall 6) — invoice link preferred, customer fallback.
+- [Phase 20]: Phase 20-07: 11 of 14 admin test files have real bodies post-20-07; 3 still-todo (admin-rpc-gate, admin-rpc-shapes, admin-rls-not-widened) are integration tests requiring live Supabase + admin role per plan 20-05 deferral. Plan 20-08 manual UAT (ADMIN-BOOTSTRAP-1) completes those.
 
 ### Blockers/Concerns
 
@@ -76,6 +79,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-04T22:11:00.000Z
-Stopped at: Phase 20-06 complete — 3 admin pages real (DailyBriefing, EmployerList, SeekerList) + RTL render-test proves MAIL-02 honest-copy renders on unavailable Resend cache; next: plan 20-07 (jobs + placement pipeline)
+Last session: 2026-05-04T22:21:10.176Z
+Stopped at: Phase 20-07 complete — 5 admin pages real (DailyBriefing, EmployerList, SeekerList, JobsManagement, PlacementPipeline); JobsManagement wires drawer-on-employer-behind-job; PlacementPipeline read-only with Stripe click-through; ADMIN-VIEW-JOBS + ADMIN-VIEW-PLAC tests green; next: plan 20-08 (manual UAT bootstrap + 3 live-RPC integration test files)
 Resume file: None
