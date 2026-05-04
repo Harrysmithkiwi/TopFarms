@@ -40,11 +40,14 @@ One-liner: Single atomic migration (023) introducing the SECURITY DEFINER admin 
 
 ## Status
 
-**Wave 1 / Task 1 — Pre-migration RLS baseline capture: AWAITING OPERATOR**
+**Wave 1 / Task 1 — Pre-migration RLS baseline capture: COMPLETE**
+**Wave 1 / Task 2 — Migration 023_admin_rpcs.sql write: PENDING**
+**Wave 1 / Task 3 — Studio SQL Editor apply: AWAITING OPERATOR (after Task 2)**
+**Wave 1 / Task 4 — NAMING.md update: PENDING**
 
-This is the load-bearing ADMIN-RLS-NEG-1/2 ground truth per VALIDATION.md. The operator (Harry) must run the 6 baseline SELECTs in Supabase Studio SQL Editor for project `inlagtgpynemhipnqvty` BEFORE migration 023 is applied, capture the integers below, and reply with the resume signal.
+This is the load-bearing ADMIN-RLS-NEG-1/2 ground truth per VALIDATION.md. The operator (Harry) ran the 6 baseline SELECTs in Supabase Studio SQL Editor for project `inlagtgpynemhipnqvty` BEFORE migration 023 was applied; integers captured below.
 
-## Pre-migration RLS baseline (captured TBD)
+## Pre-migration RLS baseline (captured 2026-05-04T21:24:48Z)
 
 Run these in Supabase Studio SQL Editor (project `inlagtgpynemhipnqvty`):
 
@@ -70,15 +73,15 @@ SELECT count(*) AS seekers_total FROM public.seeker_profiles;
 
 | # | Metric | Pre-migration count | Post-migration count | Match? |
 |---|--------|---------------------|----------------------|--------|
-| 1 | jobs (status='active') | _TBD_ | _TBD_ | _TBD_ |
-| 2 | match_scores (all rows) | _TBD_ | _TBD_ | _TBD_ |
-| 3 | applications (all rows) | _TBD_ | _TBD_ | _TBD_ |
-| 4 | jobs (all rows) | _TBD_ | _TBD_ | _TBD_ |
-| 5 | employer_profiles | _TBD_ | _TBD_ | _TBD_ |
-| 6 | seeker_profiles | _TBD_ | _TBD_ | _TBD_ |
+| 1 | jobs (status='active') | 1 | _TBD_ | _TBD_ |
+| 2 | match_scores (all rows) | 3 | _TBD_ | _TBD_ |
+| 3 | applications (all rows) | 2 | _TBD_ | _TBD_ |
+| 4 | jobs (all rows) | 2 | _TBD_ | _TBD_ |
+| 5 | employer_profiles | 1 | _TBD_ | _TBD_ |
+| 6 | seeker_profiles | 2 | _TBD_ | _TBD_ |
 
-Captured at: _TBD_ (ISO8601 UTC timestamp)
-Operator confirmation: _awaiting `approved: baselines=[...]`_
+Captured at: 2026-05-04T21:24:48Z (ISO8601 UTC timestamp)
+Operator confirmation: `approved: baselines=[jobs_active=1, match_scores=3, applications=2, jobs=2, employers=1, seekers=2]` (received 2026-05-04T21:24:48Z)
 
 ## 023_admin_rpcs.sql apply (TBD)
 
