@@ -25,3 +25,16 @@ verify_jwt = true
 [functions.create-placement-invoice]
 # Called from authenticated employer client (src/pages/dashboard/employer/ApplicantDashboard.tsx:423).
 verify_jwt = true
+
+[functions.get-resend-stats]
+# Cron-driven poller (Phase 20). pg_cron schedules a pg_net.http_post call (plan 20-08)
+# that hits this function every 15 minutes; the function fetches Resend stats and caches
+# them in public.admin_metrics_cache. No user JWT in flight — verify_jwt is disabled
+# at the gateway. Defence-in-depth is enforced INSIDE the function via X-Webhook-Secret
+# header validation (per Phase 18 hardening item #15 — same pattern as the future
+# notify-job-filled and send-followup-emails secret hardening).
+#
+# IMPORTANT: This is NOT the CLAUDE.md §5 gateway-trust pattern — that pattern is for
+# verify_jwt=true functions where the gateway has already validated a user JWT. This
+# function is invoked by pg_cron with no user context.
+verify_jwt = false
