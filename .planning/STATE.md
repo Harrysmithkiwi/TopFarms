@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: executing
-stopped_at: Phase 20-01 complete (Wave 0 test scaffold)
-last_updated: "2026-05-04T11:37:00.239Z"
-last_activity: 2026-05-04 — 20-01 complete; Wave 0 admin test scaffolds (14 vitest + 1 UAT) covering all 22 ADMIN-* IDs from VALIDATION.md
+stopped_at: Phase 20-03 complete (get-resend-stats Edge Function source + config.toml)
+last_updated: "2026-05-04T11:44:28Z"
+last_activity: 2026-05-04 — 20-03 complete; get-resend-stats Edge Function source written + verify_jwt=false registered in supabase/config.toml; deploy + cron deferred to 20-08
 progress:
   total_phases: 10
   completed_phases: 4
   total_plans: 19
-  completed_plans: 12
+  completed_plans: 14
 ---
 
 # Project State
@@ -20,14 +20,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-03)
 
 **Core value:** Farm employers and seekers can find each other through agriculture-specific matching that no generic platform provides
-**Current focus:** Super Admin Dashboard (Phase 20) — internal-only `/admin/*` panel; Wave 0 test scaffolds complete, RPC implementation next
+**Current focus:** Super Admin Dashboard (Phase 20) — internal-only `/admin/*` panel; Wave 0/1/2 backend foundations in place (test scaffold + RPC migration + Resend Edge Function source)
 
 ## Current Position
 
 Phase: 20 of 20+ — Super Admin Dashboard
-Plan: 20-01 complete — moving to 20-02 (RPC implementation)
-Status: In progress (plan 20-02 next)
-Last activity: 2026-05-04 — 20-01 complete; Wave 0 admin test scaffolds (14 vitest + 1 UAT) covering all 22 ADMIN-* IDs from VALIDATION.md
+Plan: 20-03 complete — moving to 20-04 (next plan)
+Status: In progress (plan 20-04 next)
+Last activity: 2026-05-04 — 20-03 complete; get-resend-stats Edge Function source written (119 lines, deno check passes), verify_jwt=false registered in supabase/config.toml; deploy + pg_cron schedule deferred to 20-08
 
 ## Accumulated Context
 
@@ -51,6 +51,9 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 15-04]: NAMING.md migration registry repair section: Studio SQL INSERT is canonical approach; CLI supabase migration repair incompatible with sequence-prefix disk convention
 - [Phase 20-01]: Wave 0 scaffold pattern: every VALIDATION.md test ID gets a stub in vitest file (or UAT markdown) before any implementation. 22 IDs across 14 vitest files + 1 UAT markdown. Bodies fill in subsequent waves.
 - [Phase 20-01]: it.todo() for unimplemented assertions across the entire admin suite — vitest reports todos rather than skips/fails, providing a visible scaffolding signal in CI output.
+- [Phase 20-03]: deno.lock gitignored — local typecheck artefact, Supabase CLI handles dependency resolution at deploy time; no prior deno.lock in repo history. Installed Deno 2.7.14 via Homebrew (Rule 3 deviation; required for `deno check` acceptance criterion).
+- [Phase 20-03]: get-resend-stats RESEND_API_KEY-unset path writes {unavailable: true} cache marker rather than erroring — preserves daily-briefing render path during MAIL-02-style outages, matching 20-UI-SPEC.md "Delivery data unavailable" copy.
+- [Phase 20-03]: delivered = delivered + opened + clicked when aggregating Resend last_event — Resend events progress monotonically (opened/clicked imply delivered), so summing all three captures the true delivery total without double-counting.
 
 ### Blockers/Concerns
 
@@ -61,6 +64,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-04T11:36:45.945Z
-Stopped at: Phase 20-01 complete (Wave 0 test scaffold)
+Last session: 2026-05-04T11:44:28Z
+Stopped at: Phase 20-03 complete (get-resend-stats Edge Function source + config.toml; deploy deferred to 20-08)
 Resume file: None
