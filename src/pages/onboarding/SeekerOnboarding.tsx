@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router'
 import { toast } from 'sonner'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { StepIndicator } from '@/components/ui/StepIndicator'
@@ -28,11 +29,17 @@ const TOTAL_STEPS = 7
 
 export function SeekerOnboarding() {
   const { session } = useAuth()
+  const navigate = useNavigate()
   const [profileData, setProfileData] = useState<Partial<SeekerProfileData>>({})
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [initialStep, setInitialStep] = useState(0)
   const [seekerProfileId, setSeekerProfileId] = useState<string | null>(null)
+
+  // BUG-03 2026-05-04: guard against double-firing the completion marker when
+  // currentStep transitions to the final step. SeekerStep7Complete has no
+  // onComplete prop of its own; SeekerOnboarding marks completion via this useEffect.
+  const completionMarked = useRef(false)
 
   const wizard = useWizard({ totalSteps: TOTAL_STEPS, initialStep })
 
@@ -56,6 +63,14 @@ export function SeekerOnboarding() {
       }
 
       if (data) {
+        // BUG-03 2026-05-04: re-entry redirect. If onboarding is already complete,
+        // /onboarding/seeker should bounce to /dashboard/seeker rather than re-render
+        // the wizard chrome. Editing happens elsewhere (when /profile route exists,
+        // per Phase 17/18 nav consolidation).
+        if (data.onboarding_complete) {
+          navigate('/dashboard/seeker', { replace: true })
+          return
+        }
         const resumeStep = Math.min(data.onboarding_step ?? 0, TOTAL_STEPS - 1)
         setInitialStep(resumeStep)
         wizard.goToStep(resumeStep)
@@ -90,6 +105,25 @@ export function SeekerOnboarding() {
     loadProfile()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session?.user?.id])
+
+  // BUG-03 2026-05-04: SeekerStep7Complete has no onComplete prop and no explicit
+  // "finish" button — it's a "you're done" matches view. Without firing the completion
+  // upsert, onboarding_complete stays false forever, and re-entry to /onboarding/seeker
+  // resumes at step 6 (the matches view inside wizard chrome) instead of redirecting
+  // to dashboard. Mark complete on the first transition to the final step. The upsert
+  // is idempotent (onConflict user_id), so StrictMode double-fire is harmless.
+  useEffect(() => {
+    if (
+      wizard.currentStep === TOTAL_STEPS - 1 &&
+      session?.user &&
+      seekerProfileId &&
+      !completionMarked.current
+    ) {
+      completionMarked.current = true
+      handleStepComplete({}, TOTAL_STEPS - 1)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wizard.currentStep, session?.user?.id, seekerProfileId])
 
   async function handleStepComplete(stepData: Partial<SeekerProfileData>, stepIndex: number) {
     if (!session?.user) return

@@ -15,6 +15,7 @@ import { SelectRole } from '@/pages/auth/SelectRole'
 import { EmployerDashboard } from '@/pages/dashboard/EmployerDashboard'
 import { SeekerDashboard } from '@/pages/dashboard/SeekerDashboard'
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
+import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { EmployerOnboarding } from '@/pages/onboarding/EmployerOnboarding'
 import { SeekerOnboarding } from '@/pages/onboarding/SeekerOnboarding'
 import { PostJob } from '@/pages/jobs/PostJob'
@@ -72,8 +73,17 @@ const router = createBrowserRouter([
     element: <Pricing />,
   },
   {
+    // /jobs is public-or-authenticated. Wrapped in DashboardLayout (hideSidebar) to
+    // restore Nav top bar (BUG-02 2026-05-04) — anonymous and authenticated visitors
+    // both need navigation context. hideSidebar because the page already has its own
+    // FilterSidebar; adding Sidebar would be visually busy. The Nav itself adapts
+    // links per session/role (publicLinks vs seekerLinks vs employerLinks).
     path: '/jobs',
-    element: <JobSearch />,
+    element: (
+      <DashboardLayout hideSidebar>
+        <JobSearch />
+      </DashboardLayout>
+    ),
   },
   {
     path: '/jobs/new',
