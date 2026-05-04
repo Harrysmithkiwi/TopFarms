@@ -187,12 +187,12 @@ Plans:
 **Depends on**: Phase 19 (built on top of clean v2 design system)
 **Requirements**: None directly (internal tooling; no public-facing REQ-IDs). Validation derives from CONTEXT.md MVP must-haves and 20-VALIDATION.md test IDs (22 IDs).
 **Status**: Plans authored; ready for /gsd:execute-phase
-**Plans:** 3/8 plans executed
+**Plans:** 4/8 plans executed
 Plans:
-- [ ] 20-01-PLAN.md — Wave 0 test scaffolding: 14 vitest stubs + 1 UAT markdown for all VALIDATION.md test IDs
-- [ ] 20-02-PLAN.md — Migration 023_admin_rpcs.sql via Supabase Studio (admin_audit_log + admin_notes + admin_metrics_cache + user_roles.is_active + 10 SECURITY DEFINER RPCs); pre-migration RLS baseline capture
-- [ ] 20-03-PLAN.md — Edge Function get-resend-stats source + supabase/config.toml verify_jwt=false block (cached-metric pattern)
-- [ ] 20-04-PLAN.md — ProtectedRoute requiredRole 'admin' extension + AdminLayout + AdminSidebar + 5 /admin/* routes registered
+- [x] 20-01-PLAN.md — Wave 0 test scaffolding: 14 vitest stubs + 1 UAT markdown for all VALIDATION.md test IDs
+- [x] 20-02-PLAN.md — Migration 023_admin_rpcs.sql via Supabase Studio (admin_audit_log + admin_notes + admin_metrics_cache + user_roles.is_active + 10 SECURITY DEFINER RPCs); pre-migration RLS baseline capture
+- [x] 20-03-PLAN.md — Edge Function get-resend-stats source + supabase/config.toml verify_jwt=false block (cached-metric pattern)
+- [x] 20-04-PLAN.md — ProtectedRoute requiredRole 'admin' extension + AdminLayout + AdminSidebar + 5 /admin/* routes registered
 - [ ] 20-05-PLAN.md — AdminTable + ProfileDrawer + AdminNotesField reusable components + 4 test files filled (drawer, suspend, notes, audit)
 - [ ] 20-06-PLAN.md — DailyBriefing + EmployerList + SeekerList pages; 4 test files filled (daily, employer, seeker, resend-cache)
 - [ ] 20-07-PLAN.md — JobsManagement + PlacementPipeline pages; 2 test files filled (jobs, placements)
@@ -222,4 +222,4 @@ Plans:
 | 18. Tech Debt Cleanup | v2.0 | 0/? | Pending (gap closure) | — |
 | 19. Design System Cleanup (Tier 1) | v2.0 | 0/? | In flight (this session) | — |
 | 19b. Design System Cleanup (Tier 2) | v2.0 | 0/? | Pending (post-19) | — |
-| 20. Super Admin Dashboard | 3/8 | In Progress|  | — |
+| 20. Super Admin Dashboard | 4/8 | In Progress|  | — |

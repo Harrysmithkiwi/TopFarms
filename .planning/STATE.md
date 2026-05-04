@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: executing
-stopped_at: Phase 20-02 complete (migration 023 applied via Studio; RLS not widened; NAMING.md updated)
-last_updated: "2026-05-04T21:43:30.600Z"
-last_activity: 2026-05-04 — 20-02 complete; migration 023_admin_rpcs.sql applied via Studio SQL Editor (3 tables, is_active column, 10 admin RPCs + _admin_gate helper); 6 RLS baseline counts identical pre/post (empirical ADMIN-RLS-NEG-1/2 ground truth); NAMING.md row added.
+stopped_at: "Phase 20-04 complete — admin route tree foundation (5 /admin/* routes, AdminLayout shell, AdminSidebar, ProtectedRoute admin gate); next: plan 20-05 (drawer + AdminTable)"
+last_updated: "2026-05-04T21:52:03.481Z"
+last_activity: 2026-05-04 — 20-04 complete; admin route tree foundation shipped (ProtectedRoute admin gate, AdminSidebar 240px, AdminLayout shell omitting top Nav per UI-SPEC, 5 /admin/* routes, 4 ADMIN-GATE-FE assertions green).
 progress:
   total_phases: 10
   completed_phases: 4
   total_plans: 19
-  completed_plans: 14
+  completed_plans: 15
 ---
 
 # Project State
@@ -25,9 +25,9 @@ See: .planning/PROJECT.md (updated 2026-04-03)
 ## Current Position
 
 Phase: 20 of 20+ — Super Admin Dashboard
-Plan: 20-02 + 20-03 complete — moving to 20-04 (next plan)
-Status: In progress (plan 20-04 next)
-Last activity: 2026-05-04 — 20-02 complete; migration 023_admin_rpcs.sql applied via Studio SQL Editor (3 tables, is_active column, 10 admin RPCs + _admin_gate helper); 6 RLS baseline counts identical pre/post (empirical ADMIN-RLS-NEG-1/2 ground truth); NAMING.md row added.
+Plan: 20-04 complete — moving to 20-05 (next plan)
+Status: In progress (plan 20-05 next)
+Last activity: 2026-05-04 — 20-04 complete; admin route tree foundation shipped (ProtectedRoute requiredRole union widened to include 'admin'; AdminSidebar 240px + 5 nav items + Back-to-app escape; AdminLayout omits top <Nav /> per UI-SPEC; 5 /admin/* routes registered; 4 ADMIN-GATE-FE assertions green replacing it.todo stubs; tsc clean).
 
 ## Accumulated Context
 
@@ -56,6 +56,8 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 20-03]: delivered = delivered + opened + clicked when aggregating Resend last_event — Resend events progress monotonically (opened/clicked imply delivered), so summing all three captures the true delivery total without double-counting.
 - [Phase 20-02]: Phase 20-02 Task 1 complete — pre-migration RLS baselines captured (jobs_active=1, match_scores=3, applications=2, jobs=2, employers=1, seekers=2). These are the empirical reference for ADMIN-RLS-NEG-1/2 post-migration drift check (Task 3).
 - [Phase 20-02]: Phase 20-02 complete — migration 023 applied via Studio SQL Editor for project inlagtgpynemhipnqvty (3 tables: admin_audit_log/admin_notes/admin_metrics_cache, user_roles.is_active column, 10 admin_* SECURITY DEFINER RPCs + _admin_gate helper); RLS not widened (post-baselines [1,3,2,2,1,2] match pre exactly — empirical ADMIN-RLS-NEG-1/2 ground truth).
+- [Phase 20-04]: ProtectedRoute requiredRole union widened to 'employer' | 'seeker' | 'admin' (one-line type-only change at line 7); existing line-62 redirect logic handles all 4 cases by structure
+- [Phase 20-04]: AdminLayout omits top <Nav /> per UI-SPEC anti-chrome rule — single-sidebar Stripe/Linear pattern (vs DashboardLayout's Nav+Sidebar combo); 240px AdminSidebar + max-w-[1200px] inner content; 4 list-view routes temporarily render DailyBriefing as placeholder, swapped in plans 20-06 and 20-07
 
 ### Blockers/Concerns
 
@@ -66,6 +68,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-04T21:42:54.611Z
-Stopped at: Phase 20-02 complete (migration 023 applied via Studio; RLS not widened; NAMING.md updated)
+Last session: 2026-05-04T21:52:03.478Z
+Stopped at: Phase 20-04 complete — admin route tree foundation (5 /admin/* routes, AdminLayout shell, AdminSidebar, ProtectedRoute admin gate); next: plan 20-05 (drawer + AdminTable)
 Resume file: None
