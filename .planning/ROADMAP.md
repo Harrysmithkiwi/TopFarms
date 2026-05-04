@@ -185,17 +185,27 @@ Plans:
 ### Phase 20: Super Admin Dashboard
 **Goal**: Internal-only admin panel at `/admin/*` for Harry to monitor and operate the TopFarms marketplace — daily briefing, employer/seeker lists, placement-fee pipeline, platform health (Edge Function errors, cron timestamps, pg_net log)
 **Depends on**: Phase 19 (built on top of clean v2 design system)
-**Requirements**: None directly (internal tooling; no public-facing REQ-IDs)
-**Status**: Discuss-phase only — full brief in `.planning/SESSION-HANDOFF-2026-05-04.md` "Next session brief — Super Admin Dashboard phase" section
+**Requirements**: None directly (internal tooling; no public-facing REQ-IDs). Validation derives from CONTEXT.md MVP must-haves and 20-VALIDATION.md test IDs (22 IDs).
+**Status**: Plans authored; ready for /gsd:execute-phase
+**Plans:** 8 plans
+Plans:
+- [ ] 20-01-PLAN.md — Wave 0 test scaffolding: 14 vitest stubs + 1 UAT markdown for all VALIDATION.md test IDs
+- [ ] 20-02-PLAN.md — Migration 023_admin_rpcs.sql via Supabase Studio (admin_audit_log + admin_notes + admin_metrics_cache + user_roles.is_active + 10 SECURITY DEFINER RPCs); pre-migration RLS baseline capture
+- [ ] 20-03-PLAN.md — Edge Function get-resend-stats source + supabase/config.toml verify_jwt=false block (cached-metric pattern)
+- [ ] 20-04-PLAN.md — ProtectedRoute requiredRole 'admin' extension + AdminLayout + AdminSidebar + 5 /admin/* routes registered
+- [ ] 20-05-PLAN.md — AdminTable + ProfileDrawer + AdminNotesField reusable components + 4 test files filled (drawer, suspend, notes, audit)
+- [ ] 20-06-PLAN.md — DailyBriefing + EmployerList + SeekerList pages; 4 test files filled (daily, employer, seeker, resend-cache)
+- [ ] 20-07-PLAN.md — JobsManagement + PlacementPipeline pages; 2 test files filled (jobs, placements)
+- [ ] 20-08-PLAN.md — Edge Function deploy + pg_cron schedule + bootstrap UAT + post-migration RLS proof + phase 20-VERIFICATION.md + ROADMAP flip to [x]
 **Notes**:
-- Role-gated to a new `admin` role in `user_roles` (CHECK constraint extension migration, likely `023_user_roles_admin.sql`)
+- Role-gated to existing `admin` role (CHECK constraint already includes 'admin' per 001_initial_schema.sql:13 — no constraint migration needed)
 - Protected route tree at `/admin/*` inside existing React app (same Vercel deployment, same Supabase project)
-- Own `AdminLayout` component (separate from DashboardLayout)
-- SECURITY DEFINER RPC layer for admin queries — don't widen existing RLS holes
+- Own `AdminLayout` component (separate from DashboardLayout) — single sidebar, no top Nav per UI-SPEC
+- SECURITY DEFINER RPC layer for admin queries — RLS not-widened proof captured in plan 20-02 + 20-08 (ADMIN-RLS-NEG-1/2)
 - Same Tailwind design system + component library (no new design primitives) — relies on Phase 19 v2 brand
-- First-time setup: one-shot Supabase Studio SQL to assign Harry's `auth.users.id` the admin role (NOT auto-assigned by signup trigger)
-- MVP must-haves: daily briefing view, employer list, seeker list, placement-fee pipeline, platform health
-- Post-launch (NOT MVP): broadcast comms, doc verification queue, moderation queue, advanced analytics
+- First-time setup: one-shot Supabase Studio SQL to assign Harry's `auth.users.id` the admin role (NOT auto-assigned by signup trigger; bootstrap UAT in plan 20-08)
+- MVP must-haves: daily briefing view, employer list, seeker list, jobs management, placement-fee pipeline, profile drawer (light), suspend/reactivate mutation, admin notes (additive only), Resend delivery-rate indicator
+- Post-launch (NOT MVP, deferred to Phase 21): broadcast comms, doc verification queue, moderation queue, advanced analytics, login-blocking on is_active=false
 
 ## Progress
 
