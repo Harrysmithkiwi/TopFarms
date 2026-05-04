@@ -4,7 +4,7 @@ export function LandingFooter() {
   return (
     <footer
       className="py-14 px-4"
-      style={{ backgroundColor: 'var(--color-soil-deep)' }}
+      style={{ backgroundColor: 'var(--color-brand-900)' }}
     >
       <div className="max-w-6xl mx-auto">
         {/* Main columns */}
@@ -14,11 +14,11 @@ export function LandingFooter() {
             <Link
               to="/"
               className="font-display text-xl font-semibold mb-3 inline-block"
-              style={{ color: 'var(--color-cream)' }}
+              style={{ color: 'var(--color-text-on-brand)' }}
             >
               🌿 TopFarms
             </Link>
-            <p className="text-sm leading-relaxed" style={{ color: 'rgba(247,242,232,0.5)' }}>
+            <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>
               New Zealand's agricultural recruitment platform.
             </p>
           </div>
@@ -27,7 +27,7 @@ export function LandingFooter() {
           <div>
             <h3
               className="text-xs font-bold tracking-widest uppercase mb-4"
-              style={{ color: 'rgba(247,242,232,0.4)' }}
+              style={{ color: 'rgba(255,255,255,0.4)' }}
             >
               Platform
             </h3>
@@ -36,7 +36,7 @@ export function LandingFooter() {
                 <Link
                   to="/jobs"
                   className="text-sm transition-colors hover:opacity-80"
-                  style={{ color: 'rgba(247,242,232,0.65)' }}
+                  style={{ color: 'rgba(255,255,255,0.65)' }}
                 >
                   Browse Jobs
                 </Link>
@@ -45,7 +45,7 @@ export function LandingFooter() {
                 <Link
                   to="/signup?role=employer"
                   className="text-sm transition-colors hover:opacity-80"
-                  style={{ color: 'rgba(247,242,232,0.65)' }}
+                  style={{ color: 'rgba(255,255,255,0.65)' }}
                 >
                   Post a Job
                 </Link>
@@ -54,7 +54,7 @@ export function LandingFooter() {
                 <Link
                   to="/signup"
                   className="text-sm transition-colors hover:opacity-80"
-                  style={{ color: 'rgba(247,242,232,0.65)' }}
+                  style={{ color: 'rgba(255,255,255,0.65)' }}
                 >
                   Sign Up
                 </Link>
@@ -63,7 +63,7 @@ export function LandingFooter() {
                 <Link
                   to="/login"
                   className="text-sm transition-colors hover:opacity-80"
-                  style={{ color: 'rgba(247,242,232,0.65)' }}
+                  style={{ color: 'rgba(255,255,255,0.65)' }}
                 >
                   Log In
                 </Link>
@@ -75,7 +75,7 @@ export function LandingFooter() {
           <div>
             <h3
               className="text-xs font-bold tracking-widest uppercase mb-4"
-              style={{ color: 'rgba(247,242,232,0.4)' }}
+              style={{ color: 'rgba(255,255,255,0.4)' }}
             >
               Support
             </h3>
@@ -84,7 +84,7 @@ export function LandingFooter() {
                 <a
                   href="mailto:hello@topfarms.co.nz"
                   className="text-sm transition-colors hover:opacity-80"
-                  style={{ color: 'rgba(247,242,232,0.65)' }}
+                  style={{ color: 'rgba(255,255,255,0.65)' }}
                 >
                   Contact
                 </a>
@@ -93,7 +93,7 @@ export function LandingFooter() {
                 <a
                   href="#"
                   className="text-sm transition-colors hover:opacity-80"
-                  style={{ color: 'rgba(247,242,232,0.65)' }}
+                  style={{ color: 'rgba(255,255,255,0.65)' }}
                 >
                   Help Center
                 </a>
@@ -102,7 +102,7 @@ export function LandingFooter() {
                 <a
                   href="#"
                   className="text-sm transition-colors hover:opacity-80"
-                  style={{ color: 'rgba(247,242,232,0.65)' }}
+                  style={{ color: 'rgba(255,255,255,0.65)' }}
                 >
                   About
                 </a>
@@ -114,7 +114,7 @@ export function LandingFooter() {
           <div>
             <h3
               className="text-xs font-bold tracking-widest uppercase mb-4"
-              style={{ color: 'rgba(247,242,232,0.4)' }}
+              style={{ color: 'rgba(255,255,255,0.4)' }}
             >
               Legal
             </h3>
@@ -123,7 +123,7 @@ export function LandingFooter() {
                 <Link
                   to="/privacy"
                   className="text-sm transition-colors hover:opacity-80"
-                  style={{ color: 'rgba(247,242,232,0.65)' }}
+                  style={{ color: 'rgba(255,255,255,0.65)' }}
                 >
                   Privacy Policy
                 </Link>
@@ -132,7 +132,7 @@ export function LandingFooter() {
                 <Link
                   to="/terms"
                   className="text-sm transition-colors hover:opacity-80"
-                  style={{ color: 'rgba(247,242,232,0.65)' }}
+                  style={{ color: 'rgba(255,255,255,0.65)' }}
                 >
                   Terms of Service
                 </Link>
@@ -146,7 +146,7 @@ export function LandingFooter() {
           className="pt-6 border-t"
           style={{ borderColor: 'rgba(255,255,255,0.07)' }}
         >
-          <p className="text-xs text-center" style={{ color: 'rgba(247,242,232,0.35)' }}>
+          <p className="text-xs text-center" style={{ color: 'rgba(255,255,255,0.35)' }}>
             &copy; 2026 TopFarms. All rights reserved.
           </p>
         </div>

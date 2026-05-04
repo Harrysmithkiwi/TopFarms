@@ -44,11 +44,11 @@ const steps = [
 
 export function ForEmployers() {
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'var(--color-cream)' }}>
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--color-bg)' }}>
       <Nav />
 
       {/* Hero */}
-      <section className="py-24 px-4" style={{ backgroundColor: 'var(--color-soil)' }}>
+      <section className="py-24 px-4" style={{ backgroundColor: 'var(--color-brand-900)' }}>
         <motion.div
           className="max-w-4xl mx-auto text-center"
           initial={{ opacity: 0, y: 24 }}
@@ -57,19 +57,19 @@ export function ForEmployers() {
         >
           <p
             className="text-xs font-bold tracking-widest uppercase mb-5"
-            style={{ color: 'var(--color-meadow)' }}
+            style={{ color: 'var(--color-brand)' }}
           >
             For Farm Employers
           </p>
           <h1
             className="font-display font-bold text-5xl md:text-6xl mb-6 leading-tight"
-            style={{ color: 'var(--color-cream)' }}
+            style={{ color: 'var(--color-text-on-brand)' }}
           >
             Find skilled farm workers, faster.
           </h1>
           <p
             className="text-lg mb-10 max-w-2xl mx-auto leading-relaxed"
-            style={{ color: 'rgba(247,242,232,0.7)' }}
+            style={{ color: 'rgba(255,255,255,0.7)' }}
           >
             TopFarms connects you with verified, experienced farm workers across all 16 regions of New Zealand.
             Post a job today and get matched candidates in your dashboard.
@@ -78,7 +78,7 @@ export function ForEmployers() {
             <Link
               to="/signup?role=employer"
               className="inline-block rounded-full px-8 py-3.5 font-semibold text-base transition-opacity hover:opacity-90"
-              style={{ backgroundColor: 'var(--color-meadow)', color: 'var(--color-soil)' }}
+              style={{ backgroundColor: 'var(--color-brand)', color: 'var(--color-brand-900)' }}
             >
               Post Your First Job
             </Link>
@@ -86,8 +86,8 @@ export function ForEmployers() {
               to="/jobs"
               className="inline-block rounded-full px-8 py-3.5 font-semibold text-base transition-colors"
               style={{
-                border: '1px solid rgba(247,242,232,0.25)',
-                color: 'var(--color-cream)',
+                border: '1px solid rgba(255,255,255,0.25)',
+                color: 'var(--color-text-on-brand)',
               }}
             >
               Browse Talent
@@ -97,7 +97,7 @@ export function ForEmployers() {
       </section>
 
       {/* Benefits checklist */}
-      <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-white)' }}>
+      <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-surface)' }}>
         <motion.div
           className="max-w-2xl mx-auto"
           initial={{ opacity: 0, y: 24 }}
@@ -107,7 +107,7 @@ export function ForEmployers() {
         >
           <h2
             className="font-display font-bold text-3xl mb-10 text-center"
-            style={{ color: 'var(--color-soil)' }}
+            style={{ color: 'var(--color-brand-900)' }}
           >
             Everything you need to hire well
           </h2>
@@ -118,9 +118,9 @@ export function ForEmployers() {
                   className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center"
                   style={{ backgroundColor: 'rgba(122,175,63,0.15)' }}
                 >
-                  <Check size={12} style={{ color: 'var(--color-meadow)' }} strokeWidth={3} />
+                  <Check size={12} style={{ color: 'var(--color-brand)' }} strokeWidth={3} />
                 </span>
-                <span className="text-base leading-relaxed" style={{ color: 'var(--color-ink)' }}>
+                <span className="text-base leading-relaxed" style={{ color: 'var(--color-text)' }}>
                   {item}
                 </span>
               </li>
@@ -130,11 +130,11 @@ export function ForEmployers() {
       </section>
 
       {/* Features grid */}
-      <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-cream)' }}>
+      <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-bg)' }}>
         <div className="max-w-6xl mx-auto">
           <motion.h2
             className="font-display font-bold text-3xl mb-12 text-center"
-            style={{ color: 'var(--color-soil)' }}
+            style={{ color: 'var(--color-brand-900)' }}
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
@@ -147,7 +147,7 @@ export function ForEmployers() {
               <motion.div
                 key={f.title}
                 className="rounded-xl p-6"
-                style={{ backgroundColor: 'var(--color-white)', border: '1px solid var(--color-fog)' }}
+                style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.2 }}
@@ -157,12 +157,12 @@ export function ForEmployers() {
                   className="w-10 h-10 rounded-lg flex items-center justify-center mb-4"
                   style={{ backgroundColor: 'rgba(122,175,63,0.12)' }}
                 >
-                  <f.icon size={20} style={{ color: 'var(--color-meadow)' }} />
+                  <f.icon size={20} style={{ color: 'var(--color-brand)' }} />
                 </div>
-                <h3 className="font-semibold text-base mb-2" style={{ color: 'var(--color-soil)' }}>
+                <h3 className="font-semibold text-base mb-2" style={{ color: 'var(--color-brand-900)' }}>
                   {f.title}
                 </h3>
-                <p className="text-sm leading-relaxed" style={{ color: 'var(--color-mid)' }}>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
                   {f.body}
                 </p>
               </motion.div>
@@ -172,11 +172,11 @@ export function ForEmployers() {
       </section>
 
       {/* How it works */}
-      <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-white)' }}>
+      <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-surface)' }}>
         <div className="max-w-3xl mx-auto">
           <motion.h2
             className="font-display font-bold text-3xl mb-12 text-center"
-            style={{ color: 'var(--color-soil)' }}
+            style={{ color: 'var(--color-brand-900)' }}
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
@@ -196,15 +196,15 @@ export function ForEmployers() {
               >
                 <span
                   className="font-display font-bold text-3xl flex-shrink-0 w-12 text-right"
-                  style={{ color: 'var(--color-meadow)' }}
+                  style={{ color: 'var(--color-brand)' }}
                 >
                   {step.num}
                 </span>
                 <div>
-                  <p className="font-semibold text-base mb-1" style={{ color: 'var(--color-soil)' }}>
+                  <p className="font-semibold text-base mb-1" style={{ color: 'var(--color-brand-900)' }}>
                     {step.label}
                   </p>
-                  <p className="text-sm leading-relaxed" style={{ color: 'var(--color-mid)' }}>
+                  <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
                     {step.detail}
                   </p>
                 </div>
@@ -215,7 +215,7 @@ export function ForEmployers() {
       </section>
 
       {/* Bottom CTA */}
-      <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-soil)' }}>
+      <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-brand-900)' }}>
         <motion.div
           className="max-w-xl mx-auto text-center"
           initial={{ opacity: 0, y: 24 }}
@@ -225,17 +225,17 @@ export function ForEmployers() {
         >
           <h2
             className="font-display font-bold text-4xl mb-5"
-            style={{ color: 'var(--color-cream)' }}
+            style={{ color: 'var(--color-text-on-brand)' }}
           >
             Ready to hire?
           </h2>
-          <p className="mb-8 text-base" style={{ color: 'rgba(247,242,232,0.7)' }}>
+          <p className="mb-8 text-base" style={{ color: 'rgba(255,255,255,0.7)' }}>
             Join hundreds of farms already using TopFarms to find reliable, skilled workers.
           </p>
           <Link
             to="/signup?role=employer"
             className="inline-block rounded-full px-10 py-4 font-semibold text-base transition-opacity hover:opacity-90"
-            style={{ backgroundColor: 'var(--color-meadow)', color: 'var(--color-soil)' }}
+            style={{ backgroundColor: 'var(--color-brand)', color: 'var(--color-brand-900)' }}
           >
             Get Started Free
           </Link>

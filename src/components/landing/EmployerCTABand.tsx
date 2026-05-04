@@ -11,7 +11,7 @@ const checklist = [
 
 export function EmployerCTABand() {
   return (
-    <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-soil)' }}>
+    <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-brand-900)' }}>
       <motion.div
         className="max-w-6xl mx-auto"
         initial={{ opacity: 0, y: 32 }}
@@ -25,14 +25,14 @@ export function EmployerCTABand() {
             {/* Eyebrow */}
             <p
               className="text-xs font-bold tracking-widest uppercase mb-4"
-              style={{ color: 'var(--color-meadow)' }}
+              style={{ color: 'var(--color-brand)' }}
             >
               For Employers
             </p>
 
             <h2
               className="font-display font-bold text-4xl mb-8"
-              style={{ color: 'var(--color-cream)' }}
+              style={{ color: 'var(--color-text-on-brand)' }}
             >
               Find Your Next Team Member
             </h2>
@@ -45,9 +45,9 @@ export function EmployerCTABand() {
                     className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center"
                     style={{ backgroundColor: 'rgba(122,175,63,0.2)' }}
                   >
-                    <Check size={12} style={{ color: 'var(--color-meadow)' }} strokeWidth={3} />
+                    <Check size={12} style={{ color: 'var(--color-brand)' }} strokeWidth={3} />
                   </span>
-                  <span className="text-base leading-relaxed" style={{ color: 'rgba(247,242,232,0.85)' }}>
+                  <span className="text-base leading-relaxed" style={{ color: 'rgba(255,255,255,0.85)' }}>
                     {item}
                   </span>
                 </li>
@@ -59,8 +59,8 @@ export function EmployerCTABand() {
                 to="/onboarding/employer"
                 className="inline-block rounded-full px-8 py-3 font-semibold transition-opacity hover:opacity-90"
                 style={{
-                  backgroundColor: 'var(--color-meadow)',
-                  color: 'var(--color-soil)',
+                  backgroundColor: 'var(--color-brand)',
+                  color: 'var(--color-brand-900)',
                 }}
               >
                 Post Your First Job
@@ -68,7 +68,7 @@ export function EmployerCTABand() {
               <Link
                 to="/for-employers"
                 className="inline-block text-sm font-semibold transition-opacity hover:opacity-80"
-                style={{ color: 'var(--color-meadow)' }}
+                style={{ color: 'var(--color-brand)' }}
               >
                 Learn more →
               </Link>
@@ -78,13 +78,13 @@ export function EmployerCTABand() {
           {/* Right: mini dashboard mockup */}
           <div
             className="rounded-xl shadow-xl overflow-hidden"
-            style={{ backgroundColor: 'var(--color-white)' }}
+            style={{ backgroundColor: 'var(--color-surface)' }}
           >
             <div
               className="px-5 py-4 border-b"
-              style={{ borderColor: 'var(--color-fog)' }}
+              style={{ borderColor: 'var(--color-border)' }}
             >
-              <p className="font-display font-bold text-base" style={{ color: 'var(--color-soil)' }}>
+              <p className="font-display font-bold text-base" style={{ color: 'var(--color-brand-900)' }}>
                 Your Dashboard
               </p>
             </div>
@@ -100,12 +100,12 @@ export function EmployerCTABand() {
                   <div
                     key={stat.label}
                     className="rounded-lg p-3 text-center"
-                    style={{ backgroundColor: 'var(--color-cream)' }}
+                    style={{ backgroundColor: 'var(--color-bg)' }}
                   >
-                    <p className="font-bold text-xl" style={{ color: 'var(--color-soil)' }}>
+                    <p className="font-bold text-xl" style={{ color: 'var(--color-brand-900)' }}>
                       {stat.value}
                     </p>
-                    <p className="text-xs mt-0.5" style={{ color: 'var(--color-mid)' }}>
+                    <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
                       {stat.label}
                     </p>
                   </div>
@@ -121,14 +121,14 @@ export function EmployerCTABand() {
                   key={applicant.name}
                   className="flex items-center justify-between rounded-lg px-3 py-2.5 mb-2"
                   style={{
-                    border: '1px solid var(--color-fog)',
+                    border: '1px solid var(--color-border)',
                   }}
                 >
                   <div>
-                    <p className="text-sm font-semibold" style={{ color: 'var(--color-soil)' }}>
+                    <p className="text-sm font-semibold" style={{ color: 'var(--color-brand-900)' }}>
                       {applicant.name}
                     </p>
-                    <p className="text-xs" style={{ color: 'var(--color-mid)' }}>
+                    <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
                       {applicant.role}
                     </p>
                   </div>
@@ -136,7 +136,7 @@ export function EmployerCTABand() {
                     className="text-xs font-bold px-2 py-1 rounded-full"
                     style={{
                       backgroundColor: 'rgba(122,175,63,0.12)',
-                      color: 'var(--color-meadow)',
+                      color: 'var(--color-brand)',
                     }}
                   >
                     {applicant.score}%

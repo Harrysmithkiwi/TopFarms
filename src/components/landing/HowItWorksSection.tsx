@@ -74,14 +74,14 @@ export function HowItWorksSection() {
   const steps = activeTab === 'seeker' ? seekerSteps : employerSteps
 
   return (
-    <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-cream)' }}>
+    <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-bg)' }}>
       <div className="max-w-6xl mx-auto">
         {/* Eyebrow */}
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-8 h-px" style={{ backgroundColor: 'var(--color-meadow)' }} />
+          <div className="w-8 h-px" style={{ backgroundColor: 'var(--color-brand)' }} />
           <p
             className="text-xs font-bold tracking-widest uppercase"
-            style={{ color: 'var(--color-meadow)' }}
+            style={{ color: 'var(--color-brand)' }}
           >
             How It Works
           </p>
@@ -90,10 +90,10 @@ export function HowItWorksSection() {
         {/* Title */}
         <h2
           className="font-display font-bold text-4xl md:text-5xl mb-10"
-          style={{ color: 'var(--color-soil)' }}
+          style={{ color: 'var(--color-brand-900)' }}
         >
           Your Path to the{' '}
-          <em style={{ color: 'var(--color-moss)', fontStyle: 'italic' }}>Perfect Match</em>
+          <em style={{ color: 'var(--color-brand)', fontStyle: 'italic' }}>Perfect Match</em>
         </h2>
 
         {/* Tab toggle */}
@@ -101,7 +101,7 @@ export function HowItWorksSection() {
           className="inline-flex rounded-full p-1 mb-12"
           role="tablist"
           aria-label="Choose your path"
-          style={{ backgroundColor: 'var(--color-fog)' }}
+          style={{ backgroundColor: 'var(--color-border)' }}
         >
           {tabs.map((t) => (
             <button
@@ -113,13 +113,13 @@ export function HowItWorksSection() {
               style={
                 activeTab === t.value
                   ? {
-                      backgroundColor: 'var(--color-white)',
-                      color: 'var(--color-moss)',
+                      backgroundColor: 'var(--color-surface)',
+                      color: 'var(--color-brand)',
                       boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
                     }
                   : {
                       backgroundColor: 'transparent',
-                      color: 'var(--color-mid)',
+                      color: 'var(--color-text-muted)',
                     }
               }
             >
@@ -139,8 +139,8 @@ export function HowItWorksSection() {
                   style={{
                     width: 'calc(100% - 64px)',
                     left: '80%',
-                    backgroundColor: 'var(--color-fog)',
-                    borderTop: '2px dashed var(--color-fog)',
+                    backgroundColor: 'var(--color-border)',
+                    borderTop: '2px dashed var(--color-border)',
                   }}
                   aria-hidden="true"
                 />
@@ -149,14 +149,14 @@ export function HowItWorksSection() {
               <div
                 className="relative z-10 rounded-2xl p-6 h-full"
                 style={{
-                  backgroundColor: 'var(--color-white)',
-                  border: '1px solid var(--color-fog)',
+                  backgroundColor: 'var(--color-surface)',
+                  border: '1px solid var(--color-border)',
                 }}
               >
                 {/* Faded step number */}
                 <p
                   className="font-display font-bold text-6xl leading-none mb-4 select-none"
-                  style={{ color: 'var(--color-fog)' }}
+                  style={{ color: 'var(--color-border)' }}
                 >
                   {String(step.number).padStart(2, '0')}
                 </p>
@@ -167,13 +167,13 @@ export function HowItWorksSection() {
                 {/* Title */}
                 <h3
                   className="font-display font-bold text-lg mb-2"
-                  style={{ color: 'var(--color-soil)' }}
+                  style={{ color: 'var(--color-brand-900)' }}
                 >
                   {step.title}
                 </h3>
 
                 {/* Description */}
-                <p className="text-sm leading-relaxed" style={{ color: 'var(--color-mid)' }}>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
                   {step.description}
                 </p>
               </div>

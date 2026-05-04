@@ -24,14 +24,14 @@ function CounterBlock({ label, target, active, suffix = '' }: CounterBlockProps)
         className="font-display font-bold leading-none"
         style={{
           fontSize: 'clamp(48px, 5vw, 72px)',
-          color: 'var(--color-cream)',
+          color: 'var(--color-text-on-brand)',
         }}
       >
         {count.toLocaleString()}{suffix}
       </p>
       <p
         className="text-sm font-medium tracking-wide uppercase"
-        style={{ color: 'rgba(247,242,232,0.55)' }}
+        style={{ color: 'rgba(255,255,255,0.55)' }}
       >
         {label}
       </p>
@@ -62,7 +62,7 @@ export function CountersSection() {
   return (
     <section
       ref={ref}
-      style={{ backgroundColor: 'var(--color-soil)' }}
+      style={{ backgroundColor: 'var(--color-brand-900)' }}
     >
       <div className="max-w-5xl mx-auto px-4">
         {/* Live badge */}
@@ -72,12 +72,12 @@ export function CountersSection() {
             style={{
               borderColor: 'rgba(122,175,63,0.3)',
               backgroundColor: 'rgba(122,175,63,0.08)',
-              color: 'var(--color-meadow)',
+              color: 'var(--color-brand)',
             }}
           >
             <span
               className="w-2 h-2 rounded-full animate-pulse"
-              style={{ backgroundColor: 'var(--color-meadow)' }}
+              style={{ backgroundColor: 'var(--color-brand)' }}
             />
             Live
           </div>
