@@ -29,6 +29,8 @@ import { JobSearch } from '@/pages/jobs/JobSearch'
 import { MyApplications } from '@/pages/dashboard/seeker/MyApplications'
 import { SeekerDocuments } from '@/pages/dashboard/seeker/SeekerDocuments'
 import { ApplicantDashboard } from '@/pages/dashboard/employer/ApplicantDashboard'
+import { AdminLayout } from '@/components/layout/AdminLayout'
+import { DailyBriefing } from '@/pages/admin/DailyBriefing'
 
 const router = createBrowserRouter([
   // ─── Public routes ──────────────────────────────────────────────────────────
@@ -193,6 +195,63 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute requiredRole="seeker">
         <SeekerOnboarding />
+      </ProtectedRoute>
+    ),
+  },
+
+  // ─── Admin (super admin dashboard, Phase 20) ────────────────────────────────
+  // /admin/* routes are gated by ProtectedRoute requiredRole="admin". The actual
+  // security boundary is the SECURITY DEFINER RPC layer (migration 023) — every
+  // admin_* RPC validates get_user_role(auth.uid()) = 'admin' server-side, so
+  // even a DevTools bypass of the frontend gate cannot exfiltrate data.
+  // List view pages are placeholders this commit; filled in plan 20-06 / 20-07.
+  {
+    path: '/admin',
+    element: (
+      <ProtectedRoute requiredRole="admin">
+        <AdminLayout>
+          <DailyBriefing />
+        </AdminLayout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/admin/employers',
+    element: (
+      <ProtectedRoute requiredRole="admin">
+        <AdminLayout>
+          <DailyBriefing />
+        </AdminLayout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/admin/seekers',
+    element: (
+      <ProtectedRoute requiredRole="admin">
+        <AdminLayout>
+          <DailyBriefing />
+        </AdminLayout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/admin/jobs',
+    element: (
+      <ProtectedRoute requiredRole="admin">
+        <AdminLayout>
+          <DailyBriefing />
+        </AdminLayout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/admin/placements',
+    element: (
+      <ProtectedRoute requiredRole="admin">
+        <AdminLayout>
+          <DailyBriefing />
+        </AdminLayout>
       </ProtectedRoute>
     ),
   },
