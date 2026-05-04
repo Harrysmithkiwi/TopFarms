@@ -136,7 +136,7 @@ export function FilterSidebar({
     <div
       className={cn(
         'flex flex-col bg-white',
-        isMobile ? 'h-full' : 'h-fit sticky top-4',
+        isMobile ? 'h-full' : 'h-fit sticky top-4 pl-6',
       )}
     >
       {/* Mobile header */}

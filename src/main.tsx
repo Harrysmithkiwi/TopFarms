@@ -15,7 +15,7 @@ import { SelectRole } from '@/pages/auth/SelectRole'
 import { EmployerDashboard } from '@/pages/dashboard/EmployerDashboard'
 import { SeekerDashboard } from '@/pages/dashboard/SeekerDashboard'
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
-import { DashboardLayout } from '@/components/layout/DashboardLayout'
+import { JobSearchLayout } from '@/components/layout/JobSearchLayout'
 import { EmployerOnboarding } from '@/pages/onboarding/EmployerOnboarding'
 import { SeekerOnboarding } from '@/pages/onboarding/SeekerOnboarding'
 import { PostJob } from '@/pages/jobs/PostJob'
@@ -73,16 +73,17 @@ const router = createBrowserRouter([
     element: <Pricing />,
   },
   {
-    // /jobs is public-or-authenticated. Wrapped in DashboardLayout (hideSidebar) to
-    // restore Nav top bar (BUG-02 2026-05-04) — anonymous and authenticated visitors
-    // both need navigation context. hideSidebar because the page already has its own
-    // FilterSidebar; adding Sidebar would be visually busy. The Nav itself adapts
-    // links per session/role (publicLinks vs seekerLinks vs employerLinks).
+    // /jobs uses JobSearchLayout — Nav header only, no dashboard sidebar.
+    // Job search has its own page-internal filter sidebar; a second left-rail
+    // (DashboardLayout's Sidebar) would conflict architecturally. Pattern
+    // matches Seek's job-search layout. Originally wrapped in DashboardLayout
+    // hideSidebar (commit eb7e2f1, 2026-05-04 morning) but that introduced
+    // max-w + p-6 layout constraints that conflicted with JobSearch's flex split.
     path: '/jobs',
     element: (
-      <DashboardLayout hideSidebar>
+      <JobSearchLayout>
         <JobSearch />
-      </DashboardLayout>
+      </JobSearchLayout>
     ),
   },
   {

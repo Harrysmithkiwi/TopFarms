@@ -105,8 +105,19 @@ export function Nav() {
                       borderColor: 'var(--color-fog)',
                     }}
                   >
-                    {/* Profile + Settings dropdown items removed 2026-05-04 (UAT-04 — pages don't exist).
-                        Add back when /profile and /settings routes are registered in main.tsx. */}
+                    {role && (
+                      <Link
+                        to={`/dashboard/${role}`}
+                        onClick={() => setUserMenuOpen(false)}
+                        className="block px-4 py-2 text-sm hover:bg-fog transition-colors"
+                        style={{ color: 'var(--color-ink)' }}
+                      >
+                        Dashboard
+                      </Link>
+                    )}
+                    {role && <hr style={{ borderColor: 'var(--color-fog)' }} className="my-1" />}
+                    {/* My Profile + Settings dropdown items: add back when /profile and /settings
+                        routes are registered in main.tsx (Phase 17/18 nav consolidation). */}
                     <button
                       onClick={() => {
                         setUserMenuOpen(false)
