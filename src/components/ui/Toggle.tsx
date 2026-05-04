@@ -29,16 +29,16 @@ export function Toggle({
         onCheckedChange={onCheckedChange}
         disabled={disabled}
         className={cn(
-          'w-[34px] h-[18px] rounded-full transition-colors duration-200',
-          'focus:outline-none focus:ring-[3px] focus:ring-[rgba(74,124,47,0.08)]',
+          'w-[34px] h-[18px] rounded-full transition-colors duration-150',
+          'outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
           'disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer',
-          'data-[state=unchecked]:bg-fog data-[state=checked]:bg-moss',
+          'data-[state=unchecked]:bg-border data-[state=checked]:bg-brand',
         )}
       >
         <Switch.Thumb
           className={cn(
-            'block w-[14px] h-[14px] bg-white rounded-full shadow-sm',
-            'transition-transform duration-200',
+            'block w-[14px] h-[14px] bg-surface rounded-full shadow-sm',
+            'transition-transform duration-150',
             'translate-x-[2px] data-[state=checked]:translate-x-[16px]',
           )}
         />
@@ -46,7 +46,7 @@ export function Toggle({
       {label && (
         <Label.Root
           htmlFor={switchId}
-          className="font-body text-[13px] text-ink cursor-pointer select-none"
+          className="font-body text-[13px] text-text cursor-pointer select-none"
         >
           {label}
         </Label.Root>

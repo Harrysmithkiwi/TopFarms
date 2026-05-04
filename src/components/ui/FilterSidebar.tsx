@@ -283,11 +283,11 @@ export function FilterSidebar({
                 <Slider.Range className="absolute bg-moss rounded-full h-full" />
               </Slider.Track>
               <Slider.Thumb
-                className="block w-[16px] h-[16px] bg-white border-[2px] border-moss rounded-full shadow-sm hover:bg-mist focus:outline-none focus:ring-[3px] focus:ring-[rgba(74,124,47,0.2)] cursor-pointer"
+                className="block w-[16px] h-[16px] bg-white border-[2px] border-moss rounded-full shadow-sm hover:bg-mist outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand cursor-pointer"
                 aria-label="Salary minimum"
               />
               <Slider.Thumb
-                className="block w-[16px] h-[16px] bg-white border-[2px] border-moss rounded-full shadow-sm hover:bg-mist focus:outline-none focus:ring-[3px] focus:ring-[rgba(74,124,47,0.2)] cursor-pointer"
+                className="block w-[16px] h-[16px] bg-white border-[2px] border-moss rounded-full shadow-sm hover:bg-mist outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand cursor-pointer"
                 aria-label="Salary maximum"
               />
             </Slider.Root>

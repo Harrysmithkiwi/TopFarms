@@ -43,8 +43,10 @@ function getPageNumbers(currentPage: number, totalPages: number): (number | '...
   return pages
 }
 
-const pageButtonBase =
-  'w-[34px] h-[34px] flex items-center justify-center rounded-[6px] border-[1.5px] font-body text-[13px] transition-colors'
+const pageButtonBase = cn(
+  'w-11 h-11 md:w-[34px] md:h-[34px] flex items-center justify-center rounded-[6px] border-[1.5px] font-body text-[13px] transition-colors',
+  'outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
+)
 
 export function Pagination({ currentPage, totalPages, onPageChange, className }: PaginationProps) {
   const pages = getPageNumbers(currentPage, totalPages)
@@ -56,7 +58,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, className }:
         type="button"
         className={cn(
           pageButtonBase,
-          'border-fog bg-white',
+          'border-border bg-surface',
           currentPage === 1 && 'opacity-40 cursor-not-allowed',
         )}
         disabled={currentPage === 1}
@@ -72,7 +74,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, className }:
           return (
             <span
               key={`ellipsis-${index}`}
-              className="text-[13px] text-light w-[34px] text-center"
+              className="text-[13px] text-text-subtle w-[34px] text-center"
             >
               ...
             </span>
@@ -88,8 +90,8 @@ export function Pagination({ currentPage, totalPages, onPageChange, className }:
             className={cn(
               pageButtonBase,
               isActive
-                ? 'border-moss bg-moss text-white'
-                : 'border-fog bg-white text-ink hover:border-fern',
+                ? 'border-brand bg-brand text-text-on-brand'
+                : 'border-border bg-surface text-text hover:border-brand-hover',
             )}
             onClick={() => onPageChange(page)}
           >
@@ -103,7 +105,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, className }:
         type="button"
         className={cn(
           pageButtonBase,
-          'border-fog bg-white',
+          'border-border bg-surface',
           currentPage === totalPages && 'opacity-40 cursor-not-allowed',
         )}
         disabled={currentPage === totalPages}

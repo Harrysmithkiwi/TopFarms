@@ -77,7 +77,7 @@ export function Step3Culture({ onComplete, onBack, defaultValues }: Step3Props) 
           </label>
           <textarea
             id="culture_description"
-            className="w-full border-[1.5px] rounded-[8px] px-3 py-2 font-body text-[13px] text-ink placeholder:text-light bg-mist resize-none focus:outline-none focus:ring-[3px] focus:ring-[rgba(74,124,47,0.08)] border-fog focus:border-fern transition-colors duration-200"
+            className="w-full border-[1.5px] rounded-[8px] px-3 py-2 font-body text-[13px] text-ink placeholder:text-light bg-mist resize-none outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand border-fog focus:border-fern transition-colors duration-200"
             rows={4}
             placeholder="Describe your farm's work culture and team environment..."
             maxLength={CULTURE_MAX}
@@ -113,7 +113,7 @@ export function Step3Culture({ onComplete, onBack, defaultValues }: Step3Props) 
           </label>
           <textarea
             id="about_farm"
-            className="w-full border-[1.5px] rounded-[8px] px-3 py-2 font-body text-[13px] text-ink placeholder:text-light bg-mist resize-none focus:outline-none focus:ring-[3px] focus:ring-[rgba(74,124,47,0.08)] border-fog focus:border-fern transition-colors duration-200"
+            className="w-full border-[1.5px] rounded-[8px] px-3 py-2 font-body text-[13px] text-ink placeholder:text-light bg-mist resize-none outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand border-fog focus:border-fern transition-colors duration-200"
             rows={4}
             placeholder="Describe your farm — its history, location, what makes it special..."
             maxLength={ABOUT_MAX}

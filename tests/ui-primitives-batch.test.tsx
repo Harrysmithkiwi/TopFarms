@@ -185,17 +185,17 @@ describe('Pagination', () => {
     expect(screen.getByText('5')).toBeInTheDocument()
   })
 
-  it('active page button has bg-moss and text-white classes', () => {
+  it('active page button has bg-brand and text-text-on-brand classes', () => {
     render(<Pagination currentPage={3} totalPages={5} onPageChange={vi.fn()} />)
     const activeButton = screen.getByText('3')
-    expect(activeButton.className).toContain('bg-moss')
-    expect(activeButton.className).toContain('text-white')
+    expect(activeButton.className).toContain('bg-brand')
+    expect(activeButton.className).toContain('text-text-on-brand')
   })
 
-  it('inactive page button has border-fog class', () => {
+  it('inactive page button has border-border class', () => {
     render(<Pagination currentPage={1} totalPages={5} onPageChange={vi.fn()} />)
     const inactiveButton = screen.getByText('2')
-    expect(inactiveButton.className).toContain('border-fog')
+    expect(inactiveButton.className).toContain('border-border')
   })
 
   it('clicking page 3 calls onPageChange(3)', async () => {

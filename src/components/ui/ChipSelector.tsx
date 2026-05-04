@@ -53,12 +53,13 @@ export function ChipSelector({
             type="button"
             onClick={() => handleClick(option.value)}
             className={cn(
-              'flex items-center gap-2 px-3 py-2 rounded-[8px]',
-              'border-[1.5px] cursor-pointer transition-all duration-150',
-              'font-body text-[13px]',
+              'flex items-center gap-2 px-3 py-2 rounded-[8px] min-h-[44px] md:min-h-[40px]',
+              'border-[1.5px] cursor-pointer transition-colors duration-150',
+              'font-body text-[14px]',
+              'outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
               isSelected
-                ? 'border-moss bg-moss/7 text-moss'
-                : 'border-fog bg-white text-ink hover:border-fern',
+                ? 'border-brand bg-brand-50 text-brand'
+                : 'border-border bg-surface text-text hover:border-brand-hover',
             )}
           >
             {option.icon && (
@@ -67,7 +68,7 @@ export function ChipSelector({
               </span>
             )}
             <span>{option.label}</span>
-            {isSelected && <Check className="ml-auto w-3.5 h-3.5 text-moss" />}
+            {isSelected && <Check className="ml-auto w-3.5 h-3.5 text-brand" />}
           </button>
         )
       })}
