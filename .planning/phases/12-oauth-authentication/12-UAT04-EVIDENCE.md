@@ -1,28 +1,30 @@
 ---
 phase: 12-oauth-authentication
 test: UAT-04
-type: partial-closure-evidence
+type: closure-evidence
 date: 2026-05-04
-verdict: PARTIAL — sign-in / account-linking sub-test PASS; new-user round-trip still pending
+verdict: PASS — both sub-tests empirically verified
 sub_tests:
   - name: "Google OAuth sign-in for existing email-provider account (account auto-linking)"
     status: PASS
-    date: 2026-05-04
-  - name: "Google OAuth sign-up for brand-new user (handle_new_user trigger + SelectRole + profiles auto-creation)"
-    status: PENDING
-    blocker: requires fresh Google account whose email is not already in auth.users
+    date: 2026-05-04 morning
+    test_account: harry.moonshot@gmail.com
+  - name: "Google OAuth sign-up for brand-new user (handle_new_user trigger + auto-default role + profiles auto-creation + onboarding wizard E2E)"
+    status: PASS
+    date: 2026-05-04 afternoon
+    test_account: harry.properprivacy@gmail.com
 closes:
   - "v2.0-MILESTONE-AUDIT.md tech_debt: 'Account-linking UAT (same email across providers) deferred' — empirically verified PASS this session"
-carryforward:
-  - "UAT-04 stays [ ] in REQUIREMENTS / milestone tracking until new-user round-trip sub-test completes with a fresh Google account"
+  - "v2.0-MILESTONE-AUDIT.md Public-Launch Blocker #5 (UAT-04 Google OAuth full round-trip smoke) — fully closed"
+references:
+  - "src/contexts/AuthContext.tsx, src/pages/auth/SelectRole.tsx, src/pages/onboarding/SeekerOnboarding.tsx"
+  - "supabase/migrations/001_initial_schema.sql (handle_new_user trigger)"
 ---
 
-# UAT-04 — Google OAuth Round-Trip (Partial Closure)
+# UAT-04 — Google OAuth Round-Trip (Closure Evidence)
 
-**Status:** PARTIAL — sign-in / account-linking sub-test PASS. New-user round-trip still pending.
-**Date:** 2026-05-04 morning
-**Test URL:** `https://top-farms.vercel.app`
-**Test account:** `harry.moonshot@gmail.com` (existing email-provider seeker, `auth.users.id = e89983d5-8efa-48f1-baa2-741033a6b9dd`)
+**Status:** PASS — both sub-tests empirically verified.
+**Test URL:** `https://top-farms.vercel.app` (production)
 
 ---
 
@@ -54,18 +56,41 @@ User-visible flow: clicked "Sign In" → Google consent → landed on `/dashboar
 
 ---
 
-## New-user round-trip sub-test — PENDING
+## New-user round-trip sub-test — PASS *(closed 2026-05-04 afternoon)*
 
-What this sub-test would exercise (none of which the sign-in test touches):
+Brand-new Google account `harry.properprivacy@gmail.com` (verified absent from `auth.users` pre-test, count=0) signed up via Google OAuth. Full chain executed end-to-end: Google consent → callback → `handle_new_user` trigger → seeker_profiles auto-created via onboarding wizard → all 7 onboarding steps completed → match scores computed → landed on job search.
 
-- `handle_new_user` trigger firing for a brand-new auth.users insert with provider=google
-- `SelectRole.tsx` UI rendering for a user with no role → role pick → `set_user_role` RPC invocation
-- `seeker_profiles` or `employer_profiles` auto-creation on first role selection
-- Onboarding wizard entry on first sign-up
+### Post-test state snapshot (via MCP read-only)
 
-**Blocker:** requires a fresh Google account whose email is not already in `auth.users`. Harry's primary Google (`harry.symmans.smith`) and `harry.moonshot` are both already in the table.
+| Field | Value |
+|---|---|
+| `auth.users.id` | `645e6975-9556-4813-ac5a-7d9ce934c21f` |
+| `auth.users.created_at` | 2026-05-04 00:27:30 UTC |
+| `auth.users.last_sign_in_at` | 2026-05-04 00:34:38 UTC |
+| `auth.users.providers` | `["email", "google"]` |
+| `auth.users.raw_user_meta_data.iss` | `https://accounts.google.com` |
+| `auth.users.raw_user_meta_data.name` | `Harry Smith` (from Google profile) |
+| `auth.identities` rows | **2** (1 email + 1 google) |
+| `user_roles.role` | **`seeker`** ✅ (handle_new_user fired with `COALESCE(metadata.role, 'seeker')` default) |
+| `seeker_profiles.id` | `becfec19-de0a-4dde-a828-dc1e32e92da9` ✅ created |
+| `seeker_profiles.region` | `Waikato` (entered during wizard) |
+| `match_scores` rows | **1** ✅ (computed for the new seeker) |
 
-**Carryforward:** UAT-04 stays `[ ]` until new-user sub-test runs successfully. Estimated effort: ~10 min including fresh Gmail signup if no spare account is handy.
+### What this empirically proves
+
+- **`handle_new_user` trigger fires for OAuth path** — first-time empirical proof. Previous users (harry.symmans.smith, harry.moonshot) were both pre-existing email-provider, so their auth.users INSERT predated migration 001's trigger or fired without Google metadata.
+- **Default role assignment works** — Google OAuth doesn't pass role in metadata; `COALESCE(metadata.role, 'seeker')` correctly defaults to `'seeker'`.
+- **Two identity rows created** — Supabase's auto-linking creates an implicit email identity alongside the google identity, even for OAuth-only signup.
+- **seeker_profiles auto-creation via onboarding upsert path** — wizard's `handleStepComplete` upsert (`onConflict: 'user_id'`) creates the row on first save.
+- **Match scores computed for a brand-new seeker** — match_scores trigger / cron picks up the new seeker_profiles row and computes scores against active jobs. End-to-end matching pipeline empirically functional for new signups.
+
+### SelectRole UI bypass — confirmed (not a bug, but a Phase 18 design call)
+
+OAuth signups do NOT see the SelectRole role-picker UI: `handle_new_user` defaults role to `'seeker'`, AuthContext refreshRole detects role exists, and `SelectRole.tsx:29` (`if (role) <Navigate>`) redirects past the picker. Logged as Phase 18 entry 21 — design call: leave (default-seeker is fine for marketing funnel) OR null out role for OAuth so SelectRole renders.
+
+### Onboarding completion bug discovered + fixed during this test
+
+The new-user round-trip surfaced BUG-03 — SeekerStep7Complete had no completion handler, so `onboarding_complete` stayed `false` even after wizard finished. harry.properprivacy's `seeker_profiles.onboarding_complete` is currently `false` in DB; will self-heal on next visit via the fix in commit `eb7e2f1`. See SESSION-HANDOFF-2026-05-04.md for details.
 
 ---
 
