@@ -4,6 +4,18 @@
 
 ---
 
+## Renumber update — 2026-05-04 (post-handoff write)
+
+The original handoff (below) committed Super Admin Dashboard as the next session's Phase 19. After session-start review, scope re-prioritised:
+
+- **Phase 19 = Design System Cleanup (Tier 1 surfaces)** — in flight this session. v1→v2 brand migration per `.planning/v2-migration/TopFarms_Brand_Spec_v2.md` + `.planning/v2-migration/TopFarms_Migration_Audit.md`. Long-lived `feat/v2-brand-migration` branch; one commit per migration sub-phase (0–6); preview-deploy each phase on Vercel before merging to main.
+- **Phase 19b = Design System Cleanup (Tier 2 — deeper dashboards)** — deferred follow-up; ApplicantPanel + ApplicantDashboard + employer-side composed components + onboarding wizard internals
+- **Phase 20 = Super Admin Dashboard** — discuss-phase moves to a later session, built on top of the clean v2 design system
+
+The "Next session brief" section at the bottom of this doc applies to **Phase 20**, not Phase 19. ROADMAP.md updated this commit.
+
+---
+
 ## TL;DR
 
 - **All five morning priorities closed** (UAT-04, PRIV-02, Stripe, Phase 18, Supabase ticket). Plus three sev-2/3 bugs surfaced during UAT-04 testing — fixed and shipped same-day.

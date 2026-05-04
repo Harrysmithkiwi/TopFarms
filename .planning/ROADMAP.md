@@ -40,6 +40,9 @@ Full details: `.planning/milestones/v1.1-ROADMAP.md`
 - [ ] **Phase 16: Privacy Bypass Empirical Test** — Gap closure: execute PRIV-02 B.9 from authenticated employer JWT against deployed function; flip BFIX-02 sub-phase 14-03 PARTIAL → PASS
 - [ ] **Phase 17: Saved Search** — Seeker can save, load, and delete filter combinations (reordered from Phase 15)
 - [ ] **Phase 18: Tech Debt Cleanup** — Gap closure: `EMPLOYER_VISIBLE_DOCUMENT_TYPES` canonical source, dead-semantics removal, AUTH-FIX-02 root-cause investigation, VALIDATION/SUMMARY frontmatter backfill
+- [ ] **Phase 19: Design System Cleanup (Tier 1 surfaces)** — v1→v2 brand migration on landing, nav, page shells, primitives, brand-critical components, seeker-facing job search/detail. Token rename (soil/moss/meadow → brand/brand-900), Inter throughout, hex palette per Brand Spec v2.0
+- [ ] **Phase 19b: Design System Cleanup (Tier 2 — deeper dashboards)** — ApplicantPanel, ApplicantDashboard, employer-side composed components, full onboarding wizard internals; deferred from Phase 19 to keep scope shippable
+- [ ] **Phase 20: Super Admin Dashboard** — Internal-only `/admin/*` panel for daily briefing, employer/seeker lists, placement-fee pipeline, platform health (discuss-phase next session)
 
 ## Phase Details
 
@@ -152,6 +155,48 @@ Plans:
   20. UX-01: Salary input → preset band chips. Replace the free-text salary input in `SeekerStep5LifeSituation.tsx` (`min_salary` field) with selectable preset bands: $50–60k, $60–70k, $70–80k, $80–90k, $90–100k, $100–110k, $110–120k, $120k+. Improves mobile UX (no number-pad fumbling) and normalises salary data for the matching engine. Surfaced 2026-05-04 morning during UAT-04 new-user round-trip with harry.properprivacy.
   21. SelectRole UI bypass for OAuth signups (known behaviour, no code change required). `handle_new_user` trigger defaults role to `'seeker'` via `COALESCE(raw_user_meta_data->>'role', 'seeker')` for all new auth.users INSERTs. Google OAuth signups don't pass `role` in metadata, so they auto-default to seeker. `SelectRole.tsx:29` `if (role) <Navigate>` then redirects past the role-picker UI before it can render. Current behaviour is intentional (seeker is the correct default for the marketing funnel — most signups are seekers). Logged as known behaviour for future audit; if employer OAuth signup volume becomes meaningful, revisit by either nulling out role for OAuth or surfacing a "Were you signing up as an employer?" prompt in onboarding. Surfaced 2026-05-04 during UAT-04 new-user round-trip recon.
 
+### Phase 19: Design System Cleanup (Tier 1 surfaces)
+**Goal**: Migrate the v1 brand system (soil/moss/meadow earth-tones + Fraunces/DM Sans) to v2.0 (single-green modern SaaS palette + Inter throughout) on Tier 1 surfaces — landing page, top nav, page shells, primitive components, brand-critical components, seeker job search/detail. Visual-only: no DB / API / route changes.
+**Depends on**: Nothing (independent of all open phases)
+**Requirements**: None directly satisfied — design-system migration tracked outside REQUIREMENTS.md
+**References**: `.planning/v2-migration/TopFarms_Brand_Spec_v2.md` (authoritative spec), `.planning/v2-migration/TopFarms_Migration_Audit.md` (token map + Phase 0–6 order), `SENSE_CHECK_AUDIT_2026-05-01.md` (V1_CLEAN empirical baseline)
+**Tooling**: Impeccable design skill installed project-local (`pbakaus/impeccable`); used as audit/critique/polish only — does NOT redesign components. PRODUCT.md + DESIGN.md stored in `.planning/v2-migration/` via `IMPECCABLE_CONTEXT_DIR`.
+**Branch**: `feat/v2-brand-migration` long-lived; one commit per migration phase (0–6); merge to main only after Phase 6 cleanup
+**Plans:** 0/? (Phase 0 = `@theme` token swap with v1 aliases; Phases 1–6 follow Migration Audit §7)
+**Success Criteria** (what must be TRUE):
+  1. `src/index.css` `@theme` block declares v2 tokens canonically (`--color-bg`, `--color-brand`, `--color-brand-hover`, `--color-brand-900`, `--color-brand-50`, `--color-warn*`, `--color-text*`, `--color-surface*`, `--color-border*`) per Brand Spec §3 with `--color-` prefix (Tailwind v4 requirement)
+  2. v1 token names retained as legacy aliases during Phases 1–5 to enable incremental migration; aliases removed in Phase 6
+  3. Inter (with JetBrains Mono fallback) replaces Fraunces + DM Sans; both `--font-display` and `--font-body` point at Inter (per Migration Audit Decision 2)
+  4. Tier 1 surfaces — landing page (12 components), top nav, Sidebar, DashboardLayout, JobSearchLayout, AuthLayout (token swap only per Decision 3), primitives (Button, Card, Input, etc.), brand-critical (MatchCircle, MatchBreakdown, StatusBanner, VerificationBadge), seeker job search + job detail — all render in v2 brand on Vercel preview after their respective phase commits
+  5. PaymentForm.tsx Stripe Elements appearance variables migrated from v1 hex (4 occurrences: lines 83, 84, 93, 97) to v2 hex (`colorPrimary: #16A34A`, `colorBackground: #FFFFFF`, `borderColor: #E5E8E2`)
+  6. Each Phase 0–6 sub-phase ships as its own commit on `feat/v2-brand-migration`, deploys to Vercel preview, manually verified before next phase begins
+  7. PRODUCT.md + DESIGN.md generated by `/impeccable teach` and stored in `.planning/v2-migration/`; register pinned to `product`; Inter + hex tokens explicitly noted as deliberate, not anti-pattern
+  8. Vitest suite passes after each phase; full suite passes before merge to main
+  9. Final grep sweep `grep -rn "soil\|moss\|fern\|meadow\|hay\|cream\|fog\|mist" src/` returns zero matches across Tier 1 surfaces
+  10. Phase 19b carryforward entry created in `v2.0-MILESTONE-AUDIT.md` listing Tier 2 surfaces deferred for follow-up execution
+
+### Phase 19b: Design System Cleanup (Tier 2 — deeper dashboards)
+**Goal**: Complete the v2 brand migration on Tier 2 surfaces deferred from Phase 19. Same token map, same Phase-0-style alias trick, same Pattern A + Pattern B migration approach.
+**Depends on**: Phase 19 (Tier 1 ships first; Phase 19's `@theme` aliases keep Tier 2 rendering correctly until 19b migrates them)
+**Requirements**: None directly
+**Tier 2 surfaces**: ApplicantPanel.tsx (60 v1 refs — own focused sub-task), ApplicantDashboard, MyApplicationsSidebar, JobDetailSidebar, LivePreviewSidebar, TierCard, DocumentUploader, EmployerVerification, employer onboarding step internals (Step1–Step8), seeker onboarding step internals (Step1–Step8)
+**Status**: Defined in Phase 19 closure; not planned this session
+
+### Phase 20: Super Admin Dashboard
+**Goal**: Internal-only admin panel at `/admin/*` for Harry to monitor and operate the TopFarms marketplace — daily briefing, employer/seeker lists, placement-fee pipeline, platform health (Edge Function errors, cron timestamps, pg_net log)
+**Depends on**: Phase 19 (built on top of clean v2 design system)
+**Requirements**: None directly (internal tooling; no public-facing REQ-IDs)
+**Status**: Discuss-phase only — full brief in `.planning/SESSION-HANDOFF-2026-05-04.md` "Next session brief — Super Admin Dashboard phase" section
+**Notes**:
+- Role-gated to a new `admin` role in `user_roles` (CHECK constraint extension migration, likely `023_user_roles_admin.sql`)
+- Protected route tree at `/admin/*` inside existing React app (same Vercel deployment, same Supabase project)
+- Own `AdminLayout` component (separate from DashboardLayout)
+- SECURITY DEFINER RPC layer for admin queries — don't widen existing RLS holes
+- Same Tailwind design system + component library (no new design primitives) — relies on Phase 19 v2 brand
+- First-time setup: one-shot Supabase Studio SQL to assign Harry's `auth.users.id` the admin role (NOT auto-assigned by signup trigger)
+- MVP must-haves: daily briefing view, employer list, seeker list, placement-fee pipeline, platform health
+- Post-launch (NOT MVP): broadcast comms, doc verification queue, moderation queue, advanced analytics
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -165,3 +210,6 @@ Plans:
 | 16. Privacy Bypass Empirical Test | v2.0 | 0/? | Pending (gap closure) | — |
 | 17. Saved Search | v2.0 | 0/? | Pending | — |
 | 18. Tech Debt Cleanup | v2.0 | 0/? | Pending (gap closure) | — |
+| 19. Design System Cleanup (Tier 1) | v2.0 | 0/? | In flight (this session) | — |
+| 19b. Design System Cleanup (Tier 2) | v2.0 | 0/? | Pending (post-19) | — |
+| 20. Super Admin Dashboard | v2.0 | 0/? | Pending (discuss next session) | — |
