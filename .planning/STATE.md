@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: executing
-stopped_at: "Phase 20 Discuss complete — CONTEXT.md + handoff written, ready for fresh session to /gsd:plan-phase 20"
-last_updated: "2026-05-04T06:29:56.154Z"
-last_activity: 2026-05-01 — 15-03 complete; CI deploy workflow + config.toml committed; migration registry repaired; DEPLOY-01 CI gap closed; RESEND_API_KEY still unset (15-04)
+stopped_at: Phase 20-01 complete (Wave 0 test scaffold)
+last_updated: "2026-05-04T11:37:00.239Z"
+last_activity: 2026-05-04 — 20-01 complete; Wave 0 admin test scaffolds (14 vitest + 1 UAT) covering all 22 ADMIN-* IDs from VALIDATION.md
 progress:
   total_phases: 10
   completed_phases: 4
-  total_plans: 11
-  completed_plans: 11
+  total_plans: 19
+  completed_plans: 12
 ---
 
 # Project State
@@ -20,14 +20,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-03)
 
 **Core value:** Farm employers and seekers can find each other through agriculture-specific matching that no generic platform provides
-**Current focus:** Email Pipeline Deploy & Verify (Phase 15) — gap closure for MAIL-02 prod-silent failure + DEPLOY-01 CI gap
+**Current focus:** Super Admin Dashboard (Phase 20) — internal-only `/admin/*` panel; Wave 0 test scaffolds complete, RPC implementation next
 
 ## Current Position
 
-Phase: 15 of 18 — Email Pipeline Deploy & Verify
-Plan: 15-03 complete — moving to 15-04
-Status: In progress (plan 15-04 next)
-Last activity: 2026-05-01 — 15-03 complete; CI deploy workflow + config.toml committed; migration registry repaired; DEPLOY-01 CI gap closed; RESEND_API_KEY still unset (15-04)
+Phase: 20 of 20+ — Super Admin Dashboard
+Plan: 20-01 complete — moving to 20-02 (RPC implementation)
+Status: In progress (plan 20-02 next)
+Last activity: 2026-05-04 — 20-01 complete; Wave 0 admin test scaffolds (14 vitest + 1 UAT) covering all 22 ADMIN-* IDs from VALIDATION.md
 
 ## Accumulated Context
 
@@ -49,6 +49,8 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 15-04]: MAIL-01/02 kept [ ] (not [x]) — truthful partial-close pending RESEND_API_KEY + plan 15-02 E2E verification
 - [Phase 15-04]: 13-VERIFICATION.md backfilled with PARTIAL/DEFERRED verdicts for all 4 Phase 13 ROADMAP criteria — no hand-wave verdicts
 - [Phase 15-04]: NAMING.md migration registry repair section: Studio SQL INSERT is canonical approach; CLI supabase migration repair incompatible with sequence-prefix disk convention
+- [Phase 20-01]: Wave 0 scaffold pattern: every VALIDATION.md test ID gets a stub in vitest file (or UAT markdown) before any implementation. 22 IDs across 14 vitest files + 1 UAT markdown. Bodies fill in subsequent waves.
+- [Phase 20-01]: it.todo() for unimplemented assertions across the entire admin suite — vitest reports todos rather than skips/fails, providing a visible scaffolding signal in CI output.
 
 ### Blockers/Concerns
 
@@ -59,6 +61,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-04T06:29:56.146Z
-Stopped at: Phase 20 Discuss complete — CONTEXT.md + handoff written, ready for fresh session to /gsd:plan-phase 20
-Resume file: .planning/SESSION-HANDOFF-2026-05-04-phase20.md
+Last session: 2026-05-04T11:36:45.945Z
+Stopped at: Phase 20-01 complete (Wave 0 test scaffold)
+Resume file: None
