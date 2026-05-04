@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: executing
-stopped_at: "Phase 20-04 complete — admin route tree foundation (5 /admin/* routes, AdminLayout shell, AdminSidebar, ProtectedRoute admin gate); next: plan 20-05 (drawer + AdminTable)"
-last_updated: "2026-05-04T21:52:03.481Z"
-last_activity: 2026-05-04 — 20-04 complete; admin route tree foundation shipped (ProtectedRoute admin gate, AdminSidebar 240px, AdminLayout shell omitting top Nav per UI-SPEC, 5 /admin/* routes, 4 ADMIN-GATE-FE assertions green).
+stopped_at: "Phase 20-05 complete — 3 reusable admin components (AdminTable, ProfileDrawer, AdminNotesField) + 11 shape-contract tests green; next: plan 20-06 (employer + seeker list pages)"
+last_updated: "2026-05-04T22:01:44.854Z"
+last_activity: 2026-05-04 — 20-05 complete; 3 reusable admin components shipped (AdminTable 194 lines, ProfileDrawer 494 lines, AdminNotesField 103 lines); 4 shape-contract test files filled (11 tests green replacing it.todo stubs from plan 20-01); tsc clean. Wave 4 collapses 8+ would-be-tasks into 3 reusable artefacts that waves 5-6 list-view pages drop into via composition.
 progress:
   total_phases: 10
   completed_phases: 4
   total_plans: 19
-  completed_plans: 15
+  completed_plans: 16
 ---
 
 # Project State
@@ -25,9 +25,9 @@ See: .planning/PROJECT.md (updated 2026-04-03)
 ## Current Position
 
 Phase: 20 of 20+ — Super Admin Dashboard
-Plan: 20-04 complete — moving to 20-05 (next plan)
-Status: In progress (plan 20-05 next)
-Last activity: 2026-05-04 — 20-04 complete; admin route tree foundation shipped (ProtectedRoute requiredRole union widened to include 'admin'; AdminSidebar 240px + 5 nav items + Back-to-app escape; AdminLayout omits top <Nav /> per UI-SPEC; 5 /admin/* routes registered; 4 ADMIN-GATE-FE assertions green replacing it.todo stubs; tsc clean).
+Plan: 20-05 complete — moving to 20-06 (next plan)
+Status: In progress (plan 20-06 next)
+Last activity: 2026-05-04 — 20-05 complete; 3 reusable admin components shipped (AdminTable, ProfileDrawer, AdminNotesField) + 11 shape-contract tests green. Wave 5 (employer + seeker list pages) is pure composition from these primitives — no architectural decisions remain.
 
 ## Accumulated Context
 
@@ -58,6 +58,11 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 20-02]: Phase 20-02 complete — migration 023 applied via Studio SQL Editor for project inlagtgpynemhipnqvty (3 tables: admin_audit_log/admin_notes/admin_metrics_cache, user_roles.is_active column, 10 admin_* SECURITY DEFINER RPCs + _admin_gate helper); RLS not widened (post-baselines [1,3,2,2,1,2] match pre exactly — empirical ADMIN-RLS-NEG-1/2 ground truth).
 - [Phase 20-04]: ProtectedRoute requiredRole union widened to 'employer' | 'seeker' | 'admin' (one-line type-only change at line 7); existing line-62 redirect logic handles all 4 cases by structure
 - [Phase 20-04]: AdminLayout omits top <Nav /> per UI-SPEC anti-chrome rule — single-sidebar Stripe/Linear pattern (vs DashboardLayout's Nav+Sidebar combo); 240px AdminSidebar + max-w-[1200px] inner content; 4 list-view routes temporarily render DailyBriefing as placeholder, swapped in plans 20-06 and 20-07
+- [Phase 20-05]: AdminTable + ProfileDrawer + AdminNotesField composed from existing v2 primitives only (Tag/Toggle/Timeline/Button/Pagination/Input). Wave 4 locks the contract surface so list-view plans 20-06/07 are pure assembly — saves context budget across 4 list-page plans.
+- [Phase 20-05]: Pagination prop names adjusted from plan body (page/onChange) to live contract (currentPage/totalPages/onPageChange); Timeline accepts `entries` not `items` with `date` field not `timestamp`; StatusBanner has fixed semantic variants (no 'error') so ProfileDrawer error display uses inline `role='alert'` div with --color-danger tokens. All 3 are sanctioned plan-anticipated adjustments.
+- [Phase 20-05]: supabase.rpc admin_* type assertion via `as never` — admin_* RPCs not in supabase-js generated function-name union (plan 20-02 was applied via Studio SQL Editor which doesn't update JS types). `as never` collapses to a no-op once types regenerate post-deploy. Cleaner than @ts-expect-error directives.
+- [Phase 20-05]: Shape-contract tests (mocked supabase) for 4 admin test files — assert SHAPE the frontend code requires from RPCs, not live integration. 11 tests green; live RPC integration deferred to plan 20-08 manual UAT (ADMIN-BOOTSTRAP-1) per plan instruction. Decouples wave 4 from infrastructure readiness.
+- [Phase 20-05]: Drawer-internal confirm row (no modal) for destructive admin actions — Toggle reveals confirm row inside drawer with heading 15px/600 + body 13px/muted (max 60ch) + ghost Cancel + warn (suspend) / primary (reactivate) Confirm CTAs; Escape collapses; no focus trap. Aligns with PRODUCT.md anti-chrome paranoia.
 
 ### Blockers/Concerns
 
@@ -68,6 +73,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-04T21:52:03.478Z
-Stopped at: Phase 20-04 complete — admin route tree foundation (5 /admin/* routes, AdminLayout shell, AdminSidebar, ProtectedRoute admin gate); next: plan 20-05 (drawer + AdminTable)
+Last session: 2026-05-04T22:01:44.851Z
+Stopped at: Phase 20-05 complete — 3 reusable admin components (AdminTable, ProfileDrawer, AdminNotesField) + 11 shape-contract tests green; next: plan 20-06 (employer + seeker list pages)
 Resume file: None
