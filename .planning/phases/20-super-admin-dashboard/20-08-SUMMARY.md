@@ -21,7 +21,7 @@ provides:
   - Real assertions for ADMIN-GATE-BE-4 (6 happy-path shapes) in tests/admin-rpc-shapes.test.ts
   - Real-bodied tests/admin-rls-not-widened.test.ts (PRE/POST baseline constants populated in Task 5)
   - Edge Function get-resend-stats deployed live + ADMIN_METRICS_WEBHOOK_SECRET set in Studio + smoke-test 200
-  - pg_cron schedule refresh-resend-stats every 15 minutes (Task 3, pending)
+  - pg_cron schedule refresh-resend-stats every 15 minutes (Task 3, DONE — jobid=4, first_run=succeeded, cache=live)
   - ADMIN-BOOTSTRAP-1 manual UAT executed (Task 4, pending)
   - Post-migration RLS baselines re-captured + admin-rls-not-widened.test.ts finalised (Task 5, pending)
   - 20-VERIFICATION.md PASS rollup (Task 6, pending)
@@ -48,6 +48,7 @@ key-decisions:
   - "Phase 20-08 Task 1: ADMIN-GATE-BE-1..3 use mock-rpc shape-contract pattern (not live integration). Live admin-RPC gate proof comes from ADMIN-BOOTSTRAP-1 UAT in Task 4 + the SECURITY DEFINER body in migration 023 (verified pre-merge by 20-02 SUMMARY)."
   - "Phase 20-08 Task 2: Edge Function deployment via Supabase CLI (supabase functions deploy get-resend-stats --project-ref inlagtgpynemhipnqvty); secret set via Supabase Studio (Edge Functions → Secrets, never via MCP write). Smoke test confirmed 200 (RESEND_API_KEY live, cache populated). NOT 403 = secret honoured."
   - "Phase 20-08 Task 2: smoke_test=200 (not 503) confirms RESEND_API_KEY was set in Phase 15-04+ secrets infrastructure — MAIL-02 carryforward materially closed via this smoke (the Phase 15 deferred RESEND_API_KEY check is now live in production secrets)."
+  - "Phase 20-08 Task 3: pg_cron schedule applied via Supabase Studio SQL Editor (NOT via supabase/migrations/) because the schedule body embeds the runtime ADMIN_METRICS_WEBHOOK_SECRET value. Per CLAUDE.md §2 (Studio SQL preferred for one-off DB writes that resist transactional wrapping or need runtime values). Rotation procedure: SELECT cron.unschedule('refresh-resend-stats'); then re-paste the cron.schedule(...) body with the new secret value."
 
 patterns-established:
   - "Pattern: pre/post-migration RLS proof — captured as constants in test file with explicit -1 placeholder semantics; assertBaselineEqual() helper passes through when either side is -1 (documentation mode), strict-equality when both populated"
@@ -69,7 +70,7 @@ completed: in-progress
 | ---- | ------------------------------------------------------------------------------------ | ----------- | ------- |
 | 1    | Backend test bodies (admin-rpc-gate, admin-rpc-shapes, admin-rls-not-widened)        | DONE        | 262aad7 |
 | 2    | Deploy get-resend-stats + set ADMIN_METRICS_WEBHOOK_SECRET                            | DONE        | this commit |
-| 3    | pg_cron schedule refresh-resend-stats every 15min via Studio SQL                     | PENDING     | —       |
+| 3    | pg_cron schedule refresh-resend-stats every 15min via Studio SQL                     | DONE        | this commit |
 | 4    | ADMIN-BOOTSTRAP-1 manual UAT (Studio SQL admin role + sign-out/sign-in + /admin nav) | PENDING     | —       |
 | 5    | Post-migration RLS baselines + finalise admin-rls-not-widened.test.ts                | PENDING     | —       |
 | 6    | 20-VERIFICATION.md + ROADMAP Phase 20 flip [x] + full vitest green                   | PENDING     | —       |
@@ -94,9 +95,26 @@ Commit: `262aad7` — `test(20-08): fill backend test bodies — rpc-gate, rpc-s
 
 **Material implication:** smoke_test=200 (not 503) means RESEND_API_KEY is live in production Edge Function secrets. The Phase 15 carryforward (MAIL-02 deferred) is now materially closed by this smoke — Resend send path is functional and the daily-briefing cache will populate with live stats once the cron schedule fires (Task 3).
 
-## Cron schedule (Task 3 — PENDING)
+## Cron schedule (Task 3 — DONE)
 
-Studio SQL `cron.schedule('refresh-resend-stats', '*/15 * * * *', ...)` to be applied via Supabase Studio SQL Editor (operator pastes secret value inline). Captures jobid + first-run status + cache-row sample after Studio apply.
+Studio SQL `cron.schedule('refresh-resend-stats', '*/15 * * * *', ...)` applied via Supabase Studio SQL Editor for project `inlagtgpynemhipnqvty`. The schedule fires every 15 minutes against `https://inlagtgpynemhipnqvty.supabase.co/functions/v1/get-resend-stats` with the `x-webhook-secret` header containing the ADMIN_METRICS_WEBHOOK_SECRET value (operator pasted secret inline; secret value NOT recorded here per Phase 18 hardening discipline).
+
+- **jobid:** 4 (returned from `cron.schedule(...)` Studio SQL)
+- **schedule:** `*/15 * * * *` (every 15 minutes)
+- **active:** true (verified via `SELECT * FROM cron.job WHERE jobname='refresh-resend-stats'`)
+- **first_run_status:** succeeded (verified via `SELECT status FROM cron.job_run_details WHERE jobid=4 ORDER BY start_time DESC LIMIT 1`)
+- **cache populated:** live (NOT the `{unavailable: true}` marker — admin_metrics_cache row for `metric_key='resend_stats'` contains live Resend stats: rate/total/delivered/opened/clicked counts. Materially confirms RESEND_API_KEY is honoured at runtime AND the Edge Function code path that aggregates Resend last_event into the cache is operating end-to-end.)
+
+**Why Studio SQL not supabase/migrations/:** the cron schedule body embeds the runtime ADMIN_METRICS_WEBHOOK_SECRET value (per defence-in-depth design from plan 20-03). Migration files are committed to git and should never contain secret values. Studio SQL Editor is the canonical path per CLAUDE.md §2 for one-off DB writes that depend on runtime values. Studio-applied configuration does NOT write a `supabase_migrations.schema_migrations` row — verify presence via `SELECT * FROM cron.job` instead of `list_migrations`.
+
+**Rotation procedure:** to change the secret OR the schedule cadence:
+```sql
+SELECT cron.unschedule('refresh-resend-stats');
+-- then re-paste the cron.schedule(...) body with new secret/cadence
+```
+The unschedule + reschedule is atomic enough for ops purposes; transient missed run during the gap is acceptable (cache merely shows a stale `cached_at` timestamp until the next fire).
+
+**MAIL-02 status:** combined with Task 2's smoke=200 result, the Phase 15 carryforward (MAIL-02 deferred — RESEND_API_KEY unset, emails silently skipping) is now materially closed. Live cache row in admin_metrics_cache demonstrates Resend send/delivery is functional end-to-end. Per CLAUDE.md §7 partial-close discipline, the formal `[x]` flip on MAIL-02 in REQUIREMENTS.md will be accompanied by an evidence pointer to this SUMMARY's Task 2 + Task 3 sections.
 
 ## ADMIN-BOOTSTRAP-1 UAT (Task 4 — PENDING)
 
