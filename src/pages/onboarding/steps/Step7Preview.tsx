@@ -19,13 +19,13 @@ interface SectionProps {
 
 function PreviewSection({ title, stepIndex, onGoToStep, children }: SectionProps) {
   return (
-    <div className="border-b border-fog pb-4 last:border-0 last:pb-0">
+    <div className="border-b border-border pb-4 last:border-0 last:pb-0">
       <div className="flex items-center justify-between mb-2">
-        <h3 className="font-body font-semibold text-[13px] text-ink">{title}</h3>
+        <h3 className="font-body font-semibold text-[13px] text-text">{title}</h3>
         <button
           type="button"
           onClick={() => onGoToStep(stepIndex)}
-          className="text-[12px] font-body text-fern hover:text-moss transition-colors"
+          className="text-[12px] font-body text-brand-hover hover:text-brand transition-colors"
         >
           Edit
         </button>
@@ -56,10 +56,10 @@ function DataRow({ label, value }: DataRowProps) {
 
   return (
     <div className="flex gap-2 text-[12px]">
-      <span style={{ color: 'var(--color-mid)' }} className="min-w-[140px]">
+      <span style={{ color: 'var(--color-text-muted)' }} className="min-w-[140px]">
         {label}
       </span>
-      <span className="text-ink font-body">{displayValue}</span>
+      <span className="text-text font-body">{displayValue}</span>
     </div>
   )
 }
@@ -93,10 +93,10 @@ export function Step7Preview({ onComplete, onBack, onGoToStep, profileData }: St
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-ink)' }}>
+        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Review your profile
         </h2>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-mid)' }}>
+        <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
           Check your details before completing your profile
         </p>
       </div>
@@ -134,18 +134,18 @@ export function Step7Preview({ onComplete, onBack, onGoToStep, profileData }: St
         <PreviewSection title="Culture & Team" stepIndex={2} onGoToStep={onGoToStep}>
           <div className="space-y-1">
             {profileData.culture_description && (
-              <p className="text-[12px] text-ink font-body line-clamp-3">
+              <p className="text-[12px] text-text font-body line-clamp-3">
                 {profileData.culture_description}
               </p>
             )}
             <DataRow label="Team size" value={profileData.team_size} />
             {profileData.about_farm && !profileData.culture_description && (
-              <p className="text-[12px] text-ink font-body line-clamp-3">
+              <p className="text-[12px] text-text font-body line-clamp-3">
                 {profileData.about_farm}
               </p>
             )}
             {!profileData.culture_description && !profileData.about_farm && !profileData.team_size && (
-              <p className="text-[12px]" style={{ color: 'var(--color-light)' }}>
+              <p className="text-[12px]" style={{ color: 'var(--color-text-subtle)' }}>
                 Not provided
               </p>
             )}
@@ -169,13 +169,13 @@ export function Step7Preview({ onComplete, onBack, onGoToStep, profileData }: St
       </div>
 
       {/* Billing period toggle (EONB-08) */}
-      <div className="flex items-center justify-between p-4 rounded-[10px] border-[1.5px] border-fog bg-mist">
+      <div className="flex items-center justify-between p-4 rounded-[10px] border-[1.5px] border-border bg-surface-2">
         <div className="flex items-center gap-2">
-          <p className="font-body text-[13px] font-semibold text-ink">Billing period</p>
+          <p className="font-body text-[13px] font-semibold text-text">Billing period</p>
           {billingPeriod === 'annual' && (
             <span
               className="text-[11px] font-body font-semibold px-2 py-0.5 rounded"
-              style={{ backgroundColor: 'var(--color-hay-lt)', color: 'var(--color-soil)' }}
+              style={{ backgroundColor: 'var(--color-warn-bg)', color: 'var(--color-brand-900)' }}
             >
               Save 20%
             </span>
@@ -184,7 +184,7 @@ export function Step7Preview({ onComplete, onBack, onGoToStep, profileData }: St
         <div className="flex items-center gap-2">
           <span
             className="text-[12px] font-body"
-            style={{ color: billingPeriod === 'monthly' ? 'var(--color-ink)' : 'var(--color-light)' }}
+            style={{ color: billingPeriod === 'monthly' ? 'var(--color-text)' : 'var(--color-text-subtle)' }}
           >
             Monthly
           </span>
@@ -194,7 +194,7 @@ export function Step7Preview({ onComplete, onBack, onGoToStep, profileData }: St
           />
           <span
             className="text-[12px] font-body"
-            style={{ color: billingPeriod === 'annual' ? 'var(--color-ink)' : 'var(--color-light)' }}
+            style={{ color: billingPeriod === 'annual' ? 'var(--color-text)' : 'var(--color-text-subtle)' }}
           >
             Annual
           </span>

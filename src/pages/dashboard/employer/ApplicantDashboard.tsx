@@ -72,7 +72,7 @@ function buildSeekerLabel(app: Applicant): string {
 
 function SkeletonRow() {
   return (
-    <div className="bg-white border-[1.5px] border-fog rounded-[12px] p-4 animate-pulse">
+    <div className="bg-surface border-[1.5px] border-border rounded-[12px] p-4 animate-pulse">
       <div className="flex items-center gap-4">
         <div className="flex-1 h-4 bg-fog rounded" />
         <div className="w-9 h-9 bg-fog rounded-full" />
@@ -499,7 +499,7 @@ export function ApplicantDashboard() {
         <div>
           <Link
             to="/dashboard/employer"
-            className="flex items-center gap-1.5 text-sm font-body text-mid hover:text-ink transition-colors mb-3"
+            className="flex items-center gap-1.5 text-sm font-body text-text-muted hover:text-text transition-colors mb-3"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Dashboard
@@ -507,14 +507,14 @@ export function ApplicantDashboard() {
           <div className="flex items-center gap-3">
             <h1
               className="font-display text-3xl font-semibold"
-              style={{ color: 'var(--color-soil)' }}
+              style={{ color: 'var(--color-brand-900)' }}
             >
               {jobTitle ? `Applicants for ${jobTitle}` : 'Applicants'}
             </h1>
             {!loading && applicants.length > 0 && (
               <span
                 className="px-2.5 py-1 rounded-full text-[12px] font-body font-semibold"
-                style={{ backgroundColor: 'var(--color-fog)', color: 'var(--color-mid)' }}
+                style={{ backgroundColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
               >
                 {applicants.length}
               </span>
@@ -543,7 +543,7 @@ export function ApplicantDashboard() {
                 placeholder="Search applicants..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="border border-fog rounded-[8px] px-3 py-1.5 text-[13px] font-body text-ink bg-white focus:outline-none focus:border-moss w-48"
+                className="border border-border rounded-[8px] px-3 py-1.5 text-[13px] font-body text-text bg-surface focus:outline-none focus:border-brand w-48"
               />
 
               {/* Status filter chips — use STATUS_LABELS for display text */}
@@ -556,8 +556,8 @@ export function ApplicantDashboard() {
                     className={cn(
                       'px-3 py-1 rounded-full text-[12px] font-body font-semibold transition-colors border',
                       statusFilter === status
-                        ? 'bg-moss/10 border-moss text-moss'
-                        : 'bg-white border-fog text-mid hover:border-mid',
+                        ? 'bg-brand/10 border-brand text-brand'
+                        : 'bg-surface border-border text-text-muted hover:border-mid',
                     )}
                   >
                     {label}
@@ -572,20 +572,20 @@ export function ApplicantDashboard() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as 'newest' | 'match')}
-                className="border border-fog rounded-[8px] px-2 py-1.5 text-[12px] font-body text-ink bg-white focus:outline-none focus:border-moss cursor-pointer"
+                className="border border-border rounded-[8px] px-2 py-1.5 text-[12px] font-body text-text bg-surface focus:outline-none focus:border-brand cursor-pointer"
               >
                 <option value="newest">Newest first</option>
                 <option value="match">Match score</option>
               </select>
 
               {/* View toggle (list/grid) */}
-              <div className="flex border border-fog rounded-[8px] overflow-hidden">
+              <div className="flex border border-border rounded-[8px] overflow-hidden">
                 <button
                   type="button"
                   onClick={() => setViewMode('list')}
                   className={cn(
                     'px-2 py-1.5 text-[12px]',
-                    viewMode === 'list' ? 'bg-moss/10 text-moss' : 'bg-white text-mid hover:bg-cream',
+                    viewMode === 'list' ? 'bg-brand/10 text-brand' : 'bg-surface text-text-muted hover:bg-bg',
                   )}
                   aria-label="List view"
                 >
@@ -595,8 +595,8 @@ export function ApplicantDashboard() {
                   type="button"
                   onClick={() => setViewMode('grid')}
                   className={cn(
-                    'px-2 py-1.5 text-[12px] border-l border-fog',
-                    viewMode === 'grid' ? 'bg-moss/10 text-moss' : 'bg-white text-mid hover:bg-cream',
+                    'px-2 py-1.5 text-[12px] border-l border-border',
+                    viewMode === 'grid' ? 'bg-brand/10 text-brand' : 'bg-surface text-text-muted hover:bg-bg',
                   )}
                   aria-label="Grid view"
                 >
@@ -618,10 +618,10 @@ export function ApplicantDashboard() {
             {!loading && applicants.length === 0 && (
               <div
                 className="rounded-[12px] p-12 text-center"
-                style={{ backgroundColor: 'var(--color-mist)' }}
+                style={{ backgroundColor: 'var(--color-surface-2)' }}
               >
                 <p className="text-base font-body font-semibold mb-1">No applicants yet.</p>
-                <p className="text-sm text-mid">Share your listing to attract candidates.</p>
+                <p className="text-sm text-text-muted">Share your listing to attract candidates.</p>
               </div>
             )}
 
@@ -629,12 +629,12 @@ export function ApplicantDashboard() {
             {!loading && applicants.length > 0 && filteredApplicants.length === 0 && (
               <div
                 className="rounded-[12px] p-8 text-center"
-                style={{ backgroundColor: 'var(--color-mist)' }}
+                style={{ backgroundColor: 'var(--color-surface-2)' }}
               >
-                <p className="text-base font-body font-semibold mb-1" style={{ color: 'var(--color-ink)' }}>
+                <p className="text-base font-body font-semibold mb-1" style={{ color: 'var(--color-text)' }}>
                   No applicants match your filters.
                 </p>
-                <p className="text-sm" style={{ color: 'var(--color-mid)' }}>
+                <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
                   Try adjusting the status filter or search query.
                 </p>
               </div>

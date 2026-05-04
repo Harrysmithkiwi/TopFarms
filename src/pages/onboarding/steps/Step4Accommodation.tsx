@@ -77,10 +77,10 @@ export function Step4Accommodation({ onComplete, onBack, defaultValues }: Step4P
   return (
     <form onSubmit={handleSubmit(onComplete)} className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-ink)' }}>
+        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Work & Accommodation
         </h2>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-mid)' }}>
+        <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
           Help candidates understand career opportunities and what you offer
         </p>
       </div>
@@ -88,7 +88,7 @@ export function Step4Accommodation({ onComplete, onBack, defaultValues }: Step4P
       <div className="space-y-5">
         {/* Section A: Career development (EONB-04) */}
         <div>
-          <p className="font-body text-[13px] font-semibold text-ink mb-2">
+          <p className="font-body text-[13px] font-semibold text-text mb-2">
             Career development opportunities
           </p>
           <Controller
@@ -121,10 +121,10 @@ export function Step4Accommodation({ onComplete, onBack, defaultValues }: Step4P
         />
 
         {/* Couples toggle with partner sub-select */}
-        <div className="flex items-center justify-between p-4 rounded-[10px] border-[1.5px] border-fog bg-mist">
+        <div className="flex items-center justify-between p-4 rounded-[10px] border-[1.5px] border-border bg-surface-2">
           <div>
-            <p className="font-body text-[13px] font-semibold text-ink">Couples welcome?</p>
-            <p className="text-[12px] mt-0.5" style={{ color: 'var(--color-mid)' }}>
+            <p className="font-body text-[13px] font-semibold text-text">Couples welcome?</p>
+            <p className="text-[12px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
               We'll match you with couples-ready seekers
             </p>
           </div>
@@ -164,12 +164,12 @@ export function Step4Accommodation({ onComplete, onBack, defaultValues }: Step4P
         </InfoBox>
 
         {/* Main accommodation toggle */}
-        <div className="flex items-center justify-between p-4 rounded-[10px] border-[1.5px] border-fog bg-mist">
+        <div className="flex items-center justify-between p-4 rounded-[10px] border-[1.5px] border-border bg-surface-2">
           <div>
-            <p className="font-body text-[13px] font-semibold text-ink">
+            <p className="font-body text-[13px] font-semibold text-text">
               Do you offer accommodation?
             </p>
-            <p className="text-[12px] mt-0.5" style={{ color: 'var(--color-mid)' }}>
+            <p className="text-[12px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
               On-site or nearby housing provided to workers
             </p>
           </div>
@@ -201,7 +201,7 @@ export function Step4Accommodation({ onComplete, onBack, defaultValues }: Step4P
 
             {/* Accommodation extras ChipSelector */}
             <div>
-              <p className="font-body text-[13px] font-medium text-ink mb-3">
+              <p className="font-body text-[13px] font-medium text-text mb-3">
                 Accommodation extras
               </p>
               <Controller
@@ -222,10 +222,10 @@ export function Step4Accommodation({ onComplete, onBack, defaultValues }: Step4P
         )}
 
         {/* Vehicle toggle with conditional chips */}
-        <div className="flex items-center justify-between p-4 rounded-[10px] border-[1.5px] border-fog bg-mist">
+        <div className="flex items-center justify-between p-4 rounded-[10px] border-[1.5px] border-border bg-surface-2">
           <div>
-            <p className="font-body text-[13px] font-semibold text-ink">Vehicle provided?</p>
-            <p className="text-[12px] mt-0.5" style={{ color: 'var(--color-mid)' }}>
+            <p className="font-body text-[13px] font-semibold text-text">Vehicle provided?</p>
+            <p className="text-[12px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
               Farm vehicle or transport assistance
             </p>
           </div>
@@ -261,10 +261,10 @@ export function Step4Accommodation({ onComplete, onBack, defaultValues }: Step4P
         )}
 
         {/* Broadband toggle */}
-        <div className="flex items-center justify-between p-4 rounded-[10px] border-[1.5px] border-fog bg-mist">
+        <div className="flex items-center justify-between p-4 rounded-[10px] border-[1.5px] border-border bg-surface-2">
           <div>
-            <p className="font-body text-[13px] font-semibold text-ink">Broadband available?</p>
-            <p className="text-[12px] mt-0.5" style={{ color: 'var(--color-mid)' }}>
+            <p className="font-body text-[13px] font-semibold text-text">Broadband available?</p>
+            <p className="text-[12px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
               Internet connectivity on-farm or in accommodation
             </p>
           </div>
@@ -279,7 +279,7 @@ export function Step4Accommodation({ onComplete, onBack, defaultValues }: Step4P
 
         {/* Section C: Salary range (EONB-07) */}
         <div>
-          <p className="font-body text-[13px] font-semibold text-ink mb-2">
+          <p className="font-body text-[13px] font-semibold text-text mb-2">
             Salary range (NZD per annum)
           </p>
           <div className="grid grid-cols-2 gap-4">

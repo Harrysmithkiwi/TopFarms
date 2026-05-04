@@ -83,10 +83,10 @@ export function Step2FarmDetails({ onComplete, onBack, defaultValues }: Step2Pro
   return (
     <form onSubmit={handleSubmit(onComplete)} className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-ink)' }}>
+        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Tell us about your farm
         </h2>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-mid)' }}>
+        <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
           These details help candidates understand your operation
         </p>
       </div>
@@ -94,7 +94,7 @@ export function Step2FarmDetails({ onComplete, onBack, defaultValues }: Step2Pro
       <div className="space-y-4">
         {/* Farm type chips — 2-column grid, multi-select */}
         <div>
-          <p className="font-body text-[13px] font-semibold text-ink mb-2">Farm type *</p>
+          <p className="font-body text-[13px] font-semibold text-text mb-2">Farm type *</p>
           <Controller
             control={control}
             name="farm_types"
@@ -109,13 +109,13 @@ export function Step2FarmDetails({ onComplete, onBack, defaultValues }: Step2Pro
             )}
           />
           {errors.farm_types && (
-            <p className="text-red text-[12px] mt-1">{errors.farm_types.message}</p>
+            <p className="text-danger text-[12px] mt-1">{errors.farm_types.message}</p>
           )}
         </div>
 
         {/* Ownership structure chips — 2-column grid, multi-select */}
         <div>
-          <p className="font-body text-[13px] font-semibold text-ink mb-2">Ownership structure</p>
+          <p className="font-body text-[13px] font-semibold text-text mb-2">Ownership structure</p>
           <Controller
             control={control}
             name="ownership_type"
@@ -163,7 +163,7 @@ export function Step2FarmDetails({ onComplete, onBack, defaultValues }: Step2Pro
 
         {/* Shed type chips — inline, multi-select */}
         <div>
-          <p className="font-body text-[13px] font-semibold text-ink mb-2">Shed type *</p>
+          <p className="font-body text-[13px] font-semibold text-text mb-2">Shed type *</p>
           <Controller
             control={control}
             name="shed_type"
@@ -178,7 +178,7 @@ export function Step2FarmDetails({ onComplete, onBack, defaultValues }: Step2Pro
             )}
           />
           {errors.shed_type && (
-            <p className="text-red text-[12px] mt-1">{errors.shed_type.message}</p>
+            <p className="text-danger text-[12px] mt-1">{errors.shed_type.message}</p>
           )}
         </div>
 
@@ -211,7 +211,7 @@ export function Step2FarmDetails({ onComplete, onBack, defaultValues }: Step2Pro
           />
           <span
             className="absolute right-3 bottom-2 text-[12px]"
-            style={{ color: 'var(--color-light)' }}
+            style={{ color: 'var(--color-text-subtle)' }}
           >
             ha
           </span>
