@@ -162,16 +162,16 @@ describe('StatusBanner', () => {
     expect(screen.getByText(/Unfortunately, this application wasn't successful\./)).toBeTruthy()
   })
 
-  it('variant="shortlisted" container has bg-hay-lt class', () => {
+  it('variant="shortlisted" container has bg-warn-bg class', () => {
     const { container } = render(<StatusBanner variant="shortlisted" />)
     const wrapper = container.firstElementChild
-    expect(wrapper?.className).toMatch(/bg-hay-lt/)
+    expect(wrapper?.className).toMatch(/bg-warn-bg/)
   })
 
-  it('variant="declined" container has bg-red-lt\/60 class (not opacity-60)', () => {
+  it('variant="declined" container has bg-danger-bg/60 class (not opacity-60)', () => {
     const { container } = render(<StatusBanner variant="declined" />)
     const wrapper = container.firstElementChild
-    expect(wrapper?.className).toMatch(/bg-red-lt\/60/)
+    expect(wrapper?.className).toMatch(/bg-danger-bg\/60/)
     expect(wrapper?.className).not.toMatch(/opacity-60/)
   })
 
