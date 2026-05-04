@@ -10,7 +10,7 @@ const sectors = [
 
 export function FarmTypesStrip() {
   return (
-    <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-white)' }}>
+    <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-surface)' }}>
       <motion.div
         className="max-w-6xl mx-auto"
         initial={{ opacity: 0, y: 32 }}
@@ -20,10 +20,10 @@ export function FarmTypesStrip() {
       >
         {/* Eyebrow */}
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-8 h-px" style={{ backgroundColor: 'var(--color-meadow)' }} />
+          <div className="w-8 h-px" style={{ backgroundColor: 'var(--color-brand)' }} />
           <p
             className="text-xs font-bold tracking-widest uppercase"
-            style={{ color: 'var(--color-meadow)' }}
+            style={{ color: 'var(--color-brand)' }}
           >
             Farm Sectors
           </p>
@@ -32,7 +32,7 @@ export function FarmTypesStrip() {
         {/* Heading */}
         <h2
           className="font-display font-bold text-4xl md:text-5xl mb-10"
-          style={{ color: 'var(--color-soil)' }}
+          style={{ color: 'var(--color-brand-900)' }}
         >
           Opportunities Across Every Sector
         </h2>
@@ -44,15 +44,15 @@ export function FarmTypesStrip() {
               key={sector.name}
               className="snap-center min-w-[160px] sm:min-w-0 rounded-xl p-6 text-center transition-shadow hover:shadow-lg cursor-default"
               style={{
-                backgroundColor: 'var(--color-white)',
-                border: '1px solid var(--color-fog)',
+                backgroundColor: 'var(--color-surface)',
+                border: '1px solid var(--color-border)',
               }}
             >
               <div className="text-3xl mb-3">{sector.icon}</div>
-              <p className="font-bold text-sm mb-1" style={{ color: 'var(--color-soil)' }}>
+              <p className="font-bold text-sm mb-1" style={{ color: 'var(--color-brand-900)' }}>
                 {sector.name}
               </p>
-              <p className="text-xs" style={{ color: 'var(--color-mid)' }}>
+              <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
                 {sector.count} listings
               </p>
             </div>

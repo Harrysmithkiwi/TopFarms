@@ -16,16 +16,16 @@ const STATUS_CONFIG: Record<
   JobStatus,
   { label: string; bgClass: string; textClass: string }
 > = {
-  active: { label: 'Active', bgClass: 'bg-[rgba(74,124,47,0.12)]', textClass: 'text-moss' },
+  active: { label: 'Active', bgClass: 'bg-[rgba(74,124,47,0.12)]', textClass: 'text-brand' },
   paused: {
     label: 'Paused',
     bgClass: 'bg-[rgba(217,150,45,0.12)]',
     textClass: 'text-[#9a6c1a]',
   },
-  draft: { label: 'Draft', bgClass: 'bg-fog', textClass: 'text-mid' },
-  expired: { label: 'Expired', bgClass: 'bg-[rgba(220,53,69,0.10)]', textClass: 'text-red' },
+  draft: { label: 'Draft', bgClass: 'bg-surface-2', textClass: 'text-text-muted' },
+  expired: { label: 'Expired', bgClass: 'bg-[rgba(220,53,69,0.10)]', textClass: 'text-danger' },
   filled: { label: 'Filled', bgClass: 'bg-[rgba(59,130,246,0.10)]', textClass: 'text-[#2563eb]' },
-  archived: { label: 'Archived', bgClass: 'bg-fog', textClass: 'text-light' },
+  archived: { label: 'Archived', bgClass: 'bg-surface-2', textClass: 'text-text-subtle' },
 }
 
 function formatSalary(min?: number, max?: number): string | null {
@@ -63,15 +63,15 @@ export function JobCard({ job, onPause, onEdit, onArchive, onMarkFilled, classNa
   return (
     <div
       className={cn(
-        'bg-white border-[1.5px] border-fog rounded-[12px] p-5 flex flex-col gap-4',
+        'bg-surface border-[1.5px] border-border rounded-[12px] p-5 flex flex-col gap-4',
         className,
       )}
     >
       {/* Header row */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
-          <h3 className="text-[15px] font-body font-bold text-ink truncate">{job.title}</h3>
-          <p className="text-[12px] font-body text-mid mt-0.5">{job.region}</p>
+          <h3 className="text-[15px] font-body font-bold text-text truncate">{job.title}</h3>
+          <p className="text-[12px] font-body text-text-muted mt-0.5">{job.region}</p>
         </div>
 
         {/* Status badge */}
@@ -87,7 +87,7 @@ export function JobCard({ job, onPause, onEdit, onArchive, onMarkFilled, classNa
       </div>
 
       {/* Job meta */}
-      <div className="flex flex-wrap gap-3 text-[12px] font-body text-mid">
+      <div className="flex flex-wrap gap-3 text-[12px] font-body text-text-muted">
         {salary && <span>{salary}</span>}
         <span className="capitalize">{job.contract_type}</span>
         {job.views_count > 0 && (
@@ -103,7 +103,7 @@ export function JobCard({ job, onPause, onEdit, onArchive, onMarkFilled, classNa
         <p
           className={cn(
             'text-[12px] font-body',
-            daysLeft <= 7 ? 'text-red font-medium' : 'text-mid',
+            daysLeft <= 7 ? 'text-danger font-medium' : 'text-text-muted',
           )}
         >
           {daysLeft > 0 ? `${daysLeft} day${daysLeft === 1 ? '' : 's'} remaining` : 'Expired today'}
@@ -111,7 +111,7 @@ export function JobCard({ job, onPause, onEdit, onArchive, onMarkFilled, classNa
       )}
 
       {/* Action buttons */}
-      <div className="flex flex-wrap gap-2 pt-1 border-t border-fog">
+      <div className="flex flex-wrap gap-2 pt-1 border-t border-border">
         {canEdit && (
           <Button
             variant="ghost"
@@ -165,7 +165,7 @@ export function JobCard({ job, onPause, onEdit, onArchive, onMarkFilled, classNa
             variant="ghost"
             size="sm"
             onClick={onArchive}
-            className="flex items-center gap-1.5 text-light hover:text-mid"
+            className="flex items-center gap-1.5 text-text-subtle hover:text-text-muted"
           >
             <Archive className="w-3.5 h-3.5" />
             Archive

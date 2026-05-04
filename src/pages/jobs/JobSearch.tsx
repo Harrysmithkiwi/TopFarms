@@ -57,18 +57,18 @@ function computeTrustLevel(verifications: EmployerVerification[]): TrustLevel {
 
 function SkeletonCard() {
   return (
-    <div className="bg-white border border-fog rounded-[12px] p-4 animate-pulse">
+    <div className="bg-surface border border-border rounded-[12px] p-4 animate-pulse">
       <div className="flex items-start gap-4">
         <div className="flex-1 space-y-2">
-          <div className="h-4 bg-fog rounded w-3/5" />
-          <div className="h-3 bg-fog rounded w-2/5" />
+          <div className="h-4 bg-surface-2 rounded w-3/5" />
+          <div className="h-3 bg-surface-2 rounded w-2/5" />
           <div className="flex gap-2 mt-2">
-            <div className="h-5 bg-fog rounded-full w-16" />
-            <div className="h-5 bg-fog rounded-full w-20" />
+            <div className="h-5 bg-surface-2 rounded-full w-16" />
+            <div className="h-5 bg-surface-2 rounded-full w-20" />
           </div>
-          <div className="h-3 bg-fog rounded w-1/4 mt-2" />
+          <div className="h-3 bg-surface-2 rounded w-1/4 mt-2" />
         </div>
-        <div className="w-[50px] h-[50px] rounded-full bg-fog flex-shrink-0" />
+        <div className="w-[50px] h-[50px] rounded-full bg-surface-2 flex-shrink-0" />
       </div>
     </div>
   )
@@ -396,19 +396,19 @@ export function JobSearch() {
   }
 
   return (
-    <div className="min-h-screen bg-mist">
+    <div className="min-h-screen bg-surface-2">
       <SearchHero />
 
       <div className="max-w-[1200px] mx-auto px-4 py-6">
 
         {/* Mobile: sticky header with filter icon */}
-        <div className="md:hidden flex items-center justify-between mb-4 sticky top-0 bg-mist z-10 py-2">
-          <h1 className="text-[18px] font-display font-bold text-soil">Find Farm Jobs</h1>
+        <div className="md:hidden flex items-center justify-between mb-4 sticky top-0 bg-surface-2 z-10 py-2">
+          <h1 className="text-[18px] font-display font-bold text-text">Find Farm Jobs</h1>
           <Dialog.Root open={drawerOpen} onOpenChange={setDrawerOpen}>
             <Dialog.Trigger asChild>
               <button
                 type="button"
-                className="flex items-center gap-2 px-3 py-2 border border-fog rounded-[8px] bg-white text-[13px] font-body text-mid hover:border-mid transition-colors"
+                className="flex items-center gap-2 px-3 py-2 border border-border rounded-[8px] bg-surface text-[13px] font-body text-text-muted hover:border-border-strong transition-colors"
               >
                 <SlidersHorizontal className="w-4 h-4" />
                 Filters
@@ -419,7 +419,7 @@ export function JobSearch() {
             <Dialog.Portal>
               <Dialog.Overlay className="fixed inset-0 bg-black/40 z-40" />
               <Dialog.Content
-                className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-[16px] max-h-[85vh] flex flex-col overflow-hidden"
+                className="fixed bottom-0 left-0 right-0 z-50 bg-surface rounded-t-[16px] max-h-[85vh] flex flex-col overflow-hidden"
                 aria-describedby={undefined}
               >
                 <Dialog.Title className="sr-only">Job Filters</Dialog.Title>
@@ -551,23 +551,23 @@ function ResultsArea({
 
       {/* Header: count + sort */}
       <div className="flex items-center justify-between mb-4">
-        <p className="text-[14px] font-body text-mid">
+        <p className="text-[14px] font-body text-text-muted">
           {loading && jobs.length === 0 ? (
-            <span className="inline-block w-20 h-4 bg-fog rounded animate-pulse" />
+            <span className="inline-block w-20 h-4 bg-surface-2 rounded animate-pulse" />
           ) : (
             <span>
-              <strong className="text-ink">{jobs.length}</strong> job{jobs.length !== 1 ? 's' : ''} found
+              <strong className="text-text">{jobs.length}</strong> job{jobs.length !== 1 ? 's' : ''} found
             </span>
           )}
         </p>
 
         {/* Sort selector */}
         <div className="flex items-center gap-2">
-          <span className="text-[12px] font-body text-light">Sort:</span>
+          <span className="text-[12px] font-body text-text-subtle">Sort:</span>
           <select
             value={sortParam}
             onChange={(e) => onSortChange(e.target.value)}
-            className="text-[12px] font-body text-ink border border-fog rounded-[6px] px-2 py-1 bg-white focus:outline-none focus:border-moss cursor-pointer"
+            className="text-[12px] font-body text-text border border-border rounded-[6px] px-2 py-1 bg-surface focus:outline-none focus:border-brand cursor-pointer"
           >
             <option value="match">Match Score</option>
             <option value="recent">Most Recent</option>
@@ -589,13 +589,13 @@ function ResultsArea({
       {/* Empty state */}
       {!loading && jobs.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="w-[72px] h-[72px] rounded-full bg-fog flex items-center justify-center mb-4">
-            <X className="w-8 h-8 text-light" />
+          <div className="w-[72px] h-[72px] rounded-full bg-surface-2 flex items-center justify-center mb-4">
+            <X className="w-8 h-8 text-text-subtle" />
           </div>
-          <h3 className="text-[17px] font-body font-semibold text-ink mb-2">
+          <h3 className="text-[17px] font-body font-semibold text-text mb-2">
             No jobs match your filters.
           </h3>
-          <p className="text-[14px] font-body text-mid max-w-[280px]">
+          <p className="text-[14px] font-body text-text-muted max-w-[280px]">
             Try broadening your search or removing a filter.
           </p>
         </div>
@@ -636,7 +636,7 @@ function ResultsArea({
       {/* Loading more indicator */}
       {loading && jobs.length > 0 && (
         <div className="flex justify-center mt-6">
-          <div className="w-6 h-6 border-2 border-moss border-t-transparent rounded-full animate-spin" />
+          <div className="w-6 h-6 border-2 border-brand border-t-transparent rounded-full animate-spin" />
         </div>
       )}
     </div>

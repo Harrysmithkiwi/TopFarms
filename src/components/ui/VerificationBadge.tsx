@@ -17,23 +17,24 @@ const TRUST_CONFIG: Record<
 > = {
   unverified: {
     label: 'Unverified',
-    shieldClass: 'text-light',
-    badgeClass: 'bg-fog text-mid border-fog',
+    shieldClass: 'text-text-subtle',
+    badgeClass: 'bg-surface-2 text-text-muted border-border',
   },
   basic: {
     label: 'Basic Verified',
-    shieldClass: 'text-[#2563eb]',
-    badgeClass: 'bg-[rgba(59,130,246,0.08)] text-[#2563eb] border-[rgba(59,130,246,0.25)]',
+    shieldClass: 'text-info',
+    badgeClass: 'bg-info-bg text-info border-info/30',
   },
   verified: {
     label: 'Verified',
-    shieldClass: 'text-moss',
-    badgeClass: 'bg-[rgba(74,124,47,0.08)] text-moss border-[rgba(74,124,47,0.25)]',
+    shieldClass: 'text-brand',
+    badgeClass: 'bg-brand-50 text-brand border-brand/30',
   },
   fully_verified: {
+    // #b45309 (amber-700) kept for legibility on warn-bg — see PHASE-19-KNOWN-STATE.md
     label: 'Fully Verified',
     shieldClass: 'text-[#b45309]',
-    badgeClass: 'bg-[rgba(180,83,9,0.08)] text-[#b45309] border-[rgba(180,83,9,0.25)]',
+    badgeClass: 'bg-warn-bg text-[#b45309] border-warn/30',
   },
 }
 
@@ -76,7 +77,8 @@ export function VerificationBadge({
         type="button"
         onClick={toggle}
         className={cn(
-          'flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[12px] font-body font-semibold transition-all duration-150',
+          'flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[12px] font-body font-semibold transition-colors duration-150',
+          'outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
           config.badgeClass,
           expandable && 'cursor-pointer hover:opacity-80',
           !expandable && 'cursor-default',
@@ -101,12 +103,12 @@ export function VerificationBadge({
           <div
             className={cn(
               'absolute left-0 top-full mt-1.5 z-20 min-w-[220px]',
-              'bg-white border-[1.5px] border-fog rounded-[10px] shadow-lg py-2',
+              'bg-surface border border-border rounded-[10px] shadow-md py-2',
             )}
             role="listbox"
             aria-label="Verification details"
           >
-            <p className="px-3 py-1 text-[10px] font-body font-semibold text-light uppercase tracking-wide">
+            <p className="px-3 py-1 text-[10px] font-body font-semibold text-text-subtle uppercase tracking-wide">
               Verification Status
             </p>
 
@@ -126,24 +128,25 @@ export function VerificationBadge({
                   <div
                     className={cn(
                       'w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0',
-                      isVerified && 'bg-moss',
-                      isPending && 'bg-[rgba(217,150,45,0.20)]',
-                      !record && 'bg-fog',
+                      isVerified && 'bg-brand',
+                      isPending && 'bg-warn/20',
+                      !record && 'bg-surface-2',
                     )}
                   >
-                    {isVerified && <Check className="w-2.5 h-2.5 text-white stroke-[3]" />}
+                    {isVerified && <Check className="w-2.5 h-2.5 text-text-on-brand stroke-[3]" />}
+                    {/* #9a6c1a kept for legibility — see PHASE-19-KNOWN-STATE.md */}
                     {isPending && <Clock className="w-2.5 h-2.5 text-[#9a6c1a]" />}
                   </div>
 
-                  <span className="text-[12px] font-body text-ink">{METHOD_LABELS[method]}</span>
+                  <span className="text-[12px] font-body text-text">{METHOD_LABELS[method]}</span>
 
                   {/* Status label */}
                   <span
                     className={cn(
                       'ml-auto text-[11px] font-body',
-                      isVerified && 'text-moss',
+                      isVerified && 'text-brand',
                       isPending && 'text-[#9a6c1a]',
-                      !record && 'text-light',
+                      !record && 'text-text-subtle',
                     )}
                   >
                     {isVerified ? 'Verified' : isPending ? 'Pending' : 'Not started'}

@@ -232,10 +232,10 @@ export function FileDropzone({
           <div
             className={cn(
               'border-2 border-dashed rounded-[10px] p-4 text-center',
-              'border-fog bg-mist opacity-60 cursor-not-allowed',
+              'border-border bg-surface-2 opacity-60 cursor-not-allowed',
             )}
           >
-            <p className="text-[13px] font-body text-mid">
+            <p className="text-[13px] font-body text-text-muted">
               Maximum {maxFiles} files reached. Remove a file to upload more.
             </p>
           </div>
@@ -246,20 +246,20 @@ export function FileDropzone({
               'border-2 border-dashed rounded-[10px] p-6 text-center cursor-pointer transition-all duration-200',
               'flex flex-col items-center justify-center gap-3 min-h-[120px]',
               isDragActive
-                ? 'border-fern bg-[rgba(74,124,47,0.06)]'
-                : 'border-fog bg-mist hover:border-mid',
-              (multiErrorMessage || hasRejections) && 'border-red',
+                ? 'border-brand-hover bg-[rgba(74,124,47,0.06)]'
+                : 'border-border bg-surface-2 hover:border-border-strong',
+              (multiErrorMessage || hasRejections) && 'border-danger',
             )}
           >
             <input {...getInputProps()} />
             <div className="flex flex-col items-center gap-2">
               <UploadCloud
-                className={cn('w-8 h-8', isDragActive ? 'text-fern' : 'text-mid')}
+                className={cn('w-8 h-8', isDragActive ? 'text-brand-hover' : 'text-text-muted')}
               />
-              <p className={cn('text-[13px] font-body', isDragActive ? 'text-fern' : 'text-mid')}>
+              <p className={cn('text-[13px] font-body', isDragActive ? 'text-brand-hover' : 'text-text-muted')}>
                 {isDragActive ? 'Drop files here...' : label}
               </p>
-              <p className="text-[11px] font-body text-light">
+              <p className="text-[11px] font-body text-text-subtle">
                 Max {Math.round(maxSize / 1024 / 1024)}MB per file · up to {maxFiles} files
               </p>
             </div>
@@ -272,23 +272,23 @@ export function FileDropzone({
             {uploadedFiles.map((f) => (
               <li key={f.path || f.name} className="flex items-center gap-2 text-[13px] font-body">
                 {f.status === 'uploading' ? (
-                  <Loader2 className="w-4 h-4 text-fern animate-spin flex-shrink-0" />
+                  <Loader2 className="w-4 h-4 text-brand-hover animate-spin flex-shrink-0" />
                 ) : (
-                  <FileText className="w-4 h-4 text-fern flex-shrink-0" />
+                  <FileText className="w-4 h-4 text-brand-hover flex-shrink-0" />
                 )}
-                <span className="text-ink truncate max-w-[200px]">{f.name}</span>
+                <span className="text-text truncate max-w-[200px]">{f.name}</span>
                 {f.status === 'done' && (
                   <button
                     type="button"
                     onClick={() => removeFile(f.path)}
-                    className="ml-auto text-light hover:text-ink"
+                    className="ml-auto text-text-subtle hover:text-text"
                     aria-label={`Remove ${f.name}`}
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
                 )}
                 {f.status === 'error' && (
-                  <span className="ml-auto text-[11px] text-red">Failed</span>
+                  <span className="ml-auto text-[11px] text-danger">Failed</span>
                 )}
               </li>
             ))}
@@ -297,7 +297,7 @@ export function FileDropzone({
 
         {/* Error message */}
         {multiErrorMessage && (
-          <p className="mt-1 text-[12px] font-body text-red">{multiErrorMessage}</p>
+          <p className="mt-1 text-[12px] font-body text-danger">{multiErrorMessage}</p>
         )}
       </div>
     )
@@ -312,10 +312,10 @@ export function FileDropzone({
           'border-2 border-dashed rounded-[10px] p-6 text-center cursor-pointer transition-all duration-200',
           'flex flex-col items-center justify-center gap-3 min-h-[120px]',
           isDragActive
-            ? 'border-fern bg-[rgba(74,124,47,0.06)]'
-            : 'border-fog bg-mist hover:border-mid',
+            ? 'border-brand-hover bg-[rgba(74,124,47,0.06)]'
+            : 'border-border bg-surface-2 hover:border-border-strong',
           isUploading && 'pointer-events-none opacity-70',
-          (errorMessage || hasRejections) && 'border-red',
+          (errorMessage || hasRejections) && 'border-danger',
         )}
       >
         <input {...getInputProps()} />
@@ -323,8 +323,8 @@ export function FileDropzone({
         {/* Preview / uploading / idle state */}
         {isUploading ? (
           <div className="flex flex-col items-center gap-2">
-            <Loader2 className="w-8 h-8 text-fern animate-spin" />
-            <p className="text-[13px] font-body text-mid">Uploading {fileName}...</p>
+            <Loader2 className="w-8 h-8 text-brand-hover animate-spin" />
+            <p className="text-[13px] font-body text-text-muted">Uploading {fileName}...</p>
           </div>
         ) : hasFile ? (
           <div className="flex flex-col items-center gap-2">
@@ -336,26 +336,26 @@ export function FileDropzone({
               />
             )}
             {!preview && fileName && (
-              <div className="flex items-center gap-2 text-mid">
-                <FileText className="w-6 h-6 text-fern" />
-                <span className="text-[13px] font-body text-ink truncate max-w-[200px]">
+              <div className="flex items-center gap-2 text-text-muted">
+                <FileText className="w-6 h-6 text-brand-hover" />
+                <span className="text-[13px] font-body text-text truncate max-w-[200px]">
                   {fileName}
                 </span>
               </div>
             )}
-            <p className="text-[11px] font-body text-mid">
+            <p className="text-[11px] font-body text-text-muted">
               {isDragActive ? 'Drop to replace file' : 'Click or drag to replace'}
             </p>
           </div>
         ) : (
           <div className="flex flex-col items-center gap-2">
             <UploadCloud
-              className={cn('w-8 h-8', isDragActive ? 'text-fern' : 'text-mid')}
+              className={cn('w-8 h-8', isDragActive ? 'text-brand-hover' : 'text-text-muted')}
             />
-            <p className={cn('text-[13px] font-body', isDragActive ? 'text-fern' : 'text-mid')}>
+            <p className={cn('text-[13px] font-body', isDragActive ? 'text-brand-hover' : 'text-text-muted')}>
               {isDragActive ? 'Drop file here...' : label}
             </p>
-            <p className="text-[11px] font-body text-light">
+            <p className="text-[11px] font-body text-text-subtle">
               Max {Math.round(maxSize / 1024 / 1024)}MB
             </p>
           </div>
@@ -367,7 +367,7 @@ export function FileDropzone({
         <button
           type="button"
           onClick={clearFile}
-          className="mt-1.5 flex items-center gap-1 text-[11px] font-body text-mid hover:text-ink transition-colors"
+          className="mt-1.5 flex items-center gap-1 text-[11px] font-body text-text-muted hover:text-text transition-colors"
         >
           <X className="w-3 h-3" />
           Remove file
@@ -376,7 +376,7 @@ export function FileDropzone({
 
       {/* Error message */}
       {errorMessage && (
-        <p className="mt-1 text-[12px] font-body text-red">{errorMessage}</p>
+        <p className="mt-1 text-[12px] font-body text-danger">{errorMessage}</p>
       )}
     </div>
   )

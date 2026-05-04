@@ -58,10 +58,10 @@ export function Step3Culture({ onComplete, onBack, defaultValues }: Step3Props) 
   return (
     <form onSubmit={handleSubmit(onComplete)} className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-ink)' }}>
+        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Farm culture & team
         </h2>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-mid)' }}>
+        <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
           Help candidates understand what it's like to work on your farm
         </p>
       </div>
@@ -70,14 +70,14 @@ export function Step3Culture({ onComplete, onBack, defaultValues }: Step3Props) 
         {/* Culture description textarea */}
         <div>
           <label
-            className="font-body text-[13px] font-medium text-ink mb-1 block"
+            className="font-body text-[13px] font-medium text-text mb-1 block"
             htmlFor="culture_description"
           >
             Work culture
           </label>
           <textarea
             id="culture_description"
-            className="w-full border-[1.5px] rounded-[8px] px-3 py-2 font-body text-[13px] text-ink placeholder:text-light bg-mist resize-none focus:outline-none focus:ring-[3px] focus:ring-[rgba(74,124,47,0.08)] border-fog focus:border-fern transition-colors duration-200"
+            className="w-full border-[1.5px] rounded-[8px] px-3 py-2 font-body text-[13px] text-text placeholder:text-text-subtle bg-surface-2 resize-none outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand border-border focus:border-brand-hover transition-colors duration-200"
             rows={4}
             placeholder="Describe your farm's work culture and team environment..."
             maxLength={CULTURE_MAX}
@@ -87,9 +87,9 @@ export function Step3Culture({ onComplete, onBack, defaultValues }: Step3Props) 
           />
           <div className="flex justify-between mt-1">
             {errors.culture_description && (
-              <p className="text-red text-[12px] font-body">{errors.culture_description.message}</p>
+              <p className="text-danger text-[12px] font-body">{errors.culture_description.message}</p>
             )}
-            <p className="text-[12px] font-body ml-auto" style={{ color: 'var(--color-light)' }}>
+            <p className="text-[12px] font-body ml-auto" style={{ color: 'var(--color-text-subtle)' }}>
               {cultureCount}/{CULTURE_MAX}
             </p>
           </div>
@@ -106,14 +106,14 @@ export function Step3Culture({ onComplete, onBack, defaultValues }: Step3Props) 
         {/* About farm textarea */}
         <div>
           <label
-            className="font-body text-[13px] font-medium text-ink mb-1 block"
+            className="font-body text-[13px] font-medium text-text mb-1 block"
             htmlFor="about_farm"
           >
             About your farm
           </label>
           <textarea
             id="about_farm"
-            className="w-full border-[1.5px] rounded-[8px] px-3 py-2 font-body text-[13px] text-ink placeholder:text-light bg-mist resize-none focus:outline-none focus:ring-[3px] focus:ring-[rgba(74,124,47,0.08)] border-fog focus:border-fern transition-colors duration-200"
+            className="w-full border-[1.5px] rounded-[8px] px-3 py-2 font-body text-[13px] text-text placeholder:text-text-subtle bg-surface-2 resize-none outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand border-border focus:border-brand-hover transition-colors duration-200"
             rows={4}
             placeholder="Describe your farm — its history, location, what makes it special..."
             maxLength={ABOUT_MAX}
@@ -123,9 +123,9 @@ export function Step3Culture({ onComplete, onBack, defaultValues }: Step3Props) 
           />
           <div className="flex justify-between mt-1">
             {errors.about_farm && (
-              <p className="text-red text-[12px] font-body">{errors.about_farm.message}</p>
+              <p className="text-danger text-[12px] font-body">{errors.about_farm.message}</p>
             )}
-            <p className="text-[12px] font-body ml-auto" style={{ color: 'var(--color-light)' }}>
+            <p className="text-[12px] font-body ml-auto" style={{ color: 'var(--color-text-subtle)' }}>
               {aboutCount}/{ABOUT_MAX}
             </p>
           </div>
@@ -170,7 +170,7 @@ export function Step3Culture({ onComplete, onBack, defaultValues }: Step3Props) 
           />
           {showDistanceWarning && (
             <div className="mt-2">
-              <InfoBox variant="hay">
+              <InfoBox variant="warn">
                 Remote locations may receive fewer applicants. Consider highlighting accommodation and transport options.
               </InfoBox>
             </div>

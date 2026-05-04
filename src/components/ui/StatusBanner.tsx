@@ -10,28 +10,28 @@ export interface StatusBannerProps {
 
 const bannerVariants: Record<StatusVariant, { wrapper: string; title: string; body: string; titleColor: string }> = {
   shortlisted: {
-    wrapper: 'bg-hay-lt border-hay',
+    wrapper: 'bg-warn-bg border-warn',
     title: "Great news \u2014 you've been shortlisted!",
     body: 'The employer has added you to their shortlist.',
-    titleColor: 'text-ink',
+    titleColor: 'text-text',
   },
   interview: {
-    wrapper: 'bg-green-lt border-green',
+    wrapper: 'bg-success-bg border-success',
     title: "You've got an interview invitation!",
     body: 'Please respond to confirm your availability.',
-    titleColor: 'text-ink',
+    titleColor: 'text-text',
   },
   offer: {
-    wrapper: 'bg-green-lt border-green',
+    wrapper: 'bg-success-bg border-success',
     title: "Congratulations \u2014 you've received an offer!",
     body: 'Review the offer details below.',
-    titleColor: 'text-ink',
+    titleColor: 'text-text',
   },
   declined: {
-    wrapper: 'bg-red-lt/60 border-red-lt',
+    wrapper: 'bg-danger-bg/60 border-danger-bg',
     title: "Unfortunately, this application wasn't successful.",
     body: '',
-    titleColor: 'text-red',
+    titleColor: 'text-danger',
   },
 }
 
@@ -50,7 +50,7 @@ export function StatusBanner({ variant, actions, className }: StatusBannerProps)
         {config.title}
       </p>
       {config.body && (
-        <p className="text-[14px] text-mid font-body mt-1">
+        <p className="text-[14px] text-text-muted font-body mt-1">
           {config.body}
         </p>
       )}

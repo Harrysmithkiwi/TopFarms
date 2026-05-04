@@ -13,7 +13,7 @@ import { LandingFooter } from '@/components/landing/LandingFooter'
 
 export function Home() {
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'var(--color-cream)' }}>
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--color-bg)' }}>
       <Nav />
       <HeroSection />
       <CountersSection />

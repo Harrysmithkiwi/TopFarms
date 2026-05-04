@@ -83,7 +83,7 @@ export function JobStep1Basics({ onComplete, defaultValues }: Step1Props) {
       {/* Left panel — soil background with stats */}
       <div
         className="hidden md:flex flex-col justify-center rounded-l-[16px] p-6"
-        style={{ backgroundColor: 'var(--color-soil)' }}
+        style={{ backgroundColor: 'var(--color-brand-900)' }}
       >
         <h3 className="font-display text-lg font-semibold text-white mb-4">Why TopFarms?</h3>
         <div className="space-y-4">
@@ -103,13 +103,13 @@ export function JobStep1Basics({ onComplete, defaultValues }: Step1Props) {
       </div>
 
       {/* Right panel — cream form */}
-      <div className="p-6" style={{ backgroundColor: 'var(--color-cream)' }}>
+      <div className="p-6" style={{ backgroundColor: 'var(--color-bg)' }}>
         <form onSubmit={handleSubmit(onComplete)} className="space-y-6">
           <div>
-            <h2 className="text-lg font-semibold" style={{ color: 'var(--color-ink)' }}>
+            <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
               Job basics
             </h2>
-            <p className="text-sm mt-1" style={{ color: 'var(--color-mid)' }}>
+            <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
               Start with the essential details about this role
             </p>
           </div>

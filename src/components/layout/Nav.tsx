@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, Leaf } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 
 const employerLinks = [
@@ -41,8 +41,8 @@ export function Nav() {
     [
       'text-xs font-semibold px-3 py-1.5 rounded-full transition-all',
       isActive
-        ? 'text-cream bg-white/8'
-        : 'text-cream/50 hover:text-cream/80',
+        ? 'text-white bg-surface/8'
+        : 'text-white/50 hover:text-white/80',
     ].join(' ')
 
   return (
@@ -50,17 +50,19 @@ export function Nav() {
       <nav
         className="sticky top-0 z-50 h-14 flex items-center px-4 md:px-6"
         style={{
-          backgroundColor: 'var(--color-soil)',
+          backgroundColor: 'var(--color-brand-900)',
           borderBottom: '1px solid rgba(255,255,255,0.06)',
         }}
       >
         {/* Logo */}
         <Link
           to="/"
-          className="font-display text-[20px] font-semibold mr-8 flex-shrink-0"
-          style={{ color: 'var(--color-cream)' }}
+          className="font-display text-[20px] font-semibold mr-8 flex-shrink-0 inline-flex items-center gap-1.5"
+          style={{ color: 'var(--color-text-on-brand)' }}
+          aria-label="TopFarms"
         >
-          🌿 TopFarms
+          <Leaf size={20} className="text-brand" aria-hidden="true" />
+          <span>TopFarms</span>
         </Link>
 
         {/* Desktop nav links */}
@@ -84,8 +86,8 @@ export function Nav() {
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
                 className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-opacity hover:opacity-80"
                 style={{
-                  backgroundColor: 'var(--color-meadow)',
-                  color: 'var(--color-white)',
+                  backgroundColor: 'var(--color-brand)',
+                  color: 'var(--color-surface)',
                 }}
                 aria-label="User menu"
               >
@@ -101,21 +103,21 @@ export function Nav() {
                   <div
                     className="absolute right-0 top-10 z-20 w-48 rounded-lg border shadow-lg py-1"
                     style={{
-                      backgroundColor: 'var(--color-white)',
-                      borderColor: 'var(--color-fog)',
+                      backgroundColor: 'var(--color-surface)',
+                      borderColor: 'var(--color-border)',
                     }}
                   >
                     {role && (
                       <Link
                         to={`/dashboard/${role}`}
                         onClick={() => setUserMenuOpen(false)}
-                        className="block px-4 py-2 text-sm hover:bg-fog transition-colors"
-                        style={{ color: 'var(--color-ink)' }}
+                        className="block px-4 py-2 text-sm hover:bg-surface-2 transition-colors"
+                        style={{ color: 'var(--color-text)' }}
                       >
                         Dashboard
                       </Link>
                     )}
-                    {role && <hr style={{ borderColor: 'var(--color-fog)' }} className="my-1" />}
+                    {role && <hr style={{ borderColor: 'var(--color-border)' }} className="my-1" />}
                     {/* My Profile + Settings dropdown items: add back when /profile and /settings
                         routes are registered in main.tsx (Phase 17/18 nav consolidation). */}
                     <button
@@ -123,8 +125,8 @@ export function Nav() {
                         setUserMenuOpen(false)
                         signOut()
                       }}
-                      className="w-full text-left px-4 py-2 text-sm hover:bg-fog transition-colors"
-                      style={{ color: 'var(--color-red)' }}
+                      className="w-full text-left px-4 py-2 text-sm hover:bg-surface-2 transition-colors"
+                      style={{ color: 'var(--color-danger)' }}
                     >
                       Sign Out
                     </button>
@@ -136,8 +138,8 @@ export function Nav() {
             <>
               <Link
                 to="/login"
-                className="text-sm font-medium px-3 py-1.5 rounded-lg transition-colors hover:bg-white/8"
-                style={{ color: 'var(--color-cream)' }}
+                className="text-sm font-medium px-3 py-1.5 rounded-lg transition-colors hover:bg-surface/8"
+                style={{ color: 'var(--color-text-on-brand)' }}
               >
                 Log in
               </Link>
@@ -145,8 +147,8 @@ export function Nav() {
                 to="/signup"
                 className="text-sm font-semibold px-4 py-1.5 rounded-lg transition-colors"
                 style={{
-                  backgroundColor: 'var(--color-meadow)',
-                  color: 'var(--color-white)',
+                  backgroundColor: 'var(--color-brand)',
+                  color: 'var(--color-surface)',
                 }}
               >
                 Sign up
@@ -157,8 +159,8 @@ export function Nav() {
 
         {/* Mobile hamburger */}
         <button
-          className="md:hidden ml-auto p-1.5 rounded-lg transition-colors hover:bg-white/8"
-          style={{ color: 'var(--color-cream)' }}
+          className="md:hidden ml-auto p-1.5 rounded-lg transition-colors hover:bg-surface/8"
+          style={{ color: 'var(--color-text-on-brand)' }}
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
         >
@@ -171,7 +173,7 @@ export function Nav() {
         <div
           className="md:hidden fixed inset-x-0 top-14 z-40 border-b shadow-lg"
           style={{
-            backgroundColor: 'var(--color-soil)',
+            backgroundColor: 'var(--color-brand-900)',
             borderColor: 'rgba(255,255,255,0.06)',
           }}
         >
@@ -185,8 +187,8 @@ export function Nav() {
                   [
                     'block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
                     isActive
-                      ? 'text-cream bg-white/8'
-                      : 'text-cream/60 hover:text-cream/90',
+                      ? 'text-white bg-surface/8'
+                      : 'text-white/60 hover:text-white/90',
                   ].join(' ')
                 }
               >
@@ -203,7 +205,7 @@ export function Nav() {
                   signOut()
                 }}
                 className="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-colors"
-                style={{ color: 'var(--color-red)' }}
+                style={{ color: 'var(--color-danger)' }}
               >
                 Sign Out
               </button>
@@ -215,7 +217,7 @@ export function Nav() {
                   className="flex-1 text-center py-2.5 px-3 rounded-lg text-sm font-medium border transition-colors"
                   style={{
                     borderColor: 'rgba(255,255,255,0.2)',
-                    color: 'var(--color-cream)',
+                    color: 'var(--color-text-on-brand)',
                   }}
                 >
                   Log in
@@ -225,8 +227,8 @@ export function Nav() {
                   onClick={() => setMobileOpen(false)}
                   className="flex-1 text-center py-2.5 px-3 rounded-lg text-sm font-semibold transition-colors"
                   style={{
-                    backgroundColor: 'var(--color-meadow)',
-                    color: 'var(--color-white)',
+                    backgroundColor: 'var(--color-brand)',
+                    color: 'var(--color-surface)',
                   }}
                 >
                   Sign up

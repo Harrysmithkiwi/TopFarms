@@ -42,7 +42,7 @@ export function SearchHero({
     <div
       className={cn('relative overflow-hidden py-12 px-4', className)}
       style={{
-        background: 'linear-gradient(135deg, var(--color-soil) 0%, #1a3a10 100%)',
+        background: 'linear-gradient(135deg, var(--color-brand-900) 0%, #1a3a10 100%)',
       }}
     >
       {/* Radial glow overlay */}
@@ -61,14 +61,14 @@ export function SearchHero({
         </h1>
 
         {/* Search bar */}
-        <div className="bg-white rounded-[12px] p-2 flex items-center gap-2 shadow-lg max-w-[680px] mx-auto">
+        <div className="bg-surface rounded-[12px] p-2 flex items-center gap-2 shadow-lg max-w-[680px] mx-auto">
           <input
             type="text"
             placeholder="Search jobs, roles, farms..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className={cn(
-              'flex-1 min-w-0 border-0 bg-transparent px-3 py-2 font-body text-[14px] text-ink placeholder:text-light',
+              'flex-1 min-w-0 border-0 bg-transparent px-3 py-2 font-body text-[14px] text-text placeholder:text-text-subtle',
               'focus:outline-none',
             )}
           />
@@ -82,7 +82,7 @@ export function SearchHero({
           <button
             type="button"
             onClick={handleSearch}
-            className="bg-moss text-white rounded-[8px] px-4 py-2 text-[14px] font-semibold font-body whitespace-nowrap hover:bg-moss/90 transition-colors"
+            className="bg-brand text-white rounded-[8px] px-4 py-2 text-[14px] font-semibold font-body whitespace-nowrap hover:bg-brand/90 transition-colors"
           >
             Search Jobs
           </button>
@@ -95,7 +95,7 @@ export function SearchHero({
               key={pill}
               type="button"
               onClick={() => onPillClick?.(pill)}
-              className="bg-white/15 text-white border border-white/30 rounded-full px-3 py-1 text-[13px] font-body cursor-pointer hover:bg-white/25 transition-colors"
+              className="bg-surface/15 text-white border border-white/30 rounded-full px-3 py-1 text-[13px] font-body cursor-pointer hover:bg-surface/25 transition-colors"
             >
               {pill}
             </button>

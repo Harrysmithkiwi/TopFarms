@@ -46,10 +46,10 @@ export function SeekerStep2Experience({ onComplete, onBack, defaultValues }: See
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-ink)' }}>
+        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Your experience
         </h2>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-mid)' }}>
+        <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
           Tell us about your farming background so we can find the best matches
         </p>
       </div>
@@ -69,7 +69,7 @@ export function SeekerStep2Experience({ onComplete, onBack, defaultValues }: See
 
       {/* Shed types */}
       <div>
-        <p className="font-body text-[13px] font-medium text-ink mb-3">
+        <p className="font-body text-[13px] font-medium text-text mb-3">
           Shed types you've worked with
         </p>
         <div className="space-y-2.5">
@@ -104,7 +104,7 @@ export function SeekerStep2Experience({ onComplete, onBack, defaultValues }: See
 
       {/* Herd sizes */}
       <div>
-        <p className="font-body text-[13px] font-medium text-ink mb-3">
+        <p className="font-body text-[13px] font-medium text-text mb-3">
           Herd sizes you've worked with
         </p>
         <div className="space-y-2.5">

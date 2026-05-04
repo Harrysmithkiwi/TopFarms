@@ -79,9 +79,9 @@ export function SearchJobCard({
   return (
     <div
       className={cn(
-        'bg-white border border-fog rounded-[12px]',
-        'hover:border-moss/30 transition-colors',
-        isExpanded && 'border-moss/30',
+        'bg-surface border border-border rounded-[12px]',
+        'hover:border-brand/30 transition-colors',
+        isExpanded && 'border-brand/30',
       )}
     >
       {/* Card header — clickable to toggle accordion */}
@@ -94,13 +94,13 @@ export function SearchJobCard({
           {/* Left: content */}
           <div className="flex-1 min-w-0">
             {/* Title */}
-            <h3 className="text-[15px] font-body font-semibold text-soil truncate leading-snug">
+            <h3 className="text-[15px] font-body font-semibold text-text truncate leading-snug">
               {job.title}
             </h3>
 
             {/* Farm name + verification badge */}
             <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-              <span className="text-sm font-body text-mid">
+              <span className="text-sm font-body text-text-muted">
                 {job.employer_profiles?.farm_name}
               </span>
               {verifications.length > 0 && (
@@ -115,11 +115,11 @@ export function SearchJobCard({
                   className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-body font-semibold"
                   style={{
                     backgroundColor: isTerminalApplication
-                      ? 'var(--color-fog)'
-                      : 'var(--color-meadow)',
+                      ? 'var(--color-border)'
+                      : 'var(--color-brand)',
                     color: isTerminalApplication
-                      ? 'var(--color-mid)'
-                      : 'var(--color-soil)',
+                      ? 'var(--color-text-muted)'
+                      : 'var(--color-brand-900)',
                   }}
                 >
                   {appliedBadgeLabel}
@@ -159,13 +159,13 @@ export function SearchJobCard({
 
               {/* Couples welcome */}
               {job.couples_welcome && (
-                <Tag variant="hay">Couples welcome</Tag>
+                <Tag variant="warn">Couples welcome</Tag>
               )}
             </div>
 
             {/* Salary */}
             {salary && (
-              <p className="text-sm font-body text-mid mt-2">{salary}</p>
+              <p className="text-sm font-body text-text-muted mt-2">{salary}</p>
             )}
           </div>
 
@@ -175,10 +175,10 @@ export function SearchJobCard({
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); onSaveToggle?.() }}
-              className={cn('flex-shrink-0', isSaved ? 'text-hay' : 'text-mid hover:text-hay')}
+              className={cn('flex-shrink-0', isSaved ? 'text-warn' : 'text-text-muted hover:text-warn')}
               aria-label={isSaved ? 'Job saved' : 'Save this job'}
             >
-              <Bookmark className={cn('w-4 h-4', isSaved && 'fill-hay')} />
+              <Bookmark className={cn('w-4 h-4', isSaved && 'fill-warn')} />
             </button>
 
             {/* Match circle */}
@@ -187,8 +187,8 @@ export function SearchJobCard({
                 <MatchCircle score={matchScore.total_score} size="md" />
               ) : (
                 /* Subtle placeholder for visitors */
-                <div className="w-[50px] h-[50px] rounded-full border-[1.5px] border-fog bg-mist flex items-center justify-center">
-                  <span className="text-[16px] font-body text-light">?</span>
+                <div className="w-[50px] h-[50px] rounded-full border-[1.5px] border-border bg-surface-2 flex items-center justify-center">
+                  <span className="text-[16px] font-body text-text-subtle">?</span>
                 </div>
               )}
             </div>

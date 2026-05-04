@@ -72,23 +72,23 @@ export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-ink)' }}>
+        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Life situation
         </h2>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-mid)' }}>
+        <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
           Help us find jobs that are the right fit for your lifestyle
         </p>
       </div>
 
       <div className="space-y-4">
         {/* Couples section */}
-        <div className="rounded-[10px] border-[1.5px] border-fog bg-mist p-4 space-y-3">
+        <div className="rounded-[10px] border-[1.5px] border-border bg-surface-2 p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-body text-[13px] font-semibold text-ink">
+              <p className="font-body text-[13px] font-semibold text-text">
                 Seeking work as a couple?
               </p>
-              <p className="text-[12px] mt-0.5" style={{ color: 'var(--color-mid)' }}>
+              <p className="text-[12px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
                 We'll match you with jobs that welcome couples
               </p>
             </div>
@@ -111,13 +111,13 @@ export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: 
         </div>
 
         {/* Accommodation section */}
-        <div className="rounded-[10px] border-[1.5px] border-fog bg-mist p-4 space-y-3">
+        <div className="rounded-[10px] border-[1.5px] border-border bg-surface-2 p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-body text-[13px] font-semibold text-ink">
+              <p className="font-body text-[13px] font-semibold text-text">
                 Need on-farm accommodation?
               </p>
-              <p className="text-[12px] mt-0.5" style={{ color: 'var(--color-mid)' }}>
+              <p className="text-[12px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
                 Filter to jobs that offer housing
               </p>
             </div>
@@ -132,7 +132,7 @@ export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: 
 
           {accommodationOn && (
             <div className="space-y-3 pl-1">
-              <p className="font-body text-[13px] font-semibold text-ink mb-2">
+              <p className="font-body text-[13px] font-semibold text-text mb-2">
                 Housing requirements
               </p>
               <Controller
@@ -154,8 +154,8 @@ export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: 
 
         {/* Preferred regions */}
         <div>
-          <p className="font-body text-[13px] font-semibold text-ink mb-2">Preferred regions</p>
-          <p className="text-[12px] mb-2" style={{ color: 'var(--color-mid)' }}>
+          <p className="font-body text-[13px] font-semibold text-text mb-2">Preferred regions</p>
+          <p className="text-[12px] mb-2" style={{ color: 'var(--color-text-muted)' }}>
             Select all regions you'd work in
           </p>
           <Controller

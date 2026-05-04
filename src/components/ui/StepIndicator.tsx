@@ -31,9 +31,9 @@ export function StepIndicator({ currentStep, totalSteps, labels, className }: St
                 className={cn(
                   'w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-body font-bold flex-shrink-0 transition-colors duration-200',
                   'text-[10px] sm:text-[13px]',
-                  i < currentStep && 'bg-moss text-white',
-                  i === currentStep && 'bg-fern text-white',
-                  i > currentStep && 'bg-fog text-light',
+                  i < currentStep && 'bg-brand text-white',
+                  i === currentStep && 'bg-brand-hover text-white',
+                  i > currentStep && 'bg-surface-2 text-text-subtle',
                 )}
               >
                 {i < currentStep ? (
@@ -47,9 +47,9 @@ export function StepIndicator({ currentStep, totalSteps, labels, className }: St
                 <span
                   className={cn(
                     'hidden sm:block mt-1.5 text-[10px] font-body text-center max-w-[60px] leading-tight',
-                    i < currentStep && 'text-moss font-medium',
-                    i === currentStep && 'text-fern font-semibold',
-                    i > currentStep && 'text-light',
+                    i < currentStep && 'text-brand font-medium',
+                    i === currentStep && 'text-brand-hover font-semibold',
+                    i > currentStep && 'text-text-subtle',
                   )}
                 >
                   {labels[i]}
@@ -62,7 +62,7 @@ export function StepIndicator({ currentStep, totalSteps, labels, className }: St
               <div
                 className={cn(
                   'flex-1 h-0.5 transition-colors duration-200',
-                  i < currentStep ? 'bg-moss' : 'bg-fog',
+                  i < currentStep ? 'bg-brand' : 'bg-surface-2',
                 )}
               />
             )}

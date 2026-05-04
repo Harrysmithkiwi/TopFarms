@@ -112,13 +112,13 @@ export function ApplicantDocuments({ applicationId, seekerId }: ApplicantDocumen
       <div>
         <p
           className="text-[11px] font-body font-semibold uppercase tracking-wide mb-2"
-          style={{ color: 'var(--color-light)' }}
+          style={{ color: 'var(--color-text-subtle)' }}
         >
           Documents
         </p>
         <div className="space-y-1.5">
-          <div className="h-9 bg-fog rounded-md animate-pulse" />
-          <div className="h-9 bg-fog rounded-md animate-pulse" />
+          <div className="h-9 bg-surface-2 rounded-md animate-pulse" />
+          <div className="h-9 bg-surface-2 rounded-md animate-pulse" />
         </div>
       </div>
     )
@@ -129,11 +129,11 @@ export function ApplicantDocuments({ applicationId, seekerId }: ApplicantDocumen
       <div>
         <p
           className="text-[11px] font-body font-semibold uppercase tracking-wide mb-2"
-          style={{ color: 'var(--color-light)' }}
+          style={{ color: 'var(--color-text-subtle)' }}
         >
           Documents
         </p>
-        <p className="text-[12px] font-body italic" style={{ color: 'var(--color-red)' }}>
+        <p className="text-[12px] font-body italic" style={{ color: 'var(--color-danger)' }}>
           {errorState}
         </p>
       </div>
@@ -147,11 +147,11 @@ export function ApplicantDocuments({ applicationId, seekerId }: ApplicantDocumen
       <div>
         <p
           className="text-[11px] font-body font-semibold uppercase tracking-wide mb-2"
-          style={{ color: 'var(--color-light)' }}
+          style={{ color: 'var(--color-text-subtle)' }}
         >
           Documents
         </p>
-        <p className="text-[12px] font-body italic" style={{ color: 'var(--color-mid)' }}>
+        <p className="text-[12px] font-body italic" style={{ color: 'var(--color-text-muted)' }}>
           No documents uploaded by this applicant
         </p>
       </div>
@@ -162,7 +162,7 @@ export function ApplicantDocuments({ applicationId, seekerId }: ApplicantDocumen
     <div>
       <p
         className="text-[11px] font-body font-semibold uppercase tracking-wide mb-2"
-        style={{ color: 'var(--color-light)' }}
+        style={{ color: 'var(--color-text-subtle)' }}
       >
         Documents
       </p>
@@ -174,7 +174,7 @@ export function ApplicantDocuments({ applicationId, seekerId }: ApplicantDocumen
             <div key={type}>
               <p
                 className="text-[12px] font-body font-semibold mb-1.5"
-                style={{ color: 'var(--color-mid)' }}
+                style={{ color: 'var(--color-text-muted)' }}
               >
                 {title}
               </p>
@@ -182,14 +182,14 @@ export function ApplicantDocuments({ applicationId, seekerId }: ApplicantDocumen
                 {sectionDocs.map((doc) => (
                   <li
                     key={doc.id}
-                    className="flex items-center gap-3 p-2 rounded-md border border-fog bg-white"
+                    className="flex items-center gap-3 p-2 rounded-md border border-border bg-surface"
                   >
-                    <FileText className="w-4 h-4 text-fern flex-shrink-0" />
+                    <FileText className="w-4 h-4 text-brand-hover flex-shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-[13px] font-body text-ink truncate">
+                      <p className="text-[13px] font-body text-text truncate">
                         {doc.filename}
                       </p>
-                      <p className="text-[11px] font-body text-light">
+                      <p className="text-[11px] font-body text-text-subtle">
                         {formatBytes(doc.file_size_bytes)} · Uploaded {formatDate(doc.uploaded_at)}
                       </p>
                     </div>
@@ -198,7 +198,7 @@ export function ApplicantDocuments({ applicationId, seekerId }: ApplicantDocumen
                       onClick={() => handleView(doc)}
                       className={cn(
                         'text-[12px] font-body font-semibold flex-shrink-0',
-                        'text-moss hover:underline',
+                        'text-brand hover:underline',
                       )}
                     >
                       View

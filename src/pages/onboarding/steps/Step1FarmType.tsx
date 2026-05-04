@@ -50,10 +50,10 @@ export function Step1FarmType({ onComplete, defaultValues }: Step1Props) {
   return (
     <form onSubmit={handleSubmit(onComplete)} className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-ink)' }}>
+        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           What type of farm do you operate?
         </h2>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-mid)' }}>
+        <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
           This helps us show the right fields and match you with suitable candidates
         </p>
       </div>
@@ -68,19 +68,19 @@ export function Step1FarmType({ onComplete, defaultValues }: Step1Props) {
               'relative w-full text-left rounded-[12px] border-[2px] p-5 transition-all duration-200 cursor-pointer',
               'flex flex-col items-center text-center gap-3',
               selectedType === type.value
-                ? 'border-fern bg-[rgba(74,124,47,0.06)]'
-                : 'border-fog bg-white hover:border-mid',
+                ? 'border-brand-hover bg-[rgba(74,124,47,0.06)]'
+                : 'border-border bg-surface hover:border-border-strong',
             )}
           >
             <span className="text-4xl">{type.icon}</span>
             <div>
               <h3
                 className="font-body font-bold text-[15px]"
-                style={{ color: 'var(--color-ink)' }}
+                style={{ color: 'var(--color-text)' }}
               >
                 {type.label}
               </h3>
-              <p className="text-[12px] mt-0.5" style={{ color: 'var(--color-mid)' }}>
+              <p className="text-[12px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
                 {type.description}
               </p>
             </div>
@@ -89,7 +89,7 @@ export function Step1FarmType({ onComplete, defaultValues }: Step1Props) {
             <div
               className={cn(
                 'absolute top-3 right-3 w-5 h-5 rounded-full border-[2px] flex items-center justify-center transition-all duration-200',
-                selectedType === type.value ? 'border-fern bg-fern' : 'border-fog bg-white',
+                selectedType === type.value ? 'border-brand-hover bg-brand-hover' : 'border-border bg-surface',
               )}
             >
               {selectedType === type.value && (
@@ -109,7 +109,7 @@ export function Step1FarmType({ onComplete, defaultValues }: Step1Props) {
       </div>
 
       {errors.farm_type && (
-        <p className="text-red text-[12px] font-body">{errors.farm_type.message}</p>
+        <p className="text-danger text-[12px] font-body">{errors.farm_type.message}</p>
       )}
 
       <div className="flex justify-end pt-2">

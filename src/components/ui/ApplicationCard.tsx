@@ -8,11 +8,11 @@ import { Button } from '@/components/ui/Button'
 import type { Application, ApplicationStatus, MatchScore, JobListing } from '@/types/domain'
 import { ACTIVE_STATUSES } from '@/types/domain'
 
-type TagVariant = 'green' | 'hay' | 'blue' | 'grey' | 'orange' | 'purple' | 'red'
+type TagVariant = 'green' | 'warn' | 'blue' | 'grey' | 'orange' | 'purple' | 'red'
 
 const STATUS_TAG_VARIANT: Record<ApplicationStatus, TagVariant> = {
   applied:     'blue',
-  review:      'hay',
+  review:      'warn',
   interview:   'orange',
   shortlisted: 'purple',
   offered:     'green',
@@ -78,7 +78,7 @@ export function ApplicationCard({
   return (
     <div
       className={cn(
-        'bg-white border-[1.5px] border-fog rounded-[12px] overflow-hidden',
+        'bg-surface border-[1.5px] border-border rounded-[12px] overflow-hidden',
         !isActive && 'opacity-75',
       )}
     >
@@ -107,7 +107,7 @@ export function ApplicationCard({
           <div className="flex items-start justify-between gap-2">
             <Link
               to={`/jobs/${application.job_id}`}
-              className="text-[15px] font-body font-semibold text-ink hover:text-moss transition-colors truncate"
+              className="text-[15px] font-body font-semibold text-text hover:text-brand transition-colors truncate"
             >
               {job?.title ?? 'Job Listing'}
             </Link>
@@ -117,12 +117,12 @@ export function ApplicationCard({
           </div>
 
           {/* Farm + region */}
-          <p className="text-sm font-body text-mid mt-0.5">
+          <p className="text-sm font-body text-text-muted mt-0.5">
             {farmName}{region ? ` — ${region}` : ''}
           </p>
 
           {/* Applied date */}
-          <p className="text-xs font-body text-light mt-1">
+          <p className="text-xs font-body text-text-subtle mt-1">
             {formatAppliedDate(application.created_at)}
           </p>
 
@@ -134,7 +134,7 @@ export function ApplicationCard({
             <button
               type="button"
               onClick={handleWithdraw}
-              className="mt-2 text-sm font-body text-red hover:underline"
+              className="mt-2 text-sm font-body text-danger hover:underline"
             >
               Withdraw
             </button>

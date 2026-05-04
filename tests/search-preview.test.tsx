@@ -86,12 +86,12 @@ describe('LivePreviewSidebar', () => {
     expect(screen.getByText('Fill in fields to see estimates')).toBeInTheDocument()
   })
 
-  it('renders AI tip box with purple-lt background', () => {
+  it('renders AI tip box with ai-bg background', () => {
     render(<LivePreviewSidebar completenessPercent={50} />)
     const tipText = screen.getByText(/40% more applications/)
     expect(tipText).toBeInTheDocument()
-    // Check that the tip box parent has purple-lt bg
-    const tipBox = tipText.closest('[class*="bg-purple-lt"]')
+    // Check that the tip box parent has ai-bg
+    const tipBox = tipText.closest('[class*="bg-ai-bg"]')
     expect(tipBox).toBeInTheDocument()
   })
 

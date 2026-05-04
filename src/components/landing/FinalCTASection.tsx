@@ -3,7 +3,7 @@ import { motion } from 'motion/react'
 
 export function FinalCTASection() {
   return (
-    <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-soil-deep)' }}>
+    <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-brand-900)' }}>
       <motion.div
         initial={{ opacity: 0, y: 32 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -13,13 +13,13 @@ export function FinalCTASection() {
       >
         <h2
           className="font-display font-bold text-4xl md:text-5xl mb-4"
-          style={{ color: 'var(--color-cream)' }}
+          style={{ color: 'var(--color-text-on-brand)' }}
         >
           Ready to Find Your Perfect Match?
         </h2>
         <p
           className="text-lg mb-8"
-          style={{ color: 'var(--color-cream)', opacity: 0.8 }}
+          style={{ color: 'var(--color-text-on-brand)', opacity: 0.8 }}
         >
           Whether you're looking for farm work or looking to hire, TopFarms connects you with the right people.
         </p>
@@ -28,8 +28,8 @@ export function FinalCTASection() {
             to="/onboarding/seeker"
             className="inline-flex items-center justify-center px-8 py-3 rounded-full font-semibold transition-opacity hover:opacity-90"
             style={{
-              backgroundColor: 'var(--color-meadow)',
-              color: 'var(--color-soil)',
+              backgroundColor: 'var(--color-brand)',
+              color: 'var(--color-brand-900)',
             }}
           >
             Find Farm Work
@@ -39,8 +39,8 @@ export function FinalCTASection() {
             className="inline-flex items-center justify-center px-8 py-3 rounded-full font-semibold border transition-opacity hover:opacity-90"
             style={{
               backgroundColor: 'transparent',
-              borderColor: 'var(--color-hay)',
-              color: 'var(--color-cream)',
+              borderColor: 'var(--color-text-on-brand)',
+              color: 'var(--color-text-on-brand)',
             }}
           >
             Post a Job

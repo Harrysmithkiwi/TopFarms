@@ -123,8 +123,8 @@ export function PhoneVerification({ employerId, onSuccess }: PhoneVerificationPr
     return (
       <form onSubmit={handleSendCode} className="space-y-3">
         <div className="flex items-center gap-2 mb-2">
-          <Phone className="w-4 h-4 text-moss" />
-          <span className="text-[13px] font-body font-semibold text-ink">
+          <Phone className="w-4 h-4 text-brand" />
+          <span className="text-[13px] font-body font-semibold text-text">
             Enter your NZ phone number
           </span>
         </div>
@@ -137,7 +137,7 @@ export function PhoneVerification({ employerId, onSuccess }: PhoneVerificationPr
           disabled={loading}
           className="text-[13px]"
         />
-        {error && <p className="text-[12px] font-body text-red-600">{error}</p>}
+        {error && <p className="text-[12px] font-body text-danger-600">{error}</p>}
         <Button type="submit" size="sm" disabled={loading || !phone.trim()}>
           {loading ? 'Sending...' : 'Send Code'}
         </Button>
@@ -148,8 +148,8 @@ export function PhoneVerification({ employerId, onSuccess }: PhoneVerificationPr
   return (
     <form onSubmit={handleVerifyOtp} className="space-y-3">
       <div className="flex items-center gap-2 mb-2">
-        <Phone className="w-4 h-4 text-moss" />
-        <span className="text-[13px] font-body font-semibold text-ink">
+        <Phone className="w-4 h-4 text-brand" />
+        <span className="text-[13px] font-body font-semibold text-text">
           Enter the 6-digit code sent to {phone}
         </span>
       </div>
@@ -165,7 +165,7 @@ export function PhoneVerification({ employerId, onSuccess }: PhoneVerificationPr
         disabled={loading}
         className="text-[13px] tracking-widest"
       />
-      {error && <p className="text-[12px] font-body text-red-600">{error}</p>}
+      {error && <p className="text-[12px] font-body text-danger-600">{error}</p>}
       <div className="flex items-center gap-3">
         <Button type="submit" size="sm" disabled={loading || otp.length !== 6}>
           {loading ? 'Verifying...' : 'Verify'}
@@ -174,7 +174,7 @@ export function PhoneVerification({ employerId, onSuccess }: PhoneVerificationPr
           type="button"
           onClick={handleResend}
           disabled={cooldown > 0 || loading}
-          className="flex items-center gap-1 text-[12px] font-body text-moss hover:text-fern disabled:text-light disabled:cursor-not-allowed transition-colors"
+          className="flex items-center gap-1 text-[12px] font-body text-brand hover:text-brand-hover disabled:text-text-subtle disabled:cursor-not-allowed transition-colors"
         >
           <RefreshCw className="w-3 h-3" />
           {cooldown > 0 ? `Resend in ${cooldown}s` : 'Resend Code'}

@@ -80,22 +80,22 @@ export function PaymentForm({ clientSecret, onSuccess, onError }: PaymentFormPro
     appearance: {
       theme: 'stripe',
       variables: {
-        colorPrimary: '#4a7c2f', // fern
-        colorBackground: '#f8f6f2', // mist
-        colorText: '#1a1a1a', // ink
-        colorDanger: '#c0392b', // red
-        fontFamily: '"Source Sans 3", ui-sans-serif, system-ui, sans-serif',
+        colorPrimary: '#16A34A', // brand
+        colorBackground: '#FFFFFF', // surface
+        colorText: '#0B1F10', // text
+        colorDanger: '#DC2626', // danger
+        fontFamily: '"Inter", ui-sans-serif, system-ui, sans-serif',
         borderRadius: '8px',
         spacingUnit: '4px',
       },
       rules: {
         '.Input': {
-          borderColor: '#e2e0dc', // fog
+          borderColor: '#E5E8E2', // border
           boxShadow: 'none',
         },
         '.Input:focus': {
-          borderColor: '#4a7c2f',
-          boxShadow: '0 0 0 3px rgba(74,124,47,0.08)',
+          borderColor: '#16A34A', // brand (focus border per Brand Spec §4 inputs)
+          boxShadow: '0 0 0 2px rgba(22,163,74,0.2)',
         },
         '.Label': {
           fontSize: '13px',

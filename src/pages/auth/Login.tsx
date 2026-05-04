@@ -81,9 +81,9 @@ export function Login() {
             disabled={oauthLoading}
             className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-lg border text-sm font-medium transition-colors disabled:opacity-60"
             style={{
-              borderColor: 'var(--color-fog)',
-              backgroundColor: 'var(--color-white)',
-              color: 'var(--color-ink)',
+              borderColor: 'var(--color-border)',
+              backgroundColor: 'var(--color-surface)',
+              color: 'var(--color-text)',
             }}
           >
             <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
@@ -114,9 +114,9 @@ export function Login() {
 
         {/* OR divider */}
         <div className="relative flex items-center gap-3">
-          <div className="flex-1 h-px" style={{ backgroundColor: 'var(--color-fog)' }} />
-          <span className="text-xs" style={{ color: 'var(--color-light)' }}>or</span>
-          <div className="flex-1 h-px" style={{ backgroundColor: 'var(--color-fog)' }} />
+          <div className="flex-1 h-px" style={{ backgroundColor: 'var(--color-border)' }} />
+          <span className="text-xs" style={{ color: 'var(--color-text-subtle)' }}>or</span>
+          <div className="flex-1 h-px" style={{ backgroundColor: 'var(--color-border)' }} />
         </div>
 
         {/* Email */}
@@ -124,7 +124,7 @@ export function Login() {
           <label
             htmlFor="email"
             className="block text-sm font-medium mb-1.5"
-            style={{ color: 'var(--color-ink)' }}
+            style={{ color: 'var(--color-text)' }}
           >
             Email address
           </label>
@@ -135,13 +135,13 @@ export function Login() {
             {...register('email')}
             className="w-full px-3.5 py-2.5 rounded-lg border text-sm outline-none transition-colors"
             style={{
-              borderColor: errors.email ? 'var(--color-red)' : 'var(--color-fog)',
-              backgroundColor: 'var(--color-white)',
-              color: 'var(--color-ink)',
+              borderColor: errors.email ? 'var(--color-danger)' : 'var(--color-border)',
+              backgroundColor: 'var(--color-surface)',
+              color: 'var(--color-text)',
             }}
           />
           {errors.email && (
-            <p className="text-xs mt-1" style={{ color: 'var(--color-red)' }}>
+            <p className="text-xs mt-1" style={{ color: 'var(--color-danger)' }}>
               {errors.email.message}
             </p>
           )}
@@ -153,14 +153,14 @@ export function Login() {
             <label
               htmlFor="password"
               className="block text-sm font-medium"
-              style={{ color: 'var(--color-ink)' }}
+              style={{ color: 'var(--color-text)' }}
             >
               Password
             </label>
             <Link
               to="/forgot-password"
               className="text-xs underline"
-              style={{ color: 'var(--color-soil)' }}
+              style={{ color: 'var(--color-brand-900)' }}
             >
               Forgot password?
             </Link>
@@ -173,23 +173,23 @@ export function Login() {
               {...register('password')}
               className="w-full px-3.5 py-2.5 pr-10 rounded-lg border text-sm outline-none transition-colors"
               style={{
-                borderColor: errors.password ? 'var(--color-red)' : 'var(--color-fog)',
-                backgroundColor: 'var(--color-white)',
-                color: 'var(--color-ink)',
+                borderColor: errors.password ? 'var(--color-danger)' : 'var(--color-border)',
+                backgroundColor: 'var(--color-surface)',
+                color: 'var(--color-text)',
               }}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 -translate-y-1/2"
-              style={{ color: 'var(--color-light)' }}
+              style={{ color: 'var(--color-text-subtle)' }}
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
           {errors.password && (
-            <p className="text-xs mt-1" style={{ color: 'var(--color-red)' }}>
+            <p className="text-xs mt-1" style={{ color: 'var(--color-danger)' }}>
               {errors.password.message}
             </p>
           )}
@@ -201,20 +201,20 @@ export function Login() {
           disabled={isSubmitting}
           className="w-full py-2.5 px-4 rounded-lg text-sm font-semibold transition-opacity disabled:opacity-60"
           style={{
-            backgroundColor: 'var(--color-soil)',
-            color: 'var(--color-cream)',
+            backgroundColor: 'var(--color-brand-900)',
+            color: 'var(--color-text-on-brand)',
           }}
         >
           {isSubmitting ? 'Logging in...' : 'Log in'}
         </button>
 
         {/* Signup link */}
-        <p className="text-center text-sm" style={{ color: 'var(--color-mid)' }}>
+        <p className="text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
           Don't have an account?{' '}
           <Link
             to="/signup"
             className="font-medium underline"
-            style={{ color: 'var(--color-soil)' }}
+            style={{ color: 'var(--color-brand-900)' }}
           >
             Sign up
           </Link>

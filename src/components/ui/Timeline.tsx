@@ -21,25 +21,25 @@ export function Timeline({ entries, className, ...props }: TimelineProps) {
         return (
           <li key={index} className="relative pl-6 pb-6 last:pb-0">
             {/* Dot */}
-            <span className="absolute left-0 top-1 w-2.5 h-2.5 rounded-full bg-meadow" />
+            <span className="absolute left-0 top-1 w-2.5 h-2.5 rounded-full bg-brand" />
 
             {/* Connecting line — hidden on last item */}
             {!isLast && (
-              <span className="absolute left-[4px] top-3.5 bottom-0 w-[1.5px] bg-fog" />
+              <span className="absolute left-[4px] top-3.5 bottom-0 w-[1.5px] bg-border" />
             )}
 
             {/* Content */}
             <div>
-              <p className="text-[14px] font-semibold text-ink font-body">
+              <p className="text-[14px] font-semibold text-text font-body">
                 {entry.title}
               </p>
               {entry.date && (
-                <p className="text-[13px] text-light font-body mt-0.5">
+                <p className="text-[13px] text-text-subtle font-body mt-0.5">
                   {entry.date}
                 </p>
               )}
               {entry.description && (
-                <p className="text-[14px] text-mid font-body mt-1">
+                <p className="text-[14px] text-text-muted font-body mt-1">
                   {entry.description}
                 </p>
               )}

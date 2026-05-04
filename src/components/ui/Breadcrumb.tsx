@@ -18,7 +18,7 @@ export function Breadcrumb({ items, onSave, onShare, className, ...props }: Brea
   return (
     <nav
       className={cn(
-        'h-[44px] bg-white border-b border-fog flex items-center px-4 gap-2',
+        'h-[44px] bg-surface border-b border-border flex items-center px-4 gap-2',
         className,
       )}
       {...props}
@@ -30,16 +30,19 @@ export function Breadcrumb({ items, onSave, onShare, className, ...props }: Brea
           return (
             <li key={index} className="flex items-center gap-2">
               {index > 0 && (
-                <ChevronRight size={14} className="text-light" aria-hidden="true" />
+                <ChevronRight size={14} className="text-text-subtle" aria-hidden="true" />
               )}
               {isLast || !item.href ? (
-                <span className="text-[13px] font-body text-ink font-medium">
+                <span className="text-[13px] font-body text-text font-medium">
                   {item.label}
                 </span>
               ) : (
                 <a
                   href={item.href}
-                  className="text-[13px] font-body text-light hover:text-ink hover:underline"
+                  className={cn(
+                    'text-[13px] font-body text-text-subtle hover:text-text hover:underline rounded-[4px]',
+                    'outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
+                  )}
                 >
                   {item.label}
                 </a>
@@ -49,12 +52,16 @@ export function Breadcrumb({ items, onSave, onShare, className, ...props }: Brea
         })}
       </ol>
 
-      <div className="ml-auto flex items-center gap-2">
+      <div className="ml-auto flex items-center gap-1">
         {onSave && (
           <button
             type="button"
             onClick={onSave}
-            className="text-[13px] text-mid hover:text-ink"
+            className={cn(
+              'inline-flex items-center justify-center w-11 h-11 md:w-9 md:h-9 rounded-[6px]',
+              'text-text-muted hover:text-text hover:bg-surface-2 transition-colors',
+              'outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
+            )}
             aria-label="Save job listing"
           >
             <Bookmark size={16} />
@@ -64,7 +71,11 @@ export function Breadcrumb({ items, onSave, onShare, className, ...props }: Brea
           <button
             type="button"
             onClick={onShare}
-            className="text-[13px] text-mid hover:text-ink"
+            className={cn(
+              'inline-flex items-center justify-center w-11 h-11 md:w-9 md:h-9 rounded-[6px]',
+              'text-text-muted hover:text-text hover:bg-surface-2 transition-colors',
+              'outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
+            )}
             aria-label="Share job listing"
           >
             <Share2 size={16} />

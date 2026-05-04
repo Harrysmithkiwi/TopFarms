@@ -37,8 +37,8 @@ export function Sidebar() {
     <aside
       className="hidden md:flex flex-col w-60 flex-shrink-0 min-h-[calc(100vh-56px)] border-r"
       style={{
-        backgroundColor: 'var(--color-white)',
-        borderColor: 'var(--color-fog)',
+        backgroundColor: 'var(--color-surface)',
+        borderColor: 'var(--color-border)',
       }}
     >
       <nav className="flex flex-col gap-0.5 p-3">
@@ -52,13 +52,13 @@ export function Sidebar() {
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all',
                 isActive
                   ? 'font-semibold'
-                  : 'hover:bg-fog/50',
+                  : 'hover:bg-surface-2/50',
               ].join(' ')
             }
             style={({ isActive }) =>
               isActive
-                ? { color: 'var(--color-moss)', backgroundColor: 'rgba(45,80,22,0.05)' }
-                : { color: 'var(--color-mid)' }
+                ? { color: 'var(--color-brand)', backgroundColor: 'rgba(45,80,22,0.05)' }
+                : { color: 'var(--color-text-muted)' }
             }
           >
             <item.icon size={18} />

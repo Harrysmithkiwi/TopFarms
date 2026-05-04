@@ -61,33 +61,33 @@ export function JobDetailSidebar({
   return (
     <div className="space-y-4">
       {/* Section 1: Quick Facts card */}
-      <div className="bg-white border border-fog rounded-[12px] p-4">
-        <h3 className="text-[13px] font-body font-semibold text-ink mb-3">Quick Facts</h3>
+      <div className="bg-surface border border-border rounded-[12px] p-4">
+        <h3 className="text-[13px] font-body font-semibold text-text mb-3">Quick Facts</h3>
         <ul className="space-y-2.5 mb-4">
           {job.contract_type && (
             <li className="flex items-center gap-2">
-              <Briefcase className="w-4 h-4 text-light flex-shrink-0" />
-              <span className="text-[13px] font-body text-mid capitalize">{job.contract_type}</span>
+              <Briefcase className="w-4 h-4 text-text-subtle flex-shrink-0" />
+              <span className="text-[13px] font-body text-text-muted capitalize">{job.contract_type}</span>
             </li>
           )}
           {farm.region && (
             <li className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-light flex-shrink-0" />
-              <span className="text-[13px] font-body text-mid">{farm.region}</span>
+              <MapPin className="w-4 h-4 text-text-subtle flex-shrink-0" />
+              <span className="text-[13px] font-body text-text-muted">{farm.region}</span>
             </li>
           )}
           {(job.salary_min || job.salary_max) && (
             <li className="flex items-center gap-2">
-              <DollarSign className="w-4 h-4 text-light flex-shrink-0" />
-              <span className="text-[13px] font-body text-mid">
+              <DollarSign className="w-4 h-4 text-text-subtle flex-shrink-0" />
+              <span className="text-[13px] font-body text-text-muted">
                 {formatSalaryShort(job.salary_min, job.salary_max)}
               </span>
             </li>
           )}
           {job.start_date && (
             <li className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-light flex-shrink-0" />
-              <span className="text-[13px] font-body text-mid">
+              <Clock className="w-4 h-4 text-text-subtle flex-shrink-0" />
+              <span className="text-[13px] font-body text-text-muted">
                 Starts {formatDateShort(job.start_date)}
               </span>
             </li>
@@ -95,18 +95,18 @@ export function JobDetailSidebar({
         </ul>
 
         {/* Save / Share buttons */}
-        <div className="flex items-center gap-2 pt-3 border-t border-fog">
+        <div className="flex items-center gap-2 pt-3 border-t border-border">
           <button
             type="button"
             onClick={onSaveToggle}
             aria-label={isSaved ? 'Job saved' : 'Save this job'}
             className={cn(
               'flex items-center gap-1.5 text-[13px] font-body font-medium transition-colors',
-              isSaved ? 'text-hay' : 'text-mid hover:text-hay',
+              isSaved ? 'text-warn' : 'text-text-muted hover:text-warn',
             )}
           >
             <Bookmark
-              className={cn('w-4 h-4', isSaved ? 'fill-hay text-hay' : '')}
+              className={cn('w-4 h-4', isSaved ? 'fill-warn text-warn' : '')}
             />
             {isSaved ? 'Saved' : 'Save'}
           </button>
@@ -114,7 +114,7 @@ export function JobDetailSidebar({
             type="button"
             onClick={onShare}
             aria-label="Share this job"
-            className="flex items-center gap-1.5 text-[13px] font-body font-medium text-mid hover:text-moss transition-colors ml-auto"
+            className="flex items-center gap-1.5 text-[13px] font-body font-medium text-text-muted hover:text-brand transition-colors ml-auto"
           >
             <Share2 className="w-4 h-4" />
             Share
@@ -124,9 +124,9 @@ export function JobDetailSidebar({
 
       {/* Section 2: Deadline notice */}
       {job.expires_at && (
-        <div className="bg-hay-lt rounded-[12px] p-3 flex items-center gap-2">
-          <Clock className="w-4 h-4 text-hay flex-shrink-0" />
-          <span className="text-[13px] font-body text-ink">
+        <div className="bg-warn-bg rounded-[12px] p-3 flex items-center gap-2">
+          <Clock className="w-4 h-4 text-warn flex-shrink-0" />
+          <span className="text-[13px] font-body text-text">
             Applications close {formatDateShort(job.expires_at)}
           </span>
         </div>
@@ -134,8 +134,8 @@ export function JobDetailSidebar({
 
       {/* Section 3: Similar Jobs card */}
       {similarJobs.length > 0 && (
-        <div className="bg-white border border-fog rounded-[12px] p-4">
-          <h3 className="text-[13px] font-body font-semibold text-ink mb-3">Similar Jobs</h3>
+        <div className="bg-surface border border-border rounded-[12px] p-4">
+          <h3 className="text-[13px] font-body font-semibold text-text mb-3">Similar Jobs</h3>
           <ul className="space-y-3">
             {similarJobs.slice(0, 3).map((sj) => (
               <li key={sj.id}>
@@ -144,15 +144,15 @@ export function JobDetailSidebar({
                   className="flex items-start justify-between gap-2 group"
                 >
                   <div className="min-w-0">
-                    <p className="text-[13px] font-body font-semibold text-ink group-hover:text-moss transition-colors leading-snug truncate">
+                    <p className="text-[13px] font-body font-semibold text-text group-hover:text-brand transition-colors leading-snug truncate">
                       {sj.title}
                     </p>
-                    <p className="text-[12px] font-body text-mid truncate">
+                    <p className="text-[12px] font-body text-text-muted truncate">
                       {sj.farm_name}
                       {sj.region ? ` · ${sj.region}` : ''}
                     </p>
                     {(sj.salary_min || sj.salary_max) && (
-                      <p className="text-[12px] font-body text-light">
+                      <p className="text-[12px] font-body text-text-subtle">
                         {formatSalaryShort(sj.salary_min, sj.salary_max)}
                       </p>
                     )}
@@ -170,9 +170,9 @@ export function JobDetailSidebar({
       )}
 
       {/* Section 4: Farm Profile card */}
-      <div className="border border-fog rounded-[12px] overflow-hidden">
+      <div className="border border-border rounded-[12px] overflow-hidden">
         {/* Header */}
-        <div className="bg-soil px-4 py-3 rounded-t-[12px]">
+        <div className="bg-brand-900 px-4 py-3 rounded-t-[12px]">
           <h3 className="text-[16px] font-display font-semibold text-white leading-snug">
             {farm.farm_name}
           </h3>
@@ -182,26 +182,26 @@ export function JobDetailSidebar({
         </div>
 
         {/* Body */}
-        <div className="bg-white px-4 py-4 space-y-3">
+        <div className="bg-surface px-4 py-4 space-y-3">
           {/* Stats grid */}
           {(farm.total_jobs !== undefined || farm.herd_size !== undefined || farm.total_hires !== undefined) && (
-            <div className="grid grid-cols-3 gap-2 pb-3 border-b border-fog">
+            <div className="grid grid-cols-3 gap-2 pb-3 border-b border-border">
               {farm.total_jobs !== undefined && (
                 <div className="text-center">
-                  <p className="text-[15px] font-body font-semibold text-ink">{farm.total_jobs}</p>
-                  <p className="text-[11px] font-body text-light">Jobs</p>
+                  <p className="text-[15px] font-body font-semibold text-text">{farm.total_jobs}</p>
+                  <p className="text-[11px] font-body text-text-subtle">Jobs</p>
                 </div>
               )}
               {farm.herd_size !== undefined && (
                 <div className="text-center">
-                  <p className="text-[15px] font-body font-semibold text-ink">{farm.herd_size.toLocaleString()}</p>
-                  <p className="text-[11px] font-body text-light">Herd Size</p>
+                  <p className="text-[15px] font-body font-semibold text-text">{farm.herd_size.toLocaleString()}</p>
+                  <p className="text-[11px] font-body text-text-subtle">Herd Size</p>
                 </div>
               )}
               {farm.total_hires !== undefined && (
                 <div className="text-center">
-                  <p className="text-[15px] font-body font-semibold text-ink">{farm.total_hires}</p>
-                  <p className="text-[11px] font-body text-light">Hires</p>
+                  <p className="text-[15px] font-body font-semibold text-text">{farm.total_hires}</p>
+                  <p className="text-[11px] font-body text-text-subtle">Hires</p>
                 </div>
               )}
             </div>
@@ -211,12 +211,12 @@ export function JobDetailSidebar({
           {(farm.farm_type || farm.region) && (
             <div className="flex flex-wrap gap-1.5">
               {farm.farm_type && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-mist text-[11px] font-body text-mid capitalize">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-2 text-[11px] font-body text-text-muted capitalize">
                   {farm.farm_type}
                 </span>
               )}
               {farm.region && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-mist text-[11px] font-body text-mid">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-2 text-[11px] font-body text-text-muted">
                   {farm.region}
                 </span>
               )}
@@ -231,7 +231,7 @@ export function JobDetailSidebar({
           {/* View farm profile link */}
           <Link
             to={`/farms/${farm.id}`}
-            className="block text-[13px] font-body font-medium text-moss hover:text-fern transition-colors"
+            className="block text-[13px] font-body font-medium text-brand hover:text-brand-hover transition-colors"
           >
             View Farm Profile
           </Link>

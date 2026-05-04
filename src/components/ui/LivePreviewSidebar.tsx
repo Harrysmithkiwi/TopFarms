@@ -28,11 +28,11 @@ interface LivePreviewSidebarProps {
 function CompletenessMeter({ percent }: { percent: number }) {
   return (
     <div className="px-4 pt-4 pb-3">
-      <h3 className="text-[13px] font-semibold text-light uppercase tracking-wide">
+      <h3 className="text-[13px] font-semibold text-text-subtle uppercase tracking-wide">
         Listing Preview
       </h3>
       <div className="flex items-center justify-between mt-2">
-        <span className="text-[13px] font-body text-moss">{percent}%</span>
+        <span className="text-[13px] font-body text-brand">{percent}%</span>
       </div>
       <ProgressBar progress={percent} className="mt-2" />
     </div>
@@ -42,9 +42,9 @@ function CompletenessMeter({ percent }: { percent: number }) {
 function MiniJobCard({ title, farmName, location, salaryRange, tags }: MiniCardData) {
   return (
     <div className="px-4 py-3">
-      <p className="text-[16px] font-semibold font-body text-ink">{title}</p>
-      <p className="text-[13px] text-mid font-body mt-1">{farmName}</p>
-      <p className="text-[13px] text-light font-body mt-0.5">
+      <p className="text-[16px] font-semibold font-body text-text">{title}</p>
+      <p className="text-[13px] text-text-muted font-body mt-1">{farmName}</p>
+      <p className="text-[13px] text-text-subtle font-body mt-0.5">
         {location}
         {salaryRange && ` \u00B7 ${salaryRange}`}
       </p>
@@ -53,7 +53,7 @@ function MiniJobCard({ title, farmName, location, salaryRange, tags }: MiniCardD
           {tags.map((tag) => (
             <span
               key={tag}
-              className="bg-fog text-ink text-[13px] rounded-full px-2 py-0.5 font-body"
+              className="bg-surface-2 text-text text-[13px] rounded-full px-2 py-0.5 font-body"
             >
               {tag}
             </span>
@@ -67,7 +67,7 @@ function MiniJobCard({ title, farmName, location, salaryRange, tags }: MiniCardD
 function MiniCardPlaceholder() {
   return (
     <div className="px-4 py-3">
-      <p className="text-[13px] text-light font-body italic">Complete fields to see preview</p>
+      <p className="text-[13px] text-text-subtle font-body italic">Complete fields to see preview</p>
     </div>
   )
 }
@@ -110,29 +110,29 @@ function MatchPoolEstimate({ criteria }: { criteria?: MatchCriteria }) {
 
   return (
     <div className="px-4 py-3">
-      <h3 className="text-[13px] font-semibold text-light uppercase tracking-wide pb-2">
+      <h3 className="text-[13px] font-semibold text-text-subtle uppercase tracking-wide pb-2">
         Match Pool Estimate
       </h3>
       {state === 'loading' ? (
         <div className="flex items-center gap-2">
-          <Loader2 className="w-4 h-4 text-fern animate-spin" />
-          <p className="text-[13px] font-body text-mid">Calculating...</p>
+          <Loader2 className="w-4 h-4 text-brand-hover animate-spin" />
+          <p className="text-[13px] font-body text-text-muted">Calculating...</p>
         </div>
       ) : estimate ? (
         <>
           <ul className="space-y-1">
-            <li className="text-[14px] text-ink font-body">{estimate.seekers_in_region} seekers in region</li>
-            <li className="text-[14px] text-ink font-body">{estimate.seekers_with_shed} with shed experience</li>
-            <li className="text-[14px] text-ink font-body">{estimate.seekers_active} actively looking</li>
+            <li className="text-[14px] text-text font-body">{estimate.seekers_in_region} seekers in region</li>
+            <li className="text-[14px] text-text font-body">{estimate.seekers_with_shed} with shed experience</li>
+            <li className="text-[14px] text-text font-body">{estimate.seekers_active} actively looking</li>
           </ul>
           {noMatches && (
-            <p className="text-[13px] text-mid italic font-body mt-2">
+            <p className="text-[13px] text-text-muted italic font-body mt-2">
               Post your listing to attract seekers in this area
             </p>
           )}
         </>
       ) : (
-        <p className="text-[13px] text-light italic font-body">
+        <p className="text-[13px] text-text-subtle italic font-body">
           Fill in fields to see estimates
         </p>
       )}
@@ -143,8 +143,8 @@ function MatchPoolEstimate({ criteria }: { criteria?: MatchCriteria }) {
 function AITipBox() {
   return (
     <div className="p-4">
-      <div className="bg-purple-lt rounded-[8px] p-3">
-        <p className="text-[13px] text-ink font-body">
+      <div className="bg-ai-bg rounded-[8px] p-3">
+        <p className="text-[13px] text-text font-body">
           Tip: Listings with accommodation details get 40% more applications
         </p>
       </div>
@@ -168,21 +168,21 @@ export function LivePreviewSidebar({
   return (
     <aside
       className={cn(
-        'sticky top-6 w-[320px] bg-white rounded-[14px] border border-fog overflow-hidden',
+        'sticky top-6 w-[320px] bg-surface rounded-[14px] border border-border overflow-hidden',
         className,
       )}
     >
       <CompletenessMeter percent={completenessPercent} />
 
-      <div className="border-t border-fog" />
+      <div className="border-t border-border" />
 
       {miniCard ? <MiniJobCard {...miniCard} /> : <MiniCardPlaceholder />}
 
-      <div className="border-t border-fog" />
+      <div className="border-t border-border" />
 
       <MatchPoolEstimate criteria={matchCriteria} />
 
-      <div className="border-t border-fog" />
+      <div className="border-t border-border" />
 
       <AITipBox />
     </aside>

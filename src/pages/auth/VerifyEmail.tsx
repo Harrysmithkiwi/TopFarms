@@ -76,9 +76,9 @@ export function VerifyEmail() {
           <Loader2
             size={40}
             className="animate-spin"
-            style={{ color: 'var(--color-moss)' }}
+            style={{ color: 'var(--color-brand)' }}
           />
-          <p className="text-sm text-center" style={{ color: 'var(--color-mid)' }}>
+          <p className="text-sm text-center" style={{ color: 'var(--color-text-muted)' }}>
             Please wait while we verify your email address and set up your account.
           </p>
         </div>
@@ -96,19 +96,19 @@ export function VerifyEmail() {
         <div className="flex justify-center">
           <div
             className="w-16 h-16 rounded-full flex items-center justify-center"
-            style={{ backgroundColor: 'var(--color-hay-lt)' }}
+            style={{ backgroundColor: 'var(--color-warn-bg)' }}
           >
-            <Mail size={32} style={{ color: 'var(--color-hay)' }} />
+            <Mail size={32} style={{ color: '#7A5C00' }} />
           </div>
         </div>
 
         {/* Instruction */}
         <div className="text-center space-y-2">
-          <p className="text-sm" style={{ color: 'var(--color-mid)' }}>
+          <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
             We've sent a verification link to your email address. Click the link in that email to
             activate your account.
           </p>
-          <p className="text-xs" style={{ color: 'var(--color-light)' }}>
+          <p className="text-xs" style={{ color: 'var(--color-text-subtle)' }}>
             The link expires after 24 hours. Check your spam folder if you don't see it.
           </p>
         </div>
@@ -120,9 +120,9 @@ export function VerifyEmail() {
           disabled={isResending}
           className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg border text-sm font-medium transition-opacity disabled:opacity-60"
           style={{
-            borderColor: 'var(--color-fog)',
-            color: 'var(--color-soil)',
-            backgroundColor: 'var(--color-white)',
+            borderColor: 'var(--color-border)',
+            color: 'var(--color-brand-900)',
+            backgroundColor: 'var(--color-surface)',
           }}
         >
           <RefreshCw size={15} className={isResending ? 'animate-spin' : ''} />

@@ -16,7 +16,7 @@ function StarIcon({ filled, size = 16 }: { filled: boolean; size?: number }) {
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none" aria-hidden="true">
       <path
         d={STAR_PATH}
-        fill={filled ? 'var(--color-hay)' : 'var(--color-fog)'}
+        fill={filled ? 'var(--color-warn)' : 'var(--color-border)'}
       />
     </svg>
   )

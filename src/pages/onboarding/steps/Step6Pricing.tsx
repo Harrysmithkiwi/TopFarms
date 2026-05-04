@@ -41,17 +41,17 @@ export function Step6Pricing({ onComplete, onBack }: Step6Props) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-ink)' }}>
+        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Listing tiers
         </h2>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-mid)' }}>
+        <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
           Preview our listing options — your first listing is always free!
         </p>
       </div>
 
       <div
         className="rounded-[10px] p-3 text-[13px] font-body font-semibold text-center"
-        style={{ backgroundColor: 'var(--color-hay-lt)', color: 'var(--color-soil)' }}
+        style={{ backgroundColor: 'var(--color-warn-bg)', color: 'var(--color-brand-900)' }}
       >
         Your first job listing is free, regardless of tier
       </div>
@@ -72,7 +72,7 @@ export function Step6Pricing({ onComplete, onBack }: Step6Props) {
         ))}
       </div>
 
-      <p className="text-[12px] text-center" style={{ color: 'var(--color-light)' }}>
+      <p className="text-[12px] text-center" style={{ color: 'var(--color-text-subtle)' }}>
         You'll choose your listing tier when you post your first job. No payment required today.
       </p>
 

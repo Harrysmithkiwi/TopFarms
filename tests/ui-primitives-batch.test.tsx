@@ -103,15 +103,15 @@ describe('Timeline', () => {
     expect(screen.getByText('Shortlisted')).toBeInTheDocument()
   })
 
-  it('renders meadow dots', () => {
+  it('renders brand-coloured dots', () => {
     const { container } = render(<Timeline entries={entries} />)
-    const dots = container.querySelectorAll('.bg-meadow')
+    const dots = container.querySelectorAll('.bg-brand')
     expect(dots.length).toBe(3)
   })
 
-  it('renders connecting lines with bg-fog', () => {
+  it('renders connecting lines with bg-border', () => {
     const { container } = render(<Timeline entries={entries} />)
-    const lines = container.querySelectorAll('.bg-fog')
+    const lines = container.querySelectorAll('.bg-border')
     // Last item should NOT have a connecting line, so 2 lines for 3 entries
     expect(lines.length).toBe(2)
   })
@@ -120,7 +120,7 @@ describe('Timeline', () => {
     const { container } = render(<Timeline entries={entries} />)
     const listItems = container.querySelectorAll('li')
     const lastItem = listItems[listItems.length - 1]
-    const line = lastItem.querySelector('.bg-fog')
+    const line = lastItem.querySelector('.bg-border')
     expect(line).toBeNull()
   })
 
@@ -144,15 +144,15 @@ describe('StarRating', () => {
     expect(stars.length).toBe(5)
   })
 
-  it('renders first N stars with hay fill and rest with fog fill', () => {
+  it('renders first N stars with warn fill and rest with border fill', () => {
     const { container } = render(<StarRating value={4} />)
     const paths = container.querySelectorAll('path')
     // First 4 should have hay fill, 5th should have fog fill
-    expect(paths[0]).toHaveAttribute('fill', 'var(--color-hay)')
-    expect(paths[1]).toHaveAttribute('fill', 'var(--color-hay)')
-    expect(paths[2]).toHaveAttribute('fill', 'var(--color-hay)')
-    expect(paths[3]).toHaveAttribute('fill', 'var(--color-hay)')
-    expect(paths[4]).toHaveAttribute('fill', 'var(--color-fog)')
+    expect(paths[0]).toHaveAttribute('fill', 'var(--color-warn)')
+    expect(paths[1]).toHaveAttribute('fill', 'var(--color-warn)')
+    expect(paths[2]).toHaveAttribute('fill', 'var(--color-warn)')
+    expect(paths[3]).toHaveAttribute('fill', 'var(--color-warn)')
+    expect(paths[4]).toHaveAttribute('fill', 'var(--color-border)')
   })
 
   it('clicking star 3 calls onChange(3)', async () => {
@@ -185,17 +185,17 @@ describe('Pagination', () => {
     expect(screen.getByText('5')).toBeInTheDocument()
   })
 
-  it('active page button has bg-moss and text-white classes', () => {
+  it('active page button has bg-brand and text-text-on-brand classes', () => {
     render(<Pagination currentPage={3} totalPages={5} onPageChange={vi.fn()} />)
     const activeButton = screen.getByText('3')
-    expect(activeButton.className).toContain('bg-moss')
-    expect(activeButton.className).toContain('text-white')
+    expect(activeButton.className).toContain('bg-brand')
+    expect(activeButton.className).toContain('text-text-on-brand')
   })
 
-  it('inactive page button has border-fog class', () => {
+  it('inactive page button has border-border class', () => {
     render(<Pagination currentPage={1} totalPages={5} onPageChange={vi.fn()} />)
     const inactiveButton = screen.getByText('2')
-    expect(inactiveButton.className).toContain('border-fog')
+    expect(inactiveButton.className).toContain('border-border')
   })
 
   it('clicking page 3 calls onPageChange(3)', async () => {

@@ -2,21 +2,21 @@ import { ButtonHTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'outline' | 'ghost' | 'hay'
+  variant?: 'primary' | 'outline' | 'ghost' | 'warn'
   size?: 'sm' | 'md' | 'lg'
 }
 
 const variantClasses = {
-  primary: 'bg-moss text-white hover:bg-fern',
-  outline: 'bg-white border border-moss text-moss hover:bg-mist',
-  ghost: 'border border-fog text-mid hover:border-mid',
-  hay: 'bg-hay text-soil hover:opacity-90',
+  primary: 'bg-brand text-text-on-brand hover:bg-brand-hover',
+  outline: 'bg-surface border border-border-strong text-text hover:bg-surface-hover',
+  ghost: 'bg-transparent text-text hover:bg-surface-2',
+  warn: 'bg-warn text-text-on-brand hover:opacity-90',
 }
 
 const sizeClasses = {
-  sm: 'px-3 py-1.5 text-[12px]',
-  md: 'px-4 py-2 text-[13px]',
-  lg: 'px-6 py-3 text-[14px]',
+  sm: 'h-11 md:h-9 px-3 text-[13px]',
+  md: 'h-11 md:h-10 px-4 text-[15px]',
+  lg: 'h-12 md:h-11 px-6 text-[15px]',
 }
 
 export function Button({
@@ -29,7 +29,10 @@ export function Button({
   return (
     <button
       className={cn(
-        'font-body font-bold rounded-[8px] transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center',
+        'font-body font-medium rounded-[8px] transition-colors duration-150 cursor-pointer',
+        'inline-flex items-center justify-center',
+        'disabled:opacity-50 disabled:cursor-not-allowed',
+        'outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
         variantClasses[variant],
         sizeClasses[size],
         className,

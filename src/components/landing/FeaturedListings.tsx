@@ -32,8 +32,8 @@ function formatSalary(min: number | null, max: number | null): string {
 
 function getTierBadge(tier: string | number): { label: string; color: string; bg: string } | null {
   const t = String(tier)
-  if (t === '3' || t === 'premium') return { label: 'Premium', color: 'var(--color-hay)', bg: 'rgba(212,168,67,0.12)' }
-  if (t === '2' || t === 'featured') return { label: 'Featured', color: 'var(--color-meadow)', bg: 'rgba(122,175,63,0.1)' }
+  if (t === '3' || t === 'premium') return { label: 'Premium', color: 'var(--color-warn)', bg: 'rgba(245,158,11,0.12)' }
+  if (t === '2' || t === 'featured') return { label: 'Featured', color: 'var(--color-brand)', bg: 'rgba(122,175,63,0.1)' }
   return null
 }
 
@@ -54,8 +54,8 @@ function JobCard({ job, matchScore }: JobCardProps) {
       to={`/jobs/${job.id}`}
       className="relative block rounded-2xl p-5 transition-shadow hover:shadow-md"
       style={{
-        backgroundColor: 'var(--color-white)',
-        border: '1px solid var(--color-fog)',
+        backgroundColor: 'var(--color-surface)',
+        border: '1px solid var(--color-border)',
       }}
     >
       {/* Match score circle */}
@@ -63,8 +63,8 @@ function JobCard({ job, matchScore }: JobCardProps) {
         className="absolute top-3 right-3 w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold"
         style={{
           backgroundColor: 'rgba(122,175,63,0.2)',
-          color: 'var(--color-meadow)',
-          border: '2px solid var(--color-meadow)',
+          color: 'var(--color-brand)',
+          border: '2px solid var(--color-brand)',
         }}
       >
         {matchScore}%
@@ -75,11 +75,11 @@ function JobCard({ job, matchScore }: JobCardProps) {
         <div className="flex-1 min-w-0 pr-14">
           <h3
             className="font-display font-semibold text-base leading-snug mb-0.5 truncate"
-            style={{ color: 'var(--color-soil)' }}
+            style={{ color: 'var(--color-brand-900)' }}
           >
             {job.title}
           </h3>
-          <p className="text-sm truncate" style={{ color: 'var(--color-mid)' }}>
+          <p className="text-sm truncate" style={{ color: 'var(--color-text-muted)' }}>
             {farmName}
           </p>
         </div>
@@ -97,20 +97,20 @@ function JobCard({ job, matchScore }: JobCardProps) {
       <div className="flex flex-wrap gap-1.5 mb-3">
         <span
           className="text-[11px] px-2 py-0.5 rounded-full font-medium"
-          style={{ backgroundColor: 'var(--color-fog)', color: 'var(--color-mid)' }}
+          style={{ backgroundColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
         >
           {region}
         </span>
         <span
           className="text-[11px] px-2 py-0.5 rounded-full font-medium capitalize"
-          style={{ backgroundColor: 'var(--color-fog)', color: 'var(--color-mid)' }}
+          style={{ backgroundColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
         >
           {job.contract_type}
         </span>
       </div>
 
       {/* Salary */}
-      <p className="text-sm font-semibold" style={{ color: 'var(--color-soil)' }}>
+      <p className="text-sm font-semibold" style={{ color: 'var(--color-brand-900)' }}>
         {formatSalary(job.salary_min, job.salary_max)}
       </p>
     </Link>
@@ -158,33 +158,33 @@ export function FeaturedListings() {
   }, [])
 
   return (
-    <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-cream)' }}>
+    <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-bg)' }}>
       <div className="max-w-6xl mx-auto">
         {/* Header row */}
         <div className="flex items-end justify-between mb-10">
           <div>
             {/* Eyebrow */}
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-8 h-px" style={{ backgroundColor: 'var(--color-meadow)' }} />
+              <div className="w-8 h-px" style={{ backgroundColor: 'var(--color-brand)' }} />
               <p
                 className="text-xs font-bold tracking-widest uppercase"
-                style={{ color: 'var(--color-meadow)' }}
+                style={{ color: 'var(--color-brand)' }}
               >
                 Live Listings
               </p>
             </div>
             <h2
               className="font-display font-bold text-4xl md:text-5xl"
-              style={{ color: 'var(--color-soil)' }}
+              style={{ color: 'var(--color-brand-900)' }}
             >
               Featured{' '}
-              <em style={{ color: 'var(--color-moss)', fontStyle: 'italic' }}>Opportunities</em>
+              <em style={{ color: 'var(--color-brand)', fontStyle: 'italic' }}>Opportunities</em>
             </h2>
           </div>
           <Link
             to="/jobs"
             className="hidden sm:inline-flex items-center gap-1 text-sm font-semibold transition-colors hover:opacity-70"
-            style={{ color: 'var(--color-soil)' }}
+            style={{ color: 'var(--color-brand-900)' }}
           >
             View all jobs
             <span aria-hidden="true">→</span>
@@ -198,7 +198,7 @@ export function FeaturedListings() {
               <div
                 key={i}
                 className="rounded-2xl h-40 animate-pulse"
-                style={{ backgroundColor: 'var(--color-fog)' }}
+                style={{ backgroundColor: 'var(--color-border)' }}
               />
             ))}
           </div>
@@ -208,26 +208,26 @@ export function FeaturedListings() {
             <div
               className="rounded-2xl p-10 text-center max-w-sm"
               style={{
-                backgroundColor: 'var(--color-white)',
-                border: '1px solid var(--color-fog)',
+                backgroundColor: 'var(--color-surface)',
+                border: '1px solid var(--color-border)',
               }}
             >
               <div className="text-4xl mb-4">🌾</div>
               <h3
                 className="font-display font-semibold text-lg mb-2"
-                style={{ color: 'var(--color-soil)' }}
+                style={{ color: 'var(--color-brand-900)' }}
               >
                 Be the first to post a featured job
               </h3>
-              <p className="text-sm mb-6" style={{ color: 'var(--color-mid)' }}>
+              <p className="text-sm mb-6" style={{ color: 'var(--color-text-muted)' }}>
                 Get your farm in front of top candidates across New Zealand.
               </p>
               <Link
                 to="/signup?role=employer"
                 className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-semibold transition-opacity hover:opacity-90"
                 style={{
-                  backgroundColor: 'var(--color-soil)',
-                  color: 'var(--color-cream)',
+                  backgroundColor: 'var(--color-brand-900)',
+                  color: 'var(--color-text-on-brand)',
                 }}
               >
                 Post a Job
@@ -247,7 +247,7 @@ export function FeaturedListings() {
               <Link
                 to="/jobs"
                 className="inline-flex items-center gap-1 text-sm font-semibold"
-                style={{ color: 'var(--color-soil)' }}
+                style={{ color: 'var(--color-brand-900)' }}
               >
                 View all jobs →
               </Link>

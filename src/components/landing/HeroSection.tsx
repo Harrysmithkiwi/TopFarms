@@ -15,7 +15,7 @@ export function HeroSection() {
   return (
     <section
       className="relative min-h-screen pt-14 overflow-hidden"
-      style={{ backgroundColor: 'var(--color-soil-deep)' }}
+      style={{ backgroundColor: 'var(--color-brand-900)' }}
     >
       {/* Radial gradient blobs */}
       <div
@@ -54,12 +54,12 @@ export function HeroSection() {
               style={{
                 borderColor: 'rgba(122,175,63,0.3)',
                 backgroundColor: 'rgba(122,175,63,0.1)',
-                color: 'var(--color-meadow)',
+                color: 'var(--color-brand)',
               }}
             >
               <span
                 className="w-1.5 h-1.5 rounded-full animate-pulse"
-                style={{ backgroundColor: 'var(--color-meadow)' }}
+                style={{ backgroundColor: 'var(--color-brand)' }}
               />
               NZ Agriculture
             </div>
@@ -73,7 +73,7 @@ export function HeroSection() {
             className="font-display font-bold leading-[1.05] tracking-tight"
             style={{
               fontSize: 'clamp(48px, 6.5vw, 82px)',
-              color: 'var(--color-cream)',
+              color: 'var(--color-text-on-brand)',
             }}
           >
             <motion.span variants={lineVariants} className="block">
@@ -82,7 +82,7 @@ export function HeroSection() {
             <motion.span
               variants={lineVariants}
               className="block"
-              style={{ color: 'var(--color-hay)', fontStyle: 'italic' }}
+              style={{ color: 'var(--color-brand-50)', fontStyle: 'italic' }}
             >
               Best Farms
             </motion.span>
@@ -94,7 +94,7 @@ export function HeroSection() {
           {/* Subtext */}
           <p
             className="text-lg md:text-xl leading-relaxed max-w-xl"
-            style={{ color: 'rgba(247,242,232,0.65)' }}
+            style={{ color: 'rgba(255,255,255,0.65)' }}
           >
             TopFarms matches skilled farm workers with quality employers across dairy, sheep &amp;
             beef, and livestock operations.
@@ -112,18 +112,18 @@ export function HeroSection() {
             >
               <p
                 className="text-[10px] font-bold tracking-widest uppercase"
-                style={{ color: 'var(--color-meadow)' }}
+                style={{ color: 'var(--color-brand)' }}
               >
                 Farm Workers
               </p>
               <div>
                 <p
                   className="font-display font-semibold text-lg mb-1"
-                  style={{ color: 'var(--color-cream)' }}
+                  style={{ color: 'var(--color-text-on-brand)' }}
                 >
                   Find Your Next Role
                 </p>
-                <p className="text-sm" style={{ color: 'rgba(247,242,232,0.55)' }}>
+                <p className="text-sm" style={{ color: 'rgba(255,255,255,0.55)' }}>
                   Browse jobs matched to your experience
                 </p>
               </div>
@@ -131,8 +131,8 @@ export function HeroSection() {
                 to="/signup?role=seeker"
                 className="mt-1 inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-semibold transition-opacity hover:opacity-90"
                 style={{
-                  backgroundColor: 'var(--color-meadow)',
-                  color: 'var(--color-white)',
+                  backgroundColor: 'var(--color-brand)',
+                  color: 'var(--color-text-on-brand)',
                 }}
               >
                 Find Farm Work
@@ -143,27 +143,27 @@ export function HeroSection() {
             <div className="flex-1 p-6 flex flex-col gap-3">
               <p
                 className="text-[10px] font-bold tracking-widest uppercase"
-                style={{ color: 'var(--color-hay)' }}
+                style={{ color: 'var(--color-text-on-brand)' }}
               >
                 Farm Employers
               </p>
               <div>
                 <p
                   className="font-display font-semibold text-lg mb-1"
-                  style={{ color: 'var(--color-cream)' }}
+                  style={{ color: 'var(--color-text-on-brand)' }}
                 >
                   Find Skilled Workers
                 </p>
-                <p className="text-sm" style={{ color: 'rgba(247,242,232,0.55)' }}>
+                <p className="text-sm" style={{ color: 'rgba(255,255,255,0.55)' }}>
                   AI-matched candidates for your farm
                 </p>
               </div>
               <Link
                 to="/signup?role=employer"
-                className="mt-1 inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-semibold border transition-colors hover:bg-hay/10"
+                className="mt-1 inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-semibold border transition-colors hover:bg-warn/10"
                 style={{
-                  borderColor: 'var(--color-hay)',
-                  color: 'var(--color-hay)',
+                  borderColor: 'var(--color-text-on-brand)',
+                  color: 'var(--color-text-on-brand)',
                 }}
               >
                 Post a Job
@@ -187,11 +187,11 @@ export function HeroSection() {
               <div>
                 <p
                   className="font-display font-semibold text-base mb-0.5"
-                  style={{ color: 'var(--color-cream)' }}
+                  style={{ color: 'var(--color-text-on-brand)' }}
                 >
                   Senior Dairy Farm Manager
                 </p>
-                <p className="text-sm" style={{ color: 'rgba(247,242,232,0.6)' }}>
+                <p className="text-sm" style={{ color: 'rgba(255,255,255,0.6)' }}>
                   Greenfield Dairy, Waikato
                 </p>
               </div>
@@ -199,8 +199,8 @@ export function HeroSection() {
                 className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold"
                 style={{
                   backgroundColor: 'rgba(122,175,63,0.2)',
-                  color: 'var(--color-meadow)',
-                  border: '2px solid var(--color-meadow)',
+                  color: 'var(--color-brand)',
+                  border: '2px solid var(--color-brand)',
                 }}
               >
                 94%
@@ -213,7 +213,7 @@ export function HeroSection() {
                   className="text-[11px] px-2 py-0.5 rounded-full"
                   style={{
                     backgroundColor: 'rgba(255,255,255,0.08)',
-                    color: 'rgba(247,242,232,0.7)',
+                    color: 'rgba(255,255,255,0.7)',
                   }}
                 >
                   {tag}
@@ -236,16 +236,16 @@ export function HeroSection() {
                 className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
                 style={{
                   backgroundColor: 'rgba(74,124,47,0.3)',
-                  color: 'var(--color-meadow)',
+                  color: 'var(--color-brand)',
                 }}
               >
                 JD
               </div>
               <div>
-                <p className="text-sm font-semibold" style={{ color: 'var(--color-cream)' }}>
+                <p className="text-sm font-semibold" style={{ color: 'var(--color-text-on-brand)' }}>
                   Jamie D.
                 </p>
-                <p className="text-xs" style={{ color: 'rgba(247,242,232,0.5)' }}>
+                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
                   5 yrs dairy experience
                 </p>
               </div>
@@ -256,7 +256,7 @@ export function HeroSection() {
                 { label: 'Tractor Operation', pct: 75 },
               ].map(({ label, pct }) => (
                 <div key={label}>
-                  <div className="flex justify-between text-[11px] mb-0.5" style={{ color: 'rgba(247,242,232,0.5)' }}>
+                  <div className="flex justify-between text-[11px] mb-0.5" style={{ color: 'rgba(255,255,255,0.5)' }}>
                     <span>{label}</span>
                     <span>{pct}%</span>
                   </div>
@@ -268,7 +268,7 @@ export function HeroSection() {
                       className="h-full rounded-full"
                       style={{
                         width: `${pct}%`,
-                        backgroundColor: 'var(--color-meadow)',
+                        backgroundColor: 'var(--color-brand)',
                       }}
                     />
                   </div>
@@ -288,10 +288,10 @@ export function HeroSection() {
           >
             <span className="text-lg">🎯</span>
             <div>
-              <p className="text-xs font-semibold" style={{ color: 'var(--color-meadow)' }}>
+              <p className="text-xs font-semibold" style={{ color: 'var(--color-brand)' }}>
                 New match found
               </p>
-              <p className="text-[11px]" style={{ color: 'rgba(247,242,232,0.6)' }}>
+              <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.6)' }}>
                 3 candidates match your criteria
               </p>
             </div>
@@ -301,17 +301,17 @@ export function HeroSection() {
 
       {/* Scroll hint */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-10">
-        <p className="text-xs tracking-widest uppercase" style={{ color: 'rgba(247,242,232,0.4)' }}>
+        <p className="text-xs tracking-widest uppercase" style={{ color: 'rgba(255,255,255,0.4)' }}>
           Explore
         </p>
         <div className="flex flex-col items-center gap-0.5 animate-bounce">
-          <div className="w-px h-5" style={{ backgroundColor: 'rgba(247,242,232,0.25)' }} />
+          <div className="w-px h-5" style={{ backgroundColor: 'rgba(255,255,255,0.25)' }} />
           <svg
             width="10"
             height="6"
             viewBox="0 0 10 6"
             fill="none"
-            style={{ color: 'rgba(247,242,232,0.3)' }}
+            style={{ color: 'rgba(255,255,255,0.3)' }}
           >
             <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>

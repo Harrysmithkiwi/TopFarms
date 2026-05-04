@@ -15,25 +15,25 @@ const sizeClasses = {
 function getColourClasses(score: number) {
   if (score >= 80) {
     return {
-      bg: 'bg-[rgba(45,80,22,0.08)]',
-      border: 'border-[rgba(45,80,22,0.2)]',
-      text: 'text-moss',
-      label: 'text-moss',
+      bg: 'bg-brand-50',
+      border: 'border-brand/20',
+      text: 'text-brand',
+      label: 'text-brand',
     }
   }
   if (score >= 60) {
     return {
-      bg: 'bg-[rgba(230,126,34,0.08)]',
-      border: 'border-[rgba(230,126,34,0.2)]',
-      text: 'text-orange',
-      label: 'text-orange',
+      bg: 'bg-warn/10',
+      border: 'border-warn/20',
+      text: 'text-warn',
+      label: 'text-warn',
     }
   }
   return {
-    bg: 'bg-[rgba(192,57,43,0.08)]',
-    border: 'border-[rgba(192,57,43,0.2)]',
-    text: 'text-red',
-    label: 'text-red',
+    bg: 'bg-danger/10',
+    border: 'border-danger/20',
+    text: 'text-danger',
+    label: 'text-danger',
   }
 }
 
@@ -43,6 +43,8 @@ export function MatchCircle({ score, size = 'md', className }: MatchCircleProps)
 
   return (
     <div
+      role="img"
+      aria-label={`${score}% match`}
       className={cn(
         'flex flex-col items-center justify-center rounded-full border-[1.5px]',
         sizes.container,
@@ -51,7 +53,13 @@ export function MatchCircle({ score, size = 'md', className }: MatchCircleProps)
         className,
       )}
     >
-      <span className={cn('font-display font-bold leading-none', sizes.text, colours.text)}>
+      <span
+        className={cn(
+          'font-display font-semibold leading-none tabular-nums',
+          sizes.text,
+          colours.text,
+        )}
+      >
         {score}
       </span>
       {size === 'lg' && (

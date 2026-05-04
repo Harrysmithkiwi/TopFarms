@@ -10,7 +10,7 @@ const features = [
 
 export function AIMatchingSection() {
   return (
-    <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-cream)' }}>
+    <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-bg)' }}>
       <motion.div
         className="max-w-6xl mx-auto"
         initial={{ opacity: 0, y: 32 }}
@@ -20,10 +20,10 @@ export function AIMatchingSection() {
       >
         {/* Eyebrow */}
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-8 h-px" style={{ backgroundColor: 'var(--color-meadow)' }} />
+          <div className="w-8 h-px" style={{ backgroundColor: 'var(--color-brand)' }} />
           <p
             className="text-xs font-bold tracking-widest uppercase"
-            style={{ color: 'var(--color-meadow)' }}
+            style={{ color: 'var(--color-brand)' }}
           >
             AI-Powered Matching
           </p>
@@ -32,7 +32,7 @@ export function AIMatchingSection() {
         {/* Heading */}
         <h2
           className="font-display font-bold text-4xl md:text-5xl mb-12"
-          style={{ color: 'var(--color-soil)' }}
+          style={{ color: 'var(--color-brand-900)' }}
         >
           Smart Matching That Understands Agriculture
         </h2>
@@ -47,9 +47,9 @@ export function AIMatchingSection() {
                   className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center"
                   style={{ backgroundColor: 'rgba(122,175,63,0.12)' }}
                 >
-                  <Check size={12} style={{ color: 'var(--color-meadow)' }} strokeWidth={3} />
+                  <Check size={12} style={{ color: 'var(--color-brand)' }} strokeWidth={3} />
                 </span>
-                <span className="text-base leading-relaxed" style={{ color: 'var(--color-soil)' }}>
+                <span className="text-base leading-relaxed" style={{ color: 'var(--color-brand-900)' }}>
                   {feature}
                 </span>
               </li>
@@ -59,12 +59,12 @@ export function AIMatchingSection() {
           {/* Right: Mock browser window */}
           <div
             className="rounded-xl shadow-2xl overflow-hidden"
-            style={{ border: '1px solid var(--color-fog)' }}
+            style={{ border: '1px solid var(--color-border)' }}
           >
             {/* Browser chrome */}
             <div
               className="flex items-center gap-2 px-4 py-3"
-              style={{ backgroundColor: 'var(--color-fog)' }}
+              style={{ backgroundColor: 'var(--color-border)' }}
             >
               {/* Traffic lights */}
               <span className="w-3 h-3 rounded-full" style={{ backgroundColor: '#ff5f57' }} />
@@ -74,8 +74,8 @@ export function AIMatchingSection() {
               <div
                 className="ml-2 flex-1 rounded-full px-3 py-1 text-xs"
                 style={{
-                  backgroundColor: 'var(--color-white)',
-                  color: 'var(--color-mid)',
+                  backgroundColor: 'var(--color-surface)',
+                  color: 'var(--color-text-muted)',
                 }}
               >
                 topfarms.co.nz/match
@@ -83,10 +83,10 @@ export function AIMatchingSection() {
             </div>
 
             {/* Browser content */}
-            <div className="p-5" style={{ backgroundColor: 'var(--color-white)' }}>
+            <div className="p-5" style={{ backgroundColor: 'var(--color-surface)' }}>
               <p
                 className="font-display font-bold text-lg mb-4"
-                style={{ color: 'var(--color-soil)' }}
+                style={{ color: 'var(--color-brand-900)' }}
               >
                 Your Top Matches
               </p>
@@ -101,15 +101,15 @@ export function AIMatchingSection() {
                   key={match.name}
                   className="flex items-center justify-between rounded-lg px-3 py-2.5 mb-2"
                   style={{
-                    backgroundColor: 'var(--color-cream)',
-                    border: '1px solid var(--color-fog)',
+                    backgroundColor: 'var(--color-bg)',
+                    border: '1px solid var(--color-border)',
                   }}
                 >
                   <div>
-                    <p className="text-sm font-semibold" style={{ color: 'var(--color-soil)' }}>
+                    <p className="text-sm font-semibold" style={{ color: 'var(--color-brand-900)' }}>
                       {match.name}
                     </p>
-                    <p className="text-xs" style={{ color: 'var(--color-mid)' }}>
+                    <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
                       {match.location}
                     </p>
                   </div>
@@ -117,7 +117,7 @@ export function AIMatchingSection() {
                     className="text-xs font-bold px-2 py-1 rounded-full"
                     style={{
                       backgroundColor: 'rgba(122,175,63,0.12)',
-                      color: 'var(--color-meadow)',
+                      color: 'var(--color-brand)',
                     }}
                   >
                     {match.score}% match

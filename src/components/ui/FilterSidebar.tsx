@@ -64,7 +64,7 @@ function formatSalaryLabel(value: number): string {
 
 function SectionHeader({ title }: { title: string }) {
   return (
-    <span className="text-[13px] font-body font-semibold" style={{ color: 'var(--color-ink)' }}>
+    <span className="text-[13px] font-body font-semibold" style={{ color: 'var(--color-text)' }}>
       {title}
     </span>
   )
@@ -135,21 +135,21 @@ export function FilterSidebar({
   return (
     <div
       className={cn(
-        'flex flex-col bg-white',
+        'flex flex-col bg-surface',
         isMobile ? 'h-full' : 'h-fit sticky top-4 pl-6',
       )}
     >
       {/* Mobile header */}
       {isMobile && (
-        <div className="flex items-center justify-between px-4 py-3 border-b border-fog">
-          <span className="text-[15px] font-body font-semibold text-ink">Filters</span>
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+          <span className="text-[15px] font-body font-semibold text-text">Filters</span>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-full hover:bg-mist transition-colors"
+            className="p-1.5 rounded-full hover:bg-surface-2 transition-colors"
             aria-label="Close filters"
           >
-            <X className="w-4 h-4 text-mid" />
+            <X className="w-4 h-4 text-text-muted" />
           </button>
         </div>
       )}
@@ -158,7 +158,7 @@ export function FilterSidebar({
       <div className={cn('flex-1 overflow-y-auto', isMobile ? 'px-4' : '')}>
 
         {/* 1. Role Type */}
-        <details open className="border-t border-fog first:border-t-0 py-4">
+        <details open className="border-t border-border first:border-t-0 py-4">
           <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
             <SectionHeader title="Role Type" />
           </summary>
@@ -177,7 +177,7 @@ export function FilterSidebar({
         </details>
 
         {/* 2. Extras */}
-        <details open className="border-t border-fog py-4">
+        <details open className="border-t border-border py-4">
           <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
             <SectionHeader title="Extras" />
           </summary>
@@ -196,7 +196,7 @@ export function FilterSidebar({
         </details>
 
         {/* 3. Shed Type */}
-        <details open className="border-t border-fog py-4">
+        <details open className="border-t border-border py-4">
           <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
             <SectionHeader title="Shed Type" />
           </summary>
@@ -215,7 +215,7 @@ export function FilterSidebar({
         </details>
 
         {/* 4. Region */}
-        <details open className="border-t border-fog py-4">
+        <details open className="border-t border-border py-4">
           <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
             <SectionHeader title="Region" />
           </summary>
@@ -235,7 +235,7 @@ export function FilterSidebar({
             <button
               type="button"
               onClick={() => setShowAllRegions((prev) => !prev)}
-              className="mt-2 text-[12px] font-body text-moss hover:underline"
+              className="mt-2 text-[12px] font-body text-brand hover:underline"
             >
               {showAllRegions ? 'Show fewer' : `Show all ${NZ_REGIONS.length} regions`}
             </button>
@@ -243,7 +243,7 @@ export function FilterSidebar({
         </details>
 
         {/* 5. Contract Type */}
-        <details open className="border-t border-fog py-4">
+        <details open className="border-t border-border py-4">
           <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
             <SectionHeader title="Contract Type" />
           </summary>
@@ -262,12 +262,12 @@ export function FilterSidebar({
         </details>
 
         {/* 6. Salary Range */}
-        <details open className="border-t border-fog py-4">
+        <details open className="border-t border-border py-4">
           <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
             <SectionHeader title="Salary Range" />
           </summary>
           <div className="px-1">
-            <div className="text-[13px] font-body text-mid mb-3">
+            <div className="text-[13px] font-body text-text-muted mb-3">
               {formatSalaryLabel(currentSalaryMin)} – {formatSalaryLabel(currentSalaryMax)} /year
             </div>
             <Slider.Root
@@ -279,15 +279,15 @@ export function FilterSidebar({
               onValueChange={handleSalaryChange}
               minStepsBetweenThumbs={1}
             >
-              <Slider.Track className="bg-fog relative grow rounded-full h-[4px]">
-                <Slider.Range className="absolute bg-moss rounded-full h-full" />
+              <Slider.Track className="bg-border relative grow rounded-full h-[4px]">
+                <Slider.Range className="absolute bg-brand rounded-full h-full" />
               </Slider.Track>
               <Slider.Thumb
-                className="block w-[16px] h-[16px] bg-white border-[2px] border-moss rounded-full shadow-sm hover:bg-mist focus:outline-none focus:ring-[3px] focus:ring-[rgba(74,124,47,0.2)] cursor-pointer"
+                className="block w-[16px] h-[16px] bg-surface border-[2px] border-brand rounded-full shadow-sm hover:bg-surface-2 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand cursor-pointer"
                 aria-label="Salary minimum"
               />
               <Slider.Thumb
-                className="block w-[16px] h-[16px] bg-white border-[2px] border-moss rounded-full shadow-sm hover:bg-mist focus:outline-none focus:ring-[3px] focus:ring-[rgba(74,124,47,0.2)] cursor-pointer"
+                className="block w-[16px] h-[16px] bg-surface border-[2px] border-brand rounded-full shadow-sm hover:bg-surface-2 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand cursor-pointer"
                 aria-label="Salary maximum"
               />
             </Slider.Root>
@@ -296,7 +296,7 @@ export function FilterSidebar({
 
         {/* 7. Herd Size */}
         {/* herd_size: multi-select with OR semantics. See KNOWN_QUIRKS.md QUIRK-01. */}
-        <details open className="border-t border-fog py-4">
+        <details open className="border-t border-border py-4">
           <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
             <SectionHeader title="Herd Size" />
           </summary>
@@ -315,7 +315,7 @@ export function FilterSidebar({
         </details>
 
         {/* 8. Accommodation */}
-        <details open className="border-t border-fog py-4">
+        <details open className="border-t border-border py-4">
           <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
             <SectionHeader title="Accommodation" />
           </summary>
@@ -334,7 +334,7 @@ export function FilterSidebar({
         </details>
 
         {/* 9. Visa Sponsorship */}
-        <details open className="border-t border-fog py-4">
+        <details open className="border-t border-border py-4">
           <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
             <SectionHeader title="Visa Sponsorship" />
           </summary>
@@ -346,11 +346,11 @@ export function FilterSidebar({
         </details>
 
         {/* 10. DairyNZ Level */}
-        <details open className="border-t border-fog py-4">
+        <details open className="border-t border-border py-4">
           <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
             <SectionHeader title="DairyNZ Level" />
           </summary>
-          <p className="text-[11px] font-body text-light mb-2">
+          <p className="text-[11px] font-body text-text-subtle mb-2">
             Show jobs you qualify for
           </p>
           <Select
@@ -368,12 +368,12 @@ export function FilterSidebar({
 
         {/* Clear All */}
         {hasActiveFilters && (
-          <div className="border-t border-fog py-4">
+          <div className="border-t border-border py-4">
             <Button
               variant="ghost"
               size="sm"
               onClick={handleClearAll}
-              className="w-full text-mid hover:text-ink"
+              className="w-full text-text-muted hover:text-text"
             >
               Clear all filters
             </Button>
@@ -383,7 +383,7 @@ export function FilterSidebar({
 
       {/* Mobile footer — sticky "Show results" button */}
       {isMobile && onClose && (
-        <div className="border-t border-fog px-4 py-3 bg-white">
+        <div className="border-t border-border px-4 py-3 bg-surface">
           <Button variant="primary" size="md" onClick={onClose} className="w-full">
             {resultCount !== undefined ? `Show ${resultCount} results` : 'Show results'}
           </Button>

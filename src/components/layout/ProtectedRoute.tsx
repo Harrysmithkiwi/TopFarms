@@ -12,13 +12,13 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-cream">
+      <div className="min-h-screen flex items-center justify-center bg-bg">
         <div className="flex flex-col items-center gap-4">
           <div
-            className="w-10 h-10 rounded-full border-4 border-fog border-t-moss animate-spin"
+            className="w-10 h-10 rounded-full border-4 border-border border-t-moss animate-spin"
             aria-label="Loading"
           />
-          <p className="text-sm" style={{ color: 'var(--color-mid)' }}>
+          <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
             Loading...
           </p>
         </div>
@@ -40,13 +40,13 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
   // is manual nav. Acceptable for MVP.
   if (requiredRole && role === null) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-cream">
+      <div className="min-h-screen flex items-center justify-center bg-bg">
         <div className="flex flex-col items-center gap-4">
           <div
-            className="w-10 h-10 rounded-full border-4 border-fog border-t-moss animate-spin"
+            className="w-10 h-10 rounded-full border-4 border-border border-t-moss animate-spin"
             aria-label="Loading"
           />
-          <p className="text-sm" style={{ color: 'var(--color-mid)' }}>
+          <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
             Loading...
           </p>
         </div>

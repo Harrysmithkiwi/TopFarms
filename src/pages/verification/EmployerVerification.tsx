@@ -48,20 +48,20 @@ function VerificationCard({
         <div
           className={cn(
             'w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0',
-            isVerified ? 'bg-[rgba(74,124,47,0.10)]' : 'bg-fog',
+            isVerified ? 'bg-brand/10' : 'bg-surface-2',
           )}
         >
-          <span className={cn('w-4 h-4', isVerified ? 'text-moss' : 'text-mid')}>{icon}</span>
+          <span className={cn('w-4 h-4', isVerified ? 'text-brand' : 'text-text-muted')}>{icon}</span>
         </div>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2 flex-wrap">
-            <h3 className="text-[14px] font-body font-semibold text-ink">{label}</h3>
+            <h3 className="text-[14px] font-body font-semibold text-text">{label}</h3>
 
             {/* Status badge */}
             {isVerified && (
-              <span className="flex items-center gap-1 text-[11px] font-body font-semibold text-moss bg-[rgba(74,124,47,0.10)] px-2 py-0.5 rounded-full">
+              <span className="flex items-center gap-1 text-[11px] font-body font-semibold text-brand bg-brand/10 px-2 py-0.5 rounded-full">
                 <Check className="w-3 h-3 stroke-[3]" />
                 Verified
               </span>
@@ -73,17 +73,17 @@ function VerificationCard({
               </span>
             )}
             {!verification && (
-              <span className="text-[11px] font-body text-light bg-fog px-2 py-0.5 rounded-full">
+              <span className="text-[11px] font-body text-text-subtle bg-surface-2 px-2 py-0.5 rounded-full">
                 Not started
               </span>
             )}
           </div>
 
-          <p className="text-[12px] font-body text-mid mt-0.5 mb-3">{description}</p>
+          <p className="text-[12px] font-body text-text-muted mt-0.5 mb-3">{description}</p>
 
           {/* Inline expanded content */}
           {isExpanded && expandContent && (
-            <div className="mt-2 mb-3 p-3 bg-mist rounded-[8px]">{expandContent}</div>
+            <div className="mt-2 mb-3 p-3 bg-surface-2 rounded-[8px]">{expandContent}</div>
           )}
 
           {/* Action */}
@@ -91,7 +91,7 @@ function VerificationCard({
             <button
               type="button"
               onClick={onExpand}
-              className="flex items-center gap-1 text-[12px] font-body font-semibold text-moss hover:text-fern transition-colors"
+              className="flex items-center gap-1 text-[12px] font-body font-semibold text-brand hover:text-brand-hover transition-colors"
             >
               {action}
               <ChevronRight
@@ -188,7 +188,7 @@ export function EmployerVerification() {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center py-16">
-          <Loader2 className="w-6 h-6 text-moss animate-spin" />
+          <Loader2 className="w-6 h-6 text-brand animate-spin" />
         </div>
       </DashboardLayout>
     )
@@ -200,10 +200,10 @@ export function EmployerVerification() {
         {/* Page header */}
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <h1 className="font-display text-3xl font-semibold" style={{ color: 'var(--color-soil)' }}>
+            <h1 className="font-display text-3xl font-semibold" style={{ color: 'var(--color-brand-900)' }}>
               Verification
             </h1>
-            <p className="mt-1 text-sm" style={{ color: 'var(--color-mid)' }}>
+            <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
               Build trust with farm seekers by verifying your identity and business
             </p>
           </div>
@@ -279,40 +279,40 @@ export function EmployerVerification() {
                 className={cn(
                   'w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0',
                   verificationMap.get('document')?.status === 'verified'
-                    ? 'bg-[rgba(74,124,47,0.10)]'
-                    : 'bg-fog',
+                    ? 'bg-brand/10'
+                    : 'bg-surface-2',
                 )}
               >
                 <FileText
                   className={cn(
                     'w-4 h-4',
-                    verificationMap.get('document')?.status === 'verified' ? 'text-moss' : 'text-mid',
+                    verificationMap.get('document')?.status === 'verified' ? 'text-brand' : 'text-text-muted',
                   )}
                 />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2 flex-wrap">
-                  <h3 className="text-[14px] font-body font-semibold text-ink">
+                  <h3 className="text-[14px] font-body font-semibold text-text">
                     Verification Documents
                   </h3>
                   {verificationMap.get('document')?.status === 'verified' ? (
-                    <span className="flex items-center gap-1 text-[11px] font-body font-semibold text-moss bg-[rgba(74,124,47,0.10)] px-2 py-0.5 rounded-full">
+                    <span className="flex items-center gap-1 text-[11px] font-body font-semibold text-brand bg-brand/10 px-2 py-0.5 rounded-full">
                       <Check className="w-3 h-3 stroke-[3]" />
                       Verified
                     </span>
                   ) : (
-                    <span className="text-[11px] font-body text-light bg-fog px-2 py-0.5 rounded-full">
+                    <span className="text-[11px] font-body text-text-subtle bg-surface-2 px-2 py-0.5 rounded-full">
                       Not started
                     </span>
                   )}
                 </div>
-                <p className="text-[12px] font-body text-mid mt-0.5 mb-3">
+                <p className="text-[12px] font-body text-text-muted mt-0.5 mb-3">
                   Upload business registration, farm ownership, or other documents
                 </p>
                 {verificationMap.get('document')?.status !== 'verified' && (
                   <Link
                     to="/dashboard/employer/verification/documents"
-                    className="flex items-center gap-1 text-[12px] font-body font-semibold text-moss hover:text-fern transition-colors"
+                    className="flex items-center gap-1 text-[12px] font-body font-semibold text-brand hover:text-brand-hover transition-colors"
                   >
                     Upload Documents
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -329,38 +329,38 @@ export function EmployerVerification() {
                 className={cn(
                   'w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0',
                   verificationMap.get('farm_photo')?.status === 'verified'
-                    ? 'bg-[rgba(74,124,47,0.10)]'
-                    : 'bg-fog',
+                    ? 'bg-brand/10'
+                    : 'bg-surface-2',
                 )}
               >
                 <Camera
                   className={cn(
                     'w-4 h-4',
-                    verificationMap.get('farm_photo')?.status === 'verified' ? 'text-moss' : 'text-mid',
+                    verificationMap.get('farm_photo')?.status === 'verified' ? 'text-brand' : 'text-text-muted',
                   )}
                 />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2 flex-wrap">
-                  <h3 className="text-[14px] font-body font-semibold text-ink">Farm Photos</h3>
+                  <h3 className="text-[14px] font-body font-semibold text-text">Farm Photos</h3>
                   {verificationMap.get('farm_photo')?.status === 'verified' ? (
-                    <span className="flex items-center gap-1 text-[11px] font-body font-semibold text-moss bg-[rgba(74,124,47,0.10)] px-2 py-0.5 rounded-full">
+                    <span className="flex items-center gap-1 text-[11px] font-body font-semibold text-brand bg-brand/10 px-2 py-0.5 rounded-full">
                       <Check className="w-3 h-3 stroke-[3]" />
                       Verified
                     </span>
                   ) : (
-                    <span className="text-[11px] font-body text-light bg-fog px-2 py-0.5 rounded-full">
+                    <span className="text-[11px] font-body text-text-subtle bg-surface-2 px-2 py-0.5 rounded-full">
                       Not started
                     </span>
                   )}
                 </div>
-                <p className="text-[12px] font-body text-mid mt-0.5 mb-3">
+                <p className="text-[12px] font-body text-text-muted mt-0.5 mb-3">
                   Show seekers your farm — photos help build trust and attract candidates
                 </p>
                 {verificationMap.get('farm_photo')?.status !== 'verified' && (
                   <Link
                     to="/dashboard/employer/verification/photos"
-                    className="flex items-center gap-1 text-[12px] font-body font-semibold text-moss hover:text-fern transition-colors"
+                    className="flex items-center gap-1 text-[12px] font-body font-semibold text-brand hover:text-brand-hover transition-colors"
                   >
                     Upload Photos
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -372,21 +372,21 @@ export function EmployerVerification() {
         </div>
 
         {/* Trust level explanation */}
-        <Card className="p-5 bg-mist border-fog">
-          <h3 className="text-[13px] font-body font-semibold text-ink mb-2">
+        <Card className="p-5 bg-surface-2 border-border">
+          <h3 className="text-[13px] font-body font-semibold text-text mb-2">
             How trust levels work
           </h3>
           <div className="space-y-1.5">
             {[
               { level: 'Basic Verified', requirement: 'Email verified', color: 'text-[#2563eb]' },
-              { level: 'Verified', requirement: 'Email + Phone verified', color: 'text-moss' },
+              { level: 'Verified', requirement: 'Email + Phone verified', color: 'text-brand' },
               { level: 'Fully Verified', requirement: 'Email + Phone + Business/Documents + Farm Photos', color: 'text-[#b45309]' },
             ].map(({ level, requirement, color }) => (
               <div key={level} className="flex items-center gap-2">
                 <span className={cn('text-[12px] font-body font-semibold w-28 flex-shrink-0', color)}>
                   {level}
                 </span>
-                <span className="text-[12px] font-body text-mid">{requirement}</span>
+                <span className="text-[12px] font-body text-text-muted">{requirement}</span>
               </div>
             ))}
           </div>

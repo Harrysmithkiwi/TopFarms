@@ -104,16 +104,16 @@ export function JobStep7Payment({
   if (phase === 'free-activated') {
     return (
       <div className="flex flex-col items-center justify-center py-10 space-y-4 text-center">
-        <CheckCircle className="w-12 h-12" style={{ color: 'var(--color-fern)' }} />
-        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-ink)' }}>
+        <CheckCircle className="w-12 h-12" style={{ color: 'var(--color-brand-hover)' }} />
+        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Your first listing is free!
         </h2>
-        <p className="text-sm" style={{ color: 'var(--color-mid)' }}>
+        <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
           Your job is being activated. Redirecting to success screen...
         </p>
         <div
           className="w-5 h-5 rounded-full border-[2px] border-t-transparent animate-spin"
-          style={{ borderColor: 'var(--color-fern)', borderTopColor: 'transparent' }}
+          style={{ borderColor: 'var(--color-brand-hover)', borderTopColor: 'transparent' }}
         />
       </div>
     )
@@ -124,10 +124,10 @@ export function JobStep7Payment({
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-lg font-semibold" style={{ color: 'var(--color-ink)' }}>
+          <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
             Complete payment
           </h2>
-          <p className="text-sm mt-1" style={{ color: 'var(--color-mid)' }}>
+          <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
             {selectedTier
               ? `${LISTING_TIERS[selectedTier].name} listing — ${LISTING_TIERS[selectedTier].price} NZD`
               : 'Enter your payment details to activate your listing'}
@@ -136,7 +136,7 @@ export function JobStep7Payment({
 
         {paymentError && (
           <div
-            className="rounded-[10px] border border-red/30 bg-red/5 p-4 space-y-2"
+            className="rounded-[10px] border border-danger/30 bg-red/5 p-4 space-y-2"
           >
             <p className="text-[13px] font-medium" style={{ color: 'var(--color-clay)' }}>
               Payment failed
@@ -147,7 +147,7 @@ export function JobStep7Payment({
             <button
               type="button"
               className="text-[12px] font-semibold underline"
-              style={{ color: 'var(--color-fern)' }}
+              style={{ color: 'var(--color-brand-hover)' }}
               onClick={() => setPaymentError(null)}
             >
               Try again
@@ -183,10 +183,10 @@ export function JobStep7Payment({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-ink)' }}>
+        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Choose a listing plan
         </h2>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-mid)' }}>
+        <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
           Select the plan that best suits your needs
         </p>
       </div>

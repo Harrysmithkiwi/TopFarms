@@ -2,30 +2,30 @@ import { HTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
 
 interface InfoBoxProps extends HTMLAttributes<HTMLDivElement> {
-  variant: 'blue' | 'hay' | 'green' | 'purple' | 'red'
+  variant: 'blue' | 'warn' | 'green' | 'purple' | 'red'
   title?: string
 }
 
 const variantClasses = {
   blue: {
-    container: 'bg-blue-lt border-blue/20',
-    title: 'text-blue',
+    container: 'bg-info-bg border-info/20',
+    title: 'text-info',
   },
-  hay: {
-    container: 'bg-hay-lt border-hay/30',
+  warn: {
+    container: 'bg-warn-bg border-warn/30',
     title: 'text-[#7A5C00]',
   },
   green: {
-    container: 'bg-[rgba(45,80,22,0.06)] border-moss/20',
-    title: 'text-moss',
+    container: 'bg-brand-50 border-brand/20',
+    title: 'text-brand',
   },
   purple: {
-    container: 'bg-purple-lt border-purple/20',
-    title: 'text-purple',
+    container: 'bg-ai-bg border-ai/20',
+    title: 'text-ai',
   },
   red: {
-    container: 'bg-red-lt border-red/20',
-    title: 'text-red',
+    container: 'bg-danger-bg border-danger/20',
+    title: 'text-danger',
   },
 }
 
@@ -44,7 +44,7 @@ export function InfoBox({ variant, title, className, children, ...props }: InfoB
       {title && (
         <p className={cn('font-body text-[13px] font-semibold mb-1', classes.title)}>{title}</p>
       )}
-      <div className="font-body text-[13px] text-ink">{children}</div>
+      <div className="font-body text-[13px] text-text">{children}</div>
     </div>
   )
 }

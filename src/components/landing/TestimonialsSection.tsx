@@ -47,7 +47,7 @@ function StarRating() {
         >
           <path
             d="M8 1.5l1.854 3.756 4.146.602-3 2.924.708 4.128L8 10.81l-3.708 1.1.708-4.128-3-2.924 4.146-.602L8 1.5z"
-            fill="var(--color-hay)"
+            fill="var(--color-warn)"
           />
         </svg>
       ))}
@@ -57,7 +57,7 @@ function StarRating() {
 
 export function TestimonialsSection() {
   return (
-    <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-soil)' }}>
+    <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-brand-900)' }}>
       <div className="max-w-6xl mx-auto">
         {/* Stat blocks row — above the testimonial heading/cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
@@ -72,13 +72,13 @@ export function TestimonialsSection() {
             >
               <p
                 className="text-3xl md:text-4xl font-bold font-display mb-1"
-                style={{ color: 'var(--color-cream)' }}
+                style={{ color: 'var(--color-text-on-brand)' }}
               >
                 {stat.value}
               </p>
               <p
                 className="text-sm uppercase tracking-wider"
-                style={{ color: 'rgba(247,242,232,0.5)' }}
+                style={{ color: 'rgba(255,255,255,0.5)' }}
               >
                 {stat.label}
               </p>
@@ -90,10 +90,10 @@ export function TestimonialsSection() {
         <div className="text-center mb-12">
           <h2
             className="font-display font-bold text-4xl md:text-5xl"
-            style={{ color: 'var(--color-cream)' }}
+            style={{ color: 'var(--color-text-on-brand)' }}
           >
             Trusted by farms across{' '}
-            <em style={{ color: 'var(--color-hay)', fontStyle: 'italic' }}>New Zealand</em>
+            <em style={{ color: 'var(--color-brand-50)', fontStyle: 'italic' }}>New Zealand</em>
           </h2>
         </div>
 
@@ -113,7 +113,7 @@ export function TestimonialsSection() {
               {/* Quote */}
               <blockquote
                 className="text-base italic leading-relaxed flex-1"
-                style={{ color: 'rgba(247,242,232,0.8)' }}
+                style={{ color: 'rgba(255,255,255,0.8)' }}
               >
                 "{t.quote}"
               </blockquote>
@@ -123,17 +123,17 @@ export function TestimonialsSection() {
                 <div
                   className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
                   style={{
-                    backgroundColor: 'var(--color-fern)',
-                    color: 'var(--color-cream)',
+                    backgroundColor: 'var(--color-brand-hover)',
+                    color: 'var(--color-text-on-brand)',
                   }}
                 >
                   {t.initial}
                 </div>
                 <div>
-                  <p className="text-sm font-semibold" style={{ color: 'var(--color-cream)' }}>
+                  <p className="text-sm font-semibold" style={{ color: 'var(--color-text-on-brand)' }}>
                     {t.name}
                   </p>
-                  <p className="text-xs" style={{ color: 'rgba(247,242,232,0.5)' }}>
+                  <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
                     {t.farm}
                   </p>
                 </div>
@@ -143,7 +143,7 @@ export function TestimonialsSection() {
                     className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
                     style={{
                       backgroundColor: 'rgba(122,175,63,0.15)',
-                      color: 'var(--color-meadow)',
+                      color: 'var(--color-brand)',
                     }}
                   >
                     Verified

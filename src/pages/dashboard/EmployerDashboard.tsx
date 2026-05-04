@@ -208,7 +208,7 @@ export function EmployerDashboard() {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center py-20">
-          <p className="text-sm" style={{ color: 'var(--color-light)' }}>
+          <p className="text-sm" style={{ color: 'var(--color-text-subtle)' }}>
             Loading...
           </p>
         </div>
@@ -226,23 +226,23 @@ export function EmployerDashboard() {
             <div className="flex flex-col md:flex-row md:items-center gap-6">
               <div
                 className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0 text-3xl"
-                style={{ backgroundColor: 'var(--color-hay-lt)' }}
+                style={{ backgroundColor: 'var(--color-warn-bg)' }}
               >
                 🌾
               </div>
               <div className="flex-1 min-w-0">
                 <h2
                   className="text-lg font-semibold mb-1"
-                  style={{ color: 'var(--color-ink)' }}
+                  style={{ color: 'var(--color-text)' }}
                 >
                   Complete your farm profile to start posting jobs
                 </h2>
-                <p className="text-sm mb-4" style={{ color: 'var(--color-mid)' }}>
+                <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>
                   Set up your farm details, verification, and team culture to attract the best
                   candidates
                 </p>
                 <ProgressBar progress={onboardingProgress} className="mb-2" />
-                <p className="text-xs" style={{ color: 'var(--color-light)' }}>
+                <p className="text-xs" style={{ color: 'var(--color-text-subtle)' }}>
                   {profile?.onboarding_step ?? 0} of {TOTAL_STEPS} steps completed
                 </p>
               </div>
@@ -251,7 +251,7 @@ export function EmployerDashboard() {
                   to="/onboarding/employer"
                   className={cn(
                     'font-body font-bold rounded-[8px] transition-all duration-200 inline-flex items-center justify-center',
-                    'bg-moss text-white hover:bg-fern',
+                    'bg-brand text-white hover:bg-brand-hover',
                     'px-4 py-2 text-[13px]',
                   )}
                 >
@@ -270,11 +270,11 @@ export function EmployerDashboard() {
               <div>
                 <h1
                   className="font-display text-3xl font-semibold"
-                  style={{ color: 'var(--color-soil)' }}
+                  style={{ color: 'var(--color-brand-900)' }}
                 >
                   Welcome back, {profile?.farm_name || 'Your Farm'}
                 </h1>
-                <p className="mt-1 text-sm" style={{ color: 'var(--color-mid)' }}>
+                <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
                   Manage your job listings and applications
                 </p>
               </div>
@@ -282,7 +282,7 @@ export function EmployerDashboard() {
                 to="/jobs/new"
                 className={cn(
                   'font-body font-bold rounded-[8px] transition-all duration-200 inline-flex items-center justify-center gap-1.5',
-                  'bg-moss text-white hover:bg-fern',
+                  'bg-brand text-white hover:bg-brand-hover',
                   'px-4 py-2 text-[13px] flex-shrink-0',
                 )}
               >
@@ -296,10 +296,10 @@ export function EmployerDashboard() {
               <Card className="p-5">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <AlertCircle className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--color-mid)' }} />
+                    <AlertCircle className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--color-text-muted)' }} />
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
-                        <p className="text-sm font-body font-semibold" style={{ color: 'var(--color-ink)' }}>
+                        <p className="text-sm font-body font-semibold" style={{ color: 'var(--color-text)' }}>
                           Boost your trust level
                         </p>
                         <VerificationBadge
@@ -308,7 +308,7 @@ export function EmployerDashboard() {
                           expandable={false}
                         />
                       </div>
-                      <p className="text-xs mt-0.5" style={{ color: 'var(--color-mid)' }}>
+                      <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
                         Complete your verification to attract more candidates
                       </p>
                     </div>
@@ -317,7 +317,7 @@ export function EmployerDashboard() {
                     to="/dashboard/employer/verification"
                     className={cn(
                       'font-body font-bold rounded-[8px] transition-all duration-200 inline-flex items-center justify-center',
-                      'bg-white border border-moss text-moss hover:bg-mist',
+                      'bg-surface border border-brand text-brand hover:bg-surface-2',
                       'px-4 py-2 text-[13px] flex-shrink-0',
                     )}
                   >
@@ -330,26 +330,26 @@ export function EmployerDashboard() {
             {/* Quick Stats row */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <Card className="p-5">
-                <p className="text-[12px] font-body font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-light)' }}>
+                <p className="text-[12px] font-body font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-text-subtle)' }}>
                   Active Listings
                 </p>
-                <p className="text-3xl font-display font-semibold" style={{ color: 'var(--color-soil)' }}>
+                <p className="text-3xl font-display font-semibold" style={{ color: 'var(--color-brand-900)' }}>
                   {activeCount}
                 </p>
               </Card>
               <Card className="p-5">
-                <p className="text-[12px] font-body font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-light)' }}>
+                <p className="text-[12px] font-body font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-text-subtle)' }}>
                   Draft Listings
                 </p>
-                <p className="text-3xl font-display font-semibold" style={{ color: 'var(--color-soil)' }}>
+                <p className="text-3xl font-display font-semibold" style={{ color: 'var(--color-brand-900)' }}>
                   {draftCount}
                 </p>
               </Card>
               <Card className="p-5">
-                <p className="text-[12px] font-body font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-light)' }}>
+                <p className="text-[12px] font-body font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-text-subtle)' }}>
                   Total Views
                 </p>
-                <p className="text-3xl font-display font-semibold" style={{ color: 'var(--color-soil)' }}>
+                <p className="text-3xl font-display font-semibold" style={{ color: 'var(--color-brand-900)' }}>
                   {totalViews}
                 </p>
               </Card>
@@ -358,7 +358,7 @@ export function EmployerDashboard() {
             {/* Job Listings section */}
             <div>
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-body font-bold" style={{ color: 'var(--color-ink)' }}>
+                <h2 className="text-lg font-body font-bold" style={{ color: 'var(--color-text)' }}>
                   Job Listings
                 </h2>
               </div>
@@ -373,8 +373,8 @@ export function EmployerDashboard() {
                     className={cn(
                       'flex-shrink-0 px-3 py-1.5 rounded-full text-[12px] font-body font-semibold transition-all duration-150',
                       activeTab === tab.id
-                        ? 'bg-moss text-white'
-                        : 'bg-fog text-mid hover:bg-[rgba(74,124,47,0.10)] hover:text-moss',
+                        ? 'bg-brand text-white'
+                        : 'bg-surface-2 text-text-muted hover:bg-brand/10 hover:text-brand',
                     )}
                   >
                     {tab.label}
@@ -384,7 +384,7 @@ export function EmployerDashboard() {
 
               {/* Jobs grid */}
               {loadingJobs ? (
-                <p className="text-sm py-8 text-center" style={{ color: 'var(--color-light)' }}>
+                <p className="text-sm py-8 text-center" style={{ color: 'var(--color-text-subtle)' }}>
                   Loading listings...
                 </p>
               ) : filteredJobs.length === 0 && activeTab === 'all' ? (
@@ -392,21 +392,21 @@ export function EmployerDashboard() {
                 <Card className="p-10 text-center">
                   <div
                     className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4"
-                    style={{ backgroundColor: 'var(--color-hay-lt)' }}
+                    style={{ backgroundColor: 'var(--color-warn-bg)' }}
                   >
                     📌
                   </div>
-                  <h3 className="text-base font-body font-bold mb-1" style={{ color: 'var(--color-ink)' }}>
+                  <h3 className="text-base font-body font-bold mb-1" style={{ color: 'var(--color-text)' }}>
                     No job listings yet
                   </h3>
-                  <p className="text-sm mb-4" style={{ color: 'var(--color-mid)' }}>
+                  <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>
                     Post your first job to start finding great farm workers
                   </p>
                   <Link
                     to="/jobs/new"
                     className={cn(
                       'font-body font-bold rounded-[8px] transition-all duration-200 inline-flex items-center justify-center gap-1.5',
-                      'bg-moss text-white hover:bg-fern',
+                      'bg-brand text-white hover:bg-brand-hover',
                       'px-4 py-2 text-[13px]',
                     )}
                   >
@@ -418,9 +418,9 @@ export function EmployerDashboard() {
                 // Empty state for current filter
                 <div
                   className="rounded-[12px] py-10 text-center"
-                  style={{ backgroundColor: 'var(--color-mist)' }}
+                  style={{ backgroundColor: 'var(--color-surface-2)' }}
                 >
-                  <p className="text-sm" style={{ color: 'var(--color-light)' }}>
+                  <p className="text-sm" style={{ color: 'var(--color-text-subtle)' }}>
                     No listings in this category
                   </p>
                 </div>
@@ -444,7 +444,7 @@ export function EmployerDashboard() {
                               <Link
                                 to={`/dashboard/employer/jobs/${job.id}/applicants`}
                                 className="text-sm font-body font-semibold hover:underline"
-                                style={{ color: 'var(--color-moss)' }}
+                                style={{ color: 'var(--color-brand)' }}
                               >
                                 View Applicants ({appCount})
                               </Link>
@@ -460,20 +460,20 @@ export function EmployerDashboard() {
             {/* Drafts section (shown separately when not on drafts tab) */}
             {activeTab !== 'drafts' && draftJobs.length > 0 && (
               <div>
-                <h2 className="text-lg font-body font-bold mb-4" style={{ color: 'var(--color-ink)' }}>
+                <h2 className="text-lg font-body font-bold mb-4" style={{ color: 'var(--color-text)' }}>
                   Draft Listings
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {draftJobs.map((job) => (
                     <div
                       key={job.id}
-                      className="bg-white border-[1.5px] border-fog rounded-[12px] p-5 flex items-center justify-between gap-4"
+                      className="bg-surface border-[1.5px] border-border rounded-[12px] p-5 flex items-center justify-between gap-4"
                     >
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-[15px] font-body font-bold text-ink truncate">
+                        <h3 className="text-[15px] font-body font-bold text-text truncate">
                           {job.title}
                         </h3>
-                        <p className="text-[12px] font-body text-mid mt-0.5">
+                        <p className="text-[12px] font-body text-text-muted mt-0.5">
                           {job.region} — Draft
                         </p>
                       </div>
@@ -481,7 +481,7 @@ export function EmployerDashboard() {
                         to={`/jobs/${job.id}/edit`}
                         className={cn(
                           'font-body font-bold rounded-[8px] transition-all duration-200 inline-flex items-center justify-center flex-shrink-0',
-                          'bg-white border border-moss text-moss hover:bg-mist',
+                          'bg-surface border border-brand text-brand hover:bg-surface-2',
                           'px-3 py-1.5 text-[12px]',
                         )}
                       >
@@ -506,13 +506,13 @@ export function EmployerDashboard() {
           />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div
-              className="bg-white rounded-[16px] shadow-xl w-full max-w-sm border-[1.5px] border-fog p-6"
+              className="bg-surface rounded-[16px] shadow-xl w-full max-w-sm border-[1.5px] border-border p-6"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="text-[16px] font-body font-bold mb-2" style={{ color: 'var(--color-ink)' }}>
+              <h3 className="text-[16px] font-body font-bold mb-2" style={{ color: 'var(--color-text)' }}>
                 Archive this listing?
               </h3>
-              <p className="text-sm mb-5" style={{ color: 'var(--color-mid)' }}>
+              <p className="text-sm mb-5" style={{ color: 'var(--color-text-muted)' }}>
                 Archived listings are hidden from job seekers and cannot be resumed. This cannot be
                 undone.
               </p>
@@ -529,7 +529,7 @@ export function EmployerDashboard() {
                   variant="primary"
                   size="md"
                   onClick={() => handleArchive(confirmArchiveId)}
-                  className="flex-1 bg-red hover:bg-red/90 border-red"
+                  className="flex-1 bg-red hover:bg-red/90 border-danger"
                   style={{ backgroundColor: '#dc3545' }}
                 >
                   Archive

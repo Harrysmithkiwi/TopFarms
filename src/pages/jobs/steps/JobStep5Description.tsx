@@ -47,13 +47,13 @@ function TextAreaField({
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between">
-        <label className="font-body text-[13px] font-medium text-ink">
+        <label className="font-body text-[13px] font-medium text-text">
           {label}
-          {required && <span className="text-red ml-0.5">*</span>}
+          {required && <span className="text-danger ml-0.5">*</span>}
         </label>
         <span
           className="text-[11px] font-body"
-          style={{ color: isNearLimit ? 'var(--color-clay)' : 'var(--color-light)' }}
+          style={{ color: isNearLimit ? 'var(--color-clay)' : 'var(--color-text-subtle)' }}
         >
           {charCount} / {maxLength}
         </span>
@@ -63,9 +63,9 @@ function TextAreaField({
         placeholder={placeholder}
         rows={5}
         maxLength={maxLength}
-        className="w-full rounded-[10px] border-[1.5px] border-fog px-3 py-2.5 text-[13px] font-body text-ink bg-white resize-none transition-colors duration-150 placeholder:text-light focus:outline-none focus:border-fern"
+        className="w-full rounded-[10px] border-[1.5px] border-border px-3 py-2.5 text-[13px] font-body text-text bg-surface resize-none transition-colors duration-150 placeholder:text-text-subtle focus:outline-none focus:border-brand-hover"
       />
-      {error && <p className="text-[12px] text-red font-body">{error}</p>}
+      {error && <p className="text-[12px] text-danger font-body">{error}</p>}
     </div>
   )
 }
@@ -94,10 +94,10 @@ export function JobStep5Description({ onComplete, onBack, defaultValues }: Step5
   return (
     <form onSubmit={handleSubmit(onComplete)} className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-ink)' }}>
+        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Job description
         </h2>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-mid)' }}>
+        <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
           Tell candidates about the role and what you are looking for
         </p>
       </div>

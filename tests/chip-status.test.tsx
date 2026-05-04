@@ -53,7 +53,7 @@ describe('ChipSelector', () => {
     expect(onChange).toHaveBeenCalledWith(['sheep'])
   })
 
-  it('selected chip renders with border-moss and bg-moss classes', () => {
+  it('selected chip renders with border-brand and bg-brand-50 classes', () => {
     render(
       <ChipSelector
         options={options}
@@ -63,8 +63,8 @@ describe('ChipSelector', () => {
       />,
     )
     const selectedButton = screen.getByRole('button', { name: /Dairy/i })
-    expect(selectedButton.className).toMatch(/border-moss/)
-    expect(selectedButton.className).toMatch(/bg-moss/)
+    expect(selectedButton.className).toMatch(/border-brand/)
+    expect(selectedButton.className).toMatch(/bg-brand-50/)
   })
 
   it('selected chip renders a Check icon (checkmark)', () => {
@@ -82,7 +82,7 @@ describe('ChipSelector', () => {
     expect(svg).toBeTruthy()
   })
 
-  it('unselected chip renders with border-fog class', () => {
+  it('unselected chip renders with border-border class', () => {
     render(
       <ChipSelector
         options={options}
@@ -92,7 +92,7 @@ describe('ChipSelector', () => {
       />,
     )
     const unselectedButton = screen.getByRole('button', { name: /Sheep & Beef/i })
-    expect(unselectedButton.className).toMatch(/border-fog/)
+    expect(unselectedButton.className).toMatch(/border-border/)
   })
 
   it('columns=3 renders container with grid-cols-3', () => {
@@ -162,16 +162,16 @@ describe('StatusBanner', () => {
     expect(screen.getByText(/Unfortunately, this application wasn't successful\./)).toBeTruthy()
   })
 
-  it('variant="shortlisted" container has bg-hay-lt class', () => {
+  it('variant="shortlisted" container has bg-warn-bg class', () => {
     const { container } = render(<StatusBanner variant="shortlisted" />)
     const wrapper = container.firstElementChild
-    expect(wrapper?.className).toMatch(/bg-hay-lt/)
+    expect(wrapper?.className).toMatch(/bg-warn-bg/)
   })
 
-  it('variant="declined" container has bg-red-lt\/60 class (not opacity-60)', () => {
+  it('variant="declined" container has bg-danger-bg/60 class (not opacity-60)', () => {
     const { container } = render(<StatusBanner variant="declined" />)
     const wrapper = container.firstElementChild
-    expect(wrapper?.className).toMatch(/bg-red-lt\/60/)
+    expect(wrapper?.className).toMatch(/bg-danger-bg\/60/)
     expect(wrapper?.className).not.toMatch(/opacity-60/)
   })
 
