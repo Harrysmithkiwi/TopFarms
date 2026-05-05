@@ -83,6 +83,10 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - MAIL-01 Resend `Verified` status not yet captured in artefacts — Phase 15 captures evidence + backfills 13-VERIFICATION.md
 - PRIV-02 public-launch blocker (B.9 empirical identity-bypass test never executed) — Phase 16 (depends on Phase 15)
 
+### Pending Todos
+
+- [Phase 21] Add Sign Out button to dashboard sidebar footer (employer + seeker) — `.planning/todos/pending/2026-05-05-add-sign-out-button-to-dashboard-sidebar-footer.md`
+
 ## Session Continuity
 
 Last session: 2026-05-05T01:10:00Z
