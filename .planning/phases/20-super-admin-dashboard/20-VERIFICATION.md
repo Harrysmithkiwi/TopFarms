@@ -153,14 +153,10 @@ These items are EXPLICITLY deferred — not partial-closes. Phase 20 ships with 
 
 ### Code quality
 
-- [ ] **Refactor `role === 'admin' ? '/admin' : `/dashboard/${role}`` ternary into a shared helper.** Five callsites currently duplicate the ternary inline (Login, VerifyEmail, ProtectedRoute, SelectRole, Nav). Replace with:
-  ```ts
-  // src/lib/routing.ts (new file)
-  export function dashboardPathFor(role: 'employer' | 'seeker' | 'admin'): string {
-    return role === 'admin' ? '/admin' : `/dashboard/${role}`
-  }
-  ```
-  Update all 5 callsites to import + call this helper. Add a test in `tests/dashboard-routing.test.ts` asserting all 3 role outcomes.
+- [x] **Refactor `role === 'admin' ? '/admin' : `/dashboard/${role}`` ternary into a shared helper.** ✅ CLOSED in Phase 20.1 Plans 01-02 (commits `b987eb7` + `7f61a74`, 2026-05-05).
+  - Plan 20.1-01: `src/lib/routing.ts` created with `dashboardPathFor(role: UserRole): string` + 3 unit tests in `tests/dashboard-routing.test.ts` asserting all 3 role outcomes (admin → `/admin`, employer → `/dashboard/employer`, seeker → `/dashboard/seeker`).
+  - Plan 20.1-02: All 5 callsites swapped to use the helper in a single atomic commit per CLAUDE.md §4: `Login.tsx:49`, `VerifyEmail.tsx:36`, `ProtectedRoute.tsx:64`, `SelectRole.tsx:31`, `Nav.tsx:113`.
+  - Verification: `grep -rE "role === 'admin' \? '/admin'" src/` returns only the helper body itself (`src/lib/routing.ts:4`, by design); full vitest 169 passed | 113 todo | 0 failed (baseline preserved exactly); `pnpm tsc --noEmit` exit 0.
 
 ### Existing Phase-20 deferrals (CONTEXT.md → Phase 21+)
 

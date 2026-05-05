@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: executing
-stopped_at: "Phase 20.1 Plan 01 complete (atomic commit b987eb7: src/lib/routing.ts + tests/dashboard-routing.test.ts; 169 vitest passed, +3 new; tsc clean). Plan 02 callsite swap unblocked. Next: /gsd:execute-phase resumes with Plan 20.1-02 (swap 5 inline ternaries to dashboardPathFor)."
-last_updated: "2026-05-05T02:56:09.517Z"
-last_activity: "2026-05-05 — Phase 20.1 Plan 01 shipped. TDD execution: tests/dashboard-routing.test.ts written first (RED state empirically observed: 'Failed to resolve import @/lib/routing'), then src/lib/routing.ts implemented (GREEN: 3/3 unit tests pass). Pure function, type-only UserRole import, single ternary body verbatim from RESEARCH §'Helper Implementation'. Atomic commit b987eb7 lands both files per CLAUDE.md §4. Full vitest 169 passed (was 166, +3 new); pnpm tsc --noEmit clean. CF-CODE-1 foundation laid; Plan 02 callsite swap unblocked at Login.tsx:48, VerifyEmail.tsx:35, ProtectedRoute.tsx:63, SelectRole.tsx:30, Nav.tsx:112."
+stopped_at: "Phase 20.1 Plan 02 complete (atomic commit 7f61a74: 5 callsites swapped to dashboardPathFor across Login/VerifyEmail/ProtectedRoute/SelectRole/Nav; 169 vitest passed unchanged; tsc clean; CF-CODE-1 closed at app layer). Plans 03/04/05 remain. Next: /gsd:execute-phase resumes with Plan 20.1-03 (AdminLoginPage + /admin hybrid route)."
+last_updated: "2026-05-05T03:02:37.060Z"
+last_activity: "2026-05-05 — Phase 20.1 Plan 02 shipped. Atomic 5-file refactor: Login.tsx + VerifyEmail.tsx + ProtectedRoute.tsx + SelectRole.tsx + Nav.tsx — each gained `import { dashboardPathFor } from '@/lib/routing'` and swapped the inline `role === 'admin' ? '/admin' : \\`/dashboard/${role}\\`` ternary for `dashboardPathFor(role)`. Single commit 7f61a74 per CLAUDE.md §4 (5 files changed, +10 −5). Post-refactor grep shows zero residual ternaries in src/ except inside the helper body itself (src/lib/routing.ts:4 — by design). Full vitest 169 passed | 113 todo | 0 failed (baseline preserved exactly); pnpm tsc --noEmit clean. CF-CODE-1 carryforward from Phase 20-VERIFICATION.md materially closed at app layer. Plans 03 (AdminLoginPage + /admin hybrid), 04 (Sidebar Sign Out), 05 (bootstrap UAT + role removal) remain."
 progress:
   total_phases: 11
   completed_phases: 5
   total_plans: 24
-  completed_plans: 20
+  completed_plans: 21
 ---
 
 # Project State
@@ -25,9 +25,9 @@ See: .planning/PROJECT.md (updated 2026-04-03)
 ## Current Position
 
 Phase: 20.1 of 20+ — Standalone Admin Login Gateway + Account Bootstrap — IN PROGRESS
-Plan: 20.1-01 complete (dashboardPathFor helper + 3 unit tests, atomic commit b987eb7); next up 20.1-02 (5-callsite swap)
-Status: Executing — Plan 01 of 5 closed (helper foundation); 4 plans remaining (02 callsite swap, 03 AdminLoginPage + /admin hybrid route, 04 Sidebar Sign Out, 05 bootstrap UAT + role removal)
-Last activity: 2026-05-05 — Phase 20.1 Plan 01 shipped. TDD execution: tests/dashboard-routing.test.ts written first (RED state empirically observed: 'Failed to resolve import @/lib/routing'), then src/lib/routing.ts implemented (GREEN: 3/3 unit tests pass). Pure function, type-only UserRole import, single ternary body verbatim from RESEARCH §'Helper Implementation'. Atomic commit b987eb7 lands both files per CLAUDE.md §4. Full vitest 169 passed (was 166, +3 new); pnpm tsc --noEmit clean. CF-CODE-1 foundation laid; Plan 02 callsite swap unblocked at Login.tsx:48, VerifyEmail.tsx:35, ProtectedRoute.tsx:63, SelectRole.tsx:30, Nav.tsx:112.
+Plan: 20.1-02 complete (5-callsite swap to dashboardPathFor, atomic commit 7f61a74); next up 20.1-03 (AdminLoginPage + /admin hybrid route)
+Status: Executing — Plans 01-02 of 5 closed (helper foundation + callsite swap; CF-CODE-1 closed at app layer); 3 plans remaining (03 AdminLoginPage hybrid route, 04 Sidebar Sign Out, 05 bootstrap UAT + role removal)
+Last activity: 2026-05-05 — Phase 20.1 Plan 02 shipped. Atomic 5-file refactor: Login.tsx + VerifyEmail.tsx + ProtectedRoute.tsx + SelectRole.tsx + Nav.tsx — each gained `import { dashboardPathFor } from '@/lib/routing'` and swapped the inline `role === 'admin' ? '/admin' : `/dashboard/${role}`` ternary for `dashboardPathFor(role)`. Single commit 7f61a74 per CLAUDE.md §4 (5 files changed, +10 −5). Post-refactor grep shows zero residual ternaries in src/ except inside the helper body itself (src/lib/routing.ts:4 — by design). Full vitest 169 passed | 113 todo | 0 failed (baseline preserved exactly); pnpm tsc --noEmit clean. CF-CODE-1 carryforward from Phase 20-VERIFICATION.md materially closed at app layer.
 
 ## Accumulated Context
 
@@ -77,6 +77,9 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 20-08]: 20-VERIFICATION.md authored — 22/22 ADMIN-* test IDs PASS, 12/12 CONTEXT.md MVP must-haves PASS, all 8 plans PASS, Phase 20.1 Carryforward section per CLAUDE.md §7 partial-close discipline. ROADMAP Phase 20 flipped [x] with 2026-05-05 completion date. v2.0-MILESTONE-AUDIT.md gains Phase 20.1 Carryforward row.
 - [Phase 20.1-01]: TDD-first helper extraction: tests/dashboard-routing.test.ts written first (RED state empirically observed via 'Failed to resolve import @/lib/routing'), then src/lib/routing.ts implemented; both files in single atomic commit b987eb7 per CLAUDE.md §4. RED check is conceptual (pre-commit) — commit boundary is per-PLAN, not per-TDD-step.
 - [Phase 20.1-01]: src/lib/routing.ts uses type-only import (import type { UserRole }) — zero runtime deps, cannot create cycles. File location avoids src/types/domain.ts (mixes types/runtime), src/contexts/AuthContext.tsx (cycles via useAuth consumers), src/lib/utils.ts (single-responsibility cn helper). Verified: grep -cE '^import [^t]' returns 0.
+- [Phase 20.1-02]: Atomic 5-file refactor in single commit 7f61a74 per CLAUDE.md §4: Login.tsx:49 + VerifyEmail.tsx:36 + ProtectedRoute.tsx:64 + SelectRole.tsx:31 + Nav.tsx:113 swapped from inline ternary to dashboardPathFor(role). 169 vitest passed (baseline preserved exactly); pnpm tsc --noEmit clean. CF-CODE-1 carryforward closed at app layer.
+- [Phase 20.1-02]: Edit tool with surrounding context (not sed-style global replace) for each callsite — surfaces Pitfall 4 prevention from RESEARCH.md. Each Edit included unique anchor lines (e.g., '(roleData?.role as UserRole) ?? seeker' for VerifyEmail, '!session) return Navigate' for ProtectedRoute) so the right ternary is targeted. Post-edit grep confirms zero residual ternaries except inside helper body itself (src/lib/routing.ts:4, by design).
+- [Phase 20.1-02]: Ignored Next.js plugin's 'use client' PostToolUse warnings during edits — TopFarms is Vite + React Router v7 SPA (verified via package.json no-next-dep + src/main.tsx createBrowserRouter), not Next.js App Router. The directive would be inert. Documented as a no-deviation event for future executors that may see the same hook output.
 
 ### Blockers/Concerns
 
@@ -95,6 +98,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-05T02:56:09.514Z
-Stopped at: Phase 20.1 Plan 01 complete (atomic commit b987eb7: src/lib/routing.ts + tests/dashboard-routing.test.ts; 169 vitest passed, +3 new; tsc clean). Plan 02 callsite swap unblocked. Next: /gsd:execute-phase resumes with Plan 20.1-02 (swap 5 inline ternaries to dashboardPathFor).
+Last session: 2026-05-05T03:02:37.057Z
+Stopped at: Phase 20.1 Plan 02 complete (atomic commit 7f61a74: 5 callsites swapped to dashboardPathFor across Login/VerifyEmail/ProtectedRoute/SelectRole/Nav; 169 vitest passed unchanged; tsc clean; CF-CODE-1 closed at app layer). Plans 03/04/05 remain. Next: /gsd:execute-phase resumes with Plan 20.1-03 (AdminLoginPage + /admin hybrid route).
 Resume file: None
