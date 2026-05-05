@@ -209,6 +209,20 @@ export interface SeekerDocument {
   file_size_bytes: number | null
 }
 
+/**
+ * Phase 17 SRCH-13/14/15 — saved-search row shape.
+ * Mirrors the saved_searches table from migration 024.
+ * search_params is a URLSearchParams.toString() snapshot (see src/lib/savedSearch.ts).
+ */
+export interface SavedSearch {
+  id: string
+  user_id: string
+  name: string
+  search_params: string
+  created_at: string
+  updated_at: string
+}
+
 // ============================================================
 // Phase 8 — Wizard Field Extension types
 // ============================================================
