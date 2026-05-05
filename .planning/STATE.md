@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: executing
-stopped_at: "Phase 20.1 Plan 03 complete (atomic commit 0dcda8a: AdminGate hybrid route + AdminLoginPage form + 4 component tests; 173 vitest passed = 169 baseline + 4 new; tsc clean; pnpm build clean; zero residual admin ternaries outside helper body). Plans 04 (Sidebar Sign Out) and 05 (bootstrap UAT + role removal) remain. Next: /gsd:execute-phase resumes with Plan 20.1-04."
-last_updated: "2026-05-05T03:13:42.051Z"
-last_activity: "2026-05-05 — Phase 20.1 Plan 03 shipped. Atomic single-commit 0dcda8a (AdminLoginPage.tsx + main.tsx + admin-login.test.tsx; +316/-8 net) per CLAUDE.md §4. AdminGate hybrid route at /admin renders SpinnerBlock / AdminLoginPage form / inline AccessDenied / AdminLayout+DailyBriefing depending on auth state — 5-branch decision tree with role===null spinner BEFORE role!=='admin' check (RESEARCH Pitfall 1 AUTH-FIX-02 race-window guard). AdminLoginPage form is email+password ONLY (CONTEXT GA-1 lock — no Google/Facebook OAuth) using Phase 19 v2 Input + Button primitives, react-hook-form + zod; submit-error and AccessDenied use inline role=alert div with --color-danger tokens (RESEARCH Pitfall 3 Option A). No useNavigate (RESEARCH Pitfall 9 — AdminGate re-render handles routing). main.tsx /admin index swapped to <AdminGate />; 4 sub-routes byte-frozen; unused DailyBriefing import dropped. Full vitest 173 passed (169 baseline + 4 new admin-login) | 113 todo | 0 failed; pnpm tsc --noEmit clean; pnpm build clean (2.37s). CF-AUTH-1 + CF-AUTH-2 closed at app layer; CF-AUTH-3 preserved by Plan 02. Plans 04 (Sidebar Sign Out) and 05 (bootstrap UAT + role removal) remain."
+stopped_at: "Phase 20.1 Plan 04 complete (atomic commit b4c6b4c: Sidebar.tsx footer + sidebar-signout.test.tsx; 174 vitest passed = 173 baseline + 1 new; tsc clean; CF-CODE-2 closed; Phase 21 Sign Out todo moved to .planning/todos/done/). Only Plan 05 remains: bootstrap UAT + admin role transfer to admin@topfarms.co.nz + role removal from harry.symmans.smith@gmail.com + 20.1-VERIFICATION.md + ROADMAP [x]. Next: /gsd:execute-phase resumes with Plan 20.1-05."
+last_updated: "2026-05-05T03:20:43.274Z"
+last_activity: "2026-05-05 — Phase 20.1 Plan 04 shipped. Atomic single-commit b4c6b4c (Sidebar.tsx + sidebar-signout.test.tsx; +61/-1 net) per CLAUDE.md §4. Bottom-anchored Sign Out button added to consumer dashboard sidebar via mt-auto p-3 border-t footer slot — sibling div after the existing nav, no aside restructure required (parent already flex-col + min-h-[calc(100vh-56px)]). Click → useAuth().signOut() once → AuthContext.onAuthStateChange clears session → ProtectedRoute fall-through redirects to /login (no useNavigate needed; RESEARCH Don't-hand-roll table). lucide-react LogOut icon size={18} matches existing nav-link icon convention. Full vitest 174 passed (173 baseline + 1 new sidebar-signout) | 113 todo | 0 failed; pnpm tsc --noEmit clean. CF-CODE-2 closed at app layer; Phase 21 todo (2026-05-05-add-sign-out-button-to-dashboard-sidebar-footer.md) git mv'd from .planning/todos/pending/ to .planning/todos/done/. Plan 05 (bootstrap UAT + role transfer + ROADMAP [x]) is the only remaining plan in Phase 20.1."
 progress:
   total_phases: 11
   completed_phases: 5
   total_plans: 24
-  completed_plans: 22
+  completed_plans: 23
 ---
 
 # Project State
@@ -25,9 +25,9 @@ See: .planning/PROJECT.md (updated 2026-04-03)
 ## Current Position
 
 Phase: 20.1 of 20+ — Standalone Admin Login Gateway + Account Bootstrap — IN PROGRESS
-Plan: 20.1-03 complete (AdminGate hybrid route + AdminLoginPage form + 4 component tests, atomic commit 0dcda8a); next up 20.1-04 (Sidebar Sign Out button)
-Status: Executing — Plans 01-03 of 5 closed (helper foundation + callsite swap + standalone admin gateway; CF-CODE-1 + CF-AUTH-1 + CF-AUTH-2 closed at app layer; CF-AUTH-3 preserved); 2 plans remaining (04 Sidebar Sign Out, 05 bootstrap UAT + role removal)
-Last activity: 2026-05-05 — Phase 20.1 Plan 03 shipped. Atomic single-commit 0dcda8a (AdminLoginPage.tsx + main.tsx + admin-login.test.tsx; +316/-8 net) per CLAUDE.md §4. AdminGate hybrid route at /admin renders SpinnerBlock / AdminLoginPage form / inline AccessDenied / AdminLayout+DailyBriefing depending on auth state — 5-branch decision tree with `role === null` spinner BEFORE the `role !== 'admin'` check (RESEARCH Pitfall 1 AUTH-FIX-02 race-window guard). AdminLoginPage form is email+password ONLY (CONTEXT GA-1 lock — no Google/Facebook OAuth) using Phase 19 v2 Input + Button primitives, react-hook-form + zod; submit-error and AccessDenied use inline `role="alert"` div with --color-danger tokens (RESEARCH Pitfall 3 Option A). No useNavigate (RESEARCH Pitfall 9 — AdminGate re-render handles routing). main.tsx /admin index swapped to `<AdminGate />`; 4 sub-routes byte-frozen; unused DailyBriefing import dropped. Full vitest 173 passed (169 baseline + 4 new admin-login) | 113 todo | 0 failed; `pnpm tsc --noEmit` clean; `pnpm build` clean (2.37s). CF-AUTH-1 + CF-AUTH-2 closed at app layer; CF-AUTH-3 preserved by Plan 02.
+Plan: 20.1-04 complete (Sidebar Sign Out button at bottom of consumer dashboard sidebar via mt-auto footer slot, atomic commit b4c6b4c); next up 20.1-05 (bootstrap UAT + role transfer + ROADMAP [x])
+Status: Executing — Plans 01-04 of 5 closed (helper foundation + 5-callsite swap + standalone admin gateway + dashboard Sign Out; CF-AUTH-1 + CF-AUTH-2 + CF-CODE-1 + CF-CODE-2 closed at app layer; CF-AUTH-3 preserved); 1 plan remaining (05 bootstrap UAT + role removal + ROADMAP [x])
+Last activity: 2026-05-05 — Phase 20.1 Plan 04 shipped. Atomic single-commit b4c6b4c (Sidebar.tsx + sidebar-signout.test.tsx; +61/-1 net) per CLAUDE.md §4. Bottom-anchored Sign Out button added to consumer dashboard sidebar via `mt-auto p-3 border-t` footer slot — sibling `<div>` after the existing `<nav>`, no aside restructure required (parent already `flex flex-col` + `min-h-[calc(100vh-56px)]`). Click → `useAuth().signOut()` exactly once → AuthContext.onAuthStateChange clears session → ProtectedRoute fall-through redirects to `/login` automatically (no useNavigate; RESEARCH Don't-hand-roll table). lucide-react `LogOut` icon size={18} matches existing nav-link icon convention. Full vitest 174 passed (173 baseline + 1 new sidebar-signout) | 113 todo | 0 failed; `pnpm tsc --noEmit` clean. CF-CODE-2 closed at app layer; Phase 21 todo (`2026-05-05-add-sign-out-button-to-dashboard-sidebar-footer.md`) git mv'd from `.planning/todos/pending/` to `.planning/todos/done/`.
 
 ## Accumulated Context
 
@@ -83,6 +83,8 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 20.1-03]: AdminGate hybrid route shipped at /admin: 5-branch decision tree (loading -> spinner; !session -> AdminLoginPage; role===null -> spinner BEFORE role!=='admin' check per RESEARCH Pitfall 1 AUTH-FIX-02 race; role!=='admin' -> inline AccessDenied per CONTEXT Q3; admin -> AdminLayout+DailyBriefing). SpinnerBlock mirrors ProtectedRoute.tsx:13-26 + :41-55 byte-for-byte (CONTEXT Q2 deferred shared extraction). Atomic single commit 0dcda8a (3 files +316/-8) per CLAUDE.md §4. CF-AUTH-1 + CF-AUTH-2 closed at app layer; CF-AUTH-3 preserved by Plan 02.
 - [Phase 20.1-03]: AdminLoginPage email+password ONLY (CONTEXT GA-1 lock — no Google/Facebook OAuth). Form-submit error and AccessDeniedView both use inline role=alert div with --color-danger / --color-danger-bg tokens (RESEARCH Pitfall 3 Option A — StatusBanner has fixed variant union with no 'error' member; same pattern Phase 20-05 ProfileDrawer used). Test guards regression with explicit queryByRole(button, name: /google/i)).not.toBeInTheDocument().
 - [Phase 20.1-03]: AdminLoginPage onSubmit does NOT call useNavigate (RESEARCH Pitfall 9): on success it returns and lets AdminGate re-render via AuthContext state-change route to AdminLayout. Avoids the Login.tsx didSubmit-ref + useEffect workaround entirely because AdminLoginPage lives at the destination (/admin), not at /login. main.tsx /admin element swapped to <AdminGate />; 4 sub-routes (/admin/employers|seekers|jobs|placements) byte-frozen with their existing ProtectedRoute wrapping; now-unused top-level DailyBriefing import removed (transitively imported via AdminGate).
+- [Phase 20.1-04]: Atomic single-commit landing of TDD RED + GREEN per CLAUDE.md §4: pre-commit RED state empirically observed via pnpm test (1 failed | 173 passed, RTL Unable-to-find), then production edit, then GREEN re-run (174 passed). Splitting into two commits would have produced two commits for a 14-line behavioral change — out of policy. Mirrors Phase 20.1-01 atomic-TDD-bundle precedent.
+- [Phase 20.1-04]: Sidebar Sign Out shipped without aside restructure: existing aside is already flex-col + min-h-[calc(100vh-56px)], so a sibling div with mt-auto p-3 border-t after the existing nav is sufficient. No useNavigate import — AuthContext.onAuthStateChange clears session → ProtectedRoute fall-through redirects to /login automatically (RESEARCH Don't-hand-roll table). Atomic commit b4c6b4c (2 files, +61/-1).
 
 ### Blockers/Concerns
 
@@ -93,7 +95,7 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ### Pending Todos
 
-- [Phase 21] Add Sign Out button to dashboard sidebar footer (employer + seeker) — `.planning/todos/pending/2026-05-05-add-sign-out-button-to-dashboard-sidebar-footer.md`
+- (none — Phase 21 Sign Out todo closed by Phase 20.1 Plan 04, moved to `.planning/todos/done/2026-05-05-add-sign-out-button-to-dashboard-sidebar-footer.md`)
 
 ### Roadmap Evolution
 
@@ -101,6 +103,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-05T03:13:18.707Z
-Stopped at: Phase 20.1 Plan 03 complete (atomic commit 0dcda8a: AdminGate hybrid route + AdminLoginPage form + 4 component tests; 173 vitest passed = 169 baseline + 4 new; tsc clean; pnpm build clean; zero residual admin ternaries outside helper body). Plans 04 (Sidebar Sign Out) and 05 (bootstrap UAT + role removal) remain. Next: /gsd:execute-phase resumes with Plan 20.1-04.
+Last session: 2026-05-05T03:20:43.271Z
+Stopped at: Phase 20.1 Plan 04 complete (atomic commit b4c6b4c: Sidebar.tsx footer + sidebar-signout.test.tsx; 174 vitest passed = 173 baseline + 1 new; tsc clean; CF-CODE-2 closed; Phase 21 Sign Out todo moved to .planning/todos/done/). Only Plan 05 remains: bootstrap UAT + admin role transfer to admin@topfarms.co.nz + role removal from harry.symmans.smith@gmail.com + 20.1-VERIFICATION.md + ROADMAP [x]. Next: /gsd:execute-phase resumes with Plan 20.1-05.
 Resume file: None
