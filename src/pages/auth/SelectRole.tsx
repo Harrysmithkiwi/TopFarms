@@ -26,7 +26,10 @@ export function SelectRole() {
   }
 
   if (!session) return <Navigate to="/login" replace />
-  if (role) return <Navigate to={`/dashboard/${role}`} replace />
+  if (role) {
+    const dest = role === 'admin' ? '/admin' : `/dashboard/${role}`
+    return <Navigate to={dest} replace />
+  }
 
   const handleRoleSelect = async (selectedRole: 'employer' | 'seeker') => {
     setIsSubmitting(true)

@@ -60,7 +60,8 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
   }
 
   if (requiredRole && role !== requiredRole) {
-    return <Navigate to={`/dashboard/${role}`} replace />
+    const dest = role === 'admin' ? '/admin' : `/dashboard/${role}`
+    return <Navigate to={dest} replace />
   }
 
   return <>{children}</>

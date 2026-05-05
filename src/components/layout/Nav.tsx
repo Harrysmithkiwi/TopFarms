@@ -109,7 +109,7 @@ export function Nav() {
                   >
                     {role && (
                       <Link
-                        to={`/dashboard/${role}`}
+                        to={role === 'admin' ? '/admin' : `/dashboard/${role}`}
                         onClick={() => setUserMenuOpen(false)}
                         className="block px-4 py-2 text-sm hover:bg-surface-2 transition-colors"
                         style={{ color: 'var(--color-text)' }}
