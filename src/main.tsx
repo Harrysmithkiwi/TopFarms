@@ -27,6 +27,7 @@ import { ForEmployers } from '@/pages/ForEmployers'
 import { Pricing } from '@/pages/Pricing'
 import { JobSearch } from '@/pages/jobs/JobSearch'
 import { MyApplications } from '@/pages/dashboard/seeker/MyApplications'
+import { SavedSearches } from '@/pages/dashboard/seeker/SavedSearches'
 import { SeekerDocuments } from '@/pages/dashboard/seeker/SeekerDocuments'
 import { ApplicantDashboard } from '@/pages/dashboard/employer/ApplicantDashboard'
 import { AdminLayout } from '@/components/layout/AdminLayout'
@@ -165,6 +166,14 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute requiredRole="seeker">
         <MyApplications />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/dashboard/seeker/saved-searches',
+    element: (
+      <ProtectedRoute requiredRole="seeker">
+        <SavedSearches />
       </ProtectedRoute>
     ),
   },

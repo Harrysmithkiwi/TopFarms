@@ -5,6 +5,7 @@ import {
   FileText,
   User,
   LogOut,
+  Bookmark,
 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 
@@ -26,6 +27,7 @@ const seekerItems: NavItem[] = [
   { to: '/dashboard/seeker', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/jobs', label: 'Find Jobs', icon: Search },
   { to: '/dashboard/seeker/applications', label: 'My Applications', icon: FileText },
+  { to: '/dashboard/seeker/saved-searches', label: 'Saved searches', icon: Bookmark },
   { to: '/onboarding/seeker', label: 'Edit Profile', icon: User },
 ]
 
