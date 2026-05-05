@@ -45,7 +45,8 @@ export function Login() {
   // After successful login, role is loaded via onAuthStateChange — navigate when ready
   useEffect(() => {
     if (didSubmit.current && !loading && session && role) {
-      navigate(`/dashboard/${role}`, { replace: true })
+      const dest = role === 'admin' ? '/admin' : `/dashboard/${role}`
+      navigate(dest, { replace: true })
     }
   }, [session, role, loading, navigate])
 

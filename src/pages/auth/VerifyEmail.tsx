@@ -32,7 +32,8 @@ export function VerifyEmail() {
           .single()
 
         const role = (roleData?.role as UserRole) ?? 'seeker'
-        navigate(`/dashboard/${role}`)
+        const dest = role === 'admin' ? '/admin' : `/dashboard/${role}`
+        navigate(dest)
       }
     })
 
