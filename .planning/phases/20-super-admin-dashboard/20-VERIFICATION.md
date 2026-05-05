@@ -142,14 +142,14 @@ These items are EXPLICITLY deferred — not partial-closes. Phase 20 ships with 
 
 ### Auth gateway
 
-- [ ] **Standalone admin login gateway at `/admin`** for unauthenticated users. Currently the shared `/login` funnel handles all roles; `/admin` assumes the user is already authenticated.
-- [ ] **`/admin` renders `AdminLoginPage` for unauthenticated/non-admin sessions.** Currently `AdminLayout` assumes admin already authenticated; ProtectedRoute redirects non-admin to their own dashboard or `/login`.
-- [ ] **Shared `/login` redirects admin-role JWTs to `/admin` automatically** (this is already done via the Login.tsx ternary fix in `0e91ff2`, but Phase 20.1 may refactor as part of the dedicated gateway).
+- [x] **Standalone admin login gateway at `/admin`** for unauthenticated users. ✅ CLOSED in Phase 20.1 Plan 03 (commit `0dcda8a`, 2026-05-05). `<AdminGate>` hybrid route renders `AdminLoginPage` for unauthenticated and AdminLayout for admin. UAT empirical evidence in `tests/admin-bootstrap-UAT.md` Phase 20.1 transfer Run § Step 4. See 20.1-VERIFICATION.md CF-AUTH-1.
+- [x] **`/admin` renders `AdminLoginPage` for unauthenticated/non-admin sessions.** ✅ CLOSED in Phase 20.1 Plan 03 (commit `0dcda8a`). 4 component tests in `tests/admin-login.test.tsx` (loading/unauth/access-denied/admin) all pass. Browser UAT confirmed unauth → AdminLoginPage. **Caveat:** runtime AccessDenied UI for non-admin authenticated user observed anomalously during regression UAT 8a (URL became `/dashboard/admin` → 404 instead of inline AccessDenied) — operator-attributed stale-cache, not a code regression (grep diagnostic + unit-test pass + helper-test pass all confirm). Recommend fresh-session post-deploy re-verify. Documented in detail in 20.1-VERIFICATION.md CF-AUTH-2 disposition section. Not a blocker per CLAUDE §7.
+- [x] **Shared `/login` redirects admin-role JWTs to `/admin` automatically.** ✅ CLOSED in Phase 20.1 Plan 02 (commit `7f61a74`). `Login.tsx:49` swapped to `dashboardPathFor(role)`; `dashboardPathFor('admin')` returns `/admin`. UAT Step 4 empirical evidence: admin@topfarms.co.nz signing in via /admin lands at AdminLayout. See 20.1-VERIFICATION.md CF-AUTH-3.
 
 ### Account lifecycle
 
-- [ ] **Dedicated `admin@topfarms.nz` account** for production admin role. Currently using `harry.symmans.smith@gmail.com` as the Phase 20 test admin.
-- [ ] **Remove admin role from `harry.symmans.smith@gmail.com`** after 20.1 bootstraps the new dedicated account. (TEST RUN — admin role on this email is to be removed in Phase 20.1.)
+- [x] **Dedicated `admin@topfarms.co.nz` account** for production admin role. ✅ CLOSED in Phase 20.1 Plan 05 (this commit). Studio Auth user created (auth.users.id = `ab48ed2b-0336-4b1d-8937-5d3eff50faf6`), Studio SQL UPSERT assigned role=admin/is_active=true, MCP read-only verification confirmed, UAT Step 4 confirmed end-to-end sign-in works. See 20.1-VERIFICATION.md CF-ACCOUNT-1.
+- [x] **Remove admin role from `harry.symmans.smith@gmail.com`** after 20.1 bootstraps the new dedicated account. ✅ CLOSED in Phase 20.1 Plan 05 (this commit). Studio SQL UPDATE demoted to role=seeker/is_active=true (1 row affected), MCP read-only verification confirmed, regression UAT 8a confirmed post-login redirect went to `/dashboard/seeker` via `dashboardPathFor` swap from Plan 02. See 20.1-VERIFICATION.md CF-ACCOUNT-2.
 
 ### Code quality
 

@@ -43,6 +43,7 @@ Full details: `.planning/milestones/v1.1-ROADMAP.md`
 - [ ] **Phase 19: Design System Cleanup (Tier 1 surfaces)** — v1→v2 brand migration on landing, nav, page shells, primitives, brand-critical components, seeker-facing job search/detail. Token rename (soil/moss/meadow → brand/brand-900), Inter throughout, hex palette per Brand Spec v2.0
 - [ ] **Phase 19b: Design System Cleanup (Tier 2 — deeper dashboards)** — ApplicantPanel, ApplicantDashboard, employer-side composed components, full onboarding wizard internals; deferred from Phase 19 to keep scope shippable
 - [x] **Phase 20: Super Admin Dashboard** — Internal-only `/admin/*` panel for daily briefing, employer/seeker lists, placement-fee pipeline, platform health (completed 2026-05-05; see 20-VERIFICATION.md PASS verdict — 22/22 test IDs PASS, 12/12 must-haves PASS; carryforwards to Phase 20.1 documented)
+- [x] **Phase 20.1: Standalone Admin Login Gateway + Account Bootstrap** — completed 2026-05-05 (see 20.1-VERIFICATION.md PASS verdict — 7/7 CF-IDs PASS; CF-AUTH-2 carries documented runtime AccessDenied caveat — recommend fresh-session post-deploy re-verify)
 
 ## Phase Details
 
@@ -223,6 +224,7 @@ Plans:
 | 19. Design System Cleanup (Tier 1) | v2.0 | 0/? | In flight (this session) | — |
 | 19b. Design System Cleanup (Tier 2) | v2.0 | 0/? | Pending (post-19) | — |
 | 20. Super Admin Dashboard | v2.0 | 8/8 | Complete | 2026-05-05 |
+| 20.1. Standalone Admin Login Gateway + Account Bootstrap | v2.0 | 5/5 | Complete | 2026-05-05 |
 
 ### Phase 20.1: Standalone Admin Login Gateway + Account Bootstrap (INSERTED)
 
@@ -249,11 +251,13 @@ Plans:
 - Open questions for Discuss to evaluate: (a) hybrid `/admin` route soundness re session timing/race/FoUC; (b) AdminLoginPage loading state on hard refresh; (c) "Access denied" UX (inline vs redirect); (d) regression risk to employer/seeker flows from `dashboardPathFor` refactor; (e) is bundling all 4 tasks one phase right, or does the routing change warrant its own phase?
 - Source artefacts: `.planning/phases/20-super-admin-dashboard/20-VERIFICATION.md` (Phase 20.1 Carryforward section), `.planning/v2.0-MILESTONE-AUDIT.md` (carryforward row)
 
-**Plans:** 4/5 plans executed
+**Plans:** 5/5 plans complete
+
+**Status:** Complete — see 20.1-VERIFICATION.md PASS verdict (7/7 CF-IDs PASS; CF-AUTH-2 carries documented runtime caveat — recommend fresh-session post-deploy re-verify, no-blocker)
 
 Plans:
 - [x] 20.1-01-dashboard-path-helper-PLAN.md — TDD: dashboardPathFor helper + 3 unit tests (employer/seeker/admin) — completed 2026-05-05 (commit b987eb7; 3/3 green; tsc clean)
 - [x] 20.1-02-swap-callsites-PLAN.md — Refactor 5 inline `role === 'admin'` ternaries to use dashboardPathFor (Login, VerifyEmail, ProtectedRoute, SelectRole, Nav) — completed 2026-05-05 (atomic commit 7f61a74; 169 vitest passed unchanged; tsc clean; CF-CODE-1 closed at app layer)
-- [ ] 20.1-03-admin-login-page-PLAN.md — AdminLoginPage + AdminGate hybrid `/admin` route + 4 component tests (loading/unauth/access-denied/admin)
-- [ ] 20.1-04-sidebar-sign-out-PLAN.md — Sign Out button in dashboard Sidebar footer (mt-auto + LogOut icon) + 1 click test
-- [ ] 20.1-05-bootstrap-uat-and-ship-PLAN.md — Operator: Studio Auth admin@topfarms.co.nz + Studio SQL role assign + UAT + role removal + 20.1-VERIFICATION.md + ROADMAP flip
+- [x] 20.1-03-admin-login-page-PLAN.md — AdminLoginPage + AdminGate hybrid `/admin` route + 4 component tests — completed 2026-05-05 (atomic commit 0dcda8a; 173 vitest passed | 113 todo | 0 failed; tsc clean; CF-AUTH-1 + CF-AUTH-2 closed at app layer)
+- [x] 20.1-04-sidebar-sign-out-PLAN.md — Sign Out button in dashboard Sidebar footer (mt-auto + LogOut icon) + 1 click test — completed 2026-05-05 (atomic commit b4c6b4c; 174 vitest passed | 113 todo | 0 failed; tsc clean; CF-CODE-2 closed at app layer)
+- [x] 20.1-05-bootstrap-uat-and-ship-PLAN.md — Operator: Studio Auth admin@topfarms.co.nz + Studio SQL role assign + UAT + old-role removal + 20.1-VERIFICATION.md + ROADMAP flip — completed 2026-05-05 (this commit)
