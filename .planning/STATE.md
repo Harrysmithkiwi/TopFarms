@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: verifying
-stopped_at: Phase 17 context gathered
-last_updated: "2026-05-05T05:43:56.044Z"
+stopped_at: Completed 17-00-test-scaffold-PLAN.md (commit f482ad5); ready for 17-01-foundation-PLAN.md
+last_updated: "2026-05-05T06:37:02.577Z"
 last_activity: "2026-05-05 — Phase 20.1 Plan 05 shipped (closes phase 20.1 entirely). Operator multi-stage actions across two sessions: Studio Auth created `admin@topfarms.co.nz` (auth.users.id=`ab48ed2b-0336-4b1d-8937-5d3eff50faf6`); Studio SQL UPSERT assigned role=admin/is_active=true; MCP read-only verification confirmed; browser UAT empirically confirmed AdminLoginPage renders for unauth /admin + admin sign-in transitions to AdminLayout (CF-AUTH-1, CF-AUTH-2 unauth+admin branches, CF-AUTH-3 redirect, CF-ACCOUNT-1 all PASS); Studio SQL UPDATE demoted `harry.symmans.smith@gmail.com` to role=seeker/is_active=true; MCP verification confirmed; regression UAT 8a confirmed runtime role transition. CF-AUTH-2 anomaly observed (direct /admin nav after old-account sign-in produced /dashboard/admin → 404) was diagnosed (grep + unit test + helper test ruled out code regression); operator-attributed stale-cache; documented PASS-with-caveat per CLAUDE §7. All closure docs in single atomic commit per CLAUDE §4 (UAT.md + 20.1-VERIFICATION.md + 20.1-SUMMARY.md + 20.1-05-SUMMARY.md + ROADMAP.md + v2.0-MILESTONE-AUDIT.md + 20-VERIFICATION.md + STATE.md)."
 progress:
   total_phases: 11
@@ -88,6 +88,8 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 20.1-05]: Operator-action plan execution chain: 4 checkpoint:human-action gates (Studio Auth create, Studio SQL admin UPSERT, browser UAT, Studio SQL old-role UPDATE) interleaved with 3 auto MCP read-only verification SELECTs. Each operator gate produces a structured resume signal (created/assigned/passed/removed/regression-pass) that the executor agent verifies via MCP before advancing. New admin auth.users.id captured: ab48ed2b-0336-4b1d-8937-5d3eff50faf6 for admin@topfarms.co.nz; old account demoted: 5634f2fb-ad12-4f5e-8d48-833373c77691 for harry.symmans.smith@gmail.com (now role=seeker).
 - [Phase 20.1-05]: CF-AUTH-2 anomaly handled per CLAUDE §3 + §7: regression UAT 8a observed /dashboard/admin → 404 instead of inline AccessDenied for non-admin authenticated /admin nav. Three orthogonal diagnostics ruled out code regression — (a) grep -rE "role === 'admin' \\? '/admin'" src/ returns only helper body; (b) tests/admin-login.test.tsx non-admin AccessDenied branch test PASSES; (c) tests/dashboard-routing.test.ts confirms helper outputs (no /dashboard/admin generable). Operator-attributed stale-cache. Documented PASS-with-caveat in 20.1-VERIFICATION.md (NOT partial-close — empirical proof exists at unit-test + DB-level + code-path-grep layers). Recommended fresh-session post-deploy re-verify is no-blocker carryforward in v2.0-MILESTONE-AUDIT.md.
 - [Phase 20.1-05]: Atomic docs-trio commit per CLAUDE §4: 8 files in single commit (tests/admin-bootstrap-UAT.md + 20.1-VERIFICATION.md + 20.1-SUMMARY.md + 20.1-05-SUMMARY.md + ROADMAP.md + v2.0-MILESTONE-AUDIT.md + 20-VERIFICATION.md + STATE.md). Splitting would produce noisy multi-commit close for what's logically the closure of Phase 20.1.
+- [Phase 17-00]: Wave 0 scaffold-first: 1 stub file per VALIDATION.md per-task row, it.todo() over it.skip() so vitest reports todos as third state (visible CI scaffolding signal). 47 todos across 6 files + 1 UAT markdown frame Waves 1-4.
+- [Phase 17-00]: Single load-integration stub guards both SRCH-14 dropdown and SRCH-15 list-page Load — both call navigate('/jobs?<params>') with same shape, so one regression file protects JOBS-01 fetchJobs-loop fix from commit 7401116 across both call sites.
 
 ### Blockers/Concerns
 
@@ -106,6 +108,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-05T05:43:56.035Z
-Stopped at: Phase 17 context gathered
-Resume file: .planning/phases/17-saved-search/17-CONTEXT.md
+Last session: 2026-05-05T06:37:02.574Z
+Stopped at: Completed 17-00-test-scaffold-PLAN.md (commit f482ad5); ready for 17-01-foundation-PLAN.md
+Resume file: None
