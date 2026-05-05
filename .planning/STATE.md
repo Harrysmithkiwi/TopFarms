@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: executing
-stopped_at: "Phase 20 COMPLETE — Super Admin Dashboard shipped (22/22 ADMIN-* test IDs PASS, 12/12 CONTEXT.md MVP must-haves PASS, all 8 plans executed, ROADMAP flipped [x] 2026-05-05). Mid-flight: admin redirect bug fixed across 5 callsites (commits 0e91ff2 + 6b769b4); refactor to dashboardPathFor(role) helper carried forward to Phase 20.1. Next: insert Phase 20.1 (standalone admin login redesign + admin@topfarms.nz dedicated account) via /gsd:insert-phase 20.1."
-last_updated: "2026-05-05T01:10:00Z"
-last_activity: 2026-05-05 — Phase 20 closeout. Plan 20-08 final wave shipped: backend test bodies (admin-rpc-gate, admin-rpc-shapes, admin-rls-not-widened) green; Edge Function get-resend-stats deployed live + ADMIN_METRICS_WEBHOOK_SECRET set in Studio (smoke=200); pg_cron jobid=4 firing every 15 min, cache live (Email Delivery 100% in DailyBriefing UAT); ADMIN-BOOTSTRAP-1 manual UAT pass (operator confirmed /admin renders + drawer works); ADMIN-RLS-NEG-1/2 finalized PASS (auto-confirmed on prior post-migration baseline [1,3,2,2,1,2] captured 2026-05-04T21:40:47Z); 20-VERIFICATION.md authored with full 22/22 test IDs PASS + 12/12 must-haves PASS + Phase 20.1 Carryforward section per CLAUDE.md §7. Mid-flight admin-redirect bug across 5 callsites (Login, VerifyEmail, ProtectedRoute, SelectRole, Nav) fixed across commits 0e91ff2 + 6b769b4; refactor to shared dashboardPathFor(role) helper deferred to Phase 20.1. Full vitest green (166 passed | 113 todo | 0 failed); pnpm tsc --noEmit clean. ROADMAP Phase 20 flipped [x] with 2026-05-05 completion date; v2.0-MILESTONE-AUDIT.md gains Phase 20.1 carryforward row.
+stopped_at: "Phase 20.1 Plan 01 complete (atomic commit b987eb7: src/lib/routing.ts + tests/dashboard-routing.test.ts; 169 vitest passed, +3 new; tsc clean). Plan 02 callsite swap unblocked. Next: /gsd:execute-phase resumes with Plan 20.1-02 (swap 5 inline ternaries to dashboardPathFor)."
+last_updated: "2026-05-05T02:56:09.517Z"
+last_activity: "2026-05-05 — Phase 20.1 Plan 01 shipped. TDD execution: tests/dashboard-routing.test.ts written first (RED state empirically observed: 'Failed to resolve import @/lib/routing'), then src/lib/routing.ts implemented (GREEN: 3/3 unit tests pass). Pure function, type-only UserRole import, single ternary body verbatim from RESEARCH §'Helper Implementation'. Atomic commit b987eb7 lands both files per CLAUDE.md §4. Full vitest 169 passed (was 166, +3 new); pnpm tsc --noEmit clean. CF-CODE-1 foundation laid; Plan 02 callsite swap unblocked at Login.tsx:48, VerifyEmail.tsx:35, ProtectedRoute.tsx:63, SelectRole.tsx:30, Nav.tsx:112."
 progress:
-  total_phases: 10
+  total_phases: 11
   completed_phases: 5
-  total_plans: 20
-  completed_plans: 19
+  total_plans: 24
+  completed_plans: 20
 ---
 
 # Project State
@@ -24,10 +24,10 @@ See: .planning/PROJECT.md (updated 2026-04-03)
 
 ## Current Position
 
-Phase: 20 of 20+ — Super Admin Dashboard — **COMPLETE 2026-05-05**
-Plan: 20-08 complete — phase shipped
-Status: Complete — Phase 20 fully shipped; next-up Phase 20.1 (standalone admin login redesign) to be inserted via /gsd:insert-phase 20.1
-Last activity: 2026-05-05 — Phase 20 closeout. Plan 20-08 final wave shipped: backend test bodies (admin-rpc-gate, admin-rpc-shapes, admin-rls-not-widened) green; Edge Function get-resend-stats deployed live + ADMIN_METRICS_WEBHOOK_SECRET set in Studio (smoke=200); pg_cron jobid=4 firing every 15 min, cache live (Email Delivery 100% in DailyBriefing UAT); ADMIN-BOOTSTRAP-1 manual UAT pass; ADMIN-RLS-NEG-1/2 finalized PASS (auto-confirmed on prior post-migration baseline [1,3,2,2,1,2]); 20-VERIFICATION.md authored with full 22/22 test IDs PASS + 12/12 must-haves PASS + Phase 20.1 Carryforward per CLAUDE.md §7. Mid-flight admin-redirect bug across 5 callsites fixed (commits 0e91ff2 + 6b769b4); refactor to shared dashboardPathFor(role) helper deferred to Phase 20.1. Full vitest green; tsc clean; ROADMAP Phase 20 flipped [x]; v2.0-MILESTONE-AUDIT.md gains Phase 20.1 carryforward row.
+Phase: 20.1 of 20+ — Standalone Admin Login Gateway + Account Bootstrap — IN PROGRESS
+Plan: 20.1-01 complete (dashboardPathFor helper + 3 unit tests, atomic commit b987eb7); next up 20.1-02 (5-callsite swap)
+Status: Executing — Plan 01 of 5 closed (helper foundation); 4 plans remaining (02 callsite swap, 03 AdminLoginPage + /admin hybrid route, 04 Sidebar Sign Out, 05 bootstrap UAT + role removal)
+Last activity: 2026-05-05 — Phase 20.1 Plan 01 shipped. TDD execution: tests/dashboard-routing.test.ts written first (RED state empirically observed: 'Failed to resolve import @/lib/routing'), then src/lib/routing.ts implemented (GREEN: 3/3 unit tests pass). Pure function, type-only UserRole import, single ternary body verbatim from RESEARCH §'Helper Implementation'. Atomic commit b987eb7 lands both files per CLAUDE.md §4. Full vitest 169 passed (was 166, +3 new); pnpm tsc --noEmit clean. CF-CODE-1 foundation laid; Plan 02 callsite swap unblocked at Login.tsx:48, VerifyEmail.tsx:35, ProtectedRoute.tsx:63, SelectRole.tsx:30, Nav.tsx:112.
 
 ## Accumulated Context
 
@@ -75,6 +75,8 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 20-08]: Mid-flight deviation Rule 1 — admin-redirect bug fixed across 5 callsites (Login, VerifyEmail, ProtectedRoute, SelectRole, Nav). Each callsite interpolated `admin` into `/dashboard/${role}` template producing 404. Inline ternary fix at each callsite (`role === 'admin' ? '/admin' : `/dashboard/${role}``); refactor to shared `dashboardPathFor(role)` helper deferred to Phase 20.1.
 - [Phase 20-08]: ADMIN-RLS-NEG-1/2 auto-confirmed PASS on prior post-migration baseline. The load-bearing measurement is the immediate post-apply re-run captured in 20-02 SUMMARY at 2026-05-04T21:40:47Z (operator-confirmed [1,3,2,2,1,2], exact match to pre-migration [1,3,2,2,1,2]). A later re-run after UAT would only show NATURAL_GROWTH (Test Farm UAT employer + 2 jobs created) and offer no additional drift evidence.
 - [Phase 20-08]: 20-VERIFICATION.md authored — 22/22 ADMIN-* test IDs PASS, 12/12 CONTEXT.md MVP must-haves PASS, all 8 plans PASS, Phase 20.1 Carryforward section per CLAUDE.md §7 partial-close discipline. ROADMAP Phase 20 flipped [x] with 2026-05-05 completion date. v2.0-MILESTONE-AUDIT.md gains Phase 20.1 Carryforward row.
+- [Phase 20.1-01]: TDD-first helper extraction: tests/dashboard-routing.test.ts written first (RED state empirically observed via 'Failed to resolve import @/lib/routing'), then src/lib/routing.ts implemented; both files in single atomic commit b987eb7 per CLAUDE.md §4. RED check is conceptual (pre-commit) — commit boundary is per-PLAN, not per-TDD-step.
+- [Phase 20.1-01]: src/lib/routing.ts uses type-only import (import type { UserRole }) — zero runtime deps, cannot create cycles. File location avoids src/types/domain.ts (mixes types/runtime), src/contexts/AuthContext.tsx (cycles via useAuth consumers), src/lib/utils.ts (single-responsibility cn helper). Verified: grep -cE '^import [^t]' returns 0.
 
 ### Blockers/Concerns
 
@@ -93,6 +95,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-05T01:10:00Z
-Stopped at: Phase 20 COMPLETE — Super Admin Dashboard shipped (22/22 ADMIN-* test IDs PASS, 12/12 CONTEXT.md MVP must-haves PASS, all 8 plans executed, ROADMAP flipped [x] 2026-05-05). Mid-flight admin-redirect bug fixed across 5 callsites (commits 0e91ff2 + 6b769b4); refactor to dashboardPathFor(role) helper carried forward to Phase 20.1. Full vitest green (166 passed | 113 todo | 0 failed); pnpm tsc --noEmit clean. Next: insert Phase 20.1 (standalone admin login redesign + admin@topfarms.nz dedicated account + dashboardPathFor helper refactor) via /gsd:insert-phase 20.1.
+Last session: 2026-05-05T02:56:09.514Z
+Stopped at: Phase 20.1 Plan 01 complete (atomic commit b987eb7: src/lib/routing.ts + tests/dashboard-routing.test.ts; 169 vitest passed, +3 new; tsc clean). Plan 02 callsite swap unblocked. Next: /gsd:execute-phase resumes with Plan 20.1-02 (swap 5 inline ternaries to dashboardPathFor).
 Resume file: None
