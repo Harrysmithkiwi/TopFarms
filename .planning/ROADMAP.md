@@ -249,7 +249,7 @@ Plans:
 - Open questions for Discuss to evaluate: (a) hybrid `/admin` route soundness re session timing/race/FoUC; (b) AdminLoginPage loading state on hard refresh; (c) "Access denied" UX (inline vs redirect); (d) regression risk to employer/seeker flows from `dashboardPathFor` refactor; (e) is bundling all 4 tasks one phase right, or does the routing change warrant its own phase?
 - Source artefacts: `.planning/phases/20-super-admin-dashboard/20-VERIFICATION.md` (Phase 20.1 Carryforward section), `.planning/v2.0-MILESTONE-AUDIT.md` (carryforward row)
 
-**Plans:** 2/5 plans executed
+**Plans:** 3/5 plans executed
 
 Plans:
 - [x] 20.1-01-dashboard-path-helper-PLAN.md — TDD: dashboardPathFor helper + 3 unit tests (employer/seeker/admin) — completed 2026-05-05 (commit b987eb7; 3/3 green; tsc clean)

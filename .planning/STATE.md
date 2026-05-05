@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: executing
-stopped_at: "Phase 20.1 Plan 02 complete (atomic commit 7f61a74: 5 callsites swapped to dashboardPathFor across Login/VerifyEmail/ProtectedRoute/SelectRole/Nav; 169 vitest passed unchanged; tsc clean; CF-CODE-1 closed at app layer). Plans 03/04/05 remain. Next: /gsd:execute-phase resumes with Plan 20.1-03 (AdminLoginPage + /admin hybrid route)."
-last_updated: "2026-05-05T03:02:37.060Z"
-last_activity: "2026-05-05 — Phase 20.1 Plan 02 shipped. Atomic 5-file refactor: Login.tsx + VerifyEmail.tsx + ProtectedRoute.tsx + SelectRole.tsx + Nav.tsx — each gained `import { dashboardPathFor } from '@/lib/routing'` and swapped the inline `role === 'admin' ? '/admin' : \\`/dashboard/${role}\\`` ternary for `dashboardPathFor(role)`. Single commit 7f61a74 per CLAUDE.md §4 (5 files changed, +10 −5). Post-refactor grep shows zero residual ternaries in src/ except inside the helper body itself (src/lib/routing.ts:4 — by design). Full vitest 169 passed | 113 todo | 0 failed (baseline preserved exactly); pnpm tsc --noEmit clean. CF-CODE-1 carryforward from Phase 20-VERIFICATION.md materially closed at app layer. Plans 03 (AdminLoginPage + /admin hybrid), 04 (Sidebar Sign Out), 05 (bootstrap UAT + role removal) remain."
+stopped_at: "Phase 20.1 Plan 03 complete (atomic commit 0dcda8a: AdminGate hybrid route + AdminLoginPage form + 4 component tests; 173 vitest passed = 169 baseline + 4 new; tsc clean; pnpm build clean; zero residual admin ternaries outside helper body). Plans 04 (Sidebar Sign Out) and 05 (bootstrap UAT + role removal) remain. Next: /gsd:execute-phase resumes with Plan 20.1-04."
+last_updated: "2026-05-05T03:13:42.051Z"
+last_activity: "2026-05-05 — Phase 20.1 Plan 03 shipped. Atomic single-commit 0dcda8a (AdminLoginPage.tsx + main.tsx + admin-login.test.tsx; +316/-8 net) per CLAUDE.md §4. AdminGate hybrid route at /admin renders SpinnerBlock / AdminLoginPage form / inline AccessDenied / AdminLayout+DailyBriefing depending on auth state — 5-branch decision tree with role===null spinner BEFORE role!=='admin' check (RESEARCH Pitfall 1 AUTH-FIX-02 race-window guard). AdminLoginPage form is email+password ONLY (CONTEXT GA-1 lock — no Google/Facebook OAuth) using Phase 19 v2 Input + Button primitives, react-hook-form + zod; submit-error and AccessDenied use inline role=alert div with --color-danger tokens (RESEARCH Pitfall 3 Option A). No useNavigate (RESEARCH Pitfall 9 — AdminGate re-render handles routing). main.tsx /admin index swapped to <AdminGate />; 4 sub-routes byte-frozen; unused DailyBriefing import dropped. Full vitest 173 passed (169 baseline + 4 new admin-login) | 113 todo | 0 failed; pnpm tsc --noEmit clean; pnpm build clean (2.37s). CF-AUTH-1 + CF-AUTH-2 closed at app layer; CF-AUTH-3 preserved by Plan 02. Plans 04 (Sidebar Sign Out) and 05 (bootstrap UAT + role removal) remain."
 progress:
   total_phases: 11
   completed_phases: 5
   total_plans: 24
-  completed_plans: 21
+  completed_plans: 22
 ---
 
 # Project State
@@ -25,9 +25,9 @@ See: .planning/PROJECT.md (updated 2026-04-03)
 ## Current Position
 
 Phase: 20.1 of 20+ — Standalone Admin Login Gateway + Account Bootstrap — IN PROGRESS
-Plan: 20.1-02 complete (5-callsite swap to dashboardPathFor, atomic commit 7f61a74); next up 20.1-03 (AdminLoginPage + /admin hybrid route)
-Status: Executing — Plans 01-02 of 5 closed (helper foundation + callsite swap; CF-CODE-1 closed at app layer); 3 plans remaining (03 AdminLoginPage hybrid route, 04 Sidebar Sign Out, 05 bootstrap UAT + role removal)
-Last activity: 2026-05-05 — Phase 20.1 Plan 02 shipped. Atomic 5-file refactor: Login.tsx + VerifyEmail.tsx + ProtectedRoute.tsx + SelectRole.tsx + Nav.tsx — each gained `import { dashboardPathFor } from '@/lib/routing'` and swapped the inline `role === 'admin' ? '/admin' : `/dashboard/${role}`` ternary for `dashboardPathFor(role)`. Single commit 7f61a74 per CLAUDE.md §4 (5 files changed, +10 −5). Post-refactor grep shows zero residual ternaries in src/ except inside the helper body itself (src/lib/routing.ts:4 — by design). Full vitest 169 passed | 113 todo | 0 failed (baseline preserved exactly); pnpm tsc --noEmit clean. CF-CODE-1 carryforward from Phase 20-VERIFICATION.md materially closed at app layer.
+Plan: 20.1-03 complete (AdminGate hybrid route + AdminLoginPage form + 4 component tests, atomic commit 0dcda8a); next up 20.1-04 (Sidebar Sign Out button)
+Status: Executing — Plans 01-03 of 5 closed (helper foundation + callsite swap + standalone admin gateway; CF-CODE-1 + CF-AUTH-1 + CF-AUTH-2 closed at app layer; CF-AUTH-3 preserved); 2 plans remaining (04 Sidebar Sign Out, 05 bootstrap UAT + role removal)
+Last activity: 2026-05-05 — Phase 20.1 Plan 03 shipped. Atomic single-commit 0dcda8a (AdminLoginPage.tsx + main.tsx + admin-login.test.tsx; +316/-8 net) per CLAUDE.md §4. AdminGate hybrid route at /admin renders SpinnerBlock / AdminLoginPage form / inline AccessDenied / AdminLayout+DailyBriefing depending on auth state — 5-branch decision tree with `role === null` spinner BEFORE the `role !== 'admin'` check (RESEARCH Pitfall 1 AUTH-FIX-02 race-window guard). AdminLoginPage form is email+password ONLY (CONTEXT GA-1 lock — no Google/Facebook OAuth) using Phase 19 v2 Input + Button primitives, react-hook-form + zod; submit-error and AccessDenied use inline `role="alert"` div with --color-danger tokens (RESEARCH Pitfall 3 Option A). No useNavigate (RESEARCH Pitfall 9 — AdminGate re-render handles routing). main.tsx /admin index swapped to `<AdminGate />`; 4 sub-routes byte-frozen; unused DailyBriefing import dropped. Full vitest 173 passed (169 baseline + 4 new admin-login) | 113 todo | 0 failed; `pnpm tsc --noEmit` clean; `pnpm build` clean (2.37s). CF-AUTH-1 + CF-AUTH-2 closed at app layer; CF-AUTH-3 preserved by Plan 02.
 
 ## Accumulated Context
 
@@ -80,6 +80,9 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 20.1-02]: Atomic 5-file refactor in single commit 7f61a74 per CLAUDE.md §4: Login.tsx:49 + VerifyEmail.tsx:36 + ProtectedRoute.tsx:64 + SelectRole.tsx:31 + Nav.tsx:113 swapped from inline ternary to dashboardPathFor(role). 169 vitest passed (baseline preserved exactly); pnpm tsc --noEmit clean. CF-CODE-1 carryforward closed at app layer.
 - [Phase 20.1-02]: Edit tool with surrounding context (not sed-style global replace) for each callsite — surfaces Pitfall 4 prevention from RESEARCH.md. Each Edit included unique anchor lines (e.g., '(roleData?.role as UserRole) ?? seeker' for VerifyEmail, '!session) return Navigate' for ProtectedRoute) so the right ternary is targeted. Post-edit grep confirms zero residual ternaries except inside helper body itself (src/lib/routing.ts:4, by design).
 - [Phase 20.1-02]: Ignored Next.js plugin's 'use client' PostToolUse warnings during edits — TopFarms is Vite + React Router v7 SPA (verified via package.json no-next-dep + src/main.tsx createBrowserRouter), not Next.js App Router. The directive would be inert. Documented as a no-deviation event for future executors that may see the same hook output.
+- [Phase 20.1-03]: AdminGate hybrid route shipped at /admin: 5-branch decision tree (loading -> spinner; !session -> AdminLoginPage; role===null -> spinner BEFORE role!=='admin' check per RESEARCH Pitfall 1 AUTH-FIX-02 race; role!=='admin' -> inline AccessDenied per CONTEXT Q3; admin -> AdminLayout+DailyBriefing). SpinnerBlock mirrors ProtectedRoute.tsx:13-26 + :41-55 byte-for-byte (CONTEXT Q2 deferred shared extraction). Atomic single commit 0dcda8a (3 files +316/-8) per CLAUDE.md §4. CF-AUTH-1 + CF-AUTH-2 closed at app layer; CF-AUTH-3 preserved by Plan 02.
+- [Phase 20.1-03]: AdminLoginPage email+password ONLY (CONTEXT GA-1 lock — no Google/Facebook OAuth). Form-submit error and AccessDeniedView both use inline role=alert div with --color-danger / --color-danger-bg tokens (RESEARCH Pitfall 3 Option A — StatusBanner has fixed variant union with no 'error' member; same pattern Phase 20-05 ProfileDrawer used). Test guards regression with explicit queryByRole(button, name: /google/i)).not.toBeInTheDocument().
+- [Phase 20.1-03]: AdminLoginPage onSubmit does NOT call useNavigate (RESEARCH Pitfall 9): on success it returns and lets AdminGate re-render via AuthContext state-change route to AdminLayout. Avoids the Login.tsx didSubmit-ref + useEffect workaround entirely because AdminLoginPage lives at the destination (/admin), not at /login. main.tsx /admin element swapped to <AdminGate />; 4 sub-routes (/admin/employers|seekers|jobs|placements) byte-frozen with their existing ProtectedRoute wrapping; now-unused top-level DailyBriefing import removed (transitively imported via AdminGate).
 
 ### Blockers/Concerns
 
@@ -98,6 +101,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-05T03:02:37.057Z
-Stopped at: Phase 20.1 Plan 02 complete (atomic commit 7f61a74: 5 callsites swapped to dashboardPathFor across Login/VerifyEmail/ProtectedRoute/SelectRole/Nav; 169 vitest passed unchanged; tsc clean; CF-CODE-1 closed at app layer). Plans 03/04/05 remain. Next: /gsd:execute-phase resumes with Plan 20.1-03 (AdminLoginPage + /admin hybrid route).
+Last session: 2026-05-05T03:13:18.707Z
+Stopped at: Phase 20.1 Plan 03 complete (atomic commit 0dcda8a: AdminGate hybrid route + AdminLoginPage form + 4 component tests; 173 vitest passed = 169 baseline + 4 new; tsc clean; pnpm build clean; zero residual admin ternaries outside helper body). Plans 04 (Sidebar Sign Out) and 05 (bootstrap UAT + role removal) remain. Next: /gsd:execute-phase resumes with Plan 20.1-04.
 Resume file: None
