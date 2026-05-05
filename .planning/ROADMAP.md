@@ -224,7 +224,7 @@ Plans:
 | 19. Design System Cleanup (Tier 1) | v2.0 | 0/? | In flight (this session) | — |
 | 19b. Design System Cleanup (Tier 2) | v2.0 | 0/? | Pending (post-19) | — |
 | 20. Super Admin Dashboard | v2.0 | 8/8 | Complete | 2026-05-05 |
-| 20.1. Standalone Admin Login Gateway + Account Bootstrap | v2.0 | 5/5 | Complete | 2026-05-05 |
+| 20.1. Standalone Admin Login Gateway + Account Bootstrap | v2.0 | Complete    | 2026-05-05 | 2026-05-05 |
 
 ### Phase 20.1: Standalone Admin Login Gateway + Account Bootstrap (INSERTED)
 
@@ -251,7 +251,7 @@ Plans:
 - Open questions for Discuss to evaluate: (a) hybrid `/admin` route soundness re session timing/race/FoUC; (b) AdminLoginPage loading state on hard refresh; (c) "Access denied" UX (inline vs redirect); (d) regression risk to employer/seeker flows from `dashboardPathFor` refactor; (e) is bundling all 4 tasks one phase right, or does the routing change warrant its own phase?
 - Source artefacts: `.planning/phases/20-super-admin-dashboard/20-VERIFICATION.md` (Phase 20.1 Carryforward section), `.planning/v2.0-MILESTONE-AUDIT.md` (carryforward row)
 
-**Plans:** 5/5 plans complete
+**Plans:** 6/5 plans complete
 
 **Status:** Complete — see 20.1-VERIFICATION.md PASS verdict (7/7 CF-IDs PASS; CF-AUTH-2 carries documented runtime caveat — recommend fresh-session post-deploy re-verify, no-blocker)
 
