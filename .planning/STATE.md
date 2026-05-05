@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: verifying
-stopped_at: "Phase 20.1 COMPLETE — Standalone Admin Login Gateway + Account Bootstrap shipped (7/7 CF-IDs PASS, 5/5 plans executed, ROADMAP flipped [x] 2026-05-05). All 7 carryforwards from Phase 20 closed. CF-AUTH-2 carries documented runtime AccessDenied caveat (recommend fresh-session post-deploy re-verify, no-blocker). Outstanding v2.0 phases pending: 16 (Privacy Bypass), 17 (Saved Search), 18 (Tech Debt Cleanup), 19 (Design System Tier 1), 19b (Design System Tier 2). Next: TBD by user."
-last_updated: "2026-05-05T04:20:43.979Z"
+stopped_at: Phase 17 context gathered
+last_updated: "2026-05-05T05:43:56.044Z"
 last_activity: "2026-05-05 — Phase 20.1 Plan 05 shipped (closes phase 20.1 entirely). Operator multi-stage actions across two sessions: Studio Auth created `admin@topfarms.co.nz` (auth.users.id=`ab48ed2b-0336-4b1d-8937-5d3eff50faf6`); Studio SQL UPSERT assigned role=admin/is_active=true; MCP read-only verification confirmed; browser UAT empirically confirmed AdminLoginPage renders for unauth /admin + admin sign-in transitions to AdminLayout (CF-AUTH-1, CF-AUTH-2 unauth+admin branches, CF-AUTH-3 redirect, CF-ACCOUNT-1 all PASS); Studio SQL UPDATE demoted `harry.symmans.smith@gmail.com` to role=seeker/is_active=true; MCP verification confirmed; regression UAT 8a confirmed runtime role transition. CF-AUTH-2 anomaly observed (direct /admin nav after old-account sign-in produced /dashboard/admin → 404) was diagnosed (grep + unit test + helper test ruled out code regression); operator-attributed stale-cache; documented PASS-with-caveat per CLAUDE §7. All closure docs in single atomic commit per CLAUDE §4 (UAT.md + 20.1-VERIFICATION.md + 20.1-SUMMARY.md + 20.1-05-SUMMARY.md + ROADMAP.md + v2.0-MILESTONE-AUDIT.md + 20-VERIFICATION.md + STATE.md)."
 progress:
   total_phases: 11
@@ -106,6 +106,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-05T03:45:00Z
-Stopped at: Phase 20.1 COMPLETE — Standalone Admin Login Gateway + Account Bootstrap shipped (7/7 CF-IDs PASS, 5/5 plans executed, ROADMAP flipped [x] 2026-05-05). All 7 carryforwards from Phase 20 closed. CF-AUTH-2 carries documented runtime AccessDenied caveat (recommend fresh-session post-deploy re-verify, no-blocker). Outstanding v2.0 phases pending: 16 (Privacy Bypass), 17 (Saved Search), 18 (Tech Debt Cleanup), 19 (Design System Tier 1), 19b (Design System Tier 2). Next: TBD by user.
-Resume file: None
+Last session: 2026-05-05T05:43:56.035Z
+Stopped at: Phase 17 context gathered
+Resume file: .planning/phases/17-saved-search/17-CONTEXT.md
