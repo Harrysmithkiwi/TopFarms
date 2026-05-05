@@ -30,7 +30,7 @@ import { MyApplications } from '@/pages/dashboard/seeker/MyApplications'
 import { SeekerDocuments } from '@/pages/dashboard/seeker/SeekerDocuments'
 import { ApplicantDashboard } from '@/pages/dashboard/employer/ApplicantDashboard'
 import { AdminLayout } from '@/components/layout/AdminLayout'
-import { DailyBriefing } from '@/pages/admin/DailyBriefing'
+import { AdminGate } from '@/pages/admin/AdminLoginPage'
 import { EmployerList } from '@/pages/admin/EmployerList'
 import { SeekerList } from '@/pages/admin/SeekerList'
 import { JobsManagement } from '@/pages/admin/JobsManagement'
@@ -211,13 +211,7 @@ const router = createBrowserRouter([
   // List view pages are placeholders this commit; filled in plan 20-06 / 20-07.
   {
     path: '/admin',
-    element: (
-      <ProtectedRoute requiredRole="admin">
-        <AdminLayout>
-          <DailyBriefing />
-        </AdminLayout>
-      </ProtectedRoute>
-    ),
+    element: <AdminGate />,
   },
   {
     path: '/admin/employers',
