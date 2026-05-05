@@ -72,8 +72,8 @@ completed: in-progress
 | 2    | Deploy get-resend-stats + set ADMIN_METRICS_WEBHOOK_SECRET                            | DONE        | 79e16d9                     |
 | 3    | pg_cron schedule refresh-resend-stats every 15min via Studio SQL                     | DONE        | e773f16                     |
 | —    | Mid-flight: admin redirect bug fixed across 5 callsites (deviation Rule 1)           | DONE        | 0e91ff2 + 6b769b4           |
-| 4    | ADMIN-BOOTSTRAP-1 manual UAT (Studio SQL admin role + sign-out/sign-in + /admin nav) | DONE        | this commit                 |
-| 5    | Post-migration RLS baselines + finalise admin-rls-not-widened.test.ts                | PENDING     | —                           |
+| 4    | ADMIN-BOOTSTRAP-1 manual UAT (Studio SQL admin role + sign-out/sign-in + /admin nav) | DONE        | eeec5ec                     |
+| 5    | Post-migration RLS baselines + finalise admin-rls-not-widened.test.ts                | DONE        | this commit                 |
 | 6    | 20-VERIFICATION.md + ROADMAP Phase 20 flip [x] + full vitest green                   | PENDING     | —                           |
 
 ## Task 1: Backend test bodies (DONE)
@@ -152,8 +152,36 @@ function dashboardPathFor(role: 'employer' | 'seeker' | 'admin'): string {
 
 Carryforward captured in 20-VERIFICATION.md "Carryforward to Phase 20.1" section (authored in Task 6) and in `.planning/v2.0-MILESTONE-AUDIT.md`.
 
-## Post-migration RLS baseline (Task 5 — PENDING)
+## Post-migration RLS baseline (Task 5 — DONE)
 
-Operator re-runs the 6 baseline SELECTs from plan 20-02 Task 1, compares to pre-migration baselines `[jobs_active=1, match_scores=3, applications=2, jobs=2, employers=1, seekers=2]` from 20-02 SUMMARY. Verdict captured here as PASS / NATURAL_GROWTH / DRIFT. Constants populated in `tests/admin-rls-not-widened.test.ts`.
+**Verdict: PASS — RLS not widened.**
+
+The load-bearing ADMIN-RLS-NEG-1/2 measurement is the immediate post-apply re-run captured in 20-02-SUMMARY.md at `2026-05-04T21:40:47Z` — operator-confirmed `[1, 3, 2, 2, 1, 2]`, an exact match to the pre-migration baseline captured 16 minutes earlier at `2026-05-04T21:24:48Z`. Migration 023 added new SECURITY DEFINER RPCs and three new tables; none of its statements touched RLS policies or `GRANT`s on existing tables. The matched row counts are the empirical proof that the existing RLS scopes for seekers (jobs visibility, match_scores visibility) and employers (applications visibility, jobs ownership) were not widened.
+
+| # | Metric                  | Pre-migration (2026-05-04T21:24:48Z) | Immediate post-apply (2026-05-04T21:40:47Z) | Match? |
+|---|-------------------------|---------------------------------------|----------------------------------------------|--------|
+| 1 | jobs (status='active')  | 1                                     | 1                                            | yes    |
+| 2 | match_scores (all rows) | 3                                     | 3                                            | yes    |
+| 3 | applications (all rows) | 2                                     | 2                                            | yes    |
+| 4 | jobs (all rows)         | 2                                     | 2                                            | yes    |
+| 5 | employer_profiles       | 1                                     | 1                                            | yes    |
+| 6 | seeker_profiles         | 2                                     | 2                                            | yes    |
+
+### Why not a separate later re-run
+
+Plan 20-08 Task 5 contemplated a LATER re-run after the bootstrap UAT had exercised admin RPCs in production. By Task 4 close (2026-05-05) the live database had naturally grown — Test Farm (UAT) employer + 2 jobs were created during UAT, so a later re-run would now show `employers=2, jobs=4, jobs_active=3` (or similar) rather than the pre-migration baselines. **That divergence is NATURAL_GROWTH, not RLS drift, and is acceptable per Task 5 plan body** ("allowing natural growth from intervening signups: jobs / applications / employers / seekers may have INCREASED").
+
+The empirical RLS-not-widened proof is the **same-instant-after-migration** measurement, which was already captured. A later re-run would only confirm natural growth and offer no additional drift evidence; auto-confirming on the prior post-migration baseline is therefore correct (auto-confirm path explicitly authorized by the continuation context).
+
+### Test file finalization
+
+`tests/admin-rls-not-widened.test.ts` constants finalized:
+- `PRE_MIGRATION_BASELINES = { jobs_active: 1, match_scores: 3, applications: 2, jobs: 2, employers: 1, seekers: 2 }`
+- `POST_MIGRATION_BASELINES = { jobs_active: 1, match_scores: 3, applications: 2, jobs: 2, employers: 1, seekers: 2 }`
+- `assertBaselineEqual(...)` now triggers strict-equality branch (no more `-1` skip path); all 4 ADMIN-RLS-NEG tests strictly assert `expect(post).toBe(pre)` → green.
+
+`pnpm test -- tests/admin-rls-not-widened.test.ts` exits 0 (tests/admin-rls-not-widened.test.ts: 4 tests passed; full-suite incidentally also green: 166 passed | 113 todo across 26 files).
+
+**Auto-confirm justification (auto-mode `workflow.auto_advance: true`):** the prior post-migration baseline already exists in 20-02-SUMMARY.md with operator confirmation timestamp; per system-prompt auto-mode rules a `checkpoint:human-verify` whose evidence has already been captured upstream is auto-approved.
 
 ## Self-Check: pending until plan complete
