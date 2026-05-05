@@ -58,8 +58,30 @@ Capture in this file (append to bottom):
 - 401 on RPC calls from /admin → JWT not refreshed. Same fix.
 
 ## Sign-off
-- [ ] Studio SQL applied successfully
-- [ ] Sign-out + sign-in completed
-- [ ] `useAuth().role === 'admin'` confirmed
-- [ ] `/admin` renders DailyBriefing without redirect
-- [ ] Run record appended below
+- [x] Studio SQL applied successfully
+- [x] Sign-out + sign-in completed
+- [x] `useAuth().role === 'admin'` confirmed
+- [x] `/admin` renders DailyBriefing without redirect
+- [x] Run record appended below
+
+## Run 2026-05-05T00:30:00Z
+
+- auth.users.id: harry.symmans.smith@gmail.com (UUID retrieved from Studio Auth → Users)
+- Studio SQL result: 1 row affected (INSERT … ON CONFLICT DO UPDATE path; row pre-existed as seeker)
+- Post sign-in role: admin
+- /admin URL final: /admin (after redirect-fix detour — see notes)
+- DailyBriefing rendered: yes
+- AdminSidebar visible: yes (5 nav items + Back to app)
+- EmployerList row click → drawer opens: yes — Test Farm (UAT) row, Unverified tier, Active status, 2 jobs; ProfileDrawer surfaces Active toggle, Notes field, Activity log
+- Resend / Email Delivery: 100% (live cache populated by jobid=4 cron firing every 15 min — Task 3 wiring confirmed end-to-end)
+- System alerts: clean (no Edge Function errors, no failed pg_net calls within window)
+- Screenshot: N/A (not captured; visual sign-off via operator description)
+- Notes:
+  - **Mid-flight redirect bug discovered + fixed inline.** Initial sign-in attempts went to `/dashboard/admin` (404) — five callsites in `src/` interpolated `admin` into the `/dashboard/${role}` template:
+    - `src/pages/auth/Login.tsx`
+    - `src/pages/auth/VerifyEmail.tsx`
+    - `src/components/layout/ProtectedRoute.tsx`
+    - `src/pages/auth/SelectRole.tsx`
+    - `src/components/layout/Nav.tsx`
+    Fixed across two commits (`0e91ff2` Login + VerifyEmail; `6b769b4` ProtectedRoute + SelectRole + Nav). Each callsite now branches on `role === 'admin' → /admin` before falling through to the dashboard template. Carryforward to Phase 20.1: refactor into a shared helper as part of the standalone admin login redesign.
+  - **TEST RUN — admin role on harry.symmans.smith@gmail.com to be removed in Phase 20.1.** This account is the Phase 20 bootstrap admin only; Phase 20.1 will create a dedicated `admin@topfarms.nz` and remove the admin role from this auth.users row.

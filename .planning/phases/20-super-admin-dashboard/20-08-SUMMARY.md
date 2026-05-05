@@ -66,14 +66,15 @@ completed: in-progress
 
 ## Status
 
-| Task | Description                                                                          | Status      | Commit  |
-| ---- | ------------------------------------------------------------------------------------ | ----------- | ------- |
-| 1    | Backend test bodies (admin-rpc-gate, admin-rpc-shapes, admin-rls-not-widened)        | DONE        | 262aad7 |
-| 2    | Deploy get-resend-stats + set ADMIN_METRICS_WEBHOOK_SECRET                            | DONE        | this commit |
-| 3    | pg_cron schedule refresh-resend-stats every 15min via Studio SQL                     | DONE        | this commit |
-| 4    | ADMIN-BOOTSTRAP-1 manual UAT (Studio SQL admin role + sign-out/sign-in + /admin nav) | PENDING     | —       |
-| 5    | Post-migration RLS baselines + finalise admin-rls-not-widened.test.ts                | PENDING     | —       |
-| 6    | 20-VERIFICATION.md + ROADMAP Phase 20 flip [x] + full vitest green                   | PENDING     | —       |
+| Task | Description                                                                          | Status      | Commit                      |
+| ---- | ------------------------------------------------------------------------------------ | ----------- | --------------------------- |
+| 1    | Backend test bodies (admin-rpc-gate, admin-rpc-shapes, admin-rls-not-widened)        | DONE        | 262aad7                     |
+| 2    | Deploy get-resend-stats + set ADMIN_METRICS_WEBHOOK_SECRET                            | DONE        | 79e16d9                     |
+| 3    | pg_cron schedule refresh-resend-stats every 15min via Studio SQL                     | DONE        | e773f16                     |
+| —    | Mid-flight: admin redirect bug fixed across 5 callsites (deviation Rule 1)           | DONE        | 0e91ff2 + 6b769b4           |
+| 4    | ADMIN-BOOTSTRAP-1 manual UAT (Studio SQL admin role + sign-out/sign-in + /admin nav) | DONE        | this commit                 |
+| 5    | Post-migration RLS baselines + finalise admin-rls-not-widened.test.ts                | PENDING     | —                           |
+| 6    | 20-VERIFICATION.md + ROADMAP Phase 20 flip [x] + full vitest green                   | PENDING     | —                           |
 
 ## Task 1: Backend test bodies (DONE)
 
@@ -116,9 +117,40 @@ The unschedule + reschedule is atomic enough for ops purposes; transient missed 
 
 **MAIL-02 status:** combined with Task 2's smoke=200 result, the Phase 15 carryforward (MAIL-02 deferred — RESEND_API_KEY unset, emails silently skipping) is now materially closed. Live cache row in admin_metrics_cache demonstrates Resend send/delivery is functional end-to-end. Per CLAUDE.md §7 partial-close discipline, the formal `[x]` flip on MAIL-02 in REQUIREMENTS.md will be accompanied by an evidence pointer to this SUMMARY's Task 2 + Task 3 sections.
 
-## ADMIN-BOOTSTRAP-1 UAT (Task 4 — PENDING)
+## ADMIN-BOOTSTRAP-1 UAT (Task 4 — DONE)
 
-Operator runs Studio SQL `INSERT INTO public.user_roles ... 'admin' ON CONFLICT ...`, signs out + signs in, navigates to `/admin`, confirms DailyBriefing renders + sidebar visible + drawer opens. Run-record appended to `tests/admin-bootstrap-UAT.md`.
+Operator (Harry) ran Studio SQL `INSERT INTO public.user_roles (user_id, role, is_active) VALUES ('<harry-auth-uid>', 'admin', true) ON CONFLICT (user_id) DO UPDATE SET role='admin', is_active=true;` for project `inlagtgpynemhipnqvty`, signed out, signed back in, then navigated to `/admin`. Empirical pass on all 5 sign-off criteria documented in `tests/admin-bootstrap-UAT.md`:
+
+1. **`/admin` URL renders** — AdminLayout + AdminSidebar (5 nav items + "Back to app") visible without redirect to `/dashboard/...`.
+2. **DailyBriefing live** — page title "Daily Briefing" + StatsStrip + system alerts panel + Resend / Email Delivery card all rendered. Email Delivery shows **100%** (live cache from jobid=4 cron — confirms Task 3 cron is firing end-to-end and Resend is honouring `ADMIN_METRICS_WEBHOOK_SECRET`). System alerts panel shows zero entries (clean — no Edge Function errors / no failed pg_net calls within the alert window).
+3. **EmployerList renders real data** — table shows `Test Farm (UAT)` row with Unverified tier badge, Active status, 2 jobs.
+4. **ProfileDrawer opens on row click** — drawer surfaces Active toggle, Notes field, Activity log (admin_audit_log → Timeline binding).
+5. **Run-record appended to `tests/admin-bootstrap-UAT.md`** with Sign-off `[x]` flips on all 5 criteria.
+
+Operator resume signal received: `uat_complete: role=admin, /admin renders, drawer works, UAT.md updated`.
+
+### Deviation: admin-redirect bug — fixed mid-flight (deviation Rule 1)
+
+Initial UAT attempts failed because every role-redirect callsite in `src/` interpolated `admin` into the `/dashboard/${role}` template, producing `/dashboard/admin` which is not a registered route → 404 / SPA fallback then `/login` bounce. Five callsites required the same one-line ternary fix `role === 'admin' ? '/admin' : '/dashboard/${role}'`:
+
+- `src/pages/auth/Login.tsx` (commit `0e91ff2`)
+- `src/pages/auth/VerifyEmail.tsx` (commit `0e91ff2`)
+- `src/components/layout/ProtectedRoute.tsx:63` (commit `6b769b4`) — wrong-role redirect when admin lands on a non-admin protected route
+- `src/pages/auth/SelectRole.tsx:29` (commit `6b769b4`) — admin-with-role guard redirect (fires on OAuth callback or stale-session route landings)
+- `src/components/layout/Nav.tsx:112` (commit `6b769b4`) — Dashboard link in user dropdown menu
+
+**Why this surfaced now and not earlier:** Plan 20-04 introduced `/admin` as a sibling route to `/dashboard/${role}` rather than nesting it under `/dashboard/`. The role-redirect logic across the auth + protected-route layers predates that decision and assumed a uniform `/dashboard/{role}` shape. No earlier plan exercised an admin-role login flow end-to-end (the earlier admin pages were unit-tested with mocked supabase + RTL only — they never hit the auth callback path).
+
+**Phase 20.1 input.** Rather than refactor all five callsites into a shared helper now (would expand 20-08 scope and risk regression on the seeker/employer paths that already work), the ternary was inlined at each callsite and Phase 20.1 (standalone `admin@topfarms.nz` login + dedicated AdminLoginPage at `/admin`) will own the refactor:
+
+```ts
+// Phase 20.1 should replace the 5 inline ternaries with:
+function dashboardPathFor(role: 'employer' | 'seeker' | 'admin'): string {
+  return role === 'admin' ? '/admin' : `/dashboard/${role}`
+}
+```
+
+Carryforward captured in 20-VERIFICATION.md "Carryforward to Phase 20.1" section (authored in Task 6) and in `.planning/v2.0-MILESTONE-AUDIT.md`.
 
 ## Post-migration RLS baseline (Task 5 — PENDING)
 
