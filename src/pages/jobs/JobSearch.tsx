@@ -16,6 +16,7 @@ import { ActiveFilterPills } from '@/components/ui/ActiveFilterPills'
 import { hasActiveFilters, snapshotFilters, deriveAutoName } from '@/lib/savedSearch'
 import { SaveSearchModal } from '@/components/saved-search/SaveSearchModal'
 import { ReplaceOldestModal } from '@/components/saved-search/ReplaceOldestModal'
+import { SavedSearchesDropdown } from '@/components/saved-search/SavedSearchesDropdown'
 import type { JobListing, MatchScore, EmployerVerification, TrustLevel, ApplicationStatus } from '@/types/domain'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -651,6 +652,14 @@ function ResultsArea({
               </button>
             </>
           )}
+
+          {/* Phase 17 SRCH-14 — quick-load dropdown (Wave 4). Visible whenever
+              signed in (no hasActiveFilters gate — seekers should be able to
+              load a saved search from the unfiltered state). Component
+              self-guards on session?.user?.id; ResultsArea-level isLoggedIn
+              gate is defence-in-depth + skips rendering the trigger entirely
+              for anonymous visitors. */}
+          {isLoggedIn && <SavedSearchesDropdown />}
         </div>
 
         {/* Sort selector */}
