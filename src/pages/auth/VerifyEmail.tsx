@@ -4,6 +4,7 @@ import { toast } from 'sonner'
 import { Mail, RefreshCw, Loader2 } from 'lucide-react'
 import { AuthLayout } from '@/components/layout/AuthLayout'
 import { supabase } from '@/lib/supabase'
+import { dashboardPathFor } from '@/lib/routing'
 import type { UserRole } from '@/types/domain'
 
 export function VerifyEmail() {
@@ -32,7 +33,7 @@ export function VerifyEmail() {
           .single()
 
         const role = (roleData?.role as UserRole) ?? 'seeker'
-        const dest = role === 'admin' ? '/admin' : `/dashboard/${role}`
+        const dest = dashboardPathFor(role)
         navigate(dest)
       }
     })

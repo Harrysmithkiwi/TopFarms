@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import { Eye, EyeOff } from 'lucide-react'
 import { AuthLayout } from '@/components/layout/AuthLayout'
 import { useAuth } from '@/hooks/useAuth'
+import { dashboardPathFor } from '@/lib/routing'
 
 const schema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -45,7 +46,7 @@ export function Login() {
   // After successful login, role is loaded via onAuthStateChange — navigate when ready
   useEffect(() => {
     if (didSubmit.current && !loading && session && role) {
-      const dest = role === 'admin' ? '/admin' : `/dashboard/${role}`
+      const dest = dashboardPathFor(role)
       navigate(dest, { replace: true })
     }
   }, [session, role, loading, navigate])

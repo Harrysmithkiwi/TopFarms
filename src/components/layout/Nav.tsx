@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, NavLink } from 'react-router'
 import { Menu, X, Leaf } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
+import { dashboardPathFor } from '@/lib/routing'
 
 const employerLinks = [
   { to: '/dashboard/employer', label: 'Dashboard' },
@@ -109,7 +110,7 @@ export function Nav() {
                   >
                     {role && (
                       <Link
-                        to={role === 'admin' ? '/admin' : `/dashboard/${role}`}
+                        to={dashboardPathFor(role)}
                         onClick={() => setUserMenuOpen(false)}
                         className="block px-4 py-2 text-sm hover:bg-surface-2 transition-colors"
                         style={{ color: 'var(--color-text)' }}

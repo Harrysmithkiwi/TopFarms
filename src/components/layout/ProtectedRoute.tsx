@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Navigate } from 'react-router'
 import { useAuth } from '@/hooks/useAuth'
+import { dashboardPathFor } from '@/lib/routing'
 
 interface ProtectedRouteProps {
   children: ReactNode
@@ -60,7 +61,7 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
   }
 
   if (requiredRole && role !== requiredRole) {
-    const dest = role === 'admin' ? '/admin' : `/dashboard/${role}`
+    const dest = dashboardPathFor(role)
     return <Navigate to={dest} replace />
   }
 

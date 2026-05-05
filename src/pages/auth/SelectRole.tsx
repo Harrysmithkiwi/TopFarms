@@ -5,6 +5,7 @@ import { Building2, User } from 'lucide-react'
 import { AuthLayout } from '@/components/layout/AuthLayout'
 import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
+import { dashboardPathFor } from '@/lib/routing'
 
 export function SelectRole() {
   const { session, role, loading, refreshRole } = useAuth()
@@ -27,7 +28,7 @@ export function SelectRole() {
 
   if (!session) return <Navigate to="/login" replace />
   if (role) {
-    const dest = role === 'admin' ? '/admin' : `/dashboard/${role}`
+    const dest = dashboardPathFor(role)
     return <Navigate to={dest} replace />
   }
 
