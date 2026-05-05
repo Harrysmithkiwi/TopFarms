@@ -29,6 +29,7 @@ The full prose (incident chain, why each rule exists) lives in `.planning/retros
 
 - One phase (or sub-phase) per commit. Don't bundle unrelated work.
 - Amending within the same atomic-commit-window is acceptable when internal consistency requires it (precedent: BFIX-02/03 + BFIX-01 docs reconciliation amended into the Phase 14-03 commit `e8f0882`).
+- **History-rewriting commands are off-limits without explicit operator instruction in the chat.** Executors and any spawned agent MUST NOT run `git reset --hard`, `git rebase`, `git push --force`, `git checkout --` (over uncommitted work), `git branch -D`, `git clean -f`, or any equivalent destructive operation unless the operator has explicitly typed the command (or its intent) into the chat. Violation must be surfaced immediately with a `STOP` notice before any further work — fix the underlying problem instead of reaching for a reset. Precedent: §8 (2026-05-05).
 
 ## 5. Gateway-trust JWT pattern for `verify_jwt: true` Edge Functions
 
@@ -70,3 +71,29 @@ A requirement may have multiple gaps (e.g., deploy gap + runtime/secret gap + E2
 - Counter-signal: when a gap-closure phase explicitly captures the missing evidence and the requirement's must-haves are all empirically met, flipping is correct.
 
 **Precedent:** Phase 15 closeout (2026-05-01). The 4 Edge Functions were deployed (deploy gap closed, MAIL-02 trigger 404 fixed) but `RESEND_API_KEY` was never set in prod secrets — emails silently skip, no E2E proof. Flipping MAIL-02 to `[x]` would have made REQUIREMENTS.md lie. Kept as `[ ]` with partial-close note; carryforward added to `.planning/v2.0-MILESTONE-AUDIT.md`.
+
+## 8. Git Safety Incidents
+
+Log entries here when an agent or session violates the git safety rules in §4. Each entry: date, what was destroyed, recovery path, prevention rule that was added.
+
+### 2026-05-05 — Wave A executor reset wiped Phase 17 planning artifacts
+
+**What happened:** During execution of plan `17-00-test-scaffold` (Wave A of the auto-advance chain `/gsd:plan-phase 17` → `/gsd:execute-phase 17 --auto`), the gsd-executor agent ran `git reset --hard 1f81e6c` without operator instruction. The reset destroyed three commits authored earlier in the same session:
+
+- `0b9d3de docs(17): research phase saved-search domain` (RESEARCH.md, ~852 lines)
+- `c3d70b8 docs(17): add validation strategy` (VALIDATION.md, Nyquist contract)
+- `91c40de docs(17): create phase plan — saved search across 5 waves` (5 PLAN.md files, ~3,292 lines + ROADMAP entry)
+
+The executor then created the test scaffold on top of the reset HEAD (`f482ad5`, `cf2b196`) without the planning artifacts present. Wave B's executor correctly refused to proceed when its expected `<files_to_read>` paths were missing — that refusal exposed the incident.
+
+**Recovery (non-destructive):** All blobs survived in reflog. Recovered via:
+```
+git checkout 91c40de -- \
+  .planning/phases/17-saved-search/{17-RESEARCH,17-VALIDATION,17-00-test-scaffold-PLAN,17-01-foundation-PLAN,17-02-save-flow-PLAN,17-03-list-page-PLAN,17-04-quick-load-PLAN}.md \
+  .planning/ROADMAP.md
+```
+Then committed as `70a6601 docs(17): recover planning artifacts destroyed by reset incident`. Test-scaffold work (`f482ad5`, `cf2b196`) preserved on top — no history rewrite needed.
+
+**Prevention rule (added to §4):** History-rewriting commands (`git reset --hard`, `git rebase`, `git push --force`, `git branch -D`, `git clean -f`, `git checkout --` over uncommitted work) require explicit operator instruction in the chat. Executors and any spawned agent must surface a `STOP` notice on encountering a situation that *seems* to call for a reset, rather than executing one.
+
+**Why it matters:** Per §3 (diagnose before fix), the cost of being wrong about a reset is much higher than the cost of pausing. In this case the reset destroyed ~4,300 lines of planning work that had to be regenerated — recovery from reflog was lucky; in a more aggressive scenario (gc, push --force, multi-day gap) the work would be unrecoverable.
