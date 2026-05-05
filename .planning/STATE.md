@@ -87,6 +87,10 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 - [Phase 21] Add Sign Out button to dashboard sidebar footer (employer + seeker) — `.planning/todos/pending/2026-05-05-add-sign-out-button-to-dashboard-sidebar-footer.md`
 
+### Roadmap Evolution
+
+- Phase 20.1 inserted after Phase 20: Standalone Admin Login Gateway + Account Bootstrap (URGENT — Phase 20 carryforward closure: dedicated `admin@topfarms.co.nz` account, separate /admin login, dashboardPathFor helper refactor, dashboard sidebar Sign Out button)
+
 ## Session Continuity
 
 Last session: 2026-05-05T01:10:00Z

@@ -223,3 +223,33 @@ Plans:
 | 19. Design System Cleanup (Tier 1) | v2.0 | 0/? | In flight (this session) | — |
 | 19b. Design System Cleanup (Tier 2) | v2.0 | 0/? | Pending (post-19) | — |
 | 20. Super Admin Dashboard | v2.0 | 8/8 | Complete | 2026-05-05 |
+
+### Phase 20.1: Standalone Admin Login Gateway + Account Bootstrap (INSERTED)
+
+**Goal:** Close Phase 20 carryforwards by separating admin authentication from the consumer login flow. Four tasks:
+
+1. **Bootstrap dedicated `admin@topfarms.co.nz` account** and transfer admin role from `harry.symmans.smith@gmail.com` (which was the Phase 20 test admin)
+2. **Standalone AdminLoginPage at `/admin`** — renders for unauthenticated or non-admin visitors. Email + password only (no Google OAuth, no Facebook). Composes Phase 19 v2 Input + Button primitives. On successful auth: `role === 'admin'` → AdminLayout; else "Access denied"
+3. **Refactor role-based redirect logic** into shared `dashboardPathFor(role)` helper. Replaces 5 duplicate inline ternaries (Login.tsx, VerifyEmail.tsx, ProtectedRoute.tsx, SelectRole.tsx, Nav.tsx) introduced in Phase 20-08 commits `0e91ff2` + `6b769b4`
+4. **Sign Out button in dashboard sidebar footer** (`Sidebar.tsx`) — currently no logout affordance visible on `/dashboard/employer` or `/dashboard/seeker` (Nav-bearing routes only). Mirror AdminSidebar's footer slot pattern. (See `.planning/todos/pending/2026-05-05-add-sign-out-button-to-dashboard-sidebar-footer.md`)
+
+**Routing change:** `/admin` no longer wrapped in existing ProtectedRoute. The `/admin` route renders AdminLoginPage when unauthenticated/non-admin, AdminLayout when `role === 'admin'`. `/login` keeps existing flow but admin-role JWT post-login redirects to `/admin` via `dashboardPathFor`.
+
+**Constraints (from Phase 20.1 brief):**
+- AdminLoginPage email + password only — NO OAuth providers
+- Use Phase 19 v2 design system; no new primitives; compose Input + Button
+- Minimal and functional — not a marketing surface
+- After 20.1 ships, admin role on `harry.symmans.smith@gmail.com` is REMOVED (operator action via Studio SQL)
+
+**Requirements**: None directly (internal tooling continuation; no public REQ-IDs). Validation derives from Phase 20-VERIFICATION.md "Carryforward to Phase 20.1" section + the Sign Out todo.
+
+**Depends on:** Phase 20
+
+**Notes:**
+- Open questions for Discuss to evaluate: (a) hybrid `/admin` route soundness re session timing/race/FoUC; (b) AdminLoginPage loading state on hard refresh; (c) "Access denied" UX (inline vs redirect); (d) regression risk to employer/seeker flows from `dashboardPathFor` refactor; (e) is bundling all 4 tasks one phase right, or does the routing change warrant its own phase?
+- Source artefacts: `.planning/phases/20-super-admin-dashboard/20-VERIFICATION.md` (Phase 20.1 Carryforward section), `.planning/v2.0-MILESTONE-AUDIT.md` (carryforward row)
+
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 20.1 to break down)
