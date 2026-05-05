@@ -13,6 +13,9 @@ import { SearchJobCard } from '@/components/ui/SearchJobCard'
 import { SearchHero } from '@/components/ui/SearchHero'
 import { Pagination } from '@/components/ui/Pagination'
 import { ActiveFilterPills } from '@/components/ui/ActiveFilterPills'
+import { hasActiveFilters, snapshotFilters, deriveAutoName } from '@/lib/savedSearch'
+import { SaveSearchModal } from '@/components/saved-search/SaveSearchModal'
+import { ReplaceOldestModal } from '@/components/saved-search/ReplaceOldestModal'
 import type { JobListing, MatchScore, EmployerVerification, TrustLevel, ApplicationStatus } from '@/types/domain'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -89,6 +92,15 @@ export function JobSearch() {
   const [totalCount, setTotalCount] = useState(0)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [expandedId, setExpandedId] = useState<string | null>(null)
+
+  // Phase 17 SRCH-13 — save-search state. Modal open flags + pending payload
+  // for the 10-cap replace flow. Lives in its own state — does NOT participate
+  // in the fetchJobs useEffect deps (Pitfall 1 / JOBS-01 regression guard).
+  const [saveModalOpen, setSaveModalOpen] = useState(false)
+  const [replaceModalOpen, setReplaceModalOpen] = useState(false)
+  const [pendingSave, setPendingSave] = useState<
+    { name: string; searchParams: string } | null
+  >(null)
 
   const { isSaved, toggleSave } = useSavedJobs(session?.user?.id ?? null)
 
@@ -395,6 +407,28 @@ export function JobSearch() {
     setExpandedId(null) // collapse card after successful apply
   }
 
+  // ─── Save-search click handler (Phase 17 SRCH-13) ──────────────────────────
+  // Cap-check shape: select id with { count: 'exact', head: true } returns the
+  // count without rows. If count >= 10, defer to ReplaceOldestModal; otherwise
+  // open SaveSearchModal normally. Race tradeoff documented in 17-RESEARCH §6.
+  async function handleSaveClick() {
+    if (!session?.user?.id) return
+    const { count } = await supabase
+      .from('saved_searches')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', session.user.id)
+
+    if ((count ?? 0) >= 10) {
+      setPendingSave({
+        name: deriveAutoName(searchParams),
+        searchParams: snapshotFilters(searchParams),
+      })
+      setReplaceModalOpen(true)
+      return
+    }
+    setSaveModalOpen(true)
+  }
+
   return (
     <div className="min-h-screen bg-surface-2">
       <SearchHero />
@@ -469,6 +503,7 @@ export function JobSearch() {
               isSaved={isSaved}
               onSaveToggle={toggleSave}
               onApply={handleInlineApply}
+              onSaveClick={handleSaveClick}
             />
           </main>
         </div>
@@ -494,9 +529,40 @@ export function JobSearch() {
             isSaved={isSaved}
             onSaveToggle={toggleSave}
             onApply={handleInlineApply}
+            onSaveClick={handleSaveClick}
           />
         </div>
       </div>
+
+      {/* Phase 17 SRCH-13 — save-search modal mounts. Only rendered for
+          authenticated seekers; SaveSearchModal + ReplaceOldestModal both
+          self-guard via `if (!isOpen) return null`. */}
+      {session?.user?.id && (
+        <>
+          <SaveSearchModal
+            isOpen={saveModalOpen}
+            onClose={() => setSaveModalOpen(false)}
+            onSaved={() => {
+              /* parent has nothing to refresh; quick-load dropdown refetches
+                 on open in Wave 4 (17-04-quick-load) */
+            }}
+            searchParams={searchParams}
+            userId={session.user.id}
+          />
+          <ReplaceOldestModal
+            isOpen={replaceModalOpen}
+            onClose={() => {
+              setReplaceModalOpen(false)
+              setPendingSave(null)
+            }}
+            onReplaced={() => {
+              /* same as above */
+            }}
+            userId={session.user.id}
+            pending={pendingSave}
+          />
+        </>
+      )}
     </div>
   )
 }
@@ -522,6 +588,9 @@ interface ResultsAreaProps {
   isSaved: (jobId: string) => boolean
   onSaveToggle: (jobId: string) => void
   onApply: (jobId: string, coverNote: string) => Promise<void>
+  /** Phase 17 SRCH-13 — opens Save (or Replace) modal. Button visibility is
+      gated on isLoggedIn + hasActiveFilters(searchParams) inside ResultsArea. */
+  onSaveClick: () => void
 }
 
 function ResultsArea({
@@ -543,7 +612,12 @@ function ResultsArea({
   isSaved,
   onSaveToggle,
   onApply,
+  onSaveClick,
 }: ResultsAreaProps) {
+  // Phase 17 SRCH-13 — Save button visibility predicate (locked decisions in
+  // 17-CONTEXT.md): hidden when no filters applied OR not signed in.
+  const canSave = isLoggedIn && hasActiveFilters(searchParams)
+
   return (
     <div>
       {/* Active filter pills */}
@@ -551,15 +625,33 @@ function ResultsArea({
 
       {/* Header: count + sort */}
       <div className="flex items-center justify-between mb-4">
-        <p className="text-[14px] font-body text-text-muted">
-          {loading && jobs.length === 0 ? (
-            <span className="inline-block w-20 h-4 bg-surface-2 rounded animate-pulse" />
-          ) : (
-            <span>
-              <strong className="text-text">{jobs.length}</strong> job{jobs.length !== 1 ? 's' : ''} found
-            </span>
+        <div className="flex items-center gap-3">
+          <p className="text-[14px] font-body text-text-muted">
+            {loading && jobs.length === 0 ? (
+              <span className="inline-block w-20 h-4 bg-surface-2 rounded animate-pulse" />
+            ) : (
+              <span>
+                <strong className="text-text">{jobs.length}</strong> job{jobs.length !== 1 ? 's' : ''} found
+              </span>
+            )}
+          </p>
+
+          {/* Phase 17 SRCH-13 — inline Save button (hidden when no filters /
+              not signed in). Clicking opens SaveSearchModal (or
+              ReplaceOldestModal if at 10-cap). */}
+          {canSave && (
+            <>
+              <span className="text-text-subtle">·</span>
+              <button
+                type="button"
+                onClick={onSaveClick}
+                className="text-brand text-[13px] hover:underline cursor-pointer"
+              >
+                Save search
+              </button>
+            </>
           )}
-        </p>
+        </div>
 
         {/* Sort selector */}
         <div className="flex items-center gap-2">
