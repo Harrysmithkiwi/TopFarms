@@ -158,7 +158,7 @@ export function ApplicantPanel({
             checked={isSelected ?? false}
             onChange={() => onSelect?.(application.id)}
             onClick={(e) => e.stopPropagation()}
-            className="w-4 h-4 rounded border-border text-brand focus:ring-moss flex-shrink-0"
+            className="w-4 h-4 rounded border-border text-brand focus:ring-brand flex-shrink-0"
           />
         )}
 

@@ -193,7 +193,7 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
                       value=""
                       checked={selectedApplicantId === null}
                       onChange={() => setSelectedApplicantId(null)}
-                      className="w-4 h-4 accent-moss"
+                      className="w-4 h-4 accent-brand"
                     />
                     <span className="text-sm font-body" style={{ color: 'var(--color-text)' }}>
                       Hired externally
@@ -216,7 +216,7 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
                         value={applicant.id}
                         checked={selectedApplicantId === applicant.id}
                         onChange={() => setSelectedApplicantId(applicant.id)}
-                        className="w-4 h-4 accent-moss"
+                        className="w-4 h-4 accent-brand"
                       />
                       <span className="text-sm font-body" style={{ color: 'var(--color-text)' }}>
                         Applicant #{applicant.id.slice(0, 8)}

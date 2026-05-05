@@ -40,8 +40,8 @@ Full details: `.planning/milestones/v1.1-ROADMAP.md`
 - [x] **Phase 16: Privacy Bypass Empirical Test** — completed 2026-05-04 (see `.planning/phases/16-privacy-bypass-test/16-PRIV02-EVIDENCE.md` PASS verdict — primary expected response observed: HTTP 403 `{"error":"Identity documents are not accessible to employers"}`; 5-layer privacy gate held under direct API attack from legitimate-employer JWT. PRIV-02 was the last public-launch privacy blocker.)
 - [ ] **Phase 17: Saved Search** — Seeker can save, load, and delete filter combinations (reordered from Phase 15)
 - [ ] **Phase 18: Tech Debt Cleanup** — Gap closure: `EMPLOYER_VISIBLE_DOCUMENT_TYPES` canonical source, dead-semantics removal, AUTH-FIX-02 root-cause investigation, VALIDATION/SUMMARY frontmatter backfill
-- [ ] **Phase 19: Design System Cleanup (Tier 1 surfaces)** — v1→v2 brand migration on landing, nav, page shells, primitives, brand-critical components, seeker-facing job search/detail. Token rename (soil/moss/meadow → brand/brand-900), Inter throughout, hex palette per Brand Spec v2.0
-- [ ] **Phase 19b: Design System Cleanup (Tier 2 — deeper dashboards)** — ApplicantPanel, ApplicantDashboard, employer-side composed components, full onboarding wizard internals; deferred from Phase 19 to keep scope shippable
+- [x] **Phase 19: Design System Cleanup (Tier 1 surfaces)** — completed 2026-05-04 (merge `50dd5b8` from `feat/v2-brand-migration`; 6-sub-phase migration: Phase 0 alias scaffolding → Phase 1 primitives → Phase 2 brand-critical → Phase 3 Tier 1 composed + seeker → Phase 4 page shells + auth + dashboards → Phase 5 landing + marketing → Phase 6 alias removal + hay→warn rename + PaymentForm v2 hex). v2 tokens canonical in `src/index.css` (`--color-brand: #16a34a`, etc.); Inter retired Fraunces + DM Sans; Brand Spec v2.0 hex palette in production. 4 straggler `-moss` class references (focus-rings + form `accent-moss`) cleaned up 2026-05-05; see `.planning/v2-migration/PHASE-19-KNOWN-STATE.md` for 2 deferred polish items now logged as todos.
+- [x] **Phase 19b: Design System Cleanup (Tier 2 — deeper dashboards)** — completed 2026-05-04 (merged in same `50dd5b8`; commit `23ad965` covered ApplicantPanel, ApplicantDashboard, DocumentUploader, FileDropzone, LivePreviewSidebar, TierCard, EmployerOnboarding/SeekerOnboarding wizard internals + all SeekerStep* + EmployerStep* surfaces).
 - [x] **Phase 20: Super Admin Dashboard** — Internal-only `/admin/*` panel for daily briefing, employer/seeker lists, placement-fee pipeline, platform health (completed 2026-05-05; see 20-VERIFICATION.md PASS verdict — 22/22 test IDs PASS, 12/12 must-haves PASS; carryforwards to Phase 20.1 documented)
 - [x] **Phase 20.1: Standalone Admin Login Gateway + Account Bootstrap** — completed 2026-05-05 (see 20.1-VERIFICATION.md PASS verdict — 7/7 CF-IDs PASS; CF-AUTH-2 carries documented runtime AccessDenied caveat — recommend fresh-session post-deploy re-verify)
 
@@ -221,8 +221,8 @@ Plans:
 | 16. Privacy Bypass Empirical Test | v2.0 | – | Complete (PRIV-02 PASS via empirical test 2026-05-04; evidence-only closure — no plan/summary on disk) | 2026-05-04 |
 | 17. Saved Search | v2.0 | 0/? | Pending | — |
 | 18. Tech Debt Cleanup | v2.0 | 0/? | Pending (gap closure) | — |
-| 19. Design System Cleanup (Tier 1) | v2.0 | 0/? | In flight (this session) | — |
-| 19b. Design System Cleanup (Tier 2) | v2.0 | 0/? | Pending (post-19) | — |
+| 19. Design System Cleanup (Tier 1) | v2.0 | 7/7 | Complete (Phases 0-6 merged via `50dd5b8`; 4 straggler refs cleaned up 2026-05-05) | 2026-05-04 |
+| 19b. Design System Cleanup (Tier 2) | v2.0 | 1/1 | Complete (commit `23ad965` Tier 2 sweep merged in `50dd5b8`) | 2026-05-04 |
 | 20. Super Admin Dashboard | v2.0 | 8/8 | Complete | 2026-05-05 |
 | 20.1. Standalone Admin Login Gateway + Account Bootstrap | v2.0 | 5/5 | Complete | 2026-05-05 |
 

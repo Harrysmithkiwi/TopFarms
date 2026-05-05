@@ -88,7 +88,7 @@ export function SearchJobCard({
       <button
         type="button"
         onClick={onToggle}
-        className="w-full text-left p-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-moss rounded-[12px]"
+        className="w-full text-left p-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-[12px]"
       >
         <div className="flex items-start gap-4">
           {/* Left: content */}
