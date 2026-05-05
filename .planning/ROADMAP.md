@@ -122,12 +122,12 @@ Plans:
 **Depends on**: Nothing (independent feature work; reordered after gap closure phases)
 **Requirements**: SRCH-13, SRCH-14, SRCH-15
 **Note**: Reordered from former Phase 15. Gap closure phases (15, 16) execute first because MAIL-02 is silently broken in production now and PRIV-02 is a public-launch blocker. **Plan this phase right before execution** — not now — to avoid burning context on stale planning and to absorb any architectural learnings from the email pipeline work (notification patterns may inform saved-search alert delivery).
-**Plans:** 3/5 plans executed
+**Plans:** 4/5 plans executed
 Plans:
-- [ ] 17-00-test-scaffold-PLAN.md — Wave 0 test scaffolding: 6 vitest stubs + 1 UAT markdown for VALIDATION.md test IDs
-- [ ] 17-01-foundation-PLAN.md — Migration 024_saved_searches.sql via Studio + SavedSearch type + snapshotFilters/deriveAutoName pure functions (turns saved-search-snapshot.test.ts GREEN)
-- [ ] 17-02-save-flow-PLAN.md — SaveSearchModal (RHF+Zod, inline role=alert) + ReplaceOldestModal (10-cap) + JobSearch Save button wiring (turns modal + cap tests GREEN)
-- [ ] 17-03-list-page-PLAN.md — SavedSearches.tsx dashboard route (list + load + delete-with-undo + inline rename) + Sidebar nav + main.tsx route registration (turns list test GREEN)
+- [x] 17-00-test-scaffold-PLAN.md — Wave 0 test scaffolding: 6 vitest stubs + 1 UAT markdown for VALIDATION.md test IDs
+- [x] 17-01-foundation-PLAN.md — Migration 024_saved_searches.sql via Studio + SavedSearch type + snapshotFilters/deriveAutoName pure functions (turns saved-search-snapshot.test.ts GREEN)
+- [x] 17-02-save-flow-PLAN.md — SaveSearchModal (RHF+Zod, inline role=alert) + ReplaceOldestModal (10-cap) + JobSearch Save button wiring (turns modal + cap tests GREEN)
+- [x] 17-03-list-page-PLAN.md — SavedSearches.tsx dashboard route (list + load + delete-with-undo + inline rename) + Sidebar nav + main.tsx route registration (turns list test GREEN)
 - [ ] 17-04-quick-load-PLAN.md — SavedSearchesDropdown (top 5 + View all) integrated in JobSearch ResultsArea + JOBS-01 regression guard (turns quick-load + load-integration tests GREEN)
 **Success Criteria** (what must be TRUE):
   1. A logged-in seeker with active filters can click "Save search", enter a name, and have the current filter combination persisted to the database
@@ -226,7 +226,7 @@ Plans:
 | 14. Bug Fixes | v2.0 | 3/3 | Complete (PRIV-02 deferred to Phase 16) | 2026-04-29 |
 | 15. Email Pipeline Deploy & Verify | v2.0 | 3/4 | Complete (15-02 deferred; MAIL-01/02 partial-close) | 2026-05-01 |
 | 16. Privacy Bypass Empirical Test | v2.0 | – | Complete (PRIV-02 PASS via empirical test 2026-05-04; evidence-only closure — no plan/summary on disk) | 2026-05-04 |
-| 17. Saved Search | 3/5 | In Progress|  | — |
+| 17. Saved Search | 4/5 | In Progress|  | — |
 | 18. Tech Debt Cleanup | v2.0 | 0/? | Pending (gap closure) | — |
 | 19. Design System Cleanup (Tier 1) | v2.0 | 7/7 | Complete (Phases 0-6 merged via `50dd5b8`; 4 straggler refs cleaned up 2026-05-05) | 2026-05-04 |
 | 19b. Design System Cleanup (Tier 2) | v2.0 | 1/1 | Complete (commit `23ad965` Tier 2 sweep merged in `50dd5b8`) | 2026-05-04 |
