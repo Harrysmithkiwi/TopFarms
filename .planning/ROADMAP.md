@@ -42,7 +42,7 @@ Full details: `.planning/milestones/v1.1-ROADMAP.md`
 - [ ] **Phase 18: Tech Debt Cleanup** — Gap closure: `EMPLOYER_VISIBLE_DOCUMENT_TYPES` canonical source, dead-semantics removal, AUTH-FIX-02 root-cause investigation, VALIDATION/SUMMARY frontmatter backfill
 - [ ] **Phase 19: Design System Cleanup (Tier 1 surfaces)** — v1→v2 brand migration on landing, nav, page shells, primitives, brand-critical components, seeker-facing job search/detail. Token rename (soil/moss/meadow → brand/brand-900), Inter throughout, hex palette per Brand Spec v2.0
 - [ ] **Phase 19b: Design System Cleanup (Tier 2 — deeper dashboards)** — ApplicantPanel, ApplicantDashboard, employer-side composed components, full onboarding wizard internals; deferred from Phase 19 to keep scope shippable
-- [ ] **Phase 20: Super Admin Dashboard** — Internal-only `/admin/*` panel for daily briefing, employer/seeker lists, placement-fee pipeline, platform health (discuss-phase next session)
+- [x] **Phase 20: Super Admin Dashboard** — Internal-only `/admin/*` panel for daily briefing, employer/seeker lists, placement-fee pipeline, platform health (completed 2026-05-05; see 20-VERIFICATION.md PASS verdict — 22/22 test IDs PASS, 12/12 must-haves PASS; carryforwards to Phase 20.1 documented)
 
 ## Phase Details
 
@@ -186,17 +186,17 @@ Plans:
 **Goal**: Internal-only admin panel at `/admin/*` for Harry to monitor and operate the TopFarms marketplace — daily briefing, employer/seeker lists, placement-fee pipeline, platform health (Edge Function errors, cron timestamps, pg_net log)
 **Depends on**: Phase 19 (built on top of clean v2 design system)
 **Requirements**: None directly (internal tooling; no public-facing REQ-IDs). Validation derives from CONTEXT.md MVP must-haves and 20-VALIDATION.md test IDs (22 IDs).
-**Status**: Plans authored; ready for /gsd:execute-phase
-**Plans:** 7/8 plans executed
+**Status**: Complete — see 20-VERIFICATION.md PASS verdict (22/22 test IDs PASS, 12/12 must-haves PASS); Phase 20.1 carryforward authored
+**Plans:** 8/8 plans executed
 Plans:
 - [x] 20-01-PLAN.md — Wave 0 test scaffolding: 14 vitest stubs + 1 UAT markdown for all VALIDATION.md test IDs
 - [x] 20-02-PLAN.md — Migration 023_admin_rpcs.sql via Supabase Studio (admin_audit_log + admin_notes + admin_metrics_cache + user_roles.is_active + 10 SECURITY DEFINER RPCs); pre-migration RLS baseline capture
 - [x] 20-03-PLAN.md — Edge Function get-resend-stats source + supabase/config.toml verify_jwt=false block (cached-metric pattern)
 - [x] 20-04-PLAN.md — ProtectedRoute requiredRole 'admin' extension + AdminLayout + AdminSidebar + 5 /admin/* routes registered
-- [ ] 20-05-PLAN.md — AdminTable + ProfileDrawer + AdminNotesField reusable components + 4 test files filled (drawer, suspend, notes, audit)
-- [ ] 20-06-PLAN.md — DailyBriefing + EmployerList + SeekerList pages; 4 test files filled (daily, employer, seeker, resend-cache)
-- [ ] 20-07-PLAN.md — JobsManagement + PlacementPipeline pages; 2 test files filled (jobs, placements)
-- [ ] 20-08-PLAN.md — Edge Function deploy + pg_cron schedule + bootstrap UAT + post-migration RLS proof + phase 20-VERIFICATION.md + ROADMAP flip to [x]
+- [x] 20-05-PLAN.md — AdminTable + ProfileDrawer + AdminNotesField reusable components + 4 test files filled (drawer, suspend, notes, audit)
+- [x] 20-06-PLAN.md — DailyBriefing + EmployerList + SeekerList pages; 4 test files filled (daily, employer, seeker, resend-cache)
+- [x] 20-07-PLAN.md — JobsManagement + PlacementPipeline pages; 2 test files filled (jobs, placements)
+- [x] 20-08-PLAN.md — Edge Function deploy + pg_cron schedule + bootstrap UAT + post-migration RLS proof + phase 20-VERIFICATION.md + ROADMAP flip to [x]
 **Notes**:
 - Role-gated to existing `admin` role (CHECK constraint already includes 'admin' per 001_initial_schema.sql:13 — no constraint migration needed)
 - Protected route tree at `/admin/*` inside existing React app (same Vercel deployment, same Supabase project)
@@ -222,4 +222,4 @@ Plans:
 | 18. Tech Debt Cleanup | v2.0 | 0/? | Pending (gap closure) | — |
 | 19. Design System Cleanup (Tier 1) | v2.0 | 0/? | In flight (this session) | — |
 | 19b. Design System Cleanup (Tier 2) | v2.0 | 0/? | Pending (post-19) | — |
-| 20. Super Admin Dashboard | 7/8 | In Progress|  | — |
+| 20. Super Admin Dashboard | v2.0 | 8/8 | Complete | 2026-05-05 |

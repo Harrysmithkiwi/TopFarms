@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: executing
-stopped_at: "Phase 20-07 complete — 5 admin pages real (DailyBriefing, EmployerList, SeekerList, JobsManagement, PlacementPipeline); JobsManagement wires drawer-on-employer-behind-job; PlacementPipeline read-only with Stripe click-through; ADMIN-VIEW-JOBS + ADMIN-VIEW-PLAC tests green; next: plan 20-08 (manual UAT bootstrap + 3 live-RPC integration test files)"
-last_updated: "2026-05-04T22:21:10.179Z"
-last_activity: 2026-05-04 — 20-07 complete; JobsManagement + PlacementPipeline pages composed from AdminTable. JobsManagement wires ProfileDrawer to row.employer_id (drawer-on-view-4 pattern, initialActive=true safe default). PlacementPipeline does NOT wire drawer (placements aren't people) — Stripe click-through with no-prefix URLs (RESEARCH.md Pitfall 6) replaces profile drill-down. All 5 admin routes now point to real components. 6 new shape-contract assertions green (3 ADMIN-VIEW-JOBS + 3 ADMIN-VIEW-PLAC); 11 of 14 admin test files have real bodies (3 live-RPC integration tests deferred to plan 20-08 UAT per plan 20-05 decision).
+stopped_at: "Phase 20 COMPLETE — Super Admin Dashboard shipped (22/22 ADMIN-* test IDs PASS, 12/12 CONTEXT.md MVP must-haves PASS, all 8 plans executed, ROADMAP flipped [x] 2026-05-05). Mid-flight: admin redirect bug fixed across 5 callsites (commits 0e91ff2 + 6b769b4); refactor to dashboardPathFor(role) helper carried forward to Phase 20.1. Next: insert Phase 20.1 (standalone admin login redesign + admin@topfarms.nz dedicated account) via /gsd:insert-phase 20.1."
+last_updated: "2026-05-05T01:10:00Z"
+last_activity: 2026-05-05 — Phase 20 closeout. Plan 20-08 final wave shipped: backend test bodies (admin-rpc-gate, admin-rpc-shapes, admin-rls-not-widened) green; Edge Function get-resend-stats deployed live + ADMIN_METRICS_WEBHOOK_SECRET set in Studio (smoke=200); pg_cron jobid=4 firing every 15 min, cache live (Email Delivery 100% in DailyBriefing UAT); ADMIN-BOOTSTRAP-1 manual UAT pass (operator confirmed /admin renders + drawer works); ADMIN-RLS-NEG-1/2 finalized PASS (auto-confirmed on prior post-migration baseline [1,3,2,2,1,2] captured 2026-05-04T21:40:47Z); 20-VERIFICATION.md authored with full 22/22 test IDs PASS + 12/12 must-haves PASS + Phase 20.1 Carryforward section per CLAUDE.md §7. Mid-flight admin-redirect bug across 5 callsites (Login, VerifyEmail, ProtectedRoute, SelectRole, Nav) fixed across commits 0e91ff2 + 6b769b4; refactor to shared dashboardPathFor(role) helper deferred to Phase 20.1. Full vitest green (166 passed | 113 todo | 0 failed); pnpm tsc --noEmit clean. ROADMAP Phase 20 flipped [x] with 2026-05-05 completion date; v2.0-MILESTONE-AUDIT.md gains Phase 20.1 carryforward row.
 progress:
   total_phases: 10
-  completed_phases: 4
-  total_plans: 19
-  completed_plans: 18
+  completed_phases: 5
+  total_plans: 20
+  completed_plans: 19
 ---
 
 # Project State
@@ -24,10 +24,10 @@ See: .planning/PROJECT.md (updated 2026-04-03)
 
 ## Current Position
 
-Phase: 20 of 20+ — Super Admin Dashboard
-Plan: 20-07 complete — moving to 20-08 (next plan, final)
-Status: In progress (plan 20-08 next — manual UAT + live-RPC integration tests + Edge Function deploy)
-Last activity: 2026-05-04 — 20-07 complete; JobsManagement + PlacementPipeline pages composed from AdminTable. JobsManagement wires ProfileDrawer to row.employer_id (drawer-on-view-4 pattern, initialActive=true safe default). PlacementPipeline does NOT wire drawer (placements aren't people) — Stripe click-through with no-prefix URLs (RESEARCH.md Pitfall 6) replaces profile drill-down. All 5 admin routes now point to real components. 6 new shape-contract assertions green (3 ADMIN-VIEW-JOBS + 3 ADMIN-VIEW-PLAC); 11 of 14 admin test files have real bodies (3 live-RPC integration tests deferred to plan 20-08 UAT per plan 20-05 decision).
+Phase: 20 of 20+ — Super Admin Dashboard — **COMPLETE 2026-05-05**
+Plan: 20-08 complete — phase shipped
+Status: Complete — Phase 20 fully shipped; next-up Phase 20.1 (standalone admin login redesign) to be inserted via /gsd:insert-phase 20.1
+Last activity: 2026-05-05 — Phase 20 closeout. Plan 20-08 final wave shipped: backend test bodies (admin-rpc-gate, admin-rpc-shapes, admin-rls-not-widened) green; Edge Function get-resend-stats deployed live + ADMIN_METRICS_WEBHOOK_SECRET set in Studio (smoke=200); pg_cron jobid=4 firing every 15 min, cache live (Email Delivery 100% in DailyBriefing UAT); ADMIN-BOOTSTRAP-1 manual UAT pass; ADMIN-RLS-NEG-1/2 finalized PASS (auto-confirmed on prior post-migration baseline [1,3,2,2,1,2]); 20-VERIFICATION.md authored with full 22/22 test IDs PASS + 12/12 must-haves PASS + Phase 20.1 Carryforward per CLAUDE.md §7. Mid-flight admin-redirect bug across 5 callsites fixed (commits 0e91ff2 + 6b769b4); refactor to shared dashboardPathFor(role) helper deferred to Phase 20.1. Full vitest green; tsc clean; ROADMAP Phase 20 flipped [x]; v2.0-MILESTONE-AUDIT.md gains Phase 20.1 carryforward row.
 
 ## Accumulated Context
 
@@ -69,6 +69,12 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 20]: Phase 20-07: JobsManagement drawer wired to row.employer_id with initialActive=true safe default (JobRow has no employer is_active flag); ProfileDrawer refetches via admin_get_user_profile on mount. CONTEXT.md MVP scope item 6 (drawer on views 2/3/4) honored.
 - [Phase 20]: Phase 20-07: PlacementPipeline does NOT wire ProfileDrawer (placements are not people). Stripe click-through replaces the profile drill-down for view 5; stripeUrl() helper uses no-prefix form (RESEARCH.md Pitfall 6) — invoice link preferred, customer fallback.
 - [Phase 20]: Phase 20-07: 11 of 14 admin test files have real bodies post-20-07; 3 still-todo (admin-rpc-gate, admin-rpc-shapes, admin-rls-not-widened) are integration tests requiring live Supabase + admin role per plan 20-05 deferral. Plan 20-08 manual UAT (ADMIN-BOOTSTRAP-1) completes those.
+- [Phase 20-08]: Edge Function get-resend-stats deployed live (smoke=200); ADMIN_METRICS_WEBHOOK_SECRET set in Studio (Edge Functions → Secrets). Material implication: smoke=200 (not 503) confirms RESEND_API_KEY is live in production secrets — Phase 15 MAIL-02 carryforward materially closed at runtime layer.
+- [Phase 20-08]: pg_cron `refresh-resend-stats` jobid=4 firing every 15 min (Studio-applied because schedule body embeds runtime ADMIN_METRICS_WEBHOOK_SECRET — migration files never contain secrets). Cache row live in admin_metrics_cache (rate/total/delivered/opened/clicked); DailyBriefing Email Delivery card shows 100% in UAT.
+- [Phase 20-08]: ADMIN-BOOTSTRAP-1 UAT empirical pass — Studio SQL admin role assigned to harry.symmans.smith@gmail.com; sign-out + sign-in cycle; /admin renders AdminLayout + AdminSidebar (5 nav + Back to app) + DailyBriefing live; EmployerList shows real production data (Test Farm UAT row); ProfileDrawer opens with Active toggle + Notes + Activity log. TEST RUN — admin role on this email to be removed in Phase 20.1.
+- [Phase 20-08]: Mid-flight deviation Rule 1 — admin-redirect bug fixed across 5 callsites (Login, VerifyEmail, ProtectedRoute, SelectRole, Nav). Each callsite interpolated `admin` into `/dashboard/${role}` template producing 404. Inline ternary fix at each callsite (`role === 'admin' ? '/admin' : `/dashboard/${role}``); refactor to shared `dashboardPathFor(role)` helper deferred to Phase 20.1.
+- [Phase 20-08]: ADMIN-RLS-NEG-1/2 auto-confirmed PASS on prior post-migration baseline. The load-bearing measurement is the immediate post-apply re-run captured in 20-02 SUMMARY at 2026-05-04T21:40:47Z (operator-confirmed [1,3,2,2,1,2], exact match to pre-migration [1,3,2,2,1,2]). A later re-run after UAT would only show NATURAL_GROWTH (Test Farm UAT employer + 2 jobs created) and offer no additional drift evidence.
+- [Phase 20-08]: 20-VERIFICATION.md authored — 22/22 ADMIN-* test IDs PASS, 12/12 CONTEXT.md MVP must-haves PASS, all 8 plans PASS, Phase 20.1 Carryforward section per CLAUDE.md §7 partial-close discipline. ROADMAP Phase 20 flipped [x] with 2026-05-05 completion date. v2.0-MILESTONE-AUDIT.md gains Phase 20.1 Carryforward row.
 
 ### Blockers/Concerns
 
@@ -79,6 +85,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-04T22:21:10.176Z
-Stopped at: Phase 20-07 complete — 5 admin pages real (DailyBriefing, EmployerList, SeekerList, JobsManagement, PlacementPipeline); JobsManagement wires drawer-on-employer-behind-job; PlacementPipeline read-only with Stripe click-through; ADMIN-VIEW-JOBS + ADMIN-VIEW-PLAC tests green; next: plan 20-08 (manual UAT bootstrap + 3 live-RPC integration test files)
+Last session: 2026-05-05T01:10:00Z
+Stopped at: Phase 20 COMPLETE — Super Admin Dashboard shipped (22/22 ADMIN-* test IDs PASS, 12/12 CONTEXT.md MVP must-haves PASS, all 8 plans executed, ROADMAP flipped [x] 2026-05-05). Mid-flight admin-redirect bug fixed across 5 callsites (commits 0e91ff2 + 6b769b4); refactor to dashboardPathFor(role) helper carried forward to Phase 20.1. Full vitest green (166 passed | 113 todo | 0 failed); pnpm tsc --noEmit clean. Next: insert Phase 20.1 (standalone admin login redesign + admin@topfarms.nz dedicated account + dashboardPathFor helper refactor) via /gsd:insert-phase 20.1.
 Resume file: None

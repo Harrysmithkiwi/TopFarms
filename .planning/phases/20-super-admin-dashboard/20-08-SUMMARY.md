@@ -56,8 +56,10 @@ patterns-established:
 requirements-completed: []
 
 # Metrics
-duration: in-progress (Tasks 1 + 2 complete; Tasks 3-6 pending)
-completed: in-progress
+duration: ~2.5 hours wall-clock across 6 tasks (started 2026-05-04T22:21:10Z; closed 2026-05-05T01:10:00Z)
+completed: 2026-05-05
+status: complete
+completed_at: 2026-05-05T01:10:00Z
 ---
 
 # Phase 20 Plan 08: Final Wave Summary (in-progress)
@@ -73,8 +75,8 @@ completed: in-progress
 | 3    | pg_cron schedule refresh-resend-stats every 15min via Studio SQL                     | DONE        | e773f16                     |
 | —    | Mid-flight: admin redirect bug fixed across 5 callsites (deviation Rule 1)           | DONE        | 0e91ff2 + 6b769b4           |
 | 4    | ADMIN-BOOTSTRAP-1 manual UAT (Studio SQL admin role + sign-out/sign-in + /admin nav) | DONE        | eeec5ec                     |
-| 5    | Post-migration RLS baselines + finalise admin-rls-not-widened.test.ts                | DONE        | this commit                 |
-| 6    | 20-VERIFICATION.md + ROADMAP Phase 20 flip [x] + full vitest green                   | PENDING     | —                           |
+| 5    | Post-migration RLS baselines + finalise admin-rls-not-widened.test.ts                | DONE        | eb25ac3                     |
+| 6    | 20-VERIFICATION.md + ROADMAP Phase 20 flip [x] + full vitest green                   | DONE        | this commit                 |
 
 ## Task 1: Backend test bodies (DONE)
 
@@ -184,4 +186,33 @@ The empirical RLS-not-widened proof is the **same-instant-after-migration** meas
 
 **Auto-confirm justification (auto-mode `workflow.auto_advance: true`):** the prior post-migration baseline already exists in 20-02-SUMMARY.md with operator confirmation timestamp; per system-prompt auto-mode rules a `checkpoint:human-verify` whose evidence has already been captured upstream is auto-approved.
 
-## Self-Check: pending until plan complete
+## Phase ship (Task 6 — DONE)
+
+`.planning/phases/20-super-admin-dashboard/20-VERIFICATION.md` authored — 22/22 VALIDATION.md test IDs PASS, 12/12 CONTEXT.md MVP must-haves PASS, plan-by-plan receipts captured, infrastructure receipts (Edge Function deploy + cron schedule + bootstrap UAT + RLS proof) captured, Phase 20.1 Carryforward section authored per CLAUDE.md §7 partial-close discipline.
+
+`.planning/ROADMAP.md` updated:
+
+- Phase 20 row in v2.0 Launch Readiness section flipped `[ ]` → `[x]` with completion date 2026-05-05
+- Phase 20 sub-section status flipped to `Complete — see 20-VERIFICATION.md PASS verdict`
+- All 8 plan checkboxes flipped `[ ]` → `[x]`
+- Progress table row updated to `8/8 | Complete | 2026-05-05`
+
+`.planning/v2.0-MILESTONE-AUDIT.md` updated:
+
+- Carryforward row "Phase 20.1 — Standalone admin login redesign + dedicated admin account" appended with effort estimate, action steps, and reference evidence pointers
+
+**Final test suite:** `pnpm test` → 26 passed | 7 skipped (33 files) | 166 passed | 113 todo (279 tests) | 0 failed.
+**Final type check:** `pnpm tsc --noEmit` → exit 0, clean.
+
+## Self-Check: PASSED
+
+All claims in this SUMMARY verified:
+
+- `tests/admin-bootstrap-UAT.md` exists with `## Run 2026-05-05T00:30:00Z` block and 5 sign-off `[x]` checkboxes — FOUND
+- `tests/admin-rls-not-widened.test.ts` PRE_MIGRATION_BASELINES + POST_MIGRATION_BASELINES populated with `[1, 3, 2, 2, 1, 2]` (no `-1` placeholders) — FOUND
+- `.planning/phases/20-super-admin-dashboard/20-VERIFICATION.md` exists with 22+ PASS rows + Carryforward section — FOUND
+- `.planning/ROADMAP.md` Phase 20 row flipped `[x]` with date 2026-05-05 — FOUND
+- `.planning/v2.0-MILESTONE-AUDIT.md` has Phase 20.1 Carryforward row — FOUND
+- Commits 262aad7 (Task 1), 79e16d9 (Task 2), e773f16 (Task 3), 0e91ff2 + 6b769b4 (mid-flight redirect-fix), eeec5ec (Task 4), eb25ac3 (Task 5) all present in `git log` — FOUND
+- `pnpm test` exits 0 with 0 failed — VERIFIED
+- `pnpm tsc --noEmit` exits 0 — VERIFIED
