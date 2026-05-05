@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: verifying
-stopped_at: Completed 17-00-test-scaffold-PLAN.md (commit f482ad5); ready for 17-01-foundation-PLAN.md
-last_updated: "2026-05-05T06:37:02.577Z"
-last_activity: "2026-05-05 — Phase 20.1 Plan 05 shipped (closes phase 20.1 entirely). Operator multi-stage actions across two sessions: Studio Auth created `admin@topfarms.co.nz` (auth.users.id=`ab48ed2b-0336-4b1d-8937-5d3eff50faf6`); Studio SQL UPSERT assigned role=admin/is_active=true; MCP read-only verification confirmed; browser UAT empirically confirmed AdminLoginPage renders for unauth /admin + admin sign-in transitions to AdminLayout (CF-AUTH-1, CF-AUTH-2 unauth+admin branches, CF-AUTH-3 redirect, CF-ACCOUNT-1 all PASS); Studio SQL UPDATE demoted `harry.symmans.smith@gmail.com` to role=seeker/is_active=true; MCP verification confirmed; regression UAT 8a confirmed runtime role transition. CF-AUTH-2 anomaly observed (direct /admin nav after old-account sign-in produced /dashboard/admin → 404) was diagnosed (grep + unit test + helper test ruled out code regression); operator-attributed stale-cache; documented PASS-with-caveat per CLAUDE §7. All closure docs in single atomic commit per CLAUDE §4 (UAT.md + 20.1-VERIFICATION.md + 20.1-SUMMARY.md + 20.1-05-SUMMARY.md + ROADMAP.md + v2.0-MILESTONE-AUDIT.md + 20-VERIFICATION.md + STATE.md)."
+stopped_at: Completed 17-01-foundation-PLAN.md (commit 1c6a0fc); ready for 17-02-save-flow + 17-03-list-page (parallel)
+last_updated: "2026-05-05T07:31:18Z"
+last_activity: "2026-05-05 — Phase 17 Plan 01 (foundation wave) shipped. saved_searches table live in production (Studio-applied per CLAUDE §2; registry-rowless state accepted) with 4 RLS policies (per-operation, pure-ownership via auth.uid() = user_id) + 2 indexes (user_id, user_id+created_at DESC) + FK CASCADE on auth.users(id). SavedSearch TS interface added to src/types/domain.ts at line 217 (after SeekerDocument); src/lib/savedSearch.ts shipped with FILTER_KEYS (15-key tuple, page excluded, sort included), snapshotFilters (URLSearchParams round-trip lossless), deriveAutoName (multi-axis priority labeller: shed_type → role_type → region → accommodation/visa flags + 50-char ellipsis truncate + ISO date fallback), hasActiveFilters (Save-button visibility predicate). Wave 0 baseline 174 passed | 160 todo → 187 passed | 147 todo (+13 GREEN, -13 todos, zero failures, tsc clean). Atomic implementation commit per CLAUDE §4 (1c6a0fc, 4 files +289/-22) + metadata commit. Operator-action gate (Studio SQL apply) handled by orchestrator before executor spawned; runtime verification via MCP read-only SELECTs (pg_class.relrowsecurity=true, 4 rows in pg_policy, 3 rows in pg_indexes including pkey). SRCH-13 NOT flipped to [x] in REQUIREMENTS.md per CLAUDE §7 — only foundation gap closed; modal/cap/E2E gaps still open."
 progress:
   total_phases: 11
   completed_phases: 6
   total_plans: 24
-  completed_plans: 25
+  completed_plans: 26
 ---
 
 # Project State
@@ -24,10 +24,10 @@ See: .planning/PROJECT.md (updated 2026-04-03)
 
 ## Current Position
 
-Phase: 20.1 of 20+ — Standalone Admin Login Gateway + Account Bootstrap — COMPLETE 2026-05-05
-Plan: 20.1-05 complete (operator UAT + role transfer + closure docs trio in single atomic commit); Phase 20.1 fully closed
-Status: Phase 20.1 SHIPPED — 5/5 plans executed; 7/7 CF-IDs PASS (CF-AUTH-2 carries documented runtime AccessDenied caveat — fresh-session post-deploy re-verify recommended, no-blocker); ROADMAP.md Phase 20.1 flipped [x]; v2.0-MILESTONE-AUDIT.md Phase 20.1 carryforward CLOSED. Outstanding v2.0 phases: 16 (Privacy Bypass), 17 (Saved Search), 18 (Tech Debt), 19/19b (Design System).
-Last activity: 2026-05-05 — Phase 20.1 Plan 05 shipped (closes phase 20.1 entirely). Operator multi-stage actions across two sessions: Studio Auth created `admin@topfarms.co.nz` (auth.users.id=`ab48ed2b-0336-4b1d-8937-5d3eff50faf6`); Studio SQL UPSERT assigned role=admin/is_active=true; MCP read-only verification confirmed; browser UAT empirically confirmed AdminLoginPage renders for unauth /admin + admin sign-in transitions to AdminLayout (CF-AUTH-1, CF-AUTH-2 unauth+admin branches, CF-AUTH-3 redirect, CF-ACCOUNT-1 all PASS); Studio SQL UPDATE demoted `harry.symmans.smith@gmail.com` to role=seeker/is_active=true; MCP verification confirmed; regression UAT 8a confirmed runtime role transition. CF-AUTH-2 anomaly observed (direct /admin nav after old-account sign-in produced /dashboard/admin → 404) was diagnosed (grep + unit test + helper test ruled out code regression); operator-attributed stale-cache; documented PASS-with-caveat per CLAUDE §7. All closure docs in single atomic commit per CLAUDE §4 (UAT.md + 20.1-VERIFICATION.md + 20.1-SUMMARY.md + 20.1-05-SUMMARY.md + ROADMAP.md + v2.0-MILESTONE-AUDIT.md + 20-VERIFICATION.md + STATE.md).
+Phase: 17 of 20+ — Saved Search — IN PROGRESS (Wave 1 / Plan 01 shipped 2026-05-05)
+Plan: 17-01-foundation complete (commit 1c6a0fc); next up: 17-02-save-flow + 17-03-list-page (parallel — no shared file edits)
+Status: Phase 17 Wave 1 SHIPPED. saved_searches table live in production with full RLS shape; pure-function helpers + types ready for Waves 2-4 to compose. Wave 0 baseline 174 passed | 160 todo → 187 passed | 147 todo. SRCH-13 partial-close per CLAUDE §7 (foundation gap CLOSED; modal/cap/E2E gaps OPEN). Outstanding v2.0 phases: 16 (Privacy Bypass), 17 (Saved Search — IN PROGRESS), 18 (Tech Debt), 19/19b (Design System).
+Last activity: 2026-05-05 — Phase 17 Plan 01 (foundation wave) shipped. saved_searches table live in production (Studio-applied per CLAUDE §2; registry-rowless state accepted) with 4 RLS policies (per-operation, pure-ownership via auth.uid() = user_id) + 2 indexes (user_id, user_id+created_at DESC) + FK CASCADE on auth.users(id). SavedSearch TS interface added to src/types/domain.ts at line 217; src/lib/savedSearch.ts shipped with FILTER_KEYS (15-key tuple, page excluded, sort included), snapshotFilters (URLSearchParams round-trip lossless), deriveAutoName (multi-axis priority labeller with 50-char ellipsis truncate + ISO date fallback), hasActiveFilters (Save-button visibility predicate). Wave 0 baseline 174 passed | 160 todo → 187 passed | 147 todo (+13 GREEN, -13 todos, zero failures, tsc clean). Atomic implementation commit per CLAUDE §4 (1c6a0fc, 4 files +289/-22) + metadata commit. Operator-action gate (Studio SQL apply) handled by orchestrator before executor spawned; runtime verification via MCP read-only SELECTs (pg_class.relrowsecurity=true, 4 rows in pg_policy, 3 rows in pg_indexes including pkey). SRCH-13 NOT flipped to [x] in REQUIREMENTS.md per CLAUDE §7 — only foundation gap closed; modal/cap/E2E gaps still open.
 
 ## Accumulated Context
 
@@ -90,6 +90,11 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 20.1-05]: Atomic docs-trio commit per CLAUDE §4: 8 files in single commit (tests/admin-bootstrap-UAT.md + 20.1-VERIFICATION.md + 20.1-SUMMARY.md + 20.1-05-SUMMARY.md + ROADMAP.md + v2.0-MILESTONE-AUDIT.md + 20-VERIFICATION.md + STATE.md). Splitting would produce noisy multi-commit close for what's logically the closure of Phase 20.1.
 - [Phase 17-00]: Wave 0 scaffold-first: 1 stub file per VALIDATION.md per-task row, it.todo() over it.skip() so vitest reports todos as third state (visible CI scaffolding signal). 47 todos across 6 files + 1 UAT markdown frame Waves 1-4.
 - [Phase 17-00]: Single load-integration stub guards both SRCH-14 dropdown and SRCH-15 list-page Load — both call navigate('/jobs?<params>') with same shape, so one regression file protects JOBS-01 fetchJobs-loop fix from commit 7401116 across both call sites.
+- [Phase 17-01]: Migration 024_saved_searches applied via Supabase Studio SQL Editor per CLAUDE §2 (preferred path even when pg_net not used — matches Phase 20-02/20-08 precedent). Registry-rowless state accepted; runtime artefacts (pg_class.relrowsecurity=true, 4 rows in pg_policy, 3 rows in pg_indexes including pkey) are the load-bearing evidence. Phase 18 may sweep registry/disk drift in bulk.
+- [Phase 17-01]: Pure-ownership RLS via auth.uid() = user_id without get_user_role() overlay — saved searches don't need role-gating; ownership is sufficient (mirrors saved_jobs 015 precedent). Per-operation policies (SELECT/INSERT/UPDATE/DELETE separately) follow 019_seeker_documents granular-audit pattern. Bare auth.uid() form (not (SELECT auth.uid())) preserved for Phase 18 auth_rls_initplan bulk sweep.
+- [Phase 17-01]: FILTER_KEYS exported as `as const` tuple from src/lib/savedSearch.ts (15 keys mirroring JobSearch.tsx:170-176 handleClearAll allowlist EXCEPT 'page' excluded and 'sort' included). page exclusion = locked decision (saved searches always start at page 1); sort inclusion = RESEARCH §2 recommendation (user-meaningful). Drift risk documented in src/lib/savedSearch.ts header (Pitfall 6).
+- [Phase 17-01]: deriveAutoName multi-axis priority pattern: shed_type (single label or N count) → role_type (fallback if no shed_type) → region (qualifier with `in`) → accommodation flag (`+ accommodation`) → visa flag (`+ visa sponsorship`) → ISO date fallback. 50-char truncate with U+2026 ellipsis. Reusable for any future "derive readable label from URL params" need across the codebase.
+- [Phase 17-01]: Atomic single-commit landing of migration + types + lib + test (1c6a0fc, 4 files +289/-22) per CLAUDE §4. Splitting into 4 commits would create 4 commits for what is logically one foundation wave; bundling matches Phase 20.1-04 TDD-bundle and 17-00 scaffold precedent.
 
 ### Blockers/Concerns
 
@@ -108,6 +113,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-05T06:37:02.574Z
-Stopped at: Completed 17-00-test-scaffold-PLAN.md (commit f482ad5); ready for 17-01-foundation-PLAN.md
+Last session: 2026-05-05T07:31:18Z
+Stopped at: Completed 17-01-foundation-PLAN.md (commit 1c6a0fc); ready for 17-02-save-flow + 17-03-list-page (parallel)
 Resume file: None

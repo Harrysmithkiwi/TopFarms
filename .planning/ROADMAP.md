@@ -122,7 +122,7 @@ Plans:
 **Depends on**: Nothing (independent feature work; reordered after gap closure phases)
 **Requirements**: SRCH-13, SRCH-14, SRCH-15
 **Note**: Reordered from former Phase 15. Gap closure phases (15, 16) execute first because MAIL-02 is silently broken in production now and PRIV-02 is a public-launch blocker. **Plan this phase right before execution** — not now — to avoid burning context on stale planning and to absorb any architectural learnings from the email pipeline work (notification patterns may inform saved-search alert delivery).
-**Plans:** 5 plans (0/5 executed)
+**Plans:** 2/5 plans executed
 Plans:
 - [ ] 17-00-test-scaffold-PLAN.md — Wave 0 test scaffolding: 6 vitest stubs + 1 UAT markdown for VALIDATION.md test IDs
 - [ ] 17-01-foundation-PLAN.md — Migration 024_saved_searches.sql via Studio + SavedSearch type + snapshotFilters/deriveAutoName pure functions (turns saved-search-snapshot.test.ts GREEN)
@@ -226,7 +226,7 @@ Plans:
 | 14. Bug Fixes | v2.0 | 3/3 | Complete (PRIV-02 deferred to Phase 16) | 2026-04-29 |
 | 15. Email Pipeline Deploy & Verify | v2.0 | 3/4 | Complete (15-02 deferred; MAIL-01/02 partial-close) | 2026-05-01 |
 | 16. Privacy Bypass Empirical Test | v2.0 | – | Complete (PRIV-02 PASS via empirical test 2026-05-04; evidence-only closure — no plan/summary on disk) | 2026-05-04 |
-| 17. Saved Search | v2.0 | 0/5 | Planned (5 plans across 5 waves) | — |
+| 17. Saved Search | 2/5 | In Progress|  | — |
 | 18. Tech Debt Cleanup | v2.0 | 0/? | Pending (gap closure) | — |
 | 19. Design System Cleanup (Tier 1) | v2.0 | 7/7 | Complete (Phases 0-6 merged via `50dd5b8`; 4 straggler refs cleaned up 2026-05-05) | 2026-05-04 |
 | 19b. Design System Cleanup (Tier 2) | v2.0 | 1/1 | Complete (commit `23ad965` Tier 2 sweep merged in `50dd5b8`) | 2026-05-04 |
