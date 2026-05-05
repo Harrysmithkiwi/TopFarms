@@ -37,7 +37,7 @@ Full details: `.planning/milestones/v1.1-ROADMAP.md`
 - [x] **Phase 13: Email & Notifications** — Production email deliverability and auto-ghosting prevention (completed 2026-04-03 — VERIFICATION.md backfill scheduled in Phase 15)
 - [x] **Phase 14: Bug Fixes** — hasApplied badge and document viewing via signed URLs (completed 2026-04-29 with PRIV-02 deferral to Phase 16)
 - [x] **Phase 15: Email Pipeline Deploy & Verify** — Gap closure: deploy `notify-job-filled` + 3 disk-only Edge Functions, add Supabase CI deploy step, backfill Phase 13 VERIFICATION.md (completed 2026-05-01; MAIL-01/02 partial-close — RESEND_API_KEY unset, plan 15-02 deferred; see carryforward in v2.0-MILESTONE-AUDIT.md)
-- [ ] **Phase 16: Privacy Bypass Empirical Test** — Gap closure: execute PRIV-02 B.9 from authenticated employer JWT against deployed function; flip BFIX-02 sub-phase 14-03 PARTIAL → PASS
+- [x] **Phase 16: Privacy Bypass Empirical Test** — completed 2026-05-04 (see `.planning/phases/16-privacy-bypass-test/16-PRIV02-EVIDENCE.md` PASS verdict — primary expected response observed: HTTP 403 `{"error":"Identity documents are not accessible to employers"}`; 5-layer privacy gate held under direct API attack from legitimate-employer JWT. PRIV-02 was the last public-launch privacy blocker.)
 - [ ] **Phase 17: Saved Search** — Seeker can save, load, and delete filter combinations (reordered from Phase 15)
 - [ ] **Phase 18: Tech Debt Cleanup** — Gap closure: `EMPLOYER_VISIBLE_DOCUMENT_TYPES` canonical source, dead-semantics removal, AUTH-FIX-02 root-cause investigation, VALIDATION/SUMMARY frontmatter backfill
 - [ ] **Phase 19: Design System Cleanup (Tier 1 surfaces)** — v1→v2 brand migration on landing, nav, page shells, primitives, brand-critical components, seeker-facing job search/detail. Token rename (soil/moss/meadow → brand/brand-900), Inter throughout, hex palette per Brand Spec v2.0
@@ -218,13 +218,13 @@ Plans:
 | 13. Email & Notifications | 2/2 | Complete   | 2026-04-03 | — |
 | 14. Bug Fixes | v2.0 | 3/3 | Complete (PRIV-02 deferred to Phase 16) | 2026-04-29 |
 | 15. Email Pipeline Deploy & Verify | v2.0 | 3/4 | Complete (15-02 deferred; MAIL-01/02 partial-close) | 2026-05-01 |
-| 16. Privacy Bypass Empirical Test | v2.0 | 0/? | Pending (gap closure) | — |
+| 16. Privacy Bypass Empirical Test | v2.0 | – | Complete (PRIV-02 PASS via empirical test 2026-05-04; evidence-only closure — no plan/summary on disk) | 2026-05-04 |
 | 17. Saved Search | v2.0 | 0/? | Pending | — |
 | 18. Tech Debt Cleanup | v2.0 | 0/? | Pending (gap closure) | — |
 | 19. Design System Cleanup (Tier 1) | v2.0 | 0/? | In flight (this session) | — |
 | 19b. Design System Cleanup (Tier 2) | v2.0 | 0/? | Pending (post-19) | — |
 | 20. Super Admin Dashboard | v2.0 | 8/8 | Complete | 2026-05-05 |
-| 20.1. Standalone Admin Login Gateway + Account Bootstrap | v2.0 | Complete    | 2026-05-05 | 2026-05-05 |
+| 20.1. Standalone Admin Login Gateway + Account Bootstrap | v2.0 | 5/5 | Complete | 2026-05-05 |
 
 ### Phase 20.1: Standalone Admin Login Gateway + Account Bootstrap (INSERTED)
 
