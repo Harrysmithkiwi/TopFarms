@@ -39,7 +39,9 @@ Full details: `.planning/milestones/v1.1-ROADMAP.md`
 - [x] **Phase 15: Email Pipeline Deploy & Verify** — Gap closure: deploy `notify-job-filled` + 3 disk-only Edge Functions, add Supabase CI deploy step, backfill Phase 13 VERIFICATION.md (completed 2026-05-01; MAIL-01/02 partial-close — RESEND_API_KEY unset, plan 15-02 deferred; see carryforward in v2.0-MILESTONE-AUDIT.md)
 - [x] **Phase 16: Privacy Bypass Empirical Test** — completed 2026-05-04 (see `.planning/phases/16-privacy-bypass-test/16-PRIV02-EVIDENCE.md` PASS verdict — primary expected response observed: HTTP 403 `{"error":"Identity documents are not accessible to employers"}`; 5-layer privacy gate held under direct API attack from legitimate-employer JWT. PRIV-02 was the last public-launch privacy blocker.)
 - [x] **Phase 17: Saved Search** — Seeker can save, load, and delete filter combinations (reordered from Phase 15) — completed 2026-05-07 (impl shipped 2026-05-05 across 4 waves: 17-01 foundation + 17-02 save-flow + 17-03 list-page + 17-04 quick-load; verifier PASS at code+test+DB layers, 47/47 phase-17 tests GREEN, JOBS-01 regression statically guarded, migration 024 applied + RLS verified via pg_class/pg_policies/pg_indexes; UAT 8/8 PASS 2026-05-07 incl. RLS isolation seeker A↔B + anonymous CRITICAL per CLAUDE §1 — see `17-UAT-EVIDENCE.md`)
-- [ ] **Phase 18: Tech Debt Cleanup** — Gap closure: `EMPLOYER_VISIBLE_DOCUMENT_TYPES` canonical source, dead-semantics removal, AUTH-FIX-02 root-cause investigation, VALIDATION/SUMMARY frontmatter backfill
+- ⊘ **Phase 18: Tech Debt Cleanup** — SPLIT 2026-05-07 into 18.1 (Pre-Launch Hardening) + 18.2 (Code Quality & UX Polish); 3 items deferred (see v2.0-MILESTONE-AUDIT.md "Carryforward: Phase 18 deferred items"). Original 21-item scope preserved in §"Phase 18" details below for traceability.
+- [ ] **Phase 18.1: Pre-Launch Hardening** — 6 safety/correctness items from original Phase 18 scope: EMPLOYER_VISIBLE_DOCUMENT_TYPES canonical source (#1, privacy drift), Stripe live-mode posture verification (#13, gates first real charge), X-Webhook-Secret header validation in 2 Edge fns (#15, defence-in-depth), MarkFilledModal atomic UPDATE wrap (#17, prior orphan-hired prod incident), match_scores cleanup trigger on jobs.status transitions (#19, data integrity), unindexed_foreign_keys advisor lints (#10a, 14 indexes — split from #10's broader scope; RLS initplan rewrites moved to 18.2). Goal: ship items that mitigate launch-time risk before any real user traffic.
+- [ ] **Phase 18.2: Code Quality & UX Polish** — 13 lower-risk items from original Phase 18 scope: stale getUser comment (#2), seeker nav My Documents link (#3), dead first_name semantics (#4), migration 020 disk/registry mismatch (#5), SUMMARY frontmatter backfill (#6), VALIDATION.md nyquist finalisation (#7), AUTH-FIX-02 root cause investigation (#8 — fix landed or deferred with rationale), jobs.benefits text[]/jsonb intent doc (#11), couples_welcome semantics doc (#12), MarkFilledModal applicant picker UX (#18), UX-01 salary preset chips (#20), SelectRole OAuth bypass log-as-known-behaviour (#21), auth_rls_initplan advisor lints (#10b, 33 RLS rewrites — split from #10's broader scope). Goal: clean up audit residue + UX polish post-launch.
 - [x] **Phase 19: Design System Cleanup (Tier 1 surfaces)** — completed 2026-05-04 (merge `50dd5b8` from `feat/v2-brand-migration`; 6-sub-phase migration: Phase 0 alias scaffolding → Phase 1 primitives → Phase 2 brand-critical → Phase 3 Tier 1 composed + seeker → Phase 4 page shells + auth + dashboards → Phase 5 landing + marketing → Phase 6 alias removal + hay→warn rename + PaymentForm v2 hex). v2 tokens canonical in `src/index.css` (`--color-brand: #16a34a`, etc.); Inter retired Fraunces + DM Sans; Brand Spec v2.0 hex palette in production. 4 straggler `-moss` class references (focus-rings + form `accent-moss`) cleaned up 2026-05-05; see `.planning/v2-migration/PHASE-19-KNOWN-STATE.md` for 2 deferred polish items now logged as todos.
 - [x] **Phase 19b: Design System Cleanup (Tier 2 — deeper dashboards)** — completed 2026-05-04 (merged in same `50dd5b8`; commit `23ad965` covered ApplicantPanel, ApplicantDashboard, DocumentUploader, FileDropzone, LivePreviewSidebar, TierCard, EmployerOnboarding/SeekerOnboarding wizard internals + all SeekerStep* + EmployerStep* surfaces).
 - [x] **Phase 20: Super Admin Dashboard** — Internal-only `/admin/*` panel for daily briefing, employer/seeker lists, placement-fee pipeline, platform health (completed 2026-05-05; see 20-VERIFICATION.md PASS verdict — 22/22 test IDs PASS, 12/12 must-haves PASS; carryforwards to Phase 20.1 documented)
@@ -136,6 +138,8 @@ Plans:
   4. Saved searches persist across sessions — a seeker who logs out and back in can still access their saved searches
 
 ### Phase 18: Tech Debt Cleanup
+> **⊘ SPLIT 2026-05-07** — original 21-item scope was unwieldy (~3 days of execution; mixed safety + polish items). Split into Phase 18.1 (Pre-Launch Hardening — 6 items, ships before launch) + Phase 18.2 (Code Quality & UX Polish — 13 items, post-launch). Items #9 (phantom-applied root cause — blocked on Supabase support), #14 (Cloudflare MCP install — session tooling, not code), and #16 (JWT HS256→ES256 migration — wide blast radius, deserves own phase) deferred with carryforward note in `v2.0-MILESTONE-AUDIT.md`. Original 21-item list retained below for traceability; each item tagged with its destination.
+
 **Goal**: Eliminate sync-drift risks, dead semantics, and process-residue items the v2.0 audit surfaced before launch. AUTH-FIX-02 root cause investigated.
 **Depends on**: Phases 15 + 16 (executes last — not time-pressured); independent of Phase 17
 **Requirements**: None directly satisfied (no REQ-IDs); reduces compound debt risk for post-launch
@@ -162,6 +166,44 @@ Plans:
   19. Stale `match_scores` rows referencing non-active jobs — when a job's status transitions to `filled` / `expired` / `archived`, the corresponding `match_scores` rows persist. RLS on `jobs` (`status='active'` filter) hides them from PostgREST embedded joins, returning the parent row with `jobs=null`. The `!inner` workaround in `SeekerStep7Complete.tsx` (commit `7401116`) drops these rows at query time but doesn't clean them up. Fix: add a trigger on `jobs.status` UPDATE that deletes associated `match_scores` rows when status transitions to non-active, OR a periodic cleanup job. Surfaced 2026-05-04 morning during UAT-04 seeker dashboard review (Bug 1 null crash on Edit Profile click).
   20. UX-01: Salary input → preset band chips. Replace the free-text salary input in `SeekerStep5LifeSituation.tsx` (`min_salary` field) with selectable preset bands: $50–60k, $60–70k, $70–80k, $80–90k, $90–100k, $100–110k, $110–120k, $120k+. Improves mobile UX (no number-pad fumbling) and normalises salary data for the matching engine. Surfaced 2026-05-04 morning during UAT-04 new-user round-trip with harry.properprivacy.
   21. SelectRole UI bypass for OAuth signups (known behaviour, no code change required). `handle_new_user` trigger defaults role to `'seeker'` via `COALESCE(raw_user_meta_data->>'role', 'seeker')` for all new auth.users INSERTs. Google OAuth signups don't pass `role` in metadata, so they auto-default to seeker. `SelectRole.tsx:29` `if (role) <Navigate>` then redirects past the role-picker UI before it can render. Current behaviour is intentional (seeker is the correct default for the marketing funnel — most signups are seekers). Logged as known behaviour for future audit; if employer OAuth signup volume becomes meaningful, revisit by either nulling out role for OAuth or surfacing a "Were you signing up as an employer?" prompt in onboarding. Surfaced 2026-05-04 during UAT-04 new-user round-trip recon.
+
+**Item assignment (post-2026-05-07 split):**
+- → **Phase 18.1** (Pre-Launch Hardening): items 1, 13, 15, 17, 19, 10a (unindexed_foreign_keys subset of #10)
+- → **Phase 18.2** (Code Quality & UX Polish): items 2, 3, 4, 5, 6, 7, 8, 11, 12, 18, 20, 21, 10b (auth_rls_initplan subset of #10)
+- **Deferred** (carryforward in v2.0-MILESTONE-AUDIT.md): item 9 (blocked on Supabase support), item 14 (session tooling, not code), item 16 (JWT migration — own phase)
+
+### Phase 18.1: Pre-Launch Hardening
+**Goal**: Ship the 6 safety/correctness items from the original Phase 18 scope that mitigate launch-time risk. Privacy drift, revenue gating, defence-in-depth, data integrity, perf-from-FK indexes.
+**Depends on**: Nothing (independent of Phase 18.2)
+**Requirements**: None directly satisfied; risk mitigation only
+**Source**: subset of original Phase 18 success criteria — items 1, 10a, 13, 15, 17, 19
+**Success Criteria** (what must be TRUE):
+  1. `EMPLOYER_VISIBLE_DOCUMENT_TYPES` has a single canonical declaration (TS) with RLS migration + Edge Function deriving from it (or an automated cross-layer consistency check) — 3-way drift risk eliminated [orig #1]
+  2. Stripe production-mode posture verified before first real placement charge — `STRIPE_SECRET_KEY` confirmed `sk_live_*` in prod secrets, webhook endpoint registered in live Stripe dashboard, `.env.example` documents Stripe env vars [orig #13]
+  3. `X-Webhook-Secret` header validation inside `notify-job-filled` and `send-followup-emails` Edge Functions to restore defence-in-depth lost by `verify_jwt=false` (Phase 15-02 Bug 3 fix). Generate a shared secret, store in vault, include as custom header in 017's `handle_job_filled` trigger payload + 011's `send-followup-emails` cron payload, validate inside each function before processing [orig #15]
+  4. `MarkFilledModal.handleConfirm()` UPDATE sequence is atomic — wrap both UPDATEs in a server-side RPC OR add explicit compensation rollback on `UPDATE jobs` failure. Closes the orphan-hired-application class of incident (precedent: 2a91e3db required manual restore SQL during Phase 15-02 Bug 4) [orig #17]
+  5. `match_scores` cleanup trigger on `jobs.status` UPDATE — deletes associated `match_scores` rows when status transitions to non-active (filled / expired / archived). Eliminates the stale-row class that the `!inner` workaround in `SeekerStep7Complete.tsx` (commit `7401116`) papers over at query time but doesn't clean up [orig #19]
+  6. 14× `unindexed_foreign_keys` advisor lints addressed — index added per advisor recommendation. (RLS initplan rewrites — original #10's other half — moved to Phase 18.2 as polish; FK indexes have material query-time impact and ship pre-launch) [orig #10a]
+
+### Phase 18.2: Code Quality & UX Polish
+**Goal**: Clean up audit residue + UX polish post-launch. 13 items: doc fixes, dead-code removal, frontmatter backfill, applicant picker UX, salary preset chips, RLS perf rewrites.
+**Depends on**: Nothing (independent of Phase 18.1)
+**Requirements**: None directly satisfied
+**Source**: subset of original Phase 18 success criteria — items 2, 3, 4, 5, 6, 7, 8, 10b, 11, 12, 18, 20, 21
+**Success Criteria** (what must be TRUE):
+  1. Stale `getUser` comment in `supabase/functions/get-applicant-document-url/index.ts:8` updated to reflect the BFIX-05 gateway-trust pattern [orig #2]
+  2. Seeker nav (`Nav.tsx` + `Sidebar.tsx`) gains a `My Documents` link to `/dashboard/seeker/documents` (BFIX-03 discoverability) [orig #3]
+  3. `ApplicantDashboard.tsx` dead `first_name` semantics (lines 24, 435) removed [orig #4]
+  4. Migration 020 disk filename / live registry version mismatch resolved (rename or document per `supabase/migrations/NAMING.md`) [orig #5]
+  5. BFIX-01/03 SUMMARY.md frontmatter `requirements_completed` field backfilled (or `tags:[bfix-XX]` convention codified as house standard) [orig #6]
+  6. Phase 12/13 VALIDATION.md `nyquist_compliant` status finalised (true/false with rationale; no lingering `draft` state) [orig #7]
+  7. AUTH-FIX-02 root cause investigated — diagnostic captured (loadRole > 3s under normal nav after AuthProvider centralisation), fix landed or deliberately deferred with rationale [orig #8]
+  8. `jobs.benefits` declared/actual mismatch documented — 013 declared `text[]`, live schema has `jsonb`. Functionally equivalent at JS layer; intent-vs-reality mismatch captured in migration comment or NAMING.md [orig #11]
+  9. `couples_welcome` (boolean) vs `accommodation_extras['Couples welcome']` (text[] member) — semantic distinction confirmed and source-of-truth documented (boolean preference vs accommodation feature) [orig #12]
+  10. `MarkFilledModal` applicant picker UX — render seeker name (or email) + current application status + match score alongside the UUID fragment in the radio-button list at `MarkFilledModal.tsx:222` [orig #18]
+  11. UX-01: Salary input → preset band chips. Replace the free-text salary input in `SeekerStep5LifeSituation.tsx` (`min_salary` field) with selectable preset bands: $50–60k, $60–70k, $70–80k, $80–90k, $90–100k, $100–110k, $110–120k, $120k+ [orig #20]
+  12. SelectRole UI bypass for OAuth signups documented as known behaviour (no code change required); revisit threshold logged for future audit if employer OAuth signup volume becomes meaningful [orig #21]
+  13. 33× `auth_rls_initplan` performance advisor lints addressed — RLS policies use `(select auth.uid())` pattern instead of bare `auth.uid()` per advisor recommendation. (Mechanical sweep across all RLS-bearing tables) [orig #10b]
 
 ### Phase 19: Design System Cleanup (Tier 1 surfaces)
 **Goal**: Migrate the v1 brand system (soil/moss/meadow earth-tones + Fraunces/DM Sans) to v2.0 (single-green modern SaaS palette + Inter throughout) on Tier 1 surfaces — landing page, top nav, page shells, primitive components, brand-critical components, seeker job search/detail. Visual-only: no DB / API / route changes.
@@ -227,7 +269,9 @@ Plans:
 | 15. Email Pipeline Deploy & Verify | v2.0 | 3/4 | Complete (15-02 deferred; MAIL-01/02 partial-close) | 2026-05-01 |
 | 16. Privacy Bypass Empirical Test | v2.0 | – | Complete (PRIV-02 PASS via empirical test 2026-05-04; evidence-only closure — no plan/summary on disk) | 2026-05-04 |
 | 17. Saved Search | v2.0 | 5/5 | Complete (UAT 8/8 PASS 2026-05-07) | 2026-05-07 |
-| 18. Tech Debt Cleanup | v2.0 | 0/? | Pending (gap closure) | — |
+| 18. Tech Debt Cleanup | v2.0 | – | ⊘ Split 2026-05-07 → 18.1 + 18.2 (3 items deferred) | — |
+| 18.1. Pre-Launch Hardening | v2.0 | 0/? | Pending (6 items: 1, 10a, 13, 15, 17, 19) | — |
+| 18.2. Code Quality & UX Polish | v2.0 | 0/? | Pending (13 items: 2-8, 10b, 11, 12, 18, 20, 21) | — |
 | 19. Design System Cleanup (Tier 1) | v2.0 | 7/7 | Complete (Phases 0-6 merged via `50dd5b8`; 4 straggler refs cleaned up 2026-05-05) | 2026-05-04 |
 | 19b. Design System Cleanup (Tier 2) | v2.0 | 1/1 | Complete (commit `23ad965` Tier 2 sweep merged in `50dd5b8`) | 2026-05-04 |
 | 20. Super Admin Dashboard | v2.0 | 8/8 | Complete | 2026-05-05 |
