@@ -3,11 +3,11 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: completed
-stopped_at: "Completed 17-04-quick-load-PLAN.md (commit e349655); Phase 17 implementation COMPLETE — all 4 waves shipped; awaiting /gsd:verify-work + manual UAT (tests/saved-search-UAT.md operator run)"
-last_updated: "2026-05-06T14:15:32.941Z"
+stopped_at: Phase 18.1 context gathered (4 gray areas, all recommended picks; 4 deferred items captured)
+last_updated: "2026-05-06T15:18:58.842Z"
 last_activity: "2026-05-05 — Phase 17 Wave 4 (commit e349655) shipped: SavedSearchesDropdown (183 lines, exports named function; fetches top-5 by created_at desc on open via { open, session.user.id } dep array NOT searchParams — Pitfall 1 / JOBS-01 regression guard preserved; click-to-navigate via navigate('/jobs?<params>', { replace: false }) + scrollTo top + close; View-all Link to /dashboard/seeker/saved-searches; Esc + click-outside close; aria-haspopup='menu' + aria-expanded contract; self-guards on session?.user?.id) + JobSearch.tsx ResultsArea wire (1 import + 1 JSX render call sibling to Save button, gated on isLoggedIn) + tests/saved-search-quick-load.test.tsx 8 GREEN RTL assertions (vi.hoisted fromMock + useNavigate + useAuthMock harness) + tests/saved-search-load-integration.test.tsx 3 GREEN static-source assertions (readFileSync + positive [searchParams, authLoading] literal + 6 negative not.toMatch anti-patterns + sibling guard for match_scores .from + .in('job_id') shape). Test suite delta 210 passed | 124 todo (Wave C baseline) → 221 passed | 113 todo (+11 GREEN, -11 todos, zero failures, zero regressions). All 6 saved-search test files now GREEN (47 cumulative GREEN: 13 snapshot + 9 modal + 5 cap + 9 list + 8 quick-load + 3 load-integration). tsc clean. JOBS-01 regression guard preserved AND now enforced via static-source test (fetchJobs deps unchanged at [searchParams, authLoading] line 383). Phase 17 implementation COMPLETE — all 4 waves landed (17-01 foundation, 17-02 save-flow, 17-03 list-page, 17-04 quick-load). FIRST-of-kind patterns shipped: self-contained dropdown with deps-decoupled data fetch + static-source regression-guard test pattern for deps-array drift. SRCH-13/14/15 implementation surfaces all CLOSED but E2E UAT gap remains until tests/saved-search-UAT.md operator run (CLAUDE §7 partial-close — do NOT flip to [x] until UAT empirically passes 8 items including RLS isolation tests CRITICAL per CLAUDE §1)."
 progress:
-  total_phases: 11
+  total_phases: 13
   completed_phases: 7
   total_plans: 29
   completed_plans: 30
@@ -129,6 +129,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-05T07:57:13Z
-Stopped at: Completed 17-04-quick-load-PLAN.md (commit e349655); Phase 17 implementation COMPLETE — all 4 waves shipped; awaiting /gsd:verify-work + manual UAT (tests/saved-search-UAT.md operator run)
-Resume file: None
+Last session: 2026-05-06T15:18:58.838Z
+Stopped at: Phase 18.1 context gathered (4 gray areas, all recommended picks; 4 deferred items captured)
+Resume file: .planning/phases/18.1-pre-launch-hardening/18.1-CONTEXT.md
