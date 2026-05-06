@@ -26,9 +26,9 @@ Requirements for Launch Readiness. Each maps to roadmap phases.
 
 ### Job Search
 
-- [ ] **SRCH-13**: Seeker can save current filter combination as a named saved search
-- [ ] **SRCH-14**: Seeker can load a previously saved search to restore all filter state
-- [ ] **SRCH-15**: Seeker can delete saved searches they no longer need
+- [x] **SRCH-13**: Seeker can save current filter combination as a named saved search (Phase 17 shipped 2026-05-05; UAT 8/8 PASS 2026-05-07 incl. cross-session persistence + 10-cap replace + RLS isolation seeker A↔B + anonymous)
+- [x] **SRCH-14**: Seeker can load a previously saved search to restore all filter state (Phase 17 shipped 2026-05-05; UAT 8/8 PASS 2026-05-07 incl. URL-state restoration + JOBS-01 regression guard intact)
+- [x] **SRCH-15**: Seeker can delete saved searches they no longer need (Phase 17 shipped 2026-05-05; UAT 8/8 PASS 2026-05-07 incl. delete-with-undo timing + delete-without-undo DB DELETE under RLS)
 
 ## Pre-Launch Must-Fix
 
@@ -128,9 +128,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | BFIX-01 | Phase 14 | Complete |
 | BFIX-02 | Phase 16 | Complete (PRIV-02 empirical PASS 2026-05-04 — see 16-PRIV02-EVIDENCE.md) |
 | BFIX-03 | Phase 14 | Complete |
-| SRCH-13 | Phase 17 | Pending (reassigned 2026-04-29 from Phase 15) |
-| SRCH-14 | Phase 17 | Pending (reassigned 2026-04-29 from Phase 15) |
-| SRCH-15 | Phase 17 | Pending (reassigned 2026-04-29 from Phase 15) |
+| SRCH-13 | Phase 17 | Complete (impl 2026-05-05; UAT 8/8 PASS 2026-05-07 — see 17-UAT-EVIDENCE.md) |
+| SRCH-14 | Phase 17 | Complete (impl 2026-05-05; UAT 8/8 PASS 2026-05-07 — see 17-UAT-EVIDENCE.md) |
+| SRCH-15 | Phase 17 | Complete (impl 2026-05-05; UAT 8/8 PASS 2026-05-07 — see 17-UAT-EVIDENCE.md) |
 
 **Coverage:**
 - v2.0 requirements: 11 total
