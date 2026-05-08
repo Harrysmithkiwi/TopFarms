@@ -64,31 +64,19 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
     setSubmitting(true)
 
     try {
-      // 1. If an applicant was selected, mark their application as hired FIRST
-      //    (before job status triggers the notify-job-filled webhook, so the hired
-      //    applicant is already excluded from the ghosting-prevention emails)
-      if (selectedApplicantId) {
-        const { error: appError } = await supabase
-          .from('applications')
-          .update({ status: 'hired' })
-          .eq('id', selectedApplicantId)
+      // Phase 18.1 #4 — atomic mark-filled via SECURITY DEFINER RPC.
+      // The RPC wraps both UPDATEs (applications + jobs) in a single Postgres
+      // transaction; on failure, both roll back — eliminates the orphan-hired
+      // application class of incident (precedent: 2a91e3db Phase 15-02 Bug 4).
+      // Migration: 026_mark_job_filled_rpc.sql.
+      const { error } = await supabase.rpc('mark_job_filled', {
+        p_job_id: jobId,
+        p_applicant_id: selectedApplicantId, // null OK — RPC handles "Hired externally" branch
+      })
 
-        if (appError) {
-          console.error('MarkFilledModal: application update error', appError)
-          toast.error('Failed to update applicant status. Please try again.')
-          return
-        }
-      }
-
-      // 2. Mark job as filled (this triggers the notify-job-filled webhook)
-      const { error: jobError } = await supabase
-        .from('jobs')
-        .update({ status: 'filled' })
-        .eq('id', jobId)
-
-      if (jobError) {
+      if (error) {
+        console.error('MarkFilledModal: mark_job_filled RPC error', error)
         toast.error('Failed to mark listing as filled. Please try again.')
-        console.error('MarkFilledModal: job update error', jobError)
         return
       }
 

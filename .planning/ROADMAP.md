@@ -185,7 +185,7 @@ Plans:
   5. `match_scores` cleanup trigger on `jobs.status` UPDATE — deletes associated `match_scores` rows when status transitions to non-active (filled / expired / archived). Eliminates the stale-row class that the `!inner` workaround in `SeekerStep7Complete.tsx` (commit `7401116`) papers over at query time but doesn't clean up [orig #19]
   6. 14× `unindexed_foreign_keys` advisor lints addressed — index added per advisor recommendation. (RLS initplan rewrites — original #10's other half — moved to Phase 18.2 as polish; FK indexes have material query-time impact and ship pre-launch) [orig #10a]
 
-**Plans:** 1/7 plans executed
+**Plans:** 2/7 plans executed
 Plans:
 - [x] 18.1-00-test-scaffold-PLAN.md — Wave 0: 5 vitest RED stubs + 1 Stripe UAT markdown (SC-1..SC-6 test targets) — completed 2026-05-08 (commit 6d6dfa3; full suite 221 passed | 145 todo, +32 todos vs baseline, zero new failures)
 - [ ] 18.1-01-fk-indexes-PLAN.md — Wave 1: migration 025 (15× CREATE INDEX IF NOT EXISTS) + GREEN drift test [SC-6]
@@ -280,7 +280,7 @@ Plans:
 | 16. Privacy Bypass Empirical Test | v2.0 | – | Complete (PRIV-02 PASS via empirical test 2026-05-04; evidence-only closure — no plan/summary on disk) | 2026-05-04 |
 | 17. Saved Search | v2.0 | 5/5 | Complete (UAT 8/8 PASS 2026-05-07) | 2026-05-07 |
 | 18. Tech Debt Cleanup | v2.0 | – | ⊘ Split 2026-05-07 → 18.1 + 18.2 (3 items deferred) | — |
-| 18.1. Pre-Launch Hardening | 1/7 | In Progress|  | — |
+| 18.1. Pre-Launch Hardening | 2/7 | In Progress|  | — |
 | 18.2. Code Quality & UX Polish | v2.0 | 0/? | Pending (13 items: 2-8, 10b, 11, 12, 18, 20, 21) | — |
 | 19. Design System Cleanup (Tier 1) | v2.0 | 7/7 | Complete (Phases 0-6 merged via `50dd5b8`; 4 straggler refs cleaned up 2026-05-05) | 2026-05-04 |
 | 19b. Design System Cleanup (Tier 2) | v2.0 | 1/1 | Complete (commit `23ad965` Tier 2 sweep merged in `50dd5b8`) | 2026-05-04 |
