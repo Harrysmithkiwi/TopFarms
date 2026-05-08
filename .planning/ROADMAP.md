@@ -185,6 +185,16 @@ Plans:
   5. `match_scores` cleanup trigger on `jobs.status` UPDATE — deletes associated `match_scores` rows when status transitions to non-active (filled / expired / archived). Eliminates the stale-row class that the `!inner` workaround in `SeekerStep7Complete.tsx` (commit `7401116`) papers over at query time but doesn't clean up [orig #19]
   6. 14× `unindexed_foreign_keys` advisor lints addressed — index added per advisor recommendation. (RLS initplan rewrites — original #10's other half — moved to Phase 18.2 as polish; FK indexes have material query-time impact and ship pre-launch) [orig #10a]
 
+**Plans:** 7 plans (Wave 0 scaffold + 3 parallel Wave 1 + 2 parallel Wave 2 + 1 operator-action Wave 3)
+Plans:
+- [ ] 18.1-00-test-scaffold-PLAN.md — Wave 0: 5 vitest RED stubs + 1 Stripe UAT markdown (SC-1..SC-6 test targets)
+- [ ] 18.1-01-fk-indexes-PLAN.md — Wave 1: migration 025 (15× CREATE INDEX IF NOT EXISTS) + GREEN drift test [SC-6]
+- [ ] 18.1-02-mark-job-filled-rpc-PLAN.md — Wave 1: migration 026 (SECURITY DEFINER RPC) + MarkFilledModal swap (2× .update → 1× .rpc) + GREEN test [SC-4]
+- [ ] 18.1-03-match-scores-cleanup-trigger-PLAN.md — Wave 1: migration 027 (AFTER UPDATE trigger + backfill) + GREEN test [SC-5]
+- [ ] 18.1-04-webhook-secret-PLAN.md — Wave 2: WEBHOOK_SECRET validation in 2 Edge fns + migration 028 (handle_job_filled header injection; send-followup-emails branch decision via empirical cron.job query) + GREEN test [SC-3 code-side]
+- [ ] 18.1-05-doc-types-drift-PLAN.md — Wave 2: vitest static-source guard across 3 layers (TS / Edge fn / SQL RLS) [SC-1]
+- [ ] 18.1-06-operator-uat-and-deploy-PLAN.md — Wave 3: operator-action — secret deploy + Stripe UAT + synthetic curl × 6 + mark-filled empirical + match_scores empirical + FK indexes empirical → VERIFICATION.md + SUMMARY.md + ROADMAP/STATE/MILESTONE-AUDIT atomic docs commit [SC-2 + SC-3 runtime + SC-4/5/6 runtime closure]
+
 ### Phase 18.2: Code Quality & UX Polish
 **Goal**: Clean up audit residue + UX polish post-launch. 13 items: doc fixes, dead-code removal, frontmatter backfill, applicant picker UX, salary preset chips, RLS perf rewrites.
 **Depends on**: Nothing (independent of Phase 18.1)
