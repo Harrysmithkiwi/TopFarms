@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: verifying
-stopped_at: Phase 18.2 context gathered
-last_updated: "2026-05-10T19:18:29.598Z"
+stopped_at: Completed 18.2-01-mechanical-fixes-PLAN.md
+last_updated: "2026-05-10T20:17:58.978Z"
 last_activity: "2026-05-10 — Phase 18.1 plan 18.1-06 operator-action complete. Migrations 025-029 applied via Studio. WEBHOOK_SECRET set in Vault (ALTER DATABASE blocked by Studio permission error; vault.create_secret() used via migration 029 instead; MCP confirmed secret_len=64). Both Edge fns redeployed with X-Webhook-Secret validation. Synthetic curl UAT 6/6 PASS. Mark-filled empirical UAT on job b00254c7 (jobs.status=filled, match_scores=0 post-trigger). Stripe 6/6 checks PASS in sandbox/test mode (PEND-01 live-mode swap before first real charge). MCP sweeps: 15/15 FK indexes, prosecdef=true, trigger in pg_trigger, X-Webhook-Secret pos=988 in handle_job_filled, Vault secret_len=64. 18.1-VERIFICATION.md PARTIAL (SC-2 Stripe live-mode PEND-01). 18.1-SUMMARY.md authored. ROADMAP Phase 18.1 partially-closed ([ ] preserved per CLAUDE §7). PEND-01 carryforward in v2.0-MILESTONE-AUDIT.md. Atomic closure commit (7 files: UAT.md + VERIFICATION.md + SUMMARY.md + ROADMAP.md + STATE.md + MILESTONE-AUDIT.md + PLAN.md)."
 progress:
   total_phases: 13
   completed_phases: 8
-  total_plans: 36
-  completed_plans: 37
+  total_plans: 39
+  completed_plans: 38
 ---
 
 # Project State
@@ -137,6 +137,9 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 18.1-06]: SC-2 PARTIAL per CLAUDE §7: Stripe integration correctly configured in sandbox/test mode. All 6 checks pass. Live-mode key swap (PEND-01) is documented pre-launch operator action, not a code gap. ROADMAP row stays [ ]; carryforward in v2.0-MILESTONE-AUDIT.md.
 - [Phase 18.1-06]: UAT job identity discrepancy: operator resume signal cited job_id 6c867c1a (remains active). Actual UAT was on b00254c7 (confirmed via SELECT WHERE status=filled). Transcription error only; underlying UAT correct. SC-4 jobs.status=filled + SC-5 match_scores=0 both confirmed on b00254c7 via MCP.
 - [Phase 18.1-06]: ROADMAP SC-6 wording corrected: 14× → 15× (live advisor count was 15; migration 025 addresses all 15; wording updated in this closure commit).
+- [Phase 18.2-01]: seeker_name: null literal replaces dead first_name access — create-placement-invoice accepts null, no API shape change
+- [Phase 18.2-01]: 13-VALIDATION.md nyquist_compliant: false (definitive) — Deno Edge Function validated via UAT, not Vitest; 12-VALIDATION.md nyquist_compliant: true — 3 test files exist for shipped deliverables
+- [Phase 18.2-01]: OAUTH-SEEKER-DEFAULT logged as known behaviour (not a bug): seeker is correct marketing-funnel default; handle_new_user COALESCE pattern is intentional
 
 ### Blockers/Concerns
 
@@ -155,6 +158,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-10T19:18:29.594Z
-Stopped at: Phase 18.2 context gathered
-Resume file: .planning/phases/18.2-code-quality-ux-polish/18.2-CONTEXT.md
+Last session: 2026-05-10T20:17:58.975Z
+Stopped at: Completed 18.2-01-mechanical-fixes-PLAN.md
+Resume file: None
