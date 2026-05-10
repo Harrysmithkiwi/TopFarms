@@ -215,6 +215,12 @@ Plans:
   12. SelectRole UI bypass for OAuth signups documented as known behaviour (no code change required); revisit threshold logged for future audit if employer OAuth signup volume becomes meaningful [orig #21]
   13. 33× `auth_rls_initplan` performance advisor lints addressed — RLS policies use `(select auth.uid())` pattern instead of bare `auth.uid()` per advisor recommendation. (Mechanical sweep across all RLS-bearing tables) [orig #10b]
 
+**Plans:** 3 plans
+Plans:
+- [ ] 18.2-01-mechanical-fixes-PLAN.md — Mechanical doc + code fixes (SC-1/2/3/4/5/6/8/9/12)
+- [ ] 18.2-02-ui-components-PLAN.md — MarkFilledModal picker UX + salary preset chips (SC-10/11)
+- [ ] 18.2-03-rls-migration-and-diagnostic-PLAN.md — RLS initplan migration + AUTH-FIX-02 diagnostic (SC-7/13)
+
 ### Phase 19: Design System Cleanup (Tier 1 surfaces)
 **Goal**: Migrate the v1 brand system (soil/moss/meadow earth-tones + Fraunces/DM Sans) to v2.0 (single-green modern SaaS palette + Inter throughout) on Tier 1 surfaces — landing page, top nav, page shells, primitive components, brand-critical components, seeker job search/detail. Visual-only: no DB / API / route changes.
 **Depends on**: Nothing (independent of all open phases)
