@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: verifying
-stopped_at: Completed 18.1-01-fk-indexes — SUMMARY authored; code commit 91f7197 (migration 025 + 16× GREEN test); Studio apply + MCP pg_indexes verify deferred to Wave 3 plan 18.1-06
-last_updated: "2026-05-10T16:16:12.839Z"
+stopped_at: "Completed 18.1-05-doc-types-drift — SUMMARY authored; commit 4d5eda7 (tests/employer-visible-document-types-drift.test.ts: 2 tests GREEN in 8ms); SC-1 closed at code side"
+last_updated: "2026-05-10T16:23:16.087Z"
 last_activity: "2026-05-08 — Phase 18.1 Plan 03 (commit 1d68769) shipped: supabase/migrations/027_match_scores_cleanup_trigger.sql (NEW; 109 lines) + tests/match-scores-cleanup-trigger.test.ts (5× it.todo() flipped GREEN with readFileSync + regex shape assertions). Trigger function cleanup_match_scores_on_status_change (SECURITY DEFINER, search_path pinned) + AFTER UPDATE OF status trigger on_jobs_status_change_match_scores_cleanup on public.jobs + one-time backfill DELETE for stale rows + embedded DO $verify$ post-state assertions (zero orphans + trigger attached + function installed). Closes SC-5 at code side. Studio apply + post-apply MCP verification (pg_trigger / pg_proc / orphan-count) pending operator (batched with 18.1-01 + 18.1-02 in Wave 3 plan 18.1-06). Scoped vitest GREEN 5/5; tsc clean (EXIT=0); full suite (excluding sibling 18.1-02's mid-flight transform error) 37 passed | 9 skipped | 242 passed | 121 todo | 0 failures. Documented deviation: pre-staged sibling rename `tests/mark-job-filled-rpc.test.ts -> .tsx` inadvertently included in atomic commit per git index state at executor start; no destructive git ops attempted per CLAUDE §4/§8. !inner workaround at SeekerStep7Complete.tsx UNCHANGED per 18.1-CONTEXT §Deferred (Phase 18.2 polish). Vercel-storage subagent-bootstrap skill suggestion ignored as no-deviation event — Supabase Postgres migration, not Vercel Storage (matches Phase 17/20.1 hook noise dismissal precedent). Self-check PASSED (all 4 files on disk, commit 1d68769 in git log, 6 grep assertions on migration body)."
 progress:
   total_phases: 13
   completed_phases: 7
   total_plans: 36
-  completed_plans: 34
+  completed_plans: 35
 ---
 
 # Project State
@@ -130,6 +130,7 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 18.1-01]: Plain CREATE INDEX (not CONCURRENTLY) for migration 025 — Studio SQL Editor wraps multi-statement DDL in implicit transaction; CONCURRENTLY cannot run inside a transaction; pre-launch table sizes make millisecond build time acceptable
 - [Phase 18.1-01]: Studio apply for migration 025 deferred to Wave 3 plan 18.1-06 — batched with 026 + 027 to minimise operator context-switches per CLAUDE §2 Studio SQL Editor preference
 - [Phase 18.1-01]: SC-6 count drift: ROADMAP wording 14× but live advisor (2026-05-07) returned 15 — 1 extra index (saved_jobs_job_id_idx) landed; reconciliation deferred to phase verifier per 18.1-RESEARCH §Pitfall 6
+- [Phase 18.1-05]: Static-source drift guard: readFileSync + regex (no AST) across 3 layers (TS canonical, Edge fn, SQL RLS) in 8ms; extractTsList covers both TS forms; sorted-set equality for order-independent comparison; if(!m) throw guards layout shift
 
 ### Blockers/Concerns
 
@@ -148,6 +149,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-10T16:15:47.729Z
-Stopped at: Completed 18.1-01-fk-indexes — SUMMARY authored; code commit 91f7197 (migration 025 + 16× GREEN test); Studio apply + MCP pg_indexes verify deferred to Wave 3 plan 18.1-06
+Last session: 2026-05-10T16:23:16.083Z
+Stopped at: Completed 18.1-05-doc-types-drift — SUMMARY authored; commit 4d5eda7 (tests/employer-visible-document-types-drift.test.ts: 2 tests GREEN in 8ms); SC-1 closed at code side
 Resume file: None
