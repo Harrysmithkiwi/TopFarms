@@ -9,6 +9,9 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
 const FROM_EMAIL = Deno.env.get('RESEND_FROM_EMAIL') ?? 'TopFarms <hello@topfarms.co.nz>'
 const APP_URL = Deno.env.get('APP_URL') ?? 'https://topfarms.co.nz'
 
+// Phase 18.1 #3 — defence-in-depth header validation (verify_jwt:false fn).
+const WEBHOOK_SECRET = Deno.env.get('WEBHOOK_SECRET') ?? ''
+
 // ---------------------------------------------------------------------------
 // Resend email helper
 // ---------------------------------------------------------------------------
@@ -158,6 +161,21 @@ Deno.serve(async (req) => {
   // Handle OPTIONS preflight request
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
+  }
+
+  // Defence-in-depth: validate X-Webhook-Secret (Phase 18.1 #15).
+  if (!WEBHOOK_SECRET) {
+    console.error('send-followup-emails: WEBHOOK_SECRET unset — refusing to process')
+    return new Response(
+      JSON.stringify({ error: 'Server misconfigured (secret unset)' }),
+      { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+    )
+  }
+  if (req.headers.get('x-webhook-secret') !== WEBHOOK_SECRET) {
+    return new Response(
+      JSON.stringify({ error: 'Forbidden' }),
+      { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+    )
   }
 
   try {

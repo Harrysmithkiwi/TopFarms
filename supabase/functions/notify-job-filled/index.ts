@@ -9,6 +9,11 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
 const FROM_EMAIL = Deno.env.get('RESEND_FROM_EMAIL') ?? 'TopFarms <hello@topfarms.co.nz>'
 const APP_URL = Deno.env.get('APP_URL') ?? 'https://topfarms.co.nz'
 
+// Phase 18.1 #3 — defence-in-depth header validation (verify_jwt:false fn).
+// Pattern: get-resend-stats:27,43-49 (production precedent). Plain !== comparator
+// matches that precedent — see 18.1-RESEARCH §Pattern 3 explicit note.
+const WEBHOOK_SECRET = Deno.env.get('WEBHOOK_SECRET') ?? ''
+
 // ---------------------------------------------------------------------------
 // Resend email helper
 // ---------------------------------------------------------------------------
@@ -106,6 +111,22 @@ function jobFilledEmailBody(seekerName: string, jobTitle: string, farmName: stri
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
+  }
+
+  // Defence-in-depth: validate X-Webhook-Secret (Phase 18.1 #15).
+  // Mirrors get-resend-stats:43-49 precedent.
+  if (!WEBHOOK_SECRET) {
+    console.error('notify-job-filled: WEBHOOK_SECRET unset — refusing to process')
+    return new Response(
+      JSON.stringify({ error: 'Server misconfigured (secret unset)' }),
+      { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+    )
+  }
+  if (req.headers.get('x-webhook-secret') !== WEBHOOK_SECRET) {
+    return new Response(
+      JSON.stringify({ error: 'Forbidden' }),
+      { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+    )
   }
 
   try {
