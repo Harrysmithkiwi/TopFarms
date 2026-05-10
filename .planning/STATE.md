@@ -4,7 +4,7 @@ milestone: v2.0
 milestone_name: Launch Readiness
 status: verifying
 stopped_at: Completed 18.2-03-rls-migration-and-diagnostic-PLAN.md — all 4 tasks complete, SUMMARY.md updated, SC-13 + SC-7 closed
-last_updated: "2026-05-10T20:58:47.457Z"
+last_updated: "2026-05-10T21:03:34.455Z"
 last_activity: "2026-05-10 — Phase 18.1 plan 18.1-06 operator-action complete. Migrations 025-029 applied via Studio. WEBHOOK_SECRET set in Vault (ALTER DATABASE blocked by Studio permission error; vault.create_secret() used via migration 029 instead; MCP confirmed secret_len=64). Both Edge fns redeployed with X-Webhook-Secret validation. Synthetic curl UAT 6/6 PASS. Mark-filled empirical UAT on job b00254c7 (jobs.status=filled, match_scores=0 post-trigger). Stripe 6/6 checks PASS in sandbox/test mode (PEND-01 live-mode swap before first real charge). MCP sweeps: 15/15 FK indexes, prosecdef=true, trigger in pg_trigger, X-Webhook-Secret pos=988 in handle_job_filled, Vault secret_len=64. 18.1-VERIFICATION.md PARTIAL (SC-2 Stripe live-mode PEND-01). 18.1-SUMMARY.md authored. ROADMAP Phase 18.1 partially-closed ([ ] preserved per CLAUDE §7). PEND-01 carryforward in v2.0-MILESTONE-AUDIT.md. Atomic closure commit (7 files: UAT.md + VERIFICATION.md + SUMMARY.md + ROADMAP.md + STATE.md + MILESTONE-AUDIT.md + PLAN.md)."
 progress:
   total_phases: 13

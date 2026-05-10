@@ -287,7 +287,7 @@ Plans:
 | 17. Saved Search | v2.0 | 5/5 | Complete (UAT 8/8 PASS 2026-05-07) | 2026-05-07 |
 | 18. Tech Debt Cleanup | v2.0 | – | ⊘ Split 2026-05-07 → 18.1 + 18.2 (3 items deferred) | — |
 | 18.1. Pre-Launch Hardening | v2.0 | 7/7 | Partial-close 2026-05-10 (SC-1/3/4/5/6 PASS; SC-2 Stripe live-mode PEND-01 pending) | — |
-| 18.2. Code Quality & UX Polish | 3/3 | Complete   | 2026-05-10 | — |
+| 18.2. Code Quality & UX Polish | 3/3 | Complete    | 2026-05-10 | — |
 | 19. Design System Cleanup (Tier 1) | v2.0 | 7/7 | Complete (Phases 0-6 merged via `50dd5b8`; 4 straggler refs cleaned up 2026-05-05) | 2026-05-04 |
 | 19b. Design System Cleanup (Tier 2) | v2.0 | 1/1 | Complete (commit `23ad965` Tier 2 sweep merged in `50dd5b8`) | 2026-05-04 |
 | 20. Super Admin Dashboard | v2.0 | 8/8 | Complete | 2026-05-05 |
