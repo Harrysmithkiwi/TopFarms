@@ -6,9 +6,21 @@ import { Select } from '@/components/ui/Select'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { ChipSelector } from '@/components/ui/ChipSelector'
+import type { ChipOption } from '@/components/ui/ChipSelector'
 import { InfoBox } from '@/components/ui/InfoBox'
 import { HOUSING_SUB_OPTIONS, PREFERRED_REGION_OPTIONS } from '@/types/domain'
 import type { SeekerProfileData } from '@/types/domain'
+
+const SALARY_BAND_OPTIONS: ChipOption[] = [
+  { value: '50000',  label: '$50–60k' },
+  { value: '60000',  label: '$60–70k' },
+  { value: '70000',  label: '$70–80k' },
+  { value: '80000',  label: '$80–90k' },
+  { value: '90000',  label: '$90–100k' },
+  { value: '100000', label: '$100–110k' },
+  { value: '110000', label: '$110–120k' },
+  { value: '120000', label: '$120k+' },
+]
 
 const schema = z.object({
   couples_seeking: z.boolean().optional(),
@@ -175,12 +187,24 @@ export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: 
 
         {/* Salary, availability, notice period */}
         <div className="space-y-4">
-          <Input
-            label="Minimum salary expectation (NZD per annum)"
-            type="number"
-            placeholder="e.g. 55000"
-            {...register('min_salary')}
-          />
+          <div>
+            <label className="block text-sm font-medium text-[--color-text-muted] mb-2">
+              Minimum salary
+            </label>
+            <Controller
+              control={control}
+              name="min_salary"
+              render={({ field }) => (
+                <ChipSelector
+                  options={SALARY_BAND_OPTIONS}
+                  value={field.value != null ? [String(field.value)] : []}
+                  onChange={(vals) => field.onChange(vals[0] ? Number(vals[0]) : undefined)}
+                  mode="single"
+                  columns="inline"
+                />
+              )}
+            />
+          </div>
 
           <Input
             label="Available from"
