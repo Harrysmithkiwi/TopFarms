@@ -1,11 +1,18 @@
 ---
 phase: 13
 slug: email-notifications
-status: draft
+status: complete
 nyquist_compliant: false
 wave_0_complete: false
 created: 2026-04-03
 ---
+
+<!-- SC-6 finalised 2026-05-10: Phase 13 predates the Nyquist Wave 0 scaffolding workflow adoption.
+Retroactively assessed as nyquist_compliant: false (definitive, not draft).
+The primary deliverable — notify-job-filled Edge Function — has no automated Vitest/unit tests.
+Validation was performed via UAT in Phase 15-02 (empirical trigger fire, email delivery observed).
+UAT is the appropriate mechanism for a Deno Edge Function that exercises pg_net and Resend.
+status: complete (validation was performed; just not via automated unit tests). -->
 
 # Phase 13 — Validation Strategy
 

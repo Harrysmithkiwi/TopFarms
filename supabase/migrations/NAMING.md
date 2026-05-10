@@ -37,6 +37,14 @@ Verified against `mcp__supabase__list_migrations` on 2026-04-29. Migrations 001�
 | `019_seeker_documents.sql` | `20260428053314` | `019_seeker_documents` | 2026-04-28 (5a228e0) | BFIX-03. `name` was passed *with* `019_` prefix. |
 | `020_seeker_documents_employer_policy.sql` | `20260429031148` | `seeker_documents_employer_policy` | 2026-04-29 (e8f0882) | BFIX-02 employer SELECT RLS policy. `name` was passed without `020_` prefix. |
 | `023_admin_rpcs.sql` | **NOT IN REGISTRY** (runtime artefacts confirmed: `public.admin_audit_log`, `public.admin_notes`, `public.admin_metrics_cache` tables, `public.user_roles.is_active` column, 10 `admin_*` SECURITY DEFINER RPCs, `public._admin_gate` helper) | — | applied via Studio SQL Editor 2026-05-04 (Phase 20 plan 20-02) | Studio path chosen per CLAUDE.md §2 to avoid the `/mcp Reconnect`/restart cycle for `--read-only` flip. Same Studio-vs-registry pattern as 016 + 017. RLS not widened: 6 baseline row counts (jobs_active, match_scores, applications, jobs, employer_profiles, seeker_profiles) identical pre/post — empirical ADMIN-RLS-NEG-1/2 ground truth (see `.planning/phases/20-super-admin-dashboard/20-02-SUMMARY.md`). |
+| `024_saved_searches.sql` | **NOT IN REGISTRY** | — | 2026-05-05 (Phase 17-01) | Studio-applied. Runtime artefacts: pg_class.relrowsecurity=true, 4 pg_policy rows, 3 pg_indexes including pkey (see 17-01-SUMMARY.md). |
+| `025_fk_indexes.sql` | **NOT IN REGISTRY** | — | 2026-05-10 (Phase 18.1-06) | Studio-applied. 15× CREATE INDEX IF NOT EXISTS for unindexed FKs. Verified via pg_indexes (see 18.1-06 operator UAT). |
+| `026_mark_job_filled_rpc.sql` | **NOT IN REGISTRY** | — | 2026-05-10 (Phase 18.1-06) | Studio-applied. SECURITY DEFINER RPC mark_job_filled. Verified via pg_proc (see 18.1-06 operator UAT). |
+| `027_match_scores_cleanup_trigger.sql` | **NOT IN REGISTRY** | — | 2026-05-10 (Phase 18.1-06) | Studio-applied. AFTER UPDATE trigger on jobs.status for match_scores cleanup. Verified via pg_trigger (see 18.1-06 operator UAT). |
+| `028_pg_net_webhook_secret_headers.sql` | **NOT IN REGISTRY** | — | 2026-05-10 (Phase 18.1-06) | Studio-applied. pg_net call updated to include X-Webhook-Secret header in handle_job_filled. |
+| `029_pg_net_webhook_secret_vault.sql` | **NOT IN REGISTRY** | — | 2026-05-10 (Phase 18.1-06) | Studio-applied. vault.create_secret() for WEBHOOK_SECRET. Verified via vault.decrypted_secrets secret_len=64 (see 18.1-06 operator UAT). |
+
+_SC-4 verified 2026-05-10: 020 disk/registry mismatch was already documented in this table. No additional entries required._
 
 ### Going-forward convention for the `name` argument
 
@@ -136,6 +144,44 @@ $verify$;
 **Precedent:** 2026-05-03 — migrations 011/012/013/014 reconciled via BLOCK 1/2/3 sequence. Full evidence in `.planning/DRIFT-AUDIT-2026-05-03.md`.
 
 ---
+
+## SUMMARY frontmatter convention
+
+Phase SUMMARY.md files use `tags: [req-id, ...]` as the canonical signal for which requirements a plan closes. This is the established convention (confirmed by 14-01, 14-03, and all subsequent SUMMARY files).
+
+The `requirements_completed` field is an optional supplement used when a plan closes multiple REQ-IDs that need explicit cross-referencing. It is NOT required if `tags` already captures the requirements closed.
+
+Example — `14-01-SUMMARY.md` closes BFIX-01 via `tags: [bfix-01, ...]`.
+Example — `14-03-SUMMARY.md` closes BFIX-02 + BFIX-03 via `tags: [bfix-02, edge-function, ...]`.
+
+No retroactive backfill of `requirements_completed` is needed for Phase 14 files — `tags` is sufficient.
+
+## Schema/types intent mismatches
+
+### jobs.benefits — text[] vs jsonb
+
+Migration 013 declared `benefits text[]` in the original schema intent comments. The live schema has `benefits jsonb` (applied during phantom-apply reconciliation 2026-05-03). At the JavaScript layer they are functionally equivalent for the array-of-strings usage pattern in TopFarms — `JSON.parse` on a jsonb string and direct array indexing on text[] both produce `string[]`. No frontend code change is needed.
+
+Source of truth: `information_schema.columns WHERE table_name='jobs' AND column_name='benefits'` returns `data_type='jsonb'`. The frontend types and any PostgREST `.eq()` / `.overlaps()` queries treat it as a string array.
+
+No fix required — intent captured here for future reference.
+
+### couples_welcome — boolean vs accommodation_extras text[] member
+
+`seeker_profiles.couples_welcome` is a **boolean** representing a seeker's preference (the seeker is a couple, looking for accommodation together).
+
+`jobs.accommodation_extras` is a **text[] array** that may contain the string `'Couples welcome'` as one of several accommodation feature flags (the employer's accommodation supports couples).
+
+These are semantically distinct:
+- `seeker_profiles.couples_welcome = true` means "this seeker needs couples-friendly accommodation"
+- `'Couples welcome' ∈ jobs.accommodation_extras` means "this job's accommodation is suitable for couples"
+
+The matching engine joins them: a seeker with `couples_welcome = true` gets a higher match score on jobs where `accommodation_extras` contains `'Couples welcome'`.
+
+Source of truth for the seeker side: `src/pages/onboarding/steps/SeekerStep5LifeSituation.tsx` (couples_welcome field).
+Source of truth for the job side: `src/pages/dashboard/employer/steps/EmployerStep5Accommodation.tsx` (accommodation_extras chips including 'Couples welcome').
+
+No fix required — semantic distinction captured here for future reference.
 
 ## When to revisit this decision
 
