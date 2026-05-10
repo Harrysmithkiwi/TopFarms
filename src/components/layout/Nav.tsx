@@ -14,6 +14,7 @@ const employerLinks = [
 const seekerLinks = [
   { to: '/jobs', label: 'Find Work' },
   { to: '/dashboard/seeker/applications', label: 'My Applications' },
+  { to: '/dashboard/seeker/documents', label: 'My Documents' },
   // 'My Profile' (/profile) and 'Settings' (/settings) removed 2026-05-04 (UAT-04 — routes
   // unregistered in main.tsx; pages don't exist yet). Seeker profile editing is via sidebar
   // 'Edit Profile' → /onboarding/seeker.

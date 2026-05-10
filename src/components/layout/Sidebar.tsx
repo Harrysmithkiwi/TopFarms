@@ -3,6 +3,7 @@ import {
   LayoutDashboard,
   Search,
   FileText,
+  FolderOpen,
   User,
   LogOut,
   Bookmark,
@@ -27,6 +28,7 @@ const seekerItems: NavItem[] = [
   { to: '/dashboard/seeker', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/jobs', label: 'Find Jobs', icon: Search },
   { to: '/dashboard/seeker/applications', label: 'My Applications', icon: FileText },
+  { to: '/dashboard/seeker/documents', label: 'My Documents', icon: FolderOpen },
   { to: '/dashboard/seeker/saved-searches', label: 'Saved searches', icon: Bookmark },
   { to: '/onboarding/seeker', label: 'Edit Profile', icon: User },
 ]
