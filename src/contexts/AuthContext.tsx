@@ -28,12 +28,15 @@ export interface AuthHookReturn {
 }
 
 async function loadRole(userId: string): Promise<UserRole | null> {
+  // [AUTH-FIX-02] Timing instrumentation — Phase 18.2 SC-7 diagnostic
+  // Remove once root cause confirmed or fix landed.
+  console.time('[AUTH-FIX-02] loadRole:db-query')
   const { data, error } = await supabase
     .from('user_roles')
     .select('role')
     .eq('user_id', userId)
     .single()
-
+  console.timeEnd('[AUTH-FIX-02] loadRole:db-query')
   if (error || !data) return null
   return data.role as UserRole
 }
