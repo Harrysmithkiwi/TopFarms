@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: verifying
-stopped_at: Completed 18.2-02-ui-components-PLAN.md
-last_updated: "2026-05-10T20:26:03.829Z"
+stopped_at: Checkpoint reached in 18.2-03-rls-migration-and-diagnostic-PLAN.md — Tasks 1-2 complete; awaiting operator Task 3 (Studio apply migrations 030+031)
+last_updated: "2026-05-10T20:32:13.821Z"
 last_activity: "2026-05-10 — Phase 18.1 plan 18.1-06 operator-action complete. Migrations 025-029 applied via Studio. WEBHOOK_SECRET set in Vault (ALTER DATABASE blocked by Studio permission error; vault.create_secret() used via migration 029 instead; MCP confirmed secret_len=64). Both Edge fns redeployed with X-Webhook-Secret validation. Synthetic curl UAT 6/6 PASS. Mark-filled empirical UAT on job b00254c7 (jobs.status=filled, match_scores=0 post-trigger). Stripe 6/6 checks PASS in sandbox/test mode (PEND-01 live-mode swap before first real charge). MCP sweeps: 15/15 FK indexes, prosecdef=true, trigger in pg_trigger, X-Webhook-Secret pos=988 in handle_job_filled, Vault secret_len=64. 18.1-VERIFICATION.md PARTIAL (SC-2 Stripe live-mode PEND-01). 18.1-SUMMARY.md authored. ROADMAP Phase 18.1 partially-closed ([ ] preserved per CLAUDE §7). PEND-01 carryforward in v2.0-MILESTONE-AUDIT.md. Atomic closure commit (7 files: UAT.md + VERIFICATION.md + SUMMARY.md + ROADMAP.md + STATE.md + MILESTONE-AUDIT.md + PLAN.md)."
 progress:
   total_phases: 13
-  completed_phases: 8
+  completed_phases: 9
   total_plans: 39
-  completed_plans: 39
+  completed_plans: 40
 ---
 
 # Project State
@@ -143,6 +143,9 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 18.2]: get_applicants_for_job RPC on disk only; applied via Studio in plan 18.2-03 operator step per CLAUDE §2
 - [Phase 18.2]: ChipSelector salary adapter: string[]->number; unselected stores undefined not 0
 - [Phase 18.2]: ResizeObserver polyfill added to tests/setup.ts (Rule 3) for Radix UI Select in jsdom
+- [Phase 18.2-03]: DROP POLICY IF EXISTS + CREATE POLICY pattern (not ALTER POLICY) for 031 RLS initplan sweep — ALTER POLICY cannot change USING expressions in Postgres
+- [Phase 18.2-03]: (select auth.uid()) form for all RLS USING/WITH CHECK clauses eliminates auth_rls_initplan initplan re-evaluation per row — performance-only change, no behaviour difference
+- [Phase 18.2-03]: AUTH-FIX-02 timing instrumentation scoped to loadRole inner DB query only (not loadRoleWithTimeout outer race wrapper) — measures pure DB round-trip latency to isolate whether issue is at DB or Lock/promise layer
 
 ### Blockers/Concerns
 
@@ -161,6 +164,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-10T20:26:03.825Z
-Stopped at: Completed 18.2-02-ui-components-PLAN.md
+Last session: 2026-05-10T20:31:51.462Z
+Stopped at: Checkpoint reached in 18.2-03-rls-migration-and-diagnostic-PLAN.md — Tasks 1-2 complete; awaiting operator Task 3 (Studio apply migrations 030+031)
 Resume file: None
