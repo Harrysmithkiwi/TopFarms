@@ -9,6 +9,8 @@ interface Applicant {
   id: string
   seeker_id: string
   status: string
+  display_name: string
+  match_score: number
 }
 
 interface MarkFilledModalProps {
@@ -38,9 +40,7 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
       setLoadingApplicants(true)
       try {
         const { data, error } = await supabase
-          .from('applications')
-          .select('id, seeker_id, status')
-          .eq('job_id', jobId)
+          .rpc('get_applicants_for_job', { p_job_id: jobId })
 
         if (error) {
           console.error('MarkFilledModal: failed to load applicants', error)
@@ -207,7 +207,7 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
                         className="w-4 h-4 accent-brand"
                       />
                       <span className="text-sm font-body" style={{ color: 'var(--color-text)' }}>
-                        Applicant #{applicant.id.slice(0, 8)}
+                        {applicant.display_name} • <span className="capitalize">{applicant.status}</span> • {applicant.match_score}pts
                       </span>
                     </label>
                   ))}
