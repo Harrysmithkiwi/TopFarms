@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
-status: partial-close
-stopped_at: Completed Phase 18.1 (partial-close) — 18.1-VERIFICATION.md PARTIAL (SC-2 Stripe test-mode per PEND-01); SC-1/3/4/5/6 all PASS with empirical evidence; ROADMAP row stays [ ] per CLAUDE §7; carryforward PEND-01 in v2.0-MILESTONE-AUDIT.md
-last_updated: "2026-05-10T17:58:00+12:00"
-last_activity: "2026-05-10 — Phase 18.1 plan 18.1-06 (Wave 3 operator-action) complete. Migrations 025-029 applied via Studio. WEBHOOK_SECRET set in Vault (ALTER DATABASE blocked; vault.create_secret used instead, migration 029). Both Edge fns (notify-job-filled + send-followup-emails) redeployed with X-Webhook-Secret validation. Synthetic curl UAT 6/6 PASS (correct→200 ×2, wrong→403 ×2, missing→403 ×2). Mark-filled empirical UAT on job b00254c7 (jobs.status=filled, match_scores=0 — trigger fired). Stripe 6/6 checks PASS in sandbox/test mode (PEND-01 live-mode swap pre-launch action documented). MCP sweeps: 15/15 FK indexes confirmed, mark_job_filled prosecdef=true, cleanup trigger in pg_trigger, X-Webhook-Secret pos=988 in handle_job_filled body, Vault WEBHOOK_SECRET secret_len=64. 18.1-VERIFICATION.md PARTIAL (SC-2 Stripe live-mode pending PEND-01). 18.1-SUMMARY.md authored. ROADMAP Phase 18.1 row partially-closed ([ ] preserved per CLAUDE §7). PEND-01 carryforward added to v2.0-MILESTONE-AUDIT.md. Single atomic closure commit."
+status: verifying
+stopped_at: Phase 18.2 context gathered
+last_updated: "2026-05-10T19:18:29.598Z"
+last_activity: "2026-05-10 — Phase 18.1 plan 18.1-06 operator-action complete. Migrations 025-029 applied via Studio. WEBHOOK_SECRET set in Vault (ALTER DATABASE blocked by Studio permission error; vault.create_secret() used via migration 029 instead; MCP confirmed secret_len=64). Both Edge fns redeployed with X-Webhook-Secret validation. Synthetic curl UAT 6/6 PASS. Mark-filled empirical UAT on job b00254c7 (jobs.status=filled, match_scores=0 post-trigger). Stripe 6/6 checks PASS in sandbox/test mode (PEND-01 live-mode swap before first real charge). MCP sweeps: 15/15 FK indexes, prosecdef=true, trigger in pg_trigger, X-Webhook-Secret pos=988 in handle_job_filled, Vault secret_len=64. 18.1-VERIFICATION.md PARTIAL (SC-2 Stripe live-mode PEND-01). 18.1-SUMMARY.md authored. ROADMAP Phase 18.1 partially-closed ([ ] preserved per CLAUDE §7). PEND-01 carryforward in v2.0-MILESTONE-AUDIT.md. Atomic closure commit (7 files: UAT.md + VERIFICATION.md + SUMMARY.md + ROADMAP.md + STATE.md + MILESTONE-AUDIT.md + PLAN.md)."
 progress:
   total_phases: 13
-  completed_phases: 7
+  completed_phases: 8
   total_plans: 36
-  completed_plans: 36
+  completed_plans: 37
 ---
 
 # Project State
@@ -155,6 +155,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-10T16:26:26.262Z
-Stopped at: Completed 18.1-04-webhook-secret — code commit 35e1cef (2 Edge fns + migration 028 + 6× GREEN test); Studio apply deferred to Wave 3 plan 18.1-06
-Resume file: None
+Last session: 2026-05-10T19:18:29.594Z
+Stopped at: Phase 18.2 context gathered
+Resume file: .planning/phases/18.2-code-quality-ux-polish/18.2-CONTEXT.md
