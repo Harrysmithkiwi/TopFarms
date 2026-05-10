@@ -21,7 +21,6 @@ import {
 interface SeekerProfile {
   id: string
   user_id?: string
-  first_name?: string
   region?: string
   years_experience?: number
   sector_pref?: string[]
@@ -432,7 +431,7 @@ export function ApplicantDashboard() {
         amount_nzd: feeCalc.amount,
         rating,
         seeker_email: seekerContact?.email ?? null,
-        seeker_name: pendingHireApp.seeker_profiles?.first_name ?? null,
+        seeker_name: null,
       },
     })
 

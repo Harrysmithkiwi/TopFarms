@@ -5,7 +5,8 @@
 // FIVE layers of authorization in this order:
 //
 //   1. Method check         — POST only.
-//   2. Bearer-token auth    — supabase.auth.getUser(token) → 401 if invalid.
+//   2. Bearer-token auth    — gateway verify_jwt:true validates signature upstream;
+//                              payload decoded locally (BFIX-05 gateway-trust pattern).
 //   3. Role check           — user_roles.role must be 'employer' → 403.
 //   4. Relationship check   — application's job must be owned by the caller
 //                              employer; document's seeker_id must match the
