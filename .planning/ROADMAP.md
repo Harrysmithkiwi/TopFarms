@@ -46,6 +46,7 @@ Full details: `.planning/milestones/v1.1-ROADMAP.md`
 - [x] **Phase 19b: Design System Cleanup (Tier 2 — deeper dashboards)** — completed 2026-05-04 (merged in same `50dd5b8`; commit `23ad965` covered ApplicantPanel, ApplicantDashboard, DocumentUploader, FileDropzone, LivePreviewSidebar, TierCard, EmployerOnboarding/SeekerOnboarding wizard internals + all SeekerStep* + EmployerStep* surfaces).
 - [x] **Phase 20: Super Admin Dashboard** — Internal-only `/admin/*` panel for daily briefing, employer/seeker lists, placement-fee pipeline, platform health (completed 2026-05-05; see 20-VERIFICATION.md PASS verdict — 22/22 test IDs PASS, 12/12 must-haves PASS; carryforwards to Phase 20.1 documented)
 - [x] **Phase 20.1: Standalone Admin Login Gateway + Account Bootstrap** — completed 2026-05-05 (see 20.1-VERIFICATION.md PASS verdict — 7/7 CF-IDs PASS; CF-AUTH-2 carries documented runtime AccessDenied caveat — recommend fresh-session post-deploy re-verify)
+- [ ] **Phase 21: v2.0 Close + Post-Launch Ops** — v2.0 milestone closeout (PEND-01 Stripe live-mode swap, visual smoke tests for 18.2/20.1 human-verification gates) + first post-launch ops features: `is_active` login-blocking (suspended users see a clear "account suspended" gate rather than a broken dashboard), and a doc verification queue in the admin panel (admin can approve/reject employer and seeker uploaded documents, triggering trust-tier updates). After Phase 21 ships: `/gsd:complete-milestone v2.0`.
 
 ## Phase Details
 
