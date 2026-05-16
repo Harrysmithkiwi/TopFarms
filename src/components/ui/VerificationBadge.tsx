@@ -31,10 +31,9 @@ const TRUST_CONFIG: Record<
     badgeClass: 'bg-brand-50 text-brand border-brand/30',
   },
   fully_verified: {
-    // #b45309 (amber-700) kept for legibility on warn-bg — see PHASE-19-KNOWN-STATE.md
     label: 'Fully Verified',
-    shieldClass: 'text-[#b45309]',
-    badgeClass: 'bg-warn-bg text-[#b45309] border-warn/30',
+    shieldClass: 'text-warn-text-on-bg',
+    badgeClass: 'bg-warn-bg text-warn-text-on-bg border-warn/30',
   },
 }
 
@@ -134,8 +133,7 @@ export function VerificationBadge({
                     )}
                   >
                     {isVerified && <Check className="w-2.5 h-2.5 text-text-on-brand stroke-[3]" />}
-                    {/* #9a6c1a kept for legibility — see PHASE-19-KNOWN-STATE.md */}
-                    {isPending && <Clock className="w-2.5 h-2.5 text-[#9a6c1a]" />}
+                    {isPending && <Clock className="w-2.5 h-2.5 text-warn-text-on-bg" />}
                   </div>
 
                   <span className="text-[12px] font-body text-text">{METHOD_LABELS[method]}</span>
@@ -145,7 +143,7 @@ export function VerificationBadge({
                     className={cn(
                       'ml-auto text-[11px] font-body',
                       isVerified && 'text-brand',
-                      isPending && 'text-[#9a6c1a]',
+                      isPending && 'text-warn-text-on-bg',
                       !record && 'text-text-subtle',
                     )}
                   >

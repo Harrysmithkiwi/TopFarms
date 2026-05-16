@@ -7,7 +7,7 @@ interface TagProps extends HTMLAttributes<HTMLSpanElement> {
 
 const variantClasses = {
   green: 'bg-brand-50 text-brand',
-  warn: 'bg-warn-bg text-[#7A5C00]',
+  warn: 'bg-warn-bg text-warn-text-on-bg',
   blue: 'bg-info-bg text-info',
   grey: 'bg-surface-2 text-text-muted',
   orange: 'bg-warn-bg text-warn',

@@ -13,7 +13,7 @@ const variantClasses = {
   },
   warn: {
     container: 'bg-warn-bg border-warn/30',
-    title: 'text-[#7A5C00]',
+    title: 'text-warn-text-on-bg',
   },
   green: {
     container: 'bg-brand-50 border-brand/20',

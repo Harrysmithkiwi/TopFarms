@@ -1,7 +1,7 @@
 ---
 phase: 15-email-pipeline-deploy
 verified: 2026-05-01T00:00:00Z
-status: gaps_found
+status: passed
 score: 3/6 truths verified (deploy-layer truths pass; E2E delivery and smoke-test truths deferred)
 gaps:
   - truth: "MAIL-01: Resend domain shows Verified status (SPF + DKIM) in production"

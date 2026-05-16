@@ -20,7 +20,7 @@ const STATUS_CONFIG: Record<
   paused: {
     label: 'Paused',
     bgClass: 'bg-[rgba(217,150,45,0.12)]',
-    textClass: 'text-[#9a6c1a]',
+    textClass: 'text-warn-text-on-bg',
   },
   draft: { label: 'Draft', bgClass: 'bg-surface-2', textClass: 'text-text-muted' },
   expired: { label: 'Expired', bgClass: 'bg-[rgba(220,53,69,0.10)]', textClass: 'text-danger' },

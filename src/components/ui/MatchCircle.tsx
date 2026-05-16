@@ -8,8 +8,8 @@ interface MatchCircleProps {
 
 const sizeClasses = {
   sm: { container: 'w-[38px] h-[38px]', text: 'text-[11px]' },
-  md: { container: 'w-[50px] h-[50px]', text: 'text-[13px]' },
-  lg: { container: 'w-[72px] h-[72px]', text: 'text-[18px]' },
+  md: { container: 'w-[56px] h-[56px]', text: 'text-[14px]' },
+  lg: { container: 'w-[88px] h-[88px]', text: 'text-[22px]' },
 }
 
 function getColourClasses(score: number) {
