@@ -329,3 +329,43 @@ Plans:
 - [x] 20.1-03-admin-login-page-PLAN.md — AdminLoginPage + AdminGate hybrid `/admin` route + 4 component tests — completed 2026-05-05 (atomic commit 0dcda8a; 173 vitest passed | 113 todo | 0 failed; tsc clean; CF-AUTH-1 + CF-AUTH-2 closed at app layer)
 - [x] 20.1-04-sidebar-sign-out-PLAN.md — Sign Out button in dashboard Sidebar footer (mt-auto + LogOut icon) + 1 click test — completed 2026-05-05 (atomic commit b4c6b4c; 174 vitest passed | 113 todo | 0 failed; tsc clean; CF-CODE-2 closed at app layer)
 - [x] 20.1-05-bootstrap-uat-and-ship-PLAN.md — Operator: Studio Auth admin@topfarms.co.nz + Studio SQL role assign + UAT + old-role removal + 20.1-VERIFICATION.md + ROADMAP flip — completed 2026-05-05 (this commit)
+
+### Phase 21: v2.0 Close + Post-Launch Ops
+
+**Goal:** Close the v2.0 milestone and ship the first two post-launch ops features. Two concurrent tracks delivered in one phase:
+
+**Track A — v2.0 milestone closeout (operator + visual UAT, no new product code):**
+1. **PEND-01 Stripe live-mode key swap** — follow the 9-item checklist in `.planning/DECISIONS-PENDING.md` §PEND-01 verbatim
+2. **Five visual smoke tests** (browser UAT) for Phase 18.2 / 20.1 human-verification gates:
+   - (a) My Documents link visible in seeker nav/sidebar
+   - (b) MarkFilledModal shows applicant names + status + points, not UUIDs
+   - (c) Salary preset chips render in seeker onboarding step 5 (not number input)
+   - (d) AUTH-FIX-02 console.time output appears in DevTools when loading dashboard
+   - (e) Phase 20.1 admin fresh-session login: sign out → clear cache → sign in → `/admin` → no AccessDenied
+3. **Flip 18.1 SC-2 PARTIAL → PASS** in `.planning/phases/18.1-pre-launch-hardening/18.1-VERIFICATION.md` after PEND-01 ships
+4. **Run `/gsd:complete-milestone v2.0`** after both Track A and Track B are empirically green
+
+**Track B — first post-launch ops features (new product code):**
+1. **`is_active` login-blocking gate** — `ProtectedRoute` enforces; suspended users redirected to new `/suspended` page instead of dashboard. `AuthContext.loadRole` extended to fetch `is_active` alongside `role` from `user_roles`. Full gate (no partial views). Re-activation = admin flips toggle in existing ProfileDrawer (no self-service path).
+2. **Doc verification queue** at `/admin/documents` — admin reviews seeker-uploaded documents. Three actions per document: Approve / Reject (with reason) / Request More Info. Approve triggers email to seeker + sets "Documents Verified" badge on profile (visible to employers on applicant cards). Migration adds `status: 'pending' | 'approved' | 'rejected'` and `rejection_reason: text` columns to `seeker_documents`. Admin signed-URL access via Edge Function bypass path or new admin RPC. Only seeker documents queued — employer docs continue to auto-verify on upload (deferred).
+
+**Constraints:**
+- Use Phase 19 v2 design system primitives (Input, Button, Tag, AdminTable, ProfileDrawer); no new primitives
+- `/suspended` page: simple, consistent with `/login` auth-page shell
+- Admin RPCs follow `SECURITY DEFINER` pattern established in `supabase/migrations/023_admin_rpcs.sql`
+- Newest pending documents first in admin queue
+- Email notifications via existing Resend infrastructure (`send-followup-emails` Edge Function pattern)
+
+**Requirements:** None directly (post-launch ops continuation; no public REQ-IDs). Validation derives from Phase 18.1 SC-2 closeout, Phase 18.2/20.1 human-verification gates, `.planning/DECISIONS-PENDING.md` §PEND-01, and the in-scope feature list in `.planning/v2.0-MILESTONE-AUDIT.md`.
+
+**Depends on:** Phase 20.1 (admin auth + AdminLayout), Phase 19 (v2 design system), Phase 18.1 (SC-2 carryforward), Phase 15 (email pipeline)
+
+**Out of scope (deferred):**
+- Employer document review queue (employer docs auto-verify; flagged for future phase if fraud materialises)
+- Broadcast comms, moderation queue, advanced analytics (deferred from MVP)
+- JWT HS256→ES256 migration (recommend Phase 22 — own phase)
+
+**Notes:**
+- Source artefacts: `.planning/phases/21-v20-close-post-launch-ops/21-CONTEXT.md`, `.planning/DECISIONS-PENDING.md` §PEND-01, `.planning/phases/18.1-pre-launch-hardening/18.1-VERIFICATION.md` (SC-2 PARTIAL), `.planning/v2.0-MILESTONE-AUDIT.md`
+- Track A is operator+UAT work; Track B is product code. Both must land before milestone close.
+- Open implementation choices for planner: (a) admin doc-URL path (Edge Function bypass vs new admin RPC); (b) "Request More Info" status semantics (`pending` vs new `needs_resubmission`); (c) `loadRole` return-type extension shape; (d) "Documents Verified" badge component (new vs reuse `VerificationBadge`); (e) queue pagination/sort affordances.
