@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: verifying
-stopped_at: Phase 21 plan 21-01 migration-032-doc-status COMPLETE — ready for plan 21-02 admin-doc-rpcs
-last_updated: "2026-05-17T14:33:05.044Z"
-last_activity: "2026-05-17 — Phase 21 plan 21-01 wave 1 migration-032-doc-status COMPLETE. Task 1 atomic commit 9fecdfe (migration 032 + SeekerDocument TS extension, 2 files +111). Task 2 Studio-applied 2026-05-17 (CLAUDE §2 registry-rowless deployment). 4/4 read-only verification queries via Supabase Management API (curl /v1/projects/inlagtgpynemhipnqvty/database/query) PASS empirically — raw JSON evidence captured verbatim in 21-01-SUMMARY.md: status text/NO/'pending'::text + rejection_reason text/YES/null + CHECK with 4 ANY-expansion values + btree (status, uploaded_at DESC) index + 3 pre-migration rows now status='pending'. 1 Rule 3 process deviation (continuation agent lacked mcp__supabase__* tool surface; substituted Management API — semantically identical to MCP execute_sql; project ref inlagtgpynemhipnqvty verbatim per CLAUDE §1; read-only invariant preserved). Wave 2 plan 21-02 unblocked (4 admin SECURITY DEFINER RPCs can now reference status + rejection_reason columns). ROADMAP per-plan checkboxes flipped for 21-00 + 21-01. Self-check PASSED."
+stopped_at: Phase 21 plan 21-03 edge-fn-admin-bypass COMPLETE — DEPLOY CHECKPOINT pending operator action
+last_updated: "2026-05-17T14:45:38.105Z"
+last_activity: "2026-05-17 — Phase 21 plan 21-03 edge-fn-admin-bypass COMPLETE. Atomic Tasks 1+2 commit 165b054 (3 files +155/-3): admin bypass branch added to get-applicant-document-url Edge fn (51/3 within ≤60/≤5 AC budget) + 7-assertion static-source regression guard test (6ms runtime) + deferred-items.md disposition note. 8/8 grep ACs PASS; 7/7 test GREEN; full vitest suite GREEN (267 passed | 137 todo — todos are pre-existing Wave 0 scaffold). BFIX-05 gateway-trust JWT decode + PRIV-02 identity reject + employer 5-layer gate all byte-frozen. 2 deviations auto-fixed (Rule 1: plan-internal AC2/AC3 wording conflict — comment-strip in test preserves docblock AND guards executable code; Rule 2: resolved sibling 21-02's pre-staged-diff observation via deterministic re-application from plan spec). DEPLOY CHECKPOINT pending operator action — supabase functions deploy get-applicant-document-url; deferred by plan body line 327 to Wave 6 plan 21-09 operator batch but orchestrator requested explicit deploy-now-or-batch decision. Plan 21-07 AdminDocumentsQueue UI is downstream runtime consumer; will be empirically testable post-deploy. Self-check PASSED."
 progress:
   total_phases: 14
   completed_phases: 9
   total_plans: 49
-  completed_plans: 42
+  completed_plans: 43
 ---
 
 # Project State
@@ -24,10 +24,10 @@ See: .planning/PROJECT.md (updated 2026-04-03)
 
 ## Current Position
 
-Phase: 21 v2.0 Close + Post-Launch Ops — Plan 01 Wave 1 migration 032 doc-verification-queue schema COMPLETE. 8 plans remain (21-02 admin-doc-rpcs → 21-09 track-A milestone close).
-Plan: 21-01-migration-032-doc-status COMPLETE. Migration 032 (status + rejection_reason + composite index) live in production project inlagtgpynemhipnqvty via Studio apply (CLAUDE §2 registry-rowless deployment). TS SeekerDocument interface extended with SeekerDocumentStatus union (pending|approved|rejected|needs_resubmission). 4/4 Management-API read-only verification queries PASS empirically — raw JSON evidence captured verbatim in 21-01-SUMMARY.md (column shape + CHECK constraint + composite index + row defaults). Atomic Task 1 commit 9fecdfe (2 files +111 insertions). Next: plan 21-02-admin-doc-rpcs (Wave 2 — 4 SECURITY DEFINER RPCs read/write these columns).
-Status: Phase 21 Plan 01 COMPLETE. Wave 1 schema-foundation pattern (single migration file + TS interface extension + checkpoint:human-action gate for Studio apply + MCP/Management-API read-only verification queries forming empirical post-state proof per CLAUDE §7). DOC-QUEUE-SCHEMA-01/02/03 requirements satisfied empirically (note: these IDs are in plan frontmatter but not in REQUIREMENTS.md registry — planning-time gap, surfaced for plan 21-09 closure to add). Outstanding v2.0 work: 8 remaining Phase 21 plans (21-02..21-09) + PEND-01 Stripe live-mode swap (closes via plan 21-09).
-Last activity: 2026-05-17 — Phase 21 plan 21-01 wave 1 migration-032-doc-status COMPLETE. Task 1 atomic commit 9fecdfe (migration 032 + SeekerDocument TS extension, 2 files +111). Task 2 Studio-applied 2026-05-17 (CLAUDE §2 registry-rowless deployment). 4/4 read-only verification queries via Supabase Management API (curl /v1/projects/inlagtgpynemhipnqvty/database/query) PASS empirically — raw JSON evidence captured verbatim in 21-01-SUMMARY.md: status text/NO/'pending'::text + rejection_reason text/YES/null + CHECK with 4 ANY-expansion values + btree (status, uploaded_at DESC) index + 3 pre-migration rows now status='pending'. 1 Rule 3 process deviation (continuation agent lacked mcp__supabase__* tool surface; substituted Management API — semantically identical to MCP execute_sql; project ref inlagtgpynemhipnqvty verbatim per CLAUDE §1; read-only invariant preserved). Wave 2 plan 21-02 unblocked (4 admin SECURITY DEFINER RPCs can now reference status + rejection_reason columns). ROADMAP per-plan checkboxes flipped for 21-00 + 21-01. Self-check PASSED.
+Phase: 21 v2.0 Close + Post-Launch Ops — Plan 03 Wave 2 edge-fn-admin-bypass COMPLETE (source-level). 6 plans remain (21-02 admin-doc-rpcs in-flight via sibling executor → 21-04 auth-context-is-active → 21-05..21-09).
+Plan: 21-03-edge-fn-admin-bypass COMPLETE (source-level; deploy CHECKPOINT pending operator action). Admin role bypass branch added to supabase/functions/get-applicant-document-url/index.ts (51 insertions, 3 deletions — within ≤60/≤5 AC budget). Non-admin (employer) 5-layer gate byte-frozen. BFIX-05 gateway-trust JWT decode preserved (CLAUDE §5 — no new adminClient.auth.getUser call introduced; admin role check reuses already-fetched roleRow). PRIV-02 identity exclusion preserved on non-admin path. New tests/get-applicant-document-url-admin-bypass.test.ts (56 lines, 7 assertions, 6ms runtime, pure-Node static-source guard) is GREEN. Atomic Tasks 1+2 single commit 165b054 (3 files +155/-3) per CLAUDE §4 atomic-bundle precedent. Full vitest suite GREEN: 267 passed | 137 todo (todos are pre-existing Wave 0 scaffold from plan 21-00). Next: deploy step (operator action — supabase functions deploy get-applicant-document-url) is the orchestrator's CHECKPOINT — either inline now or batch into Wave 6 plan 21-09 per plan body line 327.
+Status: Phase 21 Plan 03 source-level COMPLETE; DEPLOY CHECKPOINT pending operator action. DOC-QUEUE-03 + DOC-QUEUE-EDGE-GATEWAY-TRUST requirements satisfied at source layer (runtime layer satisfied post-deploy; full empirical UAT batched into Wave 6 Track A per plan body line 329). 2 deviations auto-fixed (Rule 1: plan-internal AC2/AC3 wording conflict surfaced and resolved via comment-strip preprocessing in regression test — first-in-project static-source-guard hardening pattern; Rule 2: sibling 21-02's pre-staged-diff cross-plan observation resolved via deterministic re-application from plan spec). Outstanding v2.0 work: 6 remaining Phase 21 plans (21-02 if in-flight + 21-04..21-09) + PEND-01 Stripe live-mode swap (closes via plan 21-09) + this Edge fn deploy.
+Last activity: 2026-05-17 — Phase 21 plan 21-03 edge-fn-admin-bypass COMPLETE. Atomic Tasks 1+2 commit 165b054 (3 files +155/-3): admin bypass branch added to get-applicant-document-url Edge fn (51/3 within ≤60/≤5 AC budget) + 7-assertion static-source regression guard test (6ms runtime) + deferred-items.md disposition note. 8/8 grep ACs PASS; 7/7 test GREEN; full vitest suite GREEN (267 passed | 137 todo — todos are pre-existing Wave 0 scaffold). BFIX-05 gateway-trust JWT decode + PRIV-02 identity reject + employer 5-layer gate all byte-frozen. 2 deviations auto-fixed (Rule 1: plan-internal AC2/AC3 wording conflict — comment-strip in test preserves docblock AND guards executable code; Rule 2: resolved sibling 21-02's pre-staged-diff observation via deterministic re-application from plan spec). DEPLOY CHECKPOINT pending operator action — `supabase functions deploy get-applicant-document-url`; deferred by plan body line 327 to Wave 6 plan 21-09 operator batch but orchestrator requested explicit deploy-now-or-batch decision. Plan 21-07 AdminDocumentsQueue UI is downstream runtime consumer; will be empirically testable post-deploy. Self-check PASSED.
 
 ## Accumulated Context
 
@@ -156,6 +156,10 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 21-01]: Studio apply per CLAUDE §2 (registry-rowless); 4/4 Management-API verification queries PASS — migration 032 live in production
 - [Phase 21-01]: TS SeekerDocumentStatus union mirrors DB CHECK enum; drift-risk documented in code comment (update both together when adding new status value)
 - [Phase 21-01]: Continuation-agent tool-surface gap (no mcp__supabase__* tools) — Rule 3 substitute Supabase Management API /v1/projects/{ref}/database/query with SUPABASE_ACCESS_TOKEN; semantically identical to MCP execute_sql; project ref inlagtgpynemhipnqvty verbatim per CLAUDE §1; read-only POSIX preserved
+- [Phase 21-03]: Admin bypass = early-exit branch in existing Edge fn (NOT new RPC) — PL/pgSQL cannot call Supabase Storage createSignedUrl
+- [Phase 21-03]: Gateway-trust JWT pattern preserved byte-for-byte (CLAUDE §5 / BFIX-05) — admin role check reuses already-fetched roleRow from user_roles lookup; NO new adminClient.auth.getUser call
+- [Phase 21-03]: Plan AC2/AC3 internal conflict resolved by strengthening regression test with comment-strip preprocessing — guards executable code paths, not documentation strings; first-in-project pattern
+- [Phase 21-03]: Deploy deferred to plan 21-09 operator batch (per plan body line 327); orchestrator CHECKPOINT returned to user for explicit deploy-now-or-batch decision
 
 ### Blockers/Concerns
 
@@ -174,6 +178,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-17T14:33:05.040Z
-Stopped at: Phase 21 plan 21-01 migration-032-doc-status COMPLETE — ready for plan 21-02 admin-doc-rpcs
+Last session: 2026-05-17T14:45:20.824Z
+Stopped at: Phase 21 plan 21-03 edge-fn-admin-bypass COMPLETE — DEPLOY CHECKPOINT pending operator action
 Resume file: None
