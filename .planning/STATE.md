@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
-status: in-progress
-stopped_at: Phase 21 plan 21-00 Wave 0 test scaffold COMPLETE — ready for plan 21-01
-last_updated: "2026-05-17T12:33:05Z"
-last_activity: "2026-05-17 — Phase 21 plan 21-00 wave 0 vitest scaffold COMPLETE. 5 stubs (loadRole-isActive + protected-route-suspended + suspended-page + admin-doc-queue + documents-verified-badge) + 24 it.todo placeholders covering IS-ACTIVE-01/02/03 + DOC-QUEUE-01/02/04. Atomic commit be8f76a (5 files, +134). Baseline 260 passed preserved; suite 260 passed | 137 todo | 0 failures. 4 admin RPC names verbatim in admin-doc-queue.test.tsx for Wave 2 grep-spec. 2 Rule 1 import-trim deviations (unused expect/RTL/ProtectedRoute/useAuth imports — Wave 3 reintroduces at GREEN time per CLAUDE §4)."
+status: verifying
+stopped_at: Phase 21 plan 21-01 migration-032-doc-status COMPLETE — ready for plan 21-02 admin-doc-rpcs
+last_updated: "2026-05-17T14:33:05.044Z"
+last_activity: "2026-05-17 — Phase 21 plan 21-01 wave 1 migration-032-doc-status COMPLETE. Task 1 atomic commit 9fecdfe (migration 032 + SeekerDocument TS extension, 2 files +111). Task 2 Studio-applied 2026-05-17 (CLAUDE §2 registry-rowless deployment). 4/4 read-only verification queries via Supabase Management API (curl /v1/projects/inlagtgpynemhipnqvty/database/query) PASS empirically — raw JSON evidence captured verbatim in 21-01-SUMMARY.md: status text/NO/'pending'::text + rejection_reason text/YES/null + CHECK with 4 ANY-expansion values + btree (status, uploaded_at DESC) index + 3 pre-migration rows now status='pending'. 1 Rule 3 process deviation (continuation agent lacked mcp__supabase__* tool surface; substituted Management API — semantically identical to MCP execute_sql; project ref inlagtgpynemhipnqvty verbatim per CLAUDE §1; read-only invariant preserved). Wave 2 plan 21-02 unblocked (4 admin SECURITY DEFINER RPCs can now reference status + rejection_reason columns). ROADMAP per-plan checkboxes flipped for 21-00 + 21-01. Self-check PASSED."
 progress:
   total_phases: 14
   completed_phases: 9
   total_plans: 49
-  completed_plans: 41
+  completed_plans: 42
 ---
 
 # Project State
@@ -24,10 +24,10 @@ See: .planning/PROJECT.md (updated 2026-04-03)
 
 ## Current Position
 
-Phase: 21 v2.0 Close + Post-Launch Ops — Plan 00 Wave 0 test scaffold COMPLETE. 9 plans remain (21-01 migration-032 → 21-09 track-A milestone close).
-Plan: 21-00-test-scaffold COMPLETE. 5 vitest stubs + 24 it.todo placeholders covering IS-ACTIVE-01/02/03 + DOC-QUEUE-01/02/04 landed in single atomic commit be8f76a. Baseline 260 passed preserved exactly; suite now 260 passed | 137 todo | 0 failures. Next: plan 21-01-migration-032-doc-status (Wave 1).
-Status: Phase 21 Plan 00 COMPLETE. Wave 0 scaffold-first pattern continued (Phase 17-00 / 18.1-00 / 20-01 precedent). 5 test files landed: tests/loadRole-isActive.test.ts (4 todos), tests/protected-route-suspended.test.tsx (5 todos), tests/suspended-page.test.tsx (4 todos), tests/admin-doc-queue.test.tsx (7 todos including 4 admin RPC names verbatim), tests/documents-verified-badge.test.tsx (4 todos). Zero production source touched. Outstanding v2.0 work: 9 remaining Phase 21 plans + PEND-01 Stripe live-mode swap (closes via plan 21-09).
-Last activity: 2026-05-17 — Phase 21 plan 21-00 wave 0 scaffold. Atomic commit be8f76a (5 files, +134 lines). Per-file todo counts: 4/5/4/7/4 (≥4/5/4/7/4 acceptance criteria). 4 admin RPC names referenced verbatim in admin-doc-queue.test.tsx for Wave 2 plan 21-02 grep-spec. Mock surface contracts pre-declared (rpcMock + functionsInvokeMock for queue; fromMock for loadRole; auth.signOut for SuspendedPage). 2 Rule 1 import-trim deviations (removed unused expect + RTL imports + ProtectedRoute/useAuth imports — Wave 3 reintroduces at GREEN time per CLAUDE §4 atomic-commit precedent). Vercel-plugin react-best-practices hook noise dismissed as no-deviation event (TopFarms is Vite + RR v7 SPA on Supabase, not Next.js; plan writes zero production React code). Self-check PASSED.
+Phase: 21 v2.0 Close + Post-Launch Ops — Plan 01 Wave 1 migration 032 doc-verification-queue schema COMPLETE. 8 plans remain (21-02 admin-doc-rpcs → 21-09 track-A milestone close).
+Plan: 21-01-migration-032-doc-status COMPLETE. Migration 032 (status + rejection_reason + composite index) live in production project inlagtgpynemhipnqvty via Studio apply (CLAUDE §2 registry-rowless deployment). TS SeekerDocument interface extended with SeekerDocumentStatus union (pending|approved|rejected|needs_resubmission). 4/4 Management-API read-only verification queries PASS empirically — raw JSON evidence captured verbatim in 21-01-SUMMARY.md (column shape + CHECK constraint + composite index + row defaults). Atomic Task 1 commit 9fecdfe (2 files +111 insertions). Next: plan 21-02-admin-doc-rpcs (Wave 2 — 4 SECURITY DEFINER RPCs read/write these columns).
+Status: Phase 21 Plan 01 COMPLETE. Wave 1 schema-foundation pattern (single migration file + TS interface extension + checkpoint:human-action gate for Studio apply + MCP/Management-API read-only verification queries forming empirical post-state proof per CLAUDE §7). DOC-QUEUE-SCHEMA-01/02/03 requirements satisfied empirically (note: these IDs are in plan frontmatter but not in REQUIREMENTS.md registry — planning-time gap, surfaced for plan 21-09 closure to add). Outstanding v2.0 work: 8 remaining Phase 21 plans (21-02..21-09) + PEND-01 Stripe live-mode swap (closes via plan 21-09).
+Last activity: 2026-05-17 — Phase 21 plan 21-01 wave 1 migration-032-doc-status COMPLETE. Task 1 atomic commit 9fecdfe (migration 032 + SeekerDocument TS extension, 2 files +111). Task 2 Studio-applied 2026-05-17 (CLAUDE §2 registry-rowless deployment). 4/4 read-only verification queries via Supabase Management API (curl /v1/projects/inlagtgpynemhipnqvty/database/query) PASS empirically — raw JSON evidence captured verbatim in 21-01-SUMMARY.md: status text/NO/'pending'::text + rejection_reason text/YES/null + CHECK with 4 ANY-expansion values + btree (status, uploaded_at DESC) index + 3 pre-migration rows now status='pending'. 1 Rule 3 process deviation (continuation agent lacked mcp__supabase__* tool surface; substituted Management API — semantically identical to MCP execute_sql; project ref inlagtgpynemhipnqvty verbatim per CLAUDE §1; read-only invariant preserved). Wave 2 plan 21-02 unblocked (4 admin SECURITY DEFINER RPCs can now reference status + rejection_reason columns). ROADMAP per-plan checkboxes flipped for 21-00 + 21-01. Self-check PASSED.
 
 ## Accumulated Context
 
@@ -153,6 +153,9 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 21-00]: Rule 1 import-trim at scaffold-creation time — removed unused `expect` + RTL imports + ProtectedRoute/useAuth imports from stub bodies. .todo rows never execute, so importing those symbols at scaffold time inflates the module graph and trips eslint no-unused-vars. Wave 3 plan 21-04 reintroduces at the same atomic commit it flips the first .todo to real assertion. Helper signature retained as `_mockAuth` (underscore prefix → tsconfig noUnusedParameters suppression) for documentation.
 - [Phase 21-00]: Atomic single-commit landing of Tasks 1+2 per CLAUDE §4 + plan §success_criteria — `test(21-00): wave 0 vitest scaffold for is_active gate + doc queue` (be8f76a). Matches Phase 17-00 / 18.1-00 / 20-01 atomic-bundle precedent.
 - [Phase 21-00]: Vercel-plugin react-best-practices posttooluse hook dismissed as no-deviation event — TopFarms is Vite + RR v7 SPA on Supabase (not Next.js); plan writes zero production React code (only vitest stubs with .todo rows). Matches Phase 17-02/03/04 + 18.1-02/03 + 20.1-02 STATE precedent for hook noise dismissal.
+- [Phase 21-01]: Studio apply per CLAUDE §2 (registry-rowless); 4/4 Management-API verification queries PASS — migration 032 live in production
+- [Phase 21-01]: TS SeekerDocumentStatus union mirrors DB CHECK enum; drift-risk documented in code comment (update both together when adding new status value)
+- [Phase 21-01]: Continuation-agent tool-surface gap (no mcp__supabase__* tools) — Rule 3 substitute Supabase Management API /v1/projects/{ref}/database/query with SUPABASE_ACCESS_TOKEN; semantically identical to MCP execute_sql; project ref inlagtgpynemhipnqvty verbatim per CLAUDE §1; read-only POSIX preserved
 
 ### Blockers/Concerns
 
@@ -171,6 +174,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-17T12:33:05Z
-Stopped at: Phase 21 plan 21-00 Wave 0 test scaffold COMPLETE — ready for plan 21-01
-Resume file: .planning/phases/21-v20-close-post-launch-ops/21-01-migration-032-doc-status-PLAN.md
+Last session: 2026-05-17T14:33:05.040Z
+Stopped at: Phase 21 plan 21-01 migration-032-doc-status COMPLETE — ready for plan 21-02 admin-doc-rpcs
+Resume file: None

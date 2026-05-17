@@ -293,7 +293,7 @@ Plans:
 | 19b. Design System Cleanup (Tier 2) | v2.0 | 1/1 | Complete (commit `23ad965` Tier 2 sweep merged in `50dd5b8`) | 2026-05-04 |
 | 20. Super Admin Dashboard | v2.0 | 8/8 | Complete | 2026-05-05 |
 | 20.1. Standalone Admin Login Gateway + Account Bootstrap | v2.0 | 5/5 | Complete | 2026-05-05 |
-| 21. v2.0 Close + Post-Launch Ops | 1/10 | In Progress|  | — |
+| 21. v2.0 Close + Post-Launch Ops | 2/10 | In Progress|  | — |
 
 ### Phase 20.1: Standalone Admin Login Gateway + Account Bootstrap (INSERTED)
 
@@ -366,7 +366,7 @@ Plans:
 - Broadcast comms, moderation queue, advanced analytics (deferred from MVP)
 - JWT HS256→ES256 migration (recommend Phase 22 — own phase)
 
-**Plans:** 1/10 plans executed
+**Plans:** 2/10 plans executed
 
 Plan-level resolutions of open implementation choices (per planner's authority):
 - (a) Admin doc-URL path → **Edge Function bypass branch** in get-applicant-document-url (RESEARCH §Pattern 3 — PL/pgSQL can't call Supabase Storage)
@@ -377,8 +377,8 @@ Plan-level resolutions of open implementation choices (per planner's authority):
 - (f) X-Webhook-Secret on send-document-status-email → **removed** (mid-flight Rule 1 from plan 21-07 — secret cannot live in admin browser; verify_jwt:true + admin role check suffice)
 
 Plans:
-- [ ] 21-00-test-scaffold-PLAN.md — Wave 0: 5 vitest stubs (loadRole / ProtectedRoute / Suspended / admin-doc-queue / DocumentsVerifiedBadge) — IS-ACTIVE-01/02/03 + DOC-QUEUE-01/02/04
-- [ ] 21-01-migration-032-doc-status-PLAN.md — Wave 1: migration 032 (status + rejection_reason + composite index) + SeekerDocument TS extension; Studio apply via CLAUDE §2
+- [x] 21-00-test-scaffold-PLAN.md — Wave 0: 5 vitest stubs (loadRole / ProtectedRoute / Suspended / admin-doc-queue / DocumentsVerifiedBadge) — IS-ACTIVE-01/02/03 + DOC-QUEUE-01/02/04 (shipped 2026-05-17 commit be8f76a; docs 9a3e28d)
+- [x] 21-01-migration-032-doc-status-PLAN.md — Wave 1: migration 032 (status + rejection_reason + composite index) + SeekerDocument TS extension; Studio apply via CLAUDE §2 (shipped 2026-05-17 commit 9fecdfe; Studio-applied; 4/4 Management-API verification PASS — see 21-01-SUMMARY.md)
 - [ ] 21-02-admin-doc-rpcs-PLAN.md — Wave 2: migration 033 — 4 SECURITY DEFINER admin doc RPCs (list_queue / approve / reject / request_more_info) + shape-contract tests GREEN
 - [ ] 21-03-edge-fn-admin-bypass-PLAN.md — Wave 2: get-applicant-document-url admin role bypass branch + static-source regression guard preserving BFIX-05 gateway-trust
 - [ ] 21-04-auth-context-is-active-PLAN.md — Wave 3: AuthContext.loadRole single round-trip extension + ProtectedRoute /suspended redirect at correct guard position + IS-ACTIVE-* tests GREEN
