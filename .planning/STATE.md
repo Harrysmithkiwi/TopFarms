@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
-status: verifying
-stopped_at: Phase 21 context gathered — ready for planning
-last_updated: "2026-05-16T07:28:02.979Z"
-last_activity: "2026-05-10 — Phase 18.1 plan 18.1-06 operator-action complete. Migrations 025-029 applied via Studio. WEBHOOK_SECRET set in Vault (ALTER DATABASE blocked by Studio permission error; vault.create_secret() used via migration 029 instead; MCP confirmed secret_len=64). Both Edge fns redeployed with X-Webhook-Secret validation. Synthetic curl UAT 6/6 PASS. Mark-filled empirical UAT on job b00254c7 (jobs.status=filled, match_scores=0 post-trigger). Stripe 6/6 checks PASS in sandbox/test mode (PEND-01 live-mode swap before first real charge). MCP sweeps: 15/15 FK indexes, prosecdef=true, trigger in pg_trigger, X-Webhook-Secret pos=988 in handle_job_filled, Vault secret_len=64. 18.1-VERIFICATION.md PARTIAL (SC-2 Stripe live-mode PEND-01). 18.1-SUMMARY.md authored. ROADMAP Phase 18.1 partially-closed ([ ] preserved per CLAUDE §7). PEND-01 carryforward in v2.0-MILESTONE-AUDIT.md. Atomic closure commit (7 files: UAT.md + VERIFICATION.md + SUMMARY.md + ROADMAP.md + STATE.md + MILESTONE-AUDIT.md + PLAN.md)."
+status: in-progress
+stopped_at: Phase 21 plan 21-00 Wave 0 test scaffold COMPLETE — ready for plan 21-01
+last_updated: "2026-05-17T12:33:05Z"
+last_activity: "2026-05-17 — Phase 21 plan 21-00 wave 0 vitest scaffold COMPLETE. 5 stubs (loadRole-isActive + protected-route-suspended + suspended-page + admin-doc-queue + documents-verified-badge) + 24 it.todo placeholders covering IS-ACTIVE-01/02/03 + DOC-QUEUE-01/02/04. Atomic commit be8f76a (5 files, +134). Baseline 260 passed preserved; suite 260 passed | 137 todo | 0 failures. 4 admin RPC names verbatim in admin-doc-queue.test.tsx for Wave 2 grep-spec. 2 Rule 1 import-trim deviations (unused expect/RTL/ProtectedRoute/useAuth imports — Wave 3 reintroduces at GREEN time per CLAUDE §4)."
 progress:
-  total_phases: 13
+  total_phases: 14
   completed_phases: 9
-  total_plans: 39
-  completed_plans: 40
+  total_plans: 49
+  completed_plans: 41
 ---
 
 # Project State
@@ -24,10 +24,10 @@ See: .planning/PROJECT.md (updated 2026-04-03)
 
 ## Current Position
 
-Phase: 18.1 COMPLETE (partial-close) — All 7 plans executed. SC-1/3/4/5/6 PASS with empirical evidence. SC-2 PARTIAL (Stripe sandbox/test mode, PEND-01 pre-launch live-mode swap pending). Next: Phase 18.2 (Code Quality & UX Polish — 13 items) or pre-launch Stripe live-mode key swap (PEND-01).
-Plan: 18.1-06-operator-uat-and-deploy COMPLETE. Wave 3 operator-action plan closed. VERIFICATION.md + SUMMARY.md authored. ROADMAP partially-closed ([ ] preserved per CLAUDE §7). PEND-01 carryforward in v2.0-MILESTONE-AUDIT.md.
-Status: Phase 18.1 Plan 06 COMPLETE (partial-close). All 6 SCs have verdicts in 18.1-VERIFICATION.md: SC-1 PASS (3-layer drift guard), SC-2 PARTIAL (6/6 Stripe checks pass in test mode; live-mode swap is PEND-01), SC-3 PASS (Vault WEBHOOK_SECRET len=64 + 6/6 synthetic curl), SC-4 PASS (prosecdef=true + jobs.status=filled empirical), SC-5 PASS (trigger in pg_trigger + match_scores=0 post-transition), SC-6 PASS (15/15 FK indexes in pg_indexes). Test suite: 253 passed | 113 todo | 0 failures (full Wave 2 state; no source changes in Wave 3). Outstanding v2.0 work: PEND-01 pre-launch Stripe live-mode key swap (operator action, <30 min), Phase 18.2 (Code Quality & UX Polish — 13 items, post-launch).
-Last activity: 2026-05-10 — Phase 18.1 plan 18.1-06 operator-action complete. Migrations 025-029 applied via Studio. WEBHOOK_SECRET set in Vault (ALTER DATABASE blocked by Studio permission error; vault.create_secret() used via migration 029 instead; MCP confirmed secret_len=64). Both Edge fns redeployed with X-Webhook-Secret validation. Synthetic curl UAT 6/6 PASS. Mark-filled empirical UAT on job b00254c7 (jobs.status=filled, match_scores=0 post-trigger). Stripe 6/6 checks PASS in sandbox/test mode (PEND-01 live-mode swap before first real charge). MCP sweeps: 15/15 FK indexes, prosecdef=true, trigger in pg_trigger, X-Webhook-Secret pos=988 in handle_job_filled, Vault secret_len=64. 18.1-VERIFICATION.md PARTIAL (SC-2 Stripe live-mode PEND-01). 18.1-SUMMARY.md authored. ROADMAP Phase 18.1 partially-closed ([ ] preserved per CLAUDE §7). PEND-01 carryforward in v2.0-MILESTONE-AUDIT.md. Atomic closure commit (7 files: UAT.md + VERIFICATION.md + SUMMARY.md + ROADMAP.md + STATE.md + MILESTONE-AUDIT.md + PLAN.md).
+Phase: 21 v2.0 Close + Post-Launch Ops — Plan 00 Wave 0 test scaffold COMPLETE. 9 plans remain (21-01 migration-032 → 21-09 track-A milestone close).
+Plan: 21-00-test-scaffold COMPLETE. 5 vitest stubs + 24 it.todo placeholders covering IS-ACTIVE-01/02/03 + DOC-QUEUE-01/02/04 landed in single atomic commit be8f76a. Baseline 260 passed preserved exactly; suite now 260 passed | 137 todo | 0 failures. Next: plan 21-01-migration-032-doc-status (Wave 1).
+Status: Phase 21 Plan 00 COMPLETE. Wave 0 scaffold-first pattern continued (Phase 17-00 / 18.1-00 / 20-01 precedent). 5 test files landed: tests/loadRole-isActive.test.ts (4 todos), tests/protected-route-suspended.test.tsx (5 todos), tests/suspended-page.test.tsx (4 todos), tests/admin-doc-queue.test.tsx (7 todos including 4 admin RPC names verbatim), tests/documents-verified-badge.test.tsx (4 todos). Zero production source touched. Outstanding v2.0 work: 9 remaining Phase 21 plans + PEND-01 Stripe live-mode swap (closes via plan 21-09).
+Last activity: 2026-05-17 — Phase 21 plan 21-00 wave 0 scaffold. Atomic commit be8f76a (5 files, +134 lines). Per-file todo counts: 4/5/4/7/4 (≥4/5/4/7/4 acceptance criteria). 4 admin RPC names referenced verbatim in admin-doc-queue.test.tsx for Wave 2 plan 21-02 grep-spec. Mock surface contracts pre-declared (rpcMock + functionsInvokeMock for queue; fromMock for loadRole; auth.signOut for SuspendedPage). 2 Rule 1 import-trim deviations (removed unused expect + RTL imports + ProtectedRoute/useAuth imports — Wave 3 reintroduces at GREEN time per CLAUDE §4 atomic-commit precedent). Vercel-plugin react-best-practices hook noise dismissed as no-deviation event (TopFarms is Vite + RR v7 SPA on Supabase, not Next.js; plan writes zero production React code). Self-check PASSED.
 
 ## Accumulated Context
 
@@ -147,6 +147,12 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 18.2-03]: (select auth.uid()) form for all RLS USING/WITH CHECK clauses eliminates auth_rls_initplan initplan re-evaluation per row — performance-only change, no behaviour difference
 - [Phase 18.2-03]: AUTH-FIX-02 timing instrumentation scoped to loadRole inner DB query only (not loadRoleWithTimeout outer race wrapper) — measures pure DB round-trip latency to isolate whether issue is at DB or Lock/promise layer
 - [Phase 18.2-03]: Postgres normalization caveat: (select auth.uid()) stored as ( SELECT auth.uid() AS uid) in pg_policies.qual; correct LIKE pattern for future RLS audits is '% SELECT auth.uid() AS uid%'
+- [Phase 21-00]: Wave 0 scaffold-first pattern continued (Phase 17-00 / 18.1-00 / 20-01 precedent). 5 vitest stub files + 24 it.todo() placeholders covering IS-ACTIVE-01/02/03 + DOC-QUEUE-01/02/04 landed atomically. it.todo() reports as third state (visible CI scaffolding signal) — neither pass nor fail. Wave 3/5 executors flip .todo to real assertions at GREEN time.
+- [Phase 21-00]: tests/ directory convention (not src/__tests__/ mentioned in 21-VALIDATION.md) — live repo precedent is tests/admin-*/protected-route-*/saved-search-*. Documentation-only drift in 21-VALIDATION.md; reconciliation deferred to plan 21-09 closure if desired.
+- [Phase 21-00]: 4 admin RPC names (admin_list_document_queue / admin_approve_document / admin_reject_document / admin_request_more_info) referenced verbatim in tests/admin-doc-queue.test.tsx — doubles as grep-spec Wave 2 migration 033 must match.
+- [Phase 21-00]: Rule 1 import-trim at scaffold-creation time — removed unused `expect` + RTL imports + ProtectedRoute/useAuth imports from stub bodies. .todo rows never execute, so importing those symbols at scaffold time inflates the module graph and trips eslint no-unused-vars. Wave 3 plan 21-04 reintroduces at the same atomic commit it flips the first .todo to real assertion. Helper signature retained as `_mockAuth` (underscore prefix → tsconfig noUnusedParameters suppression) for documentation.
+- [Phase 21-00]: Atomic single-commit landing of Tasks 1+2 per CLAUDE §4 + plan §success_criteria — `test(21-00): wave 0 vitest scaffold for is_active gate + doc queue` (be8f76a). Matches Phase 17-00 / 18.1-00 / 20-01 atomic-bundle precedent.
+- [Phase 21-00]: Vercel-plugin react-best-practices posttooluse hook dismissed as no-deviation event — TopFarms is Vite + RR v7 SPA on Supabase (not Next.js); plan writes zero production React code (only vitest stubs with .todo rows). Matches Phase 17-02/03/04 + 18.1-02/03 + 20.1-02 STATE precedent for hook noise dismissal.
 
 ### Blockers/Concerns
 
@@ -165,6 +171,6 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-16T07:28:02.974Z
-Stopped at: Phase 21 context gathered — ready for planning
-Resume file: .planning/phases/21-v20-close-post-launch-ops/21-CONTEXT.md
+Last session: 2026-05-17T12:33:05Z
+Stopped at: Phase 21 plan 21-00 Wave 0 test scaffold COMPLETE — ready for plan 21-01
+Resume file: .planning/phases/21-v20-close-post-launch-ops/21-01-migration-032-doc-status-PLAN.md

@@ -40,7 +40,7 @@ Full details: `.planning/milestones/v1.1-ROADMAP.md`
 - [x] **Phase 16: Privacy Bypass Empirical Test** — completed 2026-05-04 (see `.planning/phases/16-privacy-bypass-test/16-PRIV02-EVIDENCE.md` PASS verdict — primary expected response observed: HTTP 403 `{"error":"Identity documents are not accessible to employers"}`; 5-layer privacy gate held under direct API attack from legitimate-employer JWT. PRIV-02 was the last public-launch privacy blocker.)
 - [x] **Phase 17: Saved Search** — Seeker can save, load, and delete filter combinations (reordered from Phase 15) — completed 2026-05-07 (impl shipped 2026-05-05 across 4 waves: 17-01 foundation + 17-02 save-flow + 17-03 list-page + 17-04 quick-load; verifier PASS at code+test+DB layers, 47/47 phase-17 tests GREEN, JOBS-01 regression statically guarded, migration 024 applied + RLS verified via pg_class/pg_policies/pg_indexes; UAT 8/8 PASS 2026-05-07 incl. RLS isolation seeker A↔B + anonymous CRITICAL per CLAUDE §1 — see `17-UAT-EVIDENCE.md`)
 - ⊘ **Phase 18: Tech Debt Cleanup** — SPLIT 2026-05-07 into 18.1 (Pre-Launch Hardening) + 18.2 (Code Quality & UX Polish); 3 items deferred (see v2.0-MILESTONE-AUDIT.md "Carryforward: Phase 18 deferred items"). Original 21-item scope preserved in §"Phase 18" details below for traceability.
-- [ ] **Phase 18.1: Pre-Launch Hardening** — 6 safety/correctness items from original Phase 18 scope: EMPLOYER_VISIBLE_DOCUMENT_TYPES canonical source (#1, privacy drift), Stripe live-mode posture verification (#13, gates first real charge), X-Webhook-Secret header validation in 2 Edge fns (#15, defence-in-depth), MarkFilledModal atomic UPDATE wrap (#17, prior orphan-hired prod incident), match_scores cleanup trigger on jobs.status transitions (#19, data integrity), unindexed_foreign_keys advisor lints (#10a, 14 indexes — split from #10's broader scope; RLS initplan rewrites moved to 18.2). Goal: ship items that mitigate launch-time risk before any real user traffic. — partially closed 2026-05-10 (see 18.1-VERIFICATION.md PARTIAL verdict; SC-1/3/4/5/6 all PASS with empirical evidence; SC-2 Stripe live-mode swap pending PEND-01 pre-launch operator action; carryforward in v2.0-MILESTONE-AUDIT.md)
+- [ ] **Phase 18.1: Pre-Launch Hardening** — 6 safety/correctness items from original Phase 18 scope: EMPLOYER_VISIBLE_DOCUMENT_TYPES canonical source (#1, privacy drift), Stripe live-mode posture verification (#13, gates first real charge), X-Webhook-Secret header validation in 2 Edge fns (#15, defence-in-depth), MarkFilledModal atomic UPDATE wrap (#17, prior orphan-hired prod incident), match_scores cleanup trigger on jobs.status transitions (#19, data integrity), unindexed_foreign_keys advisor lints (#10a, 14 indexes — split from #10's broader scope; RLS initplan rewrites moved to 18.2). Goal: ship items that mitigate launch-time risk before any real user traffic. — partially closed 2026-05-10 (see 18.1-VERIFICATION.md PARTIAL verdict; SC-1/3/4/5/6 all PASS with empirical evidence; SC-2 Stripe live-mode swap pending PEND-01 pre-launch operator action; carryforward in v2.0-MILESTONE-AUDIT.md). **Final closure via Phase 21 plan 21-09** (PEND-01 swap + SC-2 PARTIAL→PASS flip)
 - [x] **Phase 18.2: Code Quality & UX Polish** — 13 lower-risk items from original Phase 18 scope: stale getUser comment (#2), seeker nav My Documents link (#3), dead first_name semantics (#4), migration 020 disk/registry mismatch (#5), SUMMARY frontmatter backfill (#6), VALIDATION.md nyquist finalisation (#7), AUTH-FIX-02 root cause investigation (#8 — fix landed or deferred with rationale), jobs.benefits text[]/jsonb intent doc (#11), couples_welcome semantics doc (#12), MarkFilledModal applicant picker UX (#18), UX-01 salary preset chips (#20), SelectRole OAuth bypass log-as-known-behaviour (#21), auth_rls_initplan advisor lints (#10b, 33 RLS rewrites — split from #10's broader scope). Goal: clean up audit residue + UX polish post-launch. (completed 2026-05-10)
 - [x] **Phase 19: Design System Cleanup (Tier 1 surfaces)** — completed 2026-05-04 (merge `50dd5b8` from `feat/v2-brand-migration`; 6-sub-phase migration: Phase 0 alias scaffolding → Phase 1 primitives → Phase 2 brand-critical → Phase 3 Tier 1 composed + seeker → Phase 4 page shells + auth + dashboards → Phase 5 landing + marketing → Phase 6 alias removal + hay→warn rename + PaymentForm v2 hex). v2 tokens canonical in `src/index.css` (`--color-brand: #16a34a`, etc.); Inter retired Fraunces + DM Sans; Brand Spec v2.0 hex palette in production. 4 straggler `-moss` class references (focus-rings + form `accent-moss`) cleaned up 2026-05-05; see `.planning/v2-migration/PHASE-19-KNOWN-STATE.md` for 2 deferred polish items now logged as todos.
 - [x] **Phase 19b: Design System Cleanup (Tier 2 — deeper dashboards)** — completed 2026-05-04 (merged in same `50dd5b8`; commit `23ad965` covered ApplicantPanel, ApplicantDashboard, DocumentUploader, FileDropzone, LivePreviewSidebar, TierCard, EmployerOnboarding/SeekerOnboarding wizard internals + all SeekerStep* + EmployerStep* surfaces).
@@ -287,12 +287,13 @@ Plans:
 | 16. Privacy Bypass Empirical Test | v2.0 | – | Complete (PRIV-02 PASS via empirical test 2026-05-04; evidence-only closure — no plan/summary on disk) | 2026-05-04 |
 | 17. Saved Search | v2.0 | 5/5 | Complete (UAT 8/8 PASS 2026-05-07) | 2026-05-07 |
 | 18. Tech Debt Cleanup | v2.0 | – | ⊘ Split 2026-05-07 → 18.1 + 18.2 (3 items deferred) | — |
-| 18.1. Pre-Launch Hardening | v2.0 | 7/7 | Partial-close 2026-05-10 (SC-1/3/4/5/6 PASS; SC-2 Stripe live-mode PEND-01 pending) | — |
+| 18.1. Pre-Launch Hardening | v2.0 | 7/7 | Partial-close 2026-05-10 (SC-1/3/4/5/6 PASS; SC-2 Stripe live-mode PEND-01 pending — closes via Phase 21 plan 21-09) | — |
 | 18.2. Code Quality & UX Polish | 3/3 | Complete    | 2026-05-10 | — |
 | 19. Design System Cleanup (Tier 1) | v2.0 | 7/7 | Complete (Phases 0-6 merged via `50dd5b8`; 4 straggler refs cleaned up 2026-05-05) | 2026-05-04 |
 | 19b. Design System Cleanup (Tier 2) | v2.0 | 1/1 | Complete (commit `23ad965` Tier 2 sweep merged in `50dd5b8`) | 2026-05-04 |
 | 20. Super Admin Dashboard | v2.0 | 8/8 | Complete | 2026-05-05 |
 | 20.1. Standalone Admin Login Gateway + Account Bootstrap | v2.0 | 5/5 | Complete | 2026-05-05 |
+| 21. v2.0 Close + Post-Launch Ops | 1/10 | In Progress|  | — |
 
 ### Phase 20.1: Standalone Admin Login Gateway + Account Bootstrap (INSERTED)
 
@@ -365,7 +366,29 @@ Plans:
 - Broadcast comms, moderation queue, advanced analytics (deferred from MVP)
 - JWT HS256→ES256 migration (recommend Phase 22 — own phase)
 
+**Plans:** 1/10 plans executed
+
+Plan-level resolutions of open implementation choices (per planner's authority):
+- (a) Admin doc-URL path → **Edge Function bypass branch** in get-applicant-document-url (RESEARCH §Pattern 3 — PL/pgSQL can't call Supabase Storage)
+- (b) "Request More Info" → **new `needs_resubmission` status** (RESEARCH §Pattern 7 — distinct status, blue Tag in queue)
+- (c) `loadRole` return-type → **extend existing `LoadRoleOutcome`** type to carry `isActive: boolean` (RESEARCH §Pattern 1)
+- (d) "Documents Verified" badge → **new `DocumentsVerifiedBadge` component**, NOT VerificationBadge reuse (RESEARCH §Pattern 6 — different data domain)
+- (e) Queue pagination/sort → AdminTable default (page=25); ORDER BY pending-first then uploaded_at DESC server-side
+- (f) X-Webhook-Secret on send-document-status-email → **removed** (mid-flight Rule 1 from plan 21-07 — secret cannot live in admin browser; verify_jwt:true + admin role check suffice)
+
+Plans:
+- [ ] 21-00-test-scaffold-PLAN.md — Wave 0: 5 vitest stubs (loadRole / ProtectedRoute / Suspended / admin-doc-queue / DocumentsVerifiedBadge) — IS-ACTIVE-01/02/03 + DOC-QUEUE-01/02/04
+- [ ] 21-01-migration-032-doc-status-PLAN.md — Wave 1: migration 032 (status + rejection_reason + composite index) + SeekerDocument TS extension; Studio apply via CLAUDE §2
+- [ ] 21-02-admin-doc-rpcs-PLAN.md — Wave 2: migration 033 — 4 SECURITY DEFINER admin doc RPCs (list_queue / approve / reject / request_more_info) + shape-contract tests GREEN
+- [ ] 21-03-edge-fn-admin-bypass-PLAN.md — Wave 2: get-applicant-document-url admin role bypass branch + static-source regression guard preserving BFIX-05 gateway-trust
+- [ ] 21-04-auth-context-is-active-PLAN.md — Wave 3: AuthContext.loadRole single round-trip extension + ProtectedRoute /suspended redirect at correct guard position + IS-ACTIVE-* tests GREEN
+- [ ] 21-05-suspended-page-PLAN.md — Wave 3: SuspendedPage component + /suspended route (outside ProtectedRoute) + RTL tests
+- [ ] 21-06-email-edge-fn-PLAN.md — Wave 4: send-document-status-email Deno Edge Function (3 templates) + supabase/config.toml verify_jwt entry + static-source guard test
+- [ ] 21-07-admin-documents-queue-PLAN.md — Wave 5: AdminDocumentsQueue page + main.tsx route + AdminSidebar "Documents" nav + email-side-effect RTL test; sibling X-Webhook-Secret removal in send-document-status-email
+- [ ] 21-08-documents-verified-badge-PLAN.md — Wave 5: DocumentsVerifiedBadge component + ApplicantPanel employer-visible integration + 5 RTL tests GREEN
+- [ ] 21-09-track-a-milestone-close-PLAN.md — Wave 6: operator script — Edge Function deploys + PEND-01 9-item checklist + 5 visual smoke tests + 5 Track B UATs + 21-VERIFICATION.md + 18.1 SC-2 flip + ROADMAP/STATE/MILESTONE-AUDIT atomic docs commit + /gsd:complete-milestone v2.0
+
 **Notes:**
-- Source artefacts: `.planning/phases/21-v20-close-post-launch-ops/21-CONTEXT.md`, `.planning/DECISIONS-PENDING.md` §PEND-01, `.planning/phases/18.1-pre-launch-hardening/18.1-VERIFICATION.md` (SC-2 PARTIAL), `.planning/v2.0-MILESTONE-AUDIT.md`
-- Track A is operator+UAT work; Track B is product code. Both must land before milestone close.
-- Open implementation choices for planner: (a) admin doc-URL path (Edge Function bypass vs new admin RPC); (b) "Request More Info" status semantics (`pending` vs new `needs_resubmission`); (c) `loadRole` return-type extension shape; (d) "Documents Verified" badge component (new vs reuse `VerificationBadge`); (e) queue pagination/sort affordances.
+- Source artefacts: `.planning/phases/21-v20-close-post-launch-ops/21-CONTEXT.md`, `.planning/phases/21-v20-close-post-launch-ops/21-RESEARCH.md`, `.planning/phases/21-v20-close-post-launch-ops/21-VALIDATION.md`, `.planning/DECISIONS-PENDING.md` §PEND-01, `.planning/phases/18.1-pre-launch-hardening/18.1-VERIFICATION.md` (SC-2 PARTIAL), `.planning/v2.0-MILESTONE-AUDIT.md`
+- Track A is operator+UAT work (plans 21-09 only); Track B is product code (plans 21-00..21-08). Both must land before milestone close.
+- Wave structure: W0 = scaffold (plan 21-00); W1 = DB foundation (21-01); W2 = admin RPCs + Edge fn bypass parallel (21-02, 21-03); W3 = is_active client gate + /suspended parallel (21-04, 21-05); W4 = email Edge fn (21-06); W5 = admin UI page + badge parallel (21-07, 21-08); W6 = Track A operator + milestone close (21-09).
