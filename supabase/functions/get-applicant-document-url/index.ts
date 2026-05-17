@@ -7,7 +7,10 @@
 //   1. Method check         — POST only.
 //   2. Bearer-token auth    — gateway verify_jwt:true validates signature upstream;
 //                              payload decoded locally (BFIX-05 gateway-trust pattern).
-//   3. Role check           — user_roles.role must be 'employer' → 403.
+//   3. Role check           — user_roles.role must be 'employer' OR 'admin'.
+//                              Admin: early-exit, mints signed URL for any document
+//                              (powers Phase 21 /admin/documents queue).
+//                              Non-employer non-admin: 403.
 //   4. Relationship check   — application's job must be owned by the caller
 //                              employer; document's seeker_id must match the
 //                              application's seeker_id → 403 on either miss.
@@ -94,8 +97,13 @@ Deno.serve(async (req) => {
       return jsonResponse({ error: 'Invalid auth token' }, 401)
     }
 
-    // 4. Role check — must be 'employer' (project convention: user_roles is the
-    //    canonical role gate, mirroring 002_rls_policies.sql `get_user_role` usage).
+    // 4. Role check — caller must be 'employer' OR 'admin' (Phase 21 doc queue bypass).
+    //    user_roles is the canonical role gate (mirrors 002_rls_policies.sql get_user_role usage).
+    //    ADMIN BYPASS (Phase 21): admins skip employer_profiles + application ownership +
+    //    identity exclusion checks and can fetch ANY seeker_documents row, including
+    //    identity docs. This powers the /admin/documents queue. The bypass uses the
+    //    already-fetched roleRow value — NO additional auth.getUser call (CLAUDE §5
+    //    gateway-trust; BFIX-05 regression guard).
     const { data: roleRow, error: roleErr } = await adminClient
       .from('user_roles')
       .select('role')
@@ -105,6 +113,46 @@ Deno.serve(async (req) => {
       console.error('get-applicant-document-url: user_roles lookup failed', roleErr)
       return jsonResponse({ error: 'Internal error' }, 500)
     }
+
+    // ADMIN BYPASS — early-exit branch
+    if (roleRow?.role === 'admin') {
+      // Parse body — admin path expects { document_id } only (application_id ignored).
+      let adminBody: { document_id?: string } = {}
+      try {
+        adminBody = await req.json()
+      } catch {
+        return jsonResponse({ error: 'Invalid JSON body' }, 400)
+      }
+      const adminDocId = adminBody.document_id
+      if (!adminDocId) {
+        return jsonResponse({ error: 'document_id is required' }, 400)
+      }
+
+      const { data: adminDocRow, error: adminDocErr } = await adminClient
+        .from('seeker_documents')
+        .select('id, storage_path')
+        .eq('id', adminDocId)
+        .maybeSingle()
+      if (adminDocErr) {
+        console.error('get-applicant-document-url: admin seeker_documents lookup failed', adminDocErr)
+        return jsonResponse({ error: 'Internal error' }, 500)
+      }
+      if (!adminDocRow) {
+        return jsonResponse({ error: 'Document not found' }, 404)
+      }
+
+      const { data: adminUrlData, error: adminUrlErr } = await adminClient
+        .storage
+        .from(BUCKET_NAME)
+        .createSignedUrl(adminDocRow.storage_path, SIGNED_URL_TTL_SECONDS)
+      if (adminUrlErr || !adminUrlData?.signedUrl) {
+        console.error('get-applicant-document-url: admin signed URL mint failed', adminUrlErr)
+        return jsonResponse({ error: 'Failed to generate signed URL' }, 500)
+      }
+      return jsonResponse({ url: adminUrlData.signedUrl, expires_in: SIGNED_URL_TTL_SECONDS }, 200)
+    }
+
+    // Non-admin: must be 'employer'
     if (roleRow?.role !== 'employer') {
       return jsonResponse({ error: 'Caller is not an employer' }, 403)
     }
