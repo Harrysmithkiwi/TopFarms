@@ -199,6 +199,16 @@ export const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
  */
 export const EMPLOYER_VISIBLE_DOCUMENT_TYPES: DocumentType[] = ['cv', 'certificate', 'reference']
 
+/**
+ * Phase 21 — adds review-state columns matching migration 032.
+ * status: pending=awaiting admin review; approved=verified (Documents Verified badge);
+ *         rejected=rejected with rejection_reason text; needs_resubmission=admin asked
+ *         seeker to re-upload (RESEARCH §Pattern 7).
+ * Mirrors the CHECK constraint on seeker_documents.status — if you add a value here,
+ * also update migration 032's CHECK and all admin_* RPCs in plan 21-02's migration 033.
+ */
+export type SeekerDocumentStatus = 'pending' | 'approved' | 'rejected' | 'needs_resubmission'
+
 export interface SeekerDocument {
   id: string
   seeker_id: string
@@ -207,6 +217,8 @@ export interface SeekerDocument {
   filename: string
   uploaded_at: string
   file_size_bytes: number | null
+  status: SeekerDocumentStatus
+  rejection_reason: string | null
 }
 
 /**
