@@ -46,6 +46,14 @@ Each entry has a clear trigger and a checklist of actions. Cross off as complete
 
 **Phase 18 cross-reference:** entry 13 ("Stripe production-mode posture verified before first real placement charge") — this PEND-01 is the operational checklist that closes that Phase 18 item.
 
+**Phase 21 cross-reference:** plan 21-09 Task 2 (`.planning/phases/21-v20-close-post-launch-ops/21-09-track-a-milestone-close-PLAN.md`) — Phase 21 attempted to absorb PEND-01 into the v2.0 milestone-close batch, but operator deferred 2026-05-18:
+
+> "defer: Stripe live-mode swap requires dedicated focus and a real test charge. Not doing it mid-session. Continue with Tasks 3-4-5 (visual smoke tests + Track B UAT) now. PEND-01 will be completed in a separate session before first real employer pays."
+
+Phase 21 plan 21-09 Tasks 1, 3, 4, 5 are COMPLETE and verified (Edge fn deploys + 5/5 visual smokes + 5/5 Track B UATs + atomic docs commit). The Phase 21 closure record at `.planning/phases/21-v20-close-post-launch-ops/21-VERIFICATION.md` is set to status `resolved_pending_pend_01` — all Phase-21-scoped work shipped, but `/gsd:complete-milestone v2.0` (Task 6) is BLOCKED on PEND-01.
+
+**STATUS 2026-05-18:** OPEN — DEFERRED from Phase 21 closure to a separate operator-driven session. None of the 9 checklist items above have been [x]'d yet; this section remains the authoritative script. The 4 §"Smoke evidence to capture" artefacts will be saved into `.planning/phases/21-v20-close-post-launch-ops/21-09-EVIDENCE/stripe-live-mode/` when PEND-01 finally runs. When complete, follow the 6-step playbook in `.planning/phases/18.1-pre-launch-hardening/18.1-VERIFICATION.md` § "SC-2 status update" to flip 18.1 SC-2 PASS and unblock `/gsd:complete-milestone v2.0`.
+
 ---
 
-*Last updated: 2026-05-04*
+*Last updated: 2026-05-18 — Phase 21 plan 21-09 Task 5 deferral note added; PEND-01 carryforward to separate session confirmed.*

@@ -30,6 +30,46 @@ Requirements for Launch Readiness. Each maps to roadmap phases.
 - [x] **SRCH-14**: Seeker can load a previously saved search to restore all filter state (Phase 17 shipped 2026-05-05; UAT 8/8 PASS 2026-05-07 incl. URL-state restoration + JOBS-01 regression guard intact)
 - [x] **SRCH-15**: Seeker can delete saved searches they no longer need (Phase 17 shipped 2026-05-05; UAT 8/8 PASS 2026-05-07 incl. delete-with-undo timing + delete-without-undo DB DELETE under RLS)
 
+### v2.0 Post-Launch Ops (Phase 21) — Internal REQ IDs
+
+Phase 21 introduced internal-only REQ IDs (DOC-QUEUE-*, IS-ACTIVE-*, SUSPENDED-*) in plan-level frontmatter to track post-launch feature work. These do NOT map to original v2.0 milestone goals (OAuth / Email / Bug Fixes / Saved Search) but support post-launch ops (admin suspension flow + doc verification queue + employer-visible verified badge). Backfilled to this ledger 2026-05-18 in plan 21-09 Task 5 closeout per CLAUDE §7 traceability discipline. All empirically met via plans 21-01..21-08 (source) + plan 21-09 Tasks 1/3/4 (deploy + visual smoke + Track B UAT).
+
+**Schema (migration 032 — plan 21-01, shipped + verified 2026-05-17):**
+- [x] **DOC-QUEUE-SCHEMA-01**: `seeker_documents.status` text NOT NULL DEFAULT 'pending' CHECK (pending|approved|rejected|needs_resubmission) column live in production. **§7-satisfied:** Management API verification 4/4 PASS — see `.planning/phases/21-v20-close-post-launch-ops/21-01-SUMMARY.md` §"Empirical Verification Evidence".
+- [x] **DOC-QUEUE-SCHEMA-02**: `seeker_documents.rejection_reason` text nullable column live in production. **§7-satisfied:** Same Management API verification — column shape confirmed (text/YES/null).
+- [x] **DOC-QUEUE-SCHEMA-03**: Composite btree index `seeker_documents_status_uploaded_at_idx (status, uploaded_at DESC)` live in production — supports admin queue pending-first-then-newest ORDER BY. **§7-satisfied:** Same Management API verification — `pg_indexes` confirms.
+
+**Admin RPCs (migration 033 — plan 21-02, shipped + verified 2026-05-18):**
+- [x] **DOC-QUEUE-01**: `admin_list_document_queue(int, int)` SECURITY DEFINER RPC live in production. **§7-satisfied:** Management API confirms `prosecdef=true` + EXECUTE granted to authenticated; runtime gate empirically fires (P0001 'Not authenticated' from `_admin_gate` when called without auth) — see `21-02-SUMMARY.md` §"Empirical Verification Evidence".
+- [x] **DOC-QUEUE-02**: 3 admin mutation RPCs (`admin_approve_document(uuid)`, `admin_reject_document(uuid, text)`, `admin_request_more_info(uuid)`) live in production, all SECURITY DEFINER + audit-log writes + defence-in-depth empty-reason guard on reject. **§7-satisfied:** Same Management API verification + Track B UAT 2/3/4 PASS (end-to-end approve / reject-with-reason / request-more-info flows) — see `21-VERIFICATION.md` §"Track B".
+- [x] **DOC-QUEUE-RPC-GATE**: All 4 admin doc RPCs gate via `PERFORM public._admin_gate()` first; non-admin callers receive 'Forbidden: admin role required' RAISE; unauthenticated receive 'Not authenticated' RAISE. **§7-satisfied:** Runtime smoke test 3c in `21-02-SUMMARY.md` empirically confirms gate fires.
+
+**Edge Function admin bypass (plan 21-03 + deployed plan 21-09 Task 1, verified 2026-05-18):**
+- [x] **DOC-QUEUE-03**: `get-applicant-document-url` Edge fn admin-bypass branch deployed and serving signed URLs to admin role JWTs (no per-row RLS check needed; admin role gate is load-bearing). **§7-satisfied:** Smoke test in `21-VERIFICATION.md` §Task 1 Test 1 — HTTP/2 200 + signed URL returned for test document `16eece5e-69d5-4d4d-9e0c-587d9c944f18`.
+- [x] **DOC-QUEUE-EDGE-GATEWAY-TRUST**: Admin bypass preserves BFIX-05 gateway-trust pattern byte-for-byte (atob decode + `aud === 'authenticated'` check; NO `adminClient.auth.getUser` call). **§7-satisfied:** Static-source regression guard test in `tests/employer-visible-document-types-drift.test.ts` (and plan 21-03 sibling test) prevents future drift; runtime confirmed by Test 1 smoke (admin JWT successfully decoded locally, no 401 from re-validation).
+
+**is_active gate (plan 21-04, shipped 2026-05-17 + UAT verified 2026-05-18):**
+- [x] **IS-ACTIVE-01**: AuthContext.loadRole single-query extension fetches `(role, is_active)` from `user_roles` in one round-trip (no separate query) — Wave 0 test stubs flipped GREEN. **§7-satisfied:** `tests/loadrole-is-active.test.ts` GREEN + UAT 1 redirect flow confirms runtime gate.
+- [x] **IS-ACTIVE-02**: ProtectedRoute redirects authenticated-but-`is_active=false` users to `/suspended` at the correct guard position (between role-null guard and role-allowed guard — Pitfall 1 ordering preserved). **§7-satisfied:** `tests/protected-route-is-active.test.tsx` GREEN + UAT 1 empirically confirms redirect path.
+- [x] **IS-ACTIVE-03**: Default `is_active=true` preserved — pre-existing seekers unaffected; only operator-suspended seekers gated. **§7-satisfied:** Production seeker accounts continued working pre/post deploy; UAT 1 confirms only the admin-toggled seeker hit /suspended.
+
+**Suspended page (plan 21-05, shipped 2026-05-17 + UAT verified 2026-05-18):**
+- [x] **SUSPENDED-PAGE-01**: `/suspended` gate page component at `src/pages/auth/Suspended.tsx` renders verbatim CONTEXT.md-locked message ("Your account has been suspended. If you think this is an error, contact hello@topfarms.co.nz.") + `mailto:hello@topfarms.co.nz` anchor + Sign Out button. **§7-satisfied:** `tests/suspended-page.test.tsx` 4/4 GREEN + UAT 1 confirms render in production.
+- [x] **SUSPENDED-ROUTE-01**: `/suspended` route registered at `src/main.tsx` OUTSIDE any ProtectedRoute wrapper (verified via grep — wrapping would cause infinite redirect since IS-ACTIVE-02 redirects HERE). **§7-satisfied:** UAT 1 empirically reaches `/suspended` for the suspended seeker without infinite-redirect loop.
+
+**Email Edge fn (plan 21-06, shipped 2026-05-17 + deployed + UAT verified 2026-05-18):**
+- [x] **DOC-QUEUE-EMAIL-01**: `send-document-status-email` Edge fn deployed in production with verify_jwt:true + admin role check (X-Webhook-Secret removed per plan 21-07 sibling edit — admin browser cannot carry shared secret). **§7-satisfied:** Smoke test in `21-VERIFICATION.md` §Task 1 Test 2 — HTTP/2 200 + `{sent: true}` for test document.
+- [x] **DOC-QUEUE-EMAIL-02**: Edge fn supports 3 email templates (approved / rejected / needs_resubmission) with rejection_reason interpolation for rejected template. **§7-satisfied:** UAT 2/3/4 PASS — seeker received correct template emails for each of the 3 doc-queue actions; UAT 3 specifically confirms reason text appears in rejection email body.
+
+**Admin queue page (plan 21-07, shipped 2026-05-18 + UAT verified 2026-05-18):**
+- [x] **DOC-QUEUE-PAGE-01**: AdminDocumentsQueue page at `src/pages/admin/AdminDocumentsQueue.tsx` composes `AdminTable<DocumentRow>` over `admin_list_document_queue` RPC; per-row Approve / Reject (inline reason form) / Request More Info actions dispatch matching SECURITY DEFINER RPCs from migration 033 via `supabase.rpc(name, args as never)`. **§7-satisfied:** 9/9 `tests/admin-doc-queue.test.tsx` GREEN (incl. 2 new RTL render tests proving click → RPC → email-invoke chain) + UAT 2/3/4 end-to-end.
+- [x] **DOC-QUEUE-PAGE-02**: Best-effort email side-effect: RPC FIRST (admin_audit_log atomic), `supabase.functions.invoke('send-document-status-email', ...)` SECOND, toast.warning on invoke failure, no rollback. **§7-satisfied:** UAT 2/3/4 PASS — emails received; UAT 5 confirms client-side empty-reason guard short-circuits before RPC dispatch.
+- [x] **DOC-QUEUE-NAV-01**: `/admin/documents` route registered in `src/main.tsx` wrapped in `ProtectedRoute requiredRole='admin'` + AdminLayout + AdminSidebar 'Documents' nav item between Seekers (Users icon) and Jobs (Briefcase icon), with FileText icon. **§7-satisfied:** UAT 2 confirms admin navigates from sidebar to queue page without 404; visual smoke implicit in UAT execution.
+
+**Documents Verified badge (plan 21-08, shipped 2026-05-18 + UAT verified 2026-05-18):**
+- [x] **DOC-QUEUE-04**: `seeker_documents.status='approved'` triggers "Documents Verified" badge surface on employer-side applicant cards. **§7-satisfied:** UAT 2 — employer viewing the seeker's ApplicantPanel saw badge appear after admin approved the document.
+- [x] **DOC-QUEUE-BADGE-SURFACE-01**: `DocumentsVerifiedBadge` component (stateless, 33 lines, distinct from `VerificationBadge` employer-trust-tier domain) renders in ApplicantPanel collapsed-row header (next to seekerLabel in flex gap-2 div) — employer sees verification signal in list view without expanding the panel. Scenario B integration: predicate-only head-count Supabase query (select id, head:true, count:exact, limit 1) per panel mount. **§7-satisfied:** 5/5 `tests/documents-verified-badge.test.tsx` GREEN + UAT 2 confirms employer-visible badge in production.
+
 ## Pre-Launch Must-Fix
 
 Items that **block v2.0 launch**. Surfaced during pre-Phase-14 stabilisation. Not assigned to a phase yet — must be scheduled before go-live.
@@ -134,10 +174,31 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SRCH-13 | Phase 17 | Complete (impl 2026-05-05; UAT 8/8 PASS 2026-05-07 — see 17-UAT-EVIDENCE.md) |
 | SRCH-14 | Phase 17 | Complete (impl 2026-05-05; UAT 8/8 PASS 2026-05-07 — see 17-UAT-EVIDENCE.md) |
 | SRCH-15 | Phase 17 | Complete (impl 2026-05-05; UAT 8/8 PASS 2026-05-07 — see 17-UAT-EVIDENCE.md) |
+| DOC-QUEUE-SCHEMA-01 | Phase 21-01 | Complete (migration 032 applied 2026-05-17 — see 21-01-SUMMARY.md) |
+| DOC-QUEUE-SCHEMA-02 | Phase 21-01 | Complete (migration 032 — rejection_reason column) |
+| DOC-QUEUE-SCHEMA-03 | Phase 21-01 | Complete (migration 032 — composite index seeker_documents_status_uploaded_at_idx) |
+| DOC-QUEUE-01 | Phase 21-02 | Complete (admin_list_document_queue RPC — migration 033 applied 2026-05-18; see 21-02-SUMMARY.md) |
+| DOC-QUEUE-02 | Phase 21-02 | Complete (3 mutation RPCs: approve/reject/request_more_info — migration 033) |
+| DOC-QUEUE-RPC-GATE | Phase 21-02 | Complete (PERFORM public._admin_gate() empirically fires — runtime smoke 3c) |
+| DOC-QUEUE-03 | Phase 21-03 | Complete (Edge fn admin bypass deployed + smoke 200 2026-05-18; see 21-VERIFICATION.md Task 1) |
+| DOC-QUEUE-EDGE-GATEWAY-TRUST | Phase 21-03 | Complete (BFIX-05 atob decode preserved + static-source regression guard) |
+| IS-ACTIVE-01 | Phase 21-04 | Complete (loadRole single-query is_active extension — Wave 0 tests flipped GREEN; UAT 1) |
+| IS-ACTIVE-02 | Phase 21-04 | Complete (ProtectedRoute redirect to /suspended at correct guard position; UAT 1) |
+| IS-ACTIVE-03 | Phase 21-04 | Complete (default is_active=true preserved — pre-existing seekers unaffected) |
+| SUSPENDED-PAGE-01 | Phase 21-05 | Complete (Suspended.tsx + verbatim message + mailto + Sign Out; 4/4 tests GREEN; UAT 1) |
+| SUSPENDED-ROUTE-01 | Phase 21-05 | Complete (/suspended route outside ProtectedRoute — no infinite redirect; UAT 1) |
+| DOC-QUEUE-EMAIL-01 | Phase 21-06 | Complete (send-document-status-email Edge fn deployed + smoke 200 sent:true 2026-05-18) |
+| DOC-QUEUE-EMAIL-02 | Phase 21-06 | Complete (3 templates: approved/rejected/needs_resubmission; UAT 2/3/4 emails received) |
+| DOC-QUEUE-PAGE-01 | Phase 21-07 | Complete (AdminDocumentsQueue page + 9/9 tests GREEN; UAT 2/3/4 dispatch confirmed) |
+| DOC-QUEUE-PAGE-02 | Phase 21-07 | Complete (best-effort email side-effect: RPC FIRST, invoke SECOND, toast on failure) |
+| DOC-QUEUE-NAV-01 | Phase 21-07 | Complete (/admin/documents route + AdminSidebar 'Documents' nav item between Seekers and Jobs) |
+| DOC-QUEUE-04 | Phase 21-08 | Complete (Documents Verified badge surfaces on employer ApplicantPanel; UAT 2) |
+| DOC-QUEUE-BADGE-SURFACE-01 | Phase 21-08 | Complete (DocumentsVerifiedBadge component + Scenario B head-count integration; 5/5 tests GREEN; UAT 2) |
 
 **Coverage:**
 - v2.0 requirements: 11 total
-- Mapped to phases: 11
+- v2.0 internal Phase 21 ops REQ IDs: 19 total (backfilled 2026-05-18)
+- Mapped to phases: 30
 - Unmapped: 0 ✓
 
 ---
@@ -153,3 +214,5 @@ Which phases cover which requirements. Updated during roadmap creation.
 *2026-05-03 evening — Phase 15-02 closeout: MAIL-01 + MAIL-02 flipped from `[ ]` to `[x]` per CLAUDE.md §7 partial-close discipline. All four §7 evidence artefacts captured: pg_net 200 response (`pg_net_response.json`); inbox observation (verbal confirmation during live test — both expected emails received in Gmail); DKIM=pass headers (`email_headers.txt` with `d=topfarms.co.nz`; Authentication-Results: dkim=pass; spf=pass; dmarc=pass); per-applicant verdict (4/4 CORRECT — 2 RECEIVED matches expected NOTIFY count, 2 NOT RECEIVED matches expected exclusion including race-fix). Test surfaced 4 latent bugs in the chain (pg_net signature drift, vault unpopulated, legacy JWT gateway rejection, modal non-atomic UPDATE), 3 fixed tonight (migration 022 + `vault.create_secret` + `verify_jwt=false` redeploy), 1 logged Phase 18 (modal). Full evidence: `.planning/phases/15-email-pipeline-deploy/15-02-SUMMARY.md`.*
 
 *2026-05-04 — Phase 16 PRIV-02 closure: BFIX-02 flipped from `[ ]` to `[x]` per CLAUDE.md §7. Empirical identity-bypass test executed against deployed `get-applicant-document-url` function from authenticated-employer browser console. Primary expected response observed: `403 {"error":"Identity documents are not accessible to employers"}`. No signed URL minted. 5-layer privacy gate held under direct API attack from legitimate-employer JWT (Test Farm UAT employer attempting to fetch harry-passport.pdf identity document of harry.moonshot, who legitimately applied to Test Farm's Job 1). Last public-launch privacy blocker resolved. Full evidence: `.planning/phases/16-privacy-bypass-test/16-PRIV02-EVIDENCE.md`.*
+
+*2026-05-18 — Phase 21 plan 21-09 Task 5 ledger backfill: added 19 unregistered Phase 21 internal REQ IDs to v2.0 Post-Launch Ops section + Traceability table (DOC-QUEUE-SCHEMA-01/02/03 + DOC-QUEUE-01/02 + DOC-QUEUE-RPC-GATE + DOC-QUEUE-03 + DOC-QUEUE-EDGE-GATEWAY-TRUST + IS-ACTIVE-01/02/03 + SUSPENDED-PAGE-01 + SUSPENDED-ROUTE-01 + DOC-QUEUE-EMAIL-01/02 + DOC-QUEUE-PAGE-01/02 + DOC-QUEUE-NAV-01 + DOC-QUEUE-04 + DOC-QUEUE-BADGE-SURFACE-01). All 19 marked [x] with empirical evidence pointers to plan SUMMARYs and 21-VERIFICATION.md Track A/B UAT outcomes. Phase 21 sourced these IDs in plan-level frontmatter during execution but never wrote them through to the canonical REQUIREMENTS.md ledger — gap surfaced in 21-01 + 21-02 continuation-agent SUMMARYs as "Wave 6 carryforward". Backfill is the canonical close. Phase 21 work IS COMPLETE; v2.0 milestone close gated on PEND-01 (Stripe live-mode swap) deferral to separate session per operator decision 2026-05-18 — see `.planning/phases/21-v20-close-post-launch-ops/21-VERIFICATION.md` Verdict + `.planning/phases/18.1-pre-launch-hardening/18.1-VERIFICATION.md` SC-2 status update.*
