@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
-status: ready_pending_pend_01
-stopped_at: Completed 21-09-track-a-milestone-close-PLAN.md (Tasks 1/3/4/5 PASS; Task 2 DEFERRED; Task 6 BLOCKED on PEND-01)
-last_updated: "2026-05-18T18:00:00.000Z"
-last_activity: 2026-05-18 — Phase 21 COMPLETE. Plan 21-09 Track A milestone close: Tasks 1, 3, 4, 5 PASS; Task 2 (PEND-01 Stripe live-mode swap) DEFERRED to separate session per operator decision (verbatim: "defer: Stripe live-mode swap requires dedicated focus and a real test charge"); Task 6 (`/gsd:complete-milestone v2.0`) BLOCKED on PEND-01. Edge Function deploys 2/2 PASS with HTTP/2 200 smokes (get-applicant-document-url admin bypass + send-document-status-email; RESEND_API_KEY confirmed live). 5 visual smoke tests PASS 5/5 (closes 4 Phase 18.2 + 1 Phase 20.1 human-verification gates; AUTH-FIX-02 specific Xms value carryforward to post-launch latency investigation). 5 Track B UATs PASS 5/5 (suspended flow + approve+badge+email + reject-with-reason+email + needs-resubmission+email + empty-reason negative blocked). Atomic docs commit per CLAUDE §4 across 8 files: 21-VERIFICATION.md (status: resolved_pending_pend_01 + Verdict section), 18.1-VERIFICATION.md (SC-2 PARTIAL retained per CLAUDE §7 + new SC-2 status update section with 6-step playbook for future PASS flip), REQUIREMENTS.md (19 unregistered Phase 21 REQ IDs backfilled with empirical evidence pointers; Traceability table extended; coverage 11→30), v2.0-MILESTONE-AUDIT.md (Phase 21 Closure Status section added; human_verification_gates CLOSED-via-21-09-Task-3 annotations; PEND-01 STATUS 2026-05-18 OPEN deferred), DECISIONS-PENDING.md (Phase 21 cross-reference + deferral note added), ROADMAP.md (Phase 21 row [x] + progress table updated 10/10 Complete; sub-plan rows 21-04..21-09 all [x]), 21-09-SUMMARY.md (created), STATE.md (this update). PEND-01 carryforward to separate session before first real employer pays — 9-item checklist in DECISIONS-PENDING.md remains authoritative; when complete follow 6-step playbook in 21-VERIFICATION.md Verdict. v2.0 milestone close (`/gsd:complete-milestone v2.0`) BLOCKED on PEND-01 — single remaining critical blocker. Self-check PASSED.
+status: verifying
+stopped_at: Completed 21-09-track-a-milestone-close-PLAN.md (Phase 21 closeout; v2.0 milestone close BLOCKED on PEND-01 separate-session swap)
+last_updated: "2026-05-18T12:26:31.534Z"
+last_activity: 2026-05-18 — Phase 21 Plan 21-09 Task 5 COMPLETE (atomic docs commit closing Phase 21). All Phase-21-scoped work shipped + verified. PEND-01 carryforward to separate dedicated session before first real employer pays. Self-check PASSED.
 progress:
   total_phases: 14
   completed_phases: 10
-  total_plans: 50
+  total_plans: 49
   completed_plans: 50
 ---
 
