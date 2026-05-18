@@ -37,6 +37,7 @@ import { EmployerList } from '@/pages/admin/EmployerList'
 import { SeekerList } from '@/pages/admin/SeekerList'
 import { JobsManagement } from '@/pages/admin/JobsManagement'
 import { PlacementPipeline } from '@/pages/admin/PlacementPipeline'
+import { AdminDocumentsQueue } from '@/pages/admin/AdminDocumentsQueue'
 
 const router = createBrowserRouter([
   // ─── Public routes ──────────────────────────────────────────────────────────
@@ -267,6 +268,21 @@ const router = createBrowserRouter([
       <ProtectedRoute requiredRole="admin">
         <AdminLayout>
           <PlacementPipeline />
+        </AdminLayout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    // Phase 21 Track B (plan 21-07) — admin doc verification queue.
+    // ProtectedRoute requiredRole="admin" wraps AdminLayout — same pattern as
+    // sibling /admin/* routes; SECURITY DEFINER RPCs (migration 033) are the
+    // load-bearing server-side gate. Email side-effect is best-effort via
+    // supabase.functions.invoke('send-document-status-email').
+    path: '/admin/documents',
+    element: (
+      <ProtectedRoute requiredRole="admin">
+        <AdminLayout>
+          <AdminDocumentsQueue />
         </AdminLayout>
       </ProtectedRoute>
     ),

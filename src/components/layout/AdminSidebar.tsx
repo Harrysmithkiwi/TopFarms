@@ -6,6 +6,7 @@ import {
   Users,
   Briefcase,
   DollarSign,
+  FileText,
 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 
@@ -19,6 +20,7 @@ const adminItems: NavItem[] = [
   { to: '/admin', label: 'Daily Briefing', icon: LayoutDashboard },
   { to: '/admin/employers', label: 'Employers', icon: Building2 },
   { to: '/admin/seekers', label: 'Seekers', icon: Users },
+  { to: '/admin/documents', label: 'Documents', icon: FileText },
   { to: '/admin/jobs', label: 'Jobs', icon: Briefcase },
   { to: '/admin/placements', label: 'Placement Pipeline', icon: DollarSign },
 ]
