@@ -12,6 +12,7 @@ import { VerifyEmail } from '@/pages/auth/VerifyEmail'
 import { ForgotPassword } from '@/pages/auth/ForgotPassword'
 import { ResetPassword } from '@/pages/auth/ResetPassword'
 import { SelectRole } from '@/pages/auth/SelectRole'
+import { Suspended } from '@/pages/auth/Suspended'
 import { EmployerDashboard } from '@/pages/dashboard/EmployerDashboard'
 import { SeekerDashboard } from '@/pages/dashboard/SeekerDashboard'
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
@@ -66,6 +67,14 @@ const router = createBrowserRouter([
   {
     path: '/auth/select-role',
     element: <SelectRole />,
+  },
+  {
+    // Phase 21 Track B — gate page for suspended users (isActive=false). MUST NOT
+    // be wrapped in ProtectedRoute; user has a session but is blocked from
+    // dashboards by ProtectedRoute's isActive guard, which redirects HERE.
+    // Wrapping would cause infinite redirect.
+    path: '/suspended',
+    element: <Suspended />,
   },
 
   // ─── Jobs ───────────────────────────────────────────────────────────────────
