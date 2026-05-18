@@ -293,7 +293,7 @@ Plans:
 | 19b. Design System Cleanup (Tier 2) | v2.0 | 1/1 | Complete (commit `23ad965` Tier 2 sweep merged in `50dd5b8`) | 2026-05-04 |
 | 20. Super Admin Dashboard | v2.0 | 8/8 | Complete | 2026-05-05 |
 | 20.1. Standalone Admin Login Gateway + Account Bootstrap | v2.0 | 5/5 | Complete | 2026-05-05 |
-| 21. v2.0 Close + Post-Launch Ops | 5/10 | In Progress|  | — |
+| 21. v2.0 Close + Post-Launch Ops | 6/10 | In Progress|  | — |
 
 ### Phase 20.1: Standalone Admin Login Gateway + Account Bootstrap (INSERTED)
 
@@ -366,7 +366,7 @@ Plans:
 - Broadcast comms, moderation queue, advanced analytics (deferred from MVP)
 - JWT HS256→ES256 migration (recommend Phase 22 — own phase)
 
-**Plans:** 5/10 plans executed
+**Plans:** 6/10 plans executed
 
 Plan-level resolutions of open implementation choices (per planner's authority):
 - (a) Admin doc-URL path → **Edge Function bypass branch** in get-applicant-document-url (RESEARCH §Pattern 3 — PL/pgSQL can't call Supabase Storage)
