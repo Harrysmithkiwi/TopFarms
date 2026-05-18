@@ -38,3 +38,16 @@ verify_jwt = true
 # verify_jwt=true functions where the gateway has already validated a user JWT. This
 # function is invoked by pg_cron with no user context.
 verify_jwt = false
+
+[functions.send-document-status-email]
+# Phase 21 Track B (plan 21-06). Invoked from the /admin/documents queue page
+# (Wave 5 plan 21-07) via supabase.functions.invoke after a successful admin
+# RPC (admin_approve_document / admin_reject_document / admin_request_more_info).
+# Admin caller has a valid user JWT — verify_jwt=true so the gateway validates
+# upstream and the handler uses the CLAUDE.md §5 gateway-trust JWT decode
+# pattern (atob decode, NO adminClient.auth.getUser call).
+#
+# Defence-in-depth: X-Webhook-Secret header is ALSO validated inside the function
+# (Phase 18.1 SC-3 pattern) so even a non-admin user with a valid JWT cannot
+# trigger emails — the admin queue page is the only caller that holds the secret.
+verify_jwt = true
