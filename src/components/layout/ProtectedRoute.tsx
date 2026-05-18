@@ -9,7 +9,7 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) {
-  const { session, role, loading } = useAuth()
+  const { session, role, isActive, loading } = useAuth()
 
   if (loading) {
     return (
@@ -53,6 +53,15 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
         </div>
       </div>
     )
+  }
+
+  // Phase 21 IS-ACTIVE-01: suspended user (admin flipped is_active=false via
+  // ProfileDrawer) is gated to /suspended. This check sits AFTER the AUTH-FIX-02
+  // role-null spinner (Pitfall 1 — checking before would flash /suspended for
+  // users whose loadRole is still resolving). The /suspended route itself is
+  // unprotected (Wave 3 plan 21-05) so a session user can land there.
+  if (isActive === false) {
+    return <Navigate to="/suspended" replace />
   }
 
   // New OAuth user: has session but no role yet — redirect to role selection

@@ -1,4 +1,7 @@
-import { describe, it, vi } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import { MemoryRouter, Routes, Route } from 'react-router'
+import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
 
 vi.mock('@/lib/supabase', () => ({
   supabase: {
@@ -12,31 +15,122 @@ vi.mock('@/lib/supabase', () => ({
 }))
 
 vi.mock('@/hooks/useAuth', () => ({ useAuth: vi.fn() }))
+// eslint-disable-next-line import/first
+import { useAuth } from '@/hooks/useAuth'
 
-// Helper signature retained as documentation — Wave 3 plan 21-04 imports vi.mocked(useAuth)
-// and calls this shape to set up suspended/active fixtures before render.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function _mockAuth(_opts: {
+function mockAuth(opts: {
   session: unknown
   role: 'employer' | 'seeker' | 'admin' | null
   loading: boolean
   isActive: boolean
 }) {
-  // Implementation lands when the .todo rows below are flipped to real assertions.
+  vi.mocked(useAuth).mockReturnValue({
+    session: opts.session as never,
+    role: opts.role,
+    loading: opts.loading,
+    isActive: opts.isActive,
+    signUpWithRole: vi.fn(),
+    signIn: vi.fn(),
+    signOut: vi.fn(),
+    resetPassword: vi.fn(),
+    updatePassword: vi.fn(),
+    signInWithOAuth: vi.fn(),
+    refreshRole: vi.fn(),
+  } as never)
+}
+
+function renderRoute(path: string) {
+  return render(
+    <MemoryRouter initialEntries={[path]}>
+      <Routes>
+        <Route
+          path={path}
+          element={
+            <ProtectedRoute requiredRole="seeker">
+              <div>protected-content</div>
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/suspended" element={<div>suspended-page</div>} />
+        <Route path="/dashboard/seeker" element={<div>seeker-dashboard</div>} />
+      </Routes>
+    </MemoryRouter>,
+  )
 }
 
 describe('ProtectedRoute is_active gate (IS-ACTIVE-01)', () => {
-  it.todo(
-    'IS-ACTIVE-01: suspended seeker (session=true, role=seeker, isActive=false) redirects to /suspended, not requested dashboard',
-  )
-  it.todo(
-    'IS-ACTIVE-01: suspended employer (session=true, role=employer, isActive=false) redirects to /suspended',
-  )
-  it.todo(
-    'IS-ACTIVE-01: active seeker (isActive=true) accessing /dashboard/seeker passes through (no redirect)',
-  )
-  it.todo(
-    'IS-ACTIVE-01 ordering guard: isActive=false but role=null (still loading) shows spinner, NOT /suspended flash (Pitfall 1)',
-  )
-  it.todo('IS-ACTIVE-01 default: undefined isActive treated as true (defence — no suspension on transient error)')
+  it('IS-ACTIVE-01: suspended seeker redirects to /suspended (not seeker dashboard)', () => {
+    mockAuth({
+      session: { user: { id: 's1' } },
+      role: 'seeker',
+      loading: false,
+      isActive: false,
+    })
+    renderRoute('/dashboard/seeker')
+    expect(screen.getByText('suspended-page')).toBeInTheDocument()
+    expect(screen.queryByText('protected-content')).not.toBeInTheDocument()
+  })
+
+  it('IS-ACTIVE-01: suspended employer redirects to /suspended', () => {
+    mockAuth({
+      session: { user: { id: 'e1' } },
+      role: 'employer',
+      loading: false,
+      isActive: false,
+    })
+    render(
+      <MemoryRouter initialEntries={['/dashboard/employer']}>
+        <Routes>
+          <Route
+            path="/dashboard/employer"
+            element={
+              <ProtectedRoute requiredRole="employer">
+                <div>employer-content</div>
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/suspended" element={<div>suspended-page</div>} />
+        </Routes>
+      </MemoryRouter>,
+    )
+    expect(screen.getByText('suspended-page')).toBeInTheDocument()
+    expect(screen.queryByText('employer-content')).not.toBeInTheDocument()
+  })
+
+  it('IS-ACTIVE-01: active seeker passes through to protected content', () => {
+    mockAuth({
+      session: { user: { id: 's1' } },
+      role: 'seeker',
+      loading: false,
+      isActive: true,
+    })
+    renderRoute('/dashboard/seeker')
+    expect(screen.getByText('protected-content')).toBeInTheDocument()
+    expect(screen.queryByText('suspended-page')).not.toBeInTheDocument()
+  })
+
+  it('IS-ACTIVE-01 ordering guard (Pitfall 1): role=null with isActive=false shows spinner, NOT /suspended', () => {
+    // requiredRole present + role===null → AUTH-FIX-02 spinner fires BEFORE isActive check
+    mockAuth({
+      session: { user: { id: 'u1' } },
+      role: null,
+      loading: false,
+      isActive: false,
+    })
+    renderRoute('/dashboard/seeker')
+    // Spinner = aria-label="Loading" (per ProtectedRoute.tsx:21)
+    expect(screen.getByLabelText('Loading')).toBeInTheDocument()
+    expect(screen.queryByText('suspended-page')).not.toBeInTheDocument()
+  })
+
+  it('IS-ACTIVE-01 default: isActive=true is treated as authorised (defence)', () => {
+    mockAuth({
+      session: { user: { id: 's1' } },
+      role: 'seeker',
+      loading: false,
+      isActive: true,
+    })
+    renderRoute('/dashboard/seeker')
+    expect(screen.getByText('protected-content')).toBeInTheDocument()
+  })
 })

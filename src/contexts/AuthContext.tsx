@@ -6,6 +6,7 @@ import type { UserRole } from '@/types/domain'
 export interface AuthHookReturn {
   session: Session | null
   role: UserRole | null
+  isActive: boolean
   loading: boolean
   signUpWithRole: (
     email: string,
@@ -27,18 +28,26 @@ export interface AuthHookReturn {
   refreshRole: () => Promise<UserRole | null>
 }
 
-async function loadRole(userId: string): Promise<UserRole | null> {
+async function loadRole(
+  userId: string,
+): Promise<{ role: UserRole | null; isActive: boolean }> {
   // [AUTH-FIX-02] Timing instrumentation — Phase 18.2 SC-7 diagnostic
   // Remove once root cause confirmed or fix landed.
   console.time('[AUTH-FIX-02] loadRole:db-query')
   const { data, error } = await supabase
     .from('user_roles')
-    .select('role')
+    .select('role, is_active')
     .eq('user_id', userId)
     .single()
   console.timeEnd('[AUTH-FIX-02] loadRole:db-query')
-  if (error || !data) return null
-  return data.role as UserRole
+  // RESEARCH §Pattern 1: default isActive=true on error/null so a transient
+  // failure does NOT incorrectly block a valid user. Only an explicit DB
+  // is_active=false marks the user as suspended.
+  if (error || !data) return { role: null, isActive: true }
+  return {
+    role: data.role as UserRole,
+    isActive: data.is_active ?? true,
+  }
 }
 
 // Outcome distinguishes a *successful* loadRole (which may legitimately return
@@ -48,7 +57,7 @@ async function loadRole(userId: string): Promise<UserRole | null> {
 // that null as "user has no role" — bouncing logged-in tabs to /auth/select-role
 // during multi-tab token refresh.
 type LoadRoleOutcome =
-  | { ok: true; role: UserRole | null }
+  | { ok: true; role: UserRole | null; isActive: boolean }
   | { ok: false; reason: 'timeout' }
 
 // Defence-in-depth (originally added in c6066ea as the band-aid before AUTH-FIX):
@@ -58,7 +67,7 @@ type LoadRoleOutcome =
 // internals can still hang briefly — kept as cheap insurance.
 async function loadRoleWithTimeout(userId: string): Promise<LoadRoleOutcome> {
   return Promise.race<LoadRoleOutcome>([
-    loadRole(userId).then((role) => ({ ok: true, role })),
+    loadRole(userId).then(({ role, isActive }) => ({ ok: true, role, isActive })),
     new Promise<LoadRoleOutcome>((resolve) =>
       setTimeout(() => {
         console.warn('[useAuth] loadRole timeout after 3s, keeping previous role')
@@ -73,6 +82,8 @@ const AuthContext = createContext<AuthHookReturn | null>(null)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [role, setRole] = useState<UserRole | null>(null)
+  // Pitfall 1: initialise true — never flash /suspended during loadRole resolution.
+  const [isActive, setIsActive] = useState<boolean>(true)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -83,9 +94,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setSession(initialSession)
         if (initialSession?.user) {
           const result = await loadRoleWithTimeout(initialSession.user.id)
-          if (result.ok) setRole(result.role)
-          // else: timeout — leave role at its initial null. ProtectedRoute will
-          // bounce to /auth/select-role; user can retry. No previous value to preserve.
+          if (result.ok) {
+            setRole(result.role)
+            setIsActive(result.isActive)
+          }
+          // else: timeout — leave role + isActive at their initial values.
+          // ProtectedRoute will bounce to /auth/select-role; user can retry. No previous value to preserve.
         }
         setLoading(false)
       })
@@ -104,6 +118,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!newSession?.user) {
         // Genuine sign-out (or no session): clear role.
         setRole(null)
+        setIsActive(true) // Pitfall 1 — keep default-true semantics on sign-out
       } else if (
         // Reload role only when there's a real chance the role changed.
         // Critically: skip TOKEN_REFRESHED — that fires on cross-tab token sync
@@ -115,7 +130,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         event === 'USER_UPDATED'
       ) {
         const result = await loadRoleWithTimeout(newSession.user.id)
-        if (result.ok) setRole(result.role)
+        if (result.ok) {
+          setRole(result.role)
+          setIsActive(result.isActive)
+        }
         // else: timeout — keep previous role rather than clobbering it.
       }
 
@@ -183,6 +201,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut()
     setSession(null)
     setRole(null)
+    setIsActive(true)
   }
 
   const resetPassword: AuthHookReturn['resetPassword'] = async (email) => {
@@ -208,8 +227,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refreshRole: AuthHookReturn['refreshRole'] = async () => {
     if (session?.user) {
-      const userRole = await loadRole(session.user.id)
+      const { role: userRole, isActive: userIsActive } = await loadRole(session.user.id)
       setRole(userRole)
+      setIsActive(userIsActive)
       return userRole
     }
     return null
@@ -218,6 +238,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value: AuthHookReturn = {
     session,
     role,
+    isActive,
     loading,
     signUpWithRole,
     signIn,
