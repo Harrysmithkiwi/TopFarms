@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
@@ -8,6 +8,7 @@ import { Select } from '@/components/ui/Select'
 import { AICandidateSummary } from '@/components/ui/AICandidateSummary'
 import { MatchBreakdown } from '@/components/ui/MatchBreakdown'
 import { ApplicantDocuments } from '@/components/ui/ApplicantDocuments'
+import { DocumentsVerifiedBadge } from '@/components/ui/DocumentsVerifiedBadge'
 import { supabase } from '@/lib/supabase'
 import type { ApplicationStatus, MatchScore, SeekerContact } from '@/types/domain'
 import { VALID_TRANSITIONS, APPLICATION_STATUS_LABELS } from '@/types/domain'
@@ -113,8 +114,33 @@ export function ApplicantPanel({
   const [activeTab, setActiveTab] = useState<'cv' | 'match' | 'interview' | 'notes'>('cv')
   const [notes, setNotes] = useState(application.application_notes ?? '')
   const [savingNotes, setSavingNotes] = useState(false)
+  // Phase 21 plan 21-08 — Track B "Documents Verified" badge predicate.
+  // Lightweight head-count query (status='approved' filter, limit 1) — we only need the boolean,
+  // not the rows. ApplicantDocuments still does its own fetch for the document list; this is
+  // a separate one-row check scoped to the panel header so the badge surfaces without expanding.
+  // PRIV-02 baseline preserved: no identity-document filtering needed here (status='approved' is
+  // orthogonal to document_type; the identity-exclusion lives in ApplicantDocuments / Edge fn).
+  const [hasVerifiedDocuments, setHasVerifiedDocuments] = useState(false)
 
   const seeker = application.seeker_profiles
+
+  useEffect(() => {
+    const seekerId = application.seeker_profiles?.id
+    if (!seekerId) return
+    let cancelled = false
+    supabase
+      .from('seeker_documents')
+      .select('id', { head: true, count: 'exact' })
+      .eq('seeker_id', seekerId)
+      .eq('status', 'approved')
+      .limit(1)
+      .then(({ count }) => {
+        if (!cancelled) setHasVerifiedDocuments((count ?? 0) > 0)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [application.seeker_profiles?.id])
   const validNext = VALID_TRANSITIONS[application.status]
   const isFinalStage = validNext.length === 0
 
@@ -164,7 +190,11 @@ export function ApplicantPanel({
 
         {/* Seeker label */}
         <div className="flex-1 min-w-0">
-          <p className="text-[14px] font-body font-semibold text-text truncate">{seekerLabel}</p>
+          <div className="flex items-center gap-2">
+            <p className="text-[14px] font-body font-semibold text-text truncate">{seekerLabel}</p>
+            {/* Phase 21 plan 21-08 — Track B: visible to employer when seeker has ≥1 approved doc. */}
+            <DocumentsVerifiedBadge hasVerifiedDocuments={hasVerifiedDocuments} />
+          </div>
           {application.seeker_skills && application.seeker_skills.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-1">
               {application.seeker_skills.slice(0, 3).map((sk) => (
