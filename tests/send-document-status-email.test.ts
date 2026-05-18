@@ -43,9 +43,15 @@ describe('send-document-status-email Edge Function (Phase 21 DOC-QUEUE-EMAIL-01/
     expect(source).not.toMatch(/adminClient\.auth\.getUser\(/)
   })
 
-  it('Phase 18.1 SC-3: X-Webhook-Secret header validated against WEBHOOK_SECRET', () => {
-    expect(source).toMatch(/X-Webhook-Secret/)
-    expect(source).toMatch(/WEBHOOK_SECRET/)
+  it('Phase 21 plan 21-07 decision: no X-Webhook-Secret in this fn (verify_jwt:true + admin role gate suffice; secret cannot live in admin browser)', () => {
+    // Plan 21-06 originally added X-Webhook-Secret defence-in-depth by symmetry with
+    // send-followup-emails / notify-job-filled, but those have verify_jwt:false (cron-
+    // invoked), while this fn has verify_jwt:true (admin-invoked). The admin browser
+    // cannot safely carry WEBHOOK_SECRET — exposing it would defeat its purpose. The
+    // load-bearing gates are now (1) verify_jwt:true gateway + (2) admin role check on
+    // the service-role client. Rule 1 sibling edit applied in plan 21-07 Task 1.
+    expect(source).not.toMatch(/X-Webhook-Secret/)
+    expect(source).not.toMatch(/WEBHOOK_SECRET/)
   })
 
   it('Admin-only gate: caller must have user_roles.role === "admin"', () => {

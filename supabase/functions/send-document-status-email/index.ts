@@ -15,12 +15,19 @@
 //   1. verify_jwt: true (gateway upstream) — see supabase/config.toml entry
 //      `[functions.send-document-status-email]`. Admin caller has a valid
 //      user JWT; gateway validates signature before this handler runs.
-//   2. X-Webhook-Secret header (Phase 18.1 SC-3 — matches send-followup-emails
-//      + notify-job-filled defence; same Vault-backed WEBHOOK_SECRET).
-//   3. BFIX-05 gateway-trust JWT decode (CLAUDE.md §5) — atob decode, validate
+//   2. BFIX-05 gateway-trust JWT decode (CLAUDE.md §5) — atob decode, validate
 //      payload.aud === 'authenticated'. Do NOT call adminClient.auth.getUser
 //      (rejects valid ES256 tokens on service-role-keyed clients).
-//   4. user_roles.role === 'admin' check (only admin invokes this fn).
+//   3. user_roles.role === 'admin' check (only admin invokes this fn).
+//
+// NOTE: A shared-header secret gate was considered for defence-in-depth
+// (matching send-followup-emails / notify-job-filled), but those functions
+// have verify_jwt = false (pg_cron caller, no JWT context) — different threat
+// model. This fn has verify_jwt = true and is invoked from the admin browser
+// via supabase.functions.invoke, where the gateway already validates the user
+// JWT and the admin role check below is the load-bearing gate. A browser-side
+// shared secret cannot live safely in the admin SPA without defeating its
+// purpose, so we rely on (1) + (3) above. Locked in plan 21-07.
 //
 // Best-effort failure modes (200 responses so admin RPC isn't rolled back):
 //   - RESEND_API_KEY unset → returns 200 { skipped: true, reason: 'no_resend_key' }
@@ -30,7 +37,6 @@
 //
 // Hard failure modes:
 //   - Missing/invalid Authorization → 401
-//   - Webhook secret mismatch / unset → 403
 //   - Invalid JSON body / missing fields / unknown action → 400
 //   - Caller not admin → 403
 //   - DB lookup error → 500
@@ -41,7 +47,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-webhook-secret',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
@@ -49,7 +55,6 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
 const FROM_EMAIL = Deno.env.get('RESEND_FROM_EMAIL') ?? 'TopFarms <hello@topfarms.co.nz>'
 const APP_URL = Deno.env.get('APP_URL') ?? 'https://topfarms.co.nz'
-const WEBHOOK_SECRET = Deno.env.get('WEBHOOK_SECRET') ?? ''
 
 type DocAction = 'approved' | 'rejected' | 'needs_resubmission'
 
@@ -209,15 +214,7 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: 'Method not allowed' }, 405)
   }
 
-  // Gate 1: X-Webhook-Secret defence-in-depth (Phase 18.1 SC-3 pattern).
-  // Header lookup is case-insensitive per fetch Headers spec; literal preserved
-  // for grep regression guard in tests/send-document-status-email.test.ts.
-  const headerSecret = req.headers.get('X-Webhook-Secret') ?? ''
-  if (!WEBHOOK_SECRET || headerSecret !== WEBHOOK_SECRET) {
-    return jsonResponse({ error: 'Webhook secret missing or invalid' }, 403)
-  }
-
-  // Gate 2: BFIX-05 gateway-trust JWT decode (CLAUDE.md §5; NO auth.getUser).
+  // Gate 1: BFIX-05 gateway-trust JWT decode (CLAUDE.md §5; NO auth.getUser).
   // verify_jwt: true in config.toml means the gateway has already validated
   // the signature upstream. Decode locally for `sub`; validate audience.
   const authHeader = req.headers.get('Authorization') ?? ''
@@ -260,7 +257,7 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: 'rejection_reason is required when action=rejected' }, 400)
   }
 
-  // Gate 3: admin role check via user_roles (canonical role gate; no auth.getUser).
+  // Gate 2: admin role check via user_roles (canonical role gate; no auth.getUser).
   const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
   const { data: roleRow, error: roleErr } = await adminClient
     .from('user_roles')
