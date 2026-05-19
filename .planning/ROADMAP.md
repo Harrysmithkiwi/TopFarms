@@ -392,3 +392,35 @@ Plans:
 - Source artefacts: `.planning/phases/21-v20-close-post-launch-ops/21-CONTEXT.md`, `.planning/phases/21-v20-close-post-launch-ops/21-RESEARCH.md`, `.planning/phases/21-v20-close-post-launch-ops/21-VALIDATION.md`, `.planning/DECISIONS-PENDING.md` §PEND-01, `.planning/phases/18.1-pre-launch-hardening/18.1-VERIFICATION.md` (SC-2 PARTIAL), `.planning/v2.0-MILESTONE-AUDIT.md`
 - Track A is operator+UAT work (plans 21-09 only); Track B is product code (plans 21-00..21-08). Both must land before milestone close.
 - Wave structure: W0 = scaffold (plan 21-00); W1 = DB foundation (21-01); W2 = admin RPCs + Edge fn bypass parallel (21-02, 21-03); W3 = is_active client gate + /suspended parallel (21-04, 21-05); W4 = email Edge fn (21-06); W5 = admin UI page + badge parallel (21-07, 21-08); W6 = Track A operator + milestone close (21-09).
+
+### Phase 22: Pre-Launch P0 Closure
+
+**Goal:** Close 5 P0 launch blockers + 1 P1 docs lie surfaced by 2026-05-19 pre-launch gap analysis. Phase 22 blocks v2.0 milestone close alongside PEND-01 — both must land before `/gsd:complete-milestone v2.0`.
+
+**Scope (6 items):**
+- **SIGNUP-01** (top-of-funnel breaker): signup form silently swallows `email_address_invalid` from Supabase. Fix toast plumbing in `src/pages/auth/SignUp.tsx:88` + Sonner Toaster mount path so errors are persistently visible to users.
+- **HOMEBUG-02** (top-of-funnel breaker): home page `jobs?select=...` query returns 400. Diagnose query construction; fix.
+- **HOMEBUG-03** (top-of-funnel breaker): FilterSidebar Couples + Accommodation filters trigger backend errors on `/jobs`. Three-layer diagnosis (UI emission / handler accept / table column); fix.
+- **HOMEBUG-01** (smoke): home page `get_platform_stats` RPC — schema remediated 2026-05-03 (BLOCK 3 §2); production E2E pending. Load home page in prod, confirm widget renders.
+- **UXBUG-01** (smoke): accommodation chips schema/types drift — code shipped (`d5e8dfc`); production E2E pending. Click through employer onboarding to Step 7 in prod, confirm chips populate.
+- **MAIL-01/MAIL-02 flip** (P1 docs lie): Option A — run deferred plan 15-02 E2E (notify-job-filled trigger fire → seeker inbox receipt) to capture true empirical evidence; then flip `[ ]` → `[x]` in REQUIREMENTS.md.
+
+**Requirements:** UXBUG-01 (`REQUIREMENTS.md:77`), HOMEBUG-01 (`REQUIREMENTS.md:99`), HOMEBUG-02 (`REQUIREMENTS.md:100`), HOMEBUG-03 (`REQUIREMENTS.md:101`), SIGNUP-01 (`REQUIREMENTS.md:103`), MAIL-01/02 (`REQUIREMENTS.md` lines TBD)
+
+**Depends on:** Phase 21 (Phase 21's send-document-status-email Edge fn already proved Resend chain works post-RESEND_API_KEY; Phase 22 confirms the specific notify-job-filled MAIL-02 path)
+
+**Wave structure (proposed; planner will refine):**
+- Wave 1 — Code fixes (3 parallel autonomous plans): 22-01 SIGNUP-01 · 22-02 HOMEBUG-02 · 22-03 HOMEBUG-03 (operator priority: top-of-funnel breakers first)
+- Wave 2 — Push + prod UAT batch (1 operator-action plan covering all 5 P0 confirmations): 22-04 P0 prod smoke battery (SIGNUP-01 + HOMEBUG-02 + HOMEBUG-03 + HOMEBUG-01 + UXBUG-01)
+- Wave 3 — Docs hygiene (1 plan, operator-action): 22-05 MAIL-01/02 flip via Option A (plan 15-02 E2E) + REQUIREMENTS.md update
+
+**Plans:** 5 plans
+
+**Notes:**
+- Source artefact: 2026-05-19 pre-launch gap analysis (this conversation)
+- Per CLAUDE §3 diagnose-before-fix: Wave 1 plans investigate root cause before fix; HOMEBUG-02/03 may trace back to 011-014 phantom-applied migration drift (similar shape to UXBUG-01)
+- Per CLAUDE §4: push to main between Wave 1 and Wave 2 requires explicit operator authorization
+- Out of scope: PEND-01 Stripe live-mode swap (operator's separate session); P2/P3 items (defer post-launch)
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 22 to break down into 22-01..22-05)

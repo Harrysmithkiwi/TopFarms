@@ -202,6 +202,7 @@ Decisions are logged in PROJECT.md Key Decisions table.
 ### Roadmap Evolution
 
 - Phase 20.1 inserted after Phase 20: Standalone Admin Login Gateway + Account Bootstrap (URGENT — Phase 20 carryforward closure: dedicated `admin@topfarms.co.nz` account, separate /admin login, dashboardPathFor helper refactor, dashboard sidebar Sign Out button)
+- Phase 22 added 2026-05-19: Pre-Launch P0 Closure — 5 P0 launch blockers (SIGNUP-01 toast plumbing, HOMEBUG-02 home jobs query 400, HOMEBUG-03 Couples + Accommodation filter errors, HOMEBUG-01 platform_stats RPC prod confirm, UXBUG-01 accommodation chips prod confirm) + 1 P1 docs lie (MAIL-01/02 flip via Option A — run deferred plan 15-02 E2E). Blocks v2.0 milestone close alongside PEND-01. Surfaced by 2026-05-19 pre-launch gap analysis.
 
 ## Session Continuity
 
