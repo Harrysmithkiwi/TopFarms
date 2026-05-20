@@ -414,7 +414,7 @@ Plans:
 - Wave 2 — Push + prod UAT batch (1 operator-action plan covering all 5 P0 confirmations): 22-04 P0 prod smoke battery (SIGNUP-01 + HOMEBUG-02 + HOMEBUG-03 + HOMEBUG-01 + UXBUG-01)
 - Wave 3 — Docs hygiene (1 plan, operator-action): 22-05 MAIL-01/02 flip via Option A (plan 15-02 E2E) + REQUIREMENTS.md update
 
-**Plans:** 5 plans
+**Plans:** 6 plans
 
 **Notes:**
 - Source artefact: 2026-05-19 pre-launch gap analysis (this conversation)
@@ -423,4 +423,9 @@ Plans:
 - Out of scope: PEND-01 Stripe live-mode swap (operator's separate session); P2/P3 items (defer post-launch)
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 22 to break down into 22-01..22-05)
+- [ ] 22-00-test-scaffold-PLAN.md — Wave 0: 3 vitest RED specs + 1 operator UAT markdown (Nyquist sampling guarantee)
+- [ ] 22-01-signup-01-toast-PLAN.md — Wave 1: SIGNUP-01 persistent Sonner toast fix (duration Infinity + closeButton)
+- [ ] 22-02-homebug-02-listing-tier-PLAN.md — Wave 1: HOMEBUG-02 listing_tier int-array fix (FeaturedListings.tsx:133)
+- [ ] 22-03-homebug-03-accommodation-filter-PLAN.md — Wave 1: HOMEBUG-03 Layer 2 remap lookup (JobSearch.tsx ACCOMMODATION_FILTER_TO_DB)
+- [ ] 22-04-p0-prod-smoke-PLAN.md — Wave 2: STOP gate + push to main + 5 operator UAT smokes + REQUIREMENTS.md closure flips
+- [ ] 22-05-mail-docs-audit-PLAN.md — Wave 3: MAIL-01/02 docs audit (NOT E2E re-fire per research §6)
