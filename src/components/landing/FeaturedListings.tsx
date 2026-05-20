@@ -130,7 +130,8 @@ export function FeaturedListings() {
           'id, title, region, contract_type, salary_min, salary_max, listing_tier, created_at, shed_type, accommodation, visa_sponsorship, couples_welcome, employer_profiles!inner(farm_name, region, id)'
         )
         .eq('status', 'active')
-        .in('listing_tier', ['featured', 'premium'])
+        // 2=featured, 3=premium per getTierBadge helper (FeaturedListings.tsx:33-38). listing_tier is int NOT NULL DEFAULT 1 in supabase/migrations/001_initial_schema.sql:129. HOMEBUG-02: previously passed string array which yields Postgres 22P02 invalid_text_representation.
+        .in('listing_tier', [2, 3])
         .order('created_at', { ascending: false })
         .limit(6)
 
