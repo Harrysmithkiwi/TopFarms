@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: verifying
-stopped_at: Completed 22-03-homebug-03-accommodation-filter-PLAN.md (Wave 1 HOMEBUG-03 fix landed; commit 231d17b; awaiting parallel Wave 1 siblings 22-01 + 22-02 + Wave 2 deploy + plan 22-04 prod smoke UAT)
-last_updated: "2026-05-20T20:28:19.787Z"
+stopped_at: Completed 22-02-homebug-02-listing-tier-PLAN.md (Wave 1 HOMEBUG-02 fix landed; commit 9ca41ad; Wave 0 spec RED -> GREEN; HOMEBUG-02 stays [ ] in REQUIREMENTS.md per CLAUDE §7 until plan 22-04 prod E2E)
+last_updated: "2026-05-20T20:36:06.736Z"
 last_activity: 2026-05-20 — Phase 22 Plan 22-00 COMPLETE (Wave 0 test scaffold). 4 files at tests/ (3 RED vitest specs + 1 UAT markdown). Atomic single commit 7bf7c9a per CLAUDE §4. Self-check PASSED. Wave 1 plans (22-01 SIGNUP-01 / 22-02 HOMEBUG-02 / 22-03 HOMEBUG-03) ready to start.
 progress:
   total_phases: 15
   completed_phases: 10
   total_plans: 55
-  completed_plans: 52
+  completed_plans: 54
 ---
 
 # Project State
@@ -190,6 +190,8 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 22-pre-launch-p0-closure]: SIGNUP-01 spec adapted to SignUp.tsx terms-checkbox-gated submit: fillAndSubmit helper clicks terms checkbox before submit because SignUp.tsx Zod schema includes terms.refine(v===true). Password input selector anchored /^password$/i because SignUp.tsx renders both 'Password' label and 'Show/Hide password' aria-label button
 - [Phase 22-03]: Layer 2 remap pattern for URL-param-to-DB-value drift: module-level Record<string, string> lookup + .map(v => LOOKUP[v]).filter(Boolean) + inner length-check before .overlaps() — closes HOMEBUG-03 with isolated 1-file change. house/cottage out-of-scope per research §Open Q1 (TYPE column, not extras array).
 - [Phase 22-03]: Diagnosed via Supabase Management API read-only SELECTs (CLAUDE §1 project ref + §2 read-only invariant) — 3 queries confirm column type (text[]), prod sample values (Title Case 'Couples welcome'), and empirical failing-vs-fix-shape delta (raw 'couples' → 0 rows; remapped 'Couples welcome' → 1 row). Continuation-agent Management API pattern from 21-01/21-02 applied to in-session executor.
+- [Phase 22-02]: Schema-source diagnosis (Option C, schema-only sub-path) accepted as sufficient Task 1 evidence; live PostgREST 400 capture deferred to Wave 2 plan 22-04 Step 2 to avoid duplicate evidence-gathering for the same SQLSTATE 22P02 fact
+- [Phase 22-02]: Research planning_guidance 'same change at line 147' was a false read of the source — line 147 fallback query has no .in('listing_tier', ...) filter; fix correctly scoped to line 133 (now 134 post-comment) only
 
 ### Blockers/Concerns
 
@@ -211,7 +213,7 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-20T20:28:19.783Z
-Stopped at: Completed 22-03-homebug-03-accommodation-filter-PLAN.md (Wave 1 HOMEBUG-03 fix landed; commit 231d17b; awaiting parallel Wave 1 siblings 22-01 + 22-02 + Wave 2 deploy + plan 22-04 prod smoke UAT)
+Last session: 2026-05-20T20:36:06.732Z
+Stopped at: Completed 22-02-homebug-02-listing-tier-PLAN.md (Wave 1 HOMEBUG-02 fix landed; commit 9ca41ad; Wave 0 spec RED -> GREEN; HOMEBUG-02 stays [ ] in REQUIREMENTS.md per CLAUDE §7 until plan 22-04 prod E2E)
 Resume file: None
 Next operator action: Execute PEND-01 9-item checklist in `.planning/DECISIONS-PENDING.md §PEND-01` (separate dedicated session before first real employer pays), then follow 6-step playbook in `.planning/phases/21-v20-close-post-launch-ops/21-VERIFICATION.md` Verdict to flip 18.1 SC-2 PASS + run `/gsd:complete-milestone v2.0`.
