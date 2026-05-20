@@ -85,12 +85,18 @@ export function SignUp() {
     try {
       const result = await signUpWithRole(data.email, data.password, data.role)
       if (result.error) {
-        toast.error(result.error.message)
+        toast.error(result.error.message, {
+          duration: Infinity,
+          closeButton: true,
+        })
       } else {
         navigate('/auth/verify')
       }
     } catch {
-      toast.error('An unexpected error occurred. Please try again.')
+      toast.error('An unexpected error occurred. Please try again.', {
+        duration: Infinity,
+        closeButton: true,
+      })
     } finally {
       setIsSubmitting(false)
     }
