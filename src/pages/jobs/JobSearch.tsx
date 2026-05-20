@@ -42,6 +42,24 @@ const PAGE_SIZE = 12
 const SALARY_MIN_BOUND = 30000
 const SALARY_MAX_BOUND = 120000
 
+/**
+ * Maps FilterSidebar URL param values (lowercase/snake_case from
+ * src/components/ui/FilterSidebar.tsx:43-49 ACCOMMODATION_OPTIONS) to the
+ * Title Case strings stored in employer_profiles.accommodation_extras
+ * (per supabase/migrations/013_phase8_wizard_fields.sql:30-37 and
+ * src/types/domain.ts:327-336 ACCOMMODATION_EXTRAS_OPTIONS).
+ *
+ * `house` and `cottage` are accommodation TYPES (employer_profiles.accommodation_type,
+ * singular column) — NOT extras — and intentionally absent from this lookup.
+ * They fall through .filter(Boolean) below and become no-ops for the extras filter.
+ * Closes HOMEBUG-03 via Layer 2 remap (research §Pattern 3, §Example 3).
+ */
+const ACCOMMODATION_FILTER_TO_DB: Record<string, string> = {
+  couples: 'Couples welcome',
+  family: 'Family welcome',
+  pet_friendly: 'Pets allowed',
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function computeTrustLevel(verifications: EmployerVerification[]): TrustLevel {
@@ -273,9 +291,17 @@ export function JobSearch() {
         // Accommodation multi-option filter — operates on employer_profiles.accommodation_extras
         // via PostgREST embed filter. Requires the !inner hint on the employer_profiles select above
         // so the filter prunes the parent jobs result, not just the embedded employer rows.
+        // URL params use lowercase/snake_case (FilterSidebar ACCOMMODATION_OPTIONS); DB stores
+        // Title Case (per migration 013 + domain.ts ACCOMMODATION_EXTRAS_OPTIONS).
+        // Remap via ACCOMMODATION_FILTER_TO_DB lookup before .overlaps(). HOMEBUG-03 fix.
         const accommodationTypes = searchParams.getAll('accommodation_type')
         if (accommodationTypes.length > 0) {
-          query = query.overlaps('employer_profiles.accommodation_extras', accommodationTypes)
+          const dbValues = accommodationTypes
+            .map((v) => ACCOMMODATION_FILTER_TO_DB[v])
+            .filter(Boolean)
+          if (dbValues.length > 0) {
+            query = query.overlaps('employer_profiles.accommodation_extras', dbValues)
+          }
         }
 
         // Posted recent filter (last 7 days)
