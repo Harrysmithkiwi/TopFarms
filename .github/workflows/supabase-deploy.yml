@@ -1,3 +1,12 @@
+# ⚠ MIGRATIONS CI GATED TO workflow_dispatch ONLY — 2026-05-21
+# Pooler auth (CLAUDE §6) unresolved: SUPABASE_DB_PASSWORD secret is stale,
+# every `supabase db push` since 2026-05-02 has failed with SQLSTATE 28P01
+# (failed SASL auth). Until §6 closes, the migrations job runs ONLY when
+# manually triggered via the Actions UI. Functions deploy is uncoupled
+# (uses --use-api / PAT auth, not pooler) and continues to fire on push.
+# Migration changes are applied via Supabase Studio SQL Editor per CLAUDE §2.
+# Carryforward: see .planning/v2.0-MILESTONE-AUDIT.md "§6 + 018-022 drift".
+#
 # Source: adapted from https://supabase.com/docs/guides/functions/examples/github-actions
 # TopFarms Phase 15 plan 15-03 — DEPLOY-01 closure.
 #
@@ -27,7 +36,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'supabase/migrations/**'
+      # `supabase/migrations/**` removed 2026-05-21 — migrations job is gated
+      # to workflow_dispatch only until §6 pooler auth resolves. Migration
+      # changes are applied via Supabase Studio SQL Editor per CLAUDE §2.
       - 'supabase/functions/**'
   workflow_dispatch:
 
@@ -43,6 +54,8 @@ env:
 jobs:
   migrations:
     runs-on: ubuntu-latest
+    # Gated until §6 pooler auth resolves — see header comment.
+    if: github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v4
 
@@ -65,7 +78,8 @@ jobs:
 
   functions:
     runs-on: ubuntu-latest
-    needs: migrations
+    # `needs: migrations` removed 2026-05-21 — migrations job now gated to
+    # workflow_dispatch only. Functions deploy uses --use-api (PAT, not pooler).
     continue-on-error: true   # Per CONTEXT.md: notify-only on function-deploy failure (no auto-rollback)
     steps:
       - uses: actions/checkout@v4

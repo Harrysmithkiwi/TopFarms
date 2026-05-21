@@ -31,3 +31,7 @@ supabase/.temp/
 
 # Deno (Edge Function local typecheck cache; Supabase CLI handles deps at deploy time)
 deno.lock
+
+# Claude Code runtime state (per-machine, not project state)
+.claude/scheduled_tasks.lock
+.claude/settings.local.json
