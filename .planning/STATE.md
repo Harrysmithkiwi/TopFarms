@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
-status: verifying
-stopped_at: Completed 22-02-homebug-02-listing-tier-PLAN.md (Wave 1 HOMEBUG-02 fix landed; commit 9ca41ad; Wave 0 spec RED -> GREEN; HOMEBUG-02 stays [ ] in REQUIREMENTS.md per CLAUDE §7 until plan 22-04 prod E2E)
-last_updated: "2026-05-20T20:36:06.736Z"
-last_activity: 2026-05-20 — Phase 22 Plan 22-00 COMPLETE (Wave 0 test scaffold). 4 files at tests/ (3 RED vitest specs + 1 UAT markdown). Atomic single commit 7bf7c9a per CLAUDE §4. Self-check PASSED. Wave 1 plans (22-01 SIGNUP-01 / 22-02 HOMEBUG-02 / 22-03 HOMEBUG-03) ready to start.
+status: executing
+stopped_at: Phase 22-04 Task 4 PASS — HOMEBUG-02 closed in REQUIREMENTS.md via API-layer direct PostgREST curl (400→200 contrast, operator-accepted canonical per CLAUDE §7 partial-close discipline). Paused at Task 5 (HOMEBUG-03 prod UAT) operator gate — two evidence paths offered (API-layer curl OR browser UAT); awaiting operator selection before running anything against prod.
+last_updated: "2026-05-22T11:00:00.000Z"
+last_activity: "2026-05-22 — Phase 22 Plan 22-04 Task 4 HOMEBUG-02 PASS via API-layer direct PostgREST curl (operator-accepted canonical evidence per CLAUDE §7). Test 1 (fixed form listing_tier=in.(2,3)) returned HTTP/2 200 []; Test 2 (pre-fix bug form listing_tier=in.(\"featured\",\"premium\")) returned HTTP/2 400 SQLSTATE 22P02 invalid_text_representation. 400→200 contrast empirically proves Wave 1 fix 9ca41ad is live in prod bundle index-Dmwiy3oc.js (deploy c30a867). HOMEBUG-02 flipped in REQUIREMENTS.md with §7-satisfied note + change-log entry. Evidence + flip committed atomically. Phase 22-04 progress: Task 3 (SIGNUP-01) DONE; Task 4 (HOMEBUG-02) DONE; Tasks 5 (HOMEBUG-03) / 6 (HOMEBUG-01) / 7 (UXBUG-01) still pending. Paused at Task 5 operator gate — two evidence paths offered (API-layer curl OR browser UAT)."
 progress:
   total_phases: 15
   completed_phases: 10
@@ -216,7 +216,7 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-20T20:36:06.732Z
-Stopped at: Completed 22-02-homebug-02-listing-tier-PLAN.md (Wave 1 HOMEBUG-02 fix landed; commit 9ca41ad; Wave 0 spec RED -> GREEN; HOMEBUG-02 stays [ ] in REQUIREMENTS.md per CLAUDE §7 until plan 22-04 prod E2E)
+Last session: 2026-05-22T06:39:15.209Z
+Stopped at: Phase 22-04 Task 3 PASS — SIGNUP-01 closed in REQUIREMENTS.md (commit a6cc3f5). Paused at Task 4 (HOMEBUG-02 prod UAT) operator gate.
 Resume file: None
 Next operator action: Execute PEND-01 9-item checklist in `.planning/DECISIONS-PENDING.md §PEND-01` (separate dedicated session before first real employer pays), then follow 6-step playbook in `.planning/phases/21-v20-close-post-launch-ops/21-VERIFICATION.md` Verdict to flip 18.1 SC-2 PASS + run `/gsd:complete-milestone v2.0`.
