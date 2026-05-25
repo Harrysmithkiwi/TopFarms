@@ -212,7 +212,108 @@ Content-Type: application/json
 
 ## Task 5 — UAT Step 3 (HOMEBUG-03)
 
-_Awaiting Task 4 PASS before proceeding._
+**Status:** PASS — operator-confirmed 2026-05-23 via authenticated browser end-to-end (canonical primary evidence) + service-role SQL proof (supplementary Layer 2 confirmation).
+
+**Evidence method (multi-layer, per operator decision 2026-05-23):**
+
+Unlike HOMEBUG-02 (which used anon PostgREST curl as canonical because `jobs` is anon-readable), HOMEBUG-03's PostgREST query embeds an `employer_profiles!inner(...)` relation. RLS on `employer_profiles` gates SELECT to authenticated seekers (`get_user_role(auth.uid()) = 'seeker'`), so an anon curl would return 0 rows even with a correct fix — indistinguishable from the bug. The verification chain therefore uses:
+
+1. **Primary:** operator-driven authenticated browser test (full Layer 1 → 2 → 3 chain exercised against the prod bundle with real seeker auth)
+2. **Supplementary:** service-role SQL (RLS bypassed) proving the post-fix Title Case value `'Couples welcome'` matches via `&&` operator on the actual prod row — independently establishes Layer 2 + Layer 3 correctness
+3. **Methodology note (recorded for future readers):** anon PostgREST curl was attempted but blocked by `employer_profiles` RLS; this is NOT a HOMEBUG-03 regression — it's an unrelated visibility constraint
+
+### Primary evidence — authenticated browser end-to-end (operator-driven 2026-05-23)
+
+**Operator UAT (verbatim):**
+
+- Signed in as seeker `harry.moonshot@gmail.com` in a fresh incognito window (RLS context required — `employer_profiles` SELECT is gated to seekers)
+- Navigated to `https://top-farms.vercel.app/jobs`
+- Ticked the "Couples welcome" filter checkbox in the FilterSidebar Accommodation section
+- **Result:** the "UAT Herd Manager — Declined" job (Test Farm UAT, has `accommodation_extras = ['Couples welcome']` on its employer profile) appeared in the filtered results
+- Unticked the "Couples welcome" filter
+- **Result:** the UAT Herd Manager job was removed from the results (filter applied symmetrically)
+
+**3-layer chain confirmed end-to-end:**
+
+| Layer | Component | What was verified |
+|---|---|---|
+| Layer 1 (UI emission) | `src/components/ui/FilterSidebar.tsx:43-49` | URL param `?accommodation_type=couples` emitted on checkbox toggle |
+| Layer 2 (handler remap) | `src/pages/jobs/JobSearch.tsx:296-303` | `accommodationTypes.map(v => ACCOMMODATION_FILTER_TO_DB[v])` translates `'couples'` → `'Couples welcome'` before `.overlaps('employer_profiles.accommodation_extras', dbValues)` |
+| Layer 3 (DB match) | `employer_profiles.accommodation_extras text[]` | PostgREST `ov.{Couples+welcome}` matches the Title Case value stored by Step4Accommodation chip writes |
+
+The fact that the job *appeared* on tick and *disappeared* on untick is the definitive end-to-end proof: the post-fix Layer 2 remap is live in the deployed bundle, the PostgREST query returns 200 (not 400), and the row-level match works against actual prod data.
+
+**Bundle confirmation:** Wave 1 fix `231d17b` (Phase 22-03) is part of the `c30a867` push that produced Vercel bundle `index-Dmwiy3oc.js` (Vercel READY 2026-05-21T22:22:54Z). The browser test exercised this bundle (no separate deploy between the SIGNUP-01/HOMEBUG-02 confirmations earlier this UAT and Task 5).
+
+### Supplementary evidence — service-role SQL (RLS bypassed)
+
+**Purpose:** independently confirm that the post-fix Title Case value matches the actual prod row via the `&&` overlap operator. Service role bypasses RLS so this isolates Layer 2 + Layer 3 from the auth/RLS confound.
+
+**Query (verbatim, executed via Supabase MCP `execute_sql` as service role):**
+
+```sql
+SELECT j.id, j.title, j.status, ep.farm_name, ep.accommodation_extras
+FROM public.jobs j
+JOIN public.employer_profiles ep ON ep.id = j.employer_id
+WHERE j.status = 'active'
+  AND ep.accommodation_extras && ARRAY['Couples welcome']::text[];
+```
+
+**Result:**
+
+```json
+[
+  {
+    "id": "6c867c1a-6ef2-4765-9cb1-a26e8d9029c8",
+    "title": "UAT Herd Manager — Declined",
+    "status": "active",
+    "farm_name": "Test Farm (UAT)",
+    "accommodation_extras": ["Couples welcome"]
+  }
+]
+```
+
+**Interpretation:** the post-fix Title Case array literal `ARRAY['Couples welcome']::text[]` correctly matches the prod row's `accommodation_extras` value via the `&&` overlap operator. This is precisely the comparison shape that the Wave 1 fix's `.overlaps('employer_profiles.accommodation_extras', dbValues)` produces under the hood — proving the remap target value (`'Couples welcome'`) is correct for the actual stored data.
+
+Combined with the browser end-to-end above, both halves of the chain (UI emission → handler remap → query construction; query → row match → result render) are empirically verified.
+
+### Supplementary evidence — anon curl methodology note (Layer 2 path blocked by employer_profiles RLS)
+
+**Purpose:** record the methodology investigation so future readers don't misinterpret an anon-curl 0-row result as a HOMEBUG-03 regression.
+
+**Attempt:** anon PostgREST curl reconstructing the deployed `JobSearch.tsx:281-303` query shape:
+
+```
+GET https://inlagtgpynemhipnqvty.supabase.co/rest/v1/jobs
+  ?select=id,title,...,employer_profiles!inner(farm_name,region,id,accommodation_extras)
+  &status=eq.active
+  &employer_profiles.accommodation_extras=ov.%7BCouples+welcome%7D
+  &limit=50
+
+Headers:
+  apikey: <anon key>
+  Authorization: Bearer <anon key>
+```
+
+**Response:** `HTTP/2 200 []` (empty array).
+
+**Why 0 rows is NOT a regression:** the `employer_profiles!inner` join requires the seeker to be authenticated for `employer_profiles` RLS to permit the SELECT (`get_user_role(auth.uid()) = 'seeker'` per the prod RLS policy). Under anon auth, `employer_profiles` returns 0 rows, so the inner join eliminates all `jobs` rows regardless of the `accommodation_extras` filter value. This applies to **every** embed-filtered query on this dataset via anon, not specifically to HOMEBUG-03.
+
+**Verification:** the SAME anon curl with NO accommodation filter (just `status=eq.active`) also returns 0 rows when the join requires `employer_profiles` data — confirming the constraint is on the join, not the filter. The HOMEBUG-02 test passed against anon because it filtered on `jobs.listing_tier` directly (no join required for the filter predicate); HOMEBUG-03 fundamentally needs the join because the filter predicate is on the joined table.
+
+**Conclusion:** anon curl is unsuitable for HOMEBUG-03 prod verification by construction (RLS), not by bug. The authenticated browser test + service-role SQL together cover the verification need.
+
+### Verdict
+
+**Verdict:** **PASS** — full Layer 1→2→3 chain verified end-to-end via authenticated browser + Layer 2 SQL correctness independently established via service-role overlap query. All 3 gaps now closed:
+
+1. **Code fix:** `231d17b` (Wave 1 plan 22-03 — `ACCOMMODATION_FILTER_TO_DB` lookup + remap in `JobSearch.tsx:285-303`).
+2. **Deploy:** `c30a867` push → Vercel bundle `index-Dmwiy3oc.js` (Vercel READY 2026-05-21T22:22:54Z).
+3. **Empirical prod evidence:** operator-confirmed authenticated browser test 2026-05-23 (primary) + service-role SQL overlap proof (supplementary) + anon-curl methodology note (records why anon path is unsuitable).
+
+**Operator note (post-launch carryforward — does NOT block closure):** the current prod test corpus has exactly 1 job behind employer_profiles RLS with `accommodation_extras` populated. Real seeker UX with multiple employers + diverse extras combinations needs a live re-verify once real employer jobs land in prod. Captured as a post-launch UAT carryforward in `.planning/v2.0-MILESTONE-AUDIT.md`. The current 1-job test is sufficient to prove the 400→200 fix landed and the remap shape is correct; UX-shaped verification at scale is the post-launch item.
+
+**§7-satisfied chain for HOMEBUG-03 closure:** ready to flip in `.planning/REQUIREMENTS.md`.
 
 ---
 
