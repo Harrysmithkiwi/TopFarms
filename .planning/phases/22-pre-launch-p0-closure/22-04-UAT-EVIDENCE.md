@@ -319,7 +319,44 @@ Headers:
 
 ## Task 6 — UAT Step 4 (HOMEBUG-01)
 
-_Awaiting Task 5 PASS before proceeding._
+**Verdict:** **PASS** (operator-confirmed 2026-05-26 — API-layer canonical evidence)
+**Method:** Direct PostgREST RPC call against prod
+**URL tested:** `https://inlagtgpynemhipnqvty.supabase.co/rest/v1/rpc/get_platform_stats`
+
+### Curl — POST /rest/v1/rpc/get_platform_stats
+
+```bash
+curl -sS -X POST \
+  "https://inlagtgpynemhipnqvty.supabase.co/rest/v1/rpc/get_platform_stats" \
+  -H "apikey: <anon>" \
+  -H "Authorization: Bearer <anon>" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{}'
+```
+
+**Response (verbatim):**
+
+```
+{"jobs": 1, "matches": 3, "seekers": 3}
+```
+
+`HTTP/2 200`, `content-type: application/json; charset=utf-8`, `content-range: 0-0/*`, `total_time: 2.483s`.
+
+### Interpretation
+
+- **HTTP 200** with valid JSON body — RPC is callable from anon role.
+- Pre-fix behaviour would have been `HTTP 404 PGRST202` with body `{"code":"PGRST202","details":"...","hint":"...","message":"Could not find the function public.get_platform_stats..."}`.
+- Returned counts (`jobs: 1, matches: 3, seekers: 3`) are consistent with the prod dataset known from earlier Phase 22 work (1 active job = UAT Herd Manager — Declined, 3 seekers + 3 matches from earlier test data).
+- HOMEBUG-01 was purely an RPC-availability concern — no Layer 1/3 transformation to verify. The RPC either exists in `pg_proc` and is callable from anon, or it isn't. This curl directly proves it does and is.
+
+### Conclusion
+
+The 2026-05-03 BLOCK 3 §2 Studio remediation (re-applied migration 012, `platform_stats()` RPC now present in schema) is empirically confirmed live in prod. The home page widget calling `get_platform_stats` will now receive 200 + counts instead of 404. HOMEBUG-01 §7-satisfied.
+
+### Verdict
+
+**PASS** — API-layer canonical evidence per CLAUDE §7. No browser DOM check requested; the home page rendering of these counts is a render-path concern not a HOMEBUG-01 concern (HOMEBUG-01 was the 404).
 
 ---
 
