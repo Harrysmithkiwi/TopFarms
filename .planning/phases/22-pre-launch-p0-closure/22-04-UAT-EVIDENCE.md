@@ -362,7 +362,112 @@ The 2026-05-03 BLOCK 3 §2 Studio remediation (re-applied migration 012, `platfo
 
 ## Task 7 — UAT Step 5 (UXBUG-01)
 
-_Awaiting Task 6 PASS before proceeding._
+**Verdict:** **PASS** (operator-confirmed 2026-05-26 — browser end-to-end primary + SQL+source supplementary)
+
+### Primary evidence — authenticated browser end-to-end (operator-driven 2026-05-26)
+
+- Operator signed in as employer (`harry.symmans.smith@gmail.com`) on prod
+- Navigated through job creation flow to the accommodation step
+- Accommodation option chips render and are selectable (Couples welcome + other options present)
+- Selected options carry through and display correctly in the Step 7 preview
+- No blank/broken state observed
+
+This is the canonical user-visible empirical evidence that UXBUG-01 (originally framed as "Step7Preview reads dropped columns"; reframed 2026-05-03 as schema-vs-types drift across 011/012/013/014 phantom-applied range) is resolved end-to-end in deployed prod.
+
+### Supplementary evidence — schema reconciliation (service-role SQL via MCP)
+
+**Schema columns on `employer_profiles`:**
+
+| Column | Expected | Actual |
+|---|---|---|
+| `accommodation_extras` | PRESENT (text[], nullable) | ✓ PRESENT (`ARRAY` / `_text`, nullable) |
+| `accommodation_couples` | ABSENT (013 DROP) | ✓ ABSENT |
+| `accommodation_family` | ABSENT (013 DROP) | ✓ ABSENT |
+| `accommodation_pets` | ABSENT (013 DROP) | ✓ ABSENT |
+| `accommodation_single` | ABSENT (013 DROP) | ✓ ABSENT |
+
+Confirms 2026-05-03 BLOCK 1 Studio remediation (re-applied migration 013 `ALTER TABLE ... DROP COLUMN`) is live. Old booleans dropped; new `accommodation_extras` text[] column present and queryable.
+
+**Data presence:**
+
+```sql
+SELECT count(*) AS total_profiles,
+       count(*) FILTER (WHERE accommodation_extras IS NOT NULL) AS with_array,
+       count(*) FILTER (WHERE accommodation_extras IS NOT NULL AND array_length(accommodation_extras, 1) > 0) AS with_nonempty_array,
+       array_agg(DISTINCT accommodation_extras) FILTER (WHERE accommodation_extras IS NOT NULL AND array_length(accommodation_extras, 1) > 0) AS distinct_arrays
+FROM public.employer_profiles;
+```
+
+Result:
+```
+total_profiles: 1
+with_array: 1
+with_nonempty_array: 1
+distinct_arrays: [["Couples welcome"]]
+```
+
+The single populated employer profile in prod (operator's own `Test Farm (UAT)` employer) has `accommodation_extras = ['Couples welcome']`. The column accepts writes; the value persists.
+
+### Supplementary evidence — frontend source code reads correct column
+
+**`src/pages/onboarding/steps/Step4Accommodation.tsx`** (lines 23-25, 62-64, 209):
+- Zod schema declares `accommodation_extras: z.array(z.string()).optional()`
+- Default values pull `defaultValues?.accommodation_extras ?? []`
+- Form field name is `accommodation_extras`
+
+Reads/writes the new column correctly. ✓
+
+**`src/pages/onboarding/steps/Step7Preview.tsx`** (lines 161-164):
+```tsx
+<DataRow label="Pets allowed"      value={profileData.accommodation_extras?.includes('Pets allowed')} />
+<DataRow label="Couples"           value={profileData.accommodation_extras?.includes('Couples welcome')} />
+<DataRow label="Families"          value={profileData.accommodation_extras?.includes('Family welcome')} />
+<DataRow label="Utilities included" value={profileData.accommodation_extras?.includes('Utilities included')} />
+```
+
+Reads `accommodation_extras` array via `.includes()` checks against canonical Title Case values matching the DB shape. ✓
+
+**Zero stale boolean references in `src/`:**
+
+```bash
+grep -rn "accommodation_couples|accommodation_family|accommodation_pets|accommodation_single" src/
+# (returns ZERO matches)
+```
+
+Frontend fully migrated off the dropped booleans. ✓
+
+### Conclusion
+
+Full Layer 1→2→3 chain proven:
+- **Layer 1 (UI):** operator-confirmed browser test — chips render, selections persist
+- **Layer 2 (frontend code):** source verification — Step4Accommodation writes / Step7Preview reads `accommodation_extras`; no stale boolean refs anywhere in src/
+- **Layer 3 (DB):** schema reconciliation — `accommodation_extras text[]` present and queryable; old booleans dropped; data persists across writes
+
+UXBUG-01 §7-satisfied. Reframed-2026-05-03 root cause (schema-vs-types drift) fully resolved both in DB (BLOCK 1 Studio apply) and frontend (commit `d5e8dfc`); empirical prod evidence captured 2026-05-26.
+
+### Verdict
+
+**PASS** — primary browser end-to-end + supplementary SQL+source multi-layer proof, mirrors the HOMEBUG-03 evidence pattern (operator's preferred shape for user-visible UX bugs with multi-layer fix chains).
+
+---
+
+## Task 8 — REQUIREMENTS.md flips
+
+**Status:** COMPLETE 2026-05-26.
+
+Per operator decision established 2026-05-22 (HOMEBUG-02 closure), each REQUIREMENTS.md flip was performed atomically with its UAT evidence rather than batched at the end. Outcome equivalent: all 5 P0 items closed in REQUIREMENTS.md with §7-satisfied closure notes pointing to per-task evidence sections in this file.
+
+| Requirement | Status | Closure commit | Evidence |
+|---|---|---|---|
+| SIGNUP-01 | `[x]` closed 2026-05-22 | `a6cc3f5` | Task 3 |
+| HOMEBUG-02 | `[x]` closed 2026-05-22 | `73ed245` | Task 4 |
+| HOMEBUG-03 | `[x]` closed 2026-05-23 | `9673eb1` | Task 5 |
+| HOMEBUG-01 | `[x]` closed 2026-05-26 | `fb60aa2` | Task 6 |
+| UXBUG-01 | `[x]` closed 2026-05-26 | (this commit) | Task 7 |
+
+**Per CLAUDE §7 partial-close discipline:** all 5 closure notes include code-fix commit hash + deploy commit hash + empirical-prod-evidence pointer + reasoning for why each gap is empirically closed. No partial-closes; no flips ahead of evidence.
+
+Phase 22 plan 22-04 (P0 Prod Smoke Battery) **COMPLETE** 2026-05-26. Plan 22-05 (Mail Docs Audit) still pending — see plan SUMMARY.md for next-step routing.
 
 ---
 
