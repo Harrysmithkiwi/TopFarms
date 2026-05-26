@@ -166,8 +166,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-06 | Phase 12 | Complete |
 | AUTH-07 | Phase 12 | Complete |
 | AUTH-08 | Phase 12 | Complete |
-| MAIL-01 | Phase 15 | Partial-close (2026-05-01) — code deployed; awaiting RESEND_API_KEY + plan 15-02 E2E before full satisfaction |
-| MAIL-02 | Phase 15 | Partial-close (2026-05-01) — notify-job-filled deployed, trigger live; awaiting RESEND_API_KEY + plan 15-02 E2E before full satisfaction |
+| MAIL-01 | Phase 15 | Complete (2026-05-03 evening — see 15-02-SUMMARY.md, all 4 §7 evidence artefacts captured; DKIM=pass with d=topfarms.co.nz on production delivery) |
+| MAIL-02 | Phase 15 | Complete (2026-05-03 evening — see 15-02-SUMMARY.md, pg_net 200 {sent:2,failed:0}, per-applicant 4/4 correct, 4 latent chain bugs fixed; Phase 22-05 audit clean 2026-05-26) |
 | BFIX-01 | Phase 14 | Complete |
 | BFIX-02 | Phase 16 | Complete (PRIV-02 empirical PASS 2026-05-04 — see 16-PRIV02-EVIDENCE.md) |
 | BFIX-03 | Phase 14 | Complete |
