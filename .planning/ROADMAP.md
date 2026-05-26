@@ -414,7 +414,7 @@ Plans:
 - Wave 2 — Push + prod UAT batch (1 operator-action plan covering all 5 P0 confirmations): 22-04 P0 prod smoke battery (SIGNUP-01 + HOMEBUG-02 + HOMEBUG-03 + HOMEBUG-01 + UXBUG-01)
 - Wave 3 — Docs hygiene (1 plan, operator-action): 22-05 MAIL-01/02 flip via Option A (plan 15-02 E2E) + REQUIREMENTS.md update
 
-**Plans:** 4/6 plans executed
+**Plans:** 6/6 plans complete
 
 **Notes:**
 - Source artefact: 2026-05-19 pre-launch gap analysis (this conversation)
