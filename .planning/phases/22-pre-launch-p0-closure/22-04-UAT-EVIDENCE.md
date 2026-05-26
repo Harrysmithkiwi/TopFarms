@@ -468,9 +468,3 @@ Per operator decision established 2026-05-22 (HOMEBUG-02 closure), each REQUIREM
 **Per CLAUDE §7 partial-close discipline:** all 5 closure notes include code-fix commit hash + deploy commit hash + empirical-prod-evidence pointer + reasoning for why each gap is empirically closed. No partial-closes; no flips ahead of evidence.
 
 Phase 22 plan 22-04 (P0 Prod Smoke Battery) **COMPLETE** 2026-05-26. Plan 22-05 (Mail Docs Audit) still pending — see plan SUMMARY.md for next-step routing.
-
----
-
-## Task 8 — REQUIREMENTS.md flips
-
-_Awaiting Tasks 3–7 all PASS before proceeding._
