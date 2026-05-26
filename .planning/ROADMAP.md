@@ -403,7 +403,7 @@ Plans:
 - **HOMEBUG-03** (top-of-funnel breaker): FilterSidebar Couples + Accommodation filters trigger backend errors on `/jobs`. Three-layer diagnosis (UI emission / handler accept / table column); fix.
 - **HOMEBUG-01** (smoke): home page `get_platform_stats` RPC — schema remediated 2026-05-03 (BLOCK 3 §2); production E2E pending. Load home page in prod, confirm widget renders.
 - **UXBUG-01** (smoke): accommodation chips schema/types drift — code shipped (`d5e8dfc`); production E2E pending. Click through employer onboarding to Step 7 in prod, confirm chips populate.
-- **MAIL-01/MAIL-02 flip** (P1 docs lie): Option A — run deferred plan 15-02 E2E (notify-job-filled trigger fire → seeker inbox receipt) to capture true empirical evidence; then flip `[ ]` → `[x]` in REQUIREMENTS.md.
+- **MAIL-01/MAIL-02 audit** *(closed 2026-05-26 — Phase 22-05 docs audit)*: the original "Option A — run deferred plan 15-02 E2E" instruction is OBSOLETE. Plan 15-02 was executed 2026-05-03 evening (NOT deferred); MAIL-01/02 already at `[x]` in REQUIREMENTS.md with full §7 evidence (pg_net 200, DKIM=pass with `d=topfarms.co.nz`, per-applicant 4/4 correct, job_id `b00254c7-...`). Plan 22-05 reframed as docs audit — Cross-Reference Table 5/5 YES; 2 stale Traceability table rows (lines 169-170) aligned with 2026-05-03 evening closure date. Audit details: `.planning/phases/22-pre-launch-p0-closure/22-05-AUDIT.md`.
 
 **Requirements:** UXBUG-01 (`REQUIREMENTS.md:77`), HOMEBUG-01 (`REQUIREMENTS.md:99`), HOMEBUG-02 (`REQUIREMENTS.md:100`), HOMEBUG-03 (`REQUIREMENTS.md:101`), SIGNUP-01 (`REQUIREMENTS.md:103`), MAIL-01/02 (`REQUIREMENTS.md` lines TBD)
 
