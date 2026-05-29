@@ -3,6 +3,34 @@
 **Defined:** 2026-04-02
 **Core Value:** Farm employers and seekers can find each other through agriculture-specific matching that no generic platform provides
 
+## v2.1 Requirements (Match + Train + Retain — ag-broad)
+
+**Milestone started:** 2026-05-29 · **Scope detail:** `.planning/v2.1-MILESTONE-SCOPING.md`
+
+Compromise scope: **Phase 23 is active now**; Phases 24-26 are **gated** behind real ag-employer liquidity. Gated requirements are acknowledged below but not active (full specs deferred until the gate opens — avoids speccing against an empty marketplace).
+
+### Skills Taxonomy (Phase 23 — active)
+
+- [ ] **TAX-01**: The skills schema supports agriculture-broad competencies — the `skills.sector` CHECK constraint (`dairy`/`sheep_beef`/`both`) is dropped or redesigned so skills are organised by the six v2.1 categories rather than dairy/sheep-beef only
+- [ ] **TAX-02**: The skills master holds ~24 broad ag competencies across six categories (Livestock; Cropping & agronomy; Machinery & equipment; Farm operations & infrastructure; Management & business; Cross-cutting), replacing the ~40 dairy-heavy skills
+- [ ] **TAX-03**: Existing seeker skill selections, job skill tags, and match scores are migrated to the new taxonomy with a documented old→new mapping (no orphaned references; match scores recomputed)
+- [ ] **TAX-04**: A seeker can self-assess against the new competencies in onboarding, and an employer can tag a job with them in the job-posting wizard
+- [ ] **TAX-05**: DairyNZ qualification levels are removed from the competency taxonomy and preserved as credential data for future credential tracking (Phase 26)
+
+### Admin Analytics (Phase 23 — active)
+
+- [ ] **ANLY-01**: An admin can view platform skill-coverage analytics — which competencies seekers hold versus which jobs require — to surface supply/demand gaps at the platform level
+- [ ] **ANLY-02**: An admin can view the skill taxonomy with per-competency usage counts (how many seekers and jobs reference each competency)
+- [ ] **ANLY-03**: A reusable analytics event-logging foundation exists (generic event table + admin surface) so later phases can record metrics without new infrastructure
+
+### v2.1 Gated Requirements (Phases 24-26 — behind "real ag employers posting")
+
+Acknowledged, **not active**. Lightweight placeholders; full specs authored when the liquidity gate opens (gate criteria in scoping doc). Do not plan/execute until ungated.
+
+- ⛔ **GAP-01** *(gated — Phase 24)*: A seeker can see which required competencies they're missing for a given job/match, with links to relevant training
+- ⛔ **DIR-01** *(gated — Phase 25)*: A seeker/employer can browse an admin-curated NZ ag training directory filtered by category/region/format; "express interest" logs a lead to an admin queue
+- ⛔ **CRED-01** *(gated — Phase 26)*: A seeker can record credentials (e.g. GROWSAFE, machinery tickets) and receive expiry alerts
+
 ## v2.0 Requirements
 
 Requirements for Launch Readiness. Each maps to roadmap phases.
