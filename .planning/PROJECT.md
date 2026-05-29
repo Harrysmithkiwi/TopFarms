@@ -56,23 +56,33 @@ Farm employers and seekers can find each other through agriculture-specific matc
 - [ ] Auto-ghosting prevention email when employer marks job filled
 - [ ] Saved search (seeker saves and reloads filter criteria)
 
-## Current Milestone: v2.0 Launch Readiness
+## Current Milestone: v2.1 Match + Train + Retain (ag-broad)
 
-**Goal:** Close the 6 launch-critical gaps so TopFarms can go live without major hiccups.
+**Goal:** Begin delivering the "train + retain" brand pillars by cleaning up the skills taxonomy for agriculture-broad matching and standing up admin analytics — the foundation for skills-gap, training directory, and credential tracking. **Compromise scope: Phase 23 only proceeds now; Phases 24-26 are gated behind real ag-employer liquidity.**
 
-**Target features:**
-- Google + Facebook OAuth (primary acquisition channel is Facebook groups)
-- Production email deliverability (SPF/DKIM DNS)
-- Fix hasApplied duplicate application UX bug
-- Document viewing via signed URLs for employer CV review
-- Auto-ghosting prevention email on job filled
-- Saved search for seekers
+**Brand positioning:** "TopFarms — NZ's agricultural job marketplace, expanding to primary industries over time."
+
+**Phase 23 (in scope now):**
+- Consolidate ~40 dairy-heavy skills → ~24 broad ag competencies across 6 categories (livestock, cropping & agronomy, machinery, farm operations, management, cross-cutting), with migration mapping for existing data
+- Redesign `skills.sector` CHECK constraint to support ag-broad categories
+- Relocate DairyNZ qualification levels out of the competency taxonomy (held for Phase 26 credential tracking)
+- Admin analytics scaffolding (skill-coverage view + counters for future phases)
+
+**Gated behind "real ag employers posting" (Phases 24-26):**
+- Phase 24 — Skills-gap analysis (match → train bridge)
+- Phase 25 — Training directory + funding navigation
+- Phase 26 — Credential / expiry tracking (retain pillar)
+
+Full scope, taxonomy detail, migration plan, and gate criteria: `.planning/v2.1-MILESTONE-SCOPING.md`.
+
+**Coexistence note:** v2.0 Launch Readiness is functionally complete; its milestone close is gated only on PEND-01 (Stripe live-mode swap, an external operation). v2.0 is NOT yet archived — PEND-01 + sales run in the hard-stop window after Phase 23. v2.1 Phase 23 is independent foundational engineering.
 
 ### Out of Scope
 
 - Data scraping pipeline (Apify/Claude) — separate build track and document
 - Messaging / Expressions of Interest — Growth Phase, wireframe exists but do not build
-- Horticulture and viticulture sectors — future milestone
+- **Training as an acquired third marketplace side** (provider self-service portal, provider acquisition funnel, bookings/payments/commission) — NZ ag training is finite + institutional + largely subsidised; v2.1 treats training as admin-curated content, not a marketplace side. Revisit monetised provider side only after liquidity (see scoping doc).
+- Horticulture, viticulture, apiculture, aquaculture, forestry — **future verticals** (deliberate per-vertical sequencing after ag liquidity: v3.0 horticulture, then viticulture, etc.), NOT a permanent exclusion
 - Social media login (Google/Facebook OAuth) — shipped Phase 12
 - Mobile native apps (iOS/Android) — mobile web only
 - Partner job matching (separate role for seeker's partner)
@@ -80,7 +90,6 @@ Farm employers and seekers can find each other through agriculture-specific matc
 - Multi-user employer accounts / team roles
 - API for third-party developers
 - International markets
-- Training providers / courses module
 - Real-time chat — contact release after shortlist handles core use case
 
 ## Context
@@ -102,7 +111,7 @@ Added: motion library for landing page animations.
 
 - **Tech stack**: React + TypeScript + Vite, Tailwind CSS, Supabase, Claude API, Stripe, Vercel — locked, no deviations
 - **Design system**: Fraunces + DM Sans fonts, specific colour palette (soil/moss/fern/meadow/hay/cream), component standards — non-negotiable
-- **MVP sectors**: Dairy cattle + sheep & beef ONLY
+- **Sectors (v2.1)**: agriculture-broad — livestock (dairy, beef, sheep, goats, pigs, poultry), cropping (arable, grain, vegetable), farm management, agronomy, ag mechanics. Horticulture/viticulture/apiculture/aquaculture/forestry are future verticals (v3.0+). *(Was "Dairy cattle + sheep & beef ONLY" through v2.0.)*
 - **Auth**: Email/password + Google/Facebook OAuth with role selection
 - **Performance**: Search results <1.5s, page load <2s on 4G, match recalculation <60s
 - **Security**: RLS on ALL Supabase tables, contact details masked until placement fee acknowledged
@@ -133,6 +142,9 @@ Added: motion library for landing page animations.
 | OAuth redirectTo → /auth/select-role | Both new and returning OAuth users hit role selection; returning users auto-redirect to dashboard | ✓ Shipped v2.0 |
 | SelectRole as public route (self-guarded) | Session+null-role users would be rejected by ProtectedRoute; SelectRole handles own auth check | ✓ Shipped v2.0 |
 | Facebook OAuth requires explicit email scope | Google includes email via OpenID by default; Facebook needs scopes: 'email' | ✓ Shipped v2.0 |
+| Training as content layer, not 3rd marketplace side (v2.1) | NZ ag training is finite + institutional + largely subsidised; commission/bookings model isn't real yet — curate as admin content | — Pending |
+| v2.1 compromise split: Phase 23 now, 24-26 sales-gated | Taxonomy + analytics is foundational regardless; 24-26 need real liquidity to be informed builds | — Pending |
+| Sector expansion as per-vertical roadmap (ag-broad → horticulture v3.0 → …) | Prove the match+train+retain model in ag first, then replicate per vertical | — Pending |
 
 ---
-*Last updated: 2026-04-03 after Phase 12*
+*Last updated: 2026-05-29 after v2.0 (Phase 22 complete) — started milestone v2.1 (Phase 23 in scope; 24-26 sales-gated)*
