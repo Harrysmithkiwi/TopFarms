@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TopFarms — Repository Overview</title>
+<style>
+  :root {
+    --bg: #f7f6f1;
+    --surface: #ffffff;
+    --surface-alt: #f1efe6;
+    --ink: #1f2419;
+    --ink-soft: #44503a;
+    --ink-faint: #6b7561;
+    --line: #dcdacd;
+    --brand: #2f6b34;
+    --brand-deep: #1f4a23;
+    --brand-soft: #e4eddd;
+    --soil: #5a4632;
+    --hay: #b5882f;
+    --code-bg: #eceadf;
+    --code-ink: #3a3a2e;
+    --path-bg: #e6ecdf;
+    --path-ink: #2c4a2c;
+    --sev-blocker-bg: #fbe3df;
+    --sev-blocker-ink: #8c2418;
+    --sev-high-bg: #fdead0;
+    --sev-high-ink: #8a5310;
+    --sev-med-bg: #fdf4d2;
+    --sev-med-ink: #7a5d12;
+    --sev-low-bg: #e2ede1;
+    --sev-low-ink: #2f5c33;
+    --ok-bg: #d9ead7;
+    --ok-ink: #245a28;
+    --sidebar-w: 264px;
+    --maxw: 880px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  code, pre, .path, .mono {
+    font-family: ui-monospace, "SF Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  }
+
+  /* ---------- Layout ---------- */
+  .layout { display: flex; align-items: flex-start; }
+
+  .sidebar {
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    width: var(--sidebar-w);
+    min-width: var(--sidebar-w);
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--brand-deep);
+    color: #e9efe2;
+    padding: 22px 18px 32px;
+    border-right: 1px solid var(--brand-deep);
+  }
+  .sidebar .brand {
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #fff;
+    margin: 0 0 2px;
+  }
+  .sidebar .brand-sub {
+    font-size: 0.74rem;
+    color: #a9c3a3;
+    margin: 0 0 20px;
+    line-height: 1.4;
+  }
+  .sidebar nav { display: flex; flex-direction: column; gap: 1px; }
+  .sidebar nav a {
+    display: block;
+    color: #cdddc4;
+    text-decoration: none;
+    font-size: 0.86rem;
+    padding: 7px 11px;
+    border-radius: 7px;
+    border-left: 3px solid transparent;
+    transition: background 0.12s, color 0.12s;
+  }
+  .sidebar nav a:hover { background: rgba(255,255,255,0.07); color: #fff; }
+  .sidebar nav a.active {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    border-left-color: var(--hay);
+    font-weight: 600;
+  }
+  .sidebar .nav-meta {
+    margin-top: 26px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.13);
+    font-size: 0.72rem;
+    color: #9fb89a;
+    line-height: 1.55;
+  }
+
+  .main {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0 40px 100px;
+    display: flex;
+    justify-content: center;
+  }
+  .content { width: 100%; max-width: var(--maxw); }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    padding: 48px 0 26px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 8px;
+  }
+  .hero h1 {
+    font-size: 2.5rem;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    margin: 0 0 6px;
+    color: var(--brand-deep);
+  }
+  .hero .tagline {
+    font-size: 1.12rem;
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 64ch;
+  }
+  .status-banner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 14px;
+    background: var(--brand-soft);
+    border: 1px solid #c4d6b9;
+    border-left: 4px solid var(--brand);
+    border-radius: 9px;
+    padding: 13px 16px;
+    font-size: 0.94rem;
+  }
+  .status-banner .dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--brand); display: inline-block;
+    box-shadow: 0 0 0 3px rgba(47,107,52,0.18);
+  }
+  .status-banner strong { color: var(--brand-deep); }
+  .status-banner .blocker-chip {
+    background: var(--sev-blocker-bg);
+    color: var(--sev-blocker-ink);
+    font-weight: 600;
+    font-size: 0.8rem;
+    padding: 2px 9px;
+    border-radius: 20px;
+  }
+
+  /* ---------- Sections ---------- */
+  section { padding: 34px 0 8px; scroll-margin-top: 14px; border-bottom: 1px solid var(--line); }
+  section:last-of-type { border-bottom: none; }
+  section > h2 {
+    font-size: 1.55rem;
+    letter-spacing: -0.02em;
+    color: var(--brand-deep);
+    margin: 0 0 4px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  section > h2 .num {
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: #fff;
+    background: var(--brand);
+    border-radius: 6px;
+    padding: 2px 9px;
+    line-height: 1.4;
+  }
+  .section-lead { color: var(--ink-faint); margin: 0 0 18px; font-size: 0.98rem; }
+
+  h3 {
+    font-size: 1.12rem;
+    color: var(--soil);
+    margin: 26px 0 8px;
+    letter-spacing: -0.01em;
+  }
+  h4 {
+    font-size: 0.96rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+    margin: 20px 0 6px;
+  }
+  p { margin: 0 0 12px; }
+  ul, ol { margin: 0 0 14px; padding-left: 22px; }
+  li { margin-bottom: 5px; }
+  a { color: var(--brand); }
+
+  /* ---------- Code / paths ---------- */
+  .path {
+    background: var(--path-bg);
+    color: var(--path-ink);
+    border: 1px solid #d2ddc8;
+    border-radius: 5px;
+    padding: 1px 6px;
+    font-size: 0.84em;
+    white-space: nowrap;
+  }
+  code:not(.path):not(pre code) {
+    background: var(--code-bg);
+    color: var(--code-ink);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 0.85em;
+  }
+  pre {
+    background: #1e261b;
+    color: #d9e4cf;
+    border-radius: 10px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    margin: 0 0 16px;
+    border: 1px solid #2c3727;
+  }
+  pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+  pre.tree { font-size: 0.78rem; }
+
+  .cmt { color: #8fa67f; }
+  .kw  { color: #c0d99b; }
+
+  /* ---------- Tables ---------- */
+  .table-wrap { overflow-x: auto; margin: 0 0 18px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    overflow: hidden;
+  }
+  thead th {
+    background: var(--surface-alt);
+    text-align: left;
+    font-weight: 700;
+    color: var(--ink-soft);
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.82rem;
+  }
+  tbody td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #ebe9de;
+    vertical-align: top;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:nth-child(even) { background: #fbfbf7; }
+  td .path { white-space: normal; }
+
+  /* ---------- Callout / cards ---------- */
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--hay);
+    border-radius: 9px;
+    padding: 14px 16px;
+    margin: 0 0 16px;
+    font-size: 0.93rem;
+  }
+  .callout.brand { border-left-color: var(--brand); }
+  .callout h4 { margin-top: 0; color: var(--soil); }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+
+  .factcard {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    padding: 13px 15px;
+  }
+  .factcard .k { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-faint); margin: 0 0 3px; }
+  .factcard .v { font-size: 0.96rem; color: var(--ink); }
+  .factcard .v .path { font-size: 0.82rem; }
+
+  /* ---------- Severity badges ---------- */
+  .sev {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 2px 8px;
+    border-radius: 5px;
+    white-space: nowrap;
+  }
+  .sev-blocker { background: var(--sev-blocker-bg); color: var(--sev-blocker-ink); }
+  .sev-high    { background: var(--sev-high-bg);    color: var(--sev-high-ink); }
+  .sev-med     { background: var(--sev-med-bg);     color: var(--sev-med-ink); }
+  .sev-low     { background: var(--sev-low-bg);     color: var(--sev-low-ink); }
+  .sev-ok      { background: var(--ok-bg);          color: var(--ok-ink); }
+
+  .pill {
+    display: inline-block;
+    background: var(--surface-alt);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 3px 11px;
+    font-size: 0.82rem;
+    margin: 0 6px 6px 0;
+    color: var(--ink-soft);
+  }
+  .pill .v { color: var(--brand-deep); font-weight: 600; }
+
+  /* ---------- Concern groups ---------- */
+  .concern-group { margin-bottom: 22px; }
+  .concern-group > .cg-head {
+    display: flex; align-items: center; gap: 10px;
+    margin: 0 0 4px;
+  }
+  .concern-group > .cg-head h3 { margin: 0; }
+  .concern {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    padding: 13px 15px;
+    margin-bottom: 10px;
+  }
+  .concern .c-head {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px;
+    margin-bottom: 4px;
+  }
+  .concern .c-head .c-id { font-weight: 700; color: var(--brand-deep); }
+  .concern .c-blocks {
+    font-size: 0.74rem; color: var(--ink-faint);
+    border: 1px solid var(--line); border-radius: 5px; padding: 1px 7px;
+  }
+  .concern p { margin: 4px 0; font-size: 0.91rem; }
+  .concern .c-fix { font-size: 0.88rem; color: var(--ink-soft); }
+  .concern .c-fix strong { color: var(--soil); }
+
+  /* ---------- Footer ---------- */
+  footer {
+    margin-top: 40px;
+    padding: 22px 0 0;
+    border-top: 1px solid var(--line);
+    color: var(--ink-faint);
+    font-size: 0.85rem;
+  }
+  footer .path { font-size: 0.8rem; }
+
+  .toplink { font-size: 0.78rem; color: var(--ink-faint); text-decoration: none; }
+  .toplink:hover { color: var(--brand); }
+
+  @media (max-width: 880px) {
+    .sidebar { display: none; }
+    .main { padding: 0 22px 80px; }
+    .hero h1 { font-size: 2rem; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <aside class="sidebar">
+    <p class="brand">TopFarms</p>
+    <p class="brand-sub">Repository overview &middot; v2.0 Launch Readiness</p>
+    <nav id="nav">
+      <a href="#overview">Overview &amp; Status</a>
+      <a href="#stack">Tech Stack</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#structure">Directory Structure</a>
+      <a href="#integrations">Integrations</a>
+      <a href="#conventions">Conventions</a>
+      <a href="#testing">Testing</a>
+      <a href="#concerns">Concerns &amp; Tech Debt</a>
+    </nav>
+    <p class="nav-meta">
+      Derived from <span style="color:#cdddc4">.planning/codebase/</span><br>
+      Analysis date: 2026-05-29<br>
+      Regenerate after significant changes.
+    </p>
+  </aside>
+
+  <main class="main">
+    <div class="content">
+
+      <!-- ===================== HERO ===================== -->
+      <header class="hero">
+        <h1>TopFarms</h1>
+        <p class="tagline">
+          A New Zealand agriculture jobs marketplace connecting farm employers with skilled
+          workers &mdash; replacing informal Facebook-group hiring with agriculture-specific matching
+          (shed type, on-farm accommodation, DairyNZ qualifications, herd-size experience).
+        </p>
+        <div class="status-banner">
+          <span class="dot" aria-hidden="true"></span>
+          <span><strong>v2.0 &ldquo;Launch Readiness&rdquo;</strong> &mdash; functionally complete &amp; launch-ready</span>
+          <span class="blocker-chip">1 blocker: PEND-01 Stripe live-mode swap</span>
+        </div>
+      </header>
+
+      <!-- ===================== OVERVIEW ===================== -->
+      <section id="overview">
+        <h2><span class="num">1</span> Overview &amp; Status</h2>
+        <p class="section-lead">What TopFarms is, where it stands, and the single thing blocking milestone close.</p>
+
+        <h3>Core value</h3>
+        <p>
+          Farm employers and seekers find each other through agriculture-specific matching that no
+          generic platform provides &mdash; shed type, accommodation sub-scoring, DairyNZ qualifications,
+          and herd-size experience &mdash; delivering match quality that justifies switching from Facebook
+          groups. The MVP targets the two sectors that dominate NZ ag hiring: <strong>dairy cattle</strong> and
+          <strong>sheep &amp; beef</strong>.
+        </p>
+        <ul>
+          <li>86% of NZ ag Facebook job posts are dairy &mdash; the primary target sector.</li>
+          <li>76% of NZ dairy seekers require on-farm accommodation &mdash; a major decision factor and scoring axis.</li>
+          <li>Shed type (rotary vs herringbone) is the primary skill differentiator in dairy.</li>
+          <li>28% of seekers are couples &mdash; couples matching is a significant filter.</li>
+        </ul>
+
+        <h3>Milestone status</h3>
+        <p>
+          The product shipped <strong>v1.0 MVP</strong> (Phases 1&ndash;6, 2026-03-17) and
+          <strong>v1.1 SPEC Compliance</strong> (Phases 7&ndash;11, 2026-03-23), and is now in
+          <strong>v2.0 Launch Readiness</strong> &mdash; closing the launch-critical gaps so TopFarms can go live.
+          <strong>Phase 22 (Pre-Launch P0 Closure)</strong> just completed. All 11 v2.0 requirements plus 19
+          internal Phase&nbsp;21 ops requirement IDs are mapped to phases (0 unmapped) and empirically closed.
+        </p>
+        <div class="callout brand">
+          <h4>The one remaining milestone-close blocker</h4>
+          <p style="margin-bottom:6px;">
+            <span class="sev sev-blocker">BLOCKER</span> &nbsp;<strong>PEND-01 &mdash; Stripe live-mode key swap.</strong>
+            Production still runs Stripe sandbox keys (<code>sk_test_*</code> / <code>pk_test_*</code>) and the
+            live-mode webhook endpoint is not yet registered. This is a deliberate operator action gated before
+            the first real paid charge; it is the single item blocking <code>/gsd:complete-milestone v2.0</code>.
+          </p>
+          <p style="margin-bottom:0;">
+            Resolution is a 9-item checklist in <span class="path">.planning/DECISIONS-PENDING.md &sect; PEND-01</span>:
+            rotate keys, register the live webhook, run a $0.50 smoke charge + immediate refund, then flip
+            <span class="path">18.1-VERIFICATION.md</span> SC-2 from PARTIAL to PASS.
+          </p>
+        </div>
+
+        <h3>Where the codebase is</h3>
+        <div class="grid2">
+          <div class="factcard"><p class="k">Phases shipped</p><p class="v">22 phases across 3 milestones (incl. 18.1/18.2/19b/20.1 sub-phases)</p></div>
+          <div class="factcard"><p class="k">Scale</p><p class="v">~20k LOC TypeScript across ~116 files</p></div>
+          <div class="factcard"><p class="k">Edge Functions</p><p class="v">11 deployed (Deno)</p></div>
+          <div class="factcard"><p class="k">Migrations</p><p class="v">001&ndash;033 (sequence-prefixed)</p></div>
+          <div class="factcard"><p class="k">Tests</p><p class="v">~314 passing + ~114 deferred <code>it.todo</code> (~428 total)</p></div>
+          <div class="factcard"><p class="k">Hosting</p><p class="v">Vercel (SPA) + Supabase (backend)</p></div>
+        </div>
+      </section>
+
+      <!-- ===================== STACK ===================== -->
+      <section id="stack">
+        <h2><span class="num">2</span> Tech Stack</h2>
+        <p class="section-lead">
+          TopFarms is a <strong>Vite + React Router v7 SPA</strong> (not Next.js) on Supabase, deployed to Vercel.
+          Languages: TypeScript ~5.8.3 for the SPA and Edge Function handlers, Deno as the Edge runtime, and SQL
+          for Postgres migrations and stored procedures. Package manager: pnpm.
+        </p>
+
+        <h3>Core frameworks</h3>
+        <div>
+          <span class="pill">React <span class="v">19.1.0</span></span>
+          <span class="pill">React Router <span class="v">7.5.0</span></span>
+          <span class="pill">Vite <span class="v">6.3.1</span></span>
+          <span class="pill">TypeScript <span class="v">~5.8.3</span></span>
+          <span class="pill">Tailwind CSS <span class="v">4.1.3</span></span>
+          <span class="pill">Deno <span class="v">Edge runtime</span></span>
+        </div>
+
+        <h3>Key dependencies</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Package</th><th>Version</th><th>Role</th></tr></thead>
+            <tbody>
+              <tr><td><code>react</code></td><td>19.1.0</td><td>Core UI library</td></tr>
+              <tr><td><code>react-router</code></td><td>7.5.0</td><td>Client-side SPA routing</td></tr>
+              <tr><td><code>vite</code></td><td>6.3.1</td><td>Build tool + dev server</td></tr>
+              <tr><td><code>@tailwindcss/vite</code></td><td>4.1.3</td><td>Tailwind v4 (CSS-first, <code>@theme</code> directive)</td></tr>
+              <tr><td><code>@supabase/supabase-js</code></td><td>2.49.4</td><td>Auth, data, realtime, RPC, storage</td></tr>
+              <tr><td><code>@supabase/ssr</code></td><td>0.6.1</td><td>Cookie-based auth integration</td></tr>
+              <tr><td><code>@stripe/react-stripe-js</code></td><td>5.6.1</td><td>React bindings for Stripe.js</td></tr>
+              <tr><td><code>@stripe/stripe-js</code></td><td>8.9.0</td><td>Stripe client library</td></tr>
+              <tr><td><code>react-hook-form</code></td><td>7.55.0</td><td>Form state management</td></tr>
+              <tr><td><code>@hookform/resolvers</code></td><td>5.0.1</td><td>Schema validation resolver</td></tr>
+              <tr><td><code>zod</code></td><td>3.24.2</td><td>TypeScript-first schema validation</td></tr>
+              <tr><td><code>sonner</code></td><td>2.0.3</td><td>Toast notifications</td></tr>
+              <tr><td><code>motion</code></td><td>12.38.0</td><td>Animation (framer-motion equivalent)</td></tr>
+              <tr><td><code>lucide-react</code></td><td>0.487.0</td><td>Icon library</td></tr>
+              <tr><td>Radix UI</td><td>&mdash;</td><td>Checkbox, dialog, label, progress, select, slider, switch primitives</td></tr>
+              <tr><td><code>react-dropzone</code></td><td>15.0.0</td><td>Drag-and-drop file upload</td></tr>
+              <tr><td><code>clsx</code> / <code>tailwind-merge</code></td><td>2.1.1 / 3.2.0</td><td>Conditional + merged classNames</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Build, test &amp; tooling</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Tool</th><th>Version</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>@vitejs/plugin-react</code></td><td>4.4.1</td><td>React Fast Refresh in dev</td></tr>
+              <tr><td>TypeScript (<code>tsc -b</code>)</td><td>5.8.3</td><td>Composite-project type checking (<code>npm run typecheck</code>)</td></tr>
+              <tr><td><code>vitest</code></td><td>3.1.1</td><td>Unit test runner (jsdom env)</td></tr>
+              <tr><td><code>@testing-library/react</code></td><td>16.3.0</td><td>Component testing</td></tr>
+              <tr><td><code>@testing-library/jest-dom</code></td><td>6.9.1</td><td>Custom DOM matchers</td></tr>
+              <tr><td><code>@testing-library/user-event</code></td><td>14.6.1</td><td>User interaction simulation</td></tr>
+              <tr><td><code>jsdom</code></td><td>29.0.0</td><td>DOM for Node test environment</td></tr>
+              <tr><td><code>eslint</code></td><td>9.23.0</td><td>Linting (flat config)</td></tr>
+              <tr><td><code>prettier</code> + plugin</td><td>3.5.3 / 0.6.11</td><td>Formatting + Tailwind class sorting</td></tr>
+              <tr><td>Supabase CLI</td><td>2.95.4</td><td>Migrations, local dev, function deploy (locked in CI)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Key config files</h3>
+        <ul>
+          <li><span class="path">vite.config.ts</span> &mdash; React Fast Refresh + Tailwind plugin + path alias <code>@/*</code> &rarr; <code>src/</code></li>
+          <li><span class="path">tsconfig.json</span> &mdash; references <span class="path">tsconfig.app.json</span> (frontend, ES2020, strict) + <span class="path">tsconfig.node.json</span> (build tooling)</li>
+          <li><span class="path">vercel.json</span> &mdash; SPA rewrites to <code>/index.html</code>, output directory <code>dist/</code></li>
+          <li><span class="path">supabase/config.toml</span> &mdash; per-function Edge settings (<code>verify_jwt</code>, CORS, secrets)</li>
+        </ul>
+      </section>
+
+      <!-- ===================== ARCHITECTURE ===================== -->
+      <section id="architecture">
+        <h2><span class="num">3</span> Architecture</h2>
+        <p class="section-lead">
+          Overall pattern: <strong>SPA + BaaS (Backend-as-a-Service) with role-based access control.</strong>
+          A Vite + React Router v7 SPA delegates all backend operations to Supabase; authorization and persistence
+          are server-enforced through Row-Level Security (RLS). Privileged operations run on Edge Functions with
+          <code>SECURITY DEFINER</code> stored procedures.
+        </p>
+
+        <h3>Layers</h3>
+        <ul>
+          <li><strong>Presentation</strong> &mdash; React components in <span class="path">src/components/</span> + <span class="path">src/pages/</span>; layout wrappers (DashboardLayout, AdminLayout, JobSearchLayout) and UI primitives.</li>
+          <li><strong>State management</strong> &mdash; <span class="path">src/contexts/AuthContext.tsx</span> holds session, role, and <code>isActive</code> via a single app-wide <code>onAuthStateChange</code> subscription (defence-in-depth against multi-tab Web Lock contention, AUTH-FIX-02).</li>
+          <li><strong>Access control (frontend)</strong> &mdash; <span class="path">src/components/layout/ProtectedRoute.tsx</span> guards session, role, and active status with a <code>requiredRole</code> prop.</li>
+          <li><strong>API layer</strong> &mdash; <span class="path">src/lib/supabase.ts</span> (<code>createClient()</code> with anon key; persistent sessions + auto-refresh).</li>
+          <li><strong>Database</strong> &mdash; <span class="path">supabase/migrations/</span>; 33 migrations defining 14+ tables, all with RLS enabled.</li>
+          <li><strong>Privileged ops</strong> &mdash; 11 Edge Functions in <span class="path">supabase/functions/</span> + admin RPCs in migration 023 (<code>SECURITY DEFINER</code> + <code>GRANT EXECUTE TO authenticated</code>).</li>
+        </ul>
+
+        <h3>Three-tier role model</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Role</th><th>Capabilities</th></tr></thead>
+            <tbody>
+              <tr><td><code>employer</code></td><td>Post listings, view applicants, mint document URLs, manage placement fees</td></tr>
+              <tr><td><code>seeker</code></td><td>Upload documents, apply for jobs, save searches</td></tr>
+              <tr><td><code>admin</code></td><td>Document review queue, employer/seeker management, suspension toggle (Phase 21)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Roles live in the <code>user_roles</code> table with an <code>is_active</code> flag, checked in RLS policies and Edge Functions.</p>
+
+        <h3>Key tables</h3>
+        <p>
+          <code>user_roles</code>, <code>employer_profiles</code>, <code>seeker_profiles</code>, <code>jobs</code>,
+          <code>applications</code>, <code>seeker_documents</code>, <code>seeker_contacts</code> (separate table for
+          contact masking), <code>saved_searches</code>, <code>admin_audit_log</code>, and <code>admin_notes</code>.
+          All tables have <code>ENABLE ROW LEVEL SECURITY</code>; policies check <code>auth.uid()</code> and role via the
+          <code>get_user_role(p_user_id)</code> <code>SECURITY DEFINER</code> helper (read-once to avoid recursion).
+        </p>
+
+        <h3>Key abstractions &amp; patterns</h3>
+        <div class="callout">
+          <h4>RLS policy template</h4>
+<pre><code><span class="kw">CREATE POLICY</span> "employer_profiles: employers manage own"
+  <span class="kw">ON</span> public.employer_profiles
+  <span class="kw">FOR ALL</span>
+  <span class="kw">USING</span> (user_id = auth.uid() <span class="kw">AND</span> get_user_role(auth.uid()) = 'employer')
+  <span class="kw">WITH CHECK</span> (user_id = auth.uid() <span class="kw">AND</span> get_user_role(auth.uid()) = 'employer');</code></pre>
+        </div>
+        <div class="callout">
+          <h4>Admin RPC pattern (migration 023)</h4>
+          <p style="margin-bottom:6px;">Every admin RPC opens with an admin gate, writes an audit row before returning, and is callable only by authenticated users (the gate enforces the role):</p>
+<pre><code><span class="kw">CREATE OR REPLACE FUNCTION</span> public.admin_set_user_active(...)
+<span class="kw">RETURNS</span> jsonb <span class="kw">LANGUAGE</span> plpgsql <span class="kw">SECURITY DEFINER</span> <span class="kw">SET</span> search_path = public <span class="kw">AS</span> $$
+<span class="kw">BEGIN</span>
+  <span class="kw">PERFORM</span> public._admin_gate();   <span class="cmt">-- raises if role != admin</span>
+  <span class="cmt">-- mutation + INSERT INTO admin_audit_log ...</span>
+<span class="kw">END</span>; $$;
+<span class="kw">GRANT EXECUTE</span> <span class="kw">ON FUNCTION</span> public.admin_set_user_active <span class="kw">TO</span> authenticated;</code></pre>
+        </div>
+        <div class="callout brand">
+          <h4>Gateway-trust JWT pattern (CLAUDE.md &sect;5)</h4>
+          <p style="margin-bottom:6px;">
+            For Edge Functions with <code>verify_jwt: true</code>, the Supabase gateway has already validated the JWT
+            signature upstream. Functions must <strong>not</strong> re-validate via <code>adminClient.auth.getUser(token)</code>
+            (that path rejects valid ES256 tokens &mdash; BFIX-05). Instead, trust the gateway and decode locally:
+          </p>
+<pre><code><span class="kw">const</span> payload = JSON.parse(atob(token.split(<span class="kw">'.'</span>)[1].replace(/-/g, <span class="kw">'+'</span>).replace(/_/g, <span class="kw">'/'</span>)))
+<span class="kw">if</span> (payload.aud !== <span class="kw">'authenticated'</span>) <span class="kw">return</span> 401
+<span class="kw">const</span> callerUserId = payload.sub</code></pre>
+          <p style="margin-bottom:0;">Reference implementation: <span class="path">supabase/functions/get-applicant-document-url/index.ts:79-98</span>, which adds a 5-layer auth check (method, JWT, role, relationship, document-type whitelist).</p>
+        </div>
+
+        <h3>Representative data flows</h3>
+        <ul>
+          <li><strong>Seeker signup &rarr; onboarding:</strong> <code>supabase.auth.signUp()</code> with <code>role: 'seeker'</code> &rarr; <code>on_auth_user_created</code> trigger creates the <code>user_roles</code> row &rarr; verification &rarr; <code>/onboarding/seeker</code> wizard upserts profile data step-by-step under RLS.</li>
+          <li><strong>Employer views applications:</strong> <code>get_applicants_for_job</code> RPC (migration 030) validates ownership &rarr; employer invokes <code>get-applicant-document-url</code> Edge Function (5-layer auth) &rarr; 15-minute signed URL.</li>
+          <li><strong>Admin document verification (Phase 21):</strong> <code>admin_list_document_queue</code> &rarr; approve/reject RPC fires <code>_admin_gate()</code>, writes audit log, then calls <code>send-document-status-email</code> via <code>pg_net.http_post()</code>.</li>
+        </ul>
+
+        <h3>Entry points</h3>
+        <ul>
+          <li><span class="path">index.html</span> &mdash; defines <code>#root</code>, loads <span class="path">src/main.tsx</span> as a module.</li>
+          <li><span class="path">src/main.tsx</span> &mdash; <code>createBrowserRouter</code> with 30+ routes, wraps the app in <code>AuthProvider</code>, mounts the Sonner <code>&lt;Toaster /&gt;</code>.</li>
+        </ul>
+      </section>
+
+      <!-- ===================== STRUCTURE ===================== -->
+      <section id="structure">
+        <h2><span class="num">4</span> Directory Structure</h2>
+        <p class="section-lead">
+          Pages are organized by <strong>domain-feature folder</strong> (not Next.js Pages Router &mdash; routing lives in
+          <span class="path">src/main.tsx</span>). Components split into layout / landing / ui / admin / saved-search / stripe.
+        </p>
+<pre class="tree"><code>topfarms/
+├── index.html                          <span class="cmt"># SPA entry point</span>
+├── src/
+│   ├── main.tsx                        <span class="cmt"># React Router config + AuthProvider root</span>
+│   ├── index.css                       <span class="cmt"># Tailwind v4 CSS-first (@theme tokens)</span>
+│   ├── pages/                          <span class="cmt"># Domain-feature folders</span>
+│   │   ├── Home.tsx · ForEmployers.tsx · Pricing.tsx
+│   │   ├── auth/                       <span class="cmt"># Login, SignUp, VerifyEmail, SelectRole,</span>
+│   │   │                               <span class="cmt">#   ForgotPassword, ResetPassword, Suspended (P21)</span>
+│   │   ├── onboarding/                 <span class="cmt"># EmployerOnboarding (8-step) + SeekerOnboarding (7-step)</span>
+│   │   │   └── steps/                  <span class="cmt"># Step{N}{Name}.tsx + SeekerStep{N}{Name}.tsx</span>
+│   │   ├── dashboard/                  <span class="cmt"># EmployerDashboard, SeekerDashboard,</span>
+│   │   │   ├── employer/               <span class="cmt">#   ApplicantDashboard, Hire/PlacementFee modals</span>
+│   │   │   └── seeker/                 <span class="cmt">#   MyApplications, SavedSearches, SeekerDocuments</span>
+│   │   ├── jobs/                       <span class="cmt"># JobSearch, JobDetail, PostJob, MarkFilledModal</span>
+│   │   ├── verification/               <span class="cmt"># Employer 5-tier verification screens</span>
+│   │   └── admin/                      <span class="cmt"># Super admin panel (Phase 20+): lists, pipeline,</span>
+│   │                                   <span class="cmt">#   AdminDocumentsQueue (P21 doc verification)</span>
+│   ├── components/
+│   │   ├── layout/                     <span class="cmt"># ProtectedRoute, DashboardLayout, JobSearchLayout, AdminLayout</span>
+│   │   ├── landing/ · ui/ · admin/ · saved-search/ · stripe/
+│   ├── contexts/AuthContext.tsx        <span class="cmt"># Global auth state + useAuth hook</span>
+│   ├── hooks/                          <span class="cmt"># useAuth, useWizard, useSavedJobs, useApplicantDocumentUrl, ...</span>
+│   ├── lib/                            <span class="cmt"># supabase.ts, routing.ts, stripe.ts, constants.ts,</span>
+│   │                                   <span class="cmt">#   utils.ts, wizardUtils.ts, savedSearch.ts</span>
+│   └── types/domain.ts                 <span class="cmt"># UserRole, DocumentType, JobStatus, ...</span>
+├── supabase/
+│   ├── migrations/                     <span class="cmt"># 33 migrations (001-033), sequence-prefixed</span>
+│   │   ├── 001_initial_schema.sql      <span class="cmt"># 14 tables</span>
+│   │   ├── 002_rls_policies.sql        <span class="cmt"># RLS for all tables</span>
+│   │   ├── 023_admin_rpcs.sql          <span class="cmt"># Admin RPC layer + audit tables (Phase 20)</span>
+│   │   └── NAMING.md                   <span class="cmt"># Migration conventions + schema docs</span>
+│   └── functions/                      <span class="cmt"># 11 Edge Functions (Deno), each <folder>/index.ts</span>
+├── tests/                              <span class="cmt"># Vitest suites at repo root (NOT co-located)</span>
+├── .planning/                          <span class="cmt"># Phase docs, REQUIREMENTS, ROADMAP, STATE, codebase/</span>
+├── vite.config.ts · tsconfig.json · package.json
+└── CLAUDE.md                           <span class="cmt"># Project-scoped house rules</span></code></pre>
+
+        <h3>Naming conventions</h3>
+        <ul>
+          <li><strong>Pages / components:</strong> PascalCase (<span class="path">Home.tsx</span>, <span class="path">ProtectedRoute.tsx</span>).</li>
+          <li><strong>Hooks:</strong> camelCase with <code>use</code> prefix (<span class="path">useWizard.ts</span>).</li>
+          <li><strong>Migrations:</strong> <code>{sequence}_{description}.sql</code> (<span class="path">023_admin_rpcs.sql</span>).</li>
+          <li><strong>Edge Functions:</strong> kebab-case folder + <code>index.ts</code> (<span class="path">get-applicant-document-url/index.ts</span>).</li>
+          <li><strong>DB objects:</strong> snake_case tables/columns; <code>admin_*</code> prefix on SECURITY DEFINER RPCs; <code>_admin_gate()</code> helper.</li>
+        </ul>
+
+        <h3>Core file locations</h3>
+        <ul>
+          <li><span class="path">src/contexts/AuthContext.tsx</span> &mdash; auth state provider (wraps the whole app).</li>
+          <li><span class="path">src/pages/jobs/JobSearch.tsx</span> &mdash; job search + 9 ag-specific filters (internal sidebar).</li>
+          <li><span class="path">src/pages/admin/AdminDocumentsQueue.tsx</span> &mdash; admin doc verification UI (Phase 21).</li>
+          <li><span class="path">supabase/migrations/023_admin_rpcs.sql</span> &mdash; admin RPC layer.</li>
+          <li><span class="path">supabase/migrations/NAMING.md</span> &mdash; schema docs + the dual-state (Studio-applied vs registry) convention.</li>
+        </ul>
+      </section>
+
+      <!-- ===================== INTEGRATIONS ===================== -->
+      <section id="integrations">
+        <h2><span class="num">5</span> Integrations</h2>
+        <p class="section-lead">
+          Supabase is the primary backend (Auth, Realtime, Edge Functions, Storage, pg_net, Vault).
+          Stripe handles payments, Resend handles transactional email, Vercel hosts the SPA.
+        </p>
+
+        <h3>The 11 Edge Functions</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Function</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>get-applicant-document-url</code></td><td>Mints 15-min signed URLs for seeker documents (5-layer authz)</td></tr>
+              <tr><td><code>send-document-status-email</code></td><td>Admin document-action notifier (Phase 21 Track B)</td></tr>
+              <tr><td><code>send-followup-emails</code></td><td>Cron-driven Day 7/14/21 placement-fee + reminder emails</td></tr>
+              <tr><td><code>notify-job-filled</code></td><td>DB-trigger notification (<code>on_job_filled</code>); best-effort email</td></tr>
+              <tr><td><code>create-payment-intent</code></td><td>Stripe PaymentIntent for listing fees (tiers 1&ndash;3)</td></tr>
+              <tr><td><code>stripe-webhook</code></td><td>Handles <code>payment_intent.succeeded</code> + <code>invoice.payment_succeeded</code></td></tr>
+              <tr><td><code>create-placement-invoice</code></td><td>Creates Stripe invoices for placement fees</td></tr>
+              <tr><td><code>acknowledge-placement-fee</code></td><td>Marks placement fee acknowledged (employer action)</td></tr>
+              <tr><td><code>get-resend-stats</code></td><td>Cron-polled email metrics fetcher (every 15 min)</td></tr>
+              <tr><td><code>generate-candidate-summary</code></td><td>AI candidate profile generation (LLM)</td></tr>
+              <tr><td><code>generate-match-explanation</code></td><td>AI job-match reasoning (LLM)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>External services</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Service</th><th>Use</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Supabase</strong> (Postgres)</td><td>Auth, data, RLS, RPC, realtime</td><td>Project ref <code>inlagtgpynemhipnqvty</code>; SSR cookies via <code>@supabase/ssr</code></td></tr>
+              <tr><td><strong>Supabase Storage</strong></td><td><code>seeker-documents</code> bucket</td><td>Signed URL retrieval via Edge Function (15-min TTL)</td></tr>
+              <tr><td><strong>Supabase pg_net</strong></td><td>Outbound HTTP from Postgres</td><td>pg_cron &rarr; <code>pg_net.http_post</code> &rarr; Edge Functions</td></tr>
+              <tr><td><strong>Supabase Vault</strong></td><td>Encrypted secret storage</td><td><code>pg_net_webhook_secret</code> (migration 029) signs pg_net callbacks</td></tr>
+              <tr><td><strong>Stripe</strong></td><td>Payments + invoices + webhooks</td><td><code>stripe@14</code> via ESM; API version 2024-06-20; listing fees $100/$150/$200 NZD</td></tr>
+              <tr><td><strong>Resend</strong></td><td>Transactional email</td><td>Plain <code>fetch()</code> to <code>api.resend.com/emails</code> (no SDK); from <code>TopFarms &lt;hello@topfarms.co.nz&gt;</code></td></tr>
+              <tr><td><strong>Vercel</strong></td><td>Frontend hosting</td><td>SPA rewrites; auto-deploy on push to main; PR previews</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout">
+          <h4>Resend failure mode (Phase 15 MAIL-02 closure)</h4>
+          <p style="margin-bottom:0;">
+            If <code>RESEND_API_KEY</code> is unset, email functions return <code>200</code> with a skip-flag rather than
+            erroring &mdash; email becomes a best-effort, non-blocking side-effect.
+          </p>
+        </div>
+
+        <h3>Auth, identity &amp; observability</h3>
+        <ul>
+          <li><strong>Auth provider:</strong> Supabase Auth (self-managed <code>auth.users</code> + ES256-signed JWTs). OAuth: Google + Facebook.</li>
+          <li><strong>Session persistence:</strong> localStorage (<code>persistSession=true</code>, <code>autoRefreshToken=true</code>); cross-tab <code>TOKEN_REFRESHED</code> skipped to avoid Web Lock contention.</li>
+          <li><strong>Monitoring:</strong> Supabase function/Postgres logs + console logging; <em>no</em> external error tracker (Sentry/DataDog).</li>
+        </ul>
+
+        <h3>CI/CD &amp; deployment</h3>
+        <ul>
+          <li><strong>Frontend:</strong> <code>npm run build</code> &rarr; Vite output to <code>dist/</code>, auto-deployed by Vercel.</li>
+          <li><strong>Edge Functions:</strong> <code>supabase functions deploy --use-api</code> (server-side bundling, no Docker), triggered on push to main via <span class="path">.github/workflows/supabase-deploy.yml</span>.</li>
+          <li><strong>Migrations:</strong> <code>db push --linked</code> is gated to <code>workflow_dispatch</code> only; in practice migrations land via Supabase Studio SQL Editor (see &sect;6 pooler-auth concern).</li>
+        </ul>
+      </section>
+
+      <!-- ===================== CONVENTIONS ===================== -->
+      <section id="conventions">
+        <h2><span class="num">6</span> Conventions</h2>
+        <p class="section-lead">Codified patterns the codebase follows &mdash; forms, data access, error feedback, and commit discipline.</p>
+
+        <h3>Imports &amp; aliases</h3>
+        <p>Order: React/framework &rarr; third-party UI/util &rarr; internal <code>@/</code> imports &rarr; relative (rare). Always use the <code>@/*</code> &rarr; <code>./src/*</code> alias for internal imports.</p>
+
+        <h3>Forms &amp; validation</h3>
+        <p>Zod schemas defined at module level; TypeScript types inferred via <code>z.infer&lt;typeof schema&gt;</code>; bridged to react-hook-form with <code>zodResolver</code>. Zod error messages are user-facing.</p>
+<pre><code><span class="kw">const</span> schema = z.object({
+  title: z.string().min(3, <span class="kw">'Title must be at least 3 characters'</span>),
+  contract_type: z.enum([<span class="kw">'permanent'</span>, <span class="kw">'contract'</span>, <span class="kw">'casual'</span>]),
+})
+<span class="kw">type</span> FormData = z.infer&lt;<span class="kw">typeof</span> schema&gt;
+<span class="kw">const</span> { register, handleSubmit, formState: { errors } } =
+  useForm&lt;FormData&gt;({ resolver: zodResolver(schema) })</code></pre>
+
+        <h3>Supabase access</h3>
+        <ul>
+          <li>Import the singleton: <code>import { supabase } from '@/lib/supabase'</code>.</li>
+          <li>Reads: <code>.from('table').select().eq(...).single()</code> / <code>.maybeSingle()</code>. Protected ops: <code>.rpc('fn', { p_arg })</code> against SECURITY DEFINER functions.</li>
+          <li>Always destructure and check <code>{ data, error }</code>; return sensible defaults on error (e.g. <code>loadRole</code> returns <code>isActive: true</code> on DB failure so a transient error never wrongly suspends a user).</li>
+          <li>Race long auth operations against a 3s timeout via <code>Promise.race()</code> (<code>loadRoleWithTimeout</code> pattern).</li>
+        </ul>
+
+        <h3>Error feedback (Sonner toasts)</h3>
+        <div class="callout">
+          <p style="margin-bottom:0;">
+            <strong>Persistent errors</strong> (auth/validation failures requiring action) must use
+            <code>toast.error(msg, { duration: Infinity, closeButton: true })</code> &mdash; the SIGNUP-01 precedent.
+            A default 4s auto-dismiss caused the original SIGNUP-01 bug where users never saw the
+            <code>email_address_invalid</code> error. Transient system messages may use the default duration.
+          </p>
+        </div>
+
+        <h3>Style &amp; typing</h3>
+        <ul>
+          <li>Prettier (semicolons, trailing commas, 2-space indent). ESLint v9 flat config.</li>
+          <li>TypeScript strict mode: <code>strict</code>, <code>noUnusedLocals</code>, <code>noUnusedParameters</code>, <code>noFallthroughCasesInSwitch</code>, <code>noUncheckedSideEffectImports</code> all on.</li>
+          <li>Booleans prefixed <code>is</code>/<code>has</code>; module-level constants UPPER_SNAKE_CASE; props interfaces suffixed <code>Props</code>.</li>
+          <li>Outcome types use discriminated unions, e.g. <code>type LoadRoleOutcome = { ok: true; ... } | { ok: false; reason: 'timeout' }</code>.</li>
+          <li>Tailwind v4 utility classes; merge with <code>clsx()</code> / <code>cn()</code>; avoid inline styles except branded OAuth buttons.</li>
+        </ul>
+
+        <h3>Comments &amp; commits</h3>
+        <ul>
+          <li>Prefer self-documenting code; band-aid code is tagged with a ticket ID prefix, e.g. <code>// [AUTH-FIX-02]</code> &mdash; never an untracked <code>TODO</code>.</li>
+          <li><strong>Atomic commits</strong> (CLAUDE.md &sect;4): one phase/sub-phase per commit. Format <code>type(scope): description</code>; body explains <em>why</em>; every commit carries the <code>Co-Authored-By: Claude</code> trailer.</li>
+        </ul>
+      </section>
+
+      <!-- ===================== TESTING ===================== -->
+      <section id="testing">
+        <h2><span class="num">7</span> Testing</h2>
+        <p class="section-lead">
+          <strong>Vitest</strong> (not Jest) with jsdom + React Testing Library. ~314 passing tests and ~114 deferred
+          <code>it.todo</code> stubs (~428 total). All tests live in <span class="path">tests/</span> at the repo root, not co-located.
+        </p>
+
+        <h3>Setup &amp; run</h3>
+        <ul>
+          <li>Config: <span class="path">vitest.config.ts</span> (merges with Vite config); globals on; setup file <span class="path">tests/setup.ts</span> imports jest-dom matchers, polyfills <code>ResizeObserver</code> for Radix, and runs <code>cleanup()</code> after each test.</li>
+          <li>Naming: <code>{feature}.test.ts</code> (pure logic) / <code>{feature}.test.tsx</code> (components), e.g. <span class="path">signup-toast-persistence.test.tsx</span>, <span class="path">saved-search-quick-load.test.tsx</span>.</li>
+        </ul>
+<pre><code><span class="cmt"># Run commands</span>
+pnpm test                 <span class="cmt"># watch mode</span>
+pnpm test --run           <span class="cmt"># once, then exit</span>
+pnpm test &lt;file&gt; --run     <span class="cmt"># single file</span>
+pnpm test --coverage      <span class="cmt"># coverage (if configured)</span></code></pre>
+
+        <h3>Signature patterns</h3>
+        <div class="callout">
+          <h4>1. <code>vi.hoisted()</code> for statically-imported mocks (critical)</h4>
+          <p style="margin-bottom:6px;">When the SUT statically imports a module (e.g. <code>@/lib/supabase</code> or <code>sonner</code>), the mock must be hoisted so it installs before compile-time resolution:</p>
+<pre><code><span class="kw">const</span> { toastErrorMock } = vi.hoisted(() => ({ toastErrorMock: vi.fn() }))
+vi.mock(<span class="kw">'sonner'</span>, () => ({
+  toast: { error: toastErrorMock, success: vi.fn() },
+  Toaster: () => null,
+}))
+<span class="cmt">// static import of SUT comes AFTER the hoisted mock</span>
+<span class="kw">import</span> { SignUp } <span class="kw">from</span> <span class="kw">'@/pages/auth/SignUp'</span></code></pre>
+        </div>
+        <div class="callout">
+          <h4>2. Chainable Supabase query mocks</h4>
+          <p style="margin-bottom:6px;">Mock the full <code>.from().select().eq().order().limit()</code> chain, terminating in a resolved <code>{ data, error }</code>:</p>
+<pre><code>fromMock.mockReturnValue({
+  select: vi.fn().mockReturnValue({
+    eq: vi.fn().mockReturnValue({
+      order: vi.fn().mockReturnValue({
+        limit: vi.fn().mockResolvedValue({ data: rows, error: null }),
+      }),
+    }),
+  }),
+})</code></pre>
+        </div>
+        <div class="callout">
+          <h4>3. The static-source-guard pattern</h4>
+          <p style="margin-bottom:0;">
+            A regression net that <code>readFileSync()</code>s a source file and asserts code shape with regex &mdash;
+            catching type-level bugs that are silent at runtime (e.g. HOMEBUG-02, where a string value was passed to an
+            int column). Includes both positive assertions (the fix must exist) and negative assertions (the pre-fix shape
+            must <em>not</em>). Very fast (&lt;5ms), no DOM, no network.
+          </p>
+        </div>
+        <div class="callout">
+          <h4>4. The <code>it.todo</code> deferral pattern</h4>
+          <p style="margin-bottom:0;">
+            Tests are scaffolded as <code>it.todo('...')</code> stubs documenting intent before implementation; they show as
+            &ldquo;todo&rdquo; (not failing) and are promoted to real <code>it()</code> blocks when the feature ships. This accounts
+            for the ~114 deferred tests.
+          </p>
+        </div>
+
+        <h3>Conventions</h3>
+        <ul>
+          <li>Multiplexed RPC mocks switch on function name inside <code>rpcMock.mockImplementation</code>.</li>
+          <li>Async assertions use <code>waitFor()</code> / <code>findBy*</code>; state updates wrapped in <code>act()</code>.</li>
+          <li>Layout chrome (e.g. <code>DashboardLayout</code>) is passthrough-mocked to avoid heavy provider trees.</li>
+          <li>Every test file opens with a header comment: phase + feature ID, what flips RED/GREEN, and the mock strategy.</li>
+          <li>Coverage isn't enforced in config; passing-count + pass-rate is the primary signal.</li>
+        </ul>
+      </section>
+
+      <!-- ===================== CONCERNS ===================== -->
+      <section id="concerns">
+        <h2><span class="num">8</span> Concerns &amp; Tech Debt</h2>
+        <p class="section-lead">
+          The most operationally useful section. v2.0 is functionally complete and launch-ready; the items below are
+          infrastructure debt, security workarounds, the one launch blocker, and post-launch deferrals.
+          Sources: <span class="path">v2.0-MILESTONE-AUDIT.md</span>, <span class="path">REQUIREMENTS.md</span>, <span class="path">DECISIONS-PENDING.md</span>.
+        </p>
+
+        <h3>Severity matrix</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Concern</th><th>Type</th><th>Severity</th><th>Blocks launch?</th><th>Resolution</th></tr></thead>
+            <tbody>
+              <tr><td>PEND-01 Stripe live-mode</td><td>Operator action</td><td><span class="sev sev-blocker">BLOCKER</span></td><td><strong>YES</strong></td><td>9-item checklist in DECISIONS-PENDING.md</td></tr>
+              <tr><td>&sect;6 Pooler auth</td><td>Platform-side</td><td><span class="sev sev-high">HIGH</span></td><td>No (gated CI)</td><td>Await Supabase support + reset cycle</td></tr>
+              <tr><td>018&ndash;022 registry drift</td><td>Migration hygiene</td><td><span class="sev sev-med">MEDIUM</span></td><td>No (gated CI)</td><td>Studio SQL drift cleanup</td></tr>
+              <tr><td>X-Webhook-Secret workaround</td><td>Legacy JWT limit</td><td><span class="sev sev-med">MEDIUM</span></td><td>No</td><td>Item #16: HS256&rarr;ES256 migration</td></tr>
+              <tr><td>Gateway-trust JWT pattern</td><td>Best practice</td><td><span class="sev sev-low">LOW</span></td><td>No</td><td>Locked in CLAUDE.md &sect;5; guard regressions</td></tr>
+              <tr><td>CORS-01 wildcard origin</td><td>Least-exposure</td><td><span class="sev sev-low">LOW</span></td><td>No</td><td>Post-launch: scope to prod + dev origins</td></tr>
+              <tr><td>PRIV-01 404 vs 403 leak</td><td>Info disclosure</td><td><span class="sev sev-low">LOW</span></td><td>No</td><td>Post-launch: unify to 403 &ldquo;not accessible&rdquo;</td></tr>
+              <tr><td>NAV-01 /jobs nav missing</td><td>UX defect</td><td><span class="sev sev-low">LOW</span></td><td>No</td><td>1-line fix: wrap with DashboardLayout</td></tr>
+              <tr><td>DOC-TAB-01 inline docs</td><td>UX polish</td><td><span class="sev sev-low">LOW</span></td><td>No</td><td>Post-launch: dedicated Documents tab</td></tr>
+              <tr><td>Item #9 phantom migrations</td><td>Root-cause open</td><td><span class="sev sev-low">LOW</span></td><td>No</td><td>Await Supabase diagnosis (remediated for launch)</td></tr>
+              <tr><td>Post-launch live UAT gaps</td><td>Observability</td><td><span class="sev sev-low">LOW</span></td><td>No</td><td>Re-verify with real organic data</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Launch blocker -->
+        <div class="concern-group">
+          <div class="cg-head"><h3>Launch blocker</h3></div>
+          <div class="concern">
+            <div class="c-head"><span class="c-id">PEND-01 &mdash; Stripe live-mode key swap</span><span class="sev sev-blocker">BLOCKER</span><span class="c-blocks">blocks v2.0 close</span></div>
+            <p>Prevents any real paid placement charge. Production runs sandbox Stripe keys (<code>sk_test_*</code> / <code>pk_test_*</code>) and the live webhook endpoint is unregistered; Phase 18.1 SC-2 is PARTIAL (all 6 config checks pass in test mode only).</p>
+            <p class="c-fix"><strong>Resolution:</strong> rotate <code>STRIPE_SECRET_KEY</code> &rarr; <code>sk_live_*</code>, register webhook <code>.../functions/v1/stripe-webhook</code> in the live dashboard, copy the live signing secret to <code>STRIPE_WEBHOOK_SECRET</code>, rotate <code>VITE_STRIPE_PUBLISHABLE_KEY</code> + redeploy Vercel, run a $0.50 smoke charge &rarr; webhook fires &rarr; refund, then flip SC-2 to PASS. Affects <span class="path">supabase/functions/stripe-webhook/index.ts</span>.</p>
+          </div>
+        </div>
+
+        <!-- Infrastructure debt -->
+        <div class="concern-group">
+          <div class="cg-head"><h3>Infrastructure debt (blocked on platform-side issues)</h3></div>
+          <div class="concern">
+            <div class="c-head"><span class="c-id">&sect;6 Pooler auth &mdash; DB password not persisting</span><span class="sev sev-high">HIGH</span><span class="c-blocks">blocks migrations CI</span></div>
+            <p>10+ consecutive CI migrations jobs failed since 2026-05-02 with <code>FATAL: password authentication failed (28P01)</code>. Studio password reset is accepted in the UI but does not persist server-side to <code>pg_authid</code> (confirmed twice). A CLAUDE &sect;6 enumeration sweep ruled out all client-side misconfiguration &mdash; conclusively a platform-side issue, not a credential mismatch.</p>
+            <p class="c-fix"><strong>Mitigation (sustainable indefinitely):</strong> migrations job gated to <code>workflow_dispatch</code> (commit <code>c30a867</code>); migrations applied via Supabase Studio SQL Editor; functions deploy independently via <code>--use-api</code> (PAT, not pooler). <strong>Resolution:</strong> Supabase support ticket &rarr; validate password locally &rarr; update GH secret &rarr; re-enable CI gate.</p>
+          </div>
+          <div class="concern">
+            <div class="c-head"><span class="c-id">Migration registry 018&ndash;022 timestamp/filename drift</span><span class="sev sev-med">MEDIUM</span><span class="c-blocks">blocks CI re-enable</span></div>
+            <p>5 rows in <code>supabase_migrations.schema_migrations</code> carry timestamp-style versions (e.g. <code>20260428043338</code>) that don't match on-disk filename prefixes (<code>018</code>&ndash;<code>022</code>). The CLI's <code>GetMigrationFile()</code> globs <code>migrations/&lt;version&gt;_*.sql</code> and errors &ldquo;Remote migration versions not found in local migrations directory.&rdquo; Harmless while CI is gated.</p>
+            <p class="c-fix"><strong>Resolution:</strong> a one-off Studio SQL transaction deletes the 5 timestamp rows and re-inserts <code>018</code>&ndash;<code>022</code> with filename-matching versions, then update the workflow header comment.</p>
+          </div>
+        </div>
+
+        <!-- Security workarounds -->
+        <div class="concern-group">
+          <div class="cg-head"><h3>Security workarounds (legacy HS256 JWT limitation)</h3></div>
+          <div class="concern">
+            <div class="c-head"><span class="c-id">X-Webhook-Secret defence-in-depth</span><span class="sev sev-med">MEDIUM</span><span class="c-blocks">notify-job-filled + send-followup-emails</span></div>
+            <p>Both functions run with <code>verify_jwt: false</code> because the gateway uses legacy HS256 signing for service-role JWTs and rejects them when <code>verify_jwt: true</code> (the BFIX-05 HS256/ES256 asymmetry). Instead they validate a shared <code>X-Webhook-Secret</code> header, injected by the <code>on_job_filled</code> trigger from <code>vault.decrypted_secrets.webhook_secret</code> (migration 029). Weaker than asymmetric signing and adds rotation overhead.</p>
+            <p class="c-fix"><strong>Plan for removal (Item #16, dedicated phase):</strong> migrate the project JWT signing from legacy HS256 to ES256/JWKS, then flip both functions to <code>verify_jwt: true</code>, remove the header validation/injection chain, and decommission the vault secret. Wide blast radius (all service-role usage).</p>
+          </div>
+          <div class="concern">
+            <div class="c-head"><span class="c-id">Gateway-trust JWT pattern (verify_jwt=true fns)</span><span class="sev sev-low">PATTERN</span><span class="c-blocks">prevents regressions</span></div>
+            <p>Not a bug &mdash; a critical pattern. With <code>verify_jwt: true</code>, the gateway validates the signature upstream; functions must decode the JWT payload locally (<code>sub</code>, <code>aud === 'authenticated'</code>) rather than calling <code>adminClient.auth.getUser(token)</code>, which rejects valid ES256 tokens. Codified in CLAUDE.md &sect;5; correctly used in <span class="path">get-applicant-document-url/index.ts:79-98</span> and <code>send-document-status-email</code>. Any new function copying the rejected pattern breaks identically &mdash; guarded by a static-source regression test.</p>
+          </div>
+        </div>
+
+        <!-- Security hardening gaps -->
+        <div class="concern-group">
+          <div class="cg-head"><h3>Security hardening gaps</h3></div>
+          <div class="concern">
+            <div class="c-head"><span class="c-id">CORS-01 &mdash; wildcard Allow-Origin</span><span class="sev sev-low">LOW</span></div>
+            <p>Privacy-critical Edge Functions return <code>Access-Control-Allow-Origin: '*'</code>. Safe today because authorization (role, relationship, identity exclusion) is enforced in the handler &mdash; the CORS header doesn't grant access. Post-launch: scope to the stable production domain + <code>localhost:5173</code>.</p>
+          </div>
+          <div class="concern">
+            <div class="c-head"><span class="c-id">PRIV-01 &mdash; 404 vs 403 existence leak</span><span class="sev sev-low">LOW</span></div>
+            <p>In <span class="path">get-applicant-document-url/index.ts</span>, an existing-but-unowned UUID returns 404 (&ldquo;Application not found&rdquo;) and an unowned-job UUID returns 403, technically leaking existence. Low risk because application/document UUIDs are not enumerable. Post-launch: unify both to <code>403 &ldquo;Document not accessible&rdquo;</code>.</p>
+          </div>
+        </div>
+
+        <!-- UX gaps -->
+        <div class="concern-group">
+          <div class="cg-head"><h3>Navigation &amp; UX gaps (post-launch polish)</h3></div>
+          <div class="concern">
+            <div class="c-head"><span class="c-id">NAV-01 &mdash; /jobs missing nav wrapper</span><span class="sev sev-low">LOW</span></div>
+            <p><span class="path">src/pages/jobs/JobSearch.tsx</span> is routed bare in <span class="path">src/main.tsx</span>, so <code>/jobs</code> shows no top-level nav. 1-line fix: wrap with <code>&lt;DashboardLayout hideSidebar&gt;</code> or render <code>&lt;Nav /&gt;</code> at the top of the component.</p>
+          </div>
+          <div class="concern">
+            <div class="c-head"><span class="c-id">DOC-TAB-01 &mdash; ApplicantDocuments rendered inline</span><span class="sev sev-low">LOW</span></div>
+            <p>Documents render inline within the applicant CV tab in <span class="path">ApplicantPanel.tsx</span> (matches the Phase 14-03 plan and ships with launch). Post-launch: promote to a dedicated &ldquo;Documents&rdquo; tab alongside CV / Status &amp; Notes / Match.</p>
+          </div>
+        </div>
+
+        <!-- Migration hygiene -->
+        <div class="concern-group">
+          <div class="cg-head"><h3>Migration hygiene</h3></div>
+          <div class="concern">
+            <div class="c-head"><span class="c-id">Item #9 &mdash; phantom-applied migrations 011&ndash;014</span><span class="sev sev-low">LOW</span><span class="c-blocks">root cause open</span></div>
+            <p>Migrations 011&ndash;014 exist in the registry but their schema objects were missing in production &mdash; surfacing as UXBUG-01, HOMEBUG-01, HOMEBUG-02. All symptoms were remediated via Studio SQL applies (BLOCK 1/2/3, 2026-05-03) and the bugs are closed. The root cause is unconfirmed (pattern consistent with a snapshot restore pre-dating the 015 commit, with registry rows preserved separately); an open Supabase support ticket tracks it. Full forensics: <span class="path">.planning/DRIFT-AUDIT-2026-05-03.md</span>.</p>
+          </div>
+        </div>
+
+        <!-- Post-launch UAT -->
+        <div class="concern-group">
+          <div class="cg-head"><h3>Post-launch verification gaps (observability)</h3></div>
+          <div class="concern">
+            <div class="c-head"><span class="c-id">Live UAT re-verification with real data</span><span class="sev sev-low">LOW</span></div>
+            <p>Code-side fixes (HOMEBUG-02/03, UXBUG-01) were verified against limited test data &mdash; 0 featured/premium jobs, 1 UAT job behind RLS, a pre-existing employer profile. Four flows need re-verification once organic data populates production:</p>
+            <ul style="margin-bottom:4px;">
+              <li>Accommodation filter end-to-end with ~5 real employer jobs with varied <code>accommodation_extras</code>.</li>
+              <li>Home page featured listings once ~3 employers buy featured/premium tiers.</li>
+              <li>Cold-start / empty-state UX for seekers (no-results, first-session defaults, low job counts).</li>
+              <li>Employer onboarding accommodation flow (Step 4 &rarr; Step 7) across ~3 real signups.</li>
+            </ul>
+            <p class="c-fix">Execute against the first batch of real signups; record findings in <span class="path">.planning/POST-LAUNCH-UAT.md</span>. Any regression is treated as a new bug, not a re-opened item.</p>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <p>
+          Generated <strong>2026-05-29</strong>. Derived from the codebase map in
+          <span class="path">.planning/codebase/</span> (STACK, INTEGRATIONS, ARCHITECTURE, STRUCTURE, CONVENTIONS,
+          TESTING, CONCERNS) plus <span class="path">.planning/PROJECT.md</span>, <span class="path">.planning/ROADMAP.md</span>,
+          and <span class="path">.planning/REQUIREMENTS.md</span>.
+        </p>
+        <p>
+          This is a point-in-time snapshot. <strong>Regenerate after significant changes</strong> &mdash; new phases,
+          dependency upgrades, schema migrations, or resolution of the concerns above. This document is fully
+          self-contained (no external fonts, CDNs, or network dependencies) and renders correctly offline from
+          <code>file://</code>.
+        </p>
+      </footer>
+
+    </div>
+  </main>
+</div>
+
+<script>
+  // Vanilla active-section highlight on scroll. The page is fully readable/usable
+  // with JS disabled; this is progressive enhancement only.
+  (function () {
+    var links = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+    var map = {};
+    links.forEach(function (a) {
+      var id = a.getAttribute('href').slice(1);
+      var el = document.getElementById(id);
+      if (el) map[id] = a;
+    });
+    var sections = Object.keys(map).map(function (id) { return document.getElementById(id); });
+
+    function onScroll() {
+      var pos = window.scrollY + 120;
+      var current = sections[0];
+      for (var i = 0; i < sections.length; i++) {
+        if (sections[i].offsetTop <= pos) current = sections[i];
+      }
+      links.forEach(function (a) { a.classList.remove('active'); });
+      if (current && map[current.id]) map[current.id].classList.add('active');
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    onScroll();
+  })();
+</script>
+</body>
+</html>
