@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: executing
-stopped_at: Completed 23-00-test-scaffold-PLAN.md
-last_updated: "2026-05-29T12:39:44.335Z"
+stopped_at: "Checkpoint: Task 3 of 23-01-migration-and-repoint-PLAN.md — awaiting Studio apply"
+last_updated: "2026-05-29T12:47:16.240Z"
 progress:
   total_phases: 19
   completed_phases: 11
   total_plans: 58
-  completed_plans: 57
+  completed_plans: 58
 ---
 
 # Project State
@@ -199,6 +199,7 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 22-01]: Diagnose-before-fix discipline (CLAUDE §3) executed inside atomic commit — Task 1 inserted `console.error('[SIGNUP-01]', ...)` and Task 3 removed it within commit 0e8c3a5. The diagnostic empirically captured AuthError shape during Wave 0 spec verification (`message="Unable to validate email address: invalid format", name="AuthError", status=400`), confirming Hypothesis A and ruling out Hypothesis B. Hypothesis-confirmation captured in SUMMARY narrative, not source — no permanent debug noise.
 - [Phase 22-01]: REQUIREMENTS.md SIGNUP-01 stays `[ ]` per CLAUDE §7 partial-close discipline — Wave 1 closes the spec-level gap (Wave 0 spec RED→GREEN); Wave 2 plan 22-04 Step 1 must capture empirical prod proof of >10s toast persistence + X dismiss affordance before requirement flips. Precedent: Phase 15 MAIL-02 deferred-flip after deploy-gap-only closure.
 - [Phase 23-00]: Wave 0 scaffold-first (23-00): 4 test files encode all 8 Phase 23 requirement acceptance criteria (TAX-01..05, ANLY-01..03) before any implementation. COMPETENCIES array (24 names verbatim from CONTEXT.md) + it.each pattern; vi.hoisted RTL mock for AdminSkillCoverage; readFileSync static-source-guard for migration/SkillsPicker/sidebar/union. RED state = Wave 0 success.
+- [Phase 23]: Migration 034 + SkillsPicker re-point authored together before live apply — coupling constraint honored (Research Pitfall 1)
 
 ### Blockers/Concerns
 
@@ -220,7 +221,7 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-29T12:39:38.969Z
-Stopped at: Completed 23-00-test-scaffold-PLAN.md
+Last session: 2026-05-29T12:47:06.213Z
+Stopped at: Checkpoint: Task 3 of 23-01-migration-and-repoint-PLAN.md — awaiting Studio apply
 Resume file: None
 Next operator action: Run `/gsd:plan-phase 23` to begin Phase 23 (Skills Taxonomy Consolidation + Admin Analytics). Then after Phase 23 ships: execute PEND-01 9-item checklist in `.planning/DECISIONS-PENDING.md §PEND-01` (Stripe live-mode swap → completes v2.0 milestone close) + sales / customer acquisition before resuming Phase 24.

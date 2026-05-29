@@ -310,7 +310,7 @@ Plans:
 | 20.1. Standalone Admin Login Gateway + Account Bootstrap | v2.0 | 5/5 | Complete | 2026-05-05 |
 | 21. v2.0 Close + Post-Launch Ops | 10/10 | Complete    | 2026-05-18 | 2026-05-18 |
 | 22. Pre-Launch P0 Closure | v2.0 | 6/6 | Complete (5 P0s closed + MAIL docs audit 2026-05-26) | 2026-05-26 |
-| 23. Skills Taxonomy Consolidation + Admin Analytics | 1/3 | In Progress|  | — |
+| 23. Skills Taxonomy Consolidation + Admin Analytics | 2/3 | In Progress|  | — |
 | 24. Skills-Gap Analysis | v2.1 | — | ⛔ GATED — real ag-employer liquidity precondition | — |
 | 25. Training Directory + Funding Navigation | v2.1 | — | ⛔ GATED — real ag-employer liquidity precondition | — |
 | 26. Credential / Expiry Tracking | v2.1 | — | ⛔ GATED — real ag-employer liquidity precondition | — |
@@ -454,7 +454,7 @@ Plans:
 **Goal**: Replace the ~40 dairy-heavy skills with ~24 broad ag competencies across 6 categories and stand up admin analytics, giving the platform an agriculture-broad foundation for future skills-gap, training, and credential phases
 **Depends on**: Nothing (independent foundational engineering; does not require v2.0 to be formally archived)
 **Requirements**: TAX-01, TAX-02, TAX-03, TAX-04, TAX-05, ANLY-01, ANLY-02, ANLY-03
-**Plans:** 1/3 plans executed
+**Plans:** 2/3 plans executed
 Plans:
 - [ ] 23-00-test-scaffold-PLAN.md — author the 4 Nyquist guard tests (RED) for migration, SkillsPicker, admin page, sidebar/union
 - [ ] 23-01-migration-and-repoint-PLAN.md — migration 034 (schema redesign + 24-competency reseed + match_scores recompute + admin RPCs + analytics_events) coupled with SkillsPicker/onboarding/job-wizard re-point off skills.sector; Studio-applied
