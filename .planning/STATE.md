@@ -1,16 +1,15 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.1
-milestone_name: Match + Train + Retain
-status: ready_to_plan
-stopped_at: "Roadmap created 2026-05-29. Phase 23 (Skills Taxonomy Consolidation + Admin Analytics) is the active phase — requirements defined, roadmap written, not yet planned. Run /gsd:plan-phase 23 to begin. Phases 24-26 are gated behind real ag-employer liquidity."
-last_updated: "2026-05-29T00:00:00.000Z"
-last_activity: "2026-05-29 — v2.1 roadmap created. Phase 23 in scope (8 active requirements: TAX-01..05 + ANLY-01..03). Phases 24-26 as gated placeholders (GAP-01 / DIR-01 / CRED-01). ROADMAP.md appended with v2.1 section (Phases 23-26). STATE.md updated to ready_to_plan. REQUIREMENTS.md traceability table filled. v2.0 + v2.1 coexist: v2.0 close pending PEND-01 (Stripe live-mode, external op)."
+milestone: v2.0
+milestone_name: Launch Readiness
+status: planning
+stopped_at: Phase 23 context gathered
+last_updated: "2026-05-29T10:29:45.535Z"
 progress:
-  total_phases: 1
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_phases: 19
+  completed_phases: 11
+  total_plans: 55
+  completed_plans: 56
 ---
 
 # Project State
@@ -220,7 +219,7 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-29T00:00:00.000Z
-Stopped at: v2.1 roadmap created. Phase 23 is ready to plan. ROADMAP.md appended, STATE.md updated, REQUIREMENTS.md traceability filled.
-Resume file: None
+Last session: 2026-05-29T10:29:45.525Z
+Stopped at: Phase 23 context gathered
+Resume file: .planning/phases/23-skills-taxonomy-consolidation-admin-analytics/23-CONTEXT.md
 Next operator action: Run `/gsd:plan-phase 23` to begin Phase 23 (Skills Taxonomy Consolidation + Admin Analytics). Then after Phase 23 ships: execute PEND-01 9-item checklist in `.planning/DECISIONS-PENDING.md §PEND-01` (Stripe live-mode swap → completes v2.0 milestone close) + sales / customer acquisition before resuming Phase 24.
