@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
-status: planning
-stopped_at: Phase 23 context gathered
-last_updated: "2026-05-29T10:29:45.535Z"
+status: executing
+stopped_at: Completed 23-00-test-scaffold-PLAN.md
+last_updated: "2026-05-29T12:39:44.335Z"
 progress:
   total_phases: 19
   completed_phases: 11
-  total_plans: 55
-  completed_plans: 56
+  total_plans: 58
+  completed_plans: 57
 ---
 
 # Project State
@@ -23,9 +23,9 @@ See: .planning/PROJECT.md (updated 2026-04-03)
 
 ## Current Position
 
-Phase: v2.1 Phase 23 — Skills Taxonomy Consolidation + Admin Analytics. Ready to plan. Roadmap written 2026-05-29; 8 active requirements (TAX-01..05, ANLY-01..03) mapped to Phase 23. Phases 24-26 are gated placeholders (GAP-01/DIR-01/CRED-01) behind real ag-employer liquidity. v2.0 + v2.1 coexist: v2.0 close pending PEND-01 (Stripe live-mode, external op) — NOT archived.
-Plan: None yet — roadmap complete, ready for /gsd:plan-phase 23
-Status: Ready to plan Phase 23
+Phase: v2.1 Phase 23 — Skills Taxonomy Consolidation + Admin Analytics. In execution.
+Plan: 23-00 complete (test-scaffold). Next: 23-01 (migration + SkillsPicker re-point).
+Status: Executing Phase 23 — plan 00 of 3 complete
 Progress: [░░░░░░░░░░] 0/1 v2.1 phases complete
 
 ### v2.0 close-out summary (Phase 22 complete 2026-05-26)
@@ -198,6 +198,7 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 22-01]: Sonner built-in `{ duration: Infinity, closeButton: true }` chosen over hand-rolled persistent-toast wrapper or modal (per 22-RESEARCH.md §Don't Hand-Roll table row 1) — net +8/-2 lines, zero new dependencies, zero new test surface, zero a11y risk. Applied to BOTH named-error path AND catch fallback to cover Hypothesis A (toast called but auto-dismisses in 4s) and Hypothesis B (signUpWithRole rejects) defence-in-depth with one shape.
 - [Phase 22-01]: Diagnose-before-fix discipline (CLAUDE §3) executed inside atomic commit — Task 1 inserted `console.error('[SIGNUP-01]', ...)` and Task 3 removed it within commit 0e8c3a5. The diagnostic empirically captured AuthError shape during Wave 0 spec verification (`message="Unable to validate email address: invalid format", name="AuthError", status=400`), confirming Hypothesis A and ruling out Hypothesis B. Hypothesis-confirmation captured in SUMMARY narrative, not source — no permanent debug noise.
 - [Phase 22-01]: REQUIREMENTS.md SIGNUP-01 stays `[ ]` per CLAUDE §7 partial-close discipline — Wave 1 closes the spec-level gap (Wave 0 spec RED→GREEN); Wave 2 plan 22-04 Step 1 must capture empirical prod proof of >10s toast persistence + X dismiss affordance before requirement flips. Precedent: Phase 15 MAIL-02 deferred-flip after deploy-gap-only closure.
+- [Phase 23-00]: Wave 0 scaffold-first (23-00): 4 test files encode all 8 Phase 23 requirement acceptance criteria (TAX-01..05, ANLY-01..03) before any implementation. COMPETENCIES array (24 names verbatim from CONTEXT.md) + it.each pattern; vi.hoisted RTL mock for AdminSkillCoverage; readFileSync static-source-guard for migration/SkillsPicker/sidebar/union. RED state = Wave 0 success.
 
 ### Blockers/Concerns
 
@@ -219,7 +220,7 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-29T10:29:45.525Z
-Stopped at: Phase 23 context gathered
-Resume file: .planning/phases/23-skills-taxonomy-consolidation-admin-analytics/23-CONTEXT.md
+Last session: 2026-05-29T12:39:38.969Z
+Stopped at: Completed 23-00-test-scaffold-PLAN.md
+Resume file: None
 Next operator action: Run `/gsd:plan-phase 23` to begin Phase 23 (Skills Taxonomy Consolidation + Admin Analytics). Then after Phase 23 ships: execute PEND-01 9-item checklist in `.planning/DECISIONS-PENDING.md §PEND-01` (Stripe live-mode swap → completes v2.0 milestone close) + sales / customer acquisition before resuming Phase 24.

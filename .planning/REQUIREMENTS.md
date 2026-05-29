@@ -223,14 +223,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DOC-QUEUE-04 | Phase 21-08 | Complete (Documents Verified badge surfaces on employer ApplicantPanel; UAT 2) |
 | DOC-QUEUE-BADGE-SURFACE-01 | Phase 21-08 | Complete (DocumentsVerifiedBadge component + Scenario B head-count integration; 5/5 tests GREEN; UAT 2) |
 
-| TAX-01 | Phase 23 | Pending |
-| TAX-02 | Phase 23 | Pending |
-| TAX-03 | Phase 23 | Pending |
-| TAX-04 | Phase 23 | Pending |
-| TAX-05 | Phase 23 | Pending |
-| ANLY-01 | Phase 23 | Pending |
-| ANLY-02 | Phase 23 | Pending |
-| ANLY-03 | Phase 23 | Pending |
+| TAX-01 | Phase 23 | Complete |
+| TAX-02 | Phase 23 | Complete |
+| TAX-03 | Phase 23 | Complete |
+| TAX-04 | Phase 23 | Complete |
+| TAX-05 | Phase 23 | Complete |
+| ANLY-01 | Phase 23 | Complete |
+| ANLY-02 | Phase 23 | Complete |
+| ANLY-03 | Phase 23 | Complete |
 | GAP-01 | Phase 24 (GATED) | Pending — gated behind real ag-employer liquidity |
 | DIR-01 | Phase 25 (GATED) | Pending — gated behind real ag-employer liquidity |
 | CRED-01 | Phase 26 (GATED) | Pending — gated behind real ag-employer liquidity |
