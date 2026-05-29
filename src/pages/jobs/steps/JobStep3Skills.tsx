@@ -98,7 +98,6 @@ export function JobStep3Skills({ jobId, sector, onComplete, onBack, defaultValue
       </div>
 
       <SkillsPicker
-        sector={sector as 'dairy' | 'sheep_beef'}
         selectedSkills={selectedSkills}
         onChange={setSelectedSkills}
         requirementMode={true}

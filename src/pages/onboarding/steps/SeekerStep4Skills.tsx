@@ -12,19 +12,10 @@ interface SeekerStep4Props {
   sectorPref?: string[]
 }
 
-function getSector(sectorPref?: string[]): 'dairy' | 'sheep_beef' {
-  if (!sectorPref || sectorPref.length === 0) return 'dairy'
-  // If only sheep_beef selected, show sheep_beef skills; otherwise default to dairy
-  if (sectorPref.length === 1 && sectorPref[0] === 'sheep_beef') return 'sheep_beef'
-  return 'dairy'
-}
-
 export function SeekerStep4Skills({ onComplete, onBack, seekerId, sectorPref }: SeekerStep4Props) {
   const [selectedSkills, setSelectedSkills] = useState<SelectedSkill[]>([])
   const [saving, setSaving] = useState(false)
   const [loadingSkills, setLoadingSkills] = useState(false)
-
-  const sector = getSector(sectorPref)
 
   // Load existing seeker skills on mount if seekerId is available
   useEffect(() => {
@@ -123,7 +114,6 @@ export function SeekerStep4Skills({ onComplete, onBack, seekerId, sectorPref }: 
       </div>
 
       <SkillsPicker
-        sector={sector}
         selectedSkills={selectedSkills}
         onChange={setSelectedSkills}
         requirementMode={false}

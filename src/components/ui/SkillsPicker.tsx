@@ -6,7 +6,6 @@ import { cn } from '@/lib/utils'
 import type { Skill, SelectedSkill, SkillProficiency } from '@/types/domain'
 
 interface SkillsPickerProps {
-  sector: 'dairy' | 'sheep_beef'
   selectedSkills: SelectedSkill[]
   onChange: (skills: SelectedSkill[]) => void
   /**
@@ -18,6 +17,15 @@ interface SkillsPickerProps {
 }
 
 type RequirementLevel = 'required' | 'preferred'
+
+const CATEGORY_LABELS: Record<string, string> = {
+  livestock: 'Livestock',
+  cropping_agronomy: 'Cropping & agronomy',
+  machinery_equipment: 'Machinery & equipment',
+  farm_operations_infrastructure: 'Farm operations & infrastructure',
+  management_business: 'Management & business',
+  cross_cutting: 'Cross-cutting',
+}
 
 const PROFICIENCY_OPTIONS = [
   { value: 'basic', label: 'Basic' },
@@ -32,11 +40,10 @@ const REQUIREMENT_OPTIONS = [
 
 /**
  * Skills picker with grouped checklist by category.
- * Loads skills from Supabase filtered by sector (includes 'both' sector skills).
+ * Loads all agriculture-discipline skills from Supabase (ag-broad taxonomy v2).
  * Each checked skill shows a proficiency dropdown (or required/preferred in requirementMode).
  */
 export function SkillsPicker({
-  sector,
   selectedSkills,
   onChange,
   requirementMode = false,
@@ -56,7 +63,7 @@ export function SkillsPicker({
       const { data, error: fetchError } = await supabase
         .from('skills')
         .select('*')
-        .or(`sector.eq.${sector},sector.eq.both`)
+        .eq('discipline', 'agriculture')
         .order('category')
         .order('name')
 
@@ -75,7 +82,7 @@ export function SkillsPicker({
     return () => {
       cancelled = true
     }
-  }, [sector])
+  }, [])
 
   // Group skills by category
   const grouped = skills.reduce<Record<string, Skill[]>>((acc, skill) => {
@@ -119,7 +126,7 @@ export function SkillsPicker({
   if (Object.keys(grouped).length === 0) {
     return (
       <div className={cn('py-4 text-[13px] font-body text-text-muted', className)}>
-        No skills available for this sector.
+        No skills available.
       </div>
     )
   }
@@ -130,7 +137,7 @@ export function SkillsPicker({
         <div key={category}>
           {/* Category header */}
           <h4 className="text-[11px] font-body font-semibold text-text-muted uppercase tracking-wide mb-2.5">
-            {category.replace(/_/g, ' ')}
+            {CATEGORY_LABELS[category] ?? category.replace(/_/g, ' ')}
           </h4>
 
           <div className="space-y-2">
