@@ -47,6 +47,21 @@ Full details: `.planning/milestones/v1.1-ROADMAP.md`
 - [x] **Phase 20: Super Admin Dashboard** — Internal-only `/admin/*` panel for daily briefing, employer/seeker lists, placement-fee pipeline, platform health (completed 2026-05-05; see 20-VERIFICATION.md PASS verdict — 22/22 test IDs PASS, 12/12 must-haves PASS; carryforwards to Phase 20.1 documented)
 - [x] **Phase 20.1: Standalone Admin Login Gateway + Account Bootstrap** — completed 2026-05-05 (see 20.1-VERIFICATION.md PASS verdict — 7/7 CF-IDs PASS; CF-AUTH-2 carries documented runtime AccessDenied caveat — recommend fresh-session post-deploy re-verify)
 - [x] **Phase 21: v2.0 Close + Post-Launch Ops** — completed 2026-05-18 (all 10 plans shipped: Track A v2.0 closeout operator UAT + Track B post-launch ops features). Track B: `is_active` login-blocking gate (suspended users see `/suspended` page instead of broken dashboard; re-activation via admin ProfileDrawer toggle) + doc verification queue at `/admin/documents` (admin reviews seeker docs with Approve/Reject-with-reason/Request-More-Info actions; Documents Verified badge visible to employers on applicant cards after approval). Track A: 5/5 visual smoke tests PASS (closes 4 Phase 18.2 + 1 Phase 20.1 human-verification gates) + 5/5 Track B UATs PASS + 2 Edge Functions deployed with HTTP/2 200 smokes. Plan 21-09 Task 2 (PEND-01 Stripe live-mode swap) DEFERRED to separate session per operator decision 2026-05-18; Task 6 (`/gsd:complete-milestone v2.0`) BLOCKED on PEND-01 closure — see `.planning/phases/21-v20-close-post-launch-ops/21-VERIFICATION.md` Verdict for full disposition.
+- [x] **Phase 22: Pre-Launch P0 Closure** — 5 P0 launch blockers (SIGNUP-01 toast, HOMEBUG-02 listing query, HOMEBUG-03 accommodation filter, HOMEBUG-01 stats prod confirm, UXBUG-01 chips prod confirm) + MAIL-01/02 docs audit (completed 2026-05-26; see `.planning/phases/22-pre-launch-p0-closure/`)
+
+### v2.1 Match + Train + Retain (Current Milestone)
+
+**Milestone Goal:** Begin delivering the train + retain brand pillars by cleaning up the skills taxonomy for agriculture-broad matching and standing up admin analytics. Phase 23 is in active scope now; Phases 24-26 are gated behind real ag-employer liquidity.
+
+**Coexistence note:** v2.0 milestone close is pending PEND-01 (Stripe live-mode swap, an external operator action). v2.0 is NOT archived. v2.1 Phase 23 proceeds independently.
+
+Full scope + gate criteria: `.planning/v2.1-MILESTONE-SCOPING.md`
+
+- [ ] **Phase 23: Skills Taxonomy Consolidation + Admin Analytics** — Consolidate ~40 dairy-heavy skills into ~24 broad ag competencies across 6 categories; redesign `skills.sector` schema; migrate existing data; stand up admin skill-coverage analytics (IN SCOPE NOW)
+- ⛔ **Phase 24: Skills-Gap Analysis** — GATED — behind real ag-employer liquidity (see scoping doc)
+- ⛔ **Phase 25: Training Directory + Funding Navigation** — GATED — behind real ag-employer liquidity (see scoping doc)
+- ⛔ **Phase 26: Credential / Expiry Tracking** — GATED — behind real ag-employer liquidity (see scoping doc)
+
 
 ## Phase Details
 
@@ -294,6 +309,11 @@ Plans:
 | 20. Super Admin Dashboard | v2.0 | 8/8 | Complete | 2026-05-05 |
 | 20.1. Standalone Admin Login Gateway + Account Bootstrap | v2.0 | 5/5 | Complete | 2026-05-05 |
 | 21. v2.0 Close + Post-Launch Ops | 10/10 | Complete    | 2026-05-18 | 2026-05-18 |
+| 22. Pre-Launch P0 Closure | v2.0 | 6/6 | Complete (5 P0s closed + MAIL docs audit 2026-05-26) | 2026-05-26 |
+| 23. Skills Taxonomy Consolidation + Admin Analytics | v2.1 | 0/? | Not started | — |
+| 24. Skills-Gap Analysis | v2.1 | — | ⛔ GATED — real ag-employer liquidity precondition | — |
+| 25. Training Directory + Funding Navigation | v2.1 | — | ⛔ GATED — real ag-employer liquidity precondition | — |
+| 26. Credential / Expiry Tracking | v2.1 | — | ⛔ GATED — real ag-employer liquidity precondition | — |
 
 ### Phase 20.1: Standalone Admin Login Gateway + Account Bootstrap (INSERTED)
 
@@ -429,3 +449,48 @@ Plans:
 - [ ] 22-03-homebug-03-accommodation-filter-PLAN.md — Wave 1: HOMEBUG-03 Layer 2 remap lookup (JobSearch.tsx ACCOMMODATION_FILTER_TO_DB)
 - [ ] 22-04-p0-prod-smoke-PLAN.md — Wave 2: STOP gate + push to main + 5 operator UAT smokes + REQUIREMENTS.md closure flips
 - [ ] 22-05-mail-docs-audit-PLAN.md — Wave 3: MAIL-01/02 docs audit (NOT E2E re-fire per research §6)
+
+### Phase 23: Skills Taxonomy Consolidation + Admin Analytics
+**Goal**: Replace the ~40 dairy-heavy skills with ~24 broad ag competencies across 6 categories and stand up admin analytics, giving the platform an agriculture-broad foundation for future skills-gap, training, and credential phases
+**Depends on**: Nothing (independent foundational engineering; does not require v2.0 to be formally archived)
+**Requirements**: TAX-01, TAX-02, TAX-03, TAX-04, TAX-05, ANLY-01, ANLY-02, ANLY-03
+**Plans:** TBD
+**Success Criteria** (what must be TRUE):
+  1. A seeker completing onboarding can self-assess against the new ~24 competencies (grouped into 6 categories: Livestock; Cropping & agronomy; Machinery & equipment; Farm operations & infrastructure; Management & business; Cross-cutting) — the old dairy-heavy skill list is no longer presented
+  2. An employer posting a job can tag it with the new ag-broad competencies in the posting wizard — DairyNZ qualification levels are no longer in the competency picker
+  3. An admin can view skill-coverage analytics showing which competencies seekers hold versus which jobs require, surfacing supply/demand gaps at the platform level, along with per-competency usage counts (how many seekers and how many jobs reference each competency)
+  4. Existing seeker skill selections, job skill tags, and match scores are migrated to the new taxonomy with no orphaned references — match scores are recomputed against the new competency set
+  5. A reusable analytics event-logging foundation (generic event table + admin surface) exists so later phases can record directory views, gap-prompt impressions, and lead events without new infrastructure
+**Notes**:
+  - `skills.sector` CHECK constraint (`dairy`/`sheep_beef`/`both`) must be dropped or redesigned — ag-broad skills (cropping, agronomy, ag mechanics) do not fit those three values. Likely: make `category` the primary axis (the 6 categories), either drop `sector` or repurpose as a coarse discipline tag. Decision made during planning.
+  - Migration is near-trivial in data terms: prod state 2026-05-29 shows `seeker_skills`=12 test rows, `job_skills`=0, `match_scores`=3. No production signal to preserve — correctness and documentation matter, not zero-downtime complexity.
+  - Old→new mapping classes: consolidate (many dairy skills → single competency), net-new (all crop/agronomy skills have no current equivalent), relocate (DairyNZ Level 1-5 move to credential/qualification tracking for Phase 26, not carried into competency taxonomy), drop/fold (Effluent system management → General farm maintenance or Irrigation & water systems).
+  - Full ~24 competency target list, 6 categories, and migration mapping detail: `.planning/v2.1-MILESTONE-SCOPING.md §Phase 23`
+  - Zero-added-cost constraint: only existing Supabase tables/RLS/RPC patterns; no new SaaS, no LLM calls for gap analysis (pure SQL set difference).
+
+### Phase 24: Skills-Gap Analysis (match → train bridge)
+**Goal**: Surface which required competencies a seeker is missing for a given job, with links to relevant training
+
+> ⛔ **GATED — behind real ag-employer liquidity; full spec + success criteria deferred until gate opens (see `.planning/v2.1-MILESTONE-SCOPING.md`)**
+
+**Requirements**: GAP-01
+**Gate criteria**: ≥ N real employer-posted ag jobs in production (N to be decided when the hard-stop window opens). Currently: 1 active job (UAT test), 0 paid listings, 0 `job_skills` rows. Building gap analysis against an empty marketplace is speculation.
+**Plans:** TBD (deferred until gate opens)
+
+### Phase 25: Training Directory + Funding Navigation
+**Goal**: Allow seekers and employers to browse an admin-curated NZ ag training directory filtered by category, region, and format, with funding context per entry and an "express interest" lead capture
+
+> ⛔ **GATED — behind real ag-employer liquidity; full spec + success criteria deferred until gate opens (see `.planning/v2.1-MILESTONE-SCOPING.md`)**
+
+**Requirements**: DIR-01
+**Gate criteria**: Same as Phase 24 — real ag-employer liquidity. Phase 25 also depends on Phase 23 (categories) and Phase 24 (gap links).
+**Plans:** TBD (deferred until gate opens)
+
+### Phase 26: Credential / Expiry Tracking (retain pillar)
+**Goal**: Allow seekers to record credentials (e.g. GROWSAFE, machinery tickets, DairyNZ levels relocated from Phase 23) with expiry alerts
+
+> ⛔ **GATED — behind real ag-employer liquidity; full spec + success criteria deferred until gate opens (see `.planning/v2.1-MILESTONE-SCOPING.md`)**
+
+**Requirements**: CRED-01
+**Gate criteria**: Same as Phase 24 — real ag-employer liquidity. Phase 26 also depends on Phase 23 (qualification data relocated from taxonomy).
+**Plans:** TBD (deferred until gate opens)

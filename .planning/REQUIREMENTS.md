@@ -223,15 +223,28 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DOC-QUEUE-04 | Phase 21-08 | Complete (Documents Verified badge surfaces on employer ApplicantPanel; UAT 2) |
 | DOC-QUEUE-BADGE-SURFACE-01 | Phase 21-08 | Complete (DocumentsVerifiedBadge component + Scenario B head-count integration; 5/5 tests GREEN; UAT 2) |
 
+| TAX-01 | Phase 23 | Pending |
+| TAX-02 | Phase 23 | Pending |
+| TAX-03 | Phase 23 | Pending |
+| TAX-04 | Phase 23 | Pending |
+| TAX-05 | Phase 23 | Pending |
+| ANLY-01 | Phase 23 | Pending |
+| ANLY-02 | Phase 23 | Pending |
+| ANLY-03 | Phase 23 | Pending |
+| GAP-01 | Phase 24 (GATED) | Pending — gated behind real ag-employer liquidity |
+| DIR-01 | Phase 25 (GATED) | Pending — gated behind real ag-employer liquidity |
+| CRED-01 | Phase 26 (GATED) | Pending — gated behind real ag-employer liquidity |
+
 **Coverage:**
 - v2.0 requirements: 11 total
 - v2.0 internal Phase 21 ops REQ IDs: 19 total (backfilled 2026-05-18)
-- Mapped to phases: 30
+- v2.1 requirements: 11 total (8 active Phase 23 + 3 gated Phases 24-26)
+- Mapped to phases: 41
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-04-02*
-*Last updated: 2026-04-29 — gap closure planning per `/gsd:audit-milestone` v2.0-MILESTONE-AUDIT.md. Reset MAIL-01/MAIL-02/BFIX-02 from `[x]` to `[ ]` and reassigned to gap closure phases: MAIL-01 + MAIL-02 → Phase 15 (Email Pipeline Deploy & Verify), BFIX-02 → Phase 16 (Privacy Bypass Empirical Test). Renumbered Saved Search Phase 15 → Phase 17. Added Phase 18 (Tech Debt Cleanup) per cleanup-pass discipline (drift risks compound; better than v2.1 defer). BFIX-01 + BFIX-03 retained `[x]` (verification PASS; SUMMARY frontmatter cosmetic gap to be addressed in Phase 18).*
+*Last updated: 2026-05-29 — v2.1 requirements added (Phase 23 active: TAX-01..05 + ANLY-01..03; Phases 24-26 gated: GAP-01 / DIR-01 / CRED-01). Traceability table filled for all v2.1 requirements. Previous update: 2026-04-29 — gap closure planning per `/gsd:audit-milestone` v2.0-MILESTONE-AUDIT.md. Reset MAIL-01/MAIL-02/BFIX-02 from `[x]` to `[ ]` and reassigned to gap closure phases: MAIL-01 + MAIL-02 → Phase 15 (Email Pipeline Deploy & Verify), BFIX-02 → Phase 16 (Privacy Bypass Empirical Test). Renumbered Saved Search Phase 15 → Phase 17. Added Phase 18 (Tech Debt Cleanup) per cleanup-pass discipline (drift risks compound; better than v2.1 defer). BFIX-01 + BFIX-03 retained `[x]` (verification PASS; SUMMARY frontmatter cosmetic gap to be addressed in Phase 18).*
 
 *Earlier same-day: closed Phase 14-03 BFIX-02 code (employer document viewer with 5-layer privacy gate; identity hard-filtered at three layers — RLS / Edge Function whitelist / listing-query filter; B.9 privacy bypass test deferred to PRIV-02 — blocker for public launch). Logged BFIX-04 (silent applicants query failure from non-existent column), NAV-02 (broken /applications + /my-applications routes), BFIX-05 (Edge Function `verify_jwt` + service-role `auth.getUser` quirk — pattern check required for all future verify_jwt functions), CORS-01 (scope Allow-Origin post-launch), PRIV-01 (404/403 unification post-launch), DOC-TAB-01 (dedicated docs tab post-launch UX polish). Widened DEPLOY-01 with Edge Function deploy drift (4 functions on disk, none deployed). Earlier same-day: closed Phase 14-02 BFIX-03 (seeker_documents migration + per-file categorization + re-categorize page); logged AUTH-FIX-02 (mitigated symptom of c6066ea 3s timeout) and MCP-QUIRK-01 (Supabase MCP list_tables Zod bug)*
 
