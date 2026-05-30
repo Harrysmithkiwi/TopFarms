@@ -1,16 +1,17 @@
 ---
 phase: 23-skills-taxonomy-consolidation-admin-analytics
 verified: 2026-05-30T00:10:00Z
+updated: 2026-05-30
 status: human_needed
-score: 7/8 must-haves fully verified; 1 requires live smoke test
+score: 7/8 requirements satisfied (TAX-04 wizard smoke tests outstanding)
 requirements:
   TAX-01: flip
   TAX-02: flip
   TAX-03: flip
-  TAX-04: leave  # live smoke test outstanding
+  TAX-04: leave  # wizard live smoke tests outstanding (seeker Step 4 + employer Step 3)
   TAX-05: flip
-  ANLY-01: leave  # live smoke test outstanding + CATEGORY_LABELS bug
-  ANLY-02: leave  # same basis as ANLY-01
+  ANLY-01: flip  # Playwright admin smoke test 17/17 GREEN, 2026-05-30
+  ANLY-02: flip  # same Playwright smoke test
   ANLY-03: flip
 human_verification:
   - test: "Visit /onboarding/seeker as a seeker and complete Step 4 (Skills). Confirm the picker lists ag-broad competencies grouped under the 6 categories (Livestock, Cropping & agronomy, Machinery & equipment, Farm operations & infrastructure, Management & business, Cross-cutting) with no dairy-only or DairyNZ Level rows visible."
@@ -206,3 +207,44 @@ The verifier-flagged CATEGORY_LABELS defect was fixed forward as commit **`b2f6a
 - The 3 live smoke tests below remain outstanding — operator action.
 
 **No change to TAX-01..03/05 + ANLY-03** which already flipped on DB/static evidence and are unaffected by this UI fix.
+
+---
+
+## Smoke-Test Round — ANLY-01 + ANLY-02 (2026-05-30)
+
+The Playwright admin smoke test (`/tmp/playwright-23-admin.js`) was executed against the running dev server (Vite 5173) with the operator authenticated as admin in the Playwright Chromium window. The script navigated to `/admin/skills`, waited for `<AdminTable>` to settle, then ran 17 assertions over the rendered DOM.
+
+**Result: 17/17 PASSED.** ANLY-01 + ANLY-02 are now **§7-satisfied** end-to-end (DB → RPC → AdminTable → DOM).
+
+### What landed before the smoke test passed
+
+Three latent bugs were discovered during the smoke-test cycle and fixed forward:
+
+| # | Bug | Layer | Caught by | Fix |
+|---|-----|-------|-----------|-----|
+| 1 | `CATEGORY_LABELS` map invented 4 keys (`crops_horticulture`, `farm_management`, `compliance_safety`, `land_environment`) that did not exist in the live enum — 4 of 6 categories rendered raw underscore slugs | Frontend | Verifier (post-Wave 2) | `b2f6a30` — corrected keys + RTL regression guard mocking all 6 categories |
+| 2 | `AdminTable` always sent `{p_limit, p_offset}` but `admin_skill_coverage()` is parameterless — PostgREST signature mismatch surfaced as "Failed to load skill coverage" | Frontend (contract) | Playwright run + browser console (PostgREST 42883) | `fb0af7f` — `paginated?: boolean` prop on AdminTable; AdminSkillCoverage opts out; regression test asserts args object lacks `p_limit`/`p_offset` |
+| 3 | Migration 034 RPC bodies called `row_to_jsonb(t)` — a Postgres function that **does not exist** (only `row_to_json` and `to_jsonb` do). Latent in both `admin_skill_coverage` AND `admin_list_analytics_events` | Database (function body) | Playwright run + browser console (Postgres 42883) after Bug 2 fix unblocked the call | `5ca75c6` — migration 035 recreates both RPCs with `to_jsonb(t)`; new two-tier `DO $verify$` (text + executable) closes the structural gap |
+
+### Why Wave 0 missed all three
+
+- **RTL guard mocks `supabase.rpc`** — never exercises the real Postgres signature or function body.
+- **Static-source-guard pattern-checks** the migration text — does not cross-reference referenced Postgres functions against the actual catalog.
+- **Migration `DO $verify$` checks schema presence** (tables, columns, RPC existence, SECURITY DEFINER flag) — does not invoke the RPCs.
+
+The structural gap is captured as a deferred follow-up: **ANLY-VERIFY-01** — "Migration `DO $verify$` blocks should invoke SECURITY DEFINER RPCs as a smoke test, not just assert schema presence — text-only assertions cannot catch invalid function-name calls (035 `row_to_jsonb` precedent)." Migration 035's `DO $verify$` block partially closes this by running the exact aggregation SQL inline (executable-tier) rather than relying solely on `prosrc` text checks (text-tier). Future admin RPCs should follow that two-tier pattern.
+
+### Live post-state confirmation (read-only MCP, 2026-05-30 after 035 apply)
+
+| Check | Expected | Actual |
+|---|---|---|
+| `admin_skill_coverage` body has `to_jsonb`, no `row_to_jsonb` | true | **true** ✓ |
+| `admin_list_analytics_events` body has `to_jsonb`, no `row_to_jsonb` | true | **true** ✓ |
+| Both RPCs SECURITY DEFINER | true | **true** ✓ |
+| Executable aggregation returns 24 rows | 24 | **24** ✓ |
+| `list_migrations` shows 035 | present | **present** (`035 = 035_admin_rpc_jsonb_fix`) ✓ |
+| Playwright smoke test against `/admin/skills` | all assertions pass | **17/17** ✓ |
+
+### Remaining gates
+
+- **TAX-04**: live render of both wizard skill steps (seeker onboarding Step 4 + job posting Step 3) still outstanding. The SkillsPicker component re-pointed off `skills.sector` is statically verified (Wave 0 guard 5/5 GREEN) and the same component is consumed via AdminTable's underlying skills query in the admin smoke test (indirect evidence). Direct wizard smoke tests are pending — see follow-up question to operator.
