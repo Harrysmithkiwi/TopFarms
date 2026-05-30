@@ -306,13 +306,21 @@ export function EmployerOnboarding() {
           )}
 
           {currentStep === 7 && (
-            <Step8Complete profileData={{
-              farm_name: profileData.farm_name,
-              region: profileData.region,
-              farm_types: profileData.farm_types,
-              accommodation_available: profileData.accommodation_available,
-              about_farm: profileData.about_farm,
-            }} />
+            <Step8Complete
+              // ONBOARD-EMP-CTA-01: Step 8 finalizes onboarding (writes
+              // onboarding_complete=true via handleStepComplete on mount).
+              // Without this, the wizard reaches the "complete!" screen but the
+              // DB flag stays false, and PostJob.tsx:127 traps the user with
+              // "Complete your farm profile first" → infinite loop.
+              onComplete={() => handleStepComplete({}, 7)}
+              profileData={{
+                farm_name: profileData.farm_name,
+                region: profileData.region,
+                farm_types: profileData.farm_types,
+                accommodation_available: profileData.accommodation_available,
+                about_farm: profileData.about_farm,
+              }}
+            />
           )}
         </div>
       </div>

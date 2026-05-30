@@ -124,6 +124,17 @@ export function PostJob() {
 
       if (profile) {
         if (!profile.onboarding_complete) {
+          // ONBOARD-EMP-CTA-01 self-heal instrumentation. If the user has
+          // walked the wizard to Step 8 (onboarding_step >= 7) but the flag
+          // didn't flip, they're in the pre-fix soft loop. Log loudly so we
+          // notice any persistence regression of the finalize effect.
+          if ((profile.onboarding_step ?? 0) >= 7) {
+            console.warn(
+              `[ONBOARD-EMP-CTA-01] employer_profile=${profile.id} hit /jobs/new gate with ` +
+                `onboarding_step=${profile.onboarding_step} but onboarding_complete=false. ` +
+                `Step8Complete finalize effect may have regressed — soft loop imminent.`,
+            )
+          }
           toast.error('Complete your farm profile first')
           navigate('/onboarding/employer')
           return

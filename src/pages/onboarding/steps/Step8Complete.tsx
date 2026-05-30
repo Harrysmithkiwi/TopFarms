@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router'
 import { CheckCircle } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
@@ -10,21 +11,35 @@ interface Step8CompleteProps {
     accommodation_available?: boolean
     about_farm?: string
   }
+  // ONBOARD-EMP-CTA-01: fires once on mount to flip
+  // employer_profiles.onboarding_complete=true via the parent's
+  // handleStepComplete(payload, 7) path. Without this, the user reaches the
+  // completion screen but the DB flag stays false, and PostJob.tsx's gate
+  // ('Complete your farm profile first') traps them in a soft loop.
+  onComplete?: () => void
 }
 
 const CHECKLIST_ITEMS = [
   { label: 'Farm details complete', key: 'farm_name' },
   { label: 'Accommodation details added', key: 'accommodation_available' },
   { label: 'About your farm written', key: 'about_farm' },
-  { label: 'Profile verified', key: 'verified' },
 ]
 
-export function Step8Complete({ profileData }: Step8CompleteProps) {
+export function Step8Complete({ profileData, onComplete }: Step8CompleteProps) {
   const navigate = useNavigate()
+
+  // ONBOARD-EMP-CTA-01 finalize. Ref guard prevents double-fire under React
+  // StrictMode dev re-mount + any future re-render of the parent that would
+  // remount this subtree.
+  const finalizedRef = useRef(false)
+  useEffect(() => {
+    if (finalizedRef.current) return
+    finalizedRef.current = true
+    onComplete?.()
+  }, [onComplete])
 
   function isItemComplete(key: string): boolean {
     if (!profileData) return false
-    if (key === 'verified') return true // assume verified after completing onboarding
     return !!profileData[key as keyof typeof profileData]
   }
 
