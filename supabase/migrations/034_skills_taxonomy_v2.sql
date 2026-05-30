@@ -20,9 +20,9 @@
 -- any post-state assertion fails — a clean run guarantees all invariants.
 --
 -- Sections:
---   1. Schema alterations (drop sector constraint/column, add discipline + category CHECK)
+--   1. Schema alterations (drop sector constraint/column, add discipline; drop OLD category CHECK)
 --   2. Clear existing data (FK-safe order: seeker_skills → match_scores → skills)
---   3. Reseed 24 ag-broad competencies across 6 categories
+--   3. Add NEW category CHECK + reseed 24 ag-broad competencies across 6 categories
 --   4. Recompute match_scores backfill (skills dimension = 0 until seekers re-tag)
 --   5. admin_skill_coverage RPC (ANLY-01 supply vs demand + ANLY-02 usage counts)
 --   6. analytics_events table + admin_list_analytics_events RPC (ANLY-03)
@@ -46,8 +46,35 @@ ALTER TABLE public.skills DROP COLUMN IF EXISTS sector;
 -- NO discipline CHECK constraint per CONTEXT.md decision #3 (verticals add freely).
 ALTER TABLE public.skills ADD COLUMN IF NOT EXISTS discipline text NOT NULL DEFAULT 'agriculture';
 
--- Replace the old category constraint with the 6 ag-broad category slugs
+-- Drop the OLD category CHECK. The NEW category CHECK is added in SECTION 3,
+-- AFTER legacy rows are cleared in SECTION 2. Reason: legacy category values
+-- (milking, qualification-tier, machinery, shearing, mustering, infrastructure,
+-- management) do not match the new 6-slug enum, so adding the new CHECK
+-- before clearing them raises Postgres error 23514.
 ALTER TABLE public.skills DROP CONSTRAINT IF EXISTS skills_category_check;
+
+-- ============================================================
+-- SECTION 2 — Clear existing data
+-- FK-safe order: seeker_skills (FK → skills) first, then match_scores
+-- (no FK to skills but logically coupled to seeker_skills), then skills.
+-- Research Pitfall 2/3: explicit DELETE order avoids FK ambiguity.
+-- This MUST run before the new category CHECK is added (Section 3) so the
+-- CHECK validates only the upcoming reseed, not the legacy non-conforming rows.
+-- ============================================================
+
+DELETE FROM public.seeker_skills;
+DELETE FROM public.match_scores;
+DELETE FROM public.skills;
+
+-- ============================================================
+-- SECTION 3 — Add NEW category CHECK + reseed 24 ag-broad competencies
+-- The new CHECK is added against the empty table (Section 2 cleared all rows)
+-- so it validates only the upcoming INSERT — not the legacy categories.
+-- discipline specified EXPLICITLY on every row (Research Pitfall 5:
+-- do not rely on column DEFAULT in a multi-value INSERT — be explicit).
+-- Names and category slugs are VERBATIM from CONTEXT.md decision #1.
+-- ============================================================
+
 ALTER TABLE public.skills ADD CONSTRAINT skills_category_check
   CHECK (category IN (
     'livestock',
@@ -57,24 +84,6 @@ ALTER TABLE public.skills ADD CONSTRAINT skills_category_check
     'management_business',
     'cross_cutting'
   ));
-
--- ============================================================
--- SECTION 2 — Clear existing data
--- FK-safe order: seeker_skills (FK → skills) first, then match_scores
--- (no FK to skills but logically coupled to seeker_skills), then skills.
--- Research Pitfall 2/3: explicit DELETE order avoids FK ambiguity.
--- ============================================================
-
-DELETE FROM public.seeker_skills;
-DELETE FROM public.match_scores;
-DELETE FROM public.skills;
-
--- ============================================================
--- SECTION 3 — Insert 24 ag-broad competencies
--- discipline specified EXPLICITLY on every row (Research Pitfall 5:
--- do not rely on column DEFAULT in a multi-value INSERT — be explicit).
--- Names and category slugs are VERBATIM from CONTEXT.md decision #1.
--- ============================================================
 
 INSERT INTO public.skills (name, category, discipline) VALUES
   -- Livestock (5 competencies)
