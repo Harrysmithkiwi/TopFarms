@@ -310,7 +310,7 @@ Plans:
 | 20.1. Standalone Admin Login Gateway + Account Bootstrap | v2.0 | 5/5 | Complete | 2026-05-05 |
 | 21. v2.0 Close + Post-Launch Ops | 10/10 | Complete    | 2026-05-18 | 2026-05-18 |
 | 22. Pre-Launch P0 Closure | v2.0 | 6/6 | Complete (5 P0s closed + MAIL docs audit 2026-05-26) | 2026-05-26 |
-| 23. Skills Taxonomy Consolidation + Admin Analytics | 3/3 | Complete   | 2026-05-30 | — |
+| 23. Skills Taxonomy Consolidation + Admin Analytics | 3/3 | Complete    | 2026-05-30 | — |
 | 24. Skills-Gap Analysis | v2.1 | — | ⛔ GATED — real ag-employer liquidity precondition | — |
 | 25. Training Directory + Funding Navigation | v2.1 | — | ⛔ GATED — real ag-employer liquidity precondition | — |
 | 26. Credential / Expiry Tracking | v2.1 | — | ⛔ GATED — real ag-employer liquidity precondition | — |
