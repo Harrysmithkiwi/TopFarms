@@ -10,13 +10,17 @@ interface SkillCoverageRow extends Record<string, unknown> {
 }
 
 // Friendly labels for the ag-broad category slugs (Phase 23 taxonomy).
+// Slugs MUST match the skills_category_check enum in migration 034 verbatim:
+// livestock, cropping_agronomy, machinery_equipment,
+// farm_operations_infrastructure, management_business, cross_cutting.
+// Labels are sentence-case per CONTEXT.md decision #1.
 const CATEGORY_LABELS: Record<string, string> = {
   livestock: 'Livestock',
-  crops_horticulture: 'Crops & Horticulture',
-  machinery_equipment: 'Machinery & Equipment',
-  farm_management: 'Farm Management',
-  compliance_safety: 'Compliance & Safety',
-  land_environment: 'Land & Environment',
+  cropping_agronomy: 'Cropping & agronomy',
+  machinery_equipment: 'Machinery & equipment',
+  farm_operations_infrastructure: 'Farm operations & infrastructure',
+  management_business: 'Management & business',
+  cross_cutting: 'Cross-cutting',
 }
 
 /**

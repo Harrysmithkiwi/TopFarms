@@ -120,4 +120,56 @@ describe('AdminSkillCoverage page — ANLY-01/02/TAX-04', () => {
     expect(screen.getByText(/seekers/i)).toBeInTheDocument()
     expect(screen.getByText(/jobs/i)).toBeInTheDocument()
   })
+
+  // Regression guard: CATEGORY_LABELS map must cover ALL 6 enum slugs from
+  // migration 034 (skills_category_check). A prior defect rendered 4/6
+  // categories as raw underscore slugs because the map invented keys
+  // ('crops_horticulture', 'farm_management', etc.) that didn't exist in the
+  // DB. The prior two test cases happened to use only 'livestock' and
+  // 'machinery_equipment' — the two slugs the buggy map mapped correctly —
+  // so the bug passed RTL. This case mocks one row per slug and asserts each
+  // friendly label renders AND the raw slug does not.
+  it('ANLY-01/02 regression: every category slug maps to a friendly label (no raw slugs rendered)', async () => {
+    const allCategories = [
+      { slug: 'livestock',                       label: 'Livestock' },
+      { slug: 'cropping_agronomy',               label: 'Cropping & agronomy' },
+      { slug: 'machinery_equipment',             label: 'Machinery & equipment' },
+      { slug: 'farm_operations_infrastructure',  label: 'Farm operations & infrastructure' },
+      { slug: 'management_business',             label: 'Management & business' },
+      { slug: 'cross_cutting',                   label: 'Cross-cutting' },
+    ]
+
+    rpcMock.mockResolvedValueOnce({
+      data: {
+        rows: allCategories.map((c, i) => ({
+          skill_id: `s${i}`,
+          name: `Competency ${i}`,
+          category: c.slug,
+          discipline: 'agriculture',
+          seeker_count: 0,
+          job_count: 0,
+        })),
+        total: allCategories.length,
+      },
+      error: null,
+    })
+
+    const { AdminSkillCoverage } = await import('@/pages/admin/AdminSkillCoverage')
+    render(
+      <MemoryRouter>
+        <AdminSkillCoverage />
+      </MemoryRouter>,
+    )
+
+    await waitFor(() => expect(screen.getByText('Competency 0')).toBeInTheDocument())
+
+    for (const { slug, label } of allCategories) {
+      expect(screen.getByText(label)).toBeInTheDocument()
+      // Raw slug must NOT appear inside any table cell. (It may legitimately
+      // appear in the page intro/copy — scope the negative assertion to cells.)
+      const cells = screen.getAllByRole('cell')
+      const slugInCells = cells.some((c) => c.textContent === slug)
+      expect(slugInCells, `raw slug '${slug}' rendered in a cell — CATEGORY_LABELS missing key`).toBe(false)
+    }
+  })
 })
