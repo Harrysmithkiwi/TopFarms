@@ -7,6 +7,7 @@ import {
   Briefcase,
   DollarSign,
   FileText,
+  BarChart2,
 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 
@@ -23,6 +24,7 @@ const adminItems: NavItem[] = [
   { to: '/admin/documents', label: 'Documents', icon: FileText },
   { to: '/admin/jobs', label: 'Jobs', icon: Briefcase },
   { to: '/admin/placements', label: 'Placement Pipeline', icon: DollarSign },
+  { to: '/admin/skills', label: 'Skills', icon: BarChart2 },
 ]
 
 export function AdminSidebar() {

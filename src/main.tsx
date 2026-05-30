@@ -38,6 +38,7 @@ import { SeekerList } from '@/pages/admin/SeekerList'
 import { JobsManagement } from '@/pages/admin/JobsManagement'
 import { PlacementPipeline } from '@/pages/admin/PlacementPipeline'
 import { AdminDocumentsQueue } from '@/pages/admin/AdminDocumentsQueue'
+import { AdminSkillCoverage } from '@/pages/admin/AdminSkillCoverage'
 
 const router = createBrowserRouter([
   // ─── Public routes ──────────────────────────────────────────────────────────
@@ -283,6 +284,20 @@ const router = createBrowserRouter([
       <ProtectedRoute requiredRole="admin">
         <AdminLayout>
           <AdminDocumentsQueue />
+        </AdminLayout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    // Phase 23 plan 23-02 — admin skill coverage analytics at /admin/skills.
+    // Renders admin_skill_coverage RPC (migration 034) via AdminTable.
+    // SECURITY DEFINER RPC is the server-side gate; ProtectedRoute is the
+    // client-side guard (requiredRole="admin").
+    path: '/admin/skills',
+    element: (
+      <ProtectedRoute requiredRole="admin">
+        <AdminLayout>
+          <AdminSkillCoverage />
         </AdminLayout>
       </ProtectedRoute>
     ),
