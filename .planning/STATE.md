@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: executing
-stopped_at: "Checkpoint: Task 3 of 23-01-migration-and-repoint-PLAN.md — awaiting Studio apply"
-last_updated: "2026-05-29T12:47:16.240Z"
+stopped_at: "23-01-migration-and-repoint-PLAN.md complete. Next: 23-02-admin-analytics-page-PLAN.md"
+last_updated: "2026-05-30T00:00:00.000Z"
 progress:
   total_phases: 19
   completed_phases: 11
@@ -24,8 +24,8 @@ See: .planning/PROJECT.md (updated 2026-04-03)
 ## Current Position
 
 Phase: v2.1 Phase 23 — Skills Taxonomy Consolidation + Admin Analytics. In execution.
-Plan: 23-00 complete (test-scaffold). Next: 23-01 (migration + SkillsPicker re-point).
-Status: Executing Phase 23 — plan 00 of 3 complete
+Plan: 23-01 complete (migration + SkillsPicker re-point). Next: 23-02 (admin analytics page).
+Status: Executing Phase 23 — plans 00 + 01 of 3 complete
 Progress: [░░░░░░░░░░] 0/1 v2.1 phases complete
 
 ### v2.0 close-out summary (Phase 22 complete 2026-05-26)
@@ -200,6 +200,8 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 22-01]: REQUIREMENTS.md SIGNUP-01 stays `[ ]` per CLAUDE §7 partial-close discipline — Wave 1 closes the spec-level gap (Wave 0 spec RED→GREEN); Wave 2 plan 22-04 Step 1 must capture empirical prod proof of >10s toast persistence + X dismiss affordance before requirement flips. Precedent: Phase 15 MAIL-02 deferred-flip after deploy-gap-only closure.
 - [Phase 23-00]: Wave 0 scaffold-first (23-00): 4 test files encode all 8 Phase 23 requirement acceptance criteria (TAX-01..05, ANLY-01..03) before any implementation. COMPETENCIES array (24 names verbatim from CONTEXT.md) + it.each pattern; vi.hoisted RTL mock for AdminSkillCoverage; readFileSync static-source-guard for migration/SkillsPicker/sidebar/union. RED state = Wave 0 success.
 - [Phase 23]: Migration 034 + SkillsPicker re-point authored together before live apply — coupling constraint honored (Research Pitfall 1)
+- [Phase 23-01]: First Studio apply of 034 raised Postgres 23514 (check_violation) — new skills_category_check CHECK was placed before the DELETE section; Postgres evaluated it against the ~40 legacy rows, many carrying category slugs outside the new 6-slug enum; BEGIN/COMMIT held (clean rollback, no partial state). Diagnosed per CLAUDE §3 before fix. Fix: re-order ADD CONSTRAINT to after DELETE FROM public.skills so only the 24 freshly-inserted rows are evaluated. Committed as new forward commit 2c2cce8 per CLAUDE §4 (no amend, no reset). Second apply clean; DO $verify$ 7/7 passed; read-only MCP confirmed post-state: 24 skills, 6 categories, discipline column, sector dropped, admin_skill_coverage + admin_list_analytics_events SECURITY DEFINER, analytics_events RLS-enabled. Constraint-ordering pattern for future migrations: DROP old CHECK → DELETE rows → reseed → ADD new CHECK.
+- [Phase 23-01]: seeker_skills = 0 post-apply (was 12 test rows); match_scores skill-dimension = 0 (was 3 rows with skills=0 due to test state). Both are expected post-reseed — 3 test seekers will re-tag to restore. Registry row backfilled via INSERT INTO supabase_migrations.schema_migrations per CLAUDE §2 precedent.
 
 ### Blockers/Concerns
 
@@ -221,7 +223,7 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-29T12:47:06.213Z
-Stopped at: Checkpoint: Task 3 of 23-01-migration-and-repoint-PLAN.md — awaiting Studio apply
+Last session: 2026-05-30T00:00:00.000Z
+Stopped at: 23-01-migration-and-repoint-PLAN.md complete
 Resume file: None
-Next operator action: Run `/gsd:plan-phase 23` to begin Phase 23 (Skills Taxonomy Consolidation + Admin Analytics). Then after Phase 23 ships: execute PEND-01 9-item checklist in `.planning/DECISIONS-PENDING.md §PEND-01` (Stripe live-mode swap → completes v2.0 milestone close) + sales / customer acquisition before resuming Phase 24.
+Next operator action: Execute 23-02-admin-analytics-page-PLAN.md (admin /skills coverage page + sidebar item + AdminListRpc union + route). After Phase 23 ships: execute PEND-01 9-item checklist in `.planning/DECISIONS-PENDING.md §PEND-01` (Stripe live-mode swap → completes v2.0 milestone close) + sales / customer acquisition before resuming Phase 24.

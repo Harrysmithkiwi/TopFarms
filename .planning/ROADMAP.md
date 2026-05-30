@@ -454,10 +454,10 @@ Plans:
 **Goal**: Replace the ~40 dairy-heavy skills with ~24 broad ag competencies across 6 categories and stand up admin analytics, giving the platform an agriculture-broad foundation for future skills-gap, training, and credential phases
 **Depends on**: Nothing (independent foundational engineering; does not require v2.0 to be formally archived)
 **Requirements**: TAX-01, TAX-02, TAX-03, TAX-04, TAX-05, ANLY-01, ANLY-02, ANLY-03
-**Plans:** 2/3 plans executed
+**Plans:** 2/3 plans complete
 Plans:
-- [ ] 23-00-test-scaffold-PLAN.md — author the 4 Nyquist guard tests (RED) for migration, SkillsPicker, admin page, sidebar/union
-- [ ] 23-01-migration-and-repoint-PLAN.md — migration 034 (schema redesign + 24-competency reseed + match_scores recompute + admin RPCs + analytics_events) coupled with SkillsPicker/onboarding/job-wizard re-point off skills.sector; Studio-applied
+- [x] 23-00-test-scaffold-PLAN.md — author the 4 Nyquist guard tests (RED) for migration, SkillsPicker, admin page, sidebar/union
+- [x] 23-01-migration-and-repoint-PLAN.md — migration 034 (schema redesign + 24-competency reseed + match_scores recompute + admin RPCs + analytics_events) coupled with SkillsPicker/onboarding/job-wizard re-point off skills.sector; Studio-applied (completed 2026-05-30)
 - [ ] 23-02-admin-analytics-page-PLAN.md — /admin/skills coverage page + sidebar item + AdminListRpc union extension + route
 **Success Criteria** (what must be TRUE):
   1. A seeker completing onboarding can self-assess against the new ~24 competencies (grouped into 6 categories: Livestock; Cropping & agronomy; Machinery & equipment; Farm operations & infrastructure; Management & business; Cross-cutting) — the old dairy-heavy skill list is no longer presented
