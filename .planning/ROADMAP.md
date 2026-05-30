@@ -458,7 +458,7 @@ Plans:
 Plans:
 - [x] 23-00-test-scaffold-PLAN.md — author the 4 Nyquist guard tests (RED) for migration, SkillsPicker, admin page, sidebar/union
 - [x] 23-01-migration-and-repoint-PLAN.md — migration 034 (schema redesign + 24-competency reseed + match_scores recompute + admin RPCs + analytics_events) coupled with SkillsPicker/onboarding/job-wizard re-point off skills.sector; Studio-applied (completed 2026-05-30)
-- [ ] 23-02-admin-analytics-page-PLAN.md — /admin/skills coverage page + sidebar item + AdminListRpc union extension + route
+- [x] 23-02-admin-analytics-page-PLAN.md — /admin/skills coverage page + sidebar item + AdminListRpc union extension + route
 **Success Criteria** (what must be TRUE):
   1. A seeker completing onboarding can self-assess against the new ~24 competencies (grouped into 6 categories: Livestock; Cropping & agronomy; Machinery & equipment; Farm operations & infrastructure; Management & business; Cross-cutting) — the old dairy-heavy skill list is no longer presented
   2. An employer posting a job can tag it with the new ag-broad competencies in the posting wizard — DairyNZ qualification levels are no longer in the competency picker
