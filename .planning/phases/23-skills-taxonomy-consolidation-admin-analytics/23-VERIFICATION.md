@@ -19,8 +19,8 @@ human_verification:
   - test: "Visit /jobs/new as an employer and advance to Step 3 (Skills). Confirm the skill picker shows the new ag-broad competencies with required/preferred toggle. Confirm DairyNZ Level options do NOT appear inside the competency picker (note: a separate Qualifications field below the picker still shows DairyNZ Level chips — that is expected; TAX-05 scope is the competency picker only)."
     expected: "SkillsPicker renders ag-broad competencies. DairyNZ levels absent from the picker. Qualifications chip-selector below it is a separate field (TAX-05 out-of-scope for Phase 23)."
     why_human: "Same live-DB dependency as seeker onboarding smoke test."
-  - test: "Visit /admin/skills as the admin user. Confirm a table of 24 rows renders with seeker and job count columns. Note the Category column: for competencies in categories cropping_agronomy, farm_operations_infrastructure, management_business, and cross_cutting the cell will display the raw slug (e.g. 'cropping_agronomy') rather than a human-readable label — this is a known cosmetic defect (see Defects section). Confirm counts are numeric (0 or above for each row) and the Seekers/Jobs column headers appear."
-    expected: "24 rows visible. Supply (Seekers) and demand (Jobs) counts are numeric. Category column shows raw slug for 4 of 6 category groups (cosmetic defect). Page loads without 500/error state."
+  - test: "Visit /admin/skills as the admin user. Confirm a table of 24 rows renders with seeker and job count columns. All 6 category groups should now display their human-readable labels (Livestock, Cropping & agronomy, Machinery & equipment, Farm operations & infrastructure, Management & business, Cross-cutting) — the CATEGORY_LABELS defect was fixed in b2f6a30. Confirm counts are numeric (0 or above for each row) and the Seekers/Jobs column headers appear."
+    expected: "24 rows visible. Supply (Seekers) and demand (Jobs) counts are numeric. All 6 category labels render in human-readable form (no raw underscore slugs in the Category column). Page loads without 500/error state."
     why_human: "AdminSkillCoverage page is statically and RTL-verified. Live admin session + live DB needed to confirm the RPC returns real data and the page renders without auth error."
 ---
 
@@ -180,3 +180,29 @@ The following requirements pass all empirical checks and can be flipped to `[x]`
 
 _Verified: 2026-05-30_
 _Verifier: Claude (gsd-verifier)_
+
+---
+
+## Defect Fix Applied (2026-05-30, post-verification)
+
+The verifier-flagged CATEGORY_LABELS defect was fixed forward as commit **`b2f6a30`** before requirement flipping.
+
+**Diagnosis (per CLAUDE §3):** The map invented 4 keys that didn't exist in the live `skills_category_check` enum. The verifier's table listed 4 wrong keys; the actual fault was worse — 4 invented keys AND the 2 correct slugs (`farm_operations_infrastructure`, `cross_cutting`) were entirely missing from the map. The `?? row.category` fallback rendered raw slugs for 4 of 6 categories.
+
+**Why the Wave 0 RTL guard missed it:** the two mock rows used `livestock` and `machinery_equipment` — the only two slugs the buggy map happened to map correctly. Classic mock-coverage gap.
+
+**Fix:**
+- `src/pages/admin/AdminSkillCoverage.tsx` lines 12–24: `CATEGORY_LABELS` rewritten with the 6 real enum slugs, sentence-case labels per CONTEXT.md decision #1, with an inline comment naming migration 034 as the source of truth.
+- `tests/admin-skill-coverage.test.tsx`: added a third regression test that mocks one row per category (all 6), asserts each friendly label renders, AND asserts no raw underscore slug appears in any `<td>` cell (scoped via `getAllByRole('cell')` to avoid false positives from intro copy). Test count: 2 → 3.
+
+**Verified:**
+- `tests/admin-skill-coverage.test.tsx`: 3/3 GREEN
+- Full Vitest suite: 382 passed (+1 from the new regression), 0 failed
+- `npx tsc --noEmit`: clean
+
+**Disposition update:**
+- The defect listed in the original Defects table is **RESOLVED** as of b2f6a30.
+- ANLY-01 and ANLY-02 code-side concerns are now closed. The only remaining gates before they flip `[x]` are the live admin smoke test (human verification item #3, which has been amended above to reflect the corrected expected behavior).
+- The 3 live smoke tests below remain outstanding — operator action.
+
+**No change to TAX-01..03/05 + ANLY-03** which already flipped on DB/static evidence and are unaffected by this UI fix.
