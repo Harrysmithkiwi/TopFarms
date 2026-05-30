@@ -52,6 +52,7 @@ export function AdminSkillCoverage() {
       <AdminTable<SkillCoverageRow>
         rpc="admin_skill_coverage"
         searchable={false}
+        paginated={false}
         pageSize={100}
         emptyHeading="No competencies found"
         emptyBody="The taxonomy has not been seeded yet."

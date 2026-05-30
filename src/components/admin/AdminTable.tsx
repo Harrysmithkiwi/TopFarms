@@ -18,6 +18,14 @@ interface AdminTableProps<TRow> {
   rpc: AdminListRpc
   /** Whether the RPC accepts a search param (placements does not). */
   searchable?: boolean
+  /**
+   * Whether the RPC accepts p_limit/p_offset pagination params. Default true.
+   * Set false for bounded-dataset RPCs whose Postgres signature has no
+   * pagination args — sending them anyway makes PostgREST fail to resolve
+   * the function. `admin_skill_coverage()` is such a case (24-row bounded
+   * dataset, no pagination args on the function).
+   */
+  paginated?: boolean
   /** Placeholder text for the search input. */
   searchPlaceholder?: string
   /** Column headers — array of {key, label} objects. */
@@ -47,6 +55,7 @@ interface AdminTableProps<TRow> {
 export function AdminTable<TRow extends Record<string, unknown>>({
   rpc,
   searchable = true,
+  paginated = true,
   searchPlaceholder = 'Search…',
   columns,
   renderRow,
@@ -79,14 +88,16 @@ export function AdminTable<TRow extends Record<string, unknown>>({
     setLoading(true)
     setErrored(false)
     try {
-      const args: Record<string, unknown> = {
-        p_limit: pageSize,
-        p_offset: offset,
+      const args: Record<string, unknown> = {}
+      if (paginated) {
+        args.p_limit = pageSize
+        args.p_offset = offset
       }
       if (searchable) args.p_search = debouncedSearch || null
-      // Supabase generated types treat rpc names as a literal union; the four admin_list_*
-      // functions all return jsonb {rows, total}. Type-asserting via `as never` keeps
-      // tsc happy without weakening the AdminListRpc union upstream.
+      // Supabase generated types treat rpc names as a literal union; the admin_list_*
+      // and admin_skill_coverage functions all return jsonb {rows, total}.
+      // Type-asserting via `as never` keeps tsc happy without weakening the
+      // AdminListRpc union upstream.
       const { data, error } = await supabase.rpc(rpc as never, args as never)
       if (error) {
         console.error(`AdminTable: ${rpc} failed`, error)
@@ -100,7 +111,7 @@ export function AdminTable<TRow extends Record<string, unknown>>({
     } finally {
       setLoading(false)
     }
-  }, [rpc, debouncedSearch, offset, pageSize, searchable, errorCopy])
+  }, [rpc, debouncedSearch, offset, pageSize, searchable, paginated, errorCopy])
 
   useEffect(() => {
     void load()

@@ -85,6 +85,18 @@ describe('AdminSkillCoverage page — ANLY-01/02/TAX-04', () => {
 
     // AdminTable called the RPC with correct name (searchable=false → no p_search)
     expect(rpcMock).toHaveBeenCalledWith('admin_skill_coverage', expect.anything())
+
+    // Regression guard: admin_skill_coverage() has ZERO Postgres parameters.
+    // Sending p_limit/p_offset makes PostgREST fail to resolve the function
+    // signature ("could not find function ... with arguments named p_limit,
+    // p_offset"), which surfaces as the AdminTable error state. AdminSkillCoverage
+    // sets paginated={false} on AdminTable specifically to avoid this; assert
+    // the args object is empty so the contract holds.
+    const callArgs = rpcMock.mock.calls[0]?.[1] as Record<string, unknown> | undefined
+    expect(callArgs).toBeDefined()
+    expect(callArgs).not.toHaveProperty('p_limit')
+    expect(callArgs).not.toHaveProperty('p_offset')
+    expect(callArgs).not.toHaveProperty('p_search')
   })
 
   it('ANLY-02: renders Seekers supply header and Jobs demand header', async () => {
