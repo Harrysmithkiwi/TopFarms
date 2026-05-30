@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
 status: executing
-stopped_at: "23-01-migration-and-repoint-PLAN.md complete. Next: 23-02-admin-analytics-page-PLAN.md"
-last_updated: "2026-05-30T00:00:00.000Z"
+stopped_at: "23-02-admin-analytics-page-PLAN.md complete. Phase 23 all 3 plans done — ready for phase verifier."
+last_updated: "2026-05-30T00:10:00.000Z"
 progress:
   total_phases: 19
   completed_phases: 11
@@ -24,8 +24,8 @@ See: .planning/PROJECT.md (updated 2026-04-03)
 ## Current Position
 
 Phase: v2.1 Phase 23 — Skills Taxonomy Consolidation + Admin Analytics. In execution.
-Plan: 23-01 complete (migration + SkillsPicker re-point). Next: 23-02 (admin analytics page).
-Status: Executing Phase 23 — plans 00 + 01 of 3 complete
+Plan: 23-02 complete (AdminSkillCoverage page + AdminListRpc union + sidebar + route). All 3 plans done.
+Status: Phase 23 complete — all 3/3 plans done; ready for phase verifier
 Progress: [░░░░░░░░░░] 0/1 v2.1 phases complete
 
 ### v2.0 close-out summary (Phase 22 complete 2026-05-26)
@@ -202,6 +202,9 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 23]: Migration 034 + SkillsPicker re-point authored together before live apply — coupling constraint honored (Research Pitfall 1)
 - [Phase 23-01]: First Studio apply of 034 raised Postgres 23514 (check_violation) — new skills_category_check CHECK was placed before the DELETE section; Postgres evaluated it against the ~40 legacy rows, many carrying category slugs outside the new 6-slug enum; BEGIN/COMMIT held (clean rollback, no partial state). Diagnosed per CLAUDE §3 before fix. Fix: re-order ADD CONSTRAINT to after DELETE FROM public.skills so only the 24 freshly-inserted rows are evaluated. Committed as new forward commit 2c2cce8 per CLAUDE §4 (no amend, no reset). Second apply clean; DO $verify$ 7/7 passed; read-only MCP confirmed post-state: 24 skills, 6 categories, discipline column, sector dropped, admin_skill_coverage + admin_list_analytics_events SECURITY DEFINER, analytics_events RLS-enabled. Constraint-ordering pattern for future migrations: DROP old CHECK → DELETE rows → reseed → ADD new CHECK.
 - [Phase 23-01]: seeker_skills = 0 post-apply (was 12 test rows); match_scores skill-dimension = 0 (was 3 rows with skills=0 due to test state). Both are expected post-reseed — 3 test seekers will re-tag to restore. Registry row backfilled via INSERT INTO supabase_migrations.schema_migrations per CLAUDE §2 precedent.
+- [Phase 23-02]: AdminListRpc extended with both 'admin_skill_coverage' AND 'admin_list_analytics_events' in one phase (not just the consumed RPC) — satisfies Wave 0 sidebar guard test contract and means ANLY-03's future consumer never needs to touch AdminTable again. Pitfall 4 reminder: this union is manually maintained, not generated.
+- [Phase 23-02]: pageSize=100 + searchable=false for AdminSkillCoverage — all 24 ag-broad competencies render in a single AdminTable page; admin_skill_coverage takes no p_search param. pageSize set high to future-proof if taxonomy expands slightly.
+- [Phase 23-02]: Rule 1 auto-fix applied — intro paragraph rephrased to remove literal "seekers" from prose text (RTL getByText(/seekers/i) matched both prose and column header, throwing "Found multiple elements"). Fix: "Supply counts how many candidates hold each skill" avoids the regex collision while remaining descriptive. Pattern: when writing page intros alongside table headers that share vocabulary, avoid exact header words in prose to prevent RTL getByText strictness failures.
 
 ### Blockers/Concerns
 
@@ -223,7 +226,7 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-30T00:00:00.000Z
-Stopped at: 23-01-migration-and-repoint-PLAN.md complete
+Last session: 2026-05-30T00:10:00.000Z
+Stopped at: 23-02-admin-analytics-page-PLAN.md complete. Phase 23 all 3/3 plans done — ready for phase verifier.
 Resume file: None
-Next operator action: Execute 23-02-admin-analytics-page-PLAN.md (admin /skills coverage page + sidebar item + AdminListRpc union + route). After Phase 23 ships: execute PEND-01 9-item checklist in `.planning/DECISIONS-PENDING.md §PEND-01` (Stripe live-mode swap → completes v2.0 milestone close) + sales / customer acquisition before resuming Phase 24.
+Next operator action: Phase 23 verifier. After Phase 23 verified: execute PEND-01 9-item checklist in `.planning/DECISIONS-PENDING.md §PEND-01` (Stripe live-mode swap → completes v2.0 milestone close) + sales / customer acquisition before resuming Phase 24.
