@@ -1,0 +1,206 @@
+{
+  "audit": "Repo Agentic Audit & Improvement Plan v2",
+  "date": "2026-06-10",
+  "auditor": "Claude Fable 5 (claude-fable-5[1m])",
+  "repo": {
+    "name": "topfarms",
+    "type": "SPA web app (two-sided NZ farm-jobs marketplace) + Supabase backend",
+    "stack": "Vite 6 + React 19 + TypeScript 5.8 + Tailwind 4 + react-router 7 (library mode) + Supabase (Postgres/RLS/Edge Functions) + Stripe",
+    "deploy": "Vercel (SPA rewrite, vercel.json) + GitHub Actions (supabase functions only)",
+    "maturity": "v2.1 launch-ready; 48/48 requirements [x]; phases 24-26 gated on marketplace liquidity (1 active job, 0 paid listings)",
+    "src_files_ts": 148,
+    "src_loc": 25844,
+    "test_files": 62,
+    "migrations_on_disk": 35
+  },
+  "tool_runs": {
+    "typecheck": {
+      "cmd": "npm run typecheck (tsc -b)",
+      "result": "FAIL exit 2, 29 errors (mostly TS6133 unused; 1 real TS2322 EmployerOnboarding.tsx:227)"
+    },
+    "lint": {
+      "cmd": "npm run lint (eslint .)",
+      "result": "BROKEN — ESLint 9 installed, no eslint.config.* exists anywhere"
+    },
+    "tests": {
+      "cmd": "vitest run",
+      "result": "PASS — 390 passed, 0 failed, 114 todo, 6 skipped files, 12.8s; React act() warnings in SavedSearchesDropdown tests"
+    },
+    "build": {
+      "cmd": "vite build",
+      "result": "PASS 2.4s — single JS chunk 1385.79 kB (383.17 kB gzip); Vite chunk-size warning; build does NOT run tsc"
+    },
+    "npm_audit": {
+      "result": "8 vulns (1 critical [vitest, dev-only], 4 high, 3 moderate); prod-relevant: react-router 7.5.0 (high: open redirect GHSA-2j2x-hqr9-3h42, DoS), ws 8.x (moderate, transitive). All fixable via npm audit fix"
+    },
+    "supabase_advisors_security": "70 lints: 32 anon-executable SECURITY DEFINER fns, 32 authenticated-executable, function_search_path_mutable on get_platform_stats, leaked-password protection OFF, employer-photos bucket listable, 3 tables RLS-no-policy (deny-by-default)",
+    "supabase_advisors_performance": "86 lints: 61 multiple_permissive_policies, 1 auth_rls_initplan (analytics_events), 24 unused_index",
+    "secret_scan": "CLEAN — no service-role keys, sk_ keys, or JWTs in src/ or supabase/functions/; .env untracked, mode 600; .env.example documented"
+  },
+  "key_findings": [
+    {
+      "id": "F1",
+      "sev": "High",
+      "what": "tsc -b fails with 29 errors; vite build doesn't typecheck so type errors ship",
+      "loc": "npm run typecheck; EmployerOnboarding.tsx:227",
+      "status": "closed",
+      "resolution": "a5d4f10 + c718716 — tsc -b exits 0; real type hole fixed via farm_type union narrowing"
+    },
+    {
+      "id": "F2",
+      "sev": "High",
+      "what": "lint script broken — no eslint.config.js (ESLint 9 flat config missing)",
+      "loc": "package.json:10",
+      "status": "closed",
+      "resolution": "9b00cc3 — eslint.config.js (flat); eslint . exits 0, 42 warnings as ratchet backlog"
+    },
+    {
+      "id": "F3",
+      "sev": "High",
+      "what": "No frontend CI: 390-test suite, typecheck, lint never run on push; only supabase-deploy.yml exists",
+      "loc": ".github/workflows/",
+      "status": "closed",
+      "resolution": "dfe2ccb — .github/workflows/ci.yml: typecheck/lint/test/audit/build/bundle-budget on PR + push"
+    },
+    {
+      "id": "F4",
+      "sev": "High",
+      "what": "Migration pipeline drift: db push gated to workflow_dispatch since 2026-05-21 (pooler auth broken platform-side); remote registry mixes sequence + timestamp versions; Studio is de-facto apply path",
+      "loc": ".github/workflows/supabase-deploy.yml:1-35; list_migrations output",
+      "status": "open",
+      "resolution": "gated — migration registry repair + pooler auth (pre-launch milestone)"
+    },
+    {
+      "id": "F5",
+      "sev": "Medium-High",
+      "what": "Single 1.39 MB JS bundle, all ~40 routes statically imported, no React.lazy — rural-NZ audience on slow connections",
+      "loc": "src/main.tsx:8-41; vite build output",
+      "status": "partial",
+      "resolution": "d87ff07 — landing 383.9 -> 203.0 kB gzip (-47%), 90+ chunks; <=150 needs motion/auth-bootstrap deferral"
+    },
+    {
+      "id": "F6",
+      "sev": "Medium",
+      "what": "npm audit: react-router 7.5.0 high advisories (open redirect; turbo-stream RCE is SSR-only, SPA exposure lower); fix available",
+      "loc": "package.json:34",
+      "status": "closed",
+      "resolution": "2d4afb5 — npm audit fix; 0 vulnerabilities (was 8)"
+    },
+    {
+      "id": "F7",
+      "sev": "Medium",
+      "what": "32 SECURITY DEFINER fns REST-callable by anon incl. trigger fns (handle_new_user, rls_auto_enable, cleanup_match_scores_on_status_change); admin_* fns mitigated by _admin_gate()",
+      "loc": "advisor output; migrations 012,016,018,023,033",
+      "status": "open",
+      "resolution": "DELIBERATELY DEFERRED to pre-launch per operator instruction 2026-06-10 (with F8)"
+    },
+    {
+      "id": "F8",
+      "sev": "Medium",
+      "what": "get_platform_stats: SECURITY DEFINER + mutable search_path",
+      "loc": "supabase/migrations/012_platform_stats_rpc.sql",
+      "status": "open",
+      "resolution": "DELIBERATELY DEFERRED to pre-launch per operator instruction 2026-06-10 (with F7)"
+    },
+    {
+      "id": "F9",
+      "sev": "Medium",
+      "what": "Leaked-password protection (HIBP) disabled in Supabase Auth",
+      "loc": "advisor auth_leaked_password_protection",
+      "status": "open",
+      "resolution": "one-click dashboard toggle — still pending"
+    },
+    {
+      "id": "F10",
+      "sev": "Medium",
+      "what": "No data-fetching layer: 98 raw supabase .from() calls + 98 useEffect across page components; JobDetail.tsx 970 lines",
+      "loc": "src/pages/**",
+      "status": "open",
+      "resolution": "data-access layer extraction — Milestone 3"
+    },
+    {
+      "id": "F11",
+      "sev": "Medium",
+      "what": "Hand-written DB types (domain.ts, 476 lines) — no supabase gen types; drift guarded only by spot tests",
+      "loc": "src/types/domain.ts",
+      "status": "open",
+      "resolution": "generated DB types — task 2.3; two inline no-explicit-any disables reference it"
+    },
+    {
+      "id": "F12",
+      "sev": "Low-Medium",
+      "what": "employer-photos public bucket allows listing all objects",
+      "loc": "advisor public_bucket_allows_listing; migration 007",
+      "status": "open",
+      "resolution": "bucket listing policy — pre-launch"
+    },
+    {
+      "id": "F13",
+      "sev": "Low",
+      "what": "Debug instrumentation in prod auth path marked 'Remove once root cause confirmed'; 57 console.* in src",
+      "loc": "src/contexts/AuthContext.tsx:34-42",
+      "status": "closed",
+      "resolution": "8018f5b — AUTH-FIX-02 console.time removed; no-console rule (warn/error allowlist) enforced"
+    },
+    {
+      "id": "F14",
+      "sev": "Low",
+      "what": "prettier + tailwind plugin installed but no config and no format script",
+      "loc": "package.json:50-51",
+      "status": "closed",
+      "resolution": "8018f5b + 2574fe9 — .prettierrc.json + format scripts; repo formatted (179 files), tailwind sorter active"
+    },
+    {
+      "id": "F15",
+      "sev": "Low",
+      "what": "114 todo tests + 6 skipped test files = declared-but-unwritten coverage",
+      "loc": "vitest run output",
+      "status": "open",
+      "resolution": "114 todo tests — direction pending operator answer (implement vs prune)"
+    },
+    {
+      "id": "F16",
+      "sev": "Low",
+      "what": "Playwright smoke suite (17/17, phase 23) lives only in untracked .claude/skills/playwright-skill — not reproducible from repo",
+      "loc": "git status; .claude/skills/playwright-skill",
+      "status": "open",
+      "resolution": "Playwright suite still untracked in .claude/skills — task 2.2"
+    }
+  ],
+  "strengths": [
+    "390-test suite green in 12.8s with adversarial tests (RLS-not-widened, drift guards, webhook-secret presence)",
+    "Defense-in-depth admin security: ProtectedRoute client gate + _admin_gate() SECURITY DEFINER server gate (migration 023:77-99)",
+    "Stripe webhook: signature verification + idempotency guard (stripe-webhook/index.ts)",
+    "Secret hygiene: clean scans, .env untracked + documented .env.example",
+    "Exceptional process layer: .planning/ (ROADMAP, REQUIREMENTS 48/48, retros, drift audits), CLAUDE.md house rules with incident log",
+    "Disciplined product gating: phases 24-26 explicitly blocked on real marketplace liquidity"
+  ],
+  "decisions": {
+    "not_fixing": [
+      "24 unused indexes — data volume near zero; revisit post-liquidity",
+      "multiple_permissive_policies consolidation — measurable only under load; deferred",
+      "RLS-enabled-no-policy on admin_audit_log etc. — deny-by-default is intentional (RPC-only access)"
+    ]
+  },
+  "next_review": "pre-launch milestone: F4 registry repair, F7/F8 DB hardening, F9 toggle, F12 bucket policy, live Stripe swap (PEND-01), F16 committed Playwright suite",
+  "remediation_log": {
+    "date": "2026-06-10",
+    "scope": "Milestone 0 + safe high-leverage wins (operator-directed; F7/F8 DB hardening and live-Stripe explicitly excluded)",
+    "commits": [
+      "a5d4f10",
+      "c718716",
+      "9b00cc3",
+      "dfe2ccb",
+      "2d4afb5",
+      "d87ff07",
+      "8018f5b",
+      "2574fe9"
+    ],
+    "gates_at_close": "tsc 0 errors; eslint exit 0 (42 warnings); vitest 390 passed/114 todo; npm audit 0 vulns; build green; largest chunk 203.0 kB gzip",
+    "corrections_during_execution": [
+      "audit overcount: only 12 of 28 residual tsc errors were TS6133; 16 were real (missing vite-env.d.ts, double-Promise types, Record constraint, motion Variants)",
+      "4 'unused' symbols (Tag/TIER_DISPLAY/STATUS_VARIANT/stripeUrl) were cascading-error artifacts, not dead code — restored after TS2344 fix exposed real usages",
+      "step-6 commit d87ff07 briefly broke lint (react-refresh rule on lazy() consts in entry module); caught and exempted in 8018f5b"
+    ]
+  }
+}
