@@ -1,0 +1,63 @@
+# Frontend quality gate — audit AUDIT-AGENTIC-2026-06-10.md task 0.3 (F3).
+# Every gate here is also runnable locally: npm run typecheck && npm run lint
+# && npx vitest run && npm audit --omit=dev --audit-level=high && npm run build.
+#
+# Bundle budget: largest JS chunk must gzip under 500 kB (current main chunk is
+# the whole app — audit F5). Ratchet DOWN after route-level code splitting
+# (audit task 2.1); do not raise it without a deliberate decision.
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install (clean, lockfile-exact)
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint (errors fail; warnings are the ratchet backlog)
+        run: npm run lint
+
+      - name: Tests
+        run: npx vitest run
+
+      - name: Audit production dependencies (high+)
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Build
+        run: npm run build
+
+      - name: Bundle budget — largest JS chunk < 500 kB gzip
+        run: |
+          node --input-type=module -e "
+          import { readdirSync, readFileSync } from 'node:fs';
+          import { gzipSync } from 'node:zlib';
+          const dir = 'dist/assets';
+          let worst = { file: null, gz: 0 };
+          for (const f of readdirSync(dir).filter((f) => f.endsWith('.js'))) {
+            const gz = gzipSync(readFileSync(dir + '/' + f)).length;
+            console.log(f.padEnd(40), (gz / 1024).toFixed(1) + ' kB gzip');
+            if (gz > worst.gz) worst = { file: f, gz };
+          }
+          const LIMIT = 500 * 1024;
+          if (worst.gz > LIMIT) {
+            console.error('FAIL: ' + worst.file + ' is ' + (worst.gz / 1024).toFixed(1) + ' kB gzip (limit 500 kB)');
+            process.exit(1);
+          }
+          console.log('OK: largest chunk ' + (worst.gz / 1024).toFixed(1) + ' kB gzip <= 500 kB');
+          "
