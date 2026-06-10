@@ -22,9 +22,16 @@ echo "── Step 5/5: reminders (manual, one-click each) ──"
 cat <<'EOF'
   [x] eslint.config.js (closed 2026-06-10, commit 9b00cc3)
   [x] .github/workflows/ci.yml (closed 2026-06-10, commit dfe2ccb)
+  [x] employer-photos listing policy — migration 036 APPLIED (F12, 18700a2)
+  [x] Playwright e2e suite committed + CI jobs (F16, aefe255)
   [ ] Supabase dashboard → Auth → enable leaked-password protection (audit F9)
-  [ ] DB hardening migration via Studio SQL Editor (audit F7/F8, task 1.1)
-      — GATED to pre-launch per operator 2026-06-10; verify afterwards with
-        read-only MCP get_advisors
+  [ ] PRE-LAUNCH: apply migrations/037_definer_function_hardening.sql (F7/F8,
+      staged c4e660e — review checklist in file header) then registry repair
+      per .planning/REGISTRY-REPAIR-PLAN-2026-06-10.md (F4)
+  [ ] PRE-LAUNCH: decide + apply RLS-MKT-01 fix (anon job marketplace empty);
+      then remove test.fail() in tests/e2e/seeker-browse-jobs.spec.ts
+  [ ] PUSH to main — deploys the stripe-webhook constructEventAsync fix
+      (75e301a); prod webhook 400s ALL events until deployed
+  [ ] Set E2E_* GitHub secrets so role-gated e2e flows run in CI
 EOF
 echo "Done. Re-run this script after Milestone 0 to confirm gates are green."

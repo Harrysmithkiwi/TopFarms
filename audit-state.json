@@ -68,7 +68,7 @@
       "what": "Migration pipeline drift: db push gated to workflow_dispatch since 2026-05-21 (pooler auth broken platform-side); remote registry mixes sequence + timestamp versions; Studio is de-facto apply path",
       "loc": ".github/workflows/supabase-deploy.yml:1-35; list_migrations output",
       "status": "open",
-      "resolution": "gated — migration registry repair + pooler auth (pre-launch milestone)"
+      "resolution": "PREPARED 2026-06-10 (bee0a98): .planning/REGISTRY-REPAIR-PLAN-2026-06-10.md — dry-run evidence; CLI>=2.98 login-role connect makes pooler blocker moot; yml one-time repair command found INCOMPLETE (would re-run live DDL)"
     },
     {
       "id": "F5",
@@ -92,7 +92,7 @@
       "what": "32 SECURITY DEFINER fns REST-callable by anon incl. trigger fns (handle_new_user, rls_auto_enable, cleanup_match_scores_on_status_change); admin_* fns mitigated by _admin_gate()",
       "loc": "advisor output; migrations 012,016,018,023,033",
       "status": "open",
-      "resolution": "DELIBERATELY DEFERRED to pre-launch per operator instruction 2026-06-10 (with F8)"
+      "resolution": "STAGED 2026-06-10 (c4e660e): supabase/migrations/037_definer_function_hardening.sql — NOT APPLIED; get_user_role + get_platform_stats must keep grants (RLS/landing); signup risks flagged inline"
     },
     {
       "id": "F8",
@@ -100,7 +100,7 @@
       "what": "get_platform_stats: SECURITY DEFINER + mutable search_path",
       "loc": "supabase/migrations/012_platform_stats_rpc.sql",
       "status": "open",
-      "resolution": "DELIBERATELY DEFERRED to pre-launch per operator instruction 2026-06-10 (with F7)"
+      "resolution": "STAGED 2026-06-10 (c4e660e): supabase/migrations/037_definer_function_hardening.sql — NOT APPLIED; get_user_role + get_platform_stats must keep grants (RLS/landing); signup risks flagged inline"
     },
     {
       "id": "F9",
@@ -131,8 +131,8 @@
       "sev": "Low-Medium",
       "what": "employer-photos public bucket allows listing all objects",
       "loc": "advisor public_bucket_allows_listing; migration 007",
-      "status": "open",
-      "resolution": "bucket listing policy — pre-launch"
+      "status": "closed",
+      "resolution": "18700a2 — migration 036 APPLIED 2026-06-10 (operator-sanctioned storage-policy write via Management API): owner-prefix SELECT replaces bucket-wide; advisor lint cleared; public-URL display path verified intact"
     },
     {
       "id": "F13",
@@ -163,8 +163,16 @@
       "sev": "Low",
       "what": "Playwright smoke suite (17/17, phase 23) lives only in untracked .claude/skills/playwright-skill — not reproducible from repo",
       "loc": "git status; .claude/skills/playwright-skill",
+      "status": "closed",
+      "resolution": "aefe255 — tests/e2e/ suite (4 specs from 3 UAT docs) + ci.yml e2e job + e2e-preview.yml on deployment_status; role creds via env/secrets; local run exit 0"
+    },
+    {
+      "id": "RLS-MKT-01",
+      "sev": "High",
+      "what": "Marketplace empty for anonymous visitors (and cross-employer browsing): employer_profiles has no anon SELECT policy, so the employer_profiles!inner join in JobSearch.tsx prunes every job. Proven via PostgREST as anon: jobs visible alone, [] with the join. Launch blocker for visitor acquisition.",
+      "loc": "JobSearch.tsx:259 (!inner, HOMEBUG-03); employer_profiles policies (migration 002); e2e guard: seeker-browse-jobs.spec.ts test.fail()",
       "status": "open",
-      "resolution": "Playwright suite still untracked in .claude/skills — task 2.2"
+      "resolution": "diagnosed 2026-06-10; fix is an RLS product decision (expose profile rows backing active jobs vs view-based column exposure) — proposal in session summary, awaiting operator choice"
     }
   ],
   "strengths": [
@@ -182,7 +190,7 @@
       "RLS-enabled-no-policy on admin_audit_log etc. — deny-by-default is intentional (RPC-only access)"
     ]
   },
-  "next_review": "pre-launch milestone: F4 registry repair, F7/F8 DB hardening, F9 toggle, F12 bucket policy, live Stripe swap (PEND-01), F16 committed Playwright suite",
+  "next_review": "pre-launch session: apply 037 (F7/F8) + registry repair + RLS-MKT-01 fix decision + push (deploys webhook fix) + live Stripe swap (PEND-01) + F9 toggle + E2E_* secrets",
   "remediation_log": {
     "date": "2026-06-10",
     "scope": "Milestone 0 + safe high-leverage wins (operator-directed; F7/F8 DB hardening and live-Stripe explicitly excluded)",
@@ -201,6 +209,24 @@
       "audit overcount: only 12 of 28 residual tsc errors were TS6133; 16 were real (missing vite-env.d.ts, double-Promise types, Record constraint, motion Variants)",
       "4 'unused' symbols (Tag/TIER_DISPLAY/STATUS_VARIANT/stripeUrl) were cascading-error artifacts, not dead code — restored after TS2344 fix exposed real usages",
       "step-6 commit d87ff07 briefly broke lint (react-refresh rule on lazy() consts in entry module); caught and exempted in 8018f5b"
+    ],
+    "sessions": [
+      {
+        "date": "2026-06-10 (follow-up)",
+        "closed": [
+          "F12 (036 applied + verified)",
+          "F16 (e2e suite + CI)",
+          "lint-warning ratchet pinned at 41",
+          "stripe-webhook constructEventAsync fix (committed, NOT deployed until push)"
+        ],
+        "staged_not_applied": ["037 definer hardening (F7/F8)", "registry repair plan (F4)"],
+        "discovered": [
+          "RLS-MKT-01 marketplace invisible to anon (High)",
+          "stripe-webhook sync verify ALWAYS threw under Deno — prod webhook never processed an event",
+          "pooler/§6 blocker moot on CLI >= 2.98 (login role)"
+        ],
+        "commits": ["aefe255", "5416550", "18700a2", "75e301a", "bee0a98", "c4e660e"]
+      }
     ]
   }
 }
