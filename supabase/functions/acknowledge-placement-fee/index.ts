@@ -12,12 +12,23 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { application_id, job_id, employer_id, seeker_id, fee_tier, amount_nzd } = await req.json()
+    const { application_id, job_id, employer_id, seeker_id, fee_tier, amount_nzd } =
+      await req.json()
 
     // Validate all required fields
-    if (!application_id || !job_id || !employer_id || !seeker_id || !fee_tier || amount_nzd == null) {
+    if (
+      !application_id ||
+      !job_id ||
+      !employer_id ||
+      !seeker_id ||
+      !fee_tier ||
+      amount_nzd == null
+    ) {
       return new Response(
-        JSON.stringify({ error: 'application_id, job_id, employer_id, seeker_id, fee_tier, and amount_nzd are required' }),
+        JSON.stringify({
+          error:
+            'application_id, job_id, employer_id, seeker_id, fee_tier, and amount_nzd are required',
+        }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
       )
     }
@@ -65,15 +76,15 @@ Deno.serve(async (req) => {
       )
     }
 
-    return new Response(
-      JSON.stringify({ success: true, placement_fee_id: data.id }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-    )
+    return new Response(JSON.stringify({ success: true, placement_fee_id: data.id }), {
+      status: 200,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
   } catch (error) {
     console.error('Unexpected error in acknowledge-placement-fee:', error)
-    return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-    )
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
   }
 })

@@ -21,24 +21,15 @@ export interface AuthHookReturn {
     | Awaited<ReturnType<typeof supabase.auth.signUp>>
     | { data: { user: User | null; session: Session | null }; error: AuthError }
   >
-  signIn: (
-    email: string,
-    password: string,
-  ) => ReturnType<typeof supabase.auth.signInWithPassword>
+  signIn: (email: string, password: string) => ReturnType<typeof supabase.auth.signInWithPassword>
   signOut: () => Promise<void>
-  resetPassword: (
-    email: string,
-  ) => ReturnType<typeof supabase.auth.resetPasswordForEmail>
-  updatePassword: (
-    newPassword: string,
-  ) => ReturnType<typeof supabase.auth.updateUser>
+  resetPassword: (email: string) => ReturnType<typeof supabase.auth.resetPasswordForEmail>
+  updatePassword: (newPassword: string) => ReturnType<typeof supabase.auth.updateUser>
   signInWithOAuth: (provider: 'google' | 'facebook') => Promise<void>
   refreshRole: () => Promise<UserRole | null>
 }
 
-async function loadRole(
-  userId: string,
-): Promise<{ role: UserRole | null; isActive: boolean }> {
+async function loadRole(userId: string): Promise<{ role: UserRole | null; isActive: boolean }> {
   const { data, error } = await supabase
     .from('user_roles')
     .select('role, is_active')
@@ -151,11 +142,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  const signUpWithRole: AuthHookReturn['signUpWithRole'] = async (
-    email,
-    password,
-    userRole,
-  ) => {
+  const signUpWithRole: AuthHookReturn['signUpWithRole'] = async (email, password, userRole) => {
     const result = await supabase.auth.signUp({
       email,
       password,

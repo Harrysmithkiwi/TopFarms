@@ -16,20 +16,26 @@ interface VerificationCardProps {
   onStart?: () => void
 }
 
-function VerificationCard({ icon, title, description, isVerified, onStart }: VerificationCardProps) {
+function VerificationCard({
+  icon,
+  title,
+  description,
+  isVerified,
+  onStart,
+}: VerificationCardProps) {
   return (
     <div
       className={cn(
-        'flex items-start gap-4 p-4 rounded-[10px] border-[1.5px]',
+        'flex items-start gap-4 rounded-[10px] border-[1.5px] p-4',
         isVerified ? 'border-brand bg-[rgba(74,124,47,0.04)]' : 'border-border bg-surface',
       )}
     >
-      <span className="text-2xl flex-shrink-0 mt-0.5">{icon}</span>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-0.5">
-          <p className="font-body font-semibold text-[13px] text-text">{title}</p>
+      <span className="mt-0.5 flex-shrink-0 text-2xl">{icon}</span>
+      <div className="min-w-0 flex-1">
+        <div className="mb-0.5 flex items-center gap-2">
+          <p className="font-body text-text text-[13px] font-semibold">{title}</p>
           {isVerified && (
-            <span className="text-[11px] font-body font-semibold text-brand bg-[rgba(74,124,47,0.1)] px-2 py-0.5 rounded-full">
+            <span className="font-body text-brand rounded-full bg-[rgba(74,124,47,0.1)] px-2 py-0.5 text-[11px] font-semibold">
               Verified
             </span>
           )}
@@ -68,7 +74,7 @@ export function Step5Verification({ onComplete, onBack }: Step5Props) {
         <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Verify your identity
         </h2>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
           Verified employers get more trust from candidates — but you can complete these later
         </p>
       </div>

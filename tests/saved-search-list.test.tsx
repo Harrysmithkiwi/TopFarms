@@ -110,9 +110,7 @@ describe('SavedSearches list page (SRCH-15)', () => {
       </MemoryRouter>,
     )
     await waitFor(() =>
-      expect(
-        screen.queryByText(/You haven't saved any searches yet/i),
-      ).toBeInTheDocument(),
+      expect(screen.queryByText(/You haven't saved any searches yet/i)).toBeInTheDocument(),
     )
     expect(screen.queryByText(/Browse jobs/i)).toBeInTheDocument()
   })
@@ -128,12 +126,8 @@ describe('SavedSearches list page (SRCH-15)', () => {
     expect(screen.queryByText('Sheep & Beef')).toBeInTheDocument()
     expect(screen.getAllByRole('button', { name: /^load$/i })).toHaveLength(2)
     // Each row has a delete button labeled "Delete <name>"
-    expect(
-      screen.getByRole('button', { name: /^delete dairy in waikato$/i }),
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: /^delete sheep & beef$/i }),
-    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /^delete dairy in waikato$/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /^delete sheep & beef$/i })).toBeInTheDocument()
   })
 
   it('Load button calls navigate("/jobs?<search_params>", { replace: false })', async () => {
@@ -145,10 +139,9 @@ describe('SavedSearches list page (SRCH-15)', () => {
     )
     await waitFor(() => expect(screen.queryByText('Dairy in Waikato')).toBeInTheDocument())
     fireEvent.click(screen.getAllByRole('button', { name: /^load$/i })[0])
-    expect(navigateMock).toHaveBeenCalledWith(
-      '/jobs?shed_type=rotary&region=Waikato',
-      { replace: false },
-    )
+    expect(navigateMock).toHaveBeenCalledWith('/jobs?shed_type=rotary&region=Waikato', {
+      replace: false,
+    })
   })
 
   it('Delete button shows sonner toast with Undo action and 5000ms duration', async () => {
@@ -159,9 +152,7 @@ describe('SavedSearches list page (SRCH-15)', () => {
       </MemoryRouter>,
     )
     await waitFor(() => expect(screen.queryByText('Dairy in Waikato')).toBeInTheDocument())
-    fireEvent.click(
-      screen.getByRole('button', { name: /^delete dairy in waikato$/i }),
-    )
+    fireEvent.click(screen.getByRole('button', { name: /^delete dairy in waikato$/i }))
     expect(toastMock.success).toHaveBeenCalledWith(
       expect.stringContaining('Dairy in Waikato'),
       expect.objectContaining({
@@ -179,9 +170,7 @@ describe('SavedSearches list page (SRCH-15)', () => {
       </MemoryRouter>,
     )
     await waitFor(() => expect(screen.queryByText('Dairy in Waikato')).toBeInTheDocument())
-    fireEvent.click(
-      screen.getByRole('button', { name: /^delete dairy in waikato$/i }),
-    )
+    fireEvent.click(screen.getByRole('button', { name: /^delete dairy in waikato$/i }))
 
     // Capture the toast options object passed to toast.success
     const toastCall = toastMock.success.mock.calls[0]
@@ -215,9 +204,7 @@ describe('SavedSearches list page (SRCH-15)', () => {
       </MemoryRouter>,
     )
     await waitFor(() => expect(screen.queryByText('Dairy in Waikato')).toBeInTheDocument())
-    fireEvent.click(
-      screen.getByRole('button', { name: /^delete dairy in waikato$/i }),
-    )
+    fireEvent.click(screen.getByRole('button', { name: /^delete dairy in waikato$/i }))
 
     const toastOpts = toastMock.success.mock.calls[0][1] as {
       onAutoClose: () => Promise<void>
@@ -291,8 +278,6 @@ describe('SavedSearches list page (SRCH-15)', () => {
     // No update call
     expect(updateEqMock).not.toHaveBeenCalled()
     // Original name visible (button mode restored)
-    expect(
-      screen.queryByRole('button', { name: /^rename dairy in waikato$/i }),
-    ).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /^rename dairy in waikato$/i })).toBeInTheDocument()
   })
 })

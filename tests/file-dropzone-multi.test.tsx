@@ -26,12 +26,7 @@ describe('FileDropzone — multiple mode', () => {
   it('renders with multiple prop without crashing', () => {
     const onUploadsComplete = vi.fn()
     render(
-      <FileDropzone
-        {...baseProps}
-        multiple
-        maxFiles={5}
-        onUploadsComplete={onUploadsComplete}
-      />
+      <FileDropzone {...baseProps} multiple maxFiles={5} onUploadsComplete={onUploadsComplete} />,
     )
     // Should render the dropzone area
     expect(screen.getByText(/drag and drop/i)).toBeInTheDocument()
@@ -45,7 +40,7 @@ describe('FileDropzone — multiple mode', () => {
         multiple
         existingPaths={['user-123/documents/cv.pdf', 'user-123/documents/cert.pdf']}
         onUploadsComplete={onUploadsComplete}
-      />
+      />,
     )
     expect(screen.getByText('cv.pdf')).toBeInTheDocument()
     expect(screen.getByText('cert.pdf')).toBeInTheDocument()
@@ -60,7 +55,7 @@ describe('FileDropzone — multiple mode', () => {
         maxFiles={2}
         existingPaths={['user-123/documents/a.pdf', 'user-123/documents/b.pdf']}
         onUploadsComplete={onUploadsComplete}
-      />
+      />,
     )
     expect(screen.getByText(/maximum 2 files/i)).toBeInTheDocument()
   })

@@ -38,7 +38,7 @@ export function AdminSidebar() {
 
   return (
     <aside
-      className="hidden md:flex flex-col w-60 flex-shrink-0 min-h-screen border-r"
+      className="hidden min-h-screen w-60 flex-shrink-0 flex-col border-r md:flex"
       style={{
         backgroundColor: 'var(--color-surface)',
         borderColor: 'var(--color-border)',
@@ -46,7 +46,7 @@ export function AdminSidebar() {
     >
       {/* Section eyebrow */}
       <div
-        className="px-4 pt-5 pb-3 text-xs font-semibold uppercase tracking-wider"
+        className="px-4 pt-5 pb-3 text-xs font-semibold tracking-wider uppercase"
         style={{ color: 'var(--color-text-subtle)', letterSpacing: '0.04em' }}
       >
         Admin
@@ -55,7 +55,7 @@ export function AdminSidebar() {
       {/* Back to app — escape hatch, no active state */}
       <NavLink
         to={backTo}
-        className="flex items-center gap-3 px-3 mx-2 py-2.5 rounded-lg text-[15px] transition-all hover:bg-surface-2/50"
+        className="hover:bg-surface-2/50 mx-2 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[15px] transition-all"
         style={{ color: 'var(--color-text-muted)' }}
       >
         <ArrowLeft size={18} />
@@ -73,7 +73,7 @@ export function AdminSidebar() {
             end={item.to === '/admin'}
             className={({ isActive }) =>
               [
-                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all',
+                'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all',
                 isActive ? 'font-semibold' : 'hover:bg-surface-2/50',
               ].join(' ')
             }

@@ -1,13 +1,5 @@
 import { NavLink } from 'react-router'
-import {
-  LayoutDashboard,
-  Search,
-  FileText,
-  FolderOpen,
-  User,
-  LogOut,
-  Bookmark,
-} from 'lucide-react'
+import { LayoutDashboard, Search, FileText, FolderOpen, User, LogOut, Bookmark } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 
 interface NavItem {
@@ -40,7 +32,7 @@ export function Sidebar() {
 
   return (
     <aside
-      className="hidden md:flex flex-col w-60 flex-shrink-0 min-h-[calc(100vh-56px)] border-r"
+      className="hidden min-h-[calc(100vh-56px)] w-60 flex-shrink-0 flex-col border-r md:flex"
       style={{
         backgroundColor: 'var(--color-surface)',
         borderColor: 'var(--color-border)',
@@ -54,10 +46,8 @@ export function Sidebar() {
             end={item.to.includes('/dashboard')}
             className={({ isActive }) =>
               [
-                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all',
-                isActive
-                  ? 'font-semibold'
-                  : 'hover:bg-surface-2/50',
+                'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all',
+                isActive ? 'font-semibold' : 'hover:bg-surface-2/50',
               ].join(' ')
             }
             style={({ isActive }) =>
@@ -71,11 +61,11 @@ export function Sidebar() {
           </NavLink>
         ))}
       </nav>
-      <div className="mt-auto p-3 border-t" style={{ borderColor: 'var(--color-border)' }}>
+      <div className="mt-auto border-t p-3" style={{ borderColor: 'var(--color-border)' }}>
         <button
           type="button"
           onClick={() => signOut()}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all hover:bg-surface-2/50"
+          className="hover:bg-surface-2/50 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all"
           style={{ color: 'var(--color-text-muted)' }}
         >
           <LogOut size={18} />

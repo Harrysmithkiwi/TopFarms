@@ -32,17 +32,20 @@ Deno.serve(async (req) => {
     // Validate required fields
     if (!application_id || !employer_id || !employer_email || !fee_tier || !amount_nzd) {
       return new Response(
-        JSON.stringify({ error: 'application_id, employer_id, employer_email, fee_tier, and amount_nzd are required' }),
+        JSON.stringify({
+          error:
+            'application_id, employer_id, employer_email, fee_tier, and amount_nzd are required',
+        }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
       )
     }
 
     const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY')
     if (!stripeSecretKey) {
-      return new Response(
-        JSON.stringify({ error: 'Stripe not configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      )
+      return new Response(JSON.stringify({ error: 'Stripe not configured' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
     }
 
     // Create Supabase service role client
@@ -60,19 +63,23 @@ Deno.serve(async (req) => {
 
     if (checkError) {
       console.error('Error checking placement fee:', checkError)
-      return new Response(
-        JSON.stringify({ error: 'Database error checking placement fee' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      )
+      return new Response(JSON.stringify({ error: 'Database error checking placement fee' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
     }
 
     if (existingFee?.confirmed_at) {
       // Already confirmed — return early (idempotency guard)
-      console.log('Placement fee already confirmed for application:', application_id, '— returning early')
-      return new Response(
-        JSON.stringify({ already_confirmed: true }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      console.log(
+        'Placement fee already confirmed for application:',
+        application_id,
+        '— returning early',
       )
+      return new Response(JSON.stringify({ already_confirmed: true }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
     }
 
     const stripe = new Stripe(stripeSecretKey, {
@@ -89,10 +96,10 @@ Deno.serve(async (req) => {
 
     if (empError) {
       console.error('Error loading employer profile:', empError)
-      return new Response(
-        JSON.stringify({ error: 'Failed to load employer profile' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      )
+      return new Response(JSON.stringify({ error: 'Failed to load employer profile' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
     }
 
     let customerId: string
@@ -175,7 +182,7 @@ Deno.serve(async (req) => {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${RESEND_API_KEY}`,
+              Authorization: `Bearer ${RESEND_API_KEY}`,
             },
             body: JSON.stringify({
               from: FROM_EMAIL,
@@ -223,9 +230,9 @@ Deno.serve(async (req) => {
     )
   } catch (error) {
     console.error('Unexpected error in create-placement-invoice:', error)
-    return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-    )
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
   }
 })

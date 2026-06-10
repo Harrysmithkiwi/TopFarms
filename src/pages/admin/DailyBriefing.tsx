@@ -59,8 +59,7 @@ function ResendIndicator({ resend }: { resend: DailyBriefingPayload['resend_stat
   }
   const rate = resend.value?.rate ?? 0
   const ratePct = Math.round(rate * 100)
-  const variant: 'green' | 'warn' | 'red' =
-    ratePct >= 95 ? 'green' : ratePct >= 80 ? 'warn' : 'red'
+  const variant: 'green' | 'warn' | 'red' = ratePct >= 95 ? 'green' : ratePct >= 80 ? 'warn' : 'red'
   const isStale = 'stale' in resend
   return (
     <div className="space-y-1">
@@ -126,7 +125,7 @@ export function DailyBriefing() {
   return (
     <div className="space-y-6">
       <h1
-        className="text-[20px] font-semibold leading-7"
+        className="text-[20px] leading-7 font-semibold"
         style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
       >
         Daily Briefing
@@ -155,12 +154,12 @@ export function DailyBriefing() {
             ]}
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {/* Left column — System Alerts */}
             <Card>
               <div className="space-y-3">
                 <h2
-                  className="text-xs font-semibold uppercase tracking-wider"
+                  className="text-xs font-semibold tracking-wider uppercase"
                   style={{ color: 'var(--color-text-subtle)', letterSpacing: '0.04em' }}
                 >
                   System Alerts
@@ -177,19 +176,19 @@ export function DailyBriefing() {
                     <thead>
                       <tr style={{ borderBottom: '1px solid var(--color-border)' }}>
                         <th
-                          className="text-left py-2 font-semibold uppercase text-xs"
+                          className="py-2 text-left text-xs font-semibold uppercase"
                           style={{ color: 'var(--color-text-subtle)' }}
                         >
                           Endpoint
                         </th>
                         <th
-                          className="text-left py-2 font-semibold uppercase text-xs"
+                          className="py-2 text-left text-xs font-semibold uppercase"
                           style={{ color: 'var(--color-text-subtle)' }}
                         >
                           Status
                         </th>
                         <th
-                          className="text-left py-2 font-semibold uppercase text-xs"
+                          className="py-2 text-left text-xs font-semibold uppercase"
                           style={{ color: 'var(--color-text-subtle)' }}
                         >
                           When
@@ -200,7 +199,7 @@ export function DailyBriefing() {
                       {alerts?.webhook_failures.slice(0, 5).map((f) => (
                         <tr key={f.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
                           <td
-                            className="py-2 truncate max-w-[220px]"
+                            className="max-w-[220px] truncate py-2"
                             style={{ color: 'var(--color-text)' }}
                           >
                             {f.error_body?.slice(0, 60) ?? '—'}
@@ -224,7 +223,7 @@ export function DailyBriefing() {
               <Card>
                 <div className="space-y-3">
                   <h2
-                    className="text-xs font-semibold uppercase tracking-wider"
+                    className="text-xs font-semibold tracking-wider uppercase"
                     style={{ color: 'var(--color-text-subtle)', letterSpacing: '0.04em' }}
                   >
                     Email Delivery
@@ -236,7 +235,7 @@ export function DailyBriefing() {
               <Card>
                 <div className="space-y-3">
                   <h2
-                    className="text-xs font-semibold uppercase tracking-wider"
+                    className="text-xs font-semibold tracking-wider uppercase"
                     style={{ color: 'var(--color-text-subtle)', letterSpacing: '0.04em' }}
                   >
                     Revenue

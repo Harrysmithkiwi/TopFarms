@@ -57,13 +57,13 @@ interface SectionProps {
 
 function PreviewSection({ title, stepIndex, onGoToStep, children }: SectionProps) {
   return (
-    <div className="border-b border-border pb-4 last:border-0 last:pb-0">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="font-body font-semibold text-[14px] text-text">{title}</h3>
+    <div className="border-border border-b pb-4 last:border-0 last:pb-0">
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="font-body text-text text-[14px] font-semibold">{title}</h3>
         <button
           type="button"
           onClick={() => onGoToStep(stepIndex)}
-          className="text-[12px] font-body text-brand-hover hover:text-brand transition-colors"
+          className="font-body text-brand-hover hover:text-brand text-[12px] transition-colors"
         >
           Edit
         </button>
@@ -111,8 +111,8 @@ function DescriptionBlock({ label, text }: { label: string; text?: string }) {
   if (!text?.trim()) return null
   return (
     <div className="space-y-1">
-      <p className="font-body text-[12px] font-semibold text-text">{label}</p>
-      <p className="text-[12px] text-text font-body whitespace-pre-line leading-relaxed">{text}</p>
+      <p className="font-body text-text text-[12px] font-semibold">{label}</p>
+      <p className="text-text font-body text-[12px] leading-relaxed whitespace-pre-line">{text}</p>
     </div>
   )
 }
@@ -165,7 +165,7 @@ export function JobStep6Preview({ jobId, onComplete, onBack, onGoToStep }: Step6
     return (
       <div className="flex items-center justify-center py-16">
         <div
-          className="w-8 h-8 rounded-full border-[3px] border-t-transparent animate-spin"
+          className="h-8 w-8 animate-spin rounded-full border-[3px] border-t-transparent"
           style={{ borderColor: 'var(--color-brand-hover)', borderTopColor: 'transparent' }}
         />
       </div>
@@ -182,8 +182,7 @@ export function JobStep6Preview({ jobId, onComplete, onBack, onGoToStep }: Step6
 
   const salaryDisplay = formatSalary(job.salary_min, job.salary_max)
   const requiredSkills = job.job_skills?.filter((js) => js.requirement_level === 'required') ?? []
-  const preferredSkills =
-    job.job_skills?.filter((js) => js.requirement_level === 'preferred') ?? []
+  const preferredSkills = job.job_skills?.filter((js) => js.requirement_level === 'preferred') ?? []
 
   return (
     <div className="space-y-6">
@@ -191,7 +190,7 @@ export function JobStep6Preview({ jobId, onComplete, onBack, onGoToStep }: Step6
         <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Preview your listing
         </h2>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
           Review all details before choosing your listing plan
         </p>
       </div>
@@ -200,34 +199,37 @@ export function JobStep6Preview({ jobId, onComplete, onBack, onGoToStep }: Step6
         {/* Header */}
         <PreviewSection title="Job Basics" stepIndex={0} onGoToStep={onGoToStep}>
           <div className="space-y-1">
-            <p className="font-body font-semibold text-[15px] text-text">{job.title}</p>
-            <div className="flex flex-wrap gap-2 mt-1">
+            <p className="font-body text-text text-[15px] font-semibold">{job.title}</p>
+            <div className="mt-1 flex flex-wrap gap-2">
               <span
-                className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-body font-medium bg-surface-2"
+                className="font-body bg-surface-2 inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium"
                 style={{ color: 'var(--color-text-muted)' }}
               >
                 {SECTOR_LABELS[job.sector] ?? job.sector}
               </span>
               <span
-                className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-body font-medium bg-surface-2"
+                className="font-body bg-surface-2 inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium"
                 style={{ color: 'var(--color-text-muted)' }}
               >
                 {job.role_type}
               </span>
               <span
-                className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-body font-medium bg-surface-2"
+                className="font-body bg-surface-2 inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium"
                 style={{ color: 'var(--color-text-muted)' }}
               >
                 {job.region}
               </span>
             </div>
-            <div className="space-y-1 mt-2">
+            <div className="mt-2 space-y-1">
               <DataRow
                 label="Contract type"
                 value={CONTRACT_LABELS[job.contract_type] ?? job.contract_type}
               />
               {job.start_date && (
-                <DataRow label="Start date" value={new Date(job.start_date).toLocaleDateString('en-NZ')} />
+                <DataRow
+                  label="Start date"
+                  value={new Date(job.start_date).toLocaleDateString('en-NZ')}
+                />
               )}
             </div>
           </div>
@@ -260,12 +262,8 @@ export function JobStep6Preview({ jobId, onComplete, onBack, onGoToStep }: Step6
                   <DataRow label="Accommodation type" value={job.accommodation.type} />
                 )}
                 {job.accommodation.pets && <DataRow label="Pets allowed" value={true} />}
-                {job.accommodation.couples && (
-                  <DataRow label="Suitable for couples" value={true} />
-                )}
-                {job.accommodation.family && (
-                  <DataRow label="Suitable for families" value={true} />
-                )}
+                {job.accommodation.couples && <DataRow label="Suitable for couples" value={true} />}
+                {job.accommodation.family && <DataRow label="Suitable for families" value={true} />}
                 {job.accommodation.utilities_included && (
                   <DataRow label="Utilities included" value={true} />
                 )}
@@ -294,14 +292,14 @@ export function JobStep6Preview({ jobId, onComplete, onBack, onGoToStep }: Step6
             <div className="space-y-3">
               {requiredSkills.length > 0 && (
                 <div>
-                  <p className="text-[11px] font-body font-semibold text-text-muted uppercase tracking-wide mb-1.5">
+                  <p className="font-body text-text-muted mb-1.5 text-[11px] font-semibold tracking-wide uppercase">
                     Required
                   </p>
                   <div className="flex flex-wrap gap-1.5">
                     {requiredSkills.map((js) => (
                       <span
                         key={js.skills.id}
-                        className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-body font-medium bg-[rgba(74,124,47,0.1)]"
+                        className="font-body inline-flex items-center rounded-full bg-[rgba(74,124,47,0.1)] px-2 py-0.5 text-[11px] font-medium"
                         style={{ color: 'var(--color-brand-hover)' }}
                       >
                         {js.skills.name}
@@ -312,14 +310,14 @@ export function JobStep6Preview({ jobId, onComplete, onBack, onGoToStep }: Step6
               )}
               {preferredSkills.length > 0 && (
                 <div>
-                  <p className="text-[11px] font-body font-semibold text-text-muted uppercase tracking-wide mb-1.5">
+                  <p className="font-body text-text-muted mb-1.5 text-[11px] font-semibold tracking-wide uppercase">
                     Preferred
                   </p>
                   <div className="flex flex-wrap gap-1.5">
                     {preferredSkills.map((js) => (
                       <span
                         key={js.skills.id}
-                        className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-body font-medium bg-surface-2"
+                        className="font-body bg-surface-2 inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium"
                         style={{ color: 'var(--color-text-muted)' }}
                       >
                         {js.skills.name}

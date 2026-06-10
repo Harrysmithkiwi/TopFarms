@@ -60,7 +60,13 @@ const MILKING_FREQUENCY_OPTIONS = [
 ]
 
 export function JobStep2FarmDetails({ onComplete, onBack, defaultValues }: Step2Props) {
-  const { register, handleSubmit, control, watch, formState: { errors } } = useForm<FormData>({
+  const {
+    register,
+    handleSubmit,
+    control,
+    watch,
+    formState: { errors },
+  } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
       shed_type: defaultValues?.shed_type ?? [],
@@ -89,7 +95,7 @@ export function JobStep2FarmDetails({ onComplete, onBack, defaultValues }: Step2
         <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Farm details
         </h2>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
           Help candidates understand the farm operation
         </p>
       </div>
@@ -97,7 +103,7 @@ export function JobStep2FarmDetails({ onComplete, onBack, defaultValues }: Step2
       <div className="space-y-5">
         {/* Shed type — ChipSelector (5 options, inline, multi) */}
         <div>
-          <p className="font-body text-[13px] font-semibold text-text mb-2">Shed type *</p>
+          <p className="font-body text-text mb-2 text-[13px] font-semibold">Shed type *</p>
           <Controller
             control={control}
             name="shed_type"
@@ -112,7 +118,7 @@ export function JobStep2FarmDetails({ onComplete, onBack, defaultValues }: Step2
             )}
           />
           {errors.shed_type && (
-            <p className="text-danger text-[12px] mt-1">{errors.shed_type.message}</p>
+            <p className="text-danger mt-1 text-[12px]">{errors.shed_type.message}</p>
           )}
         </div>
 
@@ -161,15 +167,13 @@ export function JobStep2FarmDetails({ onComplete, onBack, defaultValues }: Step2
             placeholder="e.g., 250"
             {...register('farm_area_ha')}
           />
-          <p className="text-[12px] mt-0.5" style={{ color: 'var(--color-text-subtle)' }}>hectares</p>
+          <p className="mt-0.5 text-[12px]" style={{ color: 'var(--color-text-subtle)' }}>
+            hectares
+          </p>
         </div>
 
         {/* Nearest town */}
-        <Input
-          label="Nearest town"
-          placeholder="e.g., Matamata"
-          {...register('nearest_town')}
-        />
+        <Input label="Nearest town" placeholder="e.g., Matamata" {...register('nearest_town')} />
 
         {/* Distance from town with hay warning */}
         <div>
@@ -189,7 +193,8 @@ export function JobStep2FarmDetails({ onComplete, onBack, defaultValues }: Step2
           {showDistanceWarning && (
             <div className="mt-2">
               <InfoBox variant="warn">
-                Remote locations may receive fewer applicants. Consider highlighting accommodation and transport options.
+                Remote locations may receive fewer applicants. Consider highlighting accommodation
+                and transport options.
               </InfoBox>
             </div>
           )}
@@ -197,7 +202,7 @@ export function JobStep2FarmDetails({ onComplete, onBack, defaultValues }: Step2
 
         {/* Herd size range */}
         <div>
-          <p className="font-body text-[13px] font-medium text-text mb-2">Herd size</p>
+          <p className="font-body text-text mb-2 text-[13px] font-medium">Herd size</p>
           <div className="grid grid-cols-2 gap-3">
             <Input
               label="Minimum"
@@ -215,12 +220,12 @@ export function JobStep2FarmDetails({ onComplete, onBack, defaultValues }: Step2
         </div>
 
         {/* Visa sponsorship toggle */}
-        <div className="flex items-center justify-between p-4 rounded-[10px] border-[1.5px] border-border bg-surface-2">
+        <div className="border-border bg-surface-2 flex items-center justify-between rounded-[10px] border-[1.5px] p-4">
           <div>
-            <p className="font-body text-[13px] font-semibold text-text">
+            <p className="font-body text-text text-[13px] font-semibold">
               Visa sponsorship available
             </p>
-            <p className="text-[12px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+            <p className="mt-0.5 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
               Can you sponsor work visas for international candidates?
             </p>
           </div>
@@ -234,10 +239,10 @@ export function JobStep2FarmDetails({ onComplete, onBack, defaultValues }: Step2
         </div>
 
         {/* Couples welcome toggle */}
-        <div className="flex items-center justify-between p-4 rounded-[10px] border-[1.5px] border-border bg-surface-2">
+        <div className="border-border bg-surface-2 flex items-center justify-between rounded-[10px] border-[1.5px] p-4">
           <div>
-            <p className="font-body text-[13px] font-semibold text-text">Couples welcome</p>
-            <p className="text-[12px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+            <p className="font-body text-text text-[13px] font-semibold">Couples welcome</p>
+            <p className="mt-0.5 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
               Is this role suitable for working couples?
             </p>
           </div>
@@ -252,12 +257,12 @@ export function JobStep2FarmDetails({ onComplete, onBack, defaultValues }: Step2
 
         {/* Accommodation */}
         <div>
-          <div className="flex items-center justify-between p-4 rounded-[10px] border-[1.5px] border-border bg-surface-2">
+          <div className="border-border bg-surface-2 flex items-center justify-between rounded-[10px] border-[1.5px] p-4">
             <div>
-              <p className="font-body text-[13px] font-semibold text-text">
+              <p className="font-body text-text text-[13px] font-semibold">
                 Accommodation available
               </p>
-              <p className="text-[12px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+              <p className="mt-0.5 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
                 On-site or nearby housing for the worker
               </p>
             </div>
@@ -287,7 +292,7 @@ export function JobStep2FarmDetails({ onComplete, onBack, defaultValues }: Step2
               />
 
               <div>
-                <p className="font-body text-[13px] font-medium text-text mb-3">
+                <p className="font-body text-text mb-3 text-[13px] font-medium">
                   Accommodation details
                 </p>
                 <div className="space-y-2.5">

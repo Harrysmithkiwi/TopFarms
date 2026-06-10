@@ -28,7 +28,7 @@ describe('SignUp Role Pre-selection', () => {
     render(
       <MemoryRouter initialEntries={['/signup?role=seeker']}>
         <SignUp />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     // When seeker role is pre-selected, the email input is rendered (conditional on selectedRole)
     expect(screen.getByLabelText(/email address/i)).toBeInTheDocument()
@@ -41,7 +41,7 @@ describe('SignUp Role Pre-selection', () => {
     render(
       <MemoryRouter initialEntries={['/signup?role=employer']}>
         <SignUp />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     // When employer role is pre-selected, the email input is rendered (conditional on selectedRole)
     expect(screen.getByLabelText(/email address/i)).toBeInTheDocument()
@@ -54,7 +54,7 @@ describe('SignUp Role Pre-selection', () => {
     render(
       <MemoryRouter initialEntries={['/signup']}>
         <SignUp />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     // No role pre-selected — email input is NOT rendered (conditional on selectedRole)
     expect(screen.queryByLabelText(/email address/i)).not.toBeInTheDocument()
@@ -67,7 +67,7 @@ describe('SignUp Role Pre-selection', () => {
     render(
       <MemoryRouter initialEntries={['/signup?role=admin']}>
         <SignUp />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     // Invalid role param — no role pre-selected, email input not rendered
     expect(screen.queryByLabelText(/email address/i)).not.toBeInTheDocument()

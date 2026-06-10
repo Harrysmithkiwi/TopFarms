@@ -117,27 +117,31 @@ Deno.serve(async (req) => {
   // Mirrors get-resend-stats:43-49 precedent.
   if (!WEBHOOK_SECRET) {
     console.error('notify-job-filled: WEBHOOK_SECRET unset — refusing to process')
-    return new Response(
-      JSON.stringify({ error: 'Server misconfigured (secret unset)' }),
-      { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-    )
+    return new Response(JSON.stringify({ error: 'Server misconfigured (secret unset)' }), {
+      status: 503,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
   }
   if (req.headers.get('x-webhook-secret') !== WEBHOOK_SECRET) {
-    return new Response(
-      JSON.stringify({ error: 'Forbidden' }),
-      { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-    )
+    return new Response(JSON.stringify({ error: 'Forbidden' }), {
+      status: 403,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
   }
 
   try {
     const payload = await req.json()
 
     // Guard: only process when status transitions TO 'filled'
-    if (payload.type !== 'UPDATE' ||
-        payload.old_record?.status === 'filled' ||
-        payload.record?.status !== 'filled') {
-      return new Response(JSON.stringify({ skipped: true, reason: 'not a filled transition' }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+    if (
+      payload.type !== 'UPDATE' ||
+      payload.old_record?.status === 'filled' ||
+      payload.record?.status !== 'filled'
+    ) {
+      return new Response(JSON.stringify({ skipped: true, reason: 'not a filled transition' }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
     }
 
     const filledJobId = payload.record.id
@@ -150,12 +154,18 @@ Deno.serve(async (req) => {
 
     // Fetch job title
     const { data: job } = await supabaseClient
-      .from('jobs').select('title').eq('id', filledJobId).single()
+      .from('jobs')
+      .select('title')
+      .eq('id', filledJobId)
+      .single()
     const jobTitle = job?.title ?? 'a position'
 
     // Fetch farm name
     const { data: employer } = await supabaseClient
-      .from('employer_profiles').select('farm_name').eq('id', employerId).single()
+      .from('employer_profiles')
+      .select('farm_name')
+      .eq('id', employerId)
+      .single()
     const farmName = employer?.farm_name ?? 'The employer'
 
     // Fetch unresolved applicants (MUST match domain.ts ACTIVE_STATUSES)
@@ -168,8 +178,10 @@ Deno.serve(async (req) => {
 
     if (appErr) {
       console.error('Error querying applications:', appErr)
-      return new Response(JSON.stringify({ error: 'Failed to query applications' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+      return new Response(JSON.stringify({ error: 'Failed to query applications' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
     }
 
     let sent = 0
@@ -178,7 +190,10 @@ Deno.serve(async (req) => {
     for (const app of applications ?? []) {
       // Get seeker user_id from seeker_profiles
       const { data: seekerProfile } = await supabaseClient
-        .from('seeker_profiles').select('user_id, region').eq('id', app.seeker_id).single()
+        .from('seeker_profiles')
+        .select('user_id, region')
+        .eq('id', app.seeker_id)
+        .single()
 
       if (!seekerProfile?.user_id) {
         console.warn(`No seeker profile found for seeker_id ${app.seeker_id} — skipping`)
@@ -188,7 +203,10 @@ Deno.serve(async (req) => {
 
       // Get seeker email from seeker_contacts
       const { data: seekerContact } = await supabaseClient
-        .from('seeker_contacts').select('email').eq('user_id', seekerProfile.user_id).maybeSingle()
+        .from('seeker_contacts')
+        .select('email')
+        .eq('user_id', seekerProfile.user_id)
+        .maybeSingle()
       const seekerEmail = seekerContact?.email
 
       if (!seekerEmail) {
@@ -211,15 +229,15 @@ Deno.serve(async (req) => {
 
     console.log(`notify-job-filled: job=${filledJobId}, sent=${sent}, failed=${failed}`)
 
-    return new Response(
-      JSON.stringify({ sent, failed, job_id: filledJobId }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-    )
+    return new Response(JSON.stringify({ sent, failed, job_id: filledJobId }), {
+      status: 200,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
   } catch (error) {
     console.error('Unexpected error in notify-job-filled:', error)
-    return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-    )
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
   }
 })

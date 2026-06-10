@@ -82,9 +82,7 @@ Deno.serve(async (req) => {
     // differently — see BFIX-05. Trust the gateway, decode locally.
     let callerUserId: string
     try {
-      const payload = JSON.parse(
-        atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))
-      )
+      const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')))
       if (payload.aud !== 'authenticated') {
         throw new Error('Token audience is not user-scoped')
       }
@@ -134,15 +132,17 @@ Deno.serve(async (req) => {
         .eq('id', adminDocId)
         .maybeSingle()
       if (adminDocErr) {
-        console.error('get-applicant-document-url: admin seeker_documents lookup failed', adminDocErr)
+        console.error(
+          'get-applicant-document-url: admin seeker_documents lookup failed',
+          adminDocErr,
+        )
         return jsonResponse({ error: 'Internal error' }, 500)
       }
       if (!adminDocRow) {
         return jsonResponse({ error: 'Document not found' }, 404)
       }
 
-      const { data: adminUrlData, error: adminUrlErr } = await adminClient
-        .storage
+      const { data: adminUrlData, error: adminUrlErr } = await adminClient.storage
         .from(BUCKET_NAME)
         .createSignedUrl(adminDocRow.storage_path, SIGNED_URL_TTL_SECONDS)
       if (adminUrlErr || !adminUrlData?.signedUrl) {
@@ -170,7 +170,10 @@ Deno.serve(async (req) => {
     if (!empProfile?.id) {
       // role='employer' but no profile row — data integrity issue. Treat as 403
       // rather than expose the inconsistency.
-      console.warn('get-applicant-document-url: caller has role=employer but no employer_profiles row', { callerUserId })
+      console.warn(
+        'get-applicant-document-url: caller has role=employer but no employer_profiles row',
+        { callerUserId },
+      )
       return jsonResponse({ error: 'Employer profile missing' }, 403)
     }
     const callerEmployerId = empProfile.id
@@ -226,23 +229,23 @@ Deno.serve(async (req) => {
 
     // 9. Identity exclusion — explicit equality check first for clear error semantics.
     if (docRow.document_type === 'identity') {
-      return jsonResponse(
-        { error: 'Identity documents are not accessible to employers' },
-        403,
-      )
+      return jsonResponse({ error: 'Identity documents are not accessible to employers' }, 403)
     }
 
     // 10. Whitelist check — defence-in-depth against future enum additions.
     //     If a new document_type is added later (e.g. 'tax_form'), it defaults
     //     to denied here unless explicitly added to EMPLOYER_VISIBLE_DOCUMENT_TYPES
     //     in lockstep with the TS union and migration 019's CHECK constraint.
-    if (!EMPLOYER_VISIBLE_DOCUMENT_TYPES.includes(docRow.document_type as typeof EMPLOYER_VISIBLE_DOCUMENT_TYPES[number])) {
+    if (
+      !EMPLOYER_VISIBLE_DOCUMENT_TYPES.includes(
+        docRow.document_type as (typeof EMPLOYER_VISIBLE_DOCUMENT_TYPES)[number],
+      )
+    ) {
       return jsonResponse({ error: 'Document type is not accessible to employers' }, 403)
     }
 
     // 11. Mint signed URL (TTL 15 minutes).
-    const { data: urlData, error: urlError } = await adminClient
-      .storage
+    const { data: urlData, error: urlError } = await adminClient.storage
       .from(BUCKET_NAME)
       .createSignedUrl(docRow.storage_path, SIGNED_URL_TTL_SECONDS)
     if (urlError || !urlData?.signedUrl) {

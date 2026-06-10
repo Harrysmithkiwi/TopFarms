@@ -44,7 +44,7 @@ on:
 
 concurrency:
   group: supabase-deploy
-  cancel-in-progress: false   # never cancel mid-deploy; queue instead
+  cancel-in-progress: false # never cancel mid-deploy; queue instead
 
 env:
   SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
@@ -80,7 +80,7 @@ jobs:
     runs-on: ubuntu-latest
     # `needs: migrations` removed 2026-05-21 — migrations job now gated to
     # workflow_dispatch only. Functions deploy uses --use-api (PAT, not pooler).
-    continue-on-error: true   # Per CONTEXT.md: notify-only on function-deploy failure (no auto-rollback)
+    continue-on-error: true # Per CONTEXT.md: notify-only on function-deploy failure (no auto-rollback)
     steps:
       - uses: actions/checkout@v4
 

@@ -68,24 +68,26 @@ Deno.serve(async (req) => {
       .single()
 
     if (appError || !appRow) {
-      return new Response(
-        JSON.stringify({ error: 'Application not found' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      )
+      return new Response(JSON.stringify({ error: 'Application not found' }), {
+        status: 404,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
     }
 
     // Cache hit — return existing summary
     if (appRow.ai_summary) {
-      return new Response(
-        JSON.stringify({ summary: appRow.ai_summary }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      )
+      return new Response(JSON.stringify({ summary: appRow.ai_summary }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
     }
 
     // Load seeker profile
     const { data: seekerProfile } = await supabaseClient
       .from('seeker_profiles')
-      .select('region, years_experience, sector_pref, visa_status, dairynz_level, shed_types_experienced')
+      .select(
+        'region, years_experience, sector_pref, visa_status, dairynz_level, shed_types_experienced',
+      )
       .eq('user_id', seeker_id)
       .single()
 
@@ -105,10 +107,10 @@ Deno.serve(async (req) => {
       .single()
 
     if (!jobData || !scoreRow) {
-      return new Response(
-        JSON.stringify({ error: 'Job or score data not found' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      )
+      return new Response(JSON.stringify({ error: 'Job or score data not found' }), {
+        status: 404,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
     }
 
     // Create Anthropic client
@@ -124,18 +126,20 @@ Deno.serve(async (req) => {
         const message = await anthropic.messages.create({
           model: 'claude-sonnet-4-20250514',
           max_tokens: 200,
-          messages: [{
-            role: 'user',
-            content: buildPrompt({
-              jobTitle: jobData.title,
-              totalScore: scoreRow.total_score,
-              breakdown: scoreRow.breakdown,
-              yearsExperience: seekerProfile?.years_experience ?? null,
-              region: seekerProfile?.region ?? null,
-              shedTypes: seekerProfile?.shed_types_experienced ?? null,
-              visaStatus: seekerProfile?.visa_status ?? null,
-            }),
-          }],
+          messages: [
+            {
+              role: 'user',
+              content: buildPrompt({
+                jobTitle: jobData.title,
+                totalScore: scoreRow.total_score,
+                breakdown: scoreRow.breakdown,
+                yearsExperience: seekerProfile?.years_experience ?? null,
+                region: seekerProfile?.region ?? null,
+                shedTypes: seekerProfile?.shed_types_experienced ?? null,
+                visaStatus: seekerProfile?.visa_status ?? null,
+              }),
+            },
+          ],
         })
 
         const firstContent = message.content[0]
@@ -161,15 +165,15 @@ Deno.serve(async (req) => {
     }
 
     // Return 200 with summary (may be null — graceful degradation)
-    return new Response(
-      JSON.stringify({ summary }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-    )
+    return new Response(JSON.stringify({ summary }), {
+      status: 200,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
   } catch (error) {
     console.error('Unexpected error in generate-candidate-summary:', error)
-    return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-    )
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
   }
 })

@@ -44,7 +44,7 @@ function renderHome() {
   return render(
     <MemoryRouter>
       <Home />
-    </MemoryRouter>
+    </MemoryRouter>,
   )
 }
 

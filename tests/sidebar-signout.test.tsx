@@ -41,7 +41,11 @@ describe('Sidebar — Sign Out', () => {
     } as any)
 
     const user = userEvent.setup()
-    render(<MemoryRouter><Sidebar /></MemoryRouter>)
+    render(
+      <MemoryRouter>
+        <Sidebar />
+      </MemoryRouter>,
+    )
     await user.click(screen.getByRole('button', { name: /sign out/i }))
     expect(signOutMock).toHaveBeenCalledTimes(1)
   })

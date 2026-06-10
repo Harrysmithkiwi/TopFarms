@@ -10,17 +10,17 @@ const sectors = [
 
 export function FarmTypesStrip() {
   return (
-    <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-surface)' }}>
+    <section className="px-4 py-20" style={{ backgroundColor: 'var(--color-surface)' }}>
       <motion.div
-        className="max-w-6xl mx-auto"
+        className="mx-auto max-w-6xl"
         initial={{ opacity: 0, y: 32 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.15 }}
         transition={{ duration: 0.55, ease: 'easeOut' }}
       >
         {/* Eyebrow */}
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-8 h-px" style={{ backgroundColor: 'var(--color-brand)' }} />
+        <div className="mb-4 flex items-center gap-3">
+          <div className="h-px w-8" style={{ backgroundColor: 'var(--color-brand)' }} />
           <p
             className="text-xs font-bold tracking-widest uppercase"
             style={{ color: 'var(--color-brand)' }}
@@ -31,25 +31,25 @@ export function FarmTypesStrip() {
 
         {/* Heading */}
         <h2
-          className="font-display font-bold text-4xl md:text-5xl mb-10"
+          className="font-display mb-10 text-4xl font-bold md:text-5xl"
           style={{ color: 'var(--color-brand-900)' }}
         >
           Opportunities Across Every Sector
         </h2>
 
         {/* Sector cards — horizontal scroll on mobile, grid on sm+ */}
-        <div className="flex overflow-x-auto snap-x sm:grid sm:grid-cols-3 lg:grid-cols-5 gap-4 pb-2 sm:pb-0">
+        <div className="flex snap-x gap-4 overflow-x-auto pb-2 sm:grid sm:grid-cols-3 sm:pb-0 lg:grid-cols-5">
           {sectors.map((sector) => (
             <div
               key={sector.name}
-              className="snap-center min-w-[160px] sm:min-w-0 rounded-xl p-6 text-center transition-shadow hover:shadow-lg cursor-default"
+              className="min-w-[160px] cursor-default snap-center rounded-xl p-6 text-center transition-shadow hover:shadow-lg sm:min-w-0"
               style={{
                 backgroundColor: 'var(--color-surface)',
                 border: '1px solid var(--color-border)',
               }}
             >
-              <div className="text-3xl mb-3">{sector.icon}</div>
-              <p className="font-bold text-sm mb-1" style={{ color: 'var(--color-brand-900)' }}>
+              <div className="mb-3 text-3xl">{sector.icon}</div>
+              <p className="mb-1 text-sm font-bold" style={{ color: 'var(--color-brand-900)' }}>
                 {sector.name}
               </p>
               <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>

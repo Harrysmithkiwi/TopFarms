@@ -22,17 +22,27 @@ describe('FK index migration 025', () => {
   const EXPECTED: Array<[string, string]> = [
     ['admin_notes', 'admin_id'],
     ['job_skills', 'skill_id'],
-    ['listing_fees', 'employer_id'], ['listing_fees', 'job_id'],
-    ['message_threads', 'employer_id'], ['message_threads', 'job_id'], ['message_threads', 'seeker_id'],
-    ['messages', 'sender_id'], ['messages', 'thread_id'],
-    ['placement_fees', 'application_id'], ['placement_fees', 'employer_id'],
-    ['placement_fees', 'job_id'],         ['placement_fees', 'seeker_id'],
+    ['listing_fees', 'employer_id'],
+    ['listing_fees', 'job_id'],
+    ['message_threads', 'employer_id'],
+    ['message_threads', 'job_id'],
+    ['message_threads', 'seeker_id'],
+    ['messages', 'sender_id'],
+    ['messages', 'thread_id'],
+    ['placement_fees', 'application_id'],
+    ['placement_fees', 'employer_id'],
+    ['placement_fees', 'job_id'],
+    ['placement_fees', 'seeker_id'],
     ['saved_jobs', 'job_id'],
     ['seeker_skills', 'skill_id'],
   ]
 
   it.each(EXPECTED)('declares index on public.%s(%s)', (table, col) => {
     const indexName = `${table}_${col}_idx`
-    expect(sql).toMatch(new RegExp(`CREATE\\s+INDEX\\s+IF\\s+NOT\\s+EXISTS\\s+${indexName}\\s+ON\\s+public\\.${table}\\s*\\(${col}\\)`))
+    expect(sql).toMatch(
+      new RegExp(
+        `CREATE\\s+INDEX\\s+IF\\s+NOT\\s+EXISTS\\s+${indexName}\\s+ON\\s+public\\.${table}\\s*\\(${col}\\)`,
+      ),
+    )
   })
 })

@@ -17,9 +17,9 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 const ROOT = resolve(__dirname, '..')
-const TS_PATH    = resolve(ROOT, 'src/types/domain.ts')
-const EDGE_PATH  = resolve(ROOT, 'supabase/functions/get-applicant-document-url/index.ts')
-const SQL_PATH   = resolve(ROOT, 'supabase/migrations/020_seeker_documents_employer_policy.sql')
+const TS_PATH = resolve(ROOT, 'src/types/domain.ts')
+const EDGE_PATH = resolve(ROOT, 'supabase/functions/get-applicant-document-url/index.ts')
+const SQL_PATH = resolve(ROOT, 'supabase/migrations/020_seeker_documents_employer_policy.sql')
 
 function extractTsList(source: string): string[] {
   // Match: EMPLOYER_VISIBLE_DOCUMENT_TYPES[: DocumentType[]]? = ['cv', 'certificate', 'reference']
@@ -37,9 +37,9 @@ function extractSqlList(source: string): string[] {
 
 describe('EMPLOYER_VISIBLE_DOCUMENT_TYPES drift guard', () => {
   it('TS canonical, Edge fn duplicate, and SQL policy literal are identical', () => {
-    const tsList   = extractTsList(readFileSync(TS_PATH,   'utf8'))
+    const tsList = extractTsList(readFileSync(TS_PATH, 'utf8'))
     const edgeList = extractTsList(readFileSync(EDGE_PATH, 'utf8'))
-    const sqlList  = extractSqlList(readFileSync(SQL_PATH, 'utf8'))
+    const sqlList = extractSqlList(readFileSync(SQL_PATH, 'utf8'))
 
     // Order-independent comparison via sorted sets
     const sorted = (xs: string[]) => [...new Set(xs)].sort()

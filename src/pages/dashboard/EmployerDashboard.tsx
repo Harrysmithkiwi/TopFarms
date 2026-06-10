@@ -149,9 +149,7 @@ export function EmployerDashboard() {
     loadJobs()
   }, [loadJobs])
 
-  const onboardingProgress = profile
-    ? Math.round((profile.onboarding_step / TOTAL_STEPS) * 100)
-    : 0
+  const onboardingProgress = profile ? Math.round((profile.onboarding_step / TOTAL_STEPS) * 100) : 0
 
   const isOnboardingComplete = profile?.onboarding_complete ?? false
 
@@ -167,10 +165,7 @@ export function EmployerDashboard() {
   // Action handlers
   async function handlePauseResume(job: JobListing) {
     const newStatus: JobStatus = job.status === 'active' ? 'paused' : 'active'
-    const { error } = await supabase
-      .from('jobs')
-      .update({ status: newStatus })
-      .eq('id', job.id)
+    const { error } = await supabase.from('jobs').update({ status: newStatus }).eq('id', job.id)
 
     if (error) {
       toast.error('Failed to update listing status')
@@ -184,10 +179,7 @@ export function EmployerDashboard() {
 
   async function handleArchive(jobId: string) {
     setConfirmArchiveId(null)
-    const { error } = await supabase
-      .from('jobs')
-      .update({ status: 'archived' })
-      .eq('id', jobId)
+    const { error } = await supabase.from('jobs').update({ status: 'archived' }).eq('id', jobId)
 
     if (error) {
       toast.error('Failed to archive listing')
@@ -219,25 +211,21 @@ export function EmployerDashboard() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-
         {/* Onboarding prompt (only if not complete) */}
         {!isOnboardingComplete && (
           <Card className="p-6">
-            <div className="flex flex-col md:flex-row md:items-center gap-6">
+            <div className="flex flex-col gap-6 md:flex-row md:items-center">
               <div
-                className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0 text-3xl"
+                className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl text-3xl"
                 style={{ backgroundColor: 'var(--color-warn-bg)' }}
               >
                 🌾
               </div>
-              <div className="flex-1 min-w-0">
-                <h2
-                  className="text-lg font-semibold mb-1"
-                  style={{ color: 'var(--color-text)' }}
-                >
+              <div className="min-w-0 flex-1">
+                <h2 className="mb-1 text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
                   Complete your farm profile to start posting jobs
                 </h2>
-                <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>
+                <p className="mb-4 text-sm" style={{ color: 'var(--color-text-muted)' }}>
                   Set up your farm details, verification, and team culture to attract the best
                   candidates
                 </p>
@@ -250,8 +238,8 @@ export function EmployerDashboard() {
                 <Link
                   to="/onboarding/employer"
                   className={cn(
-                    'font-body font-bold rounded-[8px] transition-all duration-200 inline-flex items-center justify-center',
-                    'bg-brand text-white hover:bg-brand-hover',
+                    'font-body inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
+                    'bg-brand hover:bg-brand-hover text-white',
                     'px-4 py-2 text-[13px]',
                   )}
                 >
@@ -281,12 +269,12 @@ export function EmployerDashboard() {
               <Link
                 to="/jobs/new"
                 className={cn(
-                  'font-body font-bold rounded-[8px] transition-all duration-200 inline-flex items-center justify-center gap-1.5',
-                  'bg-brand text-white hover:bg-brand-hover',
-                  'px-4 py-2 text-[13px] flex-shrink-0',
+                  'font-body inline-flex items-center justify-center gap-1.5 rounded-[8px] font-bold transition-all duration-200',
+                  'bg-brand hover:bg-brand-hover text-white',
+                  'flex-shrink-0 px-4 py-2 text-[13px]',
                 )}
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="h-4 w-4" />
                 Post a Job
               </Link>
             </div>
@@ -294,12 +282,18 @@ export function EmployerDashboard() {
             {/* Verification nudge card (if not fully verified) */}
             {trustLevel !== 'fully_verified' && (
               <Card className="p-5">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <AlertCircle className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--color-text-muted)' }} />
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                  <div className="flex min-w-0 flex-1 items-center gap-3">
+                    <AlertCircle
+                      className="h-5 w-5 flex-shrink-0"
+                      style={{ color: 'var(--color-text-muted)' }}
+                    />
                     <div>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <p className="text-sm font-body font-semibold" style={{ color: 'var(--color-text)' }}>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p
+                          className="font-body text-sm font-semibold"
+                          style={{ color: 'var(--color-text)' }}
+                        >
                           Boost your trust level
                         </p>
                         <VerificationBadge
@@ -308,7 +302,7 @@ export function EmployerDashboard() {
                           expandable={false}
                         />
                       </div>
-                      <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+                      <p className="mt-0.5 text-xs" style={{ color: 'var(--color-text-muted)' }}>
                         Complete your verification to attract more candidates
                       </p>
                     </div>
@@ -316,9 +310,9 @@ export function EmployerDashboard() {
                   <Link
                     to="/dashboard/employer/verification"
                     className={cn(
-                      'font-body font-bold rounded-[8px] transition-all duration-200 inline-flex items-center justify-center',
-                      'bg-surface border border-brand text-brand hover:bg-surface-2',
-                      'px-4 py-2 text-[13px] flex-shrink-0',
+                      'font-body inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
+                      'bg-surface border-brand text-brand hover:bg-surface-2 border',
+                      'flex-shrink-0 px-4 py-2 text-[13px]',
                     )}
                   >
                     Improve Trust Level
@@ -328,28 +322,46 @@ export function EmployerDashboard() {
             )}
 
             {/* Quick Stats row */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <Card className="p-5">
-                <p className="text-[12px] font-body font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-text-subtle)' }}>
+                <p
+                  className="font-body mb-1 text-[12px] font-semibold tracking-wide uppercase"
+                  style={{ color: 'var(--color-text-subtle)' }}
+                >
                   Active Listings
                 </p>
-                <p className="text-3xl font-display font-semibold" style={{ color: 'var(--color-brand-900)' }}>
+                <p
+                  className="font-display text-3xl font-semibold"
+                  style={{ color: 'var(--color-brand-900)' }}
+                >
                   {activeCount}
                 </p>
               </Card>
               <Card className="p-5">
-                <p className="text-[12px] font-body font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-text-subtle)' }}>
+                <p
+                  className="font-body mb-1 text-[12px] font-semibold tracking-wide uppercase"
+                  style={{ color: 'var(--color-text-subtle)' }}
+                >
                   Draft Listings
                 </p>
-                <p className="text-3xl font-display font-semibold" style={{ color: 'var(--color-brand-900)' }}>
+                <p
+                  className="font-display text-3xl font-semibold"
+                  style={{ color: 'var(--color-brand-900)' }}
+                >
                   {draftCount}
                 </p>
               </Card>
               <Card className="p-5">
-                <p className="text-[12px] font-body font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-text-subtle)' }}>
+                <p
+                  className="font-body mb-1 text-[12px] font-semibold tracking-wide uppercase"
+                  style={{ color: 'var(--color-text-subtle)' }}
+                >
                   Total Views
                 </p>
-                <p className="text-3xl font-display font-semibold" style={{ color: 'var(--color-brand-900)' }}>
+                <p
+                  className="font-display text-3xl font-semibold"
+                  style={{ color: 'var(--color-brand-900)' }}
+                >
                   {totalViews}
                 </p>
               </Card>
@@ -357,21 +369,21 @@ export function EmployerDashboard() {
 
             {/* Job Listings section */}
             <div>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-body font-bold" style={{ color: 'var(--color-text)' }}>
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="font-body text-lg font-bold" style={{ color: 'var(--color-text)' }}>
                   Job Listings
                 </h2>
               </div>
 
               {/* Filter tabs */}
-              <div className="flex gap-1 mb-4 overflow-x-auto pb-1">
+              <div className="mb-4 flex gap-1 overflow-x-auto pb-1">
                 {FILTER_TABS.map((tab) => (
                   <button
                     key={tab.id}
                     type="button"
                     onClick={() => setActiveTab(tab.id)}
                     className={cn(
-                      'flex-shrink-0 px-3 py-1.5 rounded-full text-[12px] font-body font-semibold transition-all duration-150',
+                      'font-body flex-shrink-0 rounded-full px-3 py-1.5 text-[12px] font-semibold transition-all duration-150',
                       activeTab === tab.id
                         ? 'bg-brand text-white'
                         : 'bg-surface-2 text-text-muted hover:bg-brand/10 hover:text-brand',
@@ -384,37 +396,44 @@ export function EmployerDashboard() {
 
               {/* Jobs grid */}
               {loadingJobs ? (
-                <p className="text-sm py-8 text-center" style={{ color: 'var(--color-text-subtle)' }}>
+                <p
+                  className="py-8 text-center text-sm"
+                  style={{ color: 'var(--color-text-subtle)' }}
+                >
                   Loading listings...
                 </p>
               ) : filteredJobs.length === 0 && activeTab === 'all' ? (
                 // Empty state — no jobs at all
                 <Card className="p-10 text-center">
                   <div
-                    className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4"
+                    className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl text-3xl"
                     style={{ backgroundColor: 'var(--color-warn-bg)' }}
                   >
                     📌
                   </div>
-                  <h3 className="text-base font-body font-bold mb-1" style={{ color: 'var(--color-text)' }}>
+                  <h3
+                    className="font-body mb-1 text-base font-bold"
+                    style={{ color: 'var(--color-text)' }}
+                  >
                     No job listings yet
                   </h3>
-                  <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>
+                  <p className="mb-4 text-sm" style={{ color: 'var(--color-text-muted)' }}>
                     Post your first job to start finding great farm workers
                   </p>
                   <Link
                     to="/jobs/new"
                     className={cn(
-                      'font-body font-bold rounded-[8px] transition-all duration-200 inline-flex items-center justify-center gap-1.5',
-                      'bg-brand text-white hover:bg-brand-hover',
+                      'font-body inline-flex items-center justify-center gap-1.5 rounded-[8px] font-bold transition-all duration-200',
+                      'bg-brand hover:bg-brand-hover text-white',
                       'px-4 py-2 text-[13px]',
                     )}
                   >
-                    <Plus className="w-4 h-4" />
+                    <Plus className="h-4 w-4" />
                     Post Your First Job
                   </Link>
                 </Card>
-              ) : filteredJobs.filter((j) => j.status !== 'draft').length === 0 && activeTab !== 'drafts' ? (
+              ) : filteredJobs.filter((j) => j.status !== 'draft').length === 0 &&
+                activeTab !== 'drafts' ? (
                 // Empty state for current filter
                 <div
                   className="rounded-[12px] py-10 text-center"
@@ -425,7 +444,7 @@ export function EmployerDashboard() {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   {filteredJobs
                     .filter((j) => (activeTab === 'drafts' ? true : j.status !== 'draft'))
                     .map((job) => {
@@ -443,7 +462,7 @@ export function EmployerDashboard() {
                             <div className="mt-1.5 px-1">
                               <Link
                                 to={`/dashboard/employer/jobs/${job.id}/applicants`}
-                                className="text-sm font-body font-semibold hover:underline"
+                                className="font-body text-sm font-semibold hover:underline"
                                 style={{ color: 'var(--color-brand)' }}
                               >
                                 View Applicants ({appCount})
@@ -460,28 +479,31 @@ export function EmployerDashboard() {
             {/* Drafts section (shown separately when not on drafts tab) */}
             {activeTab !== 'drafts' && draftJobs.length > 0 && (
               <div>
-                <h2 className="text-lg font-body font-bold mb-4" style={{ color: 'var(--color-text)' }}>
+                <h2
+                  className="font-body mb-4 text-lg font-bold"
+                  style={{ color: 'var(--color-text)' }}
+                >
                   Draft Listings
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   {draftJobs.map((job) => (
                     <div
                       key={job.id}
-                      className="bg-surface border-[1.5px] border-border rounded-[12px] p-5 flex items-center justify-between gap-4"
+                      className="bg-surface border-border flex items-center justify-between gap-4 rounded-[12px] border-[1.5px] p-5"
                     >
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-[15px] font-body font-bold text-text truncate">
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-body text-text truncate text-[15px] font-bold">
                           {job.title}
                         </h3>
-                        <p className="text-[12px] font-body text-text-muted mt-0.5">
+                        <p className="font-body text-text-muted mt-0.5 text-[12px]">
                           {job.region} — Draft
                         </p>
                       </div>
                       <Link
                         to={`/jobs/${job.id}/edit`}
                         className={cn(
-                          'font-body font-bold rounded-[8px] transition-all duration-200 inline-flex items-center justify-center flex-shrink-0',
-                          'bg-surface border border-brand text-brand hover:bg-surface-2',
+                          'font-body inline-flex flex-shrink-0 items-center justify-center rounded-[8px] font-bold transition-all duration-200',
+                          'bg-surface border-brand text-brand hover:bg-surface-2 border',
                           'px-3 py-1.5 text-[12px]',
                         )}
                       >
@@ -506,13 +528,16 @@ export function EmployerDashboard() {
           />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div
-              className="bg-surface rounded-[16px] shadow-xl w-full max-w-sm border-[1.5px] border-border p-6"
+              className="bg-surface border-border w-full max-w-sm rounded-[16px] border-[1.5px] p-6 shadow-xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="text-[16px] font-body font-bold mb-2" style={{ color: 'var(--color-text)' }}>
+              <h3
+                className="font-body mb-2 text-[16px] font-bold"
+                style={{ color: 'var(--color-text)' }}
+              >
                 Archive this listing?
               </h3>
-              <p className="text-sm mb-5" style={{ color: 'var(--color-text-muted)' }}>
+              <p className="mb-5 text-sm" style={{ color: 'var(--color-text-muted)' }}>
                 Archived listings are hidden from job seekers and cannot be resumed. This cannot be
                 undone.
               </p>
@@ -529,7 +554,7 @@ export function EmployerDashboard() {
                   variant="primary"
                   size="md"
                   onClick={() => handleArchive(confirmArchiveId)}
-                  className="flex-1 bg-red hover:bg-red/90 border-danger"
+                  className="bg-red hover:bg-red/90 border-danger flex-1"
                   style={{ backgroundColor: '#dc3545' }}
                 >
                   Archive

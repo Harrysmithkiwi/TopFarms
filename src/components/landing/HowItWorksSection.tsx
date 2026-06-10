@@ -14,13 +14,15 @@ const seekerSteps: Step[] = [
     number: 1,
     icon: '👤',
     title: 'Create Profile',
-    description: 'Tell us your experience, skills, and what you\'re looking for in your next farm role.',
+    description:
+      "Tell us your experience, skills, and what you're looking for in your next farm role.",
   },
   {
     number: 2,
     icon: '🎯',
     title: 'Get Matched',
-    description: 'Our AI scores your profile against active listings based on skills, location, and preferences.',
+    description:
+      'Our AI scores your profile against active listings based on skills, location, and preferences.',
   },
   {
     number: 3,
@@ -41,25 +43,29 @@ const employerSteps: Step[] = [
     number: 1,
     icon: '📢',
     title: 'Post a Job',
-    description: 'List your role with agriculture-specific details: shed type, herd size, accommodation, and more.',
+    description:
+      'List your role with agriculture-specific details: shed type, herd size, accommodation, and more.',
   },
   {
     number: 2,
     icon: '🔍',
     title: 'Review Matches',
-    description: 'We surface pre-scored candidates ranked by fit. No more wading through unsuitable CVs.',
+    description:
+      'We surface pre-scored candidates ranked by fit. No more wading through unsuitable CVs.',
   },
   {
     number: 3,
     icon: '⭐',
     title: 'Shortlist',
-    description: 'Mark your favourites, unlock contact details, and move candidates through your pipeline.',
+    description:
+      'Mark your favourites, unlock contact details, and move candidates through your pipeline.',
   },
   {
     number: 4,
     icon: '🤝',
     title: 'Hire',
-    description: 'Confirm your hire directly on the platform. Simple, transparent placement fee on success.',
+    description:
+      'Confirm your hire directly on the platform. Simple, transparent placement fee on success.',
   },
 ]
 
@@ -74,11 +80,11 @@ export function HowItWorksSection() {
   const steps = activeTab === 'seeker' ? seekerSteps : employerSteps
 
   return (
-    <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-bg)' }}>
-      <div className="max-w-6xl mx-auto">
+    <section className="px-4 py-20" style={{ backgroundColor: 'var(--color-bg)' }}>
+      <div className="mx-auto max-w-6xl">
         {/* Eyebrow */}
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-8 h-px" style={{ backgroundColor: 'var(--color-brand)' }} />
+        <div className="mb-4 flex items-center gap-3">
+          <div className="h-px w-8" style={{ backgroundColor: 'var(--color-brand)' }} />
           <p
             className="text-xs font-bold tracking-widest uppercase"
             style={{ color: 'var(--color-brand)' }}
@@ -89,7 +95,7 @@ export function HowItWorksSection() {
 
         {/* Title */}
         <h2
-          className="font-display font-bold text-4xl md:text-5xl mb-10"
+          className="font-display mb-10 text-4xl font-bold md:text-5xl"
           style={{ color: 'var(--color-brand-900)' }}
         >
           Your Path to the{' '}
@@ -98,7 +104,7 @@ export function HowItWorksSection() {
 
         {/* Tab toggle */}
         <div
-          className="inline-flex rounded-full p-1 mb-12"
+          className="mb-12 inline-flex rounded-full p-1"
           role="tablist"
           aria-label="Choose your path"
           style={{ backgroundColor: 'var(--color-border)' }}
@@ -109,7 +115,7 @@ export function HowItWorksSection() {
               role="tab"
               aria-selected={activeTab === t.value}
               onClick={() => setActiveTab(t.value)}
-              className="px-5 py-2 rounded-full text-sm font-semibold transition-all"
+              className="rounded-full px-5 py-2 text-sm font-semibold transition-all"
               style={
                 activeTab === t.value
                   ? {
@@ -129,13 +135,13 @@ export function HowItWorksSection() {
         </div>
 
         {/* Step cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           {steps.map((step, index) => (
             <div key={step.number} className="relative">
               {/* Connector line (desktop only, not on last card) */}
               {index < steps.length - 1 && (
                 <div
-                  className="hidden lg:block absolute top-8 left-full w-full h-px z-0"
+                  className="absolute top-8 left-full z-0 hidden h-px w-full lg:block"
                   style={{
                     width: 'calc(100% - 64px)',
                     left: '80%',
@@ -147,7 +153,7 @@ export function HowItWorksSection() {
               )}
 
               <div
-                className="relative z-10 rounded-2xl p-6 h-full"
+                className="relative z-10 h-full rounded-2xl p-6"
                 style={{
                   backgroundColor: 'var(--color-surface)',
                   border: '1px solid var(--color-border)',
@@ -155,18 +161,18 @@ export function HowItWorksSection() {
               >
                 {/* Faded step number */}
                 <p
-                  className="font-display font-bold text-6xl leading-none mb-4 select-none"
+                  className="font-display mb-4 text-6xl leading-none font-bold select-none"
                   style={{ color: 'var(--color-border)' }}
                 >
                   {String(step.number).padStart(2, '0')}
                 </p>
 
                 {/* Icon */}
-                <div className="text-2xl mb-3">{step.icon}</div>
+                <div className="mb-3 text-2xl">{step.icon}</div>
 
                 {/* Title */}
                 <h3
-                  className="font-display font-bold text-lg mb-2"
+                  className="font-display mb-2 text-lg font-bold"
                   style={{ color: 'var(--color-brand-900)' }}
                 >
                   {step.title}

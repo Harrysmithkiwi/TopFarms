@@ -73,10 +73,7 @@ export function ReplaceOldestModal({
     setSubmitting(true)
     try {
       // Delete oldest first
-      const { error: delError } = await supabase
-        .from('saved_searches')
-        .delete()
-        .eq('id', oldest.id)
+      const { error: delError } = await supabase.from('saved_searches').delete().eq('id', oldest.id)
       if (delError) {
         toast.error('Could not replace — please try again.')
         return
@@ -114,13 +111,13 @@ export function ReplaceOldestModal({
         className="fixed inset-0 z-50 flex items-center justify-center p-4"
       >
         <div
-          className="bg-surface rounded-[16px] shadow-xl w-full max-w-md border-[1.5px] border-border"
+          className="bg-surface border-border w-full max-w-md rounded-[16px] border-[1.5px] shadow-xl"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-border">
+          <div className="border-border flex items-center justify-between border-b px-6 pt-5 pb-4">
             <h2
               id="replace-oldest-heading"
-              className="text-[16px] font-body font-bold"
+              className="font-body text-[16px] font-bold"
               style={{ color: 'var(--color-text)' }}
             >
               Replace oldest saved search?
@@ -128,14 +125,14 @@ export function ReplaceOldestModal({
             <button
               type="button"
               onClick={onClose}
-              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-2 transition-colors"
+              className="hover:bg-surface-2 flex h-8 w-8 items-center justify-center rounded-full transition-colors"
               aria-label="Close modal"
             >
-              <X className="w-4 h-4 text-text-muted" />
+              <X className="text-text-muted h-4 w-4" />
             </button>
           </div>
 
-          <div className="px-6 py-5 space-y-3">
+          <div className="space-y-3 px-6 py-5">
             <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
               You've reached 10 saved searches. Replace the oldest one
               {oldest ? (

@@ -16,14 +16,14 @@ type ApplicationWithJob = Application & {
 
 function SkeletonCard() {
   return (
-    <div className="bg-surface border-[1.5px] border-border rounded-[12px] p-4 animate-pulse">
+    <div className="bg-surface border-border animate-pulse rounded-[12px] border-[1.5px] p-4">
       <div className="flex gap-3">
         <div className="flex-1 space-y-2">
-          <div className="h-4 bg-surface-2 rounded w-3/4" />
-          <div className="h-3 bg-surface-2 rounded w-1/2" />
-          <div className="h-3 bg-surface-2 rounded w-1/3" />
+          <div className="bg-surface-2 h-4 w-3/4 rounded" />
+          <div className="bg-surface-2 h-3 w-1/2 rounded" />
+          <div className="bg-surface-2 h-3 w-1/3 rounded" />
         </div>
-        <div className="w-9 h-9 bg-surface-2 rounded-full flex-shrink-0" />
+        <div className="bg-surface-2 h-9 w-9 flex-shrink-0 rounded-full" />
       </div>
     </div>
   )
@@ -37,7 +37,9 @@ export function MyApplications() {
   const [scoreMap, setScoreMap] = useState<Map<string, MatchScore>>(new Map())
   const [loading, setLoading] = useState(true)
   const [sidebarFilter, setSidebarFilter] = useState('all')
-  const [savedJobDetails, setSavedJobDetails] = useState<{ job_id: string; title: string; farm_name: string }[]>([])
+  const [savedJobDetails, setSavedJobDetails] = useState<
+    { job_id: string; title: string; farm_name: string }[]
+  >([])
   const [profileStrength, setProfileStrength] = useState(0)
 
   useEffect(() => {
@@ -88,7 +90,11 @@ export function MyApplications() {
 
         if (scores && Array.isArray(scores)) {
           const map = new Map<string, MatchScore>()
-          for (const row of scores as { job_id: string; total_score: number; breakdown: MatchScore['breakdown'] }[]) {
+          for (const row of scores as {
+            job_id: string
+            total_score: number
+            breakdown: MatchScore['breakdown']
+          }[]) {
             map.set(row.job_id, { total_score: row.total_score, breakdown: row.breakdown })
           }
           setScoreMap(map)
@@ -102,24 +108,40 @@ export function MyApplications() {
         .eq('user_id', session.user.id)
       // Untyped nested-join shape; `any` goes away with generated DB types
       // (audit task 2.3).
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setSavedJobDetails((savedData ?? []).map((s: any) => ({
-        job_id: s.job_id,
-        title: s.jobs?.title ?? 'Unknown',
-        farm_name: s.jobs?.employer_profiles?.farm_name ?? '',
-      })))
+      setSavedJobDetails(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (savedData ?? []).map((s: any) => ({
+          job_id: s.job_id,
+          title: s.jobs?.title ?? 'Unknown',
+          farm_name: s.jobs?.employer_profiles?.farm_name ?? '',
+        })),
+      )
 
       // Profile strength: count non-null key fields on seeker_profiles
       const { data: profileRow } = await supabase
         .from('seeker_profiles')
-        .select('region, years_experience, dairynz_level, sector_pref, shed_types_experienced, accommodation_needed')
+        .select(
+          'region, years_experience, dairynz_level, sector_pref, shed_types_experienced, accommodation_needed',
+        )
         .eq('user_id', session.user.id)
         .single()
       if (profileRow) {
-        const fields = ['region', 'years_experience', 'dairynz_level', 'sector_pref', 'shed_types_experienced', 'accommodation_needed']
-        const filled = fields.filter(f => {
+        const fields = [
+          'region',
+          'years_experience',
+          'dairynz_level',
+          'sector_pref',
+          'shed_types_experienced',
+          'accommodation_needed',
+        ]
+        const filled = fields.filter((f) => {
           const val = (profileRow as Record<string, unknown>)[f]
-          return val !== null && val !== undefined && val !== '' && !(Array.isArray(val) && val.length === 0)
+          return (
+            val !== null &&
+            val !== undefined &&
+            val !== '' &&
+            !(Array.isArray(val) && val.length === 0)
+          )
         }).length
         setProfileStrength(Math.round((filled / fields.length) * 100))
       }
@@ -192,7 +214,7 @@ export function MyApplications() {
     <DashboardLayout hideSidebar>
       <div className="flex gap-6">
         {/* Main content */}
-        <div className="flex-1 min-w-0 space-y-6">
+        <div className="min-w-0 flex-1 space-y-6">
           {/* Header */}
           <div className="flex items-center gap-3">
             <h1
@@ -203,7 +225,7 @@ export function MyApplications() {
             </h1>
             {!loading && applications.length > 0 && (
               <span
-                className="px-2.5 py-1 rounded-full text-[12px] font-body font-semibold"
+                className="font-body rounded-full px-2.5 py-1 text-[12px] font-semibold"
                 style={{ backgroundColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
               >
                 {applications.length}
@@ -226,15 +248,18 @@ export function MyApplications() {
               className="rounded-[12px] p-12 text-center"
               style={{ backgroundColor: 'var(--color-surface-2)' }}
             >
-              <p className="text-base font-body font-semibold mb-2" style={{ color: 'var(--color-text)' }}>
+              <p
+                className="font-body mb-2 text-base font-semibold"
+                style={{ color: 'var(--color-text)' }}
+              >
                 You haven't applied to any jobs yet.
               </p>
-              <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>
+              <p className="mb-4 text-sm" style={{ color: 'var(--color-text-muted)' }}>
                 Browse open roles to find your next farm position.
               </p>
               <Link
                 to="/jobs"
-                className="text-sm font-body font-semibold text-brand hover:underline"
+                className="font-body text-brand text-sm font-semibold hover:underline"
               >
                 Browse jobs
               </Link>
@@ -263,7 +288,9 @@ export function MyApplications() {
               className="rounded-[12px] p-8 text-center"
               style={{ backgroundColor: 'var(--color-surface-2)' }}
             >
-              <p className="text-sm font-body text-text-muted">No applications match this filter.</p>
+              <p className="font-body text-text-muted text-sm">
+                No applications match this filter.
+              </p>
             </div>
           )}
         </div>
@@ -278,7 +305,7 @@ export function MyApplications() {
           profileStrength={profileStrength}
           onRemoveSavedJob={(jobId) => {
             toggleSave(jobId)
-            setSavedJobDetails(prev => prev.filter(sj => sj.job_id !== jobId))
+            setSavedJobDetails((prev) => prev.filter((sj) => sj.job_id !== jobId))
           }}
         />
       </div>

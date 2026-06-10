@@ -47,12 +47,12 @@ function TextAreaField({
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between">
-        <label className="font-body text-[13px] font-medium text-text">
+        <label className="font-body text-text text-[13px] font-medium">
           {label}
           {required && <span className="text-danger ml-0.5">*</span>}
         </label>
         <span
-          className="text-[11px] font-body"
+          className="font-body text-[11px]"
           style={{ color: isNearLimit ? 'var(--color-clay)' : 'var(--color-text-subtle)' }}
         >
           {charCount} / {maxLength}
@@ -63,9 +63,9 @@ function TextAreaField({
         placeholder={placeholder}
         rows={5}
         maxLength={maxLength}
-        className="w-full rounded-[10px] border-[1.5px] border-border px-3 py-2.5 text-[13px] font-body text-text bg-surface resize-none transition-colors duration-150 placeholder:text-text-subtle focus:outline-none focus:border-brand-hover"
+        className="border-border font-body text-text bg-surface placeholder:text-text-subtle focus:border-brand-hover w-full resize-none rounded-[10px] border-[1.5px] px-3 py-2.5 text-[13px] transition-colors duration-150 focus:outline-none"
       />
-      {error && <p className="text-[12px] text-danger font-body">{error}</p>}
+      {error && <p className="text-danger font-body text-[12px]">{error}</p>}
     </div>
   )
 }
@@ -97,7 +97,7 @@ export function JobStep5Description({ onComplete, onBack, defaultValues }: Step5
         <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Job description
         </h2>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
           Tell candidates about the role and what you are looking for
         </p>
       </div>

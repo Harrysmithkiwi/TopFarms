@@ -25,7 +25,7 @@ function getLowScoreContext(key: DimensionKey): string {
     case 'location':
       return 'Different region'
     case 'accommodation':
-      return 'Accommodation preferences don\'t align'
+      return "Accommodation preferences don't align"
     case 'skills':
       return 'Skills gap on required qualifications'
     case 'salary':
@@ -49,12 +49,12 @@ interface MatchBreakdownProps {
 
 export function MatchBreakdown({ score, blurred = false, className }: MatchBreakdownProps) {
   const content = (
-    <div className="bg-surface border border-border rounded-[12px] p-6 space-y-4">
+    <div className="bg-surface border-border space-y-4 rounded-[12px] border p-6">
       {/* Total score circle */}
-      <div className="flex flex-col items-center mb-2">
+      <div className="mb-2 flex flex-col items-center">
         <MatchCircle score={score.total_score} size="lg" />
         <p
-          className="text-[12px] font-body font-semibold mt-2"
+          className="font-body mt-2 text-[12px] font-semibold"
           style={{ color: 'var(--color-text-muted)' }}
         >
           Overall Match
@@ -71,7 +71,7 @@ export function MatchBreakdown({ score, blurred = false, className }: MatchBreak
             <div key={dim.key}>
               <div className="flex items-center gap-3">
                 <span
-                  className="text-[13px] font-body font-semibold w-28 flex-shrink-0"
+                  className="font-body w-28 flex-shrink-0 text-[13px] font-semibold"
                   style={{ color: 'var(--color-text)' }}
                 >
                   {dim.label}
@@ -80,7 +80,7 @@ export function MatchBreakdown({ score, blurred = false, className }: MatchBreak
                   <ProgressBar progress={(dimScore / dim.max) * 100} />
                 </div>
                 <span
-                  className="text-[12px] font-body w-10 text-right flex-shrink-0 tabular-nums"
+                  className="font-body w-10 flex-shrink-0 text-right text-[12px] tabular-nums"
                   style={{ color: 'var(--color-text-muted)' }}
                 >
                   {dimScore}/{dim.max}
@@ -88,7 +88,7 @@ export function MatchBreakdown({ score, blurred = false, className }: MatchBreak
               </div>
               {dimScore === 0 && lowContext && (
                 <p
-                  className="text-[11px] ml-28 pl-1 mt-0.5"
+                  className="mt-0.5 ml-28 pl-1 text-[11px]"
                   style={{ color: 'var(--color-text-subtle)' }}
                 >
                   {lowContext}
@@ -101,15 +101,15 @@ export function MatchBreakdown({ score, blurred = false, className }: MatchBreak
 
       {/* AI explanation */}
       {score.explanation && (
-        <div className="mt-4 pt-4 border-t border-border">
+        <div className="border-border mt-4 border-t pt-4">
           <p
-            className="text-[11px] font-body font-semibold uppercase tracking-wide mb-1.5"
+            className="font-body mb-1.5 text-[11px] font-semibold tracking-wide uppercase"
             style={{ color: 'var(--color-text-subtle)' }}
           >
             Why this match
           </p>
           <p
-            className="text-[14px] font-body leading-relaxed"
+            className="font-body text-[14px] leading-relaxed"
             style={{ color: 'var(--color-text-muted)' }}
           >
             {score.explanation}
@@ -123,14 +123,12 @@ export function MatchBreakdown({ score, blurred = false, className }: MatchBreak
     return (
       <div className={cn('relative', className)}>
         {/* Blurred content */}
-        <div className="blur-sm select-none pointer-events-none">
-          {content}
-        </div>
+        <div className="pointer-events-none blur-sm select-none">{content}</div>
 
         {/* Overlay */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center z-10 rounded-[12px] bg-surface/80">
+        <div className="bg-surface/80 absolute inset-0 z-10 flex flex-col items-center justify-center rounded-[12px]">
           <p
-            className="text-[14px] font-body font-semibold text-center mb-3 px-4"
+            className="font-body mb-3 px-4 text-center text-[14px] font-semibold"
             style={{ color: 'var(--color-text)' }}
           >
             Sign up to see how you match
@@ -138,9 +136,9 @@ export function MatchBreakdown({ score, blurred = false, className }: MatchBreak
           <Link
             to="/signup"
             className={cn(
-              'font-body font-medium rounded-[8px] transition-colors duration-150 inline-flex items-center justify-center',
+              'font-body inline-flex items-center justify-center rounded-[8px] font-medium transition-colors duration-150',
               'bg-brand text-text-on-brand hover:bg-brand-hover px-4 py-2 text-[13px]',
-              'outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
+              'focus-visible:outline-brand outline-none focus-visible:outline-2 focus-visible:outline-offset-2',
             )}
           >
             Sign Up Free

@@ -17,7 +17,13 @@ import { hasActiveFilters, snapshotFilters, deriveAutoName } from '@/lib/savedSe
 import { SaveSearchModal } from '@/components/saved-search/SaveSearchModal'
 import { ReplaceOldestModal } from '@/components/saved-search/ReplaceOldestModal'
 import { SavedSearchesDropdown } from '@/components/saved-search/SavedSearchesDropdown'
-import type { JobListing, MatchScore, EmployerVerification, TrustLevel, ApplicationStatus } from '@/types/domain'
+import type {
+  JobListing,
+  MatchScore,
+  EmployerVerification,
+  TrustLevel,
+  ApplicationStatus,
+} from '@/types/domain'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -79,18 +85,18 @@ function computeTrustLevel(verifications: EmployerVerification[]): TrustLevel {
 
 function SkeletonCard() {
   return (
-    <div className="bg-surface border border-border rounded-[12px] p-4 animate-pulse">
+    <div className="bg-surface border-border animate-pulse rounded-[12px] border p-4">
       <div className="flex items-start gap-4">
         <div className="flex-1 space-y-2">
-          <div className="h-4 bg-surface-2 rounded w-3/5" />
-          <div className="h-3 bg-surface-2 rounded w-2/5" />
-          <div className="flex gap-2 mt-2">
-            <div className="h-5 bg-surface-2 rounded-full w-16" />
-            <div className="h-5 bg-surface-2 rounded-full w-20" />
+          <div className="bg-surface-2 h-4 w-3/5 rounded" />
+          <div className="bg-surface-2 h-3 w-2/5 rounded" />
+          <div className="mt-2 flex gap-2">
+            <div className="bg-surface-2 h-5 w-16 rounded-full" />
+            <div className="bg-surface-2 h-5 w-20 rounded-full" />
           </div>
-          <div className="h-3 bg-surface-2 rounded w-1/4 mt-2" />
+          <div className="bg-surface-2 mt-2 h-3 w-1/4 rounded" />
         </div>
-        <div className="w-[50px] h-[50px] rounded-full bg-surface-2 flex-shrink-0" />
+        <div className="bg-surface-2 h-[50px] w-[50px] flex-shrink-0 rounded-full" />
       </div>
     </div>
   )
@@ -117,9 +123,9 @@ export function JobSearch() {
   // in the fetchJobs useEffect deps (Pitfall 1 / JOBS-01 regression guard).
   const [saveModalOpen, setSaveModalOpen] = useState(false)
   const [replaceModalOpen, setReplaceModalOpen] = useState(false)
-  const [pendingSave, setPendingSave] = useState<
-    { name: string; searchParams: string } | null
-  >(null)
+  const [pendingSave, setPendingSave] = useState<{ name: string; searchParams: string } | null>(
+    null,
+  )
 
   const { isSaved, toggleSave } = useSavedJobs(session?.user?.id ?? null)
 
@@ -177,18 +183,21 @@ export function JobSearch() {
 
   // ─── Remove filter handler (for ActiveFilterPills) ─────────────────────────
   function handleRemoveFilter(key: string, value?: string) {
-    setSearchParams((prev) => {
-      const next = new URLSearchParams(prev)
-      if (value) {
-        const vals = next.getAll(key).filter(v => v !== value)
-        next.delete(key)
-        vals.forEach(v => next.append(key, v))
-      } else {
-        next.delete(key)
-      }
-      next.delete('page') // reset to page 1 on filter remove
-      return next
-    }, { replace: true })
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev)
+        if (value) {
+          const vals = next.getAll(key).filter((v) => v !== value)
+          next.delete(key)
+          vals.forEach((v) => next.append(key, v))
+        } else {
+          next.delete(key)
+        }
+        next.delete('page') // reset to page 1 on filter remove
+        return next
+      },
+      { replace: true },
+    )
   }
 
   // ─── Clear-all handler ──────────────────────────────────────────────────────
@@ -196,27 +205,44 @@ export function JobSearch() {
   // setSearchParams calls in a forEach do not chain reliably with react-router's
   // updater the way useState does — they collapse to the last update.
   const handleClearAll = useCallback(() => {
-    setSearchParams((prev) => {
-      const next = new URLSearchParams(prev)
-      const filterKeys = [
-        'role_type', 'mentorship', 'vehicle', 'dairynz_pathway', 'posted_recent',
-        'shed_type', 'region', 'contract_type', 'herd_size',
-        'salary_min', 'salary_max', 'accommodation_type',
-        'visa', 'dairynz_level', 'page',
-      ]
-      filterKeys.forEach((key) => next.delete(key))
-      return next
-    }, { replace: true })
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev)
+        const filterKeys = [
+          'role_type',
+          'mentorship',
+          'vehicle',
+          'dairynz_pathway',
+          'posted_recent',
+          'shed_type',
+          'region',
+          'contract_type',
+          'herd_size',
+          'salary_min',
+          'salary_max',
+          'accommodation_type',
+          'visa',
+          'dairynz_level',
+          'page',
+        ]
+        filterKeys.forEach((key) => next.delete(key))
+        return next
+      },
+      { replace: true },
+    )
   }, [setSearchParams])
 
   // ─── Page change handler ────────────────────────────────────────────────────
   function handlePageChange(newPage: number) {
-    setSearchParams((prev) => {
-      const next = new URLSearchParams(prev)
-      if (newPage === 1) next.delete('page')
-      else next.set('page', String(newPage))
-      return next
-    }, { replace: true })
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev)
+        if (newPage === 1) next.delete('page')
+        else next.set('page', String(newPage))
+        return next
+      },
+      { replace: true },
+    )
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -230,7 +256,9 @@ export function JobSearch() {
 
         let query = supabase
           .from('jobs')
-          .select('*, employer_profiles!inner(id, farm_name, region, accommodation_extras)', { count: 'exact' })
+          .select('*, employer_profiles!inner(id, farm_name, region, accommodation_extras)', {
+            count: 'exact',
+          })
           .eq('status', 'active')
           .range(from, to)
 
@@ -318,8 +346,10 @@ export function JobSearch() {
 
         // Sort handling
         const sortParam = searchParams.get('sort') ?? 'match'
-        if (sortParam === 'salary_desc') query = query.order('salary_max', { ascending: false, nullsFirst: false })
-        else if (sortParam === 'location_nearest') query = query.order('region', { ascending: true })
+        if (sortParam === 'salary_desc')
+          query = query.order('salary_max', { ascending: false, nullsFirst: false })
+        else if (sortParam === 'location_nearest')
+          query = query.order('region', { ascending: true })
         else if (sortParam === 'recent') query = query.order('created_at', { ascending: false })
         else query = query.order('created_at', { ascending: false }) // default — match sort happens client-side after scores
 
@@ -370,7 +400,9 @@ export function JobSearch() {
         }
 
         // Fetch employer verifications for all jobs
-        const employerIds = [...new Set(fetchedJobs.map((j) => j.employer_profiles?.id).filter(Boolean))]
+        const employerIds = [
+          ...new Set(fetchedJobs.map((j) => j.employer_profiles?.id).filter(Boolean)),
+        ]
         if (employerIds.length > 0) {
           const { data: verificationData } = await supabase
             .from('employer_verifications')
@@ -418,7 +450,10 @@ export function JobSearch() {
       .select('id')
       .eq('user_id', session.user.id)
       .single()
-    if (!profile) { toast.error('Complete your profile before applying'); return }
+    if (!profile) {
+      toast.error('Complete your profile before applying')
+      return
+    }
     const { error } = await supabase.from('applications').insert({
       job_id: jobId,
       seeker_id: profile.id,
@@ -457,30 +492,29 @@ export function JobSearch() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-2">
+    <div className="bg-surface-2 min-h-screen">
       <SearchHero />
 
-      <div className="max-w-[1200px] mx-auto px-4 py-6">
-
+      <div className="mx-auto max-w-[1200px] px-4 py-6">
         {/* Mobile: sticky header with filter icon */}
-        <div className="md:hidden flex items-center justify-between mb-4 sticky top-0 bg-surface-2 z-10 py-2">
-          <h1 className="text-[18px] font-display font-bold text-text">Find Farm Jobs</h1>
+        <div className="bg-surface-2 sticky top-0 z-10 mb-4 flex items-center justify-between py-2 md:hidden">
+          <h1 className="font-display text-text text-[18px] font-bold">Find Farm Jobs</h1>
           <Dialog.Root open={drawerOpen} onOpenChange={setDrawerOpen}>
             <Dialog.Trigger asChild>
               <button
                 type="button"
-                className="flex items-center gap-2 px-3 py-2 border border-border rounded-[8px] bg-surface text-[13px] font-body text-text-muted hover:border-border-strong transition-colors"
+                className="border-border bg-surface font-body text-text-muted hover:border-border-strong flex items-center gap-2 rounded-[8px] border px-3 py-2 text-[13px] transition-colors"
               >
-                <SlidersHorizontal className="w-4 h-4" />
+                <SlidersHorizontal className="h-4 w-4" />
                 Filters
               </button>
             </Dialog.Trigger>
 
             {/* Mobile bottom drawer */}
             <Dialog.Portal>
-              <Dialog.Overlay className="fixed inset-0 bg-black/40 z-40" />
+              <Dialog.Overlay className="fixed inset-0 z-40 bg-black/40" />
               <Dialog.Content
-                className="fixed bottom-0 left-0 right-0 z-50 bg-surface rounded-t-[16px] max-h-[85vh] flex flex-col overflow-hidden"
+                className="bg-surface fixed right-0 bottom-0 left-0 z-50 flex max-h-[85vh] flex-col overflow-hidden rounded-t-[16px]"
                 aria-describedby={undefined}
               >
                 <Dialog.Title className="sr-only">Job Filters</Dialog.Title>
@@ -498,7 +532,7 @@ export function JobSearch() {
         </div>
 
         {/* Desktop: two-column grid */}
-        <div className="hidden md:grid grid-cols-[280px_1fr] gap-6">
+        <div className="hidden grid-cols-[280px_1fr] gap-6 md:grid">
           {/* Sidebar */}
           <aside>
             <FilterSidebar
@@ -651,14 +685,15 @@ function ResultsArea({
       <ActiveFilterPills searchParams={searchParams} onRemove={onRemoveFilter} />
 
       {/* Header: count + sort */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <p className="text-[14px] font-body text-text-muted">
+          <p className="font-body text-text-muted text-[14px]">
             {loading && jobs.length === 0 ? (
-              <span className="inline-block w-20 h-4 bg-surface-2 rounded animate-pulse" />
+              <span className="bg-surface-2 inline-block h-4 w-20 animate-pulse rounded" />
             ) : (
               <span>
-                <strong className="text-text">{jobs.length}</strong> job{jobs.length !== 1 ? 's' : ''} found
+                <strong className="text-text">{jobs.length}</strong> job
+                {jobs.length !== 1 ? 's' : ''} found
               </span>
             )}
           </p>
@@ -672,7 +707,7 @@ function ResultsArea({
               <button
                 type="button"
                 onClick={onSaveClick}
-                className="text-brand text-[13px] hover:underline cursor-pointer"
+                className="text-brand cursor-pointer text-[13px] hover:underline"
               >
                 Save search
               </button>
@@ -690,11 +725,11 @@ function ResultsArea({
 
         {/* Sort selector */}
         <div className="flex items-center gap-2">
-          <span className="text-[12px] font-body text-text-subtle">Sort:</span>
+          <span className="font-body text-text-subtle text-[12px]">Sort:</span>
           <select
             value={sortParam}
             onChange={(e) => onSortChange(e.target.value)}
-            className="text-[12px] font-body text-text border border-border rounded-[6px] px-2 py-1 bg-surface focus:outline-none focus:border-brand cursor-pointer"
+            className="font-body text-text border-border bg-surface focus:border-brand cursor-pointer rounded-[6px] border px-2 py-1 text-[12px] focus:outline-none"
           >
             <option value="match">Match Score</option>
             <option value="recent">Most Recent</option>
@@ -716,13 +751,13 @@ function ResultsArea({
       {/* Empty state */}
       {!loading && jobs.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="w-[72px] h-[72px] rounded-full bg-surface-2 flex items-center justify-center mb-4">
-            <X className="w-8 h-8 text-text-subtle" />
+          <div className="bg-surface-2 mb-4 flex h-[72px] w-[72px] items-center justify-center rounded-full">
+            <X className="text-text-subtle h-8 w-8" />
           </div>
-          <h3 className="text-[17px] font-body font-semibold text-text mb-2">
+          <h3 className="font-body text-text mb-2 text-[17px] font-semibold">
             No jobs match your filters.
           </h3>
-          <p className="text-[14px] font-body text-text-muted max-w-[280px]">
+          <p className="font-body text-text-muted max-w-[280px] text-[14px]">
             Try broadening your search or removing a filter.
           </p>
         </div>
@@ -755,15 +790,19 @@ function ResultsArea({
 
       {/* Numbered pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center mt-6">
-          <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} />
+        <div className="mt-6 flex justify-center">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={onPageChange}
+          />
         </div>
       )}
 
       {/* Loading more indicator */}
       {loading && jobs.length > 0 && (
-        <div className="flex justify-center mt-6">
-          <div className="w-6 h-6 border-2 border-brand border-t-transparent rounded-full animate-spin" />
+        <div className="mt-6 flex justify-center">
+          <div className="border-brand h-6 w-6 animate-spin rounded-full border-2 border-t-transparent" />
         </div>
       )}
     </div>

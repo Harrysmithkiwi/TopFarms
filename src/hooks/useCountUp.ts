@@ -14,8 +14,7 @@ export function useCountUp(target: number, duration = 1800, active = false): num
 
     // Respect prefers-reduced-motion
     const prefersReduced =
-      typeof window !== 'undefined' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
     if (prefersReduced) {
       setCount(target)

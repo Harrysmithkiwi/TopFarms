@@ -48,10 +48,10 @@ function summarizeFilters(searchParamsStr: string): string {
 
 function SkeletonCard() {
   return (
-    <div className="bg-surface border-[1.5px] border-border rounded-[12px] p-4 animate-pulse">
+    <div className="bg-surface border-border animate-pulse rounded-[12px] border-[1.5px] p-4">
       <div className="space-y-2">
-        <div className="h-4 bg-surface-2 rounded w-1/2" />
-        <div className="h-3 bg-surface-2 rounded w-3/4" />
+        <div className="bg-surface-2 h-4 w-1/2 rounded" />
+        <div className="bg-surface-2 h-3 w-3/4 rounded" />
       </div>
     </div>
   )
@@ -102,8 +102,8 @@ function SavedSearchRow({ row, onLoad, onDelete, onRename }: SavedSearchRowProps
   }
 
   return (
-    <div className="bg-surface border-[1.5px] border-border rounded-[12px] p-4 flex items-center gap-3">
-      <div className="flex-1 min-w-0 space-y-1">
+    <div className="bg-surface border-border flex items-center gap-3 rounded-[12px] border-[1.5px] p-4">
+      <div className="min-w-0 flex-1 space-y-1">
         {editing ? (
           <Input
             ref={inputRef}
@@ -129,29 +129,29 @@ function SavedSearchRow({ row, onLoad, onDelete, onRename }: SavedSearchRowProps
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="text-left text-[15px] font-body font-semibold hover:underline truncate w-full"
+            className="font-body w-full truncate text-left text-[15px] font-semibold hover:underline"
             style={{ color: 'var(--color-text)' }}
             aria-label={`Rename ${row.name}`}
           >
             {row.name}
           </button>
         )}
-        <p className="text-[13px] font-body" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="font-body text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
           {summarizeFilters(row.search_params)}
         </p>
       </div>
 
-      <div className="flex items-center gap-2 flex-shrink-0">
+      <div className="flex flex-shrink-0 items-center gap-2">
         <Button variant="primary" size="sm" onClick={() => onLoad(row.search_params)}>
           Load
         </Button>
         <button
           type="button"
           onClick={() => onDelete(row)}
-          className="w-9 h-9 flex items-center justify-center rounded-[8px] hover:bg-surface-2 transition-colors"
+          className="hover:bg-surface-2 flex h-9 w-9 items-center justify-center rounded-[8px] transition-colors"
           aria-label={`Delete ${row.name}`}
         >
-          <Trash2 className="w-4 h-4 text-text-muted" />
+          <Trash2 className="text-text-muted h-4 w-4" />
         </button>
       </div>
     </div>
@@ -219,8 +219,7 @@ export function SavedSearches() {
           if (restored) {
             setRows((prev) =>
               [restored, ...prev].sort(
-                (a, b) =>
-                  new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+                (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
               ),
             )
           }
@@ -229,17 +228,13 @@ export function SavedSearches() {
       onAutoClose: async () => {
         if (cancelled) return
         pendingDeletes.current.delete(row.id)
-        const { error } = await supabase
-          .from('saved_searches')
-          .delete()
-          .eq('id', row.id)
+        const { error } = await supabase.from('saved_searches').delete().eq('id', row.id)
         if (error) {
           toast.error('Could not delete saved search')
           // Restore — DB rejected our optimistic remove
           setRows((prev) =>
             [row, ...prev].sort(
-              (a, b) =>
-                new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+              (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
             ),
           )
         }
@@ -274,7 +269,7 @@ export function SavedSearches() {
           </h1>
           {!loading && rows.length > 0 && (
             <span
-              className="px-2.5 py-1 rounded-full text-[12px] font-body font-semibold"
+              className="font-body rounded-full px-2.5 py-1 text-[12px] font-semibold"
               style={{
                 backgroundColor: 'var(--color-border)',
                 color: 'var(--color-text-muted)',
@@ -298,21 +293,15 @@ export function SavedSearches() {
             style={{ backgroundColor: 'var(--color-surface-2)' }}
           >
             <p
-              className="text-base font-body font-semibold mb-2"
+              className="font-body mb-2 text-base font-semibold"
               style={{ color: 'var(--color-text)' }}
             >
               You haven't saved any searches yet.
             </p>
-            <p
-              className="text-sm mb-4"
-              style={{ color: 'var(--color-text-muted)' }}
-            >
+            <p className="mb-4 text-sm" style={{ color: 'var(--color-text-muted)' }}>
               Save your filters on the job search page to come back to them later.
             </p>
-            <Link
-              to="/jobs"
-              className="text-sm font-body font-semibold text-brand hover:underline"
-            >
+            <Link to="/jobs" className="font-body text-brand text-sm font-semibold hover:underline">
               Browse jobs
             </Link>
           </div>

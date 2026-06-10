@@ -29,9 +29,7 @@ interface Step3Props {
 }
 
 export function Step3Culture({ onComplete, onBack, defaultValues }: Step3Props) {
-  const [cultureCount, setCultureCount] = useState(
-    defaultValues?.culture_description?.length ?? 0,
-  )
+  const [cultureCount, setCultureCount] = useState(defaultValues?.culture_description?.length ?? 0)
   const [aboutCount, setAboutCount] = useState(defaultValues?.about_farm?.length ?? 0)
 
   const {
@@ -61,7 +59,7 @@ export function Step3Culture({ onComplete, onBack, defaultValues }: Step3Props) 
         <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Farm culture & team
         </h2>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
           Help candidates understand what it's like to work on your farm
         </p>
       </div>
@@ -70,14 +68,14 @@ export function Step3Culture({ onComplete, onBack, defaultValues }: Step3Props) 
         {/* Culture description textarea */}
         <div>
           <label
-            className="font-body text-[13px] font-medium text-text mb-1 block"
+            className="font-body text-text mb-1 block text-[13px] font-medium"
             htmlFor="culture_description"
           >
             Work culture
           </label>
           <textarea
             id="culture_description"
-            className="w-full border-[1.5px] rounded-[8px] px-3 py-2 font-body text-[13px] text-text placeholder:text-text-subtle bg-surface-2 resize-none outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand border-border focus:border-brand-hover transition-colors duration-200"
+            className="font-body text-text placeholder:text-text-subtle bg-surface-2 focus-visible:outline-brand border-border focus:border-brand-hover w-full resize-none rounded-[8px] border-[1.5px] px-3 py-2 text-[13px] transition-colors duration-200 outline-none focus-visible:outline-2 focus-visible:outline-offset-2"
             rows={4}
             placeholder="Describe your farm's work culture and team environment..."
             maxLength={CULTURE_MAX}
@@ -85,11 +83,16 @@ export function Step3Culture({ onComplete, onBack, defaultValues }: Step3Props) 
               onChange: (e) => setCultureCount(e.target.value.length),
             })}
           />
-          <div className="flex justify-between mt-1">
+          <div className="mt-1 flex justify-between">
             {errors.culture_description && (
-              <p className="text-danger text-[12px] font-body">{errors.culture_description.message}</p>
+              <p className="text-danger font-body text-[12px]">
+                {errors.culture_description.message}
+              </p>
             )}
-            <p className="text-[12px] font-body ml-auto" style={{ color: 'var(--color-text-subtle)' }}>
+            <p
+              className="font-body ml-auto text-[12px]"
+              style={{ color: 'var(--color-text-subtle)' }}
+            >
               {cultureCount}/{CULTURE_MAX}
             </p>
           </div>
@@ -106,14 +109,14 @@ export function Step3Culture({ onComplete, onBack, defaultValues }: Step3Props) 
         {/* About farm textarea */}
         <div>
           <label
-            className="font-body text-[13px] font-medium text-text mb-1 block"
+            className="font-body text-text mb-1 block text-[13px] font-medium"
             htmlFor="about_farm"
           >
             About your farm
           </label>
           <textarea
             id="about_farm"
-            className="w-full border-[1.5px] rounded-[8px] px-3 py-2 font-body text-[13px] text-text placeholder:text-text-subtle bg-surface-2 resize-none outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand border-border focus:border-brand-hover transition-colors duration-200"
+            className="font-body text-text placeholder:text-text-subtle bg-surface-2 focus-visible:outline-brand border-border focus:border-brand-hover w-full resize-none rounded-[8px] border-[1.5px] px-3 py-2 text-[13px] transition-colors duration-200 outline-none focus-visible:outline-2 focus-visible:outline-offset-2"
             rows={4}
             placeholder="Describe your farm — its history, location, what makes it special..."
             maxLength={ABOUT_MAX}
@@ -121,11 +124,14 @@ export function Step3Culture({ onComplete, onBack, defaultValues }: Step3Props) 
               onChange: (e) => setAboutCount(e.target.value.length),
             })}
           />
-          <div className="flex justify-between mt-1">
+          <div className="mt-1 flex justify-between">
             {errors.about_farm && (
-              <p className="text-danger text-[12px] font-body">{errors.about_farm.message}</p>
+              <p className="text-danger font-body text-[12px]">{errors.about_farm.message}</p>
             )}
-            <p className="text-[12px] font-body ml-auto" style={{ color: 'var(--color-text-subtle)' }}>
+            <p
+              className="font-body ml-auto text-[12px]"
+              style={{ color: 'var(--color-text-subtle)' }}
+            >
               {aboutCount}/{ABOUT_MAX}
             </p>
           </div>
@@ -147,11 +153,7 @@ export function Step3Culture({ onComplete, onBack, defaultValues }: Step3Props) 
         />
 
         {/* Nearest town */}
-        <Input
-          label="Nearest town"
-          placeholder="e.g., Matamata"
-          {...register('nearest_town')}
-        />
+        <Input label="Nearest town" placeholder="e.g., Matamata" {...register('nearest_town')} />
 
         {/* Distance from town + conditional warning */}
         <div>
@@ -171,7 +173,8 @@ export function Step3Culture({ onComplete, onBack, defaultValues }: Step3Props) 
           {showDistanceWarning && (
             <div className="mt-2">
               <InfoBox variant="warn">
-                Remote locations may receive fewer applicants. Consider highlighting accommodation and transport options.
+                Remote locations may receive fewer applicants. Consider highlighting accommodation
+                and transport options.
               </InfoBox>
             </div>
           )}

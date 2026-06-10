@@ -72,7 +72,7 @@ export function DocumentUpload() {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center py-16">
-          <Loader2 className="w-6 h-6 text-brand animate-spin" />
+          <Loader2 className="text-brand h-6 w-6 animate-spin" />
         </div>
       </DashboardLayout>
     )
@@ -80,19 +80,22 @@ export function DocumentUpload() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6 max-w-2xl">
+      <div className="max-w-2xl space-y-6">
         {/* Back navigation */}
         <Link
           to="/dashboard/employer/verification"
-          className="inline-flex items-center gap-1.5 text-[13px] font-body text-text-muted hover:text-text transition-colors"
+          className="font-body text-text-muted hover:text-text inline-flex items-center gap-1.5 text-[13px] transition-colors"
         >
-          <ArrowLeft className="w-3.5 h-3.5" />
+          <ArrowLeft className="h-3.5 w-3.5" />
           Back to Verification
         </Link>
 
         {/* Page header */}
         <div>
-          <h1 className="font-display text-3xl font-semibold" style={{ color: 'var(--color-brand-900)' }}>
+          <h1
+            className="font-display text-3xl font-semibold"
+            style={{ color: 'var(--color-brand-900)' }}
+          >
             Upload Verification Documents
           </h1>
           <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
@@ -102,10 +105,10 @@ export function DocumentUpload() {
 
         {/* Upload card */}
         <Card className="p-6">
-          <h2 className="text-[14px] font-body font-semibold text-text mb-1">
+          <h2 className="font-body text-text mb-1 text-[14px] font-semibold">
             Verification Document
           </h2>
-          <p className="text-[12px] font-body text-text-muted mb-4">
+          <p className="font-body text-text-muted mb-4 text-[12px]">
             Accepted formats: JPG, PNG, PDF. Maximum file size: 10MB.
           </p>
 
@@ -123,23 +126,25 @@ export function DocumentUpload() {
               onUploadComplete={handleUploadComplete}
             />
           ) : (
-            <p className="text-[13px] font-body text-text-muted">Please log in to upload documents.</p>
+            <p className="font-body text-text-muted text-[13px]">
+              Please log in to upload documents.
+            </p>
           )}
         </Card>
 
         {/* Currently uploaded document */}
         {existingDocumentUrl && (
           <Card className="p-5">
-            <h3 className="text-[13px] font-body font-semibold text-text mb-3">
+            <h3 className="font-body text-text mb-3 text-[13px] font-semibold">
               Uploaded Document
             </h3>
-            <div className="flex items-center gap-3 p-3 bg-surface-2 rounded-[8px]">
-              <div className="w-8 h-8 rounded-lg bg-[rgba(74,124,47,0.10)] flex items-center justify-center flex-shrink-0">
-                <FileText className="w-4 h-4 text-brand" />
+            <div className="bg-surface-2 flex items-center gap-3 rounded-[8px] p-3">
+              <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[rgba(74,124,47,0.10)]">
+                <FileText className="text-brand h-4 w-4" />
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-body text-text truncate">Verification document</p>
-                <p className="text-[11px] font-body text-text-subtle">
+              <div className="min-w-0 flex-1">
+                <p className="font-body text-text truncate text-[13px]">Verification document</p>
+                <p className="font-body text-text-subtle text-[11px]">
                   Verified — uploaded to secure storage
                 </p>
               </div>
@@ -147,7 +152,7 @@ export function DocumentUpload() {
                 href={existingDocumentUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[11px] font-body text-brand hover:text-brand-hover transition-colors flex-shrink-0"
+                className="font-body text-brand hover:text-brand-hover flex-shrink-0 text-[11px] transition-colors"
               >
                 View
               </a>
@@ -156,7 +161,7 @@ export function DocumentUpload() {
         )}
 
         {/* Help text */}
-        <p className="text-[12px] font-body text-text-subtle">
+        <p className="font-body text-text-subtle text-[12px]">
           Acceptable documents include: business registration certificate, farm lease or ownership
           deed, RMA consent, or similar official business documents.
         </p>

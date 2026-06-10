@@ -130,7 +130,9 @@ Deno.serve(async (req) => {
     const { application_id } = invoice.metadata ?? {}
 
     if (!application_id) {
-      console.log('Invoice event without application_id metadata — skipping (not a placement fee invoice)')
+      console.log(
+        'Invoice event without application_id metadata — skipping (not a placement fee invoice)',
+      )
       return new Response(JSON.stringify({ received: true }), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },

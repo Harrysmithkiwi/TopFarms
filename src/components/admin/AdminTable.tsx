@@ -183,7 +183,7 @@ export function AdminTable<TRow extends Record<string, unknown>>({
                 return (
                   <tr
                     key={rowKey}
-                    className="cursor-pointer transition-colors hover:bg-surface-hover"
+                    className="hover:bg-surface-hover cursor-pointer transition-colors"
                     style={{
                       borderBottom:
                         idx === rows.length - 1 ? 'none' : '1px solid var(--color-border)',

@@ -61,33 +61,35 @@ export function JobDetailSidebar({
   return (
     <div className="space-y-4">
       {/* Section 1: Quick Facts card */}
-      <div className="bg-surface border border-border rounded-[12px] p-4">
-        <h3 className="text-[13px] font-body font-semibold text-text mb-3">Quick Facts</h3>
-        <ul className="space-y-2.5 mb-4">
+      <div className="bg-surface border-border rounded-[12px] border p-4">
+        <h3 className="font-body text-text mb-3 text-[13px] font-semibold">Quick Facts</h3>
+        <ul className="mb-4 space-y-2.5">
           {job.contract_type && (
             <li className="flex items-center gap-2">
-              <Briefcase className="w-4 h-4 text-text-subtle flex-shrink-0" />
-              <span className="text-[13px] font-body text-text-muted capitalize">{job.contract_type}</span>
+              <Briefcase className="text-text-subtle h-4 w-4 flex-shrink-0" />
+              <span className="font-body text-text-muted text-[13px] capitalize">
+                {job.contract_type}
+              </span>
             </li>
           )}
           {farm.region && (
             <li className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-text-subtle flex-shrink-0" />
-              <span className="text-[13px] font-body text-text-muted">{farm.region}</span>
+              <MapPin className="text-text-subtle h-4 w-4 flex-shrink-0" />
+              <span className="font-body text-text-muted text-[13px]">{farm.region}</span>
             </li>
           )}
           {(job.salary_min || job.salary_max) && (
             <li className="flex items-center gap-2">
-              <DollarSign className="w-4 h-4 text-text-subtle flex-shrink-0" />
-              <span className="text-[13px] font-body text-text-muted">
+              <DollarSign className="text-text-subtle h-4 w-4 flex-shrink-0" />
+              <span className="font-body text-text-muted text-[13px]">
                 {formatSalaryShort(job.salary_min, job.salary_max)}
               </span>
             </li>
           )}
           {job.start_date && (
             <li className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-text-subtle flex-shrink-0" />
-              <span className="text-[13px] font-body text-text-muted">
+              <Clock className="text-text-subtle h-4 w-4 flex-shrink-0" />
+              <span className="font-body text-text-muted text-[13px]">
                 Starts {formatDateShort(job.start_date)}
               </span>
             </li>
@@ -95,28 +97,26 @@ export function JobDetailSidebar({
         </ul>
 
         {/* Save / Share buttons */}
-        <div className="flex items-center gap-2 pt-3 border-t border-border">
+        <div className="border-border flex items-center gap-2 border-t pt-3">
           <button
             type="button"
             onClick={onSaveToggle}
             aria-label={isSaved ? 'Job saved' : 'Save this job'}
             className={cn(
-              'flex items-center gap-1.5 text-[13px] font-body font-medium transition-colors',
+              'font-body flex items-center gap-1.5 text-[13px] font-medium transition-colors',
               isSaved ? 'text-warn' : 'text-text-muted hover:text-warn',
             )}
           >
-            <Bookmark
-              className={cn('w-4 h-4', isSaved ? 'fill-warn text-warn' : '')}
-            />
+            <Bookmark className={cn('h-4 w-4', isSaved ? 'fill-warn text-warn' : '')} />
             {isSaved ? 'Saved' : 'Save'}
           </button>
           <button
             type="button"
             onClick={onShare}
             aria-label="Share this job"
-            className="flex items-center gap-1.5 text-[13px] font-body font-medium text-text-muted hover:text-brand transition-colors ml-auto"
+            className="font-body text-text-muted hover:text-brand ml-auto flex items-center gap-1.5 text-[13px] font-medium transition-colors"
           >
-            <Share2 className="w-4 h-4" />
+            <Share2 className="h-4 w-4" />
             Share
           </button>
         </div>
@@ -124,9 +124,9 @@ export function JobDetailSidebar({
 
       {/* Section 2: Deadline notice */}
       {job.expires_at && (
-        <div className="bg-warn-bg rounded-[12px] p-3 flex items-center gap-2">
-          <Clock className="w-4 h-4 text-warn flex-shrink-0" />
-          <span className="text-[13px] font-body text-text">
+        <div className="bg-warn-bg flex items-center gap-2 rounded-[12px] p-3">
+          <Clock className="text-warn h-4 w-4 flex-shrink-0" />
+          <span className="font-body text-text text-[13px]">
             Applications close {formatDateShort(job.expires_at)}
           </span>
         </div>
@@ -134,25 +134,25 @@ export function JobDetailSidebar({
 
       {/* Section 3: Similar Jobs card */}
       {similarJobs.length > 0 && (
-        <div className="bg-surface border border-border rounded-[12px] p-4">
-          <h3 className="text-[13px] font-body font-semibold text-text mb-3">Similar Jobs</h3>
+        <div className="bg-surface border-border rounded-[12px] border p-4">
+          <h3 className="font-body text-text mb-3 text-[13px] font-semibold">Similar Jobs</h3>
           <ul className="space-y-3">
             {similarJobs.slice(0, 3).map((sj) => (
               <li key={sj.id}>
                 <Link
                   to={`/jobs/${sj.id}`}
-                  className="flex items-start justify-between gap-2 group"
+                  className="group flex items-start justify-between gap-2"
                 >
                   <div className="min-w-0">
-                    <p className="text-[13px] font-body font-semibold text-text group-hover:text-brand transition-colors leading-snug truncate">
+                    <p className="font-body text-text group-hover:text-brand truncate text-[13px] leading-snug font-semibold transition-colors">
                       {sj.title}
                     </p>
-                    <p className="text-[12px] font-body text-text-muted truncate">
+                    <p className="font-body text-text-muted truncate text-[12px]">
                       {sj.farm_name}
                       {sj.region ? ` · ${sj.region}` : ''}
                     </p>
                     {(sj.salary_min || sj.salary_max) && (
-                      <p className="text-[12px] font-body text-text-subtle">
+                      <p className="font-body text-text-subtle text-[12px]">
                         {formatSalaryShort(sj.salary_min, sj.salary_max)}
                       </p>
                     )}
@@ -170,38 +170,44 @@ export function JobDetailSidebar({
       )}
 
       {/* Section 4: Farm Profile card */}
-      <div className="border border-border rounded-[12px] overflow-hidden">
+      <div className="border-border overflow-hidden rounded-[12px] border">
         {/* Header */}
-        <div className="bg-brand-900 px-4 py-3 rounded-t-[12px]">
-          <h3 className="text-[16px] font-display font-semibold text-white leading-snug">
+        <div className="bg-brand-900 rounded-t-[12px] px-4 py-3">
+          <h3 className="font-display text-[16px] leading-snug font-semibold text-white">
             {farm.farm_name}
           </h3>
           {farm.region && (
-            <p className="text-[12px] font-body text-white/70 mt-0.5">{farm.region}</p>
+            <p className="font-body mt-0.5 text-[12px] text-white/70">{farm.region}</p>
           )}
         </div>
 
         {/* Body */}
-        <div className="bg-surface px-4 py-4 space-y-3">
+        <div className="bg-surface space-y-3 px-4 py-4">
           {/* Stats grid */}
-          {(farm.total_jobs !== undefined || farm.herd_size !== undefined || farm.total_hires !== undefined) && (
-            <div className="grid grid-cols-3 gap-2 pb-3 border-b border-border">
+          {(farm.total_jobs !== undefined ||
+            farm.herd_size !== undefined ||
+            farm.total_hires !== undefined) && (
+            <div className="border-border grid grid-cols-3 gap-2 border-b pb-3">
               {farm.total_jobs !== undefined && (
                 <div className="text-center">
-                  <p className="text-[15px] font-body font-semibold text-text">{farm.total_jobs}</p>
-                  <p className="text-[11px] font-body text-text-subtle">Jobs</p>
+                  <p className="font-body text-text text-[15px] font-semibold">{farm.total_jobs}</p>
+                  <p className="font-body text-text-subtle text-[11px]">Jobs</p>
                 </div>
               )}
               {farm.herd_size !== undefined && (
                 <div className="text-center">
-                  <p className="text-[15px] font-body font-semibold text-text">{farm.herd_size.toLocaleString()}</p>
-                  <p className="text-[11px] font-body text-text-subtle">Herd Size</p>
+                  <p className="font-body text-text text-[15px] font-semibold">
+                    {farm.herd_size.toLocaleString()}
+                  </p>
+                  <p className="font-body text-text-subtle text-[11px]">Herd Size</p>
                 </div>
               )}
               {farm.total_hires !== undefined && (
                 <div className="text-center">
-                  <p className="text-[15px] font-body font-semibold text-text">{farm.total_hires}</p>
-                  <p className="text-[11px] font-body text-text-subtle">Hires</p>
+                  <p className="font-body text-text text-[15px] font-semibold">
+                    {farm.total_hires}
+                  </p>
+                  <p className="font-body text-text-subtle text-[11px]">Hires</p>
                 </div>
               )}
             </div>
@@ -211,12 +217,12 @@ export function JobDetailSidebar({
           {(farm.farm_type || farm.region) && (
             <div className="flex flex-wrap gap-1.5">
               {farm.farm_type && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-2 text-[11px] font-body text-text-muted capitalize">
+                <span className="bg-surface-2 font-body text-text-muted inline-flex items-center rounded-full px-2 py-0.5 text-[11px] capitalize">
                   {farm.farm_type}
                 </span>
               )}
               {farm.region && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-2 text-[11px] font-body text-text-muted">
+                <span className="bg-surface-2 font-body text-text-muted inline-flex items-center rounded-full px-2 py-0.5 text-[11px]">
                   {farm.region}
                 </span>
               )}
@@ -224,14 +230,12 @@ export function JobDetailSidebar({
           )}
 
           {/* Star rating */}
-          {farm.rating !== undefined && (
-            <StarRating value={farm.rating} size={14} />
-          )}
+          {farm.rating !== undefined && <StarRating value={farm.rating} size={14} />}
 
           {/* View farm profile link */}
           <Link
             to={`/farms/${farm.id}`}
-            className="block text-[13px] font-body font-medium text-brand hover:text-brand-hover transition-colors"
+            className="font-body text-brand hover:text-brand-hover block text-[13px] font-medium transition-colors"
           >
             View Farm Profile
           </Link>

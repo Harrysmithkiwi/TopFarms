@@ -71,11 +71,11 @@ function buildSeekerLabel(app: Applicant): string {
 
 function SkeletonRow() {
   return (
-    <div className="bg-surface border-[1.5px] border-border rounded-[12px] p-4 animate-pulse">
+    <div className="bg-surface border-border animate-pulse rounded-[12px] border-[1.5px] p-4">
       <div className="flex items-center gap-4">
-        <div className="flex-1 h-4 bg-surface-2 rounded" />
-        <div className="w-9 h-9 bg-surface-2 rounded-full" />
-        <div className="w-20 h-5 bg-surface-2 rounded-full" />
+        <div className="bg-surface-2 h-4 flex-1 rounded" />
+        <div className="bg-surface-2 h-9 w-9 rounded-full" />
+        <div className="bg-surface-2 h-5 w-20 rounded-full" />
       </div>
     </div>
   )
@@ -100,7 +100,9 @@ export function ApplicantDashboard() {
   const [loading, setLoading] = useState(true)
 
   // Employer jobs for sidebar listing selector
-  const [employerJobs, setEmployerJobs] = useState<{ id: string; title: string; applicant_count: number }[]>([])
+  const [employerJobs, setEmployerJobs] = useState<
+    { id: string; title: string; applicant_count: number }[]
+  >([])
 
   // Filter, sort, view state
   const [statusFilter, setStatusFilter] = useState<string>('all')
@@ -180,14 +182,16 @@ export function ApplicantDashboard() {
       // dead semantics (always null); cleanup deferred.
       const { data: appData, error: appError } = await supabase
         .from('applications')
-        .select(`
+        .select(
+          `
           id, status, cover_note, created_at, viewed_at, application_notes,
           seeker_profiles(
             id, user_id, region, years_experience, sector_pref, visa_status,
             dairynz_level, couples_seeking, accommodation_needed,
             shed_types_experienced, herd_sizes_worked
           )
-        `)
+        `,
+        )
         .eq('job_id', activeJobId)
         .order('created_at', { ascending: false })
 
@@ -205,9 +209,7 @@ export function ApplicantDashboard() {
       })
 
       // Batch load skills for all seekers
-      const seekerIds = apps
-        .map((a) => a.seeker_profiles?.id)
-        .filter((id): id is string => !!id)
+      const seekerIds = apps.map((a) => a.seeker_profiles?.id).filter((id): id is string => !!id)
 
       const skillsMap = new Map<string, Omit<SeekerSkill, 'seeker_id'>[]>()
 
@@ -223,7 +225,11 @@ export function ApplicantDashboard() {
             // skills may come as array from Supabase join
             const skillsObj = Array.isArray(skillRow.skills) ? skillRow.skills[0] : skillRow.skills
             const existing = skillsMap.get(skillRow.seeker_id) ?? []
-            existing.push({ skill_id: skillRow.skill_id, proficiency: skillRow.proficiency, skills: skillsObj })
+            existing.push({
+              skill_id: skillRow.skill_id,
+              proficiency: skillRow.proficiency,
+              skills: skillsObj,
+            })
             skillsMap.set(skillRow.seeker_id, existing)
           }
         }
@@ -269,11 +275,13 @@ export function ApplicantDashboard() {
       setApplicants(sorted)
 
       // Build employer jobs list with applicant counts
-      setEmployerJobs((jobsList ?? []).map(j => ({
-        id: j.id,
-        title: j.title,
-        applicant_count: j.id === activeJobId ? sorted.length : 0,
-      })))
+      setEmployerJobs(
+        (jobsList ?? []).map((j) => ({
+          id: j.id,
+          title: j.title,
+          applicant_count: j.id === activeJobId ? sorted.length : 0,
+        })),
+      )
 
       // Batch-fetch contacts for applicants already shortlisted/offered/hired
       // RLS ensures only acknowledged rows are returned
@@ -304,15 +312,22 @@ export function ApplicantDashboard() {
   }, [session?.user?.id, activeJobId])
 
   function handleJobSelect(newJobId: string) {
-    setSearchParams((prev) => {
-      const next = new URLSearchParams(prev)
-      next.set('job', newJobId)
-      return next
-    }, { replace: true })
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev)
+        next.set('job', newJobId)
+        return next
+      },
+      { replace: true },
+    )
     navigate(`/dashboard/employer/applicants/${newJobId}`)
   }
 
-  async function handleTransition(applicationId: string, newStatus: ApplicationStatus, _note?: string) {
+  async function handleTransition(
+    applicationId: string,
+    newStatus: ApplicationStatus,
+    _note?: string,
+  ) {
     // Shortlist gate — intercept and show placement fee modal
     if (newStatus === 'shortlisted') {
       const applicant = applicants.find((a) => a.id === applicationId)
@@ -396,8 +411,11 @@ export function ApplicantDashboard() {
         .maybeSingle()
 
       if (contactRow) {
-        setContactsMap(
-          (prev) => new Map(prev).set(contactRow.user_id, { phone: contactRow.phone, email: contactRow.email }),
+        setContactsMap((prev) =>
+          new Map(prev).set(contactRow.user_id, {
+            phone: contactRow.phone,
+            email: contactRow.email,
+          }),
         )
       }
     }
@@ -414,9 +432,7 @@ export function ApplicantDashboard() {
 
     // Resolve seeker email — prefer contactsMap, fall back to null
     const seekerUserIdForContact = pendingHireApp.seeker_profiles?.user_id
-    const seekerContact = seekerUserIdForContact
-      ? contactsMap.get(seekerUserIdForContact)
-      : null
+    const seekerContact = seekerUserIdForContact ? contactsMap.get(seekerUserIdForContact) : null
 
     // Call Edge Function to create Stripe Invoice + send seeker hire notification email
     const { error } = await supabase.functions.invoke('create-placement-invoice', {
@@ -447,7 +463,9 @@ export function ApplicantDashboard() {
 
     // Update local state
     setApplicants((prev) =>
-      prev.map((a) => (a.id === pendingHireApp.id ? { ...a, status: 'hired' as ApplicationStatus } : a)),
+      prev.map((a) =>
+        a.id === pendingHireApp.id ? { ...a, status: 'hired' as ApplicationStatus } : a,
+      ),
     )
 
     toast.success('Hire confirmed — invoice sent to your email.')
@@ -466,9 +484,9 @@ export function ApplicantDashboard() {
 
   // Dashboard stats for sidebar
   const dashboardStats = {
-    applied: applicants.filter(a => a.status === 'applied').length,
-    shortlisted: applicants.filter(a => a.status === 'shortlisted').length,
-    hired: applicants.filter(a => a.status === 'hired').length,
+    applied: applicants.filter((a) => a.status === 'applied').length,
+    shortlisted: applicants.filter((a) => a.status === 'shortlisted').length,
+    hired: applicants.filter((a) => a.status === 'hired').length,
   }
 
   // Filter and sort applicants
@@ -498,9 +516,9 @@ export function ApplicantDashboard() {
         <div>
           <Link
             to="/dashboard/employer"
-            className="flex items-center gap-1.5 text-sm font-body text-text-muted hover:text-text transition-colors mb-3"
+            className="font-body text-text-muted hover:text-text mb-3 flex items-center gap-1.5 text-sm transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="h-4 w-4" />
             Back to Dashboard
           </Link>
           <div className="flex items-center gap-3">
@@ -512,7 +530,7 @@ export function ApplicantDashboard() {
             </h1>
             {!loading && applicants.length > 0 && (
               <span
-                className="px-2.5 py-1 rounded-full text-[12px] font-body font-semibold"
+                className="font-body rounded-full px-2.5 py-1 text-[12px] font-semibold"
                 style={{ backgroundColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
               >
                 {applicants.length}
@@ -533,16 +551,16 @@ export function ApplicantDashboard() {
           />
 
           {/* Main content column */}
-          <div className="flex-1 min-w-0 space-y-4">
+          <div className="min-w-0 flex-1 space-y-4">
             {/* Filter toolbar */}
-            <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex flex-wrap items-center gap-3">
               {/* Search input */}
               <input
                 type="text"
                 placeholder="Search applicants..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="border border-border rounded-[8px] px-3 py-1.5 text-[13px] font-body text-text bg-surface focus:outline-none focus:border-brand w-48"
+                className="border-border font-body text-text bg-surface focus:border-brand w-48 rounded-[8px] border px-3 py-1.5 text-[13px] focus:outline-none"
               />
 
               {/* Status filter chips — use STATUS_LABELS for display text */}
@@ -553,7 +571,7 @@ export function ApplicantDashboard() {
                     type="button"
                     onClick={() => setStatusFilter(status)}
                     className={cn(
-                      'px-3 py-1 rounded-full text-[12px] font-body font-semibold transition-colors border',
+                      'font-body rounded-full border px-3 py-1 text-[12px] font-semibold transition-colors',
                       statusFilter === status
                         ? 'bg-brand/10 border-brand text-brand'
                         : 'bg-surface border-border text-text-muted hover:border-border-strong',
@@ -571,20 +589,22 @@ export function ApplicantDashboard() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as 'newest' | 'match')}
-                className="border border-border rounded-[8px] px-2 py-1.5 text-[12px] font-body text-text bg-surface focus:outline-none focus:border-brand cursor-pointer"
+                className="border-border font-body text-text bg-surface focus:border-brand cursor-pointer rounded-[8px] border px-2 py-1.5 text-[12px] focus:outline-none"
               >
                 <option value="newest">Newest first</option>
                 <option value="match">Match score</option>
               </select>
 
               {/* View toggle (list/grid) */}
-              <div className="flex border border-border rounded-[8px] overflow-hidden">
+              <div className="border-border flex overflow-hidden rounded-[8px] border">
                 <button
                   type="button"
                   onClick={() => setViewMode('list')}
                   className={cn(
                     'px-2 py-1.5 text-[12px]',
-                    viewMode === 'list' ? 'bg-brand/10 text-brand' : 'bg-surface text-text-muted hover:bg-bg',
+                    viewMode === 'list'
+                      ? 'bg-brand/10 text-brand'
+                      : 'bg-surface text-text-muted hover:bg-bg',
                   )}
                   aria-label="List view"
                 >
@@ -594,8 +614,10 @@ export function ApplicantDashboard() {
                   type="button"
                   onClick={() => setViewMode('grid')}
                   className={cn(
-                    'px-2 py-1.5 text-[12px] border-l border-border',
-                    viewMode === 'grid' ? 'bg-brand/10 text-brand' : 'bg-surface text-text-muted hover:bg-bg',
+                    'border-border border-l px-2 py-1.5 text-[12px]',
+                    viewMode === 'grid'
+                      ? 'bg-brand/10 text-brand'
+                      : 'bg-surface text-text-muted hover:bg-bg',
                   )}
                   aria-label="Grid view"
                 >
@@ -619,8 +641,8 @@ export function ApplicantDashboard() {
                 className="rounded-[12px] p-12 text-center"
                 style={{ backgroundColor: 'var(--color-surface-2)' }}
               >
-                <p className="text-base font-body font-semibold mb-1">No applicants yet.</p>
-                <p className="text-sm text-text-muted">Share your listing to attract candidates.</p>
+                <p className="font-body mb-1 text-base font-semibold">No applicants yet.</p>
+                <p className="text-text-muted text-sm">Share your listing to attract candidates.</p>
               </div>
             )}
 
@@ -630,7 +652,10 @@ export function ApplicantDashboard() {
                 className="rounded-[12px] p-8 text-center"
                 style={{ backgroundColor: 'var(--color-surface-2)' }}
               >
-                <p className="text-base font-body font-semibold mb-1" style={{ color: 'var(--color-text)' }}>
+                <p
+                  className="font-body mb-1 text-base font-semibold"
+                  style={{ color: 'var(--color-text)' }}
+                >
                   No applicants match your filters.
                 </p>
                 <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
@@ -641,9 +666,7 @@ export function ApplicantDashboard() {
 
             {/* Applicant list */}
             {!loading && filteredApplicants.length > 0 && (
-              <div className={cn(
-                viewMode === 'grid' ? 'grid grid-cols-2 gap-3' : 'space-y-3',
-              )}>
+              <div className={cn(viewMode === 'grid' ? 'grid grid-cols-2 gap-3' : 'space-y-3')}>
                 {filteredApplicants.map((app) => (
                   <ApplicantPanel
                     key={app.id}

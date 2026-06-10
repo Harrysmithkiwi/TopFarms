@@ -17,7 +17,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <Label.Root
             htmlFor={inputId}
-            className="font-body text-[13px] font-medium text-text mb-1 block"
+            className="font-body text-text mb-1 block text-[13px] font-medium"
           >
             {label}
           </Label.Root>
@@ -26,21 +26,17 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           id={inputId}
           className={cn(
-            'w-full border-[1.5px] rounded-[8px] min-h-[44px] px-3 py-2 font-body text-[15px] text-text placeholder:text-text-subtle bg-surface-2',
-            'outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
+            'font-body text-text placeholder:text-text-subtle bg-surface-2 min-h-[44px] w-full rounded-[8px] border-[1.5px] px-3 py-2 text-[15px]',
+            'focus-visible:outline-brand outline-none focus-visible:outline-2 focus-visible:outline-offset-2',
             'transition-colors duration-150',
-            error
-              ? 'border-danger focus:border-danger'
-              : 'border-border focus:border-brand',
+            error ? 'border-danger focus:border-danger' : 'border-border focus:border-brand',
             className,
           )}
           {...props}
         />
-        {error && (
-          <p className="mt-1 text-danger text-[12px] font-body">{error}</p>
-        )}
+        {error && <p className="text-danger font-body mt-1 text-[12px]">{error}</p>}
         {helperText && !error && (
-          <p className="mt-1 text-text-subtle text-[12px] font-body">{helperText}</p>
+          <p className="text-text-subtle font-body mt-1 text-[12px]">{helperText}</p>
         )}
       </div>
     )

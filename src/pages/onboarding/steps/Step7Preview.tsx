@@ -19,13 +19,13 @@ interface SectionProps {
 
 function PreviewSection({ title, stepIndex, onGoToStep, children }: SectionProps) {
   return (
-    <div className="border-b border-border pb-4 last:border-0 last:pb-0">
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="font-body font-semibold text-[13px] text-text">{title}</h3>
+    <div className="border-border border-b pb-4 last:border-0 last:pb-0">
+      <div className="mb-2 flex items-center justify-between">
+        <h3 className="font-body text-text text-[13px] font-semibold">{title}</h3>
         <button
           type="button"
           onClick={() => onGoToStep(stepIndex)}
-          className="text-[12px] font-body text-brand-hover hover:text-brand transition-colors"
+          className="font-body text-brand-hover hover:text-brand text-[12px] transition-colors"
         >
           Edit
         </button>
@@ -41,7 +41,12 @@ interface DataRowProps {
 }
 
 function DataRow({ label, value }: DataRowProps) {
-  if (value === undefined || value === null || value === '' || (Array.isArray(value) && value.length === 0)) {
+  if (
+    value === undefined ||
+    value === null ||
+    value === '' ||
+    (Array.isArray(value) && value.length === 0)
+  ) {
     return null
   }
 
@@ -96,7 +101,7 @@ export function Step7Preview({ onComplete, onBack, onGoToStep, profileData }: St
         <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Review your profile
         </h2>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
           Check your details before completing your profile
         </p>
       </div>
@@ -105,7 +110,11 @@ export function Step7Preview({ onComplete, onBack, onGoToStep, profileData }: St
         <PreviewSection title="Farm Type" stepIndex={0} onGoToStep={onGoToStep}>
           <DataRow
             label="Type"
-            value={profileData.farm_type ? FARM_TYPE_LABELS[profileData.farm_type] ?? profileData.farm_type : undefined}
+            value={
+              profileData.farm_type
+                ? (FARM_TYPE_LABELS[profileData.farm_type] ?? profileData.farm_type)
+                : undefined
+            }
           />
         </PreviewSection>
 
@@ -117,16 +126,27 @@ export function Step7Preview({ onComplete, onBack, onGoToStep, profileData }: St
             <DataRow label="Shed type" value={profileData.shed_type} />
             <DataRow
               label="Milking frequency"
-              value={profileData.milking_frequency ? MILKING_FREQ_LABELS[profileData.milking_frequency] ?? profileData.milking_frequency : undefined}
+              value={
+                profileData.milking_frequency
+                  ? (MILKING_FREQ_LABELS[profileData.milking_frequency] ??
+                    profileData.milking_frequency)
+                  : undefined
+              }
             />
             <DataRow label="Breed" value={profileData.breed} />
             <DataRow
               label="Property size"
-              value={profileData.property_size_ha ? `${profileData.property_size_ha} ha` : undefined}
+              value={
+                profileData.property_size_ha ? `${profileData.property_size_ha} ha` : undefined
+              }
             />
             <DataRow
               label="Ownership type"
-              value={profileData.ownership_type?.length ? profileData.ownership_type.map((v) => OWNERSHIP_LABELS[v] ?? v).join(', ') : undefined}
+              value={
+                profileData.ownership_type?.length
+                  ? profileData.ownership_type.map((v) => OWNERSHIP_LABELS[v] ?? v).join(', ')
+                  : undefined
+              }
             />
           </div>
         </PreviewSection>
@@ -134,21 +154,23 @@ export function Step7Preview({ onComplete, onBack, onGoToStep, profileData }: St
         <PreviewSection title="Culture & Team" stepIndex={2} onGoToStep={onGoToStep}>
           <div className="space-y-1">
             {profileData.culture_description && (
-              <p className="text-[12px] text-text font-body line-clamp-3">
+              <p className="text-text font-body line-clamp-3 text-[12px]">
                 {profileData.culture_description}
               </p>
             )}
             <DataRow label="Team size" value={profileData.team_size} />
             {profileData.about_farm && !profileData.culture_description && (
-              <p className="text-[12px] text-text font-body line-clamp-3">
+              <p className="text-text font-body line-clamp-3 text-[12px]">
                 {profileData.about_farm}
               </p>
             )}
-            {!profileData.culture_description && !profileData.about_farm && !profileData.team_size && (
-              <p className="text-[12px]" style={{ color: 'var(--color-text-subtle)' }}>
-                Not provided
-              </p>
-            )}
+            {!profileData.culture_description &&
+              !profileData.about_farm &&
+              !profileData.team_size && (
+                <p className="text-[12px]" style={{ color: 'var(--color-text-subtle)' }}>
+                  Not provided
+                </p>
+              )}
           </div>
         </PreviewSection>
 
@@ -158,10 +180,22 @@ export function Step7Preview({ onComplete, onBack, onGoToStep, profileData }: St
             {profileData.accommodation_available && (
               <>
                 <DataRow label="Type" value={profileData.accommodation_type} />
-                <DataRow label="Pets allowed" value={profileData.accommodation_extras?.includes('Pets allowed')} />
-                <DataRow label="Couples" value={profileData.accommodation_extras?.includes('Couples welcome')} />
-                <DataRow label="Families" value={profileData.accommodation_extras?.includes('Family welcome')} />
-                <DataRow label="Utilities included" value={profileData.accommodation_extras?.includes('Utilities included')} />
+                <DataRow
+                  label="Pets allowed"
+                  value={profileData.accommodation_extras?.includes('Pets allowed')}
+                />
+                <DataRow
+                  label="Couples"
+                  value={profileData.accommodation_extras?.includes('Couples welcome')}
+                />
+                <DataRow
+                  label="Families"
+                  value={profileData.accommodation_extras?.includes('Family welcome')}
+                />
+                <DataRow
+                  label="Utilities included"
+                  value={profileData.accommodation_extras?.includes('Utilities included')}
+                />
               </>
             )}
           </div>
@@ -169,12 +203,12 @@ export function Step7Preview({ onComplete, onBack, onGoToStep, profileData }: St
       </div>
 
       {/* Billing period toggle (EONB-08) */}
-      <div className="flex items-center justify-between p-4 rounded-[10px] border-[1.5px] border-border bg-surface-2">
+      <div className="border-border bg-surface-2 flex items-center justify-between rounded-[10px] border-[1.5px] p-4">
         <div className="flex items-center gap-2">
-          <p className="font-body text-[13px] font-semibold text-text">Billing period</p>
+          <p className="font-body text-text text-[13px] font-semibold">Billing period</p>
           {billingPeriod === 'annual' && (
             <span
-              className="text-[11px] font-body font-semibold px-2 py-0.5 rounded"
+              className="font-body rounded px-2 py-0.5 text-[11px] font-semibold"
               style={{ backgroundColor: 'var(--color-warn-bg)', color: 'var(--color-brand-900)' }}
             >
               Save 20%
@@ -183,8 +217,10 @@ export function Step7Preview({ onComplete, onBack, onGoToStep, profileData }: St
         </div>
         <div className="flex items-center gap-2">
           <span
-            className="text-[12px] font-body"
-            style={{ color: billingPeriod === 'monthly' ? 'var(--color-text)' : 'var(--color-text-subtle)' }}
+            className="font-body text-[12px]"
+            style={{
+              color: billingPeriod === 'monthly' ? 'var(--color-text)' : 'var(--color-text-subtle)',
+            }}
           >
             Monthly
           </span>
@@ -193,8 +229,10 @@ export function Step7Preview({ onComplete, onBack, onGoToStep, profileData }: St
             onCheckedChange={(checked) => setBillingPeriod(checked ? 'annual' : 'monthly')}
           />
           <span
-            className="text-[12px] font-body"
-            style={{ color: billingPeriod === 'annual' ? 'var(--color-text)' : 'var(--color-text-subtle)' }}
+            className="font-body text-[12px]"
+            style={{
+              color: billingPeriod === 'annual' ? 'var(--color-text)' : 'var(--color-text-subtle)',
+            }}
           >
             Annual
           </span>

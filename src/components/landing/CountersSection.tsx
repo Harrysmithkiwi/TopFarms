@@ -19,15 +19,16 @@ interface CounterBlockProps {
 function CounterBlock({ label, target, active, suffix = '' }: CounterBlockProps) {
   const count = useCountUp(target, 1800, active)
   return (
-    <div className="flex flex-col items-center gap-2 py-10 px-6">
+    <div className="flex flex-col items-center gap-2 px-6 py-10">
       <p
-        className="font-display font-bold leading-none"
+        className="font-display leading-none font-bold"
         style={{
           fontSize: 'clamp(48px, 5vw, 72px)',
           color: 'var(--color-text-on-brand)',
         }}
       >
-        {count.toLocaleString()}{suffix}
+        {count.toLocaleString()}
+        {suffix}
       </p>
       <p
         className="text-sm font-medium tracking-wide uppercase"
@@ -60,15 +61,12 @@ export function CountersSection() {
   }, [])
 
   return (
-    <section
-      ref={ref}
-      style={{ backgroundColor: 'var(--color-brand-900)' }}
-    >
-      <div className="max-w-5xl mx-auto px-4">
+    <section ref={ref} style={{ backgroundColor: 'var(--color-brand-900)' }}>
+      <div className="mx-auto max-w-5xl px-4">
         {/* Live badge */}
-        <div className="flex justify-center mb-4 pt-8">
+        <div className="mb-4 flex justify-center pt-8">
           <div
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-semibold tracking-widest uppercase"
+            className="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold tracking-widest uppercase"
             style={{
               borderColor: 'rgba(122,175,63,0.3)',
               backgroundColor: 'rgba(122,175,63,0.08)',
@@ -76,7 +74,7 @@ export function CountersSection() {
             }}
           >
             <span
-              className="w-2 h-2 rounded-full animate-pulse"
+              className="h-2 w-2 animate-pulse rounded-full"
               style={{ backgroundColor: 'var(--color-brand)' }}
             />
             Live
@@ -85,7 +83,7 @@ export function CountersSection() {
 
         {/* divide color via utility class — `divideColor` is not a CSS property,
             so the previous inline style was silently ignored by React. */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-white/[0.08]">
+        <div className="grid grid-cols-1 divide-y divide-white/[0.08] sm:grid-cols-3 sm:divide-x sm:divide-y-0">
           <CounterBlock label="Jobs Posted" target={stats.jobs} active={inView} />
           <CounterBlock label="Workers Registered" target={stats.seekers} active={inView} />
           <CounterBlock label="Matches Made" target={stats.matches} active={inView} />

@@ -11,31 +11,29 @@ interface VerificationBadgeProps {
   className?: string
 }
 
-const TRUST_CONFIG: Record<
-  TrustLevel,
-  { label: string; shieldClass: string; badgeClass: string }
-> = {
-  unverified: {
-    label: 'Unverified',
-    shieldClass: 'text-text-subtle',
-    badgeClass: 'bg-surface-2 text-text-muted border-border',
-  },
-  basic: {
-    label: 'Basic Verified',
-    shieldClass: 'text-info',
-    badgeClass: 'bg-info-bg text-info border-info/30',
-  },
-  verified: {
-    label: 'Verified',
-    shieldClass: 'text-brand',
-    badgeClass: 'bg-brand-50 text-brand border-brand/30',
-  },
-  fully_verified: {
-    label: 'Fully Verified',
-    shieldClass: 'text-warn-text-on-bg',
-    badgeClass: 'bg-warn-bg text-warn-text-on-bg border-warn/30',
-  },
-}
+const TRUST_CONFIG: Record<TrustLevel, { label: string; shieldClass: string; badgeClass: string }> =
+  {
+    unverified: {
+      label: 'Unverified',
+      shieldClass: 'text-text-subtle',
+      badgeClass: 'bg-surface-2 text-text-muted border-border',
+    },
+    basic: {
+      label: 'Basic Verified',
+      shieldClass: 'text-info',
+      badgeClass: 'bg-info-bg text-info border-info/30',
+    },
+    verified: {
+      label: 'Verified',
+      shieldClass: 'text-brand',
+      badgeClass: 'bg-brand-50 text-brand border-brand/30',
+    },
+    fully_verified: {
+      label: 'Fully Verified',
+      shieldClass: 'text-warn-text-on-bg',
+      badgeClass: 'bg-warn-bg text-warn-text-on-bg border-warn/30',
+    },
+  }
 
 const METHOD_LABELS: Record<VerificationMethod, string> = {
   email: 'Email',
@@ -76,8 +74,8 @@ export function VerificationBadge({
         type="button"
         onClick={toggle}
         className={cn(
-          'flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[12px] font-body font-semibold transition-colors duration-150',
-          'outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
+          'font-body flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[12px] font-semibold transition-colors duration-150',
+          'focus-visible:outline-brand outline-none focus-visible:outline-2 focus-visible:outline-offset-2',
           config.badgeClass,
           expandable && 'cursor-pointer hover:opacity-80',
           !expandable && 'cursor-default',
@@ -85,7 +83,7 @@ export function VerificationBadge({
         aria-expanded={expanded}
         aria-haspopup={expandable ? 'listbox' : undefined}
       >
-        <Shield className={cn('w-3.5 h-3.5 flex-shrink-0', config.shieldClass)} />
+        <Shield className={cn('h-3.5 w-3.5 flex-shrink-0', config.shieldClass)} />
         {config.label}
       </button>
 
@@ -101,13 +99,13 @@ export function VerificationBadge({
 
           <div
             className={cn(
-              'absolute left-0 top-full mt-1.5 z-20 min-w-[220px]',
-              'bg-surface border border-border rounded-[10px] shadow-md py-2',
+              'absolute top-full left-0 z-20 mt-1.5 min-w-[220px]',
+              'bg-surface border-border rounded-[10px] border py-2 shadow-md',
             )}
             role="listbox"
             aria-label="Verification details"
           >
-            <p className="px-3 py-1 text-[10px] font-body font-semibold text-text-subtle uppercase tracking-wide">
+            <p className="font-body text-text-subtle px-3 py-1 text-[10px] font-semibold tracking-wide uppercase">
               Verification Status
             </p>
 
@@ -126,22 +124,22 @@ export function VerificationBadge({
                   {/* Status icon */}
                   <div
                     className={cn(
-                      'w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0',
+                      'flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full',
                       isVerified && 'bg-brand',
                       isPending && 'bg-warn/20',
                       !record && 'bg-surface-2',
                     )}
                   >
-                    {isVerified && <Check className="w-2.5 h-2.5 text-text-on-brand stroke-[3]" />}
-                    {isPending && <Clock className="w-2.5 h-2.5 text-warn-text-on-bg" />}
+                    {isVerified && <Check className="text-text-on-brand h-2.5 w-2.5 stroke-[3]" />}
+                    {isPending && <Clock className="text-warn-text-on-bg h-2.5 w-2.5" />}
                   </div>
 
-                  <span className="text-[12px] font-body text-text">{METHOD_LABELS[method]}</span>
+                  <span className="font-body text-text text-[12px]">{METHOD_LABELS[method]}</span>
 
                   {/* Status label */}
                   <span
                     className={cn(
-                      'ml-auto text-[11px] font-body',
+                      'font-body ml-auto text-[11px]',
                       isVerified && 'text-brand',
                       isPending && 'text-warn-text-on-bg',
                       !record && 'text-text-subtle',

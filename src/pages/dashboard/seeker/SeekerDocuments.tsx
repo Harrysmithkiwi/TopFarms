@@ -40,15 +40,15 @@ function formatDate(iso: string): string {
 
 function SkeletonRow() {
   return (
-    <div className="bg-surface border-[1.5px] border-border rounded-[12px] p-4 animate-pulse">
+    <div className="bg-surface border-border animate-pulse rounded-[12px] border-[1.5px] p-4">
       <div className="flex items-center gap-3">
-        <div className="w-5 h-5 rounded bg-surface-2 flex-shrink-0" />
+        <div className="bg-surface-2 h-5 w-5 flex-shrink-0 rounded" />
         <div className="flex-1 space-y-2">
-          <div className="h-4 bg-surface-2 rounded w-2/3" />
-          <div className="h-3 bg-surface-2 rounded w-1/3" />
+          <div className="bg-surface-2 h-4 w-2/3 rounded" />
+          <div className="bg-surface-2 h-3 w-1/3 rounded" />
         </div>
-        <div className="w-[160px] h-9 bg-surface-2 rounded" />
-        <div className="w-9 h-9 bg-surface-2 rounded" />
+        <div className="bg-surface-2 h-9 w-[160px] rounded" />
+        <div className="bg-surface-2 h-9 w-9 rounded" />
       </div>
     </div>
   )
@@ -98,8 +98,8 @@ export function SeekerDocuments() {
 
   async function handleTypeChange(docId: string, newType: DocumentType) {
     const before = docs
-    setDocs((prev) =>
-      prev?.map((d) => (d.id === docId ? { ...d, document_type: newType } : d)) ?? null,
+    setDocs(
+      (prev) => prev?.map((d) => (d.id === docId ? { ...d, document_type: newType } : d)) ?? null,
     )
     const { error } = await supabase
       .from('seeker_documents')
@@ -121,10 +121,7 @@ export function SeekerDocuments() {
     // Row delete first — if it succeeds, user sees the row vanish; storage
     // cleanup is best-effort. Same orphan-cleanup philosophy as
     // DocumentUploader's post-insert rollback path.
-    const { error: rowError } = await supabase
-      .from('seeker_documents')
-      .delete()
-      .eq('id', doc.id)
+    const { error: rowError } = await supabase.from('seeker_documents').delete().eq('id', doc.id)
     if (rowError) {
       setDocs(before)
       console.error('SeekerDocuments: row delete failed', rowError)
@@ -151,7 +148,7 @@ export function SeekerDocuments() {
 
   return (
     <DashboardLayout hideSidebar>
-      <div className="max-w-3xl mx-auto space-y-6">
+      <div className="mx-auto max-w-3xl space-y-6">
         {/* Header */}
         <div className="flex items-center gap-3">
           <h1
@@ -162,7 +159,7 @@ export function SeekerDocuments() {
           </h1>
           {showList && (
             <span
-              className="px-2.5 py-1 rounded-full text-[12px] font-body font-semibold"
+              className="font-body rounded-full px-2.5 py-1 text-[12px] font-semibold"
               style={{ backgroundColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
             >
               {docs!.length}
@@ -171,8 +168,8 @@ export function SeekerDocuments() {
         </div>
 
         <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-          Manage your uploaded documents. Identity documents are kept private and are never
-          shown to employers.
+          Manage your uploaded documents. Identity documents are kept private and are never shown to
+          employers.
         </p>
 
         {/* Loading */}
@@ -191,17 +188,17 @@ export function SeekerDocuments() {
             style={{ backgroundColor: 'var(--color-surface-2)' }}
           >
             <p
-              className="text-base font-body font-semibold mb-2"
+              className="font-body mb-2 text-base font-semibold"
               style={{ color: 'var(--color-text)' }}
             >
               Set up your seeker profile first.
             </p>
-            <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>
+            <p className="mb-4 text-sm" style={{ color: 'var(--color-text-muted)' }}>
               You need to complete onboarding before you can manage documents.
             </p>
             <Link
               to="/onboarding/seeker"
-              className="text-sm font-body font-semibold text-brand hover:underline"
+              className="font-body text-brand text-sm font-semibold hover:underline"
             >
               Complete onboarding
             </Link>
@@ -214,7 +211,7 @@ export function SeekerDocuments() {
             className="rounded-[12px] p-8 text-center"
             style={{ backgroundColor: 'var(--color-surface-2)' }}
           >
-            <p className="text-sm font-body text-text-muted">{errorState}</p>
+            <p className="font-body text-text-muted text-sm">{errorState}</p>
           </div>
         )}
 
@@ -225,7 +222,7 @@ export function SeekerDocuments() {
             style={{ backgroundColor: 'var(--color-surface-2)' }}
           >
             <p
-              className="text-base font-body font-semibold mb-2"
+              className="font-body mb-2 text-base font-semibold"
               style={{ color: 'var(--color-text)' }}
             >
               No documents uploaded yet.
@@ -242,14 +239,14 @@ export function SeekerDocuments() {
             {docs!.map((doc) => (
               <li
                 key={doc.id}
-                className="bg-surface border-[1.5px] border-border rounded-[12px] p-4 flex items-center gap-3"
+                className="bg-surface border-border flex items-center gap-3 rounded-[12px] border-[1.5px] p-4"
               >
-                <FileText className="w-5 h-5 text-brand-hover flex-shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-body font-semibold text-text truncate">
+                <FileText className="text-brand-hover h-5 w-5 flex-shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <p className="font-body text-text truncate text-[13px] font-semibold">
                     {doc.filename}
                   </p>
-                  <p className="text-[11px] font-body text-text-subtle">
+                  <p className="font-body text-text-subtle text-[11px]">
                     {formatBytes(doc.file_size_bytes)} · Uploaded {formatDate(doc.uploaded_at)}
                   </p>
                 </div>
@@ -266,7 +263,7 @@ export function SeekerDocuments() {
                   className="text-text-subtle hover:text-danger p-1 transition-colors"
                   aria-label={`Delete ${doc.filename}`}
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="h-4 w-4" />
                 </button>
               </li>
             ))}

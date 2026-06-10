@@ -68,9 +68,7 @@ describe('Save search modal (SRCH-13)', () => {
     fromMock.mockReturnValueOnce({
       insert: vi.fn().mockReturnValue({
         select: vi.fn().mockReturnValue({
-          single: vi
-            .fn()
-            .mockResolvedValue({ data: null, error: { message: 'rls-block' } }),
+          single: vi.fn().mockResolvedValue({ data: null, error: { message: 'rls-block' } }),
         }),
       }),
     })

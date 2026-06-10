@@ -70,9 +70,7 @@ describe('Seeker Onboarding', () => {
 
 describe('SeekerStep5 salary chips', () => {
   it('renders all 8 salary band chips', async () => {
-    render(
-      <SeekerStep5LifeSituation onComplete={vi.fn()} />
-    )
+    render(<SeekerStep5LifeSituation onComplete={vi.fn()} />)
 
     // All 8 chip labels must be present
     const labels = [
@@ -91,7 +89,7 @@ describe('SeekerStep5 salary chips', () => {
 
     // Old number input must be gone
     expect(
-      screen.queryByRole('spinbutton') // input[type=number] has role spinbutton
+      screen.queryByRole('spinbutton'), // input[type=number] has role spinbutton
     ).toBeNull()
   })
 
@@ -114,12 +112,7 @@ describe('SeekerStep5 salary chips', () => {
   })
 
   it('renders chip as selected when defaultValues.min_salary = 80000', async () => {
-    render(
-      <SeekerStep5LifeSituation
-        onComplete={vi.fn()}
-        defaultValues={{ min_salary: 80000 }}
-      />
-    )
+    render(<SeekerStep5LifeSituation onComplete={vi.fn()} defaultValues={{ min_salary: 80000 }} />)
 
     // The '$80–90k' chip should be rendered — ChipSelector adds text-brand class on selected
     // We assert the chip button has the brand styling (border-brand class indicates selected)

@@ -26,21 +26,21 @@ import { describe, it, expect } from 'vitest'
 // later re-run would only reveal NATURAL_GROWTH (acceptable per plan 20-08 Task 5
 // methodology) and offer no additional drift evidence over the immediate measurement.
 const PRE_MIGRATION_BASELINES = {
-  jobs_active:  1,  // FROM 20-02-SUMMARY.md "Pre-migration RLS baseline" — captured 2026-05-04T21:24:48Z
-  match_scores: 3,  // FROM 20-02-SUMMARY.md
-  applications: 2,  // FROM 20-02-SUMMARY.md
-  jobs:         2,  // FROM 20-02-SUMMARY.md
-  employers:    1,  // FROM 20-02-SUMMARY.md
-  seekers:      2,  // FROM 20-02-SUMMARY.md
+  jobs_active: 1, // FROM 20-02-SUMMARY.md "Pre-migration RLS baseline" — captured 2026-05-04T21:24:48Z
+  match_scores: 3, // FROM 20-02-SUMMARY.md
+  applications: 2, // FROM 20-02-SUMMARY.md
+  jobs: 2, // FROM 20-02-SUMMARY.md
+  employers: 1, // FROM 20-02-SUMMARY.md
+  seekers: 2, // FROM 20-02-SUMMARY.md
 }
 
 const POST_MIGRATION_BASELINES = {
-  jobs_active:  1,  // FROM 20-02-SUMMARY.md immediate post-apply re-run — confirmed 2026-05-04T21:40:47Z
+  jobs_active: 1, // FROM 20-02-SUMMARY.md immediate post-apply re-run — confirmed 2026-05-04T21:40:47Z
   match_scores: 3,
   applications: 2,
-  jobs:         2,
-  employers:    1,
-  seekers:      2,
+  jobs: 2,
+  employers: 1,
+  seekers: 2,
 }
 
 function assertBaselineEqual(key: keyof typeof PRE_MIGRATION_BASELINES) {

@@ -38,15 +38,15 @@ export function AdminSkillCoverage() {
   return (
     <div className="space-y-6">
       <h1
-        className="text-[20px] font-semibold leading-7"
+        className="text-[20px] leading-7 font-semibold"
         style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
       >
         Skill Coverage
       </h1>
       <p style={{ color: 'var(--color-text-muted)' }} className="text-sm">
-        Per-competency supply and demand across the 24 ag-broad competencies. Supply counts how
-        many candidates hold each skill; demand counts how many active listings require it.
-        Use this to identify gaps between what candidates offer and what employers need.
+        Per-competency supply and demand across the 24 ag-broad competencies. Supply counts how many
+        candidates hold each skill; demand counts how many active listings require it. Use this to
+        identify gaps between what candidates offer and what employers need.
       </p>
 
       <AdminTable<SkillCoverageRow>

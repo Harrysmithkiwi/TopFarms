@@ -12,10 +12,7 @@ interface JobCardProps {
   className?: string
 }
 
-const STATUS_CONFIG: Record<
-  JobStatus,
-  { label: string; bgClass: string; textClass: string }
-> = {
+const STATUS_CONFIG: Record<JobStatus, { label: string; bgClass: string; textClass: string }> = {
   active: { label: 'Active', bgClass: 'bg-[rgba(74,124,47,0.12)]', textClass: 'text-brand' },
   paused: {
     label: 'Paused',
@@ -48,7 +45,14 @@ function getDaysRemaining(expiresAt?: string): number | null {
  * Shows title, region, salary, contract type, status badge, days remaining, and action buttons.
  * Action buttons are conditional on job status.
  */
-export function JobCard({ job, onPause, onEdit, onArchive, onMarkFilled, className }: JobCardProps) {
+export function JobCard({
+  job,
+  onPause,
+  onEdit,
+  onArchive,
+  onMarkFilled,
+  className,
+}: JobCardProps) {
   const statusCfg = STATUS_CONFIG[job.status]
   const salary = formatSalary(job.salary_min, job.salary_max)
   const daysLeft = getDaysRemaining(job.expires_at)
@@ -63,21 +67,21 @@ export function JobCard({ job, onPause, onEdit, onArchive, onMarkFilled, classNa
   return (
     <div
       className={cn(
-        'bg-surface border-[1.5px] border-border rounded-[12px] p-5 flex flex-col gap-4',
+        'bg-surface border-border flex flex-col gap-4 rounded-[12px] border-[1.5px] p-5',
         className,
       )}
     >
       {/* Header row */}
       <div className="flex items-start justify-between gap-3">
-        <div className="flex-1 min-w-0">
-          <h3 className="text-[15px] font-body font-bold text-text truncate">{job.title}</h3>
-          <p className="text-[12px] font-body text-text-muted mt-0.5">{job.region}</p>
+        <div className="min-w-0 flex-1">
+          <h3 className="font-body text-text truncate text-[15px] font-bold">{job.title}</h3>
+          <p className="font-body text-text-muted mt-0.5 text-[12px]">{job.region}</p>
         </div>
 
         {/* Status badge */}
         <span
           className={cn(
-            'flex-shrink-0 px-2.5 py-1 rounded-full text-[11px] font-body font-semibold',
+            'font-body flex-shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold',
             statusCfg.bgClass,
             statusCfg.textClass,
           )}
@@ -87,12 +91,12 @@ export function JobCard({ job, onPause, onEdit, onArchive, onMarkFilled, classNa
       </div>
 
       {/* Job meta */}
-      <div className="flex flex-wrap gap-3 text-[12px] font-body text-text-muted">
+      <div className="font-body text-text-muted flex flex-wrap gap-3 text-[12px]">
         {salary && <span>{salary}</span>}
         <span className="capitalize">{job.contract_type}</span>
         {job.views_count > 0 && (
           <span className="flex items-center gap-1">
-            <Eye className="w-3.5 h-3.5" />
+            <Eye className="h-3.5 w-3.5" />
             {job.views_count} {job.views_count === 1 ? 'view' : 'views'}
           </span>
         )}
@@ -102,7 +106,7 @@ export function JobCard({ job, onPause, onEdit, onArchive, onMarkFilled, classNa
       {job.status === 'active' && daysLeft !== null && (
         <p
           className={cn(
-            'text-[12px] font-body',
+            'font-body text-[12px]',
             daysLeft <= 7 ? 'text-danger font-medium' : 'text-text-muted',
           )}
         >
@@ -111,39 +115,24 @@ export function JobCard({ job, onPause, onEdit, onArchive, onMarkFilled, classNa
       )}
 
       {/* Action buttons */}
-      <div className="flex flex-wrap gap-2 pt-1 border-t border-border">
+      <div className="border-border flex flex-wrap gap-2 border-t pt-1">
         {canEdit && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onEdit}
-            className="flex items-center gap-1.5"
-          >
-            <Pencil className="w-3.5 h-3.5" />
+          <Button variant="ghost" size="sm" onClick={onEdit} className="flex items-center gap-1.5">
+            <Pencil className="h-3.5 w-3.5" />
             Edit
           </Button>
         )}
 
         {canPause && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onPause}
-            className="flex items-center gap-1.5"
-          >
-            <Pause className="w-3.5 h-3.5" />
+          <Button variant="ghost" size="sm" onClick={onPause} className="flex items-center gap-1.5">
+            <Pause className="h-3.5 w-3.5" />
             Pause
           </Button>
         )}
 
         {canResume && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onPause}
-            className="flex items-center gap-1.5"
-          >
-            <Play className="w-3.5 h-3.5" />
+          <Button variant="ghost" size="sm" onClick={onPause} className="flex items-center gap-1.5">
+            <Play className="h-3.5 w-3.5" />
             Resume
           </Button>
         )}
@@ -155,7 +144,7 @@ export function JobCard({ job, onPause, onEdit, onArchive, onMarkFilled, classNa
             onClick={onMarkFilled}
             className="flex items-center gap-1.5"
           >
-            <CheckCircle className="w-3.5 h-3.5" />
+            <CheckCircle className="h-3.5 w-3.5" />
             Mark as Filled
           </Button>
         )}
@@ -165,9 +154,9 @@ export function JobCard({ job, onPause, onEdit, onArchive, onMarkFilled, classNa
             variant="ghost"
             size="sm"
             onClick={onArchive}
-            className="flex items-center gap-1.5 text-text-subtle hover:text-text-muted"
+            className="text-text-subtle hover:text-text-muted flex items-center gap-1.5"
           >
-            <Archive className="w-3.5 h-3.5" />
+            <Archive className="h-3.5 w-3.5" />
             Archive
           </Button>
         )}

@@ -13,7 +13,8 @@ export function VerifyEmail() {
   const [isResending, setIsResending] = useState(false)
 
   // Check if URL contains auth hash tokens (coming from email link click)
-  const hasHashToken = typeof window !== 'undefined' && window.location.hash.includes('access_token')
+  const hasHashToken =
+    typeof window !== 'undefined' && window.location.hash.includes('access_token')
 
   useEffect(() => {
     if (hasHashToken) {
@@ -21,7 +22,9 @@ export function VerifyEmail() {
     }
 
     // Listen for SIGNED_IN event — fires when email link is clicked and session is established
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session?.user) {
         setIsProcessing(true)
 
@@ -45,7 +48,9 @@ export function VerifyEmail() {
 
   const handleResend = async () => {
     // Get the user's email from the current auth state
-    const { data: { session } } = await supabase.auth.getSession()
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
 
     if (!session?.user?.email) {
       toast.error('Unable to resend. Please try signing up again.')
@@ -75,12 +80,8 @@ export function VerifyEmail() {
     return (
       <AuthLayout title="Verifying your email...">
         <div className="flex flex-col items-center gap-4 py-8">
-          <Loader2
-            size={40}
-            className="animate-spin"
-            style={{ color: 'var(--color-brand)' }}
-          />
-          <p className="text-sm text-center" style={{ color: 'var(--color-text-muted)' }}>
+          <Loader2 size={40} className="animate-spin" style={{ color: 'var(--color-brand)' }} />
+          <p className="text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
             Please wait while we verify your email address and set up your account.
           </p>
         </div>
@@ -89,15 +90,12 @@ export function VerifyEmail() {
   }
 
   return (
-    <AuthLayout
-      title="Check your inbox"
-      subtitle="We've sent you a verification link"
-    >
+    <AuthLayout title="Check your inbox" subtitle="We've sent you a verification link">
       <div className="space-y-6">
         {/* Email icon */}
         <div className="flex justify-center">
           <div
-            className="w-16 h-16 rounded-full flex items-center justify-center"
+            className="flex h-16 w-16 items-center justify-center rounded-full"
             style={{ backgroundColor: 'var(--color-warn-bg)' }}
           >
             <Mail size={32} style={{ color: '#7A5C00' }} />
@@ -105,7 +103,7 @@ export function VerifyEmail() {
         </div>
 
         {/* Instruction */}
-        <div className="text-center space-y-2">
+        <div className="space-y-2 text-center">
           <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
             We've sent a verification link to your email address. Click the link in that email to
             activate your account.
@@ -120,7 +118,7 @@ export function VerifyEmail() {
           type="button"
           onClick={handleResend}
           disabled={isResending}
-          className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg border text-sm font-medium transition-opacity disabled:opacity-60"
+          className="flex w-full items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-opacity disabled:opacity-60"
           style={{
             borderColor: 'var(--color-border)',
             color: 'var(--color-brand-900)',

@@ -79,25 +79,25 @@ export function JobStep1Basics({ onComplete, defaultValues }: Step1Props) {
   })
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] min-h-[400px]">
+    <div className="grid min-h-[400px] grid-cols-1 md:grid-cols-[280px_1fr]">
       {/* Left panel — soil background with stats */}
       <div
-        className="hidden md:flex flex-col justify-center rounded-l-[16px] p-6"
+        className="hidden flex-col justify-center rounded-l-[16px] p-6 md:flex"
         style={{ backgroundColor: 'var(--color-brand-900)' }}
       >
-        <h3 className="font-display text-lg font-semibold text-white mb-4">Why TopFarms?</h3>
+        <h3 className="font-display mb-4 text-lg font-semibold text-white">Why TopFarms?</h3>
         <div className="space-y-4">
           <div>
             <p className="text-2xl font-semibold text-white">85%</p>
-            <p className="text-[13px] text-white/70 font-body">of jobs filled within 30 days</p>
+            <p className="font-body text-[13px] text-white/70">of jobs filled within 30 days</p>
           </div>
           <div>
             <p className="text-2xl font-semibold text-white">500+</p>
-            <p className="text-[13px] text-white/70 font-body">active seekers nationwide</p>
+            <p className="font-body text-[13px] text-white/70">active seekers nationwide</p>
           </div>
           <div>
             <p className="text-2xl font-semibold text-white">92%</p>
-            <p className="text-[13px] text-white/70 font-body">employer satisfaction rate</p>
+            <p className="font-body text-[13px] text-white/70">employer satisfaction rate</p>
           </div>
         </div>
       </div>
@@ -109,7 +109,7 @@ export function JobStep1Basics({ onComplete, defaultValues }: Step1Props) {
             <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
               Job basics
             </h2>
-            <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
+            <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
               Start with the essential details about this role
             </p>
           </div>
@@ -168,11 +168,7 @@ export function JobStep1Basics({ onComplete, defaultValues }: Step1Props) {
               )}
             />
 
-            <Input
-              label="Start date"
-              type="date"
-              {...register('start_date')}
-            />
+            <Input label="Start date" type="date" {...register('start_date')} />
 
             <Controller
               control={control}
@@ -200,4 +196,3 @@ export function JobStep1Basics({ onComplete, defaultValues }: Step1Props) {
     </div>
   )
 }
-

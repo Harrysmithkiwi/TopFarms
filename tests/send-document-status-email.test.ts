@@ -68,7 +68,9 @@ describe('send-document-status-email Edge Function (Phase 21 DOC-QUEUE-EMAIL-01/
   })
 
   it('config.toml: verify_jwt = true on send-document-status-email', () => {
-    expect(config).toMatch(/\[functions\.send-document-status-email\][\s\S]{0,800}verify_jwt\s*=\s*true/)
+    expect(config).toMatch(
+      /\[functions\.send-document-status-email\][\s\S]{0,800}verify_jwt\s*=\s*true/,
+    )
   })
 
   it('No pg_net.http_post — invocation is from client (RESEARCH §Open Q3 — best-effort)', () => {

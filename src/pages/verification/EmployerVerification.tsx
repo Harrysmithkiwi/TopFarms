@@ -1,6 +1,16 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router'
-import { Mail, Phone, Building2, FileText, Camera, Check, Clock, ChevronRight, Loader2 } from 'lucide-react'
+import {
+  Mail,
+  Phone,
+  Building2,
+  FileText,
+  Camera,
+  Check,
+  Clock,
+  ChevronRight,
+  Loader2,
+} from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/hooks/useAuth'
 import { useVerifications } from '@/hooks/useVerifications'
@@ -47,43 +57,45 @@ function VerificationCard({
         {/* Icon */}
         <div
           className={cn(
-            'w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0',
+            'flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg',
             isVerified ? 'bg-brand/10' : 'bg-surface-2',
           )}
         >
-          <span className={cn('w-4 h-4', isVerified ? 'text-brand' : 'text-text-muted')}>{icon}</span>
+          <span className={cn('h-4 w-4', isVerified ? 'text-brand' : 'text-text-muted')}>
+            {icon}
+          </span>
         </div>
 
         {/* Content */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2 flex-wrap">
-            <h3 className="text-[14px] font-body font-semibold text-text">{label}</h3>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h3 className="font-body text-text text-[14px] font-semibold">{label}</h3>
 
             {/* Status badge */}
             {isVerified && (
-              <span className="flex items-center gap-1 text-[11px] font-body font-semibold text-brand bg-brand/10 px-2 py-0.5 rounded-full">
-                <Check className="w-3 h-3 stroke-[3]" />
+              <span className="font-body text-brand bg-brand/10 flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold">
+                <Check className="h-3 w-3 stroke-[3]" />
                 Verified
               </span>
             )}
             {isPending && (
-              <span className="flex items-center gap-1 text-[11px] font-body font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">
-                <Clock className="w-3 h-3" />
+              <span className="font-body flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700">
+                <Clock className="h-3 w-3" />
                 Pending Review
               </span>
             )}
             {!verification && (
-              <span className="text-[11px] font-body text-text-subtle bg-surface-2 px-2 py-0.5 rounded-full">
+              <span className="font-body text-text-subtle bg-surface-2 rounded-full px-2 py-0.5 text-[11px]">
                 Not started
               </span>
             )}
           </div>
 
-          <p className="text-[12px] font-body text-text-muted mt-0.5 mb-3">{description}</p>
+          <p className="font-body text-text-muted mt-0.5 mb-3 text-[12px]">{description}</p>
 
           {/* Inline expanded content */}
           {isExpanded && expandContent && (
-            <div className="mt-2 mb-3 p-3 bg-surface-2 rounded-[8px]">{expandContent}</div>
+            <div className="bg-surface-2 mt-2 mb-3 rounded-[8px] p-3">{expandContent}</div>
           )}
 
           {/* Action */}
@@ -91,12 +103,12 @@ function VerificationCard({
             <button
               type="button"
               onClick={onExpand}
-              className="flex items-center gap-1 text-[12px] font-body font-semibold text-brand hover:text-brand-hover transition-colors"
+              className="font-body text-brand hover:text-brand-hover flex items-center gap-1 text-[12px] font-semibold transition-colors"
             >
               {action}
               <ChevronRight
                 className={cn(
-                  'w-3.5 h-3.5 transition-transform duration-200',
+                  'h-3.5 w-3.5 transition-transform duration-200',
                   isExpanded && 'rotate-90',
                 )}
               />
@@ -124,7 +136,12 @@ export function EmployerVerification() {
   const [loadingProfile, setLoadingProfile] = useState(true)
   const [expandedMethod, setExpandedMethod] = useState<VerificationMethod | null>(null)
 
-  const { verifications, loading: loadingVerifications, trustLevel, refresh } = useVerifications(employerId)
+  const {
+    verifications,
+    loading: loadingVerifications,
+    trustLevel,
+    refresh,
+  } = useVerifications(employerId)
 
   // Load employer profile ID
   useEffect(() => {
@@ -188,7 +205,7 @@ export function EmployerVerification() {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center py-16">
-          <Loader2 className="w-6 h-6 text-brand animate-spin" />
+          <Loader2 className="text-brand h-6 w-6 animate-spin" />
         </div>
       </DashboardLayout>
     )
@@ -198,9 +215,12 @@ export function EmployerVerification() {
     <DashboardLayout>
       <div className="space-y-6">
         {/* Page header */}
-        <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="font-display text-3xl font-semibold" style={{ color: 'var(--color-brand-900)' }}>
+            <h1
+              className="font-display text-3xl font-semibold"
+              style={{ color: 'var(--color-brand-900)' }}
+            >
               Verification
             </h1>
             <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
@@ -215,13 +235,13 @@ export function EmployerVerification() {
         </div>
 
         {/* Verification methods grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {/* 1. Email — always verified */}
           <VerificationCard
             method="email"
             label="Email Address"
             description="Verified when you created your account"
-            icon={<Mail className="w-full h-full" />}
+            icon={<Mail className="h-full w-full" />}
             verification={verificationMap.get('email') ?? null}
           />
 
@@ -230,7 +250,7 @@ export function EmployerVerification() {
             method="phone"
             label="Phone Number"
             description="Verify your NZ mobile number via SMS code"
-            icon={<Phone className="w-full h-full" />}
+            icon={<Phone className="h-full w-full" />}
             verification={verificationMap.get('phone') ?? null}
             action="Verify Phone"
             isExpanded={expandedMethod === 'phone'}
@@ -253,7 +273,7 @@ export function EmployerVerification() {
             method="nzbn"
             label="Business (NZBN)"
             description="Submit your New Zealand Business Number for admin review"
-            icon={<Building2 className="w-full h-full" />}
+            icon={<Building2 className="h-full w-full" />}
             verification={verificationMap.get('nzbn') ?? null}
             action="Submit NZBN"
             isExpanded={expandedMethod === 'nzbn'}
@@ -277,7 +297,7 @@ export function EmployerVerification() {
             <div className="flex items-start gap-3">
               <div
                 className={cn(
-                  'w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0',
+                  'flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg',
                   verificationMap.get('document')?.status === 'verified'
                     ? 'bg-brand/10'
                     : 'bg-surface-2',
@@ -285,37 +305,39 @@ export function EmployerVerification() {
               >
                 <FileText
                   className={cn(
-                    'w-4 h-4',
-                    verificationMap.get('document')?.status === 'verified' ? 'text-brand' : 'text-text-muted',
+                    'h-4 w-4',
+                    verificationMap.get('document')?.status === 'verified'
+                      ? 'text-brand'
+                      : 'text-text-muted',
                   )}
                 />
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-2 flex-wrap">
-                  <h3 className="text-[14px] font-body font-semibold text-text">
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h3 className="font-body text-text text-[14px] font-semibold">
                     Verification Documents
                   </h3>
                   {verificationMap.get('document')?.status === 'verified' ? (
-                    <span className="flex items-center gap-1 text-[11px] font-body font-semibold text-brand bg-brand/10 px-2 py-0.5 rounded-full">
-                      <Check className="w-3 h-3 stroke-[3]" />
+                    <span className="font-body text-brand bg-brand/10 flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold">
+                      <Check className="h-3 w-3 stroke-[3]" />
                       Verified
                     </span>
                   ) : (
-                    <span className="text-[11px] font-body text-text-subtle bg-surface-2 px-2 py-0.5 rounded-full">
+                    <span className="font-body text-text-subtle bg-surface-2 rounded-full px-2 py-0.5 text-[11px]">
                       Not started
                     </span>
                   )}
                 </div>
-                <p className="text-[12px] font-body text-text-muted mt-0.5 mb-3">
+                <p className="font-body text-text-muted mt-0.5 mb-3 text-[12px]">
                   Upload business registration, farm ownership, or other documents
                 </p>
                 {verificationMap.get('document')?.status !== 'verified' && (
                   <Link
                     to="/dashboard/employer/verification/documents"
-                    className="flex items-center gap-1 text-[12px] font-body font-semibold text-brand hover:text-brand-hover transition-colors"
+                    className="font-body text-brand hover:text-brand-hover flex items-center gap-1 text-[12px] font-semibold transition-colors"
                   >
                     Upload Documents
-                    <ChevronRight className="w-3.5 h-3.5" />
+                    <ChevronRight className="h-3.5 w-3.5" />
                   </Link>
                 )}
               </div>
@@ -327,7 +349,7 @@ export function EmployerVerification() {
             <div className="flex items-start gap-3">
               <div
                 className={cn(
-                  'w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0',
+                  'flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg',
                   verificationMap.get('farm_photo')?.status === 'verified'
                     ? 'bg-brand/10'
                     : 'bg-surface-2',
@@ -335,35 +357,37 @@ export function EmployerVerification() {
               >
                 <Camera
                   className={cn(
-                    'w-4 h-4',
-                    verificationMap.get('farm_photo')?.status === 'verified' ? 'text-brand' : 'text-text-muted',
+                    'h-4 w-4',
+                    verificationMap.get('farm_photo')?.status === 'verified'
+                      ? 'text-brand'
+                      : 'text-text-muted',
                   )}
                 />
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-2 flex-wrap">
-                  <h3 className="text-[14px] font-body font-semibold text-text">Farm Photos</h3>
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h3 className="font-body text-text text-[14px] font-semibold">Farm Photos</h3>
                   {verificationMap.get('farm_photo')?.status === 'verified' ? (
-                    <span className="flex items-center gap-1 text-[11px] font-body font-semibold text-brand bg-brand/10 px-2 py-0.5 rounded-full">
-                      <Check className="w-3 h-3 stroke-[3]" />
+                    <span className="font-body text-brand bg-brand/10 flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold">
+                      <Check className="h-3 w-3 stroke-[3]" />
                       Verified
                     </span>
                   ) : (
-                    <span className="text-[11px] font-body text-text-subtle bg-surface-2 px-2 py-0.5 rounded-full">
+                    <span className="font-body text-text-subtle bg-surface-2 rounded-full px-2 py-0.5 text-[11px]">
                       Not started
                     </span>
                   )}
                 </div>
-                <p className="text-[12px] font-body text-text-muted mt-0.5 mb-3">
+                <p className="font-body text-text-muted mt-0.5 mb-3 text-[12px]">
                   Show seekers your farm — photos help build trust and attract candidates
                 </p>
                 {verificationMap.get('farm_photo')?.status !== 'verified' && (
                   <Link
                     to="/dashboard/employer/verification/photos"
-                    className="flex items-center gap-1 text-[12px] font-body font-semibold text-brand hover:text-brand-hover transition-colors"
+                    className="font-body text-brand hover:text-brand-hover flex items-center gap-1 text-[12px] font-semibold transition-colors"
                   >
                     Upload Photos
-                    <ChevronRight className="w-3.5 h-3.5" />
+                    <ChevronRight className="h-3.5 w-3.5" />
                   </Link>
                 )}
               </div>
@@ -372,21 +396,27 @@ export function EmployerVerification() {
         </div>
 
         {/* Trust level explanation */}
-        <Card className="p-5 bg-surface-2 border-border">
-          <h3 className="text-[13px] font-body font-semibold text-text mb-2">
+        <Card className="bg-surface-2 border-border p-5">
+          <h3 className="font-body text-text mb-2 text-[13px] font-semibold">
             How trust levels work
           </h3>
           <div className="space-y-1.5">
             {[
               { level: 'Basic Verified', requirement: 'Email verified', color: 'text-[#2563eb]' },
               { level: 'Verified', requirement: 'Email + Phone verified', color: 'text-brand' },
-              { level: 'Fully Verified', requirement: 'Email + Phone + Business/Documents + Farm Photos', color: 'text-[#b45309]' },
+              {
+                level: 'Fully Verified',
+                requirement: 'Email + Phone + Business/Documents + Farm Photos',
+                color: 'text-[#b45309]',
+              },
             ].map(({ level, requirement, color }) => (
               <div key={level} className="flex items-center gap-2">
-                <span className={cn('text-[12px] font-body font-semibold w-28 flex-shrink-0', color)}>
+                <span
+                  className={cn('font-body w-28 flex-shrink-0 text-[12px] font-semibold', color)}
+                >
                   {level}
                 </span>
-                <span className="text-[12px] font-body text-text-muted">{requirement}</span>
+                <span className="font-body text-text-muted text-[12px]">{requirement}</span>
               </div>
             ))}
           </div>

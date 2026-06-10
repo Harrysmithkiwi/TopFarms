@@ -28,10 +28,7 @@ const PARENT = readFileSync(
   resolve(__dirname, '..', 'src/pages/onboarding/EmployerOnboarding.tsx'),
   'utf-8',
 )
-const POSTJOB = readFileSync(
-  resolve(__dirname, '..', 'src/pages/jobs/PostJob.tsx'),
-  'utf-8',
-)
+const POSTJOB = readFileSync(resolve(__dirname, '..', 'src/pages/jobs/PostJob.tsx'), 'utf-8')
 
 describe('ONBOARD-EMP-CTA-01 — Step 8 finalize + verified-tick honesty', () => {
   describe('Step8Complete.tsx', () => {

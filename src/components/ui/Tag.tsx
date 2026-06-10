@@ -19,7 +19,7 @@ export function Tag({ variant, className, children, ...props }: TagProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold font-body',
+        'font-body inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold',
         variantClasses[variant],
         className,
       )}

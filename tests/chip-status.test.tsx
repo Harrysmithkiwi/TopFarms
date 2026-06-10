@@ -13,28 +13,14 @@ describe('ChipSelector', () => {
 
   it('single-select: clicking chip B when chip A is selected calls onChange with only B', async () => {
     const onChange = vi.fn()
-    render(
-      <ChipSelector
-        options={options}
-        value={['dairy']}
-        onChange={onChange}
-        mode="single"
-      />,
-    )
+    render(<ChipSelector options={options} value={['dairy']} onChange={onChange} mode="single" />)
     await userEvent.click(screen.getByRole('button', { name: /Sheep & Beef/i }))
     expect(onChange).toHaveBeenCalledWith(['sheep'])
   })
 
   it('multi-select: clicking chip B when chip A is selected calls onChange with both', async () => {
     const onChange = vi.fn()
-    render(
-      <ChipSelector
-        options={options}
-        value={['dairy']}
-        onChange={onChange}
-        mode="multi"
-      />,
-    )
+    render(<ChipSelector options={options} value={['dairy']} onChange={onChange} mode="multi" />)
     await userEvent.click(screen.getByRole('button', { name: /Sheep & Beef/i }))
     expect(onChange).toHaveBeenCalledWith(['dairy', 'sheep'])
   })
@@ -54,28 +40,14 @@ describe('ChipSelector', () => {
   })
 
   it('selected chip renders with border-brand and bg-brand-50 classes', () => {
-    render(
-      <ChipSelector
-        options={options}
-        value={['dairy']}
-        onChange={vi.fn()}
-        mode="single"
-      />,
-    )
+    render(<ChipSelector options={options} value={['dairy']} onChange={vi.fn()} mode="single" />)
     const selectedButton = screen.getByRole('button', { name: /Dairy/i })
     expect(selectedButton.className).toMatch(/border-brand/)
     expect(selectedButton.className).toMatch(/bg-brand-50/)
   })
 
   it('selected chip renders a Check icon (checkmark)', () => {
-    render(
-      <ChipSelector
-        options={options}
-        value={['dairy']}
-        onChange={vi.fn()}
-        mode="single"
-      />,
-    )
+    render(<ChipSelector options={options} value={['dairy']} onChange={vi.fn()} mode="single" />)
     const selectedButton = screen.getByRole('button', { name: /Dairy/i })
     // lucide-react Check icon renders as an SVG
     const svg = selectedButton.querySelector('svg')
@@ -83,27 +55,14 @@ describe('ChipSelector', () => {
   })
 
   it('unselected chip renders with border-border class', () => {
-    render(
-      <ChipSelector
-        options={options}
-        value={['dairy']}
-        onChange={vi.fn()}
-        mode="single"
-      />,
-    )
+    render(<ChipSelector options={options} value={['dairy']} onChange={vi.fn()} mode="single" />)
     const unselectedButton = screen.getByRole('button', { name: /Sheep & Beef/i })
     expect(unselectedButton.className).toMatch(/border-border/)
   })
 
   it('columns=3 renders container with grid-cols-3', () => {
     const { container } = render(
-      <ChipSelector
-        options={options}
-        value={[]}
-        onChange={vi.fn()}
-        mode="multi"
-        columns={3}
-      />,
+      <ChipSelector options={options} value={[]} onChange={vi.fn()} mode="multi" columns={3} />,
     )
     const grid = container.firstElementChild
     expect(grid?.className).toMatch(/grid-cols-3/)
@@ -127,14 +86,7 @@ describe('ChipSelector', () => {
     const iconOptions = [
       { value: 'dairy', label: 'Dairy', icon: <span data-testid="dairy-icon">D</span> },
     ]
-    render(
-      <ChipSelector
-        options={iconOptions}
-        value={[]}
-        onChange={vi.fn()}
-        mode="single"
-      />,
-    )
+    render(<ChipSelector options={iconOptions} value={[]} onChange={vi.fn()} mode="single" />)
     expect(screen.getByTestId('dairy-icon')).toBeTruthy()
   })
 })

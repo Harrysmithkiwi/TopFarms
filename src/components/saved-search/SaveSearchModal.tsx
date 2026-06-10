@@ -11,10 +11,7 @@ import { supabase } from '@/lib/supabase'
 import { snapshotFilters, deriveAutoName } from '@/lib/savedSearch'
 
 const schema = z.object({
-  name: z
-    .string()
-    .min(1, 'Name required')
-    .max(100, 'Name too long (max 100 characters)'),
+  name: z.string().min(1, 'Name required').max(100, 'Name too long (max 100 characters)'),
 })
 type FormValues = z.infer<typeof schema>
 
@@ -112,13 +109,13 @@ export function SaveSearchModal({
         className={cn('fixed inset-0 z-50 flex items-center justify-center p-4')}
       >
         <div
-          className="bg-surface rounded-[16px] shadow-xl w-full max-w-md border-[1.5px] border-border"
+          className="bg-surface border-border w-full max-w-md rounded-[16px] border-[1.5px] shadow-xl"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-border">
+          <div className="border-border flex items-center justify-between border-b px-6 pt-5 pb-4">
             <h2
               id="save-search-heading"
-              className="text-[16px] font-body font-bold"
+              className="font-body text-[16px] font-bold"
               style={{ color: 'var(--color-text)' }}
             >
               Save search
@@ -126,14 +123,14 @@ export function SaveSearchModal({
             <button
               type="button"
               onClick={onClose}
-              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-2 transition-colors"
+              className="hover:bg-surface-2 flex h-8 w-8 items-center justify-center rounded-full transition-colors"
               aria-label="Close modal"
             >
-              <X className="w-4 h-4 text-text-muted" />
+              <X className="text-text-muted h-4 w-4" />
             </button>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="px-6 py-5 space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 px-6 py-5">
             <Input
               label="Name"
               autoFocus
@@ -148,7 +145,7 @@ export function SaveSearchModal({
             {errors.root?.message && (
               <div
                 role="alert"
-                className="rounded-[8px] px-3 py-2 text-[13px] font-body"
+                className="font-body rounded-[8px] px-3 py-2 text-[13px]"
                 style={{
                   backgroundColor: 'var(--color-danger-bg)',
                   color: 'var(--color-danger)',

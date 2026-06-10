@@ -33,13 +33,10 @@ const schema = z
     hours_max: z.coerce.number().optional(),
     weekend_roster: z.string().optional(),
   })
-  .refine(
-    (d) => !d.salary_min || !d.salary_max || d.salary_min < d.salary_max,
-    {
-      message: 'Maximum must be greater than minimum',
-      path: ['salary_max'],
-    },
-  )
+  .refine((d) => !d.salary_min || !d.salary_max || d.salary_min < d.salary_max, {
+    message: 'Maximum must be greater than minimum',
+    path: ['salary_max'],
+  })
 
 type FormData = z.infer<typeof schema>
 
@@ -80,7 +77,10 @@ export function JobStep4Compensation({ onComplete, onBack, defaultValues }: Step
 
   function toggleBenefit(value: string) {
     if (currentBenefits.includes(value)) {
-      setValue('benefits', currentBenefits.filter((b) => b !== value))
+      setValue(
+        'benefits',
+        currentBenefits.filter((b) => b !== value),
+      )
     } else {
       setValue('benefits', [...currentBenefits, value])
     }
@@ -109,7 +109,7 @@ export function JobStep4Compensation({ onComplete, onBack, defaultValues }: Step
         <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Compensation
         </h2>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
           Enter the salary range and any additional benefits
         </p>
       </div>
@@ -117,7 +117,7 @@ export function JobStep4Compensation({ onComplete, onBack, defaultValues }: Step
       <div className="space-y-5">
         {/* Salary range */}
         <div>
-          <p className="font-body text-[13px] font-medium text-text mb-2">
+          <p className="font-body text-text mb-2 text-[13px] font-medium">
             Salary range (NZD per year)
           </p>
           <div className="grid grid-cols-2 gap-3">
@@ -140,7 +140,7 @@ export function JobStep4Compensation({ onComplete, onBack, defaultValues }: Step
               />
             </div>
           </div>
-          <p className="text-[11px] mt-1" style={{ color: 'var(--color-text-muted)' }}>
+          <p className="mt-1 text-[11px]" style={{ color: 'var(--color-text-muted)' }}>
             Leave blank if negotiable or prefer not to say
           </p>
         </div>
@@ -166,10 +166,10 @@ export function JobStep4Compensation({ onComplete, onBack, defaultValues }: Step
         />
 
         {/* On-call allowance toggle */}
-        <div className="flex items-center justify-between p-4 rounded-[10px] border-[1.5px] border-border bg-surface-2">
+        <div className="border-border bg-surface-2 flex items-center justify-between rounded-[10px] border-[1.5px] p-4">
           <div>
-            <p className="font-body text-[13px] font-semibold text-text">On-call allowance</p>
-            <p className="text-[12px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+            <p className="font-body text-text text-[13px] font-semibold">On-call allowance</p>
+            <p className="mt-0.5 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
               Additional compensation for on-call duties
             </p>
           </div>
@@ -184,7 +184,9 @@ export function JobStep4Compensation({ onComplete, onBack, defaultValues }: Step
 
         {/* Working hours per week */}
         <div>
-          <p className="font-body text-[13px] font-semibold text-text mb-2">Working hours per week</p>
+          <p className="font-body text-text mb-2 text-[13px] font-semibold">
+            Working hours per week
+          </p>
           <div className="grid grid-cols-2 gap-4">
             <Input
               label="Min hours"
@@ -218,7 +220,7 @@ export function JobStep4Compensation({ onComplete, onBack, defaultValues }: Step
 
         {/* Benefits */}
         <div>
-          <p className="font-body text-[13px] font-medium text-text mb-3">Benefits</p>
+          <p className="font-body text-text mb-3 text-[13px] font-medium">Benefits</p>
           <div className="space-y-2.5">
             {BENEFIT_OPTIONS.map((option) => (
               <Checkbox
@@ -242,12 +244,9 @@ export function JobStep4Compensation({ onComplete, onBack, defaultValues }: Step
             />
             {includeOther && (
               <div className="pl-6">
-                <Input
-                  placeholder="Describe other benefit..."
-                  {...register('other_benefit')}
-                />
+                <Input placeholder="Describe other benefit..." {...register('other_benefit')} />
                 {otherBenefit.trim() === '' && (
-                  <p className="text-[11px] mt-1" style={{ color: 'var(--color-text-muted)' }}>
+                  <p className="mt-1 text-[11px]" style={{ color: 'var(--color-text-muted)' }}>
                     Please describe the benefit
                   </p>
                 )}

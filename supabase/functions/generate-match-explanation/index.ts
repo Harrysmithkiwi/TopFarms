@@ -35,10 +35,10 @@ Deno.serve(async (req) => {
 
     // Validate required fields
     if (!seeker_id || !job_id) {
-      return new Response(
-        JSON.stringify({ error: 'seeker_id and job_id are required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      )
+      return new Response(JSON.stringify({ error: 'seeker_id and job_id are required' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
     }
 
     // Create Supabase service role client
@@ -56,10 +56,10 @@ Deno.serve(async (req) => {
       .single()
 
     if (scoreError || !scoreRow) {
-      return new Response(
-        JSON.stringify({ error: 'Score not found' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      )
+      return new Response(JSON.stringify({ error: 'Score not found' }), {
+        status: 404,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
     }
 
     // Create Anthropic client
@@ -75,7 +75,9 @@ Deno.serve(async (req) => {
         const message = await anthropic.messages.create({
           model: 'claude-sonnet-4-20250514',
           max_tokens: 150,
-          messages: [{ role: 'user', content: buildPrompt(scoreRow.total_score, scoreRow.breakdown) }],
+          messages: [
+            { role: 'user', content: buildPrompt(scoreRow.total_score, scoreRow.breakdown) },
+          ],
         })
 
         const firstContent = message.content[0]
@@ -102,15 +104,15 @@ Deno.serve(async (req) => {
     }
 
     // Return 200 with explanation (may be null — graceful degradation)
-    return new Response(
-      JSON.stringify({ explanation }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-    )
+    return new Response(JSON.stringify({ explanation }), {
+      status: 200,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
   } catch (error) {
     console.error('Unexpected error in generate-match-explanation:', error)
-    return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-    )
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
   }
 })

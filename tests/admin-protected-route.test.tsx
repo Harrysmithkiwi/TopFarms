@@ -21,7 +21,11 @@ vi.mock('@/hooks/useAuth', () => ({
 
 import { useAuth } from '@/hooks/useAuth'
 
-function mockAuth(opts: { session: any; role: 'employer' | 'seeker' | 'admin' | null; loading: boolean }) {
+function mockAuth(opts: {
+  session: any
+  role: 'employer' | 'seeker' | 'admin' | null
+  loading: boolean
+}) {
   vi.mocked(useAuth).mockReturnValue({
     session: opts.session,
     role: opts.role,

@@ -10,8 +10,8 @@ export function BulkActionsBar({ selectedCount, onShortlist, onExport }: BulkAct
   if (selectedCount === 0) return null
 
   return (
-    <div className="sticky bottom-0 bg-surface border-t border-border px-4 py-3 flex items-center gap-3">
-      <span className="text-[13px] font-body text-text-muted">{selectedCount} selected</span>
+    <div className="bg-surface border-border sticky bottom-0 flex items-center gap-3 border-t px-4 py-3">
+      <span className="font-body text-text-muted text-[13px]">{selectedCount} selected</span>
       <div className="flex-1" />
       <Button variant="ghost" size="sm" onClick={onExport}>
         Export

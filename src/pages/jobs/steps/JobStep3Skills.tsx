@@ -33,8 +33,12 @@ export function JobStep3Skills({ jobId, onComplete, onBack, defaultValues }: Ste
   const [saving, setSaving] = useState(false)
   const [minExperience, setMinExperience] = useState(defaultValues?.min_dairy_experience ?? '')
   const [seniority, setSeniority] = useState(defaultValues?.seniority_level ?? '')
-  const [qualifications, setQualifications] = useState<string[]>(defaultValues?.qualifications ?? [])
-  const [visaRequirements, setVisaRequirements] = useState<string[]>(defaultValues?.visa_requirements ?? [])
+  const [qualifications, setQualifications] = useState<string[]>(
+    defaultValues?.qualifications ?? [],
+  )
+  const [visaRequirements, setVisaRequirements] = useState<string[]>(
+    defaultValues?.visa_requirements ?? [],
+  )
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -42,10 +46,7 @@ export function JobStep3Skills({ jobId, onComplete, onBack, defaultValues }: Ste
 
     try {
       // Delete existing job_skills for this job first
-      const { error: deleteError } = await supabase
-        .from('job_skills')
-        .delete()
-        .eq('job_id', jobId)
+      const { error: deleteError } = await supabase.from('job_skills').delete().eq('job_id', jobId)
 
       if (deleteError) {
         toast.error('Failed to update skills. Please try again.')
@@ -60,9 +61,12 @@ export function JobStep3Skills({ jobId, onComplete, onBack, defaultValues }: Ste
           job_id: jobId,
           skill_id: s.skill_id,
           // In requirementMode, SkillsPicker sets proficiency to 'required' or 'preferred'
-          requirement_level: (s.proficiency === 'advanced' || s.proficiency === 'basic')
-            ? (s.proficiency === 'advanced' ? 'required' : 'preferred')
-            : s.proficiency, // 'required' or 'preferred' from requirementMode
+          requirement_level:
+            s.proficiency === 'advanced' || s.proficiency === 'basic'
+              ? s.proficiency === 'advanced'
+                ? 'required'
+                : 'preferred'
+              : s.proficiency, // 'required' or 'preferred' from requirementMode
         }))
 
         const { error: insertError } = await supabase.from('job_skills').insert(rows)
@@ -92,7 +96,7 @@ export function JobStep3Skills({ jobId, onComplete, onBack, defaultValues }: Ste
         <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Required skills
         </h2>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
           Select skills and whether they are required or preferred for this role
         </p>
       </div>
@@ -123,7 +127,7 @@ export function JobStep3Skills({ jobId, onComplete, onBack, defaultValues }: Ste
 
       {/* Qualifications */}
       <div>
-        <p className="font-body text-[13px] font-semibold text-text mb-2">Qualifications</p>
+        <p className="font-body text-text mb-2 text-[13px] font-semibold">Qualifications</p>
         <ChipSelector
           options={QUALIFICATION_OPTIONS}
           value={qualifications}
@@ -135,7 +139,7 @@ export function JobStep3Skills({ jobId, onComplete, onBack, defaultValues }: Ste
 
       {/* Visa requirements */}
       <div>
-        <p className="font-body text-[13px] font-semibold text-text mb-2">Visa requirements</p>
+        <p className="font-body text-text mb-2 text-[13px] font-semibold">Visa requirements</p>
         <ChipSelector
           options={VISA_CHIP_OPTIONS}
           value={visaRequirements}

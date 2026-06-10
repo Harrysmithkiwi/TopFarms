@@ -13,26 +13,28 @@ import {
   HIRING_FREQUENCY_OPTIONS,
 } from '@/types/domain'
 
-const schema = z.object({
-  // Career development section (EONB-04)
-  career_development: z.array(z.string()).optional(),
-  hiring_frequency: z.string().optional(),
-  couples_welcome: z.boolean().optional(),
-  partner_role: z.string().optional(),
-  // Accommodation section (EONB-06)
-  accommodation_available: z.boolean(),
-  accommodation_type: z.string().optional(),
-  accommodation_extras: z.array(z.string()).optional(),
-  vehicle_provided: z.boolean().optional(),
-  vehicle_types: z.array(z.string()).optional(),
-  broadband_available: z.boolean().optional(),
-  // Salary section (EONB-07)
-  salary_min: z.coerce.number().optional(),
-  salary_max: z.coerce.number().optional(),
-}).refine(
-  (d) => !d.salary_min || !d.salary_max || d.salary_min < d.salary_max,
-  { message: 'Maximum must be greater than minimum', path: ['salary_max'] }
-)
+const schema = z
+  .object({
+    // Career development section (EONB-04)
+    career_development: z.array(z.string()).optional(),
+    hiring_frequency: z.string().optional(),
+    couples_welcome: z.boolean().optional(),
+    partner_role: z.string().optional(),
+    // Accommodation section (EONB-06)
+    accommodation_available: z.boolean(),
+    accommodation_type: z.string().optional(),
+    accommodation_extras: z.array(z.string()).optional(),
+    vehicle_provided: z.boolean().optional(),
+    vehicle_types: z.array(z.string()).optional(),
+    broadband_available: z.boolean().optional(),
+    // Salary section (EONB-07)
+    salary_min: z.coerce.number().optional(),
+    salary_max: z.coerce.number().optional(),
+  })
+  .refine((d) => !d.salary_min || !d.salary_max || d.salary_min < d.salary_max, {
+    message: 'Maximum must be greater than minimum',
+    path: ['salary_max'],
+  })
 
 type FormData = z.infer<typeof schema>
 
@@ -52,7 +54,14 @@ const ACCOMMODATION_TYPE_OPTIONS = [
 ]
 
 export function Step4Accommodation({ onComplete, onBack, defaultValues }: Step4Props) {
-  const { handleSubmit, control, watch, register, trigger, formState: { errors } } = useForm<FormData>({
+  const {
+    handleSubmit,
+    control,
+    watch,
+    register,
+    trigger,
+    formState: { errors },
+  } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
       career_development: defaultValues?.career_development ?? [],
@@ -80,7 +89,7 @@ export function Step4Accommodation({ onComplete, onBack, defaultValues }: Step4P
         <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Work & Accommodation
         </h2>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
           Help candidates understand career opportunities and what you offer
         </p>
       </div>
@@ -88,7 +97,7 @@ export function Step4Accommodation({ onComplete, onBack, defaultValues }: Step4P
       <div className="space-y-5">
         {/* Section A: Career development (EONB-04) */}
         <div>
-          <p className="font-body text-[13px] font-semibold text-text mb-2">
+          <p className="font-body text-text mb-2 text-[13px] font-semibold">
             Career development opportunities
           </p>
           <Controller
@@ -121,10 +130,10 @@ export function Step4Accommodation({ onComplete, onBack, defaultValues }: Step4P
         />
 
         {/* Couples toggle with partner sub-select */}
-        <div className="flex items-center justify-between p-4 rounded-[10px] border-[1.5px] border-border bg-surface-2">
+        <div className="border-border bg-surface-2 flex items-center justify-between rounded-[10px] border-[1.5px] p-4">
           <div>
-            <p className="font-body text-[13px] font-semibold text-text">Couples welcome?</p>
-            <p className="text-[12px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+            <p className="font-body text-text text-[13px] font-semibold">Couples welcome?</p>
+            <p className="mt-0.5 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
               We'll match you with couples-ready seekers
             </p>
           </div>
@@ -164,12 +173,12 @@ export function Step4Accommodation({ onComplete, onBack, defaultValues }: Step4P
         </InfoBox>
 
         {/* Main accommodation toggle */}
-        <div className="flex items-center justify-between p-4 rounded-[10px] border-[1.5px] border-border bg-surface-2">
+        <div className="border-border bg-surface-2 flex items-center justify-between rounded-[10px] border-[1.5px] p-4">
           <div>
-            <p className="font-body text-[13px] font-semibold text-text">
+            <p className="font-body text-text text-[13px] font-semibold">
               Do you offer accommodation?
             </p>
-            <p className="text-[12px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+            <p className="mt-0.5 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
               On-site or nearby housing provided to workers
             </p>
           </div>
@@ -201,7 +210,7 @@ export function Step4Accommodation({ onComplete, onBack, defaultValues }: Step4P
 
             {/* Accommodation extras ChipSelector */}
             <div>
-              <p className="font-body text-[13px] font-medium text-text mb-3">
+              <p className="font-body text-text mb-3 text-[13px] font-medium">
                 Accommodation extras
               </p>
               <Controller
@@ -222,10 +231,10 @@ export function Step4Accommodation({ onComplete, onBack, defaultValues }: Step4P
         )}
 
         {/* Vehicle toggle with conditional chips */}
-        <div className="flex items-center justify-between p-4 rounded-[10px] border-[1.5px] border-border bg-surface-2">
+        <div className="border-border bg-surface-2 flex items-center justify-between rounded-[10px] border-[1.5px] p-4">
           <div>
-            <p className="font-body text-[13px] font-semibold text-text">Vehicle provided?</p>
-            <p className="text-[12px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+            <p className="font-body text-text text-[13px] font-semibold">Vehicle provided?</p>
+            <p className="mt-0.5 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
               Farm vehicle or transport assistance
             </p>
           </div>
@@ -261,10 +270,10 @@ export function Step4Accommodation({ onComplete, onBack, defaultValues }: Step4P
         )}
 
         {/* Broadband toggle */}
-        <div className="flex items-center justify-between p-4 rounded-[10px] border-[1.5px] border-border bg-surface-2">
+        <div className="border-border bg-surface-2 flex items-center justify-between rounded-[10px] border-[1.5px] p-4">
           <div>
-            <p className="font-body text-[13px] font-semibold text-text">Broadband available?</p>
-            <p className="text-[12px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+            <p className="font-body text-text text-[13px] font-semibold">Broadband available?</p>
+            <p className="mt-0.5 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
               Internet connectivity on-farm or in accommodation
             </p>
           </div>
@@ -279,7 +288,7 @@ export function Step4Accommodation({ onComplete, onBack, defaultValues }: Step4P
 
         {/* Section C: Salary range (EONB-07) */}
         <div>
-          <p className="font-body text-[13px] font-semibold text-text mb-2">
+          <p className="font-body text-text mb-2 text-[13px] font-semibold">
             Salary range (NZD per annum)
           </p>
           <div className="grid grid-cols-2 gap-4">

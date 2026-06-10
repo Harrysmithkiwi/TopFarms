@@ -229,11 +229,11 @@ export function FileDropzone({
         {isAtMaxFiles ? (
           <div
             className={cn(
-              'border-2 border-dashed rounded-[10px] p-4 text-center',
-              'border-border bg-surface-2 opacity-60 cursor-not-allowed',
+              'rounded-[10px] border-2 border-dashed p-4 text-center',
+              'border-border bg-surface-2 cursor-not-allowed opacity-60',
             )}
           >
-            <p className="text-[13px] font-body text-text-muted">
+            <p className="font-body text-text-muted text-[13px]">
               Maximum {maxFiles} files reached. Remove a file to upload more.
             </p>
           </div>
@@ -241,8 +241,8 @@ export function FileDropzone({
           <div
             {...getRootProps()}
             className={cn(
-              'border-2 border-dashed rounded-[10px] p-6 text-center cursor-pointer transition-all duration-200',
-              'flex flex-col items-center justify-center gap-3 min-h-[120px]',
+              'cursor-pointer rounded-[10px] border-2 border-dashed p-6 text-center transition-all duration-200',
+              'flex min-h-[120px] flex-col items-center justify-center gap-3',
               isDragActive
                 ? 'border-brand-hover bg-[rgba(74,124,47,0.06)]'
                 : 'border-border bg-surface-2 hover:border-border-strong',
@@ -252,12 +252,17 @@ export function FileDropzone({
             <input {...getInputProps()} />
             <div className="flex flex-col items-center gap-2">
               <UploadCloud
-                className={cn('w-8 h-8', isDragActive ? 'text-brand-hover' : 'text-text-muted')}
+                className={cn('h-8 w-8', isDragActive ? 'text-brand-hover' : 'text-text-muted')}
               />
-              <p className={cn('text-[13px] font-body', isDragActive ? 'text-brand-hover' : 'text-text-muted')}>
+              <p
+                className={cn(
+                  'font-body text-[13px]',
+                  isDragActive ? 'text-brand-hover' : 'text-text-muted',
+                )}
+              >
                 {isDragActive ? 'Drop files here...' : label}
               </p>
-              <p className="text-[11px] font-body text-text-subtle">
+              <p className="font-body text-text-subtle text-[11px]">
                 Max {Math.round(maxSize / 1024 / 1024)}MB per file · up to {maxFiles} files
               </p>
             </div>
@@ -268,25 +273,25 @@ export function FileDropzone({
         {uploadedFiles.length > 0 && (
           <ul className="mt-3 space-y-2">
             {uploadedFiles.map((f) => (
-              <li key={f.path || f.name} className="flex items-center gap-2 text-[13px] font-body">
+              <li key={f.path || f.name} className="font-body flex items-center gap-2 text-[13px]">
                 {f.status === 'uploading' ? (
-                  <Loader2 className="w-4 h-4 text-brand-hover animate-spin flex-shrink-0" />
+                  <Loader2 className="text-brand-hover h-4 w-4 flex-shrink-0 animate-spin" />
                 ) : (
-                  <FileText className="w-4 h-4 text-brand-hover flex-shrink-0" />
+                  <FileText className="text-brand-hover h-4 w-4 flex-shrink-0" />
                 )}
-                <span className="text-text truncate max-w-[200px]">{f.name}</span>
+                <span className="text-text max-w-[200px] truncate">{f.name}</span>
                 {f.status === 'done' && (
                   <button
                     type="button"
                     onClick={() => removeFile(f.path)}
-                    className="ml-auto text-text-subtle hover:text-text"
+                    className="text-text-subtle hover:text-text ml-auto"
                     aria-label={`Remove ${f.name}`}
                   >
-                    <X className="w-3.5 h-3.5" />
+                    <X className="h-3.5 w-3.5" />
                   </button>
                 )}
                 {f.status === 'error' && (
-                  <span className="ml-auto text-[11px] text-danger">Failed</span>
+                  <span className="text-danger ml-auto text-[11px]">Failed</span>
                 )}
               </li>
             ))}
@@ -295,7 +300,7 @@ export function FileDropzone({
 
         {/* Error message */}
         {multiErrorMessage && (
-          <p className="mt-1 text-[12px] font-body text-danger">{multiErrorMessage}</p>
+          <p className="font-body text-danger mt-1 text-[12px]">{multiErrorMessage}</p>
         )}
       </div>
     )
@@ -307,8 +312,8 @@ export function FileDropzone({
       <div
         {...getRootProps()}
         className={cn(
-          'border-2 border-dashed rounded-[10px] p-6 text-center cursor-pointer transition-all duration-200',
-          'flex flex-col items-center justify-center gap-3 min-h-[120px]',
+          'cursor-pointer rounded-[10px] border-2 border-dashed p-6 text-center transition-all duration-200',
+          'flex min-h-[120px] flex-col items-center justify-center gap-3',
           isDragActive
             ? 'border-brand-hover bg-[rgba(74,124,47,0.06)]'
             : 'border-border bg-surface-2 hover:border-border-strong',
@@ -321,8 +326,8 @@ export function FileDropzone({
         {/* Preview / uploading / idle state */}
         {isUploading ? (
           <div className="flex flex-col items-center gap-2">
-            <Loader2 className="w-8 h-8 text-brand-hover animate-spin" />
-            <p className="text-[13px] font-body text-text-muted">Uploading {fileName}...</p>
+            <Loader2 className="text-brand-hover h-8 w-8 animate-spin" />
+            <p className="font-body text-text-muted text-[13px]">Uploading {fileName}...</p>
           </div>
         ) : hasFile ? (
           <div className="flex flex-col items-center gap-2">
@@ -334,26 +339,31 @@ export function FileDropzone({
               />
             )}
             {!preview && fileName && (
-              <div className="flex items-center gap-2 text-text-muted">
-                <FileText className="w-6 h-6 text-brand-hover" />
-                <span className="text-[13px] font-body text-text truncate max-w-[200px]">
+              <div className="text-text-muted flex items-center gap-2">
+                <FileText className="text-brand-hover h-6 w-6" />
+                <span className="font-body text-text max-w-[200px] truncate text-[13px]">
                   {fileName}
                 </span>
               </div>
             )}
-            <p className="text-[11px] font-body text-text-muted">
+            <p className="font-body text-text-muted text-[11px]">
               {isDragActive ? 'Drop to replace file' : 'Click or drag to replace'}
             </p>
           </div>
         ) : (
           <div className="flex flex-col items-center gap-2">
             <UploadCloud
-              className={cn('w-8 h-8', isDragActive ? 'text-brand-hover' : 'text-text-muted')}
+              className={cn('h-8 w-8', isDragActive ? 'text-brand-hover' : 'text-text-muted')}
             />
-            <p className={cn('text-[13px] font-body', isDragActive ? 'text-brand-hover' : 'text-text-muted')}>
+            <p
+              className={cn(
+                'font-body text-[13px]',
+                isDragActive ? 'text-brand-hover' : 'text-text-muted',
+              )}
+            >
               {isDragActive ? 'Drop file here...' : label}
             </p>
-            <p className="text-[11px] font-body text-text-subtle">
+            <p className="font-body text-text-subtle text-[11px]">
               Max {Math.round(maxSize / 1024 / 1024)}MB
             </p>
           </div>
@@ -365,17 +375,15 @@ export function FileDropzone({
         <button
           type="button"
           onClick={clearFile}
-          className="mt-1.5 flex items-center gap-1 text-[11px] font-body text-text-muted hover:text-text transition-colors"
+          className="font-body text-text-muted hover:text-text mt-1.5 flex items-center gap-1 text-[11px] transition-colors"
         >
-          <X className="w-3 h-3" />
+          <X className="h-3 w-3" />
           Remove file
         </button>
       )}
 
       {/* Error message */}
-      {errorMessage && (
-        <p className="mt-1 text-[12px] font-body text-danger">{errorMessage}</p>
-      )}
+      {errorMessage && <p className="font-body text-danger mt-1 text-[12px]">{errorMessage}</p>}
     </div>
   )
 }

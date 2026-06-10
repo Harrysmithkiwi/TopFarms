@@ -59,9 +59,9 @@ describe('deriveAutoName', () => {
   })
 
   it('appends "+ accommodation" when accommodation_type set', () => {
-    expect(
-      deriveAutoName(new URLSearchParams('shed_type=rotary&accommodation_type=couples')),
-    ).toBe('Rotary + accommodation')
+    expect(deriveAutoName(new URLSearchParams('shed_type=rotary&accommodation_type=couples'))).toBe(
+      'Rotary + accommodation',
+    )
   })
 
   it('appends "+ visa sponsorship" when visa=true', () => {

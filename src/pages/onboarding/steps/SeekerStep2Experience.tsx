@@ -26,7 +26,12 @@ interface SeekerStep2Props {
 }
 
 export function SeekerStep2Experience({ onComplete, onBack, defaultValues }: SeekerStep2Props) {
-  const { register, handleSubmit, control, formState: { errors } } = useForm<FormData>({
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
       years_experience: defaultValues?.years_experience,
@@ -49,7 +54,7 @@ export function SeekerStep2Experience({ onComplete, onBack, defaultValues }: See
         <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Your experience
         </h2>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
           Tell us about your farming background so we can find the best matches
         </p>
       </div>
@@ -69,7 +74,7 @@ export function SeekerStep2Experience({ onComplete, onBack, defaultValues }: See
 
       {/* Shed types */}
       <div>
-        <p className="font-body text-[13px] font-medium text-text mb-3">
+        <p className="font-body text-text mb-3 text-[13px] font-medium">
           Shed types you've worked with
         </p>
         <div className="space-y-2.5">
@@ -104,7 +109,7 @@ export function SeekerStep2Experience({ onComplete, onBack, defaultValues }: See
 
       {/* Herd sizes */}
       <div>
-        <p className="font-body text-[13px] font-medium text-text mb-3">
+        <p className="font-body text-text mb-3 text-[13px] font-medium">
           Herd sizes you've worked with
         </p>
         <div className="space-y-2.5">

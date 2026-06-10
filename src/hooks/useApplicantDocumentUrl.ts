@@ -17,10 +17,7 @@ interface DocUrlResult {
  *   This hook is just the wire.
  */
 export function useApplicantDocumentUrl() {
-  return async function getDocumentUrl(
-    applicationId: string,
-    documentId: string,
-  ): Promise<string> {
+  return async function getDocumentUrl(applicationId: string, documentId: string): Promise<string> {
     const { data, error } = await supabase.functions.invoke<DocUrlResult>(
       'get-applicant-document-url',
       { body: { application_id: applicationId, document_id: documentId } },

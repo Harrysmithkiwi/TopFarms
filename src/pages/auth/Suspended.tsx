@@ -49,12 +49,7 @@ export function Suspended() {
           .
         </p>
 
-        <Button
-          type="button"
-          variant="primary"
-          onClick={handleSignOut}
-          disabled={signingOut}
-        >
+        <Button type="button" variant="primary" onClick={handleSignOut} disabled={signingOut}>
           {signingOut ? 'Signing out…' : 'Sign out'}
         </Button>
       </div>

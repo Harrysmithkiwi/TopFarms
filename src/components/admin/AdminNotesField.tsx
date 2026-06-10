@@ -39,10 +39,13 @@ export function AdminNotesField({ targetUserId, initialNotes }: AdminNotesFieldP
     if (!content) return
     setSaving(true)
     try {
-      const { data, error } = await supabase.rpc('admin_add_note' as never, {
-        p_target_user_id: targetUserId,
-        p_content: content,
-      } as never)
+      const { data, error } = await supabase.rpc(
+        'admin_add_note' as never,
+        {
+          p_target_user_id: targetUserId,
+          p_content: content,
+        } as never,
+      )
       if (error) {
         console.error('admin_add_note failed', error)
         toast.error('Failed to save note. Try again.')
@@ -86,7 +89,7 @@ export function AdminNotesField({ targetUserId, initialNotes }: AdminNotesFieldP
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
         placeholder="Add a note… (visible to admins only)"
-        className="bg-surface-2 rounded-md border-[1.5px] border-border focus:border-2 focus:border-brand focus:outline-none px-[14px] py-3 text-[15px] leading-6 w-full resize-none min-h-[44px] max-h-[160px]"
+        className="bg-surface-2 border-border focus:border-brand max-h-[160px] min-h-[44px] w-full resize-none rounded-md border-[1.5px] px-[14px] py-3 text-[15px] leading-6 focus:border-2 focus:outline-none"
         rows={2}
       />
 

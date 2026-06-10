@@ -40,14 +40,14 @@ export function SearchHero({
 
   return (
     <div
-      className={cn('relative overflow-hidden py-12 px-4', className)}
+      className={cn('relative overflow-hidden px-4 py-12', className)}
       style={{
         background: 'linear-gradient(135deg, var(--color-brand-900) 0%, #1a3a10 100%)',
       }}
     >
       {/* Radial glow overlay */}
       <div
-        className="absolute inset-0 pointer-events-none"
+        className="pointer-events-none absolute inset-0"
         style={{
           background:
             'radial-gradient(ellipse at 30% 50%, rgba(74,124,47,0.25) 0%, transparent 60%)',
@@ -56,19 +56,19 @@ export function SearchHero({
 
       {/* Content */}
       <div className="relative z-10">
-        <h1 className="font-display text-[28px] font-normal text-white leading-[1.2] text-center mb-8">
+        <h1 className="font-display mb-8 text-center text-[28px] leading-[1.2] font-normal text-white">
           Find your next farming opportunity
         </h1>
 
         {/* Search bar */}
-        <div className="bg-surface rounded-[12px] p-2 flex items-center gap-2 shadow-lg max-w-[680px] mx-auto">
+        <div className="bg-surface mx-auto flex max-w-[680px] items-center gap-2 rounded-[12px] p-2 shadow-lg">
           <input
             type="text"
             placeholder="Search jobs, roles, farms..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className={cn(
-              'flex-1 min-w-0 border-0 bg-transparent px-3 py-2 font-body text-[14px] text-text placeholder:text-text-subtle',
+              'font-body text-text placeholder:text-text-subtle min-w-0 flex-1 border-0 bg-transparent px-3 py-2 text-[14px]',
               'focus:outline-none',
             )}
           />
@@ -82,20 +82,20 @@ export function SearchHero({
           <button
             type="button"
             onClick={handleSearch}
-            className="bg-brand text-white rounded-[8px] px-4 py-2 text-[14px] font-semibold font-body whitespace-nowrap hover:bg-brand/90 transition-colors"
+            className="bg-brand font-body hover:bg-brand/90 rounded-[8px] px-4 py-2 text-[14px] font-semibold whitespace-nowrap text-white transition-colors"
           >
             Search Jobs
           </button>
         </div>
 
         {/* Quick-filter pills */}
-        <div className="flex flex-wrap gap-2 justify-center mt-4">
+        <div className="mt-4 flex flex-wrap justify-center gap-2">
           {pills.map((pill) => (
             <button
               key={pill}
               type="button"
               onClick={() => onPillClick?.(pill)}
-              className="bg-surface/15 text-white border border-white/30 rounded-full px-3 py-1 text-[13px] font-body cursor-pointer hover:bg-surface/25 transition-colors"
+              className="bg-surface/15 font-body hover:bg-surface/25 cursor-pointer rounded-full border border-white/30 px-3 py-1 text-[13px] text-white transition-colors"
             >
               {pill}
             </button>

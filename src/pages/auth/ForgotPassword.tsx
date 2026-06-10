@@ -47,22 +47,19 @@ export function ForgotPassword() {
 
   if (emailSent) {
     return (
-      <AuthLayout
-        title="Check your email"
-        subtitle="Password reset link sent"
-      >
+      <AuthLayout title="Check your email" subtitle="Password reset link sent">
         <div className="space-y-6">
           {/* Mail icon */}
           <div className="flex justify-center">
             <div
-              className="w-16 h-16 rounded-full flex items-center justify-center"
+              className="flex h-16 w-16 items-center justify-center rounded-full"
               style={{ backgroundColor: 'var(--color-warn-bg)' }}
             >
               <Mail size={32} style={{ color: '#7A5C00' }} />
             </div>
           </div>
 
-          <div className="text-center space-y-2">
+          <div className="space-y-2 text-center">
             <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
               We've sent a password reset link to{' '}
               <span className="font-medium" style={{ color: 'var(--color-text)' }}>
@@ -98,7 +95,7 @@ export function ForgotPassword() {
         <div>
           <label
             htmlFor="email"
-            className="block text-sm font-medium mb-1.5"
+            className="mb-1.5 block text-sm font-medium"
             style={{ color: 'var(--color-text)' }}
           >
             Email address
@@ -108,7 +105,7 @@ export function ForgotPassword() {
             type="email"
             autoComplete="email"
             {...register('email')}
-            className="w-full px-3.5 py-2.5 rounded-lg border text-sm outline-none transition-colors"
+            className="w-full rounded-lg border px-3.5 py-2.5 text-sm transition-colors outline-none"
             style={{
               borderColor: errors.email ? 'var(--color-danger)' : 'var(--color-border)',
               backgroundColor: 'var(--color-surface)',
@@ -116,7 +113,7 @@ export function ForgotPassword() {
             }}
           />
           {errors.email && (
-            <p className="text-xs mt-1" style={{ color: 'var(--color-danger)' }}>
+            <p className="mt-1 text-xs" style={{ color: 'var(--color-danger)' }}>
               {errors.email.message}
             </p>
           )}
@@ -126,7 +123,7 @@ export function ForgotPassword() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full py-2.5 px-4 rounded-lg text-sm font-semibold transition-opacity disabled:opacity-60"
+          className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold transition-opacity disabled:opacity-60"
           style={{
             backgroundColor: 'var(--color-brand-900)',
             color: 'var(--color-text-on-brand)',

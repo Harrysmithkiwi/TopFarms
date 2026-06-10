@@ -24,7 +24,7 @@ export function useInView(threshold = 0.2): {
           observer.disconnect()
         }
       },
-      { threshold }
+      { threshold },
     )
 
     observer.observe(element)

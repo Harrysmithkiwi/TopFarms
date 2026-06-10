@@ -32,8 +32,10 @@ function formatSalary(min: number | null, max: number | null): string {
 
 function getTierBadge(tier: string | number): { label: string; color: string; bg: string } | null {
   const t = String(tier)
-  if (t === '3' || t === 'premium') return { label: 'Premium', color: 'var(--color-warn)', bg: 'rgba(245,158,11,0.12)' }
-  if (t === '2' || t === 'featured') return { label: 'Featured', color: 'var(--color-brand)', bg: 'rgba(122,175,63,0.1)' }
+  if (t === '3' || t === 'premium')
+    return { label: 'Premium', color: 'var(--color-warn)', bg: 'rgba(245,158,11,0.12)' }
+  if (t === '2' || t === 'featured')
+    return { label: 'Featured', color: 'var(--color-brand)', bg: 'rgba(122,175,63,0.1)' }
   return null
 }
 
@@ -60,7 +62,7 @@ function JobCard({ job, matchScore }: JobCardProps) {
     >
       {/* Match score circle */}
       <div
-        className="absolute top-3 right-3 w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold"
+        className="absolute top-3 right-3 flex h-12 w-12 items-center justify-center rounded-full text-sm font-bold"
         style={{
           backgroundColor: 'rgba(122,175,63,0.2)',
           color: 'var(--color-brand)',
@@ -71,21 +73,21 @@ function JobCard({ job, matchScore }: JobCardProps) {
       </div>
 
       {/* Badge row */}
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex-1 min-w-0 pr-14">
+      <div className="mb-3 flex items-start justify-between">
+        <div className="min-w-0 flex-1 pr-14">
           <h3
-            className="font-display font-semibold text-base leading-snug mb-0.5 truncate"
+            className="font-display mb-0.5 truncate text-base leading-snug font-semibold"
             style={{ color: 'var(--color-brand-900)' }}
           >
             {job.title}
           </h3>
-          <p className="text-sm truncate" style={{ color: 'var(--color-text-muted)' }}>
+          <p className="truncate text-sm" style={{ color: 'var(--color-text-muted)' }}>
             {farmName}
           </p>
         </div>
         {badge && (
           <span
-            className="flex-shrink-0 ml-2 text-[11px] font-semibold px-2 py-0.5 rounded-full"
+            className="ml-2 flex-shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold"
             style={{ color: badge.color, backgroundColor: badge.bg }}
           >
             {badge.label}
@@ -94,15 +96,15 @@ function JobCard({ job, matchScore }: JobCardProps) {
       </div>
 
       {/* Tags row */}
-      <div className="flex flex-wrap gap-1.5 mb-3">
+      <div className="mb-3 flex flex-wrap gap-1.5">
         <span
-          className="text-[11px] px-2 py-0.5 rounded-full font-medium"
+          className="rounded-full px-2 py-0.5 text-[11px] font-medium"
           style={{ backgroundColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
         >
           {region}
         </span>
         <span
-          className="text-[11px] px-2 py-0.5 rounded-full font-medium capitalize"
+          className="rounded-full px-2 py-0.5 text-[11px] font-medium capitalize"
           style={{ backgroundColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
         >
           {job.contract_type}
@@ -127,7 +129,7 @@ export function FeaturedListings() {
       const { data: featuredData } = await supabase
         .from('jobs')
         .select(
-          'id, title, region, contract_type, salary_min, salary_max, listing_tier, created_at, shed_type, accommodation, visa_sponsorship, couples_welcome, employer_profiles!inner(farm_name, region, id)'
+          'id, title, region, contract_type, salary_min, salary_max, listing_tier, created_at, shed_type, accommodation, visa_sponsorship, couples_welcome, employer_profiles!inner(farm_name, region, id)',
         )
         .eq('status', 'active')
         // 2=featured, 3=premium per getTierBadge helper (FeaturedListings.tsx:33-38). listing_tier is int NOT NULL DEFAULT 1 in supabase/migrations/001_initial_schema.sql:129. HOMEBUG-02: previously passed string array which yields Postgres 22P02 invalid_text_representation.
@@ -145,7 +147,7 @@ export function FeaturedListings() {
       const { data: fallbackData } = await supabase
         .from('jobs')
         .select(
-          'id, title, region, contract_type, salary_min, salary_max, listing_tier, created_at, shed_type, accommodation, visa_sponsorship, couples_welcome, employer_profiles!inner(farm_name, region, id)'
+          'id, title, region, contract_type, salary_min, salary_max, listing_tier, created_at, shed_type, accommodation, visa_sponsorship, couples_welcome, employer_profiles!inner(farm_name, region, id)',
         )
         .eq('status', 'active')
         .order('created_at', { ascending: false })
@@ -159,14 +161,14 @@ export function FeaturedListings() {
   }, [])
 
   return (
-    <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-bg)' }}>
-      <div className="max-w-6xl mx-auto">
+    <section className="px-4 py-20" style={{ backgroundColor: 'var(--color-bg)' }}>
+      <div className="mx-auto max-w-6xl">
         {/* Header row */}
-        <div className="flex items-end justify-between mb-10">
+        <div className="mb-10 flex items-end justify-between">
           <div>
             {/* Eyebrow */}
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-8 h-px" style={{ backgroundColor: 'var(--color-brand)' }} />
+            <div className="mb-3 flex items-center gap-3">
+              <div className="h-px w-8" style={{ backgroundColor: 'var(--color-brand)' }} />
               <p
                 className="text-xs font-bold tracking-widest uppercase"
                 style={{ color: 'var(--color-brand)' }}
@@ -175,7 +177,7 @@ export function FeaturedListings() {
               </p>
             </div>
             <h2
-              className="font-display font-bold text-4xl md:text-5xl"
+              className="font-display text-4xl font-bold md:text-5xl"
               style={{ color: 'var(--color-brand-900)' }}
             >
               Featured{' '}
@@ -184,7 +186,7 @@ export function FeaturedListings() {
           </div>
           <Link
             to="/jobs"
-            className="hidden sm:inline-flex items-center gap-1 text-sm font-semibold transition-colors hover:opacity-70"
+            className="hidden items-center gap-1 text-sm font-semibold transition-colors hover:opacity-70 sm:inline-flex"
             style={{ color: 'var(--color-brand-900)' }}
           >
             View all jobs
@@ -194,11 +196,11 @@ export function FeaturedListings() {
 
         {/* Content */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="rounded-2xl h-40 animate-pulse"
+                className="h-40 animate-pulse rounded-2xl"
                 style={{ backgroundColor: 'var(--color-border)' }}
               />
             ))}
@@ -207,25 +209,25 @@ export function FeaturedListings() {
           /* Empty state */
           <div className="flex justify-center">
             <div
-              className="rounded-2xl p-10 text-center max-w-sm"
+              className="max-w-sm rounded-2xl p-10 text-center"
               style={{
                 backgroundColor: 'var(--color-surface)',
                 border: '1px solid var(--color-border)',
               }}
             >
-              <div className="text-4xl mb-4">🌾</div>
+              <div className="mb-4 text-4xl">🌾</div>
               <h3
-                className="font-display font-semibold text-lg mb-2"
+                className="font-display mb-2 text-lg font-semibold"
                 style={{ color: 'var(--color-brand-900)' }}
               >
                 Be the first to post a featured job
               </h3>
-              <p className="text-sm mb-6" style={{ color: 'var(--color-text-muted)' }}>
+              <p className="mb-6 text-sm" style={{ color: 'var(--color-text-muted)' }}>
                 Get your farm in front of top candidates across New Zealand.
               </p>
               <Link
                 to="/signup?role=employer"
-                className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-semibold transition-opacity hover:opacity-90"
+                className="inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
                 style={{
                   backgroundColor: 'var(--color-brand-900)',
                   color: 'var(--color-text-on-brand)',
@@ -237,9 +239,13 @@ export function FeaturedListings() {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
               {featuredJobs.map((job, index) => (
-                <JobCard key={job.id} job={job} matchScore={MOCK_MATCH_SCORES[index % MOCK_MATCH_SCORES.length]} />
+                <JobCard
+                  key={job.id}
+                  job={job}
+                  matchScore={MOCK_MATCH_SCORES[index % MOCK_MATCH_SCORES.length]}
+                />
               ))}
             </div>
 

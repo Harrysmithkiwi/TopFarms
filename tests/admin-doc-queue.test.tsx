@@ -69,7 +69,10 @@ describe('admin_list_document_queue RPC shape (DOC-QUEUE-01)', () => {
       error: null,
     })
     const { supabase } = await import('@/lib/supabase')
-    const result = await supabase.rpc('admin_list_document_queue', { p_limit: 25, p_offset: 0 } as never)
+    const result = await supabase.rpc('admin_list_document_queue', {
+      p_limit: 25,
+      p_offset: 0,
+    } as never)
     expect(rpcMock).toHaveBeenCalledWith('admin_list_document_queue', { p_limit: 25, p_offset: 0 })
     expect(result.data).toMatchObject({ rows: expect.any(Array), total: expect.any(Number) })
     expect((result.data as { rows: Array<Record<string, unknown>> }).rows[0]).toMatchObject({
@@ -96,7 +99,10 @@ describe('admin_list_document_queue RPC shape (DOC-QUEUE-01)', () => {
       error: null,
     })
     const { supabase } = await import('@/lib/supabase')
-    const result = await supabase.rpc('admin_list_document_queue', { p_limit: 25, p_offset: 0 } as never)
+    const result = await supabase.rpc('admin_list_document_queue', {
+      p_limit: 25,
+      p_offset: 0,
+    } as never)
     const rows = (result.data as { rows: Array<{ status: string }> }).rows
     expect(rows[0].status).toBe('pending')
   })
@@ -120,8 +126,14 @@ describe('admin doc queue action dispatch (DOC-QUEUE-02)', () => {
       error: null,
     })
     const { supabase } = await import('@/lib/supabase')
-    const result = await supabase.rpc('admin_reject_document', { p_document_id: 'doc-1', p_reason: 'illegible' } as never)
-    expect(rpcMock).toHaveBeenCalledWith('admin_reject_document', { p_document_id: 'doc-1', p_reason: 'illegible' })
+    const result = await supabase.rpc('admin_reject_document', {
+      p_document_id: 'doc-1',
+      p_reason: 'illegible',
+    } as never)
+    expect(rpcMock).toHaveBeenCalledWith('admin_reject_document', {
+      p_document_id: 'doc-1',
+      p_reason: 'illegible',
+    })
     expect(result.data).toMatchObject({ ok: true, status: 'rejected', reason: 'illegible' })
   })
 
@@ -131,7 +143,9 @@ describe('admin doc queue action dispatch (DOC-QUEUE-02)', () => {
       error: null,
     })
     const { supabase } = await import('@/lib/supabase')
-    const result = await supabase.rpc('admin_request_more_info', { p_document_id: 'doc-1' } as never)
+    const result = await supabase.rpc('admin_request_more_info', {
+      p_document_id: 'doc-1',
+    } as never)
     expect(rpcMock).toHaveBeenCalledWith('admin_request_more_info', { p_document_id: 'doc-1' })
     expect(result.data).toMatchObject({ ok: true, status: 'needs_resubmission' })
   })
@@ -142,7 +156,9 @@ describe('admin doc queue action dispatch (DOC-QUEUE-02)', () => {
       error: { message: 'Forbidden: admin role required' },
     })
     const { supabase } = await import('@/lib/supabase')
-    const { error } = await supabase.rpc('admin_approve_document', { p_document_id: 'doc-1' } as never)
+    const { error } = await supabase.rpc('admin_approve_document', {
+      p_document_id: 'doc-1',
+    } as never)
     expect(error?.message).toContain('Forbidden')
   })
 
@@ -152,7 +168,10 @@ describe('admin doc queue action dispatch (DOC-QUEUE-02)', () => {
       error: { message: 'Rejection reason cannot be empty' },
     })
     const { supabase } = await import('@/lib/supabase')
-    const { error } = await supabase.rpc('admin_reject_document', { p_document_id: 'doc-1', p_reason: '' } as never)
+    const { error } = await supabase.rpc('admin_reject_document', {
+      p_document_id: 'doc-1',
+      p_reason: '',
+    } as never)
     expect(error?.message).toContain('Rejection reason cannot be empty')
   })
 })

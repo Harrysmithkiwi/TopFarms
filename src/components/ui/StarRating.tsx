@@ -14,10 +14,7 @@ const STAR_PATH =
 function StarIcon({ filled, size = 16 }: { filled: boolean; size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path
-        d={STAR_PATH}
-        fill={filled ? 'var(--color-warn)' : 'var(--color-border)'}
-      />
+      <path d={STAR_PATH} fill={filled ? 'var(--color-warn)' : 'var(--color-border)'} />
     </svg>
   )
 }
@@ -47,7 +44,7 @@ export function StarRating({ value, onChange, size = 16, className }: StarRating
           <button
             key={rating}
             type="button"
-            className="min-w-[44px] min-h-[44px] flex items-center justify-center"
+            className="flex min-h-[44px] min-w-[44px] items-center justify-center"
             onMouseEnter={() => setHoverRating(rating)}
             onClick={() => onChange(rating)}
           >

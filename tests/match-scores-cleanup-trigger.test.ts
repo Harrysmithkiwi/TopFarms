@@ -9,7 +9,11 @@ import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
-const SQL_PATH = resolve(__dirname, '..', 'supabase/migrations/027_match_scores_cleanup_trigger.sql')
+const SQL_PATH = resolve(
+  __dirname,
+  '..',
+  'supabase/migrations/027_match_scores_cleanup_trigger.sql',
+)
 
 describe('match_scores cleanup trigger migration shape', () => {
   it('027 migration exists', () => {
@@ -18,12 +22,16 @@ describe('match_scores cleanup trigger migration shape', () => {
 
   it('declares cleanup_match_scores_on_status_change function', () => {
     const sql = readFileSync(SQL_PATH, 'utf8')
-    expect(sql).toMatch(/CREATE\s+OR\s+REPLACE\s+FUNCTION\s+public\.cleanup_match_scores_on_status_change/)
+    expect(sql).toMatch(
+      /CREATE\s+OR\s+REPLACE\s+FUNCTION\s+public\.cleanup_match_scores_on_status_change/,
+    )
   })
 
   it('uses OLD/NEW status guard for active → non-active transition', () => {
     const sql = readFileSync(SQL_PATH, 'utf8')
-    expect(sql).toMatch(/OLD\.status\s*=\s*'active'\s+AND\s+NEW\.status\s+IS\s+DISTINCT\s+FROM\s+'active'/)
+    expect(sql).toMatch(
+      /OLD\.status\s*=\s*'active'\s+AND\s+NEW\.status\s+IS\s+DISTINCT\s+FROM\s+'active'/,
+    )
   })
 
   it('attaches AFTER UPDATE trigger to public.jobs', () => {

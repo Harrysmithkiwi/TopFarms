@@ -53,22 +53,20 @@ export function ChipSelector({
             type="button"
             onClick={() => handleClick(option.value)}
             className={cn(
-              'flex items-center gap-2 px-3 py-2 rounded-[8px] min-h-[44px] md:min-h-[40px]',
-              'border-[1.5px] cursor-pointer transition-colors duration-150',
+              'flex min-h-[44px] items-center gap-2 rounded-[8px] px-3 py-2 md:min-h-[40px]',
+              'cursor-pointer border-[1.5px] transition-colors duration-150',
               'font-body text-[14px]',
-              'outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
+              'focus-visible:outline-brand outline-none focus-visible:outline-2 focus-visible:outline-offset-2',
               isSelected
                 ? 'border-brand bg-brand-50 text-brand'
                 : 'border-border bg-surface text-text hover:border-brand-hover',
             )}
           >
             {option.icon && (
-              <span className="flex-shrink-0 [&>svg]:w-5 [&>svg]:h-5">
-                {option.icon}
-              </span>
+              <span className="flex-shrink-0 [&>svg]:h-5 [&>svg]:w-5">{option.icon}</span>
             )}
             <span>{option.label}</span>
-            {isSelected && <Check className="ml-auto w-3.5 h-3.5 text-brand" />}
+            {isSelected && <Check className="text-brand ml-auto h-3.5 w-3.5" />}
           </button>
         )
       })}

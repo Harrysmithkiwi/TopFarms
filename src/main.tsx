@@ -17,44 +17,104 @@ import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
 // Pages export named components; map them onto React.lazy's default slot.
 const Login = lazy(() => import('@/pages/auth/Login').then((m) => ({ default: m.Login })))
 const SignUp = lazy(() => import('@/pages/auth/SignUp').then((m) => ({ default: m.SignUp })))
-const VerifyEmail = lazy(() => import('@/pages/auth/VerifyEmail').then((m) => ({ default: m.VerifyEmail })))
-const ForgotPassword = lazy(() => import('@/pages/auth/ForgotPassword').then((m) => ({ default: m.ForgotPassword })))
-const ResetPassword = lazy(() => import('@/pages/auth/ResetPassword').then((m) => ({ default: m.ResetPassword })))
-const SelectRole = lazy(() => import('@/pages/auth/SelectRole').then((m) => ({ default: m.SelectRole })))
-const Suspended = lazy(() => import('@/pages/auth/Suspended').then((m) => ({ default: m.Suspended })))
-const EmployerDashboard = lazy(() => import('@/pages/dashboard/EmployerDashboard').then((m) => ({ default: m.EmployerDashboard })))
-const SeekerDashboard = lazy(() => import('@/pages/dashboard/SeekerDashboard').then((m) => ({ default: m.SeekerDashboard })))
-const JobSearchLayout = lazy(() => import('@/components/layout/JobSearchLayout').then((m) => ({ default: m.JobSearchLayout })))
-const EmployerOnboarding = lazy(() => import('@/pages/onboarding/EmployerOnboarding').then((m) => ({ default: m.EmployerOnboarding })))
-const SeekerOnboarding = lazy(() => import('@/pages/onboarding/SeekerOnboarding').then((m) => ({ default: m.SeekerOnboarding })))
+const VerifyEmail = lazy(() =>
+  import('@/pages/auth/VerifyEmail').then((m) => ({ default: m.VerifyEmail })),
+)
+const ForgotPassword = lazy(() =>
+  import('@/pages/auth/ForgotPassword').then((m) => ({ default: m.ForgotPassword })),
+)
+const ResetPassword = lazy(() =>
+  import('@/pages/auth/ResetPassword').then((m) => ({ default: m.ResetPassword })),
+)
+const SelectRole = lazy(() =>
+  import('@/pages/auth/SelectRole').then((m) => ({ default: m.SelectRole })),
+)
+const Suspended = lazy(() =>
+  import('@/pages/auth/Suspended').then((m) => ({ default: m.Suspended })),
+)
+const EmployerDashboard = lazy(() =>
+  import('@/pages/dashboard/EmployerDashboard').then((m) => ({ default: m.EmployerDashboard })),
+)
+const SeekerDashboard = lazy(() =>
+  import('@/pages/dashboard/SeekerDashboard').then((m) => ({ default: m.SeekerDashboard })),
+)
+const JobSearchLayout = lazy(() =>
+  import('@/components/layout/JobSearchLayout').then((m) => ({ default: m.JobSearchLayout })),
+)
+const EmployerOnboarding = lazy(() =>
+  import('@/pages/onboarding/EmployerOnboarding').then((m) => ({ default: m.EmployerOnboarding })),
+)
+const SeekerOnboarding = lazy(() =>
+  import('@/pages/onboarding/SeekerOnboarding').then((m) => ({ default: m.SeekerOnboarding })),
+)
 const PostJob = lazy(() => import('@/pages/jobs/PostJob').then((m) => ({ default: m.PostJob })))
-const JobDetail = lazy(() => import('@/pages/jobs/JobDetail').then((m) => ({ default: m.JobDetail })))
-const EmployerVerification = lazy(() => import('@/pages/verification/EmployerVerification').then((m) => ({ default: m.EmployerVerification })))
-const DocumentUpload = lazy(() => import('@/pages/verification/DocumentUpload').then((m) => ({ default: m.DocumentUpload })))
-const FarmPhotoUpload = lazy(() => import('@/pages/verification/FarmPhotoUpload').then((m) => ({ default: m.FarmPhotoUpload })))
-const ForEmployers = lazy(() => import('@/pages/ForEmployers').then((m) => ({ default: m.ForEmployers })))
+const JobDetail = lazy(() =>
+  import('@/pages/jobs/JobDetail').then((m) => ({ default: m.JobDetail })),
+)
+const EmployerVerification = lazy(() =>
+  import('@/pages/verification/EmployerVerification').then((m) => ({
+    default: m.EmployerVerification,
+  })),
+)
+const DocumentUpload = lazy(() =>
+  import('@/pages/verification/DocumentUpload').then((m) => ({ default: m.DocumentUpload })),
+)
+const FarmPhotoUpload = lazy(() =>
+  import('@/pages/verification/FarmPhotoUpload').then((m) => ({ default: m.FarmPhotoUpload })),
+)
+const ForEmployers = lazy(() =>
+  import('@/pages/ForEmployers').then((m) => ({ default: m.ForEmployers })),
+)
 const Pricing = lazy(() => import('@/pages/Pricing').then((m) => ({ default: m.Pricing })))
-const JobSearch = lazy(() => import('@/pages/jobs/JobSearch').then((m) => ({ default: m.JobSearch })))
-const MyApplications = lazy(() => import('@/pages/dashboard/seeker/MyApplications').then((m) => ({ default: m.MyApplications })))
-const SavedSearches = lazy(() => import('@/pages/dashboard/seeker/SavedSearches').then((m) => ({ default: m.SavedSearches })))
-const SeekerDocuments = lazy(() => import('@/pages/dashboard/seeker/SeekerDocuments').then((m) => ({ default: m.SeekerDocuments })))
-const ApplicantDashboard = lazy(() => import('@/pages/dashboard/employer/ApplicantDashboard').then((m) => ({ default: m.ApplicantDashboard })))
-const AdminLayout = lazy(() => import('@/components/layout/AdminLayout').then((m) => ({ default: m.AdminLayout })))
-const AdminGate = lazy(() => import('@/pages/admin/AdminLoginPage').then((m) => ({ default: m.AdminGate })))
-const EmployerList = lazy(() => import('@/pages/admin/EmployerList').then((m) => ({ default: m.EmployerList })))
-const SeekerList = lazy(() => import('@/pages/admin/SeekerList').then((m) => ({ default: m.SeekerList })))
-const JobsManagement = lazy(() => import('@/pages/admin/JobsManagement').then((m) => ({ default: m.JobsManagement })))
-const PlacementPipeline = lazy(() => import('@/pages/admin/PlacementPipeline').then((m) => ({ default: m.PlacementPipeline })))
-const AdminDocumentsQueue = lazy(() => import('@/pages/admin/AdminDocumentsQueue').then((m) => ({ default: m.AdminDocumentsQueue })))
-const AdminSkillCoverage = lazy(() => import('@/pages/admin/AdminSkillCoverage').then((m) => ({ default: m.AdminSkillCoverage })))
+const JobSearch = lazy(() =>
+  import('@/pages/jobs/JobSearch').then((m) => ({ default: m.JobSearch })),
+)
+const MyApplications = lazy(() =>
+  import('@/pages/dashboard/seeker/MyApplications').then((m) => ({ default: m.MyApplications })),
+)
+const SavedSearches = lazy(() =>
+  import('@/pages/dashboard/seeker/SavedSearches').then((m) => ({ default: m.SavedSearches })),
+)
+const SeekerDocuments = lazy(() =>
+  import('@/pages/dashboard/seeker/SeekerDocuments').then((m) => ({ default: m.SeekerDocuments })),
+)
+const ApplicantDashboard = lazy(() =>
+  import('@/pages/dashboard/employer/ApplicantDashboard').then((m) => ({
+    default: m.ApplicantDashboard,
+  })),
+)
+const AdminLayout = lazy(() =>
+  import('@/components/layout/AdminLayout').then((m) => ({ default: m.AdminLayout })),
+)
+const AdminGate = lazy(() =>
+  import('@/pages/admin/AdminLoginPage').then((m) => ({ default: m.AdminGate })),
+)
+const EmployerList = lazy(() =>
+  import('@/pages/admin/EmployerList').then((m) => ({ default: m.EmployerList })),
+)
+const SeekerList = lazy(() =>
+  import('@/pages/admin/SeekerList').then((m) => ({ default: m.SeekerList })),
+)
+const JobsManagement = lazy(() =>
+  import('@/pages/admin/JobsManagement').then((m) => ({ default: m.JobsManagement })),
+)
+const PlacementPipeline = lazy(() =>
+  import('@/pages/admin/PlacementPipeline').then((m) => ({ default: m.PlacementPipeline })),
+)
+const AdminDocumentsQueue = lazy(() =>
+  import('@/pages/admin/AdminDocumentsQueue').then((m) => ({ default: m.AdminDocumentsQueue })),
+)
+const AdminSkillCoverage = lazy(() =>
+  import('@/pages/admin/AdminSkillCoverage').then((m) => ({ default: m.AdminSkillCoverage })),
+)
 
 // Full-page fallback shown while a route chunk loads. Mirrors the in-app
 // spinner style (brand-colored ring) so chunk loads read as ordinary loading.
 function RouteFallback() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="flex min-h-screen items-center justify-center">
       <div
-        className="w-8 h-8 rounded-full border-[3px] border-t-transparent animate-spin"
+        className="h-8 w-8 animate-spin rounded-full border-[3px] border-t-transparent"
         style={{ borderColor: 'var(--color-brand)', borderTopColor: 'transparent' }}
         aria-label="Loading page"
         role="status"
@@ -135,19 +195,11 @@ const router = createBrowserRouter([
   },
   {
     path: '/jobs/new',
-    element: (
-      <ProtectedRoute requiredRole="employer">
-        {s(<PostJob />)}
-      </ProtectedRoute>
-    ),
+    element: <ProtectedRoute requiredRole="employer">{s(<PostJob />)}</ProtectedRoute>,
   },
   {
     path: '/jobs/:id/edit',
-    element: (
-      <ProtectedRoute requiredRole="employer">
-        {s(<PostJob />)}
-      </ProtectedRoute>
-    ),
+    element: <ProtectedRoute requiredRole="employer">{s(<PostJob />)}</ProtectedRoute>,
   },
   {
     // PUBLIC — no ProtectedRoute wrapper. Component handles auth-gated views internally.
@@ -159,43 +211,23 @@ const router = createBrowserRouter([
   // NOTE: /dashboard/employer/jobs/:id/applicants MUST be before /dashboard/employer
   {
     path: '/dashboard/employer/jobs/:id/applicants',
-    element: (
-      <ProtectedRoute requiredRole="employer">
-        {s(<ApplicantDashboard />)}
-      </ProtectedRoute>
-    ),
+    element: <ProtectedRoute requiredRole="employer">{s(<ApplicantDashboard />)}</ProtectedRoute>,
   },
   {
     path: '/dashboard/employer',
-    element: (
-      <ProtectedRoute requiredRole="employer">
-        {s(<EmployerDashboard />)}
-      </ProtectedRoute>
-    ),
+    element: <ProtectedRoute requiredRole="employer">{s(<EmployerDashboard />)}</ProtectedRoute>,
   },
   {
     path: '/dashboard/employer/verification',
-    element: (
-      <ProtectedRoute requiredRole="employer">
-        {s(<EmployerVerification />)}
-      </ProtectedRoute>
-    ),
+    element: <ProtectedRoute requiredRole="employer">{s(<EmployerVerification />)}</ProtectedRoute>,
   },
   {
     path: '/dashboard/employer/verification/documents',
-    element: (
-      <ProtectedRoute requiredRole="employer">
-        {s(<DocumentUpload />)}
-      </ProtectedRoute>
-    ),
+    element: <ProtectedRoute requiredRole="employer">{s(<DocumentUpload />)}</ProtectedRoute>,
   },
   {
     path: '/dashboard/employer/verification/photos',
-    element: (
-      <ProtectedRoute requiredRole="employer">
-        {s(<FarmPhotoUpload />)}
-      </ProtectedRoute>
-    ),
+    element: <ProtectedRoute requiredRole="employer">{s(<FarmPhotoUpload />)}</ProtectedRoute>,
   },
 
   // ─── Seeker dashboard ───────────────────────────────────────────────────────
@@ -203,53 +235,29 @@ const router = createBrowserRouter([
   // React Router from treating the sub-path as a nested match on the parent.
   {
     path: '/dashboard/seeker/applications',
-    element: (
-      <ProtectedRoute requiredRole="seeker">
-        {s(<MyApplications />)}
-      </ProtectedRoute>
-    ),
+    element: <ProtectedRoute requiredRole="seeker">{s(<MyApplications />)}</ProtectedRoute>,
   },
   {
     path: '/dashboard/seeker/saved-searches',
-    element: (
-      <ProtectedRoute requiredRole="seeker">
-        {s(<SavedSearches />)}
-      </ProtectedRoute>
-    ),
+    element: <ProtectedRoute requiredRole="seeker">{s(<SavedSearches />)}</ProtectedRoute>,
   },
   {
     path: '/dashboard/seeker/documents',
-    element: (
-      <ProtectedRoute requiredRole="seeker">
-        {s(<SeekerDocuments />)}
-      </ProtectedRoute>
-    ),
+    element: <ProtectedRoute requiredRole="seeker">{s(<SeekerDocuments />)}</ProtectedRoute>,
   },
   {
     path: '/dashboard/seeker',
-    element: (
-      <ProtectedRoute requiredRole="seeker">
-        {s(<SeekerDashboard />)}
-      </ProtectedRoute>
-    ),
+    element: <ProtectedRoute requiredRole="seeker">{s(<SeekerDashboard />)}</ProtectedRoute>,
   },
 
   // ─── Onboarding ─────────────────────────────────────────────────────────────
   {
     path: '/onboarding/employer',
-    element: (
-      <ProtectedRoute requiredRole="employer">
-        {s(<EmployerOnboarding />)}
-      </ProtectedRoute>
-    ),
+    element: <ProtectedRoute requiredRole="employer">{s(<EmployerOnboarding />)}</ProtectedRoute>,
   },
   {
     path: '/onboarding/seeker',
-    element: (
-      <ProtectedRoute requiredRole="seeker">
-        {s(<SeekerOnboarding />)}
-      </ProtectedRoute>
-    ),
+    element: <ProtectedRoute requiredRole="seeker">{s(<SeekerOnboarding />)}</ProtectedRoute>,
   },
 
   // ─── Admin (super admin dashboard, Phase 20) ────────────────────────────────

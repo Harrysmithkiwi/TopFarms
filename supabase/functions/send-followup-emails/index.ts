@@ -78,7 +78,12 @@ function ctaButton(href: string, label: string): string {
 }
 
 // Employer Day 7: friendly nudge
-function employerDay7Body(farmName: string, seekerName: string, jobTitle: string, jobId: string): string {
+function employerDay7Body(
+  farmName: string,
+  seekerName: string,
+  jobTitle: string,
+  jobId: string,
+): string {
   const link = `${APP_URL}/dashboard/employer/jobs/${jobId}/applicants`
   return `
     <h2 style="margin:0 0 16px;font-size:20px;font-weight:600;color:#1A1208;line-height:1.2;">How's it going with ${seekerName}?</h2>
@@ -97,7 +102,12 @@ function employerDay7Body(farmName: string, seekerName: string, jobTitle: string
 }
 
 // Employer Day 14: slightly more urgent
-function employerDay14Body(farmName: string, seekerName: string, jobTitle: string, jobId: string): string {
+function employerDay14Body(
+  farmName: string,
+  seekerName: string,
+  jobTitle: string,
+  jobId: string,
+): string {
   const link = `${APP_URL}/dashboard/employer/jobs/${jobId}/applicants`
   return `
     <h2 style="margin:0 0 16px;font-size:20px;font-weight:600;color:#1A1208;line-height:1.2;">Just checking in — have you filled this role?</h2>
@@ -166,16 +176,16 @@ Deno.serve(async (req) => {
   // Defence-in-depth: validate X-Webhook-Secret (Phase 18.1 #15).
   if (!WEBHOOK_SECRET) {
     console.error('send-followup-emails: WEBHOOK_SECRET unset — refusing to process')
-    return new Response(
-      JSON.stringify({ error: 'Server misconfigured (secret unset)' }),
-      { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-    )
+    return new Response(JSON.stringify({ error: 'Server misconfigured (secret unset)' }), {
+      status: 503,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
   }
   if (req.headers.get('x-webhook-secret') !== WEBHOOK_SECRET) {
-    return new Response(
-      JSON.stringify({ error: 'Forbidden' }),
-      { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-    )
+    return new Response(JSON.stringify({ error: 'Forbidden' }), {
+      status: 403,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
   }
 
   try {
@@ -266,16 +276,16 @@ Deno.serve(async (req) => {
       }
     }
 
-    return new Response(
-      JSON.stringify({ day7_sent: day7Sent, day14_sent: day14Sent }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-    )
+    return new Response(JSON.stringify({ day7_sent: day7Sent, day14_sent: day14Sent }), {
+      status: 200,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
   } catch (error) {
     console.error('Unexpected error in send-followup-emails:', error)
-    return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-    )
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
   }
 })
 
@@ -363,7 +373,9 @@ async function processFollowup({
     )
     if (sent) atLeastOneSent = true
   } else {
-    console.warn(`No employer email found for placement_fee ${row.id} (employer_id=${row.employer_id})`)
+    console.warn(
+      `No employer email found for placement_fee ${row.id} (employer_id=${row.employer_id})`,
+    )
   }
 
   // Send seeker email

@@ -346,9 +346,9 @@ export function PostJob() {
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
+        <div className="flex min-h-[400px] items-center justify-center">
           <div
-            className="w-8 h-8 rounded-full border-[3px] border-t-transparent animate-spin"
+            className="h-8 w-8 animate-spin rounded-full border-[3px] border-t-transparent"
             style={{ borderColor: 'var(--color-brand-hover)', borderTopColor: 'transparent' }}
           />
         </div>
@@ -362,7 +362,7 @@ export function PostJob() {
 
   return (
     <DashboardLayout>
-      <div className={showSidebar ? 'max-w-5xl mx-auto space-y-8' : 'max-w-2xl mx-auto space-y-8'}>
+      <div className={showSidebar ? 'mx-auto max-w-5xl space-y-8' : 'mx-auto max-w-2xl space-y-8'}>
         {/* Header */}
         <div>
           <h1
@@ -377,19 +377,22 @@ export function PostJob() {
         </div>
 
         {/* Step indicator */}
-        <StepIndicator
-          currentStep={currentStep}
-          totalSteps={TOTAL_STEPS}
-          labels={STEP_LABELS}
-        />
+        <StepIndicator currentStep={currentStep} totalSteps={TOTAL_STEPS} labels={STEP_LABELS} />
 
         {/* Step content — grid layout with sidebar for steps 2-5 */}
-        <div className={showSidebar ? 'grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 items-start' : ''}>
-          <div className="bg-surface rounded-[16px] border border-border p-6 shadow-sm">
+        <div
+          className={
+            showSidebar ? 'grid grid-cols-1 items-start gap-8 lg:grid-cols-[1fr_320px]' : ''
+          }
+        >
+          <div className="bg-surface border-border rounded-[16px] border p-6 shadow-sm">
             {saving && (
-              <div className="mb-4 flex items-center gap-2 text-sm" style={{ color: 'var(--color-brand)' }}>
+              <div
+                className="mb-4 flex items-center gap-2 text-sm"
+                style={{ color: 'var(--color-brand)' }}
+              >
                 <div
-                  className="w-4 h-4 rounded-full border-[2px] border-t-transparent animate-spin"
+                  className="h-4 w-4 animate-spin rounded-full border-[2px] border-t-transparent"
                   style={{ borderColor: 'var(--color-brand)', borderTopColor: 'transparent' }}
                 />
                 Saving...
@@ -420,12 +423,14 @@ export function PostJob() {
                   herd_size_max: jobData.herd_size_max ?? employerProfile.herd_size,
                   visa_sponsorship: jobData.visa_sponsorship ?? false,
                   couples_welcome: jobData.couples_welcome ?? false,
-                  accommodation: jobData.accommodation ?? (employerProfile.accommodation_available !== undefined
-                    ? {
-                        available: employerProfile.accommodation_available ?? false,
-                        type: employerProfile.accommodation_type,
-                      }
-                    : undefined),
+                  accommodation:
+                    jobData.accommodation ??
+                    (employerProfile.accommodation_available !== undefined
+                      ? {
+                          available: employerProfile.accommodation_available ?? false,
+                          type: employerProfile.accommodation_type,
+                        }
+                      : undefined),
                   breed: jobData.breed,
                   milking_frequency: jobData.milking_frequency,
                   calving_system: jobData.calving_system,
@@ -501,27 +506,30 @@ export function PostJob() {
               />
             )}
 
-            {currentStep === 7 && jobId && (
-              <JobStep8Success jobId={jobId} />
-            )}
+            {currentStep === 7 && jobId && <JobStep8Success jobId={jobId} />}
           </div>
 
           {showSidebar && (
             <div className="hidden lg:block">
               <LivePreviewSidebar
                 completenessPercent={computeJobCompleteness(jobData)}
-                miniCard={jobData.title ? {
-                  title: jobData.title,
-                  farmName: employerProfile.farm_type ?? '',
-                  location: jobData.region ?? '',
-                  salaryRange: jobData.salary_min && jobData.salary_max
-                    ? `$${(jobData.salary_min / 1000).toFixed(0)}k - $${(jobData.salary_max / 1000).toFixed(0)}k`
-                    : undefined,
-                  tags: [
-                    ...(jobData.shed_type ?? []),
-                    ...(jobData.accommodation?.available ? ['Accommodation'] : []),
-                  ].filter(Boolean),
-                } : undefined}
+                miniCard={
+                  jobData.title
+                    ? {
+                        title: jobData.title,
+                        farmName: employerProfile.farm_type ?? '',
+                        location: jobData.region ?? '',
+                        salaryRange:
+                          jobData.salary_min && jobData.salary_max
+                            ? `$${(jobData.salary_min / 1000).toFixed(0)}k - $${(jobData.salary_max / 1000).toFixed(0)}k`
+                            : undefined,
+                        tags: [
+                          ...(jobData.shed_type ?? []),
+                          ...(jobData.accommodation?.available ? ['Accommodation'] : []),
+                        ].filter(Boolean),
+                      }
+                    : undefined
+                }
                 matchCriteria={{
                   region: jobData.region,
                   shedTypes: jobData.shed_type,

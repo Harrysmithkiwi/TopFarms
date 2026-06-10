@@ -169,9 +169,9 @@ export function SeekerOnboarding() {
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
+        <div className="flex min-h-[400px] items-center justify-center">
           <div
-            className="w-8 h-8 rounded-full border-[3px] border-t-transparent animate-spin"
+            className="h-8 w-8 animate-spin rounded-full border-[3px] border-t-transparent"
             style={{ borderColor: 'var(--color-brand-hover)', borderTopColor: 'transparent' }}
           />
         </div>
@@ -183,7 +183,7 @@ export function SeekerOnboarding() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-2xl mx-auto space-y-8">
+      <div className="mx-auto max-w-2xl space-y-8">
         {/* Header */}
         <div>
           <h1
@@ -198,18 +198,17 @@ export function SeekerOnboarding() {
         </div>
 
         {/* Step indicator */}
-        <StepIndicator
-          currentStep={currentStep}
-          totalSteps={TOTAL_STEPS}
-          labels={STEP_LABELS}
-        />
+        <StepIndicator currentStep={currentStep} totalSteps={TOTAL_STEPS} labels={STEP_LABELS} />
 
         {/* Step content */}
-        <div className="bg-surface rounded-[16px] border border-border p-6 shadow-sm">
+        <div className="bg-surface border-border rounded-[16px] border p-6 shadow-sm">
           {saving && (
-            <div className="mb-4 flex items-center gap-2 text-sm" style={{ color: 'var(--color-brand)' }}>
+            <div
+              className="mb-4 flex items-center gap-2 text-sm"
+              style={{ color: 'var(--color-brand)' }}
+            >
               <div
-                className="w-4 h-4 rounded-full border-[2px] border-t-transparent animate-spin"
+                className="h-4 w-4 animate-spin rounded-full border-[2px] border-t-transparent"
                 style={{ borderColor: 'var(--color-brand)', borderTopColor: 'transparent' }}
               />
               Saving...

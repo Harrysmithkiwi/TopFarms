@@ -44,26 +44,21 @@ vi.mock('@/hooks/useAuth', () => ({
   }),
 }))
 
-const { SeekerStep3Qualifications } = await import(
-  '@/pages/onboarding/steps/SeekerStep3Qualifications'
-)
+const { SeekerStep3Qualifications } =
+  await import('@/pages/onboarding/steps/SeekerStep3Qualifications')
 
 describe('SeekerStep3Qualifications — document upload (SONB-02 / BFIX-03)', () => {
   it('renders a Documents section', () => {
     render(<SeekerStep3Qualifications onComplete={vi.fn()} />)
     expect(screen.getByText('Documents')).toBeInTheDocument()
-    expect(
-      screen.getByText(/upload your cv, certificates, and references/i),
-    ).toBeInTheDocument()
+    expect(screen.getByText(/upload your cv, certificates, and references/i)).toBeInTheDocument()
   })
 
   it('renders the post-BFIX-03 DocumentUploader once useSeekerProfileId resolves (FileDropzone replaced)', async () => {
     render(<SeekerStep3Qualifications onComplete={vi.fn()} />)
     // DocumentUploader mounts only after session.user + seekerProfileId both
     // resolve. seekerProfileId resolution is async (maybeSingle()), so use findBy.
-    expect(
-      await screen.findByText(/drag and drop, or click to select/i),
-    ).toBeInTheDocument()
+    expect(await screen.findByText(/drag and drop, or click to select/i)).toBeInTheDocument()
   })
 
   it('forwards qualification fields to onComplete on submit but does NOT couple documents into the form payload', async () => {

@@ -34,17 +34,13 @@ export function InfoBox({ variant, title, className, children, ...props }: InfoB
 
   return (
     <div
-      className={cn(
-        'rounded-[12px] p-4 border-[1.5px]',
-        classes.container,
-        className,
-      )}
+      className={cn('rounded-[12px] border-[1.5px] p-4', classes.container, className)}
       {...props}
     >
       {title && (
-        <p className={cn('font-body text-[13px] font-semibold mb-1', classes.title)}>{title}</p>
+        <p className={cn('font-body mb-1 text-[13px] font-semibold', classes.title)}>{title}</p>
       )}
-      <div className="font-body text-[13px] text-text">{children}</div>
+      <div className="font-body text-text text-[13px]">{children}</div>
     </div>
   )
 }

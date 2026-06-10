@@ -4,7 +4,13 @@ import { MatchCircle } from '@/components/ui/MatchCircle'
 import { VerificationBadge } from '@/components/ui/VerificationBadge'
 import { Tag } from '@/components/ui/Tag'
 import { ExpandableCardTabs } from '@/components/ui/ExpandableCardTabs'
-import type { JobListing, MatchScore, EmployerVerification, TrustLevel, ApplicationStatus } from '@/types/domain'
+import type {
+  JobListing,
+  MatchScore,
+  EmployerVerification,
+  TrustLevel,
+  ApplicationStatus,
+} from '@/types/domain'
 import { APPLICATION_STATUS_LABELS, COMPLETED_STATUSES } from '@/types/domain'
 
 interface SearchJobCardProps {
@@ -26,8 +32,7 @@ interface SearchJobCardProps {
 
 function formatSalaryRange(min?: number, max?: number): string | null {
   if (!min && !max) return null
-  const fmt = (n: number) =>
-    n >= 1000 ? `$${(n / 1000).toFixed(0)}k` : `$${n.toLocaleString()}`
+  const fmt = (n: number) => (n >= 1000 ? `$${(n / 1000).toFixed(0)}k` : `$${n.toLocaleString()}`)
   if (min && max) return `${fmt(min)} – ${fmt(max)} /yr`
   if (min) return `From ${fmt(min)} /yr`
   if (max) return `Up to ${fmt(max)} /yr`
@@ -59,8 +64,7 @@ export function SearchJobCard({
   isSaved = false,
   onSaveToggle,
 }: SearchJobCardProps) {
-  const isTerminalApplication =
-    appliedStatus !== null && COMPLETED_STATUSES.includes(appliedStatus)
+  const isTerminalApplication = appliedStatus !== null && COMPLETED_STATUSES.includes(appliedStatus)
   const appliedBadgeLabel =
     appliedStatus === null
       ? null
@@ -79,7 +83,7 @@ export function SearchJobCard({
   return (
     <div
       className={cn(
-        'bg-surface border border-border rounded-[12px]',
+        'bg-surface border-border rounded-[12px] border',
         'hover:border-brand/30 transition-colors',
         isExpanded && 'border-brand/30',
       )}
@@ -88,19 +92,19 @@ export function SearchJobCard({
       <button
         type="button"
         onClick={onToggle}
-        className="w-full text-left p-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-[12px]"
+        className="focus-visible:ring-brand w-full rounded-[12px] p-4 text-left focus:outline-none focus-visible:ring-2"
       >
         <div className="flex items-start gap-4">
           {/* Left: content */}
-          <div className="flex-1 min-w-0">
+          <div className="min-w-0 flex-1">
             {/* Title */}
-            <h3 className="text-[15px] font-body font-semibold text-text truncate leading-snug">
+            <h3 className="font-body text-text truncate text-[15px] leading-snug font-semibold">
               {job.title}
             </h3>
 
             {/* Farm name + verification badge */}
-            <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-              <span className="text-sm font-body text-text-muted">
+            <div className="mt-1 flex flex-wrap items-center gap-1.5">
+              <span className="font-body text-text-muted text-sm">
                 {job.employer_profiles?.farm_name}
               </span>
               {verifications.length > 0 && (
@@ -112,7 +116,7 @@ export function SearchJobCard({
               )}
               {appliedBadgeLabel !== null && (
                 <span
-                  className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-body font-semibold"
+                  className="font-body inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold"
                   style={{
                     backgroundColor: isTerminalApplication
                       ? 'var(--color-border)'
@@ -128,10 +132,10 @@ export function SearchJobCard({
             </div>
 
             {/* Tags row */}
-            <div className="flex flex-wrap gap-1.5 mt-2">
+            <div className="mt-2 flex flex-wrap gap-1.5">
               {/* Region */}
               <Tag variant="grey">
-                <MapPin className="w-3 h-3 mr-0.5 inline-block" />
+                <MapPin className="mr-0.5 inline-block h-3 w-3" />
                 {job.employer_profiles?.region || job.region}
               </Tag>
 
@@ -148,47 +152,45 @@ export function SearchJobCard({
               ))}
 
               {/* Accommodation */}
-              {accommodationAvailable && (
-                <Tag variant="green">Accommodation</Tag>
-              )}
+              {accommodationAvailable && <Tag variant="green">Accommodation</Tag>}
 
               {/* Visa sponsorship */}
-              {job.visa_sponsorship && (
-                <Tag variant="blue">Visa sponsorship</Tag>
-              )}
+              {job.visa_sponsorship && <Tag variant="blue">Visa sponsorship</Tag>}
 
               {/* Couples welcome */}
-              {job.couples_welcome && (
-                <Tag variant="warn">Couples welcome</Tag>
-              )}
+              {job.couples_welcome && <Tag variant="warn">Couples welcome</Tag>}
             </div>
 
             {/* Salary */}
-            {salary && (
-              <p className="text-sm font-body text-text-muted mt-2">{salary}</p>
-            )}
+            {salary && <p className="font-body text-text-muted mt-2 text-sm">{salary}</p>}
           </div>
 
           {/* Right: bookmark + match score */}
-          <div className="flex-shrink-0 flex flex-col items-center gap-2">
+          <div className="flex flex-shrink-0 flex-col items-center gap-2">
             {/* Bookmark icon */}
             <button
               type="button"
-              onClick={(e) => { e.stopPropagation(); onSaveToggle?.() }}
-              className={cn('flex-shrink-0', isSaved ? 'text-warn' : 'text-text-muted hover:text-warn')}
+              onClick={(e) => {
+                e.stopPropagation()
+                onSaveToggle?.()
+              }}
+              className={cn(
+                'flex-shrink-0',
+                isSaved ? 'text-warn' : 'text-text-muted hover:text-warn',
+              )}
               aria-label={isSaved ? 'Job saved' : 'Save this job'}
             >
-              <Bookmark className={cn('w-4 h-4', isSaved && 'fill-warn')} />
+              <Bookmark className={cn('h-4 w-4', isSaved && 'fill-warn')} />
             </button>
 
             {/* Match circle */}
-            <div className="w-[52px] flex flex-col items-center justify-center">
+            <div className="flex w-[52px] flex-col items-center justify-center">
               {matchScore !== null && matchScore !== undefined ? (
                 <MatchCircle score={matchScore.total_score} size="md" />
               ) : (
                 /* Subtle placeholder for visitors */
-                <div className="w-[50px] h-[50px] rounded-full border-[1.5px] border-border bg-surface-2 flex items-center justify-center">
-                  <span className="text-[16px] font-body text-text-subtle">?</span>
+                <div className="border-border bg-surface-2 flex h-[50px] w-[50px] items-center justify-center rounded-full border-[1.5px]">
+                  <span className="font-body text-text-subtle text-[16px]">?</span>
                 </div>
               )}
             </div>

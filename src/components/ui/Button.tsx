@@ -29,10 +29,10 @@ export function Button({
   return (
     <button
       className={cn(
-        'font-body font-medium rounded-[8px] transition-colors duration-150 cursor-pointer',
+        'font-body cursor-pointer rounded-[8px] font-medium transition-colors duration-150',
         'inline-flex items-center justify-center',
-        'disabled:opacity-50 disabled:cursor-not-allowed',
-        'outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
+        'disabled:cursor-not-allowed disabled:opacity-50',
+        'focus-visible:outline-brand outline-none focus-visible:outline-2 focus-visible:outline-offset-2',
         variantClasses[variant],
         sizeClasses[size],
         className,

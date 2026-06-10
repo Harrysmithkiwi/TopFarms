@@ -36,7 +36,7 @@ describe('OAuth Buttons', () => {
     render(
       <MemoryRouter>
         <Login />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     expect(screen.getByRole('button', { name: /sign in with google/i })).toBeInTheDocument()
   })
@@ -45,7 +45,7 @@ describe('OAuth Buttons', () => {
     render(
       <MemoryRouter>
         <Login />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     expect(screen.getByRole('button', { name: /continue with facebook/i })).toBeInTheDocument()
   })
@@ -54,7 +54,7 @@ describe('OAuth Buttons', () => {
     render(
       <MemoryRouter>
         <SignUp />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     expect(screen.getByRole('button', { name: /sign in with google/i })).toBeInTheDocument()
   })
@@ -63,7 +63,7 @@ describe('OAuth Buttons', () => {
     render(
       <MemoryRouter>
         <SignUp />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     expect(screen.getByRole('button', { name: /continue with facebook/i })).toBeInTheDocument()
   })
@@ -73,7 +73,7 @@ describe('OAuth Buttons', () => {
     render(
       <MemoryRouter>
         <Login />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     fireEvent.click(screen.getByRole('button', { name: /sign in with google/i }))
     expect(mockSignInWithOAuth).toHaveBeenCalledWith('google')
@@ -84,7 +84,7 @@ describe('OAuth Buttons', () => {
     render(
       <MemoryRouter>
         <Login />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     fireEvent.click(screen.getByRole('button', { name: /continue with facebook/i }))
     expect(mockSignInWithOAuth).toHaveBeenCalledWith('facebook')

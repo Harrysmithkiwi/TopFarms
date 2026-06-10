@@ -44,16 +44,16 @@ export function Step8Complete({ profileData, onComplete }: Step8CompleteProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
       {/* Left column — success + checklist + CTAs */}
       <div className="space-y-6">
         {/* Success icon */}
         <div className="flex items-center gap-3">
           <div
-            className="w-12 h-12 rounded-full flex items-center justify-center"
+            className="flex h-12 w-12 items-center justify-center rounded-full"
             style={{ backgroundColor: 'var(--color-warn-bg)' }}
           >
-            <CheckCircle className="w-6 h-6" style={{ color: 'var(--color-brand-hover)' }} />
+            <CheckCircle className="h-6 w-6" style={{ color: 'var(--color-brand-hover)' }} />
           </div>
           <div>
             <h2
@@ -62,7 +62,7 @@ export function Step8Complete({ profileData, onComplete }: Step8CompleteProps) {
             >
               Your farm profile is complete!
             </h2>
-            <p className="text-[16px] font-body mt-1" style={{ color: 'var(--color-text-muted)' }}>
+            <p className="font-body mt-1 text-[16px]" style={{ color: 'var(--color-text-muted)' }}>
               You're ready to post your first job and start finding workers
             </p>
           </div>
@@ -75,11 +75,11 @@ export function Step8Complete({ profileData, onComplete }: Step8CompleteProps) {
             return (
               <div key={item.key} className="flex items-center gap-3">
                 <div
-                  className={`w-5 h-5 rounded-full flex items-center justify-center ${complete ? 'bg-brand-hover' : 'bg-surface-2'}`}
+                  className={`flex h-5 w-5 items-center justify-center rounded-full ${complete ? 'bg-brand-hover' : 'bg-surface-2'}`}
                 >
                   {complete && (
                     <svg
-                      className="w-3 h-3 text-white"
+                      className="h-3 w-3 text-white"
                       viewBox="0 0 12 12"
                       fill="none"
                       stroke="currentColor"
@@ -90,7 +90,7 @@ export function Step8Complete({ profileData, onComplete }: Step8CompleteProps) {
                   )}
                 </div>
                 <span
-                  className="text-[13px] font-body"
+                  className="font-body text-[13px]"
                   style={{ color: complete ? 'var(--color-text)' : 'var(--color-text-subtle)' }}
                 >
                   {item.label}
@@ -120,7 +120,7 @@ export function Step8Complete({ profileData, onComplete }: Step8CompleteProps) {
           </Button>
           <button
             onClick={() => navigate('/onboarding/employer')}
-            className="block mx-auto text-[14px] font-body"
+            className="font-body mx-auto block text-[14px]"
             style={{ color: 'var(--color-brand)' }}
           >
             Edit Profile
@@ -130,18 +130,18 @@ export function Step8Complete({ profileData, onComplete }: Step8CompleteProps) {
 
       {/* Right column — mini farm profile preview */}
       <div className="hidden md:block">
-        <div className="rounded-[14px] border border-border overflow-hidden bg-surface">
+        <div className="border-border bg-surface overflow-hidden rounded-[14px] border">
           <div
-            className="h-16 flex items-end px-4 pb-2"
+            className="flex h-16 items-end px-4 pb-2"
             style={{ backgroundColor: 'var(--color-brand-900)' }}
           >
-            <p className="text-white font-body font-semibold text-[16px]">
+            <p className="font-body text-[16px] font-semibold text-white">
               {profileData?.farm_name ?? 'Your Farm'}
             </p>
           </div>
-          <div className="p-4 space-y-3">
+          <div className="space-y-3 p-4">
             <div className="flex items-center gap-2">
-              <span className="text-[12px] font-body" style={{ color: 'var(--color-text-subtle)' }}>
+              <span className="font-body text-[12px]" style={{ color: 'var(--color-text-subtle)' }}>
                 {profileData?.region ?? 'Region'}
               </span>
             </div>
@@ -150,7 +150,7 @@ export function Step8Complete({ profileData, onComplete }: Step8CompleteProps) {
                 {profileData.farm_types.map((ft) => (
                   <span
                     key={ft}
-                    className="px-2 py-0.5 text-[11px] rounded-full border border-border font-body"
+                    className="border-border font-body rounded-full border px-2 py-0.5 text-[11px]"
                     style={{ color: 'var(--color-text-muted)' }}
                   >
                     {ft}
@@ -160,14 +160,14 @@ export function Step8Complete({ profileData, onComplete }: Step8CompleteProps) {
             )}
             {profileData?.accommodation_available && (
               <span
-                className="inline-block px-2 py-0.5 text-[11px] rounded-full border border-brand-hover font-body"
+                className="border-brand-hover font-body inline-block rounded-full border px-2 py-0.5 text-[11px]"
                 style={{ color: 'var(--color-brand-hover)' }}
               >
                 Accommodation
               </span>
             )}
             <p
-              className="text-[12px] font-body line-clamp-3"
+              className="font-body line-clamp-3 text-[12px]"
               style={{ color: 'var(--color-text-muted)' }}
             >
               {profileData?.about_farm ?? 'Complete your profile to see preview'}

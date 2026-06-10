@@ -31,9 +31,9 @@ function formatDate(iso: string): string {
 }
 
 const SECTIONS: Array<{ type: DocumentType; title: string }> = [
-  { type: 'cv',          title: DOCUMENT_TYPE_LABELS.cv },          // 'CV'
+  { type: 'cv', title: DOCUMENT_TYPE_LABELS.cv }, // 'CV'
   { type: 'certificate', title: 'Certificates' },
-  { type: 'reference',   title: 'References' },
+  { type: 'reference', title: 'References' },
 ]
 
 /**
@@ -99,7 +99,11 @@ export function ApplicantDocuments({ applicationId, seekerId }: ApplicantDocumen
   // they never receive pushes because the EMPLOYER_VISIBLE_DOCUMENT_TYPES.includes check
   // below excludes them (and the listing query already filters them out upstream).
   const buckets: Record<DocumentType, SeekerDocument[]> = {
-    cv: [], certificate: [], reference: [], identity: [], other: [],
+    cv: [],
+    certificate: [],
+    reference: [],
+    identity: [],
+    other: [],
   }
   for (const doc of docs) {
     if (EMPLOYER_VISIBLE_DOCUMENT_TYPES.includes(doc.document_type)) {
@@ -111,14 +115,14 @@ export function ApplicantDocuments({ applicationId, seekerId }: ApplicantDocumen
     return (
       <div>
         <p
-          className="text-[11px] font-body font-semibold uppercase tracking-wide mb-2"
+          className="font-body mb-2 text-[11px] font-semibold tracking-wide uppercase"
           style={{ color: 'var(--color-text-subtle)' }}
         >
           Documents
         </p>
         <div className="space-y-1.5">
-          <div className="h-9 bg-surface-2 rounded-md animate-pulse" />
-          <div className="h-9 bg-surface-2 rounded-md animate-pulse" />
+          <div className="bg-surface-2 h-9 animate-pulse rounded-md" />
+          <div className="bg-surface-2 h-9 animate-pulse rounded-md" />
         </div>
       </div>
     )
@@ -128,12 +132,12 @@ export function ApplicantDocuments({ applicationId, seekerId }: ApplicantDocumen
     return (
       <div>
         <p
-          className="text-[11px] font-body font-semibold uppercase tracking-wide mb-2"
+          className="font-body mb-2 text-[11px] font-semibold tracking-wide uppercase"
           style={{ color: 'var(--color-text-subtle)' }}
         >
           Documents
         </p>
-        <p className="text-[12px] font-body italic" style={{ color: 'var(--color-danger)' }}>
+        <p className="font-body text-[12px] italic" style={{ color: 'var(--color-danger)' }}>
           {errorState}
         </p>
       </div>
@@ -146,12 +150,12 @@ export function ApplicantDocuments({ applicationId, seekerId }: ApplicantDocumen
     return (
       <div>
         <p
-          className="text-[11px] font-body font-semibold uppercase tracking-wide mb-2"
+          className="font-body mb-2 text-[11px] font-semibold tracking-wide uppercase"
           style={{ color: 'var(--color-text-subtle)' }}
         >
           Documents
         </p>
-        <p className="text-[12px] font-body italic" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="font-body text-[12px] italic" style={{ color: 'var(--color-text-muted)' }}>
           No documents uploaded by this applicant
         </p>
       </div>
@@ -161,7 +165,7 @@ export function ApplicantDocuments({ applicationId, seekerId }: ApplicantDocumen
   return (
     <div>
       <p
-        className="text-[11px] font-body font-semibold uppercase tracking-wide mb-2"
+        className="font-body mb-2 text-[11px] font-semibold tracking-wide uppercase"
         style={{ color: 'var(--color-text-subtle)' }}
       >
         Documents
@@ -173,7 +177,7 @@ export function ApplicantDocuments({ applicationId, seekerId }: ApplicantDocumen
           return (
             <div key={type}>
               <p
-                className="text-[12px] font-body font-semibold mb-1.5"
+                className="font-body mb-1.5 text-[12px] font-semibold"
                 style={{ color: 'var(--color-text-muted)' }}
               >
                 {title}
@@ -182,14 +186,12 @@ export function ApplicantDocuments({ applicationId, seekerId }: ApplicantDocumen
                 {sectionDocs.map((doc) => (
                   <li
                     key={doc.id}
-                    className="flex items-center gap-3 p-2 rounded-md border border-border bg-surface"
+                    className="border-border bg-surface flex items-center gap-3 rounded-md border p-2"
                   >
-                    <FileText className="w-4 h-4 text-brand-hover flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[13px] font-body text-text truncate">
-                        {doc.filename}
-                      </p>
-                      <p className="text-[11px] font-body text-text-subtle">
+                    <FileText className="text-brand-hover h-4 w-4 flex-shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <p className="font-body text-text truncate text-[13px]">{doc.filename}</p>
+                      <p className="font-body text-text-subtle text-[11px]">
                         {formatBytes(doc.file_size_bytes)} · Uploaded {formatDate(doc.uploaded_at)}
                       </p>
                     </div>
@@ -197,7 +199,7 @@ export function ApplicantDocuments({ applicationId, seekerId }: ApplicantDocumen
                       type="button"
                       onClick={() => handleView(doc)}
                       className={cn(
-                        'text-[12px] font-body font-semibold flex-shrink-0',
+                        'font-body flex-shrink-0 text-[12px] font-semibold',
                         'text-brand hover:underline',
                       )}
                     >

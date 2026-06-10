@@ -55,7 +55,7 @@ export function MatchCircle({ score, size = 'md', className }: MatchCircleProps)
     >
       <span
         className={cn(
-          'font-display font-semibold leading-none tabular-nums',
+          'font-display leading-none font-semibold tabular-nums',
           sizes.text,
           colours.text,
         )}
@@ -63,7 +63,7 @@ export function MatchCircle({ score, size = 'md', className }: MatchCircleProps)
         {score}
       </span>
       {size === 'lg' && (
-        <span className={cn('text-[9px] font-body font-semibold mt-0.5', colours.label)}>
+        <span className={cn('font-body mt-0.5 text-[9px] font-semibold', colours.label)}>
           MATCH
         </span>
       )}

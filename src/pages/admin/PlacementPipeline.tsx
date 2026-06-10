@@ -62,7 +62,7 @@ export function PlacementPipeline() {
   return (
     <div className="space-y-6">
       <h1
-        className="text-[20px] font-semibold leading-7"
+        className="text-[20px] leading-7 font-semibold"
         style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
       >
         Placement Pipeline
@@ -85,16 +85,10 @@ export function PlacementPipeline() {
           const link = stripeUrl(row)
           return (
             <>
-              <td
-                className="px-4 py-3 text-[15px]"
-                style={{ color: 'var(--color-text)' }}
-              >
+              <td className="px-4 py-3 text-[15px]" style={{ color: 'var(--color-text)' }}>
                 {row.employer_name ?? '—'}
               </td>
-              <td
-                className="px-4 py-3 text-[13px]"
-                style={{ color: 'var(--color-text-muted)' }}
-              >
+              <td className="px-4 py-3 text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
                 {new Date(row.acknowledged_at).toLocaleDateString('en-NZ', {
                   day: '2-digit',
                   month: 'short',
@@ -136,10 +130,7 @@ export function PlacementPipeline() {
                     View in Stripe
                   </a>
                 ) : (
-                  <span
-                    className="text-[13px]"
-                    style={{ color: 'var(--color-text-subtle)' }}
-                  >
+                  <span className="text-[13px]" style={{ color: 'var(--color-text-subtle)' }}>
                     —
                   </span>
                 )}

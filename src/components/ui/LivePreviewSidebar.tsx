@@ -28,11 +28,11 @@ interface LivePreviewSidebarProps {
 function CompletenessMeter({ percent }: { percent: number }) {
   return (
     <div className="px-4 pt-4 pb-3">
-      <h3 className="text-[13px] font-semibold text-text-subtle uppercase tracking-wide">
+      <h3 className="text-text-subtle text-[13px] font-semibold tracking-wide uppercase">
         Listing Preview
       </h3>
-      <div className="flex items-center justify-between mt-2">
-        <span className="text-[13px] font-body text-brand">{percent}%</span>
+      <div className="mt-2 flex items-center justify-between">
+        <span className="font-body text-brand text-[13px]">{percent}%</span>
       </div>
       <ProgressBar progress={percent} className="mt-2" />
     </div>
@@ -42,18 +42,18 @@ function CompletenessMeter({ percent }: { percent: number }) {
 function MiniJobCard({ title, farmName, location, salaryRange, tags }: MiniCardData) {
   return (
     <div className="px-4 py-3">
-      <p className="text-[16px] font-semibold font-body text-text">{title}</p>
-      <p className="text-[13px] text-text-muted font-body mt-1">{farmName}</p>
-      <p className="text-[13px] text-text-subtle font-body mt-0.5">
+      <p className="font-body text-text text-[16px] font-semibold">{title}</p>
+      <p className="text-text-muted font-body mt-1 text-[13px]">{farmName}</p>
+      <p className="text-text-subtle font-body mt-0.5 text-[13px]">
         {location}
         {salaryRange && ` \u00B7 ${salaryRange}`}
       </p>
       {tags && tags.length > 0 && (
-        <div className="flex flex-wrap gap-1 mt-2">
+        <div className="mt-2 flex flex-wrap gap-1">
           {tags.map((tag) => (
             <span
               key={tag}
-              className="bg-surface-2 text-text text-[13px] rounded-full px-2 py-0.5 font-body"
+              className="bg-surface-2 text-text font-body rounded-full px-2 py-0.5 text-[13px]"
             >
               {tag}
             </span>
@@ -67,7 +67,9 @@ function MiniJobCard({ title, farmName, location, salaryRange, tags }: MiniCardD
 function MiniCardPlaceholder() {
   return (
     <div className="px-4 py-3">
-      <p className="text-[13px] text-text-subtle font-body italic">Complete fields to see preview</p>
+      <p className="text-text-subtle font-body text-[13px] italic">
+        Complete fields to see preview
+      </p>
     </div>
   )
 }
@@ -110,29 +112,35 @@ function MatchPoolEstimate({ criteria }: { criteria?: MatchCriteria }) {
 
   return (
     <div className="px-4 py-3">
-      <h3 className="text-[13px] font-semibold text-text-subtle uppercase tracking-wide pb-2">
+      <h3 className="text-text-subtle pb-2 text-[13px] font-semibold tracking-wide uppercase">
         Match Pool Estimate
       </h3>
       {state === 'loading' ? (
         <div className="flex items-center gap-2">
-          <Loader2 className="w-4 h-4 text-brand-hover animate-spin" />
-          <p className="text-[13px] font-body text-text-muted">Calculating...</p>
+          <Loader2 className="text-brand-hover h-4 w-4 animate-spin" />
+          <p className="font-body text-text-muted text-[13px]">Calculating...</p>
         </div>
       ) : estimate ? (
         <>
           <ul className="space-y-1">
-            <li className="text-[14px] text-text font-body">{estimate.seekers_in_region} seekers in region</li>
-            <li className="text-[14px] text-text font-body">{estimate.seekers_with_shed} with shed experience</li>
-            <li className="text-[14px] text-text font-body">{estimate.seekers_active} actively looking</li>
+            <li className="text-text font-body text-[14px]">
+              {estimate.seekers_in_region} seekers in region
+            </li>
+            <li className="text-text font-body text-[14px]">
+              {estimate.seekers_with_shed} with shed experience
+            </li>
+            <li className="text-text font-body text-[14px]">
+              {estimate.seekers_active} actively looking
+            </li>
           </ul>
           {noMatches && (
-            <p className="text-[13px] text-text-muted italic font-body mt-2">
+            <p className="text-text-muted font-body mt-2 text-[13px] italic">
               Post your listing to attract seekers in this area
             </p>
           )}
         </>
       ) : (
-        <p className="text-[13px] text-text-subtle italic font-body">
+        <p className="text-text-subtle font-body text-[13px] italic">
           Fill in fields to see estimates
         </p>
       )}
@@ -144,7 +152,7 @@ function AITipBox() {
   return (
     <div className="p-4">
       <div className="bg-ai-bg rounded-[8px] p-3">
-        <p className="text-[13px] text-text font-body">
+        <p className="text-text font-body text-[13px]">
           Tip: Listings with accommodation details get 40% more applications
         </p>
       </div>
@@ -168,21 +176,21 @@ export function LivePreviewSidebar({
   return (
     <aside
       className={cn(
-        'sticky top-6 w-[320px] bg-surface rounded-[14px] border border-border overflow-hidden',
+        'bg-surface border-border sticky top-6 w-[320px] overflow-hidden rounded-[14px] border',
         className,
       )}
     >
       <CompletenessMeter percent={completenessPercent} />
 
-      <div className="border-t border-border" />
+      <div className="border-border border-t" />
 
       {miniCard ? <MiniJobCard {...miniCard} /> : <MiniCardPlaceholder />}
 
-      <div className="border-t border-border" />
+      <div className="border-border border-t" />
 
       <MatchPoolEstimate criteria={matchCriteria} />
 
-      <div className="border-t border-border" />
+      <div className="border-border border-t" />
 
       <AITipBox />
     </aside>

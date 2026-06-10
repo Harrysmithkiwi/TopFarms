@@ -25,7 +25,7 @@ export function DocumentsVerifiedBadge({
   if (!hasVerifiedDocuments) return null
   return (
     <Tag variant="green" className={cn('gap-1.5', className)}>
-      <FileCheck className="w-3.5 h-3.5" aria-hidden="true" />
+      <FileCheck className="h-3.5 w-3.5" aria-hidden="true" />
       Documents Verified
     </Tag>
   )

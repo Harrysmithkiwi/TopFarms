@@ -34,7 +34,7 @@ export function TierCard({
       type="button"
       onClick={onSelect}
       className={cn(
-        'relative w-full text-left rounded-[12px] border-[2px] p-5 transition-all duration-200 cursor-pointer',
+        'relative w-full cursor-pointer rounded-[12px] border-[2px] p-5 text-left transition-all duration-200',
         'flex flex-col gap-4',
         isSelected
           ? 'border-brand-hover bg-[rgba(74,124,47,0.06)] shadow-sm'
@@ -44,7 +44,7 @@ export function TierCard({
       {/* Popular badge */}
       {isPopular && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-          <span className="bg-brand-hover text-white text-[11px] font-body font-semibold px-3 py-0.5 rounded-full">
+          <span className="bg-brand-hover font-body rounded-full px-3 py-0.5 text-[11px] font-semibold text-white">
             Best Value
           </span>
         </div>
@@ -53,38 +53,34 @@ export function TierCard({
       {/* Selection indicator */}
       <div
         className={cn(
-          'absolute top-3 right-3 w-5 h-5 rounded-full border-[2px] flex items-center justify-center transition-all duration-200',
+          'absolute top-3 right-3 flex h-5 w-5 items-center justify-center rounded-full border-[2px] transition-all duration-200',
           isSelected ? 'border-brand-hover bg-brand-hover' : 'border-border bg-surface',
         )}
       >
-        {isSelected && <Check className="w-3 h-3 text-white stroke-[3]" />}
+        {isSelected && <Check className="h-3 w-3 stroke-[3] text-white" />}
       </div>
 
       {/* Tier name */}
       <div>
-        <h3 className="text-[15px] font-body font-bold text-text">{name}</h3>
+        <h3 className="font-body text-text text-[15px] font-bold">{name}</h3>
 
         {/* Price block */}
-        <div className="mt-1 relative inline-block">
+        <div className="relative mt-1 inline-block">
           <span
             className={cn(
-              'text-[24px] font-body font-bold transition-all duration-200',
+              'font-body text-[24px] font-bold transition-all duration-200',
               isSelected ? 'text-brand-hover' : 'text-text',
-              isFree && 'opacity-40 line-through text-[18px]',
+              isFree && 'text-[18px] line-through opacity-40',
             )}
           >
             {price}
           </span>
           {isFree && (
-            <span className="ml-2 text-[13px] font-body font-semibold text-brand-hover">
-              Free!
-            </span>
+            <span className="font-body text-brand-hover ml-2 text-[13px] font-semibold">Free!</span>
           )}
         </div>
 
-        {isFree && (
-          <p className="text-[11px] font-body text-brand mt-0.5">First listing free</p>
-        )}
+        {isFree && <p className="font-body text-brand mt-0.5 text-[11px]">First listing free</p>}
       </div>
 
       {/* Features list */}
@@ -93,11 +89,11 @@ export function TierCard({
           <li key={i} className="flex items-start gap-2">
             <Check
               className={cn(
-                'w-3.5 h-3.5 mt-0.5 flex-shrink-0 stroke-[2.5]',
+                'mt-0.5 h-3.5 w-3.5 flex-shrink-0 stroke-[2.5]',
                 isSelected ? 'text-brand-hover' : 'text-brand',
               )}
             />
-            <span className="text-[12px] font-body text-text-muted leading-tight">{feature}</span>
+            <span className="font-body text-text-muted text-[12px] leading-tight">{feature}</span>
           </li>
         ))}
       </ul>

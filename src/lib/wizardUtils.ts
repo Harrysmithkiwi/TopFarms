@@ -29,5 +29,5 @@ export function computeJobCompleteness(data: {
     !!data.description_overview,
   ]
   const filled = fields.filter(Boolean).length
-  return Math.round((filled / fields.length) * 100 / 5) * 5
+  return Math.round(((filled / fields.length) * 100) / 5) * 5
 }

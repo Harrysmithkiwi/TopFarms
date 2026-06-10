@@ -50,13 +50,15 @@ function useMatchScoresPoll(seekerProfileId: string | null) {
       // drops those rows server-side instead — prevents null-crash in render. See Phase 18 cleanup.
       const { data } = await supabase
         .from('match_scores')
-        .select(`
+        .select(
+          `
           total_score,
           jobs!inner (
             id, title, region, salary_min, salary_max,
             employer_profiles ( farm_name )
           )
-        `)
+        `,
+        )
         .eq('seeker_id', seekerProfileId)
         .order('total_score', { ascending: false })
         .limit(3)
@@ -96,22 +98,25 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
       {/* Left column — success + checklist + match loading + CTAs */}
       <div className="space-y-6">
         {/* Success icon + heading */}
         <div className="flex items-center gap-3">
           <div
-            className="w-12 h-12 rounded-full flex items-center justify-center"
+            className="flex h-12 w-12 items-center justify-center rounded-full"
             style={{ backgroundColor: 'var(--color-warn-bg)' }}
           >
-            <CheckCircle className="w-6 h-6" style={{ color: 'var(--color-brand-hover)' }} />
+            <CheckCircle className="h-6 w-6" style={{ color: 'var(--color-brand-hover)' }} />
           </div>
           <div>
-            <h2 className="font-display text-2xl font-semibold" style={{ color: 'var(--color-brand-900)' }}>
+            <h2
+              className="font-display text-2xl font-semibold"
+              style={{ color: 'var(--color-brand-900)' }}
+            >
               Your profile is ready!
             </h2>
-            <p className="text-[16px] font-body mt-1" style={{ color: 'var(--color-text-muted)' }}>
+            <p className="font-body mt-1 text-[16px]" style={{ color: 'var(--color-text-muted)' }}>
               We're finding your best matches
             </p>
           </div>
@@ -124,11 +129,11 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
             return (
               <div key={item.key} className="flex items-center gap-3">
                 <div
-                  className={`w-5 h-5 rounded-full flex items-center justify-center ${complete ? 'bg-brand-hover' : 'bg-surface-2'}`}
+                  className={`flex h-5 w-5 items-center justify-center rounded-full ${complete ? 'bg-brand-hover' : 'bg-surface-2'}`}
                 >
                   {complete && (
                     <svg
-                      className="w-3 h-3 text-white"
+                      className="h-3 w-3 text-white"
                       viewBox="0 0 12 12"
                       fill="none"
                       stroke="currentColor"
@@ -139,7 +144,7 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
                   )}
                 </div>
                 <span
-                  className="text-[13px] font-body"
+                  className="font-body text-[13px]"
                   style={{ color: complete ? 'var(--color-text)' : 'var(--color-text-subtle)' }}
                 >
                   {item.label}
@@ -150,30 +155,30 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
         </div>
 
         {/* Your matches — polling state */}
-        <div className="p-4 rounded-[10px] border border-border bg-surface-2">
-          <p className="text-[16px] font-semibold font-body" style={{ color: 'var(--color-text)' }}>
+        <div className="border-border bg-surface-2 rounded-[10px] border p-4">
+          <p className="font-body text-[16px] font-semibold" style={{ color: 'var(--color-text)' }}>
             Your matches
           </p>
 
           {matchesLoading ? (
-            <div className="flex items-center gap-2 mt-2">
+            <div className="mt-2 flex items-center gap-2">
               <div
-                className="w-5 h-5 rounded-full border-[2px] border-t-transparent animate-spin"
+                className="h-5 w-5 animate-spin rounded-full border-[2px] border-t-transparent"
                 style={{ borderColor: 'var(--color-brand-hover)', borderTopColor: 'transparent' }}
               />
-              <p className="text-[13px] font-body" style={{ color: 'var(--color-text-muted)' }}>
+              <p className="font-body text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
                 We're calculating your matches
               </p>
             </div>
           ) : timedOut && matches.length === 0 ? (
             <div className="mt-2">
-              <p className="text-[13px] font-body" style={{ color: 'var(--color-text-muted)' }}>
+              <p className="font-body text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
                 We're calculating your matches — check back soon!
               </p>
               <button
                 type="button"
                 onClick={() => navigate('/jobs')}
-                className="mt-2 text-[13px] font-body font-semibold underline"
+                className="font-body mt-2 text-[13px] font-semibold underline"
                 style={{ color: 'var(--color-brand)' }}
               >
                 Browse Jobs
@@ -184,19 +189,28 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
               {matches.map((match) => (
                 <li
                   key={match.jobs.id}
-                  className="flex items-center gap-3 p-3 bg-surface rounded-[10px] border border-border cursor-pointer hover:border-brand transition-colors"
+                  className="bg-surface border-border hover:border-brand flex cursor-pointer items-center gap-3 rounded-[10px] border p-3 transition-colors"
                   onClick={() => navigate(`/jobs/${match.jobs.id}`)}
                 >
                   <MatchCircle score={match.total_score} size="sm" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[14px] font-semibold font-body truncate" style={{ color: 'var(--color-text)' }}>
+                  <div className="min-w-0 flex-1">
+                    <p
+                      className="font-body truncate text-[14px] font-semibold"
+                      style={{ color: 'var(--color-text)' }}
+                    >
                       {match.jobs.title}
                     </p>
-                    <p className="text-[12px] font-body" style={{ color: 'var(--color-text-muted)' }}>
+                    <p
+                      className="font-body text-[12px]"
+                      style={{ color: 'var(--color-text-muted)' }}
+                    >
                       {match.jobs.employer_profiles.farm_name} · {match.jobs.region}
                     </p>
                     {(match.jobs.salary_min || match.jobs.salary_max) && (
-                      <p className="text-[12px] font-body" style={{ color: 'var(--color-text-subtle)' }}>
+                      <p
+                        className="font-body text-[12px]"
+                        style={{ color: 'var(--color-text-subtle)' }}
+                      >
                         {match.jobs.salary_min && match.jobs.salary_max
                           ? `$${(match.jobs.salary_min / 1000).toFixed(0)}k - $${(match.jobs.salary_max / 1000).toFixed(0)}k`
                           : match.jobs.salary_min
@@ -212,7 +226,7 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
                   <button
                     type="button"
                     onClick={() => navigate('/jobs')}
-                    className="text-[13px] font-body font-semibold underline"
+                    className="font-body text-[13px] font-semibold underline"
                     style={{ color: 'var(--color-brand)' }}
                   >
                     Browse all jobs
@@ -225,12 +239,7 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
 
         {/* CTAs */}
         <div className="space-y-3">
-          <Button
-            variant="primary"
-            size="lg"
-            className="w-full"
-            onClick={() => navigate('/jobs')}
-          >
+          <Button variant="primary" size="lg" className="w-full" onClick={() => navigate('/jobs')}>
             Browse Jobs
           </Button>
           <Button
@@ -246,25 +255,28 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
 
       {/* Right column — mini candidate card preview */}
       <div className="hidden md:block">
-        <div className="rounded-[14px] border border-border overflow-hidden bg-surface">
-          <div className="p-4 space-y-3">
+        <div className="border-border bg-surface overflow-hidden rounded-[14px] border">
+          <div className="space-y-3 p-4">
             <div className="flex items-center gap-3">
               <div
-                className="w-10 h-10 rounded-full flex items-center justify-center"
+                className="flex h-10 w-10 items-center justify-center rounded-full"
                 style={{ backgroundColor: 'var(--color-surface-2)' }}
               >
                 <span
-                  className="text-[16px] font-semibold font-body"
+                  className="font-body text-[16px] font-semibold"
                   style={{ color: 'var(--color-brand)' }}
                 >
                   S
                 </span>
               </div>
               <div>
-                <p className="text-[16px] font-semibold font-body" style={{ color: 'var(--color-text)' }}>
+                <p
+                  className="font-body text-[16px] font-semibold"
+                  style={{ color: 'var(--color-text)' }}
+                >
                   Seeker Profile
                 </p>
-                <p className="text-[13px] font-body" style={{ color: 'var(--color-text-subtle)' }}>
+                <p className="font-body text-[13px]" style={{ color: 'var(--color-text-subtle)' }}>
                   {profileData?.region ?? 'Location not set'}
                 </p>
               </div>
@@ -276,7 +288,7 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
                 {profileData.sector_pref.map((s) => (
                   <span
                     key={s}
-                    className="px-2 py-0.5 text-[11px] rounded-full border border-border font-body"
+                    className="border-border font-body rounded-full border px-2 py-0.5 text-[11px]"
                     style={{ color: 'var(--color-text-muted)' }}
                   >
                     {s}
@@ -287,7 +299,7 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
 
             {/* Experience */}
             {profileData?.years_experience !== undefined && (
-              <p className="text-[13px] font-body" style={{ color: 'var(--color-text-muted)' }}>
+              <p className="font-body text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
                 {profileData.years_experience}+ years experience
               </p>
             )}
@@ -295,7 +307,7 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
             {/* Accommodation badge */}
             {profileData?.accommodation_needed && (
               <span
-                className="inline-block px-2 py-0.5 text-[11px] rounded-full border border-brand-hover font-body"
+                className="border-brand-hover font-body inline-block rounded-full border px-2 py-0.5 text-[11px]"
                 style={{ color: 'var(--color-brand-hover)' }}
               >
                 Needs accommodation
@@ -304,7 +316,7 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
 
             {/* Visa */}
             {profileData?.visa_status && (
-              <p className="text-[12px] font-body" style={{ color: 'var(--color-text-subtle)' }}>
+              <p className="font-body text-[12px]" style={{ color: 'var(--color-text-subtle)' }}>
                 {profileData.visa_status.replace(/_/g, ' ')}
               </p>
             )}

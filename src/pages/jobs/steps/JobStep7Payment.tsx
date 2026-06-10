@@ -45,12 +45,7 @@ interface JobStep7PaymentProps {
   onBack: () => void
 }
 
-export function JobStep7Payment({
-  jobId,
-  employerId,
-  onComplete,
-  onBack,
-}: JobStep7PaymentProps) {
+export function JobStep7Payment({ jobId, employerId, onComplete, onBack }: JobStep7PaymentProps) {
   const [selectedTier, setSelectedTier] = useState<TierKey | null>(null)
   const [phase, setPhase] = useState<Phase>('tier-selection')
   const [clientSecret, setClientSecret] = useState<string | null>(null)
@@ -103,8 +98,8 @@ export function JobStep7Payment({
   // Phase: Free activation confirmed
   if (phase === 'free-activated') {
     return (
-      <div className="flex flex-col items-center justify-center py-10 space-y-4 text-center">
-        <CheckCircle className="w-12 h-12" style={{ color: 'var(--color-brand-hover)' }} />
+      <div className="flex flex-col items-center justify-center space-y-4 py-10 text-center">
+        <CheckCircle className="h-12 w-12" style={{ color: 'var(--color-brand-hover)' }} />
         <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Your first listing is free!
         </h2>
@@ -112,7 +107,7 @@ export function JobStep7Payment({
           Your job is being activated. Redirecting to success screen...
         </p>
         <div
-          className="w-5 h-5 rounded-full border-[2px] border-t-transparent animate-spin"
+          className="h-5 w-5 animate-spin rounded-full border-[2px] border-t-transparent"
           style={{ borderColor: 'var(--color-brand-hover)', borderTopColor: 'transparent' }}
         />
       </div>
@@ -127,7 +122,7 @@ export function JobStep7Payment({
           <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
             Complete payment
           </h2>
-          <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
+          <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
             {selectedTier
               ? `${LISTING_TIERS[selectedTier].name} listing — ${LISTING_TIERS[selectedTier].price} NZD`
               : 'Enter your payment details to activate your listing'}
@@ -135,9 +130,7 @@ export function JobStep7Payment({
         </div>
 
         {paymentError && (
-          <div
-            className="rounded-[10px] border border-danger/30 bg-red/5 p-4 space-y-2"
-          >
+          <div className="border-danger/30 bg-red/5 space-y-2 rounded-[10px] border p-4">
             <p className="text-[13px] font-medium" style={{ color: 'var(--color-clay)' }}>
               Payment failed
             </p>
@@ -166,12 +159,7 @@ export function JobStep7Payment({
         />
 
         <div className="flex justify-start pt-2">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={handleBackToTierSelection}
-          >
+          <Button type="button" variant="ghost" size="sm" onClick={handleBackToTierSelection}>
             Change plan
           </Button>
         </div>
@@ -186,12 +174,12 @@ export function JobStep7Payment({
         <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Choose a listing plan
         </h2>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
           Select the plan that best suits your needs
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+      <div className="grid grid-cols-1 gap-4 pt-2 sm:grid-cols-3">
         {([1, 2, 3] as const).map((tier) => (
           <TierCard
             key={tier}
@@ -220,7 +208,7 @@ export function JobStep7Payment({
           {loading ? (
             <span className="flex items-center gap-2">
               <span
-                className="w-4 h-4 rounded-full border-[2px] border-t-transparent animate-spin"
+                className="h-4 w-4 animate-spin rounded-full border-[2px] border-t-transparent"
                 style={{ borderColor: 'rgba(255,255,255,0.6)', borderTopColor: 'transparent' }}
               />
               Processing...

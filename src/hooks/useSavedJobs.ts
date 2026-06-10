@@ -7,7 +7,10 @@ export function useSavedJobs(userId: string | null) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!userId) { setLoading(false); return }
+    if (!userId) {
+      setLoading(false)
+      return
+    }
     supabase
       .from('saved_jobs')
       .select('job_id')
@@ -18,39 +21,42 @@ export function useSavedJobs(userId: string | null) {
       })
   }, [userId])
 
-  const toggleSave = useCallback(async (jobId: string) => {
-    if (!userId) return
-    const wasSaved = savedJobIds.has(jobId)
-    // Optimistic update
-    setSavedJobIds(prev => {
-      const next = new Set(prev)
-      if (wasSaved) {
-        next.delete(jobId)
-      } else {
-        next.add(jobId)
-      }
-      return next
-    })
-    try {
-      if (wasSaved) {
-        await supabase.from('saved_jobs').delete().eq('user_id', userId).eq('job_id', jobId)
-      } else {
-        await supabase.from('saved_jobs').insert({ user_id: userId, job_id: jobId })
-      }
-    } catch {
-      // Revert
-      setSavedJobIds(prev => {
+  const toggleSave = useCallback(
+    async (jobId: string) => {
+      if (!userId) return
+      const wasSaved = savedJobIds.has(jobId)
+      // Optimistic update
+      setSavedJobIds((prev) => {
         const next = new Set(prev)
         if (wasSaved) {
-          next.add(jobId)
-        } else {
           next.delete(jobId)
+        } else {
+          next.add(jobId)
         }
         return next
       })
-      toast.error('Could not save job \u2014 please try again')
-    }
-  }, [userId, savedJobIds])
+      try {
+        if (wasSaved) {
+          await supabase.from('saved_jobs').delete().eq('user_id', userId).eq('job_id', jobId)
+        } else {
+          await supabase.from('saved_jobs').insert({ user_id: userId, job_id: jobId })
+        }
+      } catch {
+        // Revert
+        setSavedJobIds((prev) => {
+          const next = new Set(prev)
+          if (wasSaved) {
+            next.add(jobId)
+          } else {
+            next.delete(jobId)
+          }
+          return next
+        })
+        toast.error('Could not save job \u2014 please try again')
+      }
+    },
+    [userId, savedJobIds],
+  )
 
   const isSaved = useCallback((jobId: string) => savedJobIds.has(jobId), [savedJobIds])
 

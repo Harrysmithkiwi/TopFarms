@@ -14,7 +14,7 @@ const lineVariants: Variants = {
 export function HeroSection() {
   return (
     <section
-      className="relative min-h-screen pt-14 overflow-hidden"
+      className="relative min-h-screen overflow-hidden pt-14"
       style={{ backgroundColor: 'var(--color-brand-900)' }}
     >
       {/* Radial gradient blobs */}
@@ -45,12 +45,13 @@ export function HeroSection() {
       />
 
       {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-6 pt-16 pb-20 md:pt-24 grid grid-cols-1 lg:grid-cols-[1fr_480px] gap-12 items-center min-h-[calc(100vh-56px)]">
+      <div className="relative z-10 mx-auto grid min-h-[calc(100vh-56px)] max-w-7xl grid-cols-1 items-center gap-12 px-4 pt-16 pb-20 md:px-6 md:pt-24 lg:grid-cols-[1fr_480px]">
         {/* Left column */}
         <div className="flex flex-col gap-8">
           {/* Eyebrow badge */}
-          <div className="inline-flex items-center gap-2 w-fit">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-semibold tracking-widest uppercase"
+          <div className="inline-flex w-fit items-center gap-2">
+            <div
+              className="flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold tracking-widest uppercase"
               style={{
                 borderColor: 'rgba(122,175,63,0.3)',
                 backgroundColor: 'rgba(122,175,63,0.1)',
@@ -58,7 +59,7 @@ export function HeroSection() {
               }}
             >
               <span
-                className="w-1.5 h-1.5 rounded-full animate-pulse"
+                className="h-1.5 w-1.5 animate-pulse rounded-full"
                 style={{ backgroundColor: 'var(--color-brand)' }}
               />
               NZ Agriculture
@@ -70,7 +71,7 @@ export function HeroSection() {
             variants={containerVariants}
             initial="hidden"
             animate="show"
-            className="font-display font-bold leading-[1.05] tracking-tight"
+            className="font-display leading-[1.05] font-bold tracking-tight"
             style={{
               fontSize: 'clamp(48px, 6.5vw, 82px)',
               color: 'var(--color-text-on-brand)',
@@ -93,7 +94,7 @@ export function HeroSection() {
 
           {/* Subtext */}
           <p
-            className="text-lg md:text-xl leading-relaxed max-w-xl"
+            className="max-w-xl text-lg leading-relaxed md:text-xl"
             style={{ color: 'rgba(255,255,255,0.65)' }}
           >
             TopFarms matches skilled farm workers with quality employers across dairy, sheep &amp;
@@ -102,12 +103,12 @@ export function HeroSection() {
 
           {/* Dual CTA fork */}
           <div
-            className="flex flex-col sm:flex-row border overflow-hidden"
+            className="flex flex-col overflow-hidden border sm:flex-row"
             style={{ borderColor: 'rgba(255,255,255,0.12)', borderRadius: '14px' }}
           >
             {/* Seeker side */}
             <div
-              className="flex-1 p-6 flex flex-col gap-3"
+              className="flex flex-1 flex-col gap-3 p-6"
               style={{ borderRight: '1px solid rgba(255,255,255,0.08)' }}
             >
               <p
@@ -118,7 +119,7 @@ export function HeroSection() {
               </p>
               <div>
                 <p
-                  className="font-display font-semibold text-lg mb-1"
+                  className="font-display mb-1 text-lg font-semibold"
                   style={{ color: 'var(--color-text-on-brand)' }}
                 >
                   Find Your Next Role
@@ -129,7 +130,7 @@ export function HeroSection() {
               </div>
               <Link
                 to="/signup?role=seeker"
-                className="mt-1 inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-semibold transition-opacity hover:opacity-90"
+                className="mt-1 inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
                 style={{
                   backgroundColor: 'var(--color-brand)',
                   color: 'var(--color-text-on-brand)',
@@ -140,7 +141,7 @@ export function HeroSection() {
             </div>
 
             {/* Employer side */}
-            <div className="flex-1 p-6 flex flex-col gap-3">
+            <div className="flex flex-1 flex-col gap-3 p-6">
               <p
                 className="text-[10px] font-bold tracking-widest uppercase"
                 style={{ color: 'var(--color-text-on-brand)' }}
@@ -149,7 +150,7 @@ export function HeroSection() {
               </p>
               <div>
                 <p
-                  className="font-display font-semibold text-lg mb-1"
+                  className="font-display mb-1 text-lg font-semibold"
                   style={{ color: 'var(--color-text-on-brand)' }}
                 >
                   Find Skilled Workers
@@ -160,7 +161,7 @@ export function HeroSection() {
               </div>
               <Link
                 to="/signup?role=employer"
-                className="mt-1 inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-semibold border transition-colors hover:bg-warn/10"
+                className="hover:bg-warn/10 mt-1 inline-flex items-center justify-center rounded-xl border px-5 py-2.5 text-sm font-semibold transition-colors"
                 style={{
                   borderColor: 'var(--color-text-on-brand)',
                   color: 'var(--color-text-on-brand)',
@@ -173,7 +174,7 @@ export function HeroSection() {
         </div>
 
         {/* Right column — decorative floating cards (desktop only) */}
-        <div className="hidden lg:flex flex-col gap-4 relative" aria-hidden="true">
+        <div className="relative hidden flex-col gap-4 lg:flex" aria-hidden="true">
           {/* Main card */}
           <div
             className="rounded-2xl p-5 shadow-2xl"
@@ -183,10 +184,10 @@ export function HeroSection() {
               backdropFilter: 'blur(12px)',
             }}
           >
-            <div className="flex items-start justify-between mb-3">
+            <div className="mb-3 flex items-start justify-between">
               <div>
                 <p
-                  className="font-display font-semibold text-base mb-0.5"
+                  className="font-display mb-0.5 text-base font-semibold"
                   style={{ color: 'var(--color-text-on-brand)' }}
                 >
                   Senior Dairy Farm Manager
@@ -196,7 +197,7 @@ export function HeroSection() {
                 </p>
               </div>
               <div
-                className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold"
+                className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold"
                 style={{
                   backgroundColor: 'rgba(122,175,63,0.2)',
                   color: 'var(--color-brand)',
@@ -210,7 +211,7 @@ export function HeroSection() {
               {['Dairy', 'Herd Manager', 'Permanent', '$90k+'].map((tag) => (
                 <span
                   key={tag}
-                  className="text-[11px] px-2 py-0.5 rounded-full"
+                  className="rounded-full px-2 py-0.5 text-[11px]"
                   style={{
                     backgroundColor: 'rgba(255,255,255,0.08)',
                     color: 'rgba(255,255,255,0.7)',
@@ -224,16 +225,16 @@ export function HeroSection() {
 
           {/* Candidate preview card */}
           <div
-            className="rounded-2xl p-4 shadow-xl ml-8"
+            className="ml-8 rounded-2xl p-4 shadow-xl"
             style={{
               backgroundColor: 'rgba(255,255,255,0.05)',
               border: '1px solid rgba(255,255,255,0.08)',
               backdropFilter: 'blur(12px)',
             }}
           >
-            <div className="flex items-center gap-3 mb-3">
+            <div className="mb-3 flex items-center gap-3">
               <div
-                className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
+                className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold"
                 style={{
                   backgroundColor: 'rgba(74,124,47,0.3)',
                   color: 'var(--color-brand)',
@@ -242,7 +243,10 @@ export function HeroSection() {
                 JD
               </div>
               <div>
-                <p className="text-sm font-semibold" style={{ color: 'var(--color-text-on-brand)' }}>
+                <p
+                  className="text-sm font-semibold"
+                  style={{ color: 'var(--color-text-on-brand)' }}
+                >
                   Jamie D.
                 </p>
                 <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
@@ -256,12 +260,15 @@ export function HeroSection() {
                 { label: 'Tractor Operation', pct: 75 },
               ].map(({ label, pct }) => (
                 <div key={label}>
-                  <div className="flex justify-between text-[11px] mb-0.5" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                  <div
+                    className="mb-0.5 flex justify-between text-[11px]"
+                    style={{ color: 'rgba(255,255,255,0.5)' }}
+                  >
                     <span>{label}</span>
                     <span>{pct}%</span>
                   </div>
                   <div
-                    className="h-1 rounded-full overflow-hidden"
+                    className="h-1 overflow-hidden rounded-full"
                     style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
                   >
                     <div
@@ -279,7 +286,7 @@ export function HeroSection() {
 
           {/* Match notification chip */}
           <div
-            className="rounded-xl px-4 py-3 flex items-center gap-3 shadow-lg self-start ml-4"
+            className="ml-4 flex items-center gap-3 self-start rounded-xl px-4 py-3 shadow-lg"
             style={{
               backgroundColor: 'rgba(122,175,63,0.15)',
               border: '1px solid rgba(122,175,63,0.3)',
@@ -300,12 +307,12 @@ export function HeroSection() {
       </div>
 
       {/* Scroll hint */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-10">
+      <div className="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2">
         <p className="text-xs tracking-widest uppercase" style={{ color: 'rgba(255,255,255,0.4)' }}>
           Explore
         </p>
-        <div className="flex flex-col items-center gap-0.5 animate-bounce">
-          <div className="w-px h-5" style={{ backgroundColor: 'rgba(255,255,255,0.25)' }} />
+        <div className="flex animate-bounce flex-col items-center gap-0.5">
+          <div className="h-5 w-px" style={{ backgroundColor: 'rgba(255,255,255,0.25)' }} />
           <svg
             width="10"
             height="6"
@@ -313,7 +320,13 @@ export function HeroSection() {
             fill="none"
             style={{ color: 'rgba(255,255,255,0.3)' }}
           >
-            <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path
+              d="M1 1l4 4 4-4"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         </div>
       </div>

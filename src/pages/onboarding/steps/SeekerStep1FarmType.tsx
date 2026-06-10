@@ -24,7 +24,7 @@ export function SeekerStep1FarmType({ onComplete, defaultValues }: SeekerStep1Pr
         <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           What type of farm work are you looking for?
         </h2>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
           Select all that apply — this helps us match you with relevant jobs
         </p>
       </div>
@@ -38,7 +38,7 @@ export function SeekerStep1FarmType({ onComplete, defaultValues }: SeekerStep1Pr
       />
 
       {selectedTypes.length === 0 && (
-        <p className="text-[12px] font-body" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="font-body text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
           Please select at least one farm type to continue
         </p>
       )}

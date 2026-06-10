@@ -25,16 +25,29 @@ describe('admin RPC backend gate (ADMIN-GATE-BE)', () => {
   })
 
   it("ADMIN-GATE-BE-2: employer JWT calling admin_list_employers surfaces 'Forbidden: admin role required'", async () => {
-    rpcMock.mockResolvedValueOnce({ data: null, error: { message: 'Forbidden: admin role required' } })
+    rpcMock.mockResolvedValueOnce({
+      data: null,
+      error: { message: 'Forbidden: admin role required' },
+    })
     const { supabase } = await import('@/lib/supabase')
-    const { error } = await supabase.rpc('admin_list_employers', { p_search: null, p_limit: 25, p_offset: 0 })
+    const { error } = await supabase.rpc('admin_list_employers', {
+      p_search: null,
+      p_limit: 25,
+      p_offset: 0,
+    })
     expect(error?.message).toContain('Forbidden')
   })
 
   it("ADMIN-GATE-BE-3: seeker JWT calling admin_set_user_active surfaces 'Forbidden: admin role required'", async () => {
-    rpcMock.mockResolvedValueOnce({ data: null, error: { message: 'Forbidden: admin role required' } })
+    rpcMock.mockResolvedValueOnce({
+      data: null,
+      error: { message: 'Forbidden: admin role required' },
+    })
     const { supabase } = await import('@/lib/supabase')
-    const { error } = await supabase.rpc('admin_set_user_active', { p_user_id: 'x', p_active: false })
+    const { error } = await supabase.rpc('admin_set_user_active', {
+      p_user_id: 'x',
+      p_active: false,
+    })
     expect(error?.message).toContain('Forbidden')
   })
 })

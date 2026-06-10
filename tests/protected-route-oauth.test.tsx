@@ -7,7 +7,9 @@ vi.mock('@/lib/supabase', () => ({
   supabase: {
     auth: {
       getSession: vi.fn().mockResolvedValue({ data: { session: null } }),
-      onAuthStateChange: vi.fn().mockReturnValue({ data: { subscription: { unsubscribe: vi.fn() } } }),
+      onAuthStateChange: vi
+        .fn()
+        .mockReturnValue({ data: { subscription: { unsubscribe: vi.fn() } } }),
     },
   },
 }))
@@ -37,7 +39,7 @@ describe('ProtectedRoute OAuth — role is null', () => {
         <ProtectedRoute requiredRole="employer">
           <div>protected</div>
         </ProtectedRoute>
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     // Should redirect to /auth/select-role — protected content should NOT be rendered
     expect(screen.queryByText('protected')).not.toBeInTheDocument()
@@ -61,7 +63,7 @@ describe('ProtectedRoute OAuth — role is null', () => {
         <ProtectedRoute requiredRole="employer">
           <div>protected</div>
         </ProtectedRoute>
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     expect(screen.getByText('protected')).toBeInTheDocument()
   })

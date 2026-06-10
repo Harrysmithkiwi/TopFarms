@@ -6,11 +6,7 @@ import { Checkbox } from '@/components/ui/Checkbox'
 import { Toggle } from '@/components/ui/Toggle'
 import { Select } from '@/components/ui/Select'
 import { Button } from '@/components/ui/Button'
-import {
-  SHED_TYPES,
-  HERD_SIZE_BUCKETS,
-  DAIRYNZ_LEVELS,
-} from '@/types/domain'
+import { SHED_TYPES, HERD_SIZE_BUCKETS, DAIRYNZ_LEVELS } from '@/types/domain'
 import { NZ_REGIONS } from '@/lib/constants'
 
 interface FilterSidebarProps {
@@ -64,7 +60,7 @@ function formatSalaryLabel(value: number): string {
 
 function SectionHeader({ title }: { title: string }) {
   return (
-    <span className="text-[13px] font-body font-semibold" style={{ color: 'var(--color-text)' }}>
+    <span className="font-body text-[13px] font-semibold" style={{ color: 'var(--color-text)' }}>
       {title}
     </span>
   )
@@ -134,32 +130,28 @@ export function FilterSidebar({
 
   return (
     <div
-      className={cn(
-        'flex flex-col bg-surface',
-        isMobile ? 'h-full' : 'h-fit sticky top-4 pl-6',
-      )}
+      className={cn('bg-surface flex flex-col', isMobile ? 'h-full' : 'sticky top-4 h-fit pl-6')}
     >
       {/* Mobile header */}
       {isMobile && (
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-          <span className="text-[15px] font-body font-semibold text-text">Filters</span>
+        <div className="border-border flex items-center justify-between border-b px-4 py-3">
+          <span className="font-body text-text text-[15px] font-semibold">Filters</span>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-full hover:bg-surface-2 transition-colors"
+            className="hover:bg-surface-2 rounded-full p-1.5 transition-colors"
             aria-label="Close filters"
           >
-            <X className="w-4 h-4 text-text-muted" />
+            <X className="text-text-muted h-4 w-4" />
           </button>
         </div>
       )}
 
       {/* Scrollable filter sections */}
       <div className={cn('flex-1 overflow-y-auto', isMobile ? 'px-4' : '')}>
-
         {/* 1. Role Type */}
-        <details open className="border-t border-border first:border-t-0 py-4">
-          <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
+        <details open className="border-border border-t py-4 first:border-t-0">
+          <summary className="mb-3 flex cursor-pointer list-none items-center justify-between">
             <SectionHeader title="Role Type" />
           </summary>
           <div className="flex flex-col gap-2">
@@ -168,17 +160,15 @@ export function FilterSidebar({
                 key={type.value}
                 label={type.label}
                 checked={selectedRoleTypes.includes(type.value)}
-                onCheckedChange={() =>
-                  toggleMultiValue('role_type', selectedRoleTypes, type.value)
-                }
+                onCheckedChange={() => toggleMultiValue('role_type', selectedRoleTypes, type.value)}
               />
             ))}
           </div>
         </details>
 
         {/* 2. Extras */}
-        <details open className="border-t border-border py-4">
-          <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
+        <details open className="border-border border-t py-4">
+          <summary className="mb-3 flex cursor-pointer list-none items-center justify-between">
             <SectionHeader title="Extras" />
           </summary>
           <div className="flex flex-col gap-3">
@@ -187,17 +177,15 @@ export function FilterSidebar({
                 key={filter.key}
                 label={filter.label}
                 checked={searchParams.get(filter.key) === 'true'}
-                onCheckedChange={(val) =>
-                  onFilterChange(filter.key, val ? 'true' : null)
-                }
+                onCheckedChange={(val) => onFilterChange(filter.key, val ? 'true' : null)}
               />
             ))}
           </div>
         </details>
 
         {/* 3. Shed Type */}
-        <details open className="border-t border-border py-4">
-          <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
+        <details open className="border-border border-t py-4">
+          <summary className="mb-3 flex cursor-pointer list-none items-center justify-between">
             <SectionHeader title="Shed Type" />
           </summary>
           <div className="flex flex-col gap-2">
@@ -206,17 +194,15 @@ export function FilterSidebar({
                 key={type.value}
                 label={type.label}
                 checked={selectedShedTypes.includes(type.value)}
-                onCheckedChange={() =>
-                  toggleMultiValue('shed_type', selectedShedTypes, type.value)
-                }
+                onCheckedChange={() => toggleMultiValue('shed_type', selectedShedTypes, type.value)}
               />
             ))}
           </div>
         </details>
 
         {/* 4. Region */}
-        <details open className="border-t border-border py-4">
-          <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
+        <details open className="border-border border-t py-4">
+          <summary className="mb-3 flex cursor-pointer list-none items-center justify-between">
             <SectionHeader title="Region" />
           </summary>
           <div className="flex flex-col gap-2">
@@ -225,9 +211,7 @@ export function FilterSidebar({
                 key={region}
                 label={region}
                 checked={selectedRegions.includes(region)}
-                onCheckedChange={() =>
-                  toggleMultiValue('region', selectedRegions, region)
-                }
+                onCheckedChange={() => toggleMultiValue('region', selectedRegions, region)}
               />
             ))}
           </div>
@@ -235,7 +219,7 @@ export function FilterSidebar({
             <button
               type="button"
               onClick={() => setShowAllRegions((prev) => !prev)}
-              className="mt-2 text-[12px] font-body text-brand hover:underline"
+              className="font-body text-brand mt-2 text-[12px] hover:underline"
             >
               {showAllRegions ? 'Show fewer' : `Show all ${NZ_REGIONS.length} regions`}
             </button>
@@ -243,8 +227,8 @@ export function FilterSidebar({
         </details>
 
         {/* 5. Contract Type */}
-        <details open className="border-t border-border py-4">
-          <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
+        <details open className="border-border border-t py-4">
+          <summary className="mb-3 flex cursor-pointer list-none items-center justify-between">
             <SectionHeader title="Contract Type" />
           </summary>
           <div className="flex flex-col gap-2">
@@ -262,16 +246,16 @@ export function FilterSidebar({
         </details>
 
         {/* 6. Salary Range */}
-        <details open className="border-t border-border py-4">
-          <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
+        <details open className="border-border border-t py-4">
+          <summary className="mb-3 flex cursor-pointer list-none items-center justify-between">
             <SectionHeader title="Salary Range" />
           </summary>
           <div className="px-1">
-            <div className="text-[13px] font-body text-text-muted mb-3">
+            <div className="font-body text-text-muted mb-3 text-[13px]">
               {formatSalaryLabel(currentSalaryMin)} – {formatSalaryLabel(currentSalaryMax)} /year
             </div>
             <Slider.Root
-              className="relative flex items-center select-none touch-none w-full h-5"
+              className="relative flex h-5 w-full touch-none items-center select-none"
               min={SALARY_MIN}
               max={SALARY_MAX}
               step={SALARY_STEP}
@@ -279,15 +263,15 @@ export function FilterSidebar({
               onValueChange={handleSalaryChange}
               minStepsBetweenThumbs={1}
             >
-              <Slider.Track className="bg-border relative grow rounded-full h-[4px]">
-                <Slider.Range className="absolute bg-brand rounded-full h-full" />
+              <Slider.Track className="bg-border relative h-[4px] grow rounded-full">
+                <Slider.Range className="bg-brand absolute h-full rounded-full" />
               </Slider.Track>
               <Slider.Thumb
-                className="block w-[16px] h-[16px] bg-surface border-[2px] border-brand rounded-full shadow-sm hover:bg-surface-2 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand cursor-pointer"
+                className="bg-surface border-brand hover:bg-surface-2 focus-visible:outline-brand block h-[16px] w-[16px] cursor-pointer rounded-full border-[2px] shadow-sm outline-none focus-visible:outline-2 focus-visible:outline-offset-2"
                 aria-label="Salary minimum"
               />
               <Slider.Thumb
-                className="block w-[16px] h-[16px] bg-surface border-[2px] border-brand rounded-full shadow-sm hover:bg-surface-2 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand cursor-pointer"
+                className="bg-surface border-brand hover:bg-surface-2 focus-visible:outline-brand block h-[16px] w-[16px] cursor-pointer rounded-full border-[2px] shadow-sm outline-none focus-visible:outline-2 focus-visible:outline-offset-2"
                 aria-label="Salary maximum"
               />
             </Slider.Root>
@@ -296,8 +280,8 @@ export function FilterSidebar({
 
         {/* 7. Herd Size */}
         {/* herd_size: multi-select with OR semantics. See KNOWN_QUIRKS.md QUIRK-01. */}
-        <details open className="border-t border-border py-4">
-          <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
+        <details open className="border-border border-t py-4">
+          <summary className="mb-3 flex cursor-pointer list-none items-center justify-between">
             <SectionHeader title="Herd Size" />
           </summary>
           <div className="flex flex-col gap-2">
@@ -315,8 +299,8 @@ export function FilterSidebar({
         </details>
 
         {/* 8. Accommodation */}
-        <details open className="border-t border-border py-4">
-          <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
+        <details open className="border-border border-t py-4">
+          <summary className="mb-3 flex cursor-pointer list-none items-center justify-between">
             <SectionHeader title="Accommodation" />
           </summary>
           <div className="flex flex-col gap-2">
@@ -334,8 +318,8 @@ export function FilterSidebar({
         </details>
 
         {/* 9. Visa Sponsorship */}
-        <details open className="border-t border-border py-4">
-          <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
+        <details open className="border-border border-t py-4">
+          <summary className="mb-3 flex cursor-pointer list-none items-center justify-between">
             <SectionHeader title="Visa Sponsorship" />
           </summary>
           <Toggle
@@ -346,13 +330,11 @@ export function FilterSidebar({
         </details>
 
         {/* 10. DairyNZ Level */}
-        <details open className="border-t border-border py-4">
-          <summary className="cursor-pointer list-none flex items-center justify-between mb-3">
+        <details open className="border-border border-t py-4">
+          <summary className="mb-3 flex cursor-pointer list-none items-center justify-between">
             <SectionHeader title="DairyNZ Level" />
           </summary>
-          <p className="text-[11px] font-body text-text-subtle mb-2">
-            Show jobs you qualify for
-          </p>
+          <p className="font-body text-text-subtle mb-2 text-[11px]">Show jobs you qualify for</p>
           <Select
             placeholder="Any level"
             options={[
@@ -360,20 +342,18 @@ export function FilterSidebar({
               ...DAIRYNZ_LEVELS.map((l) => ({ value: l.value, label: l.label })),
             ]}
             value={dairynzLevel ?? 'all'}
-            onValueChange={(val) =>
-              onFilterChange('dairynz_level', val === 'all' ? null : val)
-            }
+            onValueChange={(val) => onFilterChange('dairynz_level', val === 'all' ? null : val)}
           />
         </details>
 
         {/* Clear All */}
         {hasActiveFilters && (
-          <div className="border-t border-border py-4">
+          <div className="border-border border-t py-4">
             <Button
               variant="ghost"
               size="sm"
               onClick={handleClearAll}
-              className="w-full text-text-muted hover:text-text"
+              className="text-text-muted hover:text-text w-full"
             >
               Clear all filters
             </Button>
@@ -383,7 +363,7 @@ export function FilterSidebar({
 
       {/* Mobile footer — sticky "Show results" button */}
       {isMobile && onClose && (
-        <div className="border-t border-border px-4 py-3 bg-surface">
+        <div className="border-border bg-surface border-t px-4 py-3">
           <Button variant="primary" size="md" onClick={onClose} className="w-full">
             {resultCount !== undefined ? `Show ${resultCount} results` : 'Show results'}
           </Button>

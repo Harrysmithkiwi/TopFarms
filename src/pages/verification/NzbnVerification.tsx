@@ -76,12 +76,12 @@ export function NzbnVerification({
   if (status === 'verified') {
     return (
       <div className="flex items-center gap-2 py-1">
-        <div className="w-5 h-5 rounded-full bg-brand flex items-center justify-center">
-          <Check className="w-3 h-3 text-white stroke-[3]" />
+        <div className="bg-brand flex h-5 w-5 items-center justify-center rounded-full">
+          <Check className="h-3 w-3 stroke-[3] text-white" />
         </div>
-        <span className="text-[13px] font-body text-brand font-semibold">Business verified</span>
+        <span className="font-body text-brand text-[13px] font-semibold">Business verified</span>
         {submittedNzbn && (
-          <span className="text-[12px] font-body text-text-subtle">NZBN: {submittedNzbn}</span>
+          <span className="font-body text-text-subtle text-[12px]">NZBN: {submittedNzbn}</span>
         )}
       </div>
     )
@@ -91,12 +91,12 @@ export function NzbnVerification({
   if ((status === 'pending' && submittedNzbn) || submitted) {
     return (
       <div className="flex items-start gap-2 py-1">
-        <div className="w-5 h-5 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-          <Clock className="w-3 h-3 text-amber-700" />
+        <div className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-amber-100">
+          <Clock className="h-3 w-3 text-amber-700" />
         </div>
         <div>
-          <p className="text-[13px] font-body text-amber-700 font-semibold">Pending Review</p>
-          <p className="text-[11px] font-body text-text-subtle mt-0.5">
+          <p className="font-body text-[13px] font-semibold text-amber-700">Pending Review</p>
+          <p className="font-body text-text-subtle mt-0.5 text-[11px]">
             NZBN {submittedNzbn} submitted — our team will review within 2 business days
           </p>
         </div>
@@ -109,15 +109,17 @@ export function NzbnVerification({
     return (
       <div className="space-y-3">
         <div className="flex items-center gap-2 py-1">
-          <div className="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center">
-            <X className="w-3 h-3 text-danger-600" />
+          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-red-100">
+            <X className="text-danger-600 h-3 w-3" />
           </div>
-          <span className="text-[13px] font-body text-danger-600">Verification rejected — please resubmit</span>
+          <span className="font-body text-danger-600 text-[13px]">
+            Verification rejected — please resubmit
+          </span>
         </div>
         <form onSubmit={handleSubmit} className="space-y-2">
-          <div className="flex items-center gap-2 mb-1">
-            <Building2 className="w-4 h-4 text-brand" />
-            <span className="text-[13px] font-body font-semibold text-text">
+          <div className="mb-1 flex items-center gap-2">
+            <Building2 className="text-brand h-4 w-4" />
+            <span className="font-body text-text text-[13px] font-semibold">
               New Zealand Business Number
             </span>
           </div>
@@ -131,10 +133,12 @@ export function NzbnVerification({
             onChange={(e) => setNzbn(e.target.value.replace(/\D/g, ''))}
             required
             disabled={loading}
-            className="text-[13px] font-mono"
+            className="font-mono text-[13px]"
           />
-          <p className="text-[11px] font-body text-text-subtle">13-digit NZBN found on your Companies Register entry</p>
-          {error && <p className="text-[12px] font-body text-danger-600">{error}</p>}
+          <p className="font-body text-text-subtle text-[11px]">
+            13-digit NZBN found on your Companies Register entry
+          </p>
+          {error && <p className="font-body text-danger-600 text-[12px]">{error}</p>}
           <Button type="submit" size="sm" disabled={loading || nzbn.length !== 13}>
             {loading ? 'Submitting...' : 'Resubmit NZBN'}
           </Button>
@@ -146,9 +150,9 @@ export function NzbnVerification({
   // Default: no submission yet — show form
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
-      <div className="flex items-center gap-2 mb-1">
-        <Building2 className="w-4 h-4 text-brand" />
-        <span className="text-[13px] font-body font-semibold text-text">
+      <div className="mb-1 flex items-center gap-2">
+        <Building2 className="text-brand h-4 w-4" />
+        <span className="font-body text-text text-[13px] font-semibold">
           New Zealand Business Number
         </span>
       </div>
@@ -162,12 +166,12 @@ export function NzbnVerification({
         onChange={(e) => setNzbn(e.target.value.replace(/\D/g, ''))}
         required
         disabled={loading}
-        className="text-[13px] font-mono"
+        className="font-mono text-[13px]"
       />
-      <p className="text-[11px] font-body text-text-subtle">
+      <p className="font-body text-text-subtle text-[11px]">
         13-digit NZBN found on your Companies Register entry
       </p>
-      {error && <p className="text-[12px] font-body text-danger-600">{error}</p>}
+      {error && <p className="font-body text-danger-600 text-[12px]">{error}</p>}
       <Button type="submit" size="sm" disabled={loading || nzbn.length !== 13}>
         {loading ? 'Submitting...' : 'Submit NZBN'}
       </Button>

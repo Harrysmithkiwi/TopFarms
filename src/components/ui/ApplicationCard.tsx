@@ -11,32 +11,34 @@ import { ACTIVE_STATUSES } from '@/types/domain'
 type TagVariant = 'green' | 'warn' | 'blue' | 'grey' | 'orange' | 'purple' | 'red'
 
 const STATUS_TAG_VARIANT: Record<ApplicationStatus, TagVariant> = {
-  applied:     'blue',
-  review:      'warn',
-  interview:   'orange',
+  applied: 'blue',
+  review: 'warn',
+  interview: 'orange',
   shortlisted: 'purple',
-  offered:     'green',
-  hired:       'green',
-  declined:    'red',
-  withdrawn:   'grey',
+  offered: 'green',
+  hired: 'green',
+  declined: 'red',
+  withdrawn: 'grey',
 }
 
 const STATUS_LABELS: Record<ApplicationStatus, string> = {
-  applied:     'Applied',
-  review:      'Under Review',
-  interview:   'Interview',
+  applied: 'Applied',
+  review: 'Under Review',
+  interview: 'Interview',
   shortlisted: 'Shortlisted',
-  offered:     'Offered',
-  hired:       'Hired',
-  declined:    'Declined',
-  withdrawn:   'Withdrawn',
+  offered: 'Offered',
+  hired: 'Hired',
+  declined: 'Declined',
+  withdrawn: 'Withdrawn',
 }
 
-const STATUS_TO_BANNER: Partial<Record<ApplicationStatus, { variant: 'shortlisted' | 'interview' | 'offer' | 'declined' }>> = {
+const STATUS_TO_BANNER: Partial<
+  Record<ApplicationStatus, { variant: 'shortlisted' | 'interview' | 'offer' | 'declined' }>
+> = {
   shortlisted: { variant: 'shortlisted' },
-  interview:   { variant: 'interview' },
-  offered:     { variant: 'offer' },
-  declined:    { variant: 'declined' },
+  interview: { variant: 'interview' },
+  offered: { variant: 'offer' },
+  declined: { variant: 'declined' },
 }
 
 function formatAppliedDate(dateStr: string): string {
@@ -70,7 +72,11 @@ export function ApplicationCard({
   const bannerConfig = STATUS_TO_BANNER[application.status]
 
   function handleWithdraw() {
-    if (window.confirm(`Withdraw your application for ${job?.title ?? 'this job'}? This cannot be undone.`)) {
+    if (
+      window.confirm(
+        `Withdraw your application for ${job?.title ?? 'this job'}? This cannot be undone.`,
+      )
+    ) {
       onWithdraw?.(application.id)
     }
   }
@@ -78,7 +84,7 @@ export function ApplicationCard({
   return (
     <div
       className={cn(
-        'bg-surface border-[1.5px] border-border rounded-[12px] overflow-hidden',
+        'bg-surface border-border overflow-hidden rounded-[12px] border-[1.5px]',
         !isActive && 'opacity-75',
       )}
     >
@@ -89,9 +95,21 @@ export function ApplicationCard({
             variant={bannerConfig.variant}
             actions={
               application.status === 'interview' && onAcceptInterview && onDeclineInterview ? (
-                <div className="flex gap-2 mt-2">
-                  <Button variant="primary" size="sm" onClick={() => onAcceptInterview(application.id)}>Accept</Button>
-                  <Button variant="ghost" size="sm" onClick={() => onDeclineInterview(application.id)}>Decline</Button>
+                <div className="mt-2 flex gap-2">
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => onAcceptInterview(application.id)}
+                  >
+                    Accept
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onDeclineInterview(application.id)}
+                  >
+                    Decline
+                  </Button>
                 </div>
               ) : undefined
             }
@@ -100,14 +118,14 @@ export function ApplicationCard({
       )}
 
       {/* Card body */}
-      <div className="p-4 flex gap-3">
+      <div className="flex gap-3 p-4">
         {/* Main content */}
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           {/* Title row + status tag */}
           <div className="flex items-start justify-between gap-2">
             <Link
               to={`/jobs/${application.job_id}`}
-              className="text-[15px] font-body font-semibold text-text hover:text-brand transition-colors truncate"
+              className="font-body text-text hover:text-brand truncate text-[15px] font-semibold transition-colors"
             >
               {job?.title ?? 'Job Listing'}
             </Link>
@@ -117,12 +135,13 @@ export function ApplicationCard({
           </div>
 
           {/* Farm + region */}
-          <p className="text-sm font-body text-text-muted mt-0.5">
-            {farmName}{region ? ` — ${region}` : ''}
+          <p className="font-body text-text-muted mt-0.5 text-sm">
+            {farmName}
+            {region ? ` — ${region}` : ''}
           </p>
 
           {/* Applied date */}
-          <p className="text-xs font-body text-text-subtle mt-1">
+          <p className="font-body text-text-subtle mt-1 text-xs">
             {formatAppliedDate(application.created_at)}
           </p>
 
@@ -134,7 +153,7 @@ export function ApplicationCard({
             <button
               type="button"
               onClick={handleWithdraw}
-              className="mt-2 text-sm font-body text-danger hover:underline"
+              className="font-body text-danger mt-2 text-sm hover:underline"
             >
               Withdraw
             </button>

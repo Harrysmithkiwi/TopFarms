@@ -12,11 +12,11 @@ import { HOUSING_SUB_OPTIONS, PREFERRED_REGION_OPTIONS } from '@/types/domain'
 import type { SeekerProfileData } from '@/types/domain'
 
 const SALARY_BAND_OPTIONS: ChipOption[] = [
-  { value: '50000',  label: '$50–60k' },
-  { value: '60000',  label: '$60–70k' },
-  { value: '70000',  label: '$70–80k' },
-  { value: '80000',  label: '$80–90k' },
-  { value: '90000',  label: '$90–100k' },
+  { value: '50000', label: '$50–60k' },
+  { value: '60000', label: '$60–70k' },
+  { value: '70000', label: '$70–80k' },
+  { value: '80000', label: '$80–90k' },
+  { value: '90000', label: '$90–100k' },
   { value: '100000', label: '$100–110k' },
   { value: '110000', label: '$110–120k' },
   { value: '120000', label: '$120k+' },
@@ -87,20 +87,20 @@ export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: 
         <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Life situation
         </h2>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
           Help us find jobs that are the right fit for your lifestyle
         </p>
       </div>
 
       <div className="space-y-4">
         {/* Couples section */}
-        <div className="rounded-[10px] border-[1.5px] border-border bg-surface-2 p-4 space-y-3">
+        <div className="border-border bg-surface-2 space-y-3 rounded-[10px] border-[1.5px] p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-body text-[13px] font-semibold text-text">
+              <p className="font-body text-text text-[13px] font-semibold">
                 Seeking work as a couple?
               </p>
-              <p className="text-[12px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+              <p className="mt-0.5 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
                 We'll match you with jobs that welcome couples
               </p>
             </div>
@@ -123,13 +123,13 @@ export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: 
         </div>
 
         {/* Accommodation section */}
-        <div className="rounded-[10px] border-[1.5px] border-border bg-surface-2 p-4 space-y-3">
+        <div className="border-border bg-surface-2 space-y-3 rounded-[10px] border-[1.5px] p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-body text-[13px] font-semibold text-text">
+              <p className="font-body text-text text-[13px] font-semibold">
                 Need on-farm accommodation?
               </p>
-              <p className="text-[12px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+              <p className="mt-0.5 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
                 Filter to jobs that offer housing
               </p>
             </div>
@@ -144,7 +144,7 @@ export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: 
 
           {accommodationOn && (
             <div className="space-y-3 pl-1">
-              <p className="font-body text-[13px] font-semibold text-text mb-2">
+              <p className="font-body text-text mb-2 text-[13px] font-semibold">
                 Housing requirements
               </p>
               <Controller
@@ -166,8 +166,8 @@ export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: 
 
         {/* Preferred regions */}
         <div>
-          <p className="font-body text-[13px] font-semibold text-text mb-2">Preferred regions</p>
-          <p className="text-[12px] mb-2" style={{ color: 'var(--color-text-muted)' }}>
+          <p className="font-body text-text mb-2 text-[13px] font-semibold">Preferred regions</p>
+          <p className="mb-2 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
             Select all regions you'd work in
           </p>
           <Controller
@@ -188,7 +188,7 @@ export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: 
         {/* Salary, availability, notice period */}
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-[--color-text-muted] mb-2">
+            <label className="mb-2 block text-sm font-medium text-[--color-text-muted]">
               Minimum salary
             </label>
             <Controller
@@ -206,11 +206,7 @@ export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: 
             />
           </div>
 
-          <Input
-            label="Available from"
-            type="date"
-            {...register('availability_date')}
-          />
+          <Input label="Available from" type="date" {...register('availability_date')} />
 
           <Controller
             control={control}

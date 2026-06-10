@@ -14,9 +14,7 @@ export function DashboardLayout({ children, hideSidebar = false }: DashboardLayo
       <div className="flex">
         {!hideSidebar && <Sidebar />}
         <main className="flex-1 p-6">
-          <div className="max-w-[1200px] mx-auto">
-            {children}
-          </div>
+          <div className="mx-auto max-w-[1200px]">{children}</div>
         </main>
       </div>
     </div>

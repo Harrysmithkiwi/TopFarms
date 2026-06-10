@@ -85,21 +85,21 @@ export function Pricing() {
       <Nav />
 
       {/* Hero */}
-      <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-brand-900)' }}>
+      <section className="px-4 py-20" style={{ backgroundColor: 'var(--color-brand-900)' }}>
         <motion.div
-          className="max-w-2xl mx-auto text-center"
+          className="mx-auto max-w-2xl text-center"
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: 'easeOut' }}
         >
           <p
-            className="text-xs font-bold tracking-widest uppercase mb-5"
+            className="mb-5 text-xs font-bold tracking-widest uppercase"
             style={{ color: 'var(--color-brand)' }}
           >
             Pricing
           </p>
           <h1
-            className="font-display font-bold text-5xl mb-5 leading-tight"
+            className="font-display mb-5 text-5xl leading-tight font-bold"
             style={{ color: 'var(--color-text-on-brand)' }}
           >
             Simple, per-listing pricing
@@ -111,13 +111,13 @@ export function Pricing() {
       </section>
 
       {/* Tier cards */}
-      <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-bg)' }}>
-        <div className="max-w-5xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-6">
+      <section className="px-4 py-20" style={{ backgroundColor: 'var(--color-bg)' }}>
+        <div className="mx-auto max-w-5xl">
+          <div className="grid gap-6 md:grid-cols-3">
             {tiers.map((tier, i) => (
               <motion.div
                 key={tier.name}
-                className="relative rounded-2xl flex flex-col"
+                className="relative flex flex-col rounded-2xl"
                 style={{
                   backgroundColor: 'var(--color-surface)',
                   border: tier.isPopular
@@ -132,24 +132,33 @@ export function Pricing() {
               >
                 {tier.isPopular && (
                   <div
-                    className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold"
-                    style={{ backgroundColor: 'var(--color-brand)', color: 'var(--color-text-on-brand)' }}
+                    className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full px-4 py-1 text-xs font-bold"
+                    style={{
+                      backgroundColor: 'var(--color-brand)',
+                      color: 'var(--color-text-on-brand)',
+                    }}
                   >
                     Most Popular
                   </div>
                 )}
-                <div className="p-7 flex-1">
-                  <p className="font-display font-bold text-lg mb-1" style={{ color: 'var(--color-brand-900)' }}>
+                <div className="flex-1 p-7">
+                  <p
+                    className="font-display mb-1 text-lg font-bold"
+                    style={{ color: 'var(--color-brand-900)' }}
+                  >
                     {tier.name}
                   </p>
-                  <p className="text-sm mb-5" style={{ color: 'var(--color-text-muted)' }}>
+                  <p className="mb-5 text-sm" style={{ color: 'var(--color-text-muted)' }}>
                     {tier.description}
                   </p>
-                  <div className="flex items-end gap-1 mb-6">
-                    <span className="font-display font-bold text-4xl" style={{ color: 'var(--color-brand-900)' }}>
+                  <div className="mb-6 flex items-end gap-1">
+                    <span
+                      className="font-display text-4xl font-bold"
+                      style={{ color: 'var(--color-brand-900)' }}
+                    >
                       {tier.price}
                     </span>
-                    <span className="text-sm pb-1" style={{ color: 'var(--color-text-muted)' }}>
+                    <span className="pb-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
                       {tier.period}
                     </span>
                   </div>
@@ -157,10 +166,14 @@ export function Pricing() {
                     {tier.features.map((f) => (
                       <li key={f} className="flex items-start gap-2.5">
                         <span
-                          className="mt-0.5 flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center"
+                          className="mt-0.5 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full"
                           style={{ backgroundColor: 'rgba(122,175,63,0.15)' }}
                         >
-                          <Check size={10} style={{ color: 'var(--color-brand)' }} strokeWidth={3} />
+                          <Check
+                            size={10}
+                            style={{ color: 'var(--color-brand)' }}
+                            strokeWidth={3}
+                          />
                         </span>
                         <span className="text-sm" style={{ color: 'var(--color-text)' }}>
                           {f}
@@ -172,10 +185,13 @@ export function Pricing() {
                 <div className="px-7 pb-7">
                   <Link
                     to={tier.ctaTo}
-                    className="block text-center rounded-full py-3 font-semibold text-sm transition-opacity hover:opacity-90"
+                    className="block rounded-full py-3 text-center text-sm font-semibold transition-opacity hover:opacity-90"
                     style={
                       tier.isPopular
-                        ? { backgroundColor: 'var(--color-brand)', color: 'var(--color-text-on-brand)' }
+                        ? {
+                            backgroundColor: 'var(--color-brand)',
+                            color: 'var(--color-text-on-brand)',
+                          }
                         : {
                             border: '1.5px solid var(--color-border)',
                             color: 'var(--color-brand-900)',
@@ -204,10 +220,10 @@ export function Pricing() {
       </section>
 
       {/* FAQ */}
-      <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-surface)' }}>
-        <div className="max-w-2xl mx-auto">
+      <section className="px-4 py-20" style={{ backgroundColor: 'var(--color-surface)' }}>
+        <div className="mx-auto max-w-2xl">
           <motion.h2
-            className="font-display font-bold text-3xl mb-10 text-center"
+            className="font-display mb-10 text-center text-3xl font-bold"
             style={{ color: 'var(--color-brand-900)' }}
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -226,7 +242,10 @@ export function Pricing() {
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.35, delay: i * 0.06 }}
               >
-                <p className="font-semibold text-base mb-2" style={{ color: 'var(--color-brand-900)' }}>
+                <p
+                  className="mb-2 text-base font-semibold"
+                  style={{ color: 'var(--color-brand-900)' }}
+                >
                   {faq.q}
                 </p>
                 <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
@@ -239,16 +258,16 @@ export function Pricing() {
       </section>
 
       {/* Bottom CTA */}
-      <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-brand-900)' }}>
+      <section className="px-4 py-20" style={{ backgroundColor: 'var(--color-brand-900)' }}>
         <motion.div
-          className="max-w-xl mx-auto text-center"
+          className="mx-auto max-w-xl text-center"
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.5 }}
         >
           <h2
-            className="font-display font-bold text-4xl mb-5"
+            className="font-display mb-5 text-4xl font-bold"
             style={{ color: 'var(--color-text-on-brand)' }}
           >
             Ready to post your first job?
@@ -258,7 +277,7 @@ export function Pricing() {
           </p>
           <Link
             to="/signup?role=employer"
-            className="inline-block rounded-full px-10 py-4 font-semibold text-base transition-opacity hover:opacity-90"
+            className="inline-block rounded-full px-10 py-4 text-base font-semibold transition-opacity hover:opacity-90"
             style={{ backgroundColor: 'var(--color-brand)', color: 'var(--color-brand-900)' }}
           >
             Post Your First Job Free

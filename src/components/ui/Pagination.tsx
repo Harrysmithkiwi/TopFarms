@@ -59,7 +59,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, className }:
         className={cn(
           pageButtonBase,
           'border-border bg-surface',
-          currentPage === 1 && 'opacity-40 cursor-not-allowed',
+          currentPage === 1 && 'cursor-not-allowed opacity-40',
         )}
         disabled={currentPage === 1}
         onClick={() => onPageChange(currentPage - 1)}
@@ -74,7 +74,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, className }:
           return (
             <span
               key={`ellipsis-${index}`}
-              className="text-[13px] text-text-subtle w-[34px] text-center"
+              className="text-text-subtle w-[34px] text-center text-[13px]"
             >
               ...
             </span>
@@ -106,7 +106,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, className }:
         className={cn(
           pageButtonBase,
           'border-border bg-surface',
-          currentPage === totalPages && 'opacity-40 cursor-not-allowed',
+          currentPage === totalPages && 'cursor-not-allowed opacity-40',
         )}
         disabled={currentPage === totalPages}
         onClick={() => onPageChange(currentPage + 1)}

@@ -11,14 +11,7 @@ interface ToggleProps {
   id?: string
 }
 
-export function Toggle({
-  label,
-  checked,
-  onCheckedChange,
-  disabled,
-  className,
-  id,
-}: ToggleProps) {
+export function Toggle({ label, checked, onCheckedChange, disabled, className, id }: ToggleProps) {
   const switchId = id || (label ? `toggle-${label.toLowerCase().replace(/\s+/g, '-')}` : undefined)
 
   return (
@@ -29,15 +22,15 @@ export function Toggle({
         onCheckedChange={onCheckedChange}
         disabled={disabled}
         className={cn(
-          'w-[34px] h-[18px] rounded-full transition-colors duration-150',
-          'outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
-          'disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer',
+          'h-[18px] w-[34px] rounded-full transition-colors duration-150',
+          'focus-visible:outline-brand outline-none focus-visible:outline-2 focus-visible:outline-offset-2',
+          'cursor-pointer disabled:cursor-not-allowed disabled:opacity-50',
           'data-[state=unchecked]:bg-border data-[state=checked]:bg-brand',
         )}
       >
         <Switch.Thumb
           className={cn(
-            'block w-[14px] h-[14px] bg-surface rounded-full shadow-sm',
+            'bg-surface block h-[14px] w-[14px] rounded-full shadow-sm',
             'transition-transform duration-150',
             'translate-x-[2px] data-[state=checked]:translate-x-[16px]',
           )}
@@ -46,7 +39,7 @@ export function Toggle({
       {label && (
         <Label.Root
           htmlFor={switchId}
-          className="font-body text-[13px] text-text cursor-pointer select-none"
+          className="font-body text-text cursor-pointer text-[13px] select-none"
         >
           {label}
         </Label.Root>

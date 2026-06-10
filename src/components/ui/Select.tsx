@@ -38,7 +38,7 @@ export function Select({
       {label && (
         <Label.Root
           htmlFor={selectId}
-          className="font-body text-[13px] font-medium text-text mb-1 block"
+          className="font-body text-text mb-1 block text-[13px] font-medium"
         >
           {label}
         </Label.Root>
@@ -47,11 +47,11 @@ export function Select({
         <SelectPrimitive.Trigger
           id={selectId}
           className={cn(
-            'w-full flex items-center justify-between',
-            'border-[1.5px] rounded-[8px] min-h-[44px] px-3 py-2 font-body text-[15px] bg-surface-2',
-            'outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
-            'transition-colors duration-150 cursor-pointer',
-            'disabled:opacity-50 disabled:cursor-not-allowed',
+            'flex w-full items-center justify-between',
+            'font-body bg-surface-2 min-h-[44px] rounded-[8px] border-[1.5px] px-3 py-2 text-[15px]',
+            'focus-visible:outline-brand outline-none focus-visible:outline-2 focus-visible:outline-offset-2',
+            'cursor-pointer transition-colors duration-150',
+            'disabled:cursor-not-allowed disabled:opacity-50',
             error ? 'border-danger focus:border-danger' : 'border-border focus:border-brand',
           )}
         >
@@ -60,21 +60,21 @@ export function Select({
             className="text-text"
           />
           <SelectPrimitive.Icon>
-            <ChevronDown className="w-4 h-4 text-text-muted" />
+            <ChevronDown className="text-text-muted h-4 w-4" />
           </SelectPrimitive.Icon>
         </SelectPrimitive.Trigger>
 
         <SelectPrimitive.Portal>
           <SelectPrimitive.Content
             className={cn(
-              'bg-surface border border-border rounded-[8px] shadow-md',
-              'max-h-[280px] overflow-hidden z-50',
+              'bg-surface border-border rounded-[8px] border shadow-md',
+              'z-50 max-h-[280px] overflow-hidden',
             )}
             position="popper"
             sideOffset={4}
           >
-            <SelectPrimitive.ScrollUpButton className="flex items-center justify-center py-1 text-text-muted">
-              <ChevronUp className="w-4 h-4" />
+            <SelectPrimitive.ScrollUpButton className="text-text-muted flex items-center justify-center py-1">
+              <ChevronUp className="h-4 w-4" />
             </SelectPrimitive.ScrollUpButton>
 
             <SelectPrimitive.Viewport className="p-1">
@@ -83,8 +83,8 @@ export function Select({
                   key={option.value}
                   value={option.value}
                   className={cn(
-                    'px-3 py-2 text-[15px] font-body rounded-[4px] cursor-pointer',
-                    'outline-none focus:bg-surface-2',
+                    'font-body cursor-pointer rounded-[4px] px-3 py-2 text-[15px]',
+                    'focus:bg-surface-2 outline-none',
                     'data-[state=checked]:bg-brand-50 data-[state=checked]:text-brand',
                     'data-[highlighted]:bg-surface-2',
                     'select-none',
@@ -95,14 +95,14 @@ export function Select({
               ))}
             </SelectPrimitive.Viewport>
 
-            <SelectPrimitive.ScrollDownButton className="flex items-center justify-center py-1 text-text-muted">
-              <ChevronDown className="w-4 h-4" />
+            <SelectPrimitive.ScrollDownButton className="text-text-muted flex items-center justify-center py-1">
+              <ChevronDown className="h-4 w-4" />
             </SelectPrimitive.ScrollDownButton>
           </SelectPrimitive.Content>
         </SelectPrimitive.Portal>
       </SelectPrimitive.Root>
 
-      {error && <p className="mt-1 text-danger text-[12px] font-body">{error}</p>}
+      {error && <p className="text-danger font-body mt-1 text-[12px]">{error}</p>}
     </div>
   )
 }

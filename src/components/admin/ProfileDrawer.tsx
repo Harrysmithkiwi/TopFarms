@@ -127,9 +127,7 @@ export function ProfileDrawer({
         if (profRes.error) throw profRes.error
         if (auditRes.error) throw auditRes.error
         setProfile(profRes.data as DrawerProfile)
-        const auditPayload = auditRes.data as
-          | { audit?: AuditEntry[]; notes?: AdminNote[] }
-          | null
+        const auditPayload = auditRes.data as { audit?: AuditEntry[]; notes?: AdminNote[] } | null
         setAudit(auditPayload?.audit ?? [])
         setNotes(auditPayload?.notes ?? [])
       })
@@ -157,10 +155,13 @@ export function ProfileDrawer({
     setCommitting(true)
     setError(null)
     try {
-      const { error: rpcErr } = await supabase.rpc('admin_set_user_active' as never, {
-        p_user_id: userId,
-        p_active: next,
-      } as never)
+      const { error: rpcErr } = await supabase.rpc(
+        'admin_set_user_active' as never,
+        {
+          p_user_id: userId,
+          p_active: next,
+        } as never,
+      )
       if (rpcErr) {
         console.error('admin_set_user_active failed', rpcErr)
         setError('Failed to update account status. Try again.')
@@ -172,22 +173,20 @@ export function ProfileDrawer({
       toast.success(next ? 'Account reactivated' : 'Account suspended')
 
       // Refresh audit timeline so the new row appears
-      const { data: auditData } = await supabase.rpc('admin_get_user_audit' as never, {
-        p_user_id: userId,
-      } as never)
-      const auditPayload = auditData as
-        | { audit?: AuditEntry[]; notes?: AdminNote[] }
-        | null
+      const { data: auditData } = await supabase.rpc(
+        'admin_get_user_audit' as never,
+        {
+          p_user_id: userId,
+        } as never,
+      )
+      const auditPayload = auditData as { audit?: AuditEntry[]; notes?: AdminNote[] } | null
       setAudit(auditPayload?.audit ?? [])
     } finally {
       setCommitting(false)
     }
   }
 
-  const displayName = useMemo(
-    () => profile?.name ?? profile?.email ?? '',
-    [profile],
-  )
+  const displayName = useMemo(() => profile?.name ?? profile?.email ?? '', [profile])
 
   if (!userId) return null
 
@@ -206,7 +205,7 @@ export function ProfileDrawer({
         role="dialog"
         aria-label="User profile"
         aria-modal="true"
-        className="fixed top-0 right-0 z-50 h-full w-full lg:w-[400px] flex flex-col motion-reduce:transition-none transition-transform duration-[250ms]"
+        className="fixed top-0 right-0 z-50 flex h-full w-full flex-col transition-transform duration-[250ms] motion-reduce:transition-none lg:w-[400px]"
         style={{
           backgroundColor: 'var(--color-surface)',
           boxShadow: '0 12px 32px rgba(11, 31, 16, 0.08)',
@@ -215,7 +214,7 @@ export function ProfileDrawer({
       >
         {/* Header bar — 56px */}
         <div
-          className="flex items-center justify-between px-6 border-b"
+          className="flex items-center justify-between border-b px-6"
           style={{
             height: '56px',
             backgroundColor: 'var(--color-surface-2)',
@@ -235,7 +234,7 @@ export function ProfileDrawer({
             type="button"
             onClick={onClose}
             aria-label="Close profile"
-            className="w-10 h-10 flex items-center justify-center rounded-md hover:bg-surface-hover"
+            className="hover:bg-surface-hover flex h-10 w-10 items-center justify-center rounded-md"
             style={{ color: 'var(--color-text-muted)' }}
           >
             <X size={18} />
@@ -243,7 +242,7 @@ export function ProfileDrawer({
         </div>
 
         {/* Body — scrollable */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 space-y-6 overflow-y-auto p-6">
           {error && (
             <div
               role="alert"
@@ -267,7 +266,7 @@ export function ProfileDrawer({
           {!loading && profile && profile.role === 'employer' && (
             <div className="space-y-2">
               <h2
-                className="text-[20px] font-semibold leading-7"
+                className="text-[20px] leading-7 font-semibold"
                 style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
               >
                 {profile.name ?? profile.email}
@@ -284,10 +283,7 @@ export function ProfileDrawer({
                 Joined {formatJoinDate(profile.join_date)}
               </div>
               {profile.region && (
-                <div
-                  className="text-[13px]"
-                  style={{ color: 'var(--color-text-muted)' }}
-                >
+                <div className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
                   {profile.region}
                 </div>
               )}
@@ -295,10 +291,7 @@ export function ProfileDrawer({
                 {profile.total_jobs_posted} jobs posted
               </div>
               {profile.last_sign_in && (
-                <div
-                  className="text-[13px]"
-                  style={{ color: 'var(--color-text-subtle)' }}
-                >
+                <div className="text-[13px]" style={{ color: 'var(--color-text-subtle)' }}>
                   Last sign-in {new Date(profile.last_sign_in).toLocaleDateString()}
                 </div>
               )}
@@ -308,7 +301,7 @@ export function ProfileDrawer({
           {!loading && profile && profile.role === 'seeker' && (
             <div className="space-y-2">
               <h2
-                className="text-[20px] font-semibold leading-7"
+                className="text-[20px] leading-7 font-semibold"
                 style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
               >
                 {profile.name}
@@ -317,10 +310,7 @@ export function ProfileDrawer({
                 {profile.email}
               </div>
               {profile.region && (
-                <div
-                  className="text-[13px]"
-                  style={{ color: 'var(--color-text-muted)' }}
-                >
+                <div className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
                   {profile.region}
                 </div>
               )}
@@ -340,10 +330,7 @@ export function ProfileDrawer({
                 Joined {formatJoinDate(profile.join_date)}
               </div>
               {profile.last_sign_in && (
-                <div
-                  className="text-[13px]"
-                  style={{ color: 'var(--color-text-subtle)' }}
-                >
+                <div className="text-[13px]" style={{ color: 'var(--color-text-subtle)' }}>
                   Last sign-in {new Date(profile.last_sign_in).toLocaleDateString()}
                 </div>
               )}
@@ -353,16 +340,12 @@ export function ProfileDrawer({
           {/* Account state section */}
           {!loading && profile && (
             <section
-              className="space-y-3 pt-4 border-t"
+              className="space-y-3 border-t pt-4"
               style={{ borderColor: 'var(--color-border)' }}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  {active ? (
-                    <Tag variant="green">Active</Tag>
-                  ) : (
-                    <Tag variant="red">Suspended</Tag>
-                  )}
+                  {active ? <Tag variant="green">Active</Tag> : <Tag variant="red">Suspended</Tag>}
                 </div>
                 <Toggle
                   checked={active}
@@ -378,16 +361,13 @@ export function ProfileDrawer({
               {/* Inline confirm row per UI-SPEC §"Suspend / reactivate UX" */}
               {pendingActive !== null && (
                 <div
-                  className="rounded-lg p-4 mt-3"
+                  className="mt-3 rounded-lg p-4"
                   style={{
                     backgroundColor: 'var(--color-surface-2)',
                     border: '1px solid var(--color-border)',
                   }}
                 >
-                  <div
-                    className="text-[15px] font-semibold"
-                    style={{ color: 'var(--color-text)' }}
-                  >
+                  <div className="text-[15px] font-semibold" style={{ color: 'var(--color-text)' }}>
                     {pendingActive ? 'Reactivate this account?' : 'Suspend this account?'}
                   </div>
                   <div
@@ -438,7 +418,7 @@ export function ProfileDrawer({
           {/* Admin notes */}
           {!loading && profile && (
             <section
-              className="space-y-3 pt-4 border-t"
+              className="space-y-3 border-t pt-4"
               style={{ borderColor: 'var(--color-border)' }}
             >
               <h3
@@ -457,7 +437,7 @@ export function ProfileDrawer({
           {/* Audit log */}
           {!loading && profile && (
             <section
-              className="space-y-3 pt-4 border-t"
+              className="space-y-3 border-t pt-4"
               style={{ borderColor: 'var(--color-border)' }}
             >
               <h3
@@ -470,10 +450,7 @@ export function ProfileDrawer({
                 Activity
               </h3>
               {audit.length === 0 ? (
-                <div
-                  className="text-[13px]"
-                  style={{ color: 'var(--color-text-subtle)' }}
-                >
+                <div className="text-[13px]" style={{ color: 'var(--color-text-subtle)' }}>
                   No activity recorded yet.
                 </div>
               ) : (

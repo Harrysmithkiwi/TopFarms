@@ -18,7 +18,9 @@ const source = readFileSync(SOURCE_PATH, 'utf-8')
 describe('HOMEBUG-03 — accommodation filter Layer 2 remap', () => {
   it('declares ACCOMMODATION_FILTER_TO_DB lookup constant at module level', () => {
     // POST-FIX shape (RED until Wave 1 plan 22-03 ships):
-    expect(source).toMatch(/const\s+ACCOMMODATION_FILTER_TO_DB\s*:\s*Record<string,\s*string>\s*=\s*\{/)
+    expect(source).toMatch(
+      /const\s+ACCOMMODATION_FILTER_TO_DB\s*:\s*Record<string,\s*string>\s*=\s*\{/,
+    )
   })
 
   it('maps URL param values to Title Case DB values (couples → "Couples welcome", family → "Family welcome", pet_friendly → "Pets allowed")', () => {
@@ -40,6 +42,8 @@ describe('HOMEBUG-03 — accommodation filter Layer 2 remap', () => {
     // Negative guard against pre-fix shape — the direct pass-through of `accommodationTypes` (raw
     // URL values) into .overlaps() is exactly the bug.
     // We assert the pattern `.overlaps('employer_profiles.accommodation_extras', accommodationTypes)` is GONE.
-    expect(source).not.toMatch(/\.overlaps\(\s*'employer_profiles\.accommodation_extras'\s*,\s*accommodationTypes\s*\)/)
+    expect(source).not.toMatch(
+      /\.overlaps\(\s*'employer_profiles\.accommodation_extras'\s*,\s*accommodationTypes\s*\)/,
+    )
   })
 })

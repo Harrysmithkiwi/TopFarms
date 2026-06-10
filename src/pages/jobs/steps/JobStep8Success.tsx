@@ -19,11 +19,7 @@ export function JobStep8Success({ jobId }: JobStep8SuccessProps) {
 
   useEffect(() => {
     async function loadJob() {
-      const { data } = await supabase
-        .from('jobs')
-        .select('title, region')
-        .eq('id', jobId)
-        .single()
+      const { data } = await supabase.from('jobs').select('title, region').eq('id', jobId).single()
 
       if (data) {
         setJob(data as JobBasics)
@@ -44,13 +40,13 @@ export function JobStep8Success({ jobId }: JobStep8SuccessProps) {
   }
 
   return (
-    <div className="flex flex-col items-center text-center py-8 space-y-6">
+    <div className="flex flex-col items-center space-y-6 py-8 text-center">
       {/* Success icon */}
       <div
-        className="w-16 h-16 rounded-full flex items-center justify-center"
+        className="flex h-16 w-16 items-center justify-center rounded-full"
         style={{ backgroundColor: 'rgba(74,124,47,0.1)' }}
       >
-        <CheckCircle className="w-10 h-10" style={{ color: 'var(--color-brand-hover)' }} />
+        <CheckCircle className="h-10 w-10" style={{ color: 'var(--color-brand-hover)' }} />
       </div>
 
       {/* Heading */}
@@ -69,18 +65,30 @@ export function JobStep8Success({ jobId }: JobStep8SuccessProps) {
       </div>
 
       {/* Stats grid */}
-      <div className="grid grid-cols-3 gap-4 w-full max-w-md">
-        <div className="text-center p-4 rounded-[10px] border border-border bg-surface-2">
-          <p className="text-2xl font-semibold font-body" style={{ color: 'var(--color-brand)' }}>3</p>
-          <p className="text-[12px] font-body mt-1" style={{ color: 'var(--color-text-muted)' }}>avg days to first applicant</p>
+      <div className="grid w-full max-w-md grid-cols-3 gap-4">
+        <div className="border-border bg-surface-2 rounded-[10px] border p-4 text-center">
+          <p className="font-body text-2xl font-semibold" style={{ color: 'var(--color-brand)' }}>
+            3
+          </p>
+          <p className="font-body mt-1 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
+            avg days to first applicant
+          </p>
         </div>
-        <div className="text-center p-4 rounded-[10px] border border-border bg-surface-2">
-          <p className="text-2xl font-semibold font-body" style={{ color: 'var(--color-brand)' }}>120+</p>
-          <p className="text-[12px] font-body mt-1" style={{ color: 'var(--color-text-muted)' }}>seekers in match pool</p>
+        <div className="border-border bg-surface-2 rounded-[10px] border p-4 text-center">
+          <p className="font-body text-2xl font-semibold" style={{ color: 'var(--color-brand)' }}>
+            120+
+          </p>
+          <p className="font-body mt-1 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
+            seekers in match pool
+          </p>
         </div>
-        <div className="text-center p-4 rounded-[10px] border border-border bg-surface-2">
-          <p className="text-2xl font-semibold font-body" style={{ color: 'var(--color-brand)' }}>85%</p>
-          <p className="text-[12px] font-body mt-1" style={{ color: 'var(--color-text-muted)' }}>actively looking</p>
+        <div className="border-border bg-surface-2 rounded-[10px] border p-4 text-center">
+          <p className="font-body text-2xl font-semibold" style={{ color: 'var(--color-brand)' }}>
+            85%
+          </p>
+          <p className="font-body mt-1 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
+            actively looking
+          </p>
         </div>
       </div>
 
@@ -88,37 +96,31 @@ export function JobStep8Success({ jobId }: JobStep8SuccessProps) {
       <div className="w-full max-w-xs space-y-3">
         <Link
           to={`/jobs/${jobId}`}
-          className="flex items-center justify-center gap-2 w-full px-6 py-3 rounded-[8px] font-body font-bold text-[14px] text-white transition-all duration-200 hover:opacity-90"
+          className="font-body flex w-full items-center justify-center gap-2 rounded-[8px] px-6 py-3 text-[14px] font-bold text-white transition-all duration-200 hover:opacity-90"
           style={{ backgroundColor: 'var(--color-brand)' }}
         >
-          <Briefcase className="w-4 h-4" />
+          <Briefcase className="h-4 w-4" />
           View listing
         </Link>
 
-        <Button
-          type="button"
-          variant="outline"
-          size="lg"
-          className="w-full"
-          onClick={handleShare}
-        >
-          <Share2 className="w-4 h-4 mr-2" />
+        <Button type="button" variant="outline" size="lg" className="w-full" onClick={handleShare}>
+          <Share2 className="mr-2 h-4 w-4" />
           Share listing
         </Button>
 
         <Link
           to="/jobs/new"
-          className="flex items-center justify-center gap-2 w-full px-6 py-3 rounded-[8px] font-body font-bold text-[14px] border border-border text-text-muted transition-all duration-200 hover:border-border-strong"
+          className="font-body border-border text-text-muted hover:border-border-strong flex w-full items-center justify-center gap-2 rounded-[8px] border px-6 py-3 text-[14px] font-bold transition-all duration-200"
         >
           Post another job
         </Link>
 
         <Link
           to="/dashboard/employer"
-          className="flex items-center justify-center gap-2 w-full px-4 py-2 font-body text-[13px] font-medium transition-colors duration-200"
+          className="font-body flex w-full items-center justify-center gap-2 px-4 py-2 text-[13px] font-medium transition-colors duration-200"
           style={{ color: 'var(--color-text-muted)' }}
         >
-          <LayoutDashboard className="w-4 h-4" />
+          <LayoutDashboard className="h-4 w-4" />
           Back to dashboard
         </Link>
       </div>

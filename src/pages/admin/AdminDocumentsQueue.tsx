@@ -154,7 +154,7 @@ export function AdminDocumentsQueue() {
   return (
     <div className="space-y-6">
       <h1
-        className="text-[20px] font-semibold leading-7"
+        className="text-[20px] leading-7 font-semibold"
         style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
       >
         Document Queue
@@ -186,23 +186,14 @@ export function AdminDocumentsQueue() {
             <>
               <td className="px-4 py-3" style={{ color: 'var(--color-text)' }}>
                 <div className="text-[15px]">{row.seeker_name}</div>
-                <div
-                  className="text-[13px]"
-                  style={{ color: 'var(--color-text-muted)' }}
-                >
+                <div className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
                   {DOCUMENT_TYPE_LABELS[row.document_type] ?? row.document_type}
                 </div>
               </td>
-              <td
-                className="px-4 py-3 text-[14px]"
-                style={{ color: 'var(--color-text)' }}
-              >
+              <td className="px-4 py-3 text-[14px]" style={{ color: 'var(--color-text)' }}>
                 {row.filename}
               </td>
-              <td
-                className="px-4 py-3 text-[13px]"
-                style={{ color: 'var(--color-text-muted)' }}
-              >
+              <td className="px-4 py-3 text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
                 {new Date(row.uploaded_at).toLocaleDateString('en-NZ', {
                   day: '2-digit',
                   month: 'short',
@@ -212,17 +203,14 @@ export function AdminDocumentsQueue() {
               <td className="px-4 py-3">
                 <Tag variant={status.variant}>{status.label}</Tag>
                 {row.status === 'rejected' && row.rejection_reason && (
-                  <div
-                    className="mt-1 text-[12px]"
-                    style={{ color: 'var(--color-text-muted)' }}
-                  >
+                  <div className="mt-1 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
                     {row.rejection_reason}
                   </div>
                 )}
               </td>
               <td className="px-4 py-3">
                 {rejecting ? (
-                  <div className="flex flex-col gap-2 w-[280px]">
+                  <div className="flex w-[280px] flex-col gap-2">
                     <Input
                       placeholder="Reason (required, e.g. 'illegible')"
                       value={rejectReason}
@@ -256,7 +244,7 @@ export function AdminDocumentsQueue() {
                     </div>
                   </div>
                 ) : (
-                  <div className="flex gap-2 flex-wrap">
+                  <div className="flex flex-wrap gap-2">
                     <Button
                       type="button"
                       variant="primary"
@@ -265,7 +253,7 @@ export function AdminDocumentsQueue() {
                       disabled={busy || row.status === 'approved'}
                       aria-label="Approve document"
                     >
-                      <CheckCircle2 className="w-4 h-4 mr-1" aria-hidden="true" />
+                      <CheckCircle2 className="mr-1 h-4 w-4" aria-hidden="true" />
                       Approve
                     </Button>
                     <Button
@@ -279,7 +267,7 @@ export function AdminDocumentsQueue() {
                       disabled={busy}
                       aria-label="Reject document"
                     >
-                      <XCircle className="w-4 h-4 mr-1" aria-hidden="true" />
+                      <XCircle className="mr-1 h-4 w-4" aria-hidden="true" />
                       Reject
                     </Button>
                     <Button
@@ -290,7 +278,7 @@ export function AdminDocumentsQueue() {
                       disabled={busy}
                       aria-label="Request more info"
                     >
-                      <RotateCcw className="w-4 h-4 mr-1" aria-hidden="true" />
+                      <RotateCcw className="mr-1 h-4 w-4" aria-hidden="true" />
                       Request more info
                     </Button>
                   </div>

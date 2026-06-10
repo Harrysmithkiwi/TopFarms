@@ -2,18 +2,15 @@ import { Link } from 'react-router'
 
 export function LandingFooter() {
   return (
-    <footer
-      className="py-14 px-4"
-      style={{ backgroundColor: 'var(--color-brand-900)' }}
-    >
-      <div className="max-w-6xl mx-auto">
+    <footer className="px-4 py-14" style={{ backgroundColor: 'var(--color-brand-900)' }}>
+      <div className="mx-auto max-w-6xl">
         {/* Main columns */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+        <div className="mb-12 grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {/* Column 1: Brand */}
           <div className="lg:col-span-1">
             <Link
               to="/"
-              className="font-display text-xl font-semibold mb-3 inline-block"
+              className="font-display mb-3 inline-block text-xl font-semibold"
               style={{ color: 'var(--color-text-on-brand)' }}
             >
               🌿 TopFarms
@@ -26,7 +23,7 @@ export function LandingFooter() {
           {/* Column 2: Platform */}
           <div>
             <h3
-              className="text-xs font-bold tracking-widest uppercase mb-4"
+              className="mb-4 text-xs font-bold tracking-widest uppercase"
               style={{ color: 'rgba(255,255,255,0.4)' }}
             >
               Platform
@@ -74,7 +71,7 @@ export function LandingFooter() {
           {/* Column 3: Support */}
           <div>
             <h3
-              className="text-xs font-bold tracking-widest uppercase mb-4"
+              className="mb-4 text-xs font-bold tracking-widest uppercase"
               style={{ color: 'rgba(255,255,255,0.4)' }}
             >
               Support
@@ -113,7 +110,7 @@ export function LandingFooter() {
           {/* Column 4: Legal */}
           <div>
             <h3
-              className="text-xs font-bold tracking-widest uppercase mb-4"
+              className="mb-4 text-xs font-bold tracking-widest uppercase"
               style={{ color: 'rgba(255,255,255,0.4)' }}
             >
               Legal
@@ -142,11 +139,8 @@ export function LandingFooter() {
         </div>
 
         {/* Bottom bar */}
-        <div
-          className="pt-6 border-t"
-          style={{ borderColor: 'rgba(255,255,255,0.07)' }}
-        >
-          <p className="text-xs text-center" style={{ color: 'rgba(255,255,255,0.35)' }}>
+        <div className="border-t pt-6" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
+          <p className="text-center text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
             &copy; 2026 TopFarms. All rights reserved.
           </p>
         </div>

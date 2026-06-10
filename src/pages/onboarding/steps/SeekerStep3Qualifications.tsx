@@ -60,7 +60,7 @@ export function SeekerStep3Qualifications({ onComplete, onBack, defaultValues }:
         <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           DairyNZ qualification
         </h2>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
           Select your highest DairyNZ qualification level, if any
         </p>
       </div>
@@ -91,7 +91,7 @@ export function SeekerStep3Qualifications({ onComplete, onBack, defaultValues }:
             }}
           >
             <svg
-              className="w-4 h-4 mt-0.5 flex-shrink-0"
+              className="mt-0.5 h-4 w-4 flex-shrink-0"
               viewBox="0 0 16 16"
               fill="none"
               style={{ color: 'var(--color-brand-hover)' }}
@@ -104,20 +104,22 @@ export function SeekerStep3Qualifications({ onComplete, onBack, defaultValues }:
                 strokeLinecap="round"
               />
             </svg>
-            <span style={{ color: 'var(--color-text-muted)' }}>{selectedLevelInfo.description}</span>
+            <span style={{ color: 'var(--color-text-muted)' }}>
+              {selectedLevelInfo.description}
+            </span>
           </div>
         )}
       </div>
 
       {/* DairyNZ levels overview */}
-      <div className="rounded-[8px] border-[1.5px] border-border p-4 space-y-2">
-        <p className="font-body text-[12px] font-semibold text-text-muted uppercase tracking-wide">
+      <div className="border-border space-y-2 rounded-[8px] border-[1.5px] p-4">
+        <p className="font-body text-text-muted text-[12px] font-semibold tracking-wide uppercase">
           DairyNZ Levels Overview
         </p>
         <div className="space-y-1.5">
           {DAIRYNZ_LEVELS.map((level) => (
             <div key={level.value} className="flex gap-2">
-              <span className="font-body text-[12px] font-semibold text-brand-hover min-w-[60px]">
+              <span className="font-body text-brand-hover min-w-[60px] text-[12px] font-semibold">
                 {level.label}
               </span>
               <span className="font-body text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
@@ -130,7 +132,7 @@ export function SeekerStep3Qualifications({ onComplete, onBack, defaultValues }:
 
       {/* NZ driver's licence */}
       <div>
-        <p className="font-body text-[13px] font-semibold text-text mb-2">NZ driver's licence</p>
+        <p className="font-body text-text mb-2 text-[13px] font-semibold">NZ driver's licence</p>
         <Controller
           control={control}
           name="licence_types"
@@ -148,7 +150,7 @@ export function SeekerStep3Qualifications({ onComplete, onBack, defaultValues }:
 
       {/* Certifications */}
       <div>
-        <p className="font-body text-[13px] font-semibold text-text mb-2">Certifications</p>
+        <p className="font-body text-text mb-2 text-[13px] font-semibold">Certifications</p>
         <Controller
           control={control}
           name="certifications"
@@ -166,10 +168,10 @@ export function SeekerStep3Qualifications({ onComplete, onBack, defaultValues }:
 
       {/* Documents */}
       <div>
-        <p className="font-body text-[13px] font-semibold text-text mb-1">Documents</p>
-        <p className="text-[12px] font-body mb-3" style={{ color: 'var(--color-text-muted)' }}>
-          Upload your CV, certificates, and references (PDF, DOC, DOCX, JPG, PNG — max 10MB each,
-          up to 5 files)
+        <p className="font-body text-text mb-1 text-[13px] font-semibold">Documents</p>
+        <p className="font-body mb-3 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
+          Upload your CV, certificates, and references (PDF, DOC, DOCX, JPG, PNG — max 10MB each, up
+          to 5 files)
         </p>
         {session?.user && seekerProfileId && (
           <DocumentUploader

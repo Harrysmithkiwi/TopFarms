@@ -33,8 +33,8 @@ describe('get-applicant-document-url admin bypass + gateway-trust (Phase 21 DOC-
     // (and AC2 requires that docblock be preserved). Strip comments before asserting there
     // is no executable call to adminClient.auth.getUser / auth.getUserById anywhere.
     const stripped = source
-      .replace(/\/\*[\s\S]*?\*\//g, '')       // block comments
-      .replace(/^\s*\/\/.*$/gm, '')            // line comments
+      .replace(/\/\*[\s\S]*?\*\//g, '') // block comments
+      .replace(/^\s*\/\/.*$/gm, '') // line comments
     expect(stripped).not.toMatch(/adminClient\.auth\.getUser/)
     expect(stripped).not.toMatch(/auth\.getUserById/)
   })

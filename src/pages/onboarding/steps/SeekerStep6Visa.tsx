@@ -38,7 +38,7 @@ export function SeekerStep6Visa({ onComplete, onBack, defaultValues }: SeekerSte
         <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Visa status
         </h2>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
           This helps us match you with employers offering the right sponsorship
         </p>
       </div>
@@ -66,20 +66,15 @@ export function SeekerStep6Visa({ onComplete, onBack, defaultValues }: SeekerSte
         }}
       >
         <svg
-          className="w-4 h-4 mt-0.5 flex-shrink-0"
+          className="mt-0.5 h-4 w-4 flex-shrink-0"
           viewBox="0 0 16 16"
           fill="none"
           style={{ color: 'rgb(59,130,246)' }}
         >
           <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
-          <path
-            d="M8 7v4M8 5.5v.5"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          />
+          <path d="M8 7v4M8 5.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
-        <p className="text-[13px] font-body" style={{ color: 'rgb(30,64,175)' }}>
+        <p className="font-body text-[13px]" style={{ color: 'rgb(30,64,175)' }}>
           Your visa status helps us match you with jobs that offer the right sponsorship. This
           information is only shared with employers when you apply.
         </p>

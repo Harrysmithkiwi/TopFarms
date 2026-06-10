@@ -50,7 +50,7 @@ export function EmployerList() {
   return (
     <div className="space-y-6">
       <h1
-        className="text-[20px] font-semibold leading-7"
+        className="text-[20px] leading-7 font-semibold"
         style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
       >
         Employers

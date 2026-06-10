@@ -23,17 +23,17 @@ Deno.serve(async (req) => {
 
     // Validate request body
     if (!job_id || !tier || !employer_id) {
-      return new Response(
-        JSON.stringify({ error: 'job_id, tier, and employer_id are required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      )
+      return new Response(JSON.stringify({ error: 'job_id, tier, and employer_id are required' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
     }
 
     if (![1, 2, 3].includes(Number(tier))) {
-      return new Response(
-        JSON.stringify({ error: 'tier must be 1, 2, or 3' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      )
+      return new Response(JSON.stringify({ error: 'tier must be 1, 2, or 3' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
     }
 
     const tierNum = Number(tier) as 1 | 2 | 3
@@ -67,10 +67,10 @@ Deno.serve(async (req) => {
 
     if (countError) {
       console.error('Error checking listing fees count:', countError)
-      return new Response(
-        JSON.stringify({ error: 'Failed to check listing history' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      )
+      return new Response(JSON.stringify({ error: 'Failed to check listing history' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
     }
 
     const listingCount = count ?? 0
@@ -92,10 +92,10 @@ Deno.serve(async (req) => {
 
       if (feeError) {
         console.error('Error inserting free listing fee:', feeError)
-        return new Response(
-          JSON.stringify({ error: 'Failed to record free listing' }),
-          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-        )
+        return new Response(JSON.stringify({ error: 'Failed to record free listing' }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
       }
 
       // Activate the job
@@ -110,25 +110,25 @@ Deno.serve(async (req) => {
 
       if (updateError) {
         console.error('Error activating job:', updateError)
-        return new Response(
-          JSON.stringify({ error: 'Failed to activate job' }),
-          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-        )
+        return new Response(JSON.stringify({ error: 'Failed to activate job' }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
       }
 
-      return new Response(
-        JSON.stringify({ client_secret: null, is_free: true }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      )
+      return new Response(JSON.stringify({ client_secret: null, is_free: true }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
     }
 
     // Paid listing — create Stripe PaymentIntent
     const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY')
     if (!stripeSecretKey) {
-      return new Response(
-        JSON.stringify({ error: 'Stripe not configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      )
+      return new Response(JSON.stringify({ error: 'Stripe not configured' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
     }
 
     const stripe = new Stripe(stripeSecretKey, {
@@ -157,9 +157,9 @@ Deno.serve(async (req) => {
     )
   } catch (error) {
     console.error('Unexpected error in create-payment-intent:', error)
-    return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-    )
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
   }
 })

@@ -23,9 +23,7 @@ interface UseWizardReturn {
  * No database logic — the wizard shell component owns persistence.
  */
 export function useWizard({ totalSteps, initialStep = 0 }: UseWizardOptions): UseWizardReturn {
-  const [currentStep, setCurrentStep] = useState(
-    Math.max(0, Math.min(initialStep, totalSteps - 1)),
-  )
+  const [currentStep, setCurrentStep] = useState(Math.max(0, Math.min(initialStep, totalSteps - 1)))
 
   function goToStep(step: number) {
     setCurrentStep(Math.max(0, Math.min(step, totalSteps - 1)))

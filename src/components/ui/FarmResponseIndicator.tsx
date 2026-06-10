@@ -16,16 +16,12 @@ function formatTimeAgo(dateStr: string): string {
 export function FarmResponseIndicator({ viewedAt }: FarmResponseIndicatorProps) {
   if (viewedAt) {
     return (
-      <p className="flex items-center gap-1.5 text-[12px] font-body text-text-subtle mt-1">
-        <Eye className="w-3.5 h-3.5 inline-block" />
+      <p className="font-body text-text-subtle mt-1 flex items-center gap-1.5 text-[12px]">
+        <Eye className="inline-block h-3.5 w-3.5" />
         Viewed by employer {formatTimeAgo(viewedAt)}
       </p>
     )
   }
 
-  return (
-    <p className="text-[12px] font-body text-text-subtle italic mt-1">
-      Not yet viewed
-    </p>
-  )
+  return <p className="font-body text-text-subtle mt-1 text-[12px] italic">Not yet viewed</p>
 }

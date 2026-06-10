@@ -31,22 +31,22 @@ export function Checkbox({
         onCheckedChange={(val) => onCheckedChange?.(val === true)}
         disabled={disabled}
         className={cn(
-          'w-[15px] h-[15px] rounded-[3px] border-[1.5px] flex items-center justify-center',
-          'transition-colors duration-150 cursor-pointer',
-          'outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
-          'disabled:opacity-50 disabled:cursor-not-allowed',
+          'flex h-[15px] w-[15px] items-center justify-center rounded-[3px] border-[1.5px]',
+          'cursor-pointer transition-colors duration-150',
+          'focus-visible:outline-brand outline-none focus-visible:outline-2 focus-visible:outline-offset-2',
+          'disabled:cursor-not-allowed disabled:opacity-50',
           'data-[state=unchecked]:border-border data-[state=unchecked]:bg-surface-2',
           'data-[state=checked]:border-brand data-[state=checked]:bg-brand',
         )}
       >
         <CheckboxPrimitive.Indicator>
-          <Check className="w-[10px] h-[10px] text-text-on-brand stroke-[3]" />
+          <Check className="text-text-on-brand h-[10px] w-[10px] stroke-[3]" />
         </CheckboxPrimitive.Indicator>
       </CheckboxPrimitive.Root>
       {label && (
         <Label.Root
           htmlFor={checkboxId}
-          className="font-body text-[13px] text-text cursor-pointer select-none"
+          className="font-body text-text cursor-pointer text-[13px] select-none"
         >
           {label}
         </Label.Root>

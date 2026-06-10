@@ -70,12 +70,8 @@ export function DocumentUploader({
   const activeRowCount = stagedFiles.filter((f) => f.status !== 'done').length
   const isAtMax = activeRowCount >= maxFiles
   const anyUploading = stagedFiles.some((f) => f.status === 'uploading')
-  const anyPendingNeedsType = stagedFiles.some(
-    (f) => f.status === 'pending' && f.type === null,
-  )
-  const anyPendingReady = stagedFiles.some(
-    (f) => f.status === 'pending' && f.type !== null,
-  )
+  const anyPendingNeedsType = stagedFiles.some((f) => f.status === 'pending' && f.type === null)
+  const anyPendingReady = stagedFiles.some((f) => f.status === 'pending' && f.type !== null)
 
   const uploadDisabled = anyUploading || anyPendingNeedsType || !anyPendingReady
 
@@ -112,9 +108,7 @@ export function DocumentUploader({
   })
 
   function setRowType(rowId: string, type: DocumentType) {
-    setStagedFiles((prev) =>
-      prev.map((row) => (row.id === rowId ? { ...row, type } : row)),
-    )
+    setStagedFiles((prev) => prev.map((row) => (row.id === rowId ? { ...row, type } : row)))
   }
 
   function removeRow(rowId: string) {
@@ -168,9 +162,7 @@ export function DocumentUploader({
           r.id === rowId ? { ...r, status: 'error', error: insertError.message } : r,
         ),
       )
-      toast.error(
-        `Saved ${row.file.name} to storage but row insert failed: ${insertError.message}`,
-      )
+      toast.error(`Saved ${row.file.name} to storage but row insert failed: ${insertError.message}`)
       return
     }
 
@@ -191,11 +183,11 @@ export function DocumentUploader({
       {isAtMax ? (
         <div
           className={cn(
-            'border-2 border-dashed rounded-[10px] p-4 text-center',
-            'border-border bg-surface-2 opacity-60 cursor-not-allowed',
+            'rounded-[10px] border-2 border-dashed p-4 text-center',
+            'border-border bg-surface-2 cursor-not-allowed opacity-60',
           )}
         >
-          <p className="text-[13px] font-body text-text-muted">
+          <p className="font-body text-text-muted text-[13px]">
             Maximum {maxFiles} files reached. Remove a file to upload more.
           </p>
         </div>
@@ -203,8 +195,8 @@ export function DocumentUploader({
         <div
           {...getRootProps()}
           className={cn(
-            'border-2 border-dashed rounded-[10px] p-6 text-center cursor-pointer transition-all duration-200',
-            'flex flex-col items-center justify-center gap-3 min-h-[120px]',
+            'cursor-pointer rounded-[10px] border-2 border-dashed p-6 text-center transition-all duration-200',
+            'flex min-h-[120px] flex-col items-center justify-center gap-3',
             isDragActive
               ? 'border-brand-hover bg-[rgba(74,124,47,0.06)]'
               : 'border-border bg-surface-2 hover:border-border-strong',
@@ -213,12 +205,17 @@ export function DocumentUploader({
         >
           <input {...getInputProps()} />
           <UploadCloud
-            className={cn('w-8 h-8', isDragActive ? 'text-brand-hover' : 'text-text-muted')}
+            className={cn('h-8 w-8', isDragActive ? 'text-brand-hover' : 'text-text-muted')}
           />
-          <p className={cn('text-[13px] font-body', isDragActive ? 'text-brand-hover' : 'text-text-muted')}>
+          <p
+            className={cn(
+              'font-body text-[13px]',
+              isDragActive ? 'text-brand-hover' : 'text-text-muted',
+            )}
+          >
             {isDragActive ? 'Drop files here...' : 'Drag and drop, or click to select'}
           </p>
-          <p className="text-[11px] font-body text-text-subtle">
+          <p className="font-body text-text-subtle text-[11px]">
             Max {Math.round(maxSize / 1024 / 1024)}MB per file · up to {maxFiles} files
           </p>
         </div>
@@ -230,20 +227,20 @@ export function DocumentUploader({
             <li
               key={row.id}
               className={cn(
-                'flex items-center gap-3 p-2 rounded-[8px] bg-surface border',
+                'bg-surface flex items-center gap-3 rounded-[8px] border p-2',
                 row.status === 'error' ? 'border-danger' : 'border-border',
               )}
             >
               {row.status === 'uploading' ? (
-                <Loader2 className="w-4 h-4 text-brand-hover animate-spin flex-shrink-0" />
+                <Loader2 className="text-brand-hover h-4 w-4 flex-shrink-0 animate-spin" />
               ) : (
-                <FileText className="w-4 h-4 text-brand-hover flex-shrink-0" />
+                <FileText className="text-brand-hover h-4 w-4 flex-shrink-0" />
               )}
-              <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-body text-text truncate">{row.file.name}</p>
+              <div className="min-w-0 flex-1">
+                <p className="font-body text-text truncate text-[13px]">{row.file.name}</p>
                 <p
                   className={cn(
-                    'text-[11px] font-body',
+                    'font-body text-[11px]',
                     row.status === 'error' ? 'text-danger' : 'text-text-subtle',
                   )}
                 >
@@ -267,7 +264,7 @@ export function DocumentUploader({
                   className="text-text-subtle hover:text-text p-1"
                   aria-label={`Retry upload of ${row.file.name}`}
                 >
-                  <RotateCcw className="w-3.5 h-3.5" />
+                  <RotateCcw className="h-3.5 w-3.5" />
                 </button>
               )}
               {row.status !== 'uploading' && (
@@ -277,7 +274,7 @@ export function DocumentUploader({
                   className="text-text-subtle hover:text-text p-1"
                   aria-label={`Remove ${row.file.name}`}
                 >
-                  <X className="w-3.5 h-3.5" />
+                  <X className="h-3.5 w-3.5" />
                 </button>
               )}
             </li>
@@ -287,7 +284,7 @@ export function DocumentUploader({
 
       {stagedFiles.length > 0 && (
         <div className="mt-3 flex items-center justify-between gap-3">
-          <p className="text-[12px] font-body text-text-subtle">
+          <p className="font-body text-text-subtle text-[12px]">
             Identity documents are kept private — employers will never see them.
           </p>
           <button
@@ -295,10 +292,10 @@ export function DocumentUploader({
             onClick={uploadAllPending}
             disabled={uploadDisabled}
             className={cn(
-              'px-4 py-2 rounded-[8px] text-[13px] font-body font-medium flex-shrink-0',
+              'font-body flex-shrink-0 rounded-[8px] px-4 py-2 text-[13px] font-medium',
               'bg-brand-hover text-white',
               'hover:bg-brand-hover/90 transition-colors',
-              'disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-brand-hover',
+              'disabled:hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50',
             )}
           >
             {anyUploading ? 'Uploading...' : 'Upload'}

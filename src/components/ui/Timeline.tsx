@@ -19,29 +19,23 @@ export function Timeline({ entries, className, ...props }: TimelineProps) {
         const isLast = index === entries.length - 1
 
         return (
-          <li key={index} className="relative pl-6 pb-6 last:pb-0">
+          <li key={index} className="relative pb-6 pl-6 last:pb-0">
             {/* Dot */}
-            <span className="absolute left-0 top-1 w-2.5 h-2.5 rounded-full bg-brand" />
+            <span className="bg-brand absolute top-1 left-0 h-2.5 w-2.5 rounded-full" />
 
             {/* Connecting line — hidden on last item */}
             {!isLast && (
-              <span className="absolute left-[4px] top-3.5 bottom-0 w-[1.5px] bg-border" />
+              <span className="bg-border absolute top-3.5 bottom-0 left-[4px] w-[1.5px]" />
             )}
 
             {/* Content */}
             <div>
-              <p className="text-[14px] font-semibold text-text font-body">
-                {entry.title}
-              </p>
+              <p className="text-text font-body text-[14px] font-semibold">{entry.title}</p>
               {entry.date && (
-                <p className="text-[13px] text-text-subtle font-body mt-0.5">
-                  {entry.date}
-                </p>
+                <p className="text-text-subtle font-body mt-0.5 text-[13px]">{entry.date}</p>
               )}
               {entry.description && (
-                <p className="text-[14px] text-text-muted font-body mt-1">
-                  {entry.description}
-                </p>
+                <p className="text-text-muted font-body mt-1 text-[14px]">{entry.description}</p>
               )}
             </div>
           </li>

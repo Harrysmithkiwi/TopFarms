@@ -263,9 +263,11 @@ export function JobDetail() {
 
           // Trigger async AI explanation if score exists but explanation is missing
           if (scoreData && !scoreData.explanation) {
-            supabase.functions.invoke('generate-match-explanation', {
-              body: { seeker_id: profile.id, job_id: jobId },
-            }).catch(() => {}) // fire-and-forget, no error handling needed
+            supabase.functions
+              .invoke('generate-match-explanation', {
+                body: { seeker_id: profile.id, job_id: jobId },
+              })
+              .catch(() => {}) // fire-and-forget, no error handling needed
           }
 
           // Check if already applied
@@ -301,7 +303,10 @@ export function JobDetail() {
   // Loading state
   if (loading || authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--color-bg)' }}>
+      <div
+        className="flex min-h-screen items-center justify-center"
+        style={{ backgroundColor: 'var(--color-bg)' }}
+      >
         <p className="text-sm" style={{ color: 'var(--color-text-subtle)' }}>
           Loading listing...
         </p>
@@ -312,28 +317,31 @@ export function JobDetail() {
   // Not found / archived
   if (notFound || !job) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--color-bg)' }}>
-        <div className="text-center max-w-md px-4">
+      <div
+        className="flex min-h-screen items-center justify-center"
+        style={{ backgroundColor: 'var(--color-bg)' }}
+      >
+        <div className="max-w-md px-4 text-center">
           <div
-            className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4"
+            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl text-3xl"
             style={{ backgroundColor: 'var(--color-border)' }}
           >
             📋
           </div>
           <h1
-            className="font-display text-2xl font-semibold mb-2"
+            className="font-display mb-2 text-2xl font-semibold"
             style={{ color: 'var(--color-brand-900)' }}
           >
             Listing not available
           </h1>
-          <p className="text-sm mb-6" style={{ color: 'var(--color-text-muted)' }}>
+          <p className="mb-6 text-sm" style={{ color: 'var(--color-text-muted)' }}>
             This job listing is no longer available. It may have been filled, expired, or removed.
           </p>
           <Link
             to="/jobs"
             className={cn(
-              'font-body font-bold rounded-[8px] transition-all duration-200 inline-flex items-center justify-center',
-              'bg-brand text-white hover:bg-brand-hover',
+              'font-body inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
+              'bg-brand hover:bg-brand-hover text-white',
               'px-4 py-2 text-[13px]',
             )}
           >
@@ -349,9 +357,15 @@ export function JobDetail() {
     // If not logged in or not employer, redirect to 404-style
     if (!session || role !== 'employer') {
       return (
-        <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--color-bg)' }}>
-          <div className="text-center max-w-md px-4">
-            <h1 className="font-display text-2xl font-semibold mb-2" style={{ color: 'var(--color-brand-900)' }}>
+        <div
+          className="flex min-h-screen items-center justify-center"
+          style={{ backgroundColor: 'var(--color-bg)' }}
+        >
+          <div className="max-w-md px-4 text-center">
+            <h1
+              className="font-display mb-2 text-2xl font-semibold"
+              style={{ color: 'var(--color-brand-900)' }}
+            >
               Listing not available
             </h1>
             <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
@@ -402,17 +416,11 @@ export function JobDetail() {
   // ─── Main render ────────────────────────────────────────────────────────────
 
   return (
-    <div
-      className="min-h-screen pb-24"
-      style={{ backgroundColor: 'var(--color-bg)' }}
-    >
+    <div className="min-h-screen pb-24" style={{ backgroundColor: 'var(--color-bg)' }}>
       {/* Breadcrumb bar — replaces old minimal nav */}
       <div className="sticky top-0 z-30">
         <Breadcrumb
-          items={[
-            { label: 'Jobs', href: '/jobs' },
-            { label: job.title },
-          ]}
+          items={[{ label: 'Jobs', href: '/jobs' }, { label: job.title }]}
           onSave={() => jobId && toggleSave(jobId)}
           onShare={() => {
             navigator.clipboard.writeText(window.location.href)
@@ -422,11 +430,10 @@ export function JobDetail() {
       </div>
 
       {/* Main content */}
-      <main className="max-w-5xl mx-auto px-4 py-8">
-        <div className="lg:grid lg:grid-cols-[1fr_320px] gap-8">
+      <main className="mx-auto max-w-5xl px-4 py-8">
+        <div className="gap-8 lg:grid lg:grid-cols-[1fr_320px]">
           {/* Left column — all content sections */}
           <div className="space-y-8">
-
             {/* Header section */}
             <section>
               {/* Tier badge */}
@@ -434,28 +441,31 @@ export function JobDetail() {
                 <div className="mb-3">
                   <span
                     className={cn(
-                      'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-body font-semibold',
+                      'font-body inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold',
                       isPremium
                         ? 'bg-[rgba(180,83,9,0.10)] text-[#b45309]'
                         : 'bg-[rgba(59,130,246,0.10)] text-[#2563eb]',
                     )}
                   >
-                    <Star className="w-3 h-3" />
+                    <Star className="h-3 w-3" />
                     {isPremium ? 'Premium Listing' : 'Featured Listing'}
                   </span>
                 </div>
               )}
 
               <h1
-                className="font-display text-3xl font-semibold leading-tight mb-3"
+                className="font-display mb-3 text-3xl leading-tight font-semibold"
                 style={{ color: 'var(--color-brand-900)' }}
               >
                 {job.title}
               </h1>
 
               {/* Farm name + trust badge */}
-              <div className="flex items-center gap-2 flex-wrap mb-3">
-                <span className="text-base font-body font-semibold" style={{ color: 'var(--color-text)' }}>
+              <div className="mb-3 flex flex-wrap items-center gap-2">
+                <span
+                  className="font-body text-base font-semibold"
+                  style={{ color: 'var(--color-text)' }}
+                >
                   {employer?.farm_name}
                 </span>
                 <VerificationBadge
@@ -466,24 +476,27 @@ export function JobDetail() {
               </div>
 
               {/* Key metadata */}
-              <div className="flex flex-wrap gap-3 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+              <div
+                className="flex flex-wrap gap-3 text-sm"
+                style={{ color: 'var(--color-text-muted)' }}
+              >
                 {employer?.region && (
                   <span className="flex items-center gap-1.5">
-                    <MapPin className="w-4 h-4 flex-shrink-0" />
+                    <MapPin className="h-4 w-4 flex-shrink-0" />
                     {employer.region}
                   </span>
                 )}
                 <span className="flex items-center gap-1.5">
-                  <DollarSign className="w-4 h-4 flex-shrink-0" />
+                  <DollarSign className="h-4 w-4 flex-shrink-0" />
                   {formatSalary(job.salary_min, job.salary_max)}
                 </span>
                 <span className="flex items-center gap-1.5 capitalize">
-                  <Briefcase className="w-4 h-4 flex-shrink-0" />
+                  <Briefcase className="h-4 w-4 flex-shrink-0" />
                   {job.contract_type}
                 </span>
                 {job.start_date && (
                   <span className="flex items-center gap-1.5">
-                    <Calendar className="w-4 h-4 flex-shrink-0" />
+                    <Calendar className="h-4 w-4 flex-shrink-0" />
                     Starts {formatDate(job.start_date)}
                   </span>
                 )}
@@ -491,12 +504,14 @@ export function JobDetail() {
             </section>
 
             {/* Stats strip (JDET-02) */}
-            <StatsStrip stats={[
-              { label: 'Applications', value: applicationCount },
-              { label: 'Views', value: '-' },
-              { label: 'Salary', value: formatSalary(job.salary_min, job.salary_max) },
-              { label: 'Posted', value: formatDate(job.created_at) ?? '-' },
-            ]} />
+            <StatsStrip
+              stats={[
+                { label: 'Applications', value: applicationCount },
+                { label: 'Views', value: '-' },
+                { label: 'Salary', value: formatSalary(job.salary_min, job.salary_max) },
+                { label: 'Posted', value: formatDate(job.created_at) ?? '-' },
+              ]}
+            />
 
             {/* Description sections */}
             {(job.description_overview ||
@@ -504,16 +519,19 @@ export function JobDetail() {
               job.description_offer ||
               job.description_ideal) && (
               <section>
-                <div className="bg-surface border-[1.5px] border-border rounded-[12px] p-6 space-y-6">
+                <div className="bg-surface border-border space-y-6 rounded-[12px] border-[1.5px] p-6">
                   {job.description_overview && (
                     <div>
                       <h2
-                        className="text-[15px] font-body font-bold mb-2"
+                        className="font-body mb-2 text-[15px] font-bold"
                         style={{ color: 'var(--color-text)' }}
                       >
                         Role Overview
                       </h2>
-                      <p className="text-sm leading-relaxed whitespace-pre-line" style={{ color: 'var(--color-text-muted)' }}>
+                      <p
+                        className="text-sm leading-relaxed whitespace-pre-line"
+                        style={{ color: 'var(--color-text-muted)' }}
+                      >
                         {job.description_overview}
                       </p>
                     </div>
@@ -522,30 +540,43 @@ export function JobDetail() {
                   {job.description_daytoday && (
                     <div>
                       <h2
-                        className="text-[15px] font-body font-bold mb-2"
+                        className="font-body mb-2 text-[15px] font-bold"
                         style={{ color: 'var(--color-text)' }}
                       >
                         Day-to-Day
                       </h2>
                       <ul className="space-y-1.5">
-                        {job.description_daytoday.split('\n').filter(Boolean).map((line, i) => (
-                          <li key={i} className="flex items-start gap-2 text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
-                            <span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--color-brand)' }} />
-                            {line.replace(/^[-*]\s*/, '')}
-                          </li>
-                        ))}
+                        {job.description_daytoday
+                          .split('\n')
+                          .filter(Boolean)
+                          .map((line, i) => (
+                            <li
+                              key={i}
+                              className="flex items-start gap-2 text-sm leading-relaxed"
+                              style={{ color: 'var(--color-text-muted)' }}
+                            >
+                              <span
+                                className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full"
+                                style={{ backgroundColor: 'var(--color-brand)' }}
+                              />
+                              {line.replace(/^[-*]\s*/, '')}
+                            </li>
+                          ))}
                       </ul>
                     </div>
                   )}
                   {job.description_offer && (
                     <div>
                       <h2
-                        className="text-[15px] font-body font-bold mb-2"
+                        className="font-body mb-2 text-[15px] font-bold"
                         style={{ color: 'var(--color-text)' }}
                       >
                         What We Offer
                       </h2>
-                      <p className="text-sm leading-relaxed whitespace-pre-line" style={{ color: 'var(--color-text-muted)' }}>
+                      <p
+                        className="text-sm leading-relaxed whitespace-pre-line"
+                        style={{ color: 'var(--color-text-muted)' }}
+                      >
                         {job.description_offer}
                       </p>
                     </div>
@@ -553,12 +584,15 @@ export function JobDetail() {
                   {job.description_ideal && (
                     <div>
                       <h2
-                        className="text-[15px] font-body font-bold mb-2"
+                        className="font-body mb-2 text-[15px] font-bold"
                         style={{ color: 'var(--color-text)' }}
                       >
                         Ideal Candidate
                       </h2>
-                      <p className="text-sm leading-relaxed whitespace-pre-line" style={{ color: 'var(--color-text-muted)' }}>
+                      <p
+                        className="text-sm leading-relaxed whitespace-pre-line"
+                        style={{ color: 'var(--color-text-muted)' }}
+                      >
                         {job.description_ideal}
                       </p>
                     </div>
@@ -571,28 +605,28 @@ export function JobDetail() {
             {skills.length > 0 && (
               <section>
                 <h2
-                  className="text-[17px] font-body font-bold mb-1"
+                  className="font-body mb-1 text-[17px] font-bold"
                   style={{ color: 'var(--color-text)' }}
                 >
                   Skills
                 </h2>
-                <p className="text-xs mb-4" style={{ color: 'var(--color-text-subtle)' }}>
+                <p className="mb-4 text-xs" style={{ color: 'var(--color-text-subtle)' }}>
                   {requiredCount > 0 && `${requiredCount} required`}
                   {requiredCount > 0 && preferredCount > 0 && ', '}
                   {preferredCount > 0 && `${preferredCount} preferred`}
                 </p>
 
-                <div className="bg-surface border-[1.5px] border-border rounded-[12px] p-6">
+                <div className="bg-surface border-border rounded-[12px] border-[1.5px] p-6">
                   {/* Legend row (JDET-04) */}
-                  <div className="flex items-center gap-4 mb-4 pb-3 border-b border-border">
-                    <span className="inline-flex items-center gap-1.5 text-[12px] font-body">
-                      <span className="w-2 h-2 rounded-full bg-brand" /> Required
+                  <div className="border-border mb-4 flex items-center gap-4 border-b pb-3">
+                    <span className="font-body inline-flex items-center gap-1.5 text-[12px]">
+                      <span className="bg-brand h-2 w-2 rounded-full" /> Required
                     </span>
-                    <span className="inline-flex items-center gap-1.5 text-[12px] font-body">
-                      <span className="w-2 h-2 rounded-full bg-surface-2" /> Preferred
+                    <span className="font-body inline-flex items-center gap-1.5 text-[12px]">
+                      <span className="bg-surface-2 h-2 w-2 rounded-full" /> Preferred
                     </span>
-                    <span className="inline-flex items-center gap-1.5 text-[12px] font-body">
-                      <span className="w-2 h-2 rounded-full bg-warn" /> Bonus
+                    <span className="font-body inline-flex items-center gap-1.5 text-[12px]">
+                      <span className="bg-warn h-2 w-2 rounded-full" /> Bonus
                     </span>
                   </div>
 
@@ -601,7 +635,7 @@ export function JobDetail() {
                     {Object.entries(skillsByCategory).map(([category, categorySkills]) => (
                       <div key={category}>
                         <p
-                          className="text-[11px] font-body font-semibold uppercase tracking-wide mb-2"
+                          className="font-body mb-2 text-[11px] font-semibold tracking-wide uppercase"
                           style={{ color: 'var(--color-text-subtle)' }}
                         >
                           {category}
@@ -611,9 +645,9 @@ export function JobDetail() {
                             <span
                               key={s.skill_id}
                               className={cn(
-                                'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-body font-semibold',
+                                'font-body inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-semibold',
                                 s.requirement_level === 'required'
-                                  ? 'bg-[rgba(74,124,47,0.12)] text-brand'
+                                  ? 'text-brand bg-[rgba(74,124,47,0.12)]'
                                   : 'bg-surface-2 text-text-muted',
                               )}
                             >
@@ -621,7 +655,9 @@ export function JobDetail() {
                               <span
                                 className={cn(
                                   'text-[10px]',
-                                  s.requirement_level === 'required' ? 'text-brand/70' : 'text-text-subtle',
+                                  s.requirement_level === 'required'
+                                    ? 'text-brand/70'
+                                    : 'text-text-subtle',
                                 )}
                               >
                                 {s.requirement_level === 'required' ? 'required' : 'preferred'}
@@ -639,24 +675,26 @@ export function JobDetail() {
             {/* Application Timeline (JDET-05) */}
             <section>
               <h2
-                className="text-[17px] font-body font-bold mb-4"
+                className="font-body mb-4 text-[17px] font-bold"
                 style={{ color: 'var(--color-text)' }}
               >
                 Application Timeline
               </h2>
-              <Timeline entries={[
-                { title: 'Job posted', date: formatDate(job.created_at) ?? undefined },
-                { title: 'Applications open' },
-                { title: 'Review period' },
-                { title: 'Interviews' },
-                { title: 'Offers extended' },
-              ]} />
+              <Timeline
+                entries={[
+                  { title: 'Job posted', date: formatDate(job.created_at) ?? undefined },
+                  { title: 'Applications open' },
+                  { title: 'Review period' },
+                  { title: 'Interviews' },
+                  { title: 'Offers extended' },
+                ]}
+              />
             </section>
 
             {/* Location / Map (JDET-06) */}
             <section>
               <h2
-                className="text-[17px] font-body font-bold mb-4"
+                className="font-body mb-4 text-[17px] font-bold"
                 style={{ color: 'var(--color-text)' }}
               >
                 Location
@@ -668,22 +706,32 @@ export function JobDetail() {
             {(job.salary_min || job.salary_max || (job.benefits && job.benefits.length > 0)) && (
               <section>
                 <h2
-                  className="text-[17px] font-body font-bold mb-4"
+                  className="font-body mb-4 text-[17px] font-bold"
                   style={{ color: 'var(--color-text)' }}
                 >
                   Compensation &amp; Benefits
                 </h2>
-                <div className="bg-surface border-[1.5px] border-border rounded-[12px] p-6 space-y-3">
+                <div className="bg-surface border-border space-y-3 rounded-[12px] border-[1.5px] p-6">
                   <div className="flex items-center gap-2">
-                    <DollarSign className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--color-text-muted)' }} />
-                    <span className="text-sm font-body font-semibold" style={{ color: 'var(--color-text)' }}>
+                    <DollarSign
+                      className="h-4 w-4 flex-shrink-0"
+                      style={{ color: 'var(--color-text-muted)' }}
+                    />
+                    <span
+                      className="font-body text-sm font-semibold"
+                      style={{ color: 'var(--color-text)' }}
+                    >
                       {formatSalary(job.salary_min, job.salary_max)}
                     </span>
                   </div>
                   {job.benefits && job.benefits.length > 0 && (
                     <ul className="space-y-1.5 pl-6">
                       {job.benefits.map((benefit, i) => (
-                        <li key={i} className="text-sm flex items-start gap-2" style={{ color: 'var(--color-text-muted)' }}>
+                        <li
+                          key={i}
+                          className="flex items-start gap-2 text-sm"
+                          style={{ color: 'var(--color-text-muted)' }}
+                        >
                           <span className="text-brand mt-0.5">•</span>
                           {benefit}
                         </li>
@@ -698,15 +746,18 @@ export function JobDetail() {
             {employer?.accommodation_available && (
               <section>
                 <h2
-                  className="text-[17px] font-body font-bold mb-4"
+                  className="font-body mb-4 text-[17px] font-bold"
                   style={{ color: 'var(--color-text)' }}
                 >
                   Accommodation
                 </h2>
-                <div className="bg-surface border-[1.5px] border-border rounded-[12px] p-6 space-y-3">
+                <div className="bg-surface border-border space-y-3 rounded-[12px] border-[1.5px] p-6">
                   {employer.accommodation_type && (
                     <div className="flex items-center gap-2">
-                      <Home className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--color-text-muted)' }} />
+                      <Home
+                        className="h-4 w-4 flex-shrink-0"
+                        style={{ color: 'var(--color-text-muted)' }}
+                      />
                       <span className="text-sm" style={{ color: 'var(--color-text)' }}>
                         {employer.accommodation_type}
                       </span>
@@ -723,8 +774,12 @@ export function JobDetail() {
                       return (employer.accommodation_extras ?? []).map((chip) => {
                         const Icon = ICON_MAP[chip] ?? Tag
                         return (
-                          <span key={chip} className="flex items-center gap-1.5 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                            <Icon className="w-4 h-4" />
+                          <span
+                            key={chip}
+                            className="flex items-center gap-1.5 text-sm"
+                            style={{ color: 'var(--color-text-muted)' }}
+                          >
+                            <Icon className="h-4 w-4" />
                             {chip}
                           </span>
                         )
@@ -736,70 +791,92 @@ export function JobDetail() {
             )}
 
             {/* Farm Details section */}
-            {employer && (employer.farm_type || employer.shed_type || employer.herd_size || employer.culture_description) && (
-              <section>
-                <h2
-                  className="text-[17px] font-body font-bold mb-4"
-                  style={{ color: 'var(--color-text)' }}
-                >
-                  Farm Details
-                </h2>
-                <div className="bg-surface border-[1.5px] border-border rounded-[12px] p-6 space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    {employer.farm_type && (
+            {employer &&
+              (employer.farm_type ||
+                employer.shed_type ||
+                employer.herd_size ||
+                employer.culture_description) && (
+                <section>
+                  <h2
+                    className="font-body mb-4 text-[17px] font-bold"
+                    style={{ color: 'var(--color-text)' }}
+                  >
+                    Farm Details
+                  </h2>
+                  <div className="bg-surface border-border space-y-4 rounded-[12px] border-[1.5px] p-6">
+                    <div className="grid grid-cols-2 gap-4">
+                      {employer.farm_type && (
+                        <div>
+                          <p
+                            className="font-body mb-0.5 text-[11px] font-semibold tracking-wide uppercase"
+                            style={{ color: 'var(--color-text-subtle)' }}
+                          >
+                            Farm Type
+                          </p>
+                          <p className="text-sm capitalize" style={{ color: 'var(--color-text)' }}>
+                            {employer.farm_type}
+                          </p>
+                        </div>
+                      )}
+                      {employer.shed_type && (
+                        <div>
+                          <p
+                            className="font-body mb-0.5 text-[11px] font-semibold tracking-wide uppercase"
+                            style={{ color: 'var(--color-text-subtle)' }}
+                          >
+                            Shed Type
+                          </p>
+                          <p className="text-sm" style={{ color: 'var(--color-text)' }}>
+                            {employer.shed_type}
+                          </p>
+                        </div>
+                      )}
+                      {employer.herd_size && (
+                        <div>
+                          <p
+                            className="font-body mb-0.5 text-[11px] font-semibold tracking-wide uppercase"
+                            style={{ color: 'var(--color-text-subtle)' }}
+                          >
+                            Herd Size
+                          </p>
+                          <p className="text-sm" style={{ color: 'var(--color-text)' }}>
+                            {employer.herd_size.toLocaleString()} head
+                          </p>
+                        </div>
+                      )}
+                      {employer.region && (
+                        <div>
+                          <p
+                            className="font-body mb-0.5 text-[11px] font-semibold tracking-wide uppercase"
+                            style={{ color: 'var(--color-text-subtle)' }}
+                          >
+                            Region
+                          </p>
+                          <p className="text-sm" style={{ color: 'var(--color-text)' }}>
+                            {employer.region}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                    {employer.culture_description && (
                       <div>
-                        <p className="text-[11px] font-body font-semibold uppercase tracking-wide mb-0.5" style={{ color: 'var(--color-text-subtle)' }}>
-                          Farm Type
+                        <p
+                          className="font-body mb-1 text-[11px] font-semibold tracking-wide uppercase"
+                          style={{ color: 'var(--color-text-subtle)' }}
+                        >
+                          Culture &amp; Team
                         </p>
-                        <p className="text-sm capitalize" style={{ color: 'var(--color-text)' }}>
-                          {employer.farm_type}
-                        </p>
-                      </div>
-                    )}
-                    {employer.shed_type && (
-                      <div>
-                        <p className="text-[11px] font-body font-semibold uppercase tracking-wide mb-0.5" style={{ color: 'var(--color-text-subtle)' }}>
-                          Shed Type
-                        </p>
-                        <p className="text-sm" style={{ color: 'var(--color-text)' }}>
-                          {employer.shed_type}
-                        </p>
-                      </div>
-                    )}
-                    {employer.herd_size && (
-                      <div>
-                        <p className="text-[11px] font-body font-semibold uppercase tracking-wide mb-0.5" style={{ color: 'var(--color-text-subtle)' }}>
-                          Herd Size
-                        </p>
-                        <p className="text-sm" style={{ color: 'var(--color-text)' }}>
-                          {employer.herd_size.toLocaleString()} head
-                        </p>
-                      </div>
-                    )}
-                    {employer.region && (
-                      <div>
-                        <p className="text-[11px] font-body font-semibold uppercase tracking-wide mb-0.5" style={{ color: 'var(--color-text-subtle)' }}>
-                          Region
-                        </p>
-                        <p className="text-sm" style={{ color: 'var(--color-text)' }}>
-                          {employer.region}
+                        <p
+                          className="text-sm leading-relaxed whitespace-pre-line"
+                          style={{ color: 'var(--color-text-muted)' }}
+                        >
+                          {employer.culture_description}
                         </p>
                       </div>
                     )}
                   </div>
-                  {employer.culture_description && (
-                    <div>
-                      <p className="text-[11px] font-body font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--color-text-subtle)' }}>
-                        Culture &amp; Team
-                      </p>
-                      <p className="text-sm leading-relaxed whitespace-pre-line" style={{ color: 'var(--color-text-muted)' }}>
-                        {employer.culture_description}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </section>
-            )}
+                </section>
+              )}
 
             {/* Mobile match breakdown (below main content) */}
             {isSeeker && matchScore && (
@@ -847,19 +924,19 @@ export function JobDetail() {
       {/* Sticky CTA bar — visitor */}
       {isVisitor && (
         <div
-          className="fixed bottom-0 left-0 right-0 z-30 border-t border-border shadow-lg"
+          className="border-border fixed right-0 bottom-0 left-0 z-30 border-t shadow-lg"
           style={{ backgroundColor: 'white' }}
         >
-          <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
-            <p className="text-sm font-body font-semibold" style={{ color: 'var(--color-text)' }}>
+          <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4">
+            <p className="font-body text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
               Sign up to see how you match and apply
             </p>
-            <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="flex flex-shrink-0 items-center gap-2">
               <Link
                 to="/login"
                 className={cn(
-                  'font-body font-bold rounded-[8px] transition-all duration-200 inline-flex items-center justify-center',
-                  'bg-surface border border-brand text-brand hover:bg-surface-2',
+                  'font-body inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
+                  'bg-surface border-brand text-brand hover:bg-surface-2 border',
                   'px-3 py-2 text-[13px]',
                 )}
               >
@@ -868,8 +945,8 @@ export function JobDetail() {
               <Link
                 to="/signup"
                 className={cn(
-                  'font-body font-bold rounded-[8px] transition-all duration-200 inline-flex items-center justify-center',
-                  'bg-brand text-white hover:bg-brand-hover',
+                  'font-body inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
+                  'bg-brand hover:bg-brand-hover text-white',
                   'px-4 py-2 text-[13px]',
                 )}
               >
@@ -883,14 +960,16 @@ export function JobDetail() {
       {/* Sticky CTA bar — seeker */}
       {isSeeker && (
         <div
-          className="fixed bottom-0 left-0 right-0 z-30 border-t border-border shadow-lg"
+          className="border-border fixed right-0 bottom-0 left-0 z-30 border-t shadow-lg"
           style={{ backgroundColor: 'white' }}
         >
-          <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
+          <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4">
             {matchScore && (
               <div className="flex items-center gap-2 lg:hidden">
                 <MatchCircle score={matchScore.total_score} size="sm" />
-                <span className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>Match</span>
+                <span className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
+                  Match
+                </span>
               </div>
             )}
             <button
@@ -904,10 +983,10 @@ export function JobDetail() {
                 setApplyModalOpen(true)
               }}
               className={cn(
-                'font-body font-bold rounded-[8px] transition-all duration-200 inline-flex items-center justify-center ml-auto',
+                'font-body ml-auto inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
                 hasApplied || !seekerProfileId
                   ? 'bg-surface-2 text-text-muted cursor-not-allowed'
-                  : 'bg-brand text-white hover:bg-brand-hover',
+                  : 'bg-brand hover:bg-brand-hover text-white',
                 'px-6 py-2.5 text-[14px]',
               )}
             >
@@ -920,35 +999,38 @@ export function JobDetail() {
       {/* Apply modal */}
       <Dialog.Root open={applyModalOpen} onOpenChange={setApplyModalOpen}>
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-black/40 z-40" />
-          <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-surface rounded-[16px] p-6 w-full max-w-md z-50 shadow-xl">
+          <Dialog.Overlay className="fixed inset-0 z-40 bg-black/40" />
+          <Dialog.Content className="bg-surface fixed top-1/2 left-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-[16px] p-6 shadow-xl">
             <Dialog.Title
-              className="font-display text-xl font-semibold mb-1"
+              className="font-display mb-1 text-xl font-semibold"
               style={{ color: 'var(--color-brand-900)' }}
             >
               Apply to {job.title}
             </Dialog.Title>
             <Dialog.Description
-              className="text-sm mb-4"
+              className="mb-4 text-sm"
               style={{ color: 'var(--color-text-muted)' }}
             >
               Your profile will be shared with {employer?.farm_name}. Add an optional note below.
             </Dialog.Description>
             <textarea
               value={coverNote}
-              onChange={e => setCoverNote(e.target.value)}
+              onChange={(e) => setCoverNote(e.target.value)}
               placeholder="Add a cover note (optional)..."
               rows={4}
               maxLength={500}
-              className="w-full rounded-[8px] border border-border p-3 text-sm resize-none focus:border-brand focus:outline-none"
+              className="border-border focus:border-brand w-full resize-none rounded-[8px] border p-3 text-sm focus:outline-none"
             />
-            <p className="text-[11px] text-right mt-1" style={{ color: 'var(--color-text-subtle)' }}>
+            <p
+              className="mt-1 text-right text-[11px]"
+              style={{ color: 'var(--color-text-subtle)' }}
+            >
               {coverNote.length}/500
             </p>
-            <div className="flex gap-3 mt-4">
+            <div className="mt-4 flex gap-3">
               <Dialog.Close asChild>
                 <button
-                  className="flex-1 font-body font-bold rounded-[8px] border border-border px-4 py-2 text-[13px] hover:bg-surface-2 transition-colors"
+                  className="font-body border-border hover:bg-surface-2 flex-1 rounded-[8px] border px-4 py-2 text-[13px] font-bold transition-colors"
                   style={{ color: 'var(--color-text-muted)' }}
                 >
                   Cancel
@@ -957,7 +1039,7 @@ export function JobDetail() {
               <button
                 onClick={handleApply}
                 disabled={applying}
-                className="flex-1 font-body font-bold rounded-[8px] bg-brand text-white hover:bg-brand-hover px-4 py-2 text-[13px] transition-colors disabled:opacity-50"
+                className="font-body bg-brand hover:bg-brand-hover flex-1 rounded-[8px] px-4 py-2 text-[13px] font-bold text-white transition-colors disabled:opacity-50"
               >
                 {applying ? 'Submitting...' : 'Confirm Application'}
               </button>

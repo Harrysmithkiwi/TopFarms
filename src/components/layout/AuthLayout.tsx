@@ -6,14 +6,15 @@ interface AuthLayoutProps {
 
 export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
   return (
-    <div className="min-h-screen flex">
+    <div className="flex min-h-screen">
       {/* Left panel — soil-themed farm imagery, hidden on mobile */}
-      <div className="hidden md:flex md:w-1/2 lg:w-3/5 flex-col justify-between p-12 bg-brand-900 relative overflow-hidden">
+      <div className="bg-brand-900 relative hidden flex-col justify-between overflow-hidden p-12 md:flex md:w-1/2 lg:w-3/5">
         {/* Gradient overlay */}
         <div
           className="absolute inset-0"
           style={{
-            background: 'linear-gradient(135deg, var(--color-brand-900) 0%, var(--color-brand-900) 40%, var(--color-brand) 100%)',
+            background:
+              'linear-gradient(135deg, var(--color-brand-900) 0%, var(--color-brand-900) 40%, var(--color-brand) 100%)',
           }}
         />
 
@@ -41,47 +42,62 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
 
         <div className="relative z-10">
           <h2
-            className="text-4xl lg:text-5xl font-semibold leading-tight mb-6"
+            className="mb-6 text-4xl leading-tight font-semibold lg:text-5xl"
             style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text-on-brand)' }}
           >
             New Zealand's Agriculture Job Marketplace
           </h2>
           <p className="text-lg" style={{ color: 'var(--color-text-on-brand)' }}>
-            Connecting farm employers with skilled seekers across all 16 regions.
-            DairyNZ qualifications, herd experience, and accommodation — all in one place.
+            Connecting farm employers with skilled seekers across all 16 regions. DairyNZ
+            qualifications, herd experience, and accommodation — all in one place.
           </p>
         </div>
 
         <div className="relative z-10 flex gap-8">
           <div>
-            <p className="text-3xl font-bold" style={{ fontFamily: 'var(--font-display)', color: 'var(--color-brand)' }}>
+            <p
+              className="text-3xl font-bold"
+              style={{ fontFamily: 'var(--font-display)', color: 'var(--color-brand)' }}
+            >
               500+
             </p>
-            <p className="text-sm" style={{ color: 'var(--color-text-on-brand)' }}>Farm roles listed</p>
+            <p className="text-sm" style={{ color: 'var(--color-text-on-brand)' }}>
+              Farm roles listed
+            </p>
           </div>
           <div>
-            <p className="text-3xl font-bold" style={{ fontFamily: 'var(--font-display)', color: 'var(--color-brand)' }}>
+            <p
+              className="text-3xl font-bold"
+              style={{ fontFamily: 'var(--font-display)', color: 'var(--color-brand)' }}
+            >
               16
             </p>
-            <p className="text-sm" style={{ color: 'var(--color-text-on-brand)' }}>NZ regions covered</p>
+            <p className="text-sm" style={{ color: 'var(--color-text-on-brand)' }}>
+              NZ regions covered
+            </p>
           </div>
           <div>
-            <p className="text-3xl font-bold" style={{ fontFamily: 'var(--font-display)', color: 'var(--color-brand)' }}>
+            <p
+              className="text-3xl font-bold"
+              style={{ fontFamily: 'var(--font-display)', color: 'var(--color-brand)' }}
+            >
               2,000+
             </p>
-            <p className="text-sm" style={{ color: 'var(--color-text-on-brand)' }}>Skilled seekers</p>
+            <p className="text-sm" style={{ color: 'var(--color-text-on-brand)' }}>
+              Skilled seekers
+            </p>
           </div>
         </div>
       </div>
 
       {/* Right panel — cream form area */}
       <div
-        className="flex-1 flex flex-col justify-center items-center px-6 py-12"
+        className="flex flex-1 flex-col items-center justify-center px-6 py-12"
         style={{ backgroundColor: 'var(--color-bg)' }}
       >
         <div className="w-full max-w-md">
           {/* Logo — shown on mobile only (left panel hidden) */}
-          <div className="md:hidden mb-8 text-center">
+          <div className="mb-8 text-center md:hidden">
             <span
               className="text-3xl font-semibold"
               style={{ fontFamily: 'var(--font-display)', color: 'var(--color-brand-900)' }}
@@ -95,7 +111,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
             <div className="mb-8">
               {title && (
                 <h1
-                  className="text-2xl font-semibold mb-2"
+                  className="mb-2 text-2xl font-semibold"
                   style={{ fontFamily: 'var(--font-display)', color: 'var(--color-brand-900)' }}
                 >
                   {title}

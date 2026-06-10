@@ -71,9 +71,7 @@ describe('10-cap replace flow (SRCH-13 edge case)', () => {
         pending={{ name: 'New', searchParams: '' }}
       />,
     )
-    await waitFor(() =>
-      expect(screen.getByText('"My Old Search"')).toBeInTheDocument(),
-    )
+    await waitFor(() => expect(screen.getByText('"My Old Search"')).toBeInTheDocument())
   })
 
   it('clicking Cancel closes modal without DB writes', async () => {

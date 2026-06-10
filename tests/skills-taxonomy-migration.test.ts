@@ -165,9 +165,7 @@ describe('Migration 034 — skills taxonomy v2', () => {
   // -------------------------------------------------------------------------
   describe('ANLY-01/02: admin_skill_coverage RPC', () => {
     it('creates admin_skill_coverage function', () => {
-      expect(sql).toMatch(
-        /CREATE\s+OR\s+REPLACE\s+FUNCTION\s+public\.admin_skill_coverage/i,
-      )
+      expect(sql).toMatch(/CREATE\s+OR\s+REPLACE\s+FUNCTION\s+public\.admin_skill_coverage/i)
     })
 
     it('uses SECURITY DEFINER', () => {
@@ -198,9 +196,7 @@ describe('Migration 034 — skills taxonomy v2', () => {
   // -------------------------------------------------------------------------
   describe('ANLY-03: analytics_events table + RLS + admin read RPC', () => {
     it('creates analytics_events table', () => {
-      expect(sql).toMatch(
-        /CREATE\s+TABLE\s+IF\s+NOT\s+EXISTS\s+public\.analytics_events/i,
-      )
+      expect(sql).toMatch(/CREATE\s+TABLE\s+IF\s+NOT\s+EXISTS\s+public\.analytics_events/i)
     })
 
     it('analytics_events has event_type column', () => {
@@ -228,9 +224,7 @@ describe('Migration 034 — skills taxonomy v2', () => {
     })
 
     it('creates admin_list_analytics_events RPC', () => {
-      expect(sql).toMatch(
-        /CREATE\s+OR\s+REPLACE\s+FUNCTION\s+public\.admin_list_analytics_events/i,
-      )
+      expect(sql).toMatch(/CREATE\s+OR\s+REPLACE\s+FUNCTION\s+public\.admin_list_analytics_events/i)
     })
   })
 })

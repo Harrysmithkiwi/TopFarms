@@ -224,9 +224,7 @@ Deno.serve(async (req) => {
   }
   let callerUserId: string
   try {
-    const payload = JSON.parse(
-      atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))
-    )
+    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')))
     if (payload.aud !== 'authenticated') {
       throw new Error('Token audience is not user-scoped')
     }

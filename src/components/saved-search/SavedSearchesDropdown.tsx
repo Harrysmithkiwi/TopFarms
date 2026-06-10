@@ -114,31 +114,25 @@ export function SavedSearchesDropdown() {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="text-brand text-[13px] hover:underline flex items-center gap-1 cursor-pointer"
+        className="text-brand flex cursor-pointer items-center gap-1 text-[13px] hover:underline"
         aria-haspopup="menu"
         aria-expanded={open}
         data-testid="saved-searches-dropdown-trigger"
       >
-        Load saved search <ChevronDown className="w-3.5 h-3.5" />
+        Load saved search <ChevronDown className="h-3.5 w-3.5" />
       </button>
 
       {open && (
         <div
           role="menu"
-          className="absolute top-full mt-2 right-0 bg-surface border border-border rounded-[10px] shadow-lg w-[280px] z-30"
+          className="bg-surface border-border absolute top-full right-0 z-30 mt-2 w-[280px] rounded-[10px] border shadow-lg"
         >
           {loading ? (
-            <p
-              className="p-3 text-[13px] font-body"
-              style={{ color: 'var(--color-text-subtle)' }}
-            >
+            <p className="font-body p-3 text-[13px]" style={{ color: 'var(--color-text-subtle)' }}>
               Loading…
             </p>
           ) : rows.length === 0 ? (
-            <p
-              className="p-3 text-[13px] font-body"
-              style={{ color: 'var(--color-text-subtle)' }}
-            >
+            <p className="font-body p-3 text-[13px]" style={{ color: 'var(--color-text-subtle)' }}>
               No saved searches yet.
             </p>
           ) : (
@@ -149,16 +143,16 @@ export function SavedSearchesDropdown() {
                     type="button"
                     role="menuitem"
                     onClick={() => handleSelect(row.search_params)}
-                    className="w-full text-left px-3 py-2 hover:bg-surface-2 transition-colors border-b border-border last:border-b-0 cursor-pointer"
+                    className="hover:bg-surface-2 border-border w-full cursor-pointer border-b px-3 py-2 text-left transition-colors last:border-b-0"
                   >
                     <div
-                      className="text-[14px] font-body font-semibold truncate"
+                      className="font-body truncate text-[14px] font-semibold"
                       style={{ color: 'var(--color-text)' }}
                     >
                       {row.name}
                     </div>
                     <div
-                      className="text-[12px] font-body truncate"
+                      className="font-body truncate text-[12px]"
                       style={{ color: 'var(--color-text-subtle)' }}
                     >
                       {summarizeFilters(row.search_params)}
@@ -171,7 +165,7 @@ export function SavedSearchesDropdown() {
           <Link
             to="/dashboard/seeker/saved-searches"
             onClick={() => setOpen(false)}
-            className="block px-3 py-2 text-center text-[13px] font-body font-semibold border-t border-border hover:bg-surface-2"
+            className="font-body border-border hover:bg-surface-2 block border-t px-3 py-2 text-center text-[13px] font-semibold"
             style={{ color: 'var(--color-brand)' }}
           >
             View all

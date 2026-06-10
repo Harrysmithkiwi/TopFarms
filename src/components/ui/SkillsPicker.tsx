@@ -109,21 +109,24 @@ export function SkillsPicker({
 
   if (loading) {
     return (
-      <div className={cn('flex items-center justify-center py-8 text-text-muted text-[13px] font-body', className)}>
+      <div
+        className={cn(
+          'text-text-muted font-body flex items-center justify-center py-8 text-[13px]',
+          className,
+        )}
+      >
         Loading skills...
       </div>
     )
   }
 
   if (error) {
-    return (
-      <div className={cn('py-4 text-[13px] font-body text-danger', className)}>{error}</div>
-    )
+    return <div className={cn('font-body text-danger py-4 text-[13px]', className)}>{error}</div>
   }
 
   if (Object.keys(grouped).length === 0) {
     return (
-      <div className={cn('py-4 text-[13px] font-body text-text-muted', className)}>
+      <div className={cn('font-body text-text-muted py-4 text-[13px]', className)}>
         No skills available.
       </div>
     )
@@ -134,7 +137,7 @@ export function SkillsPicker({
       {Object.entries(grouped).map(([category, categorySkills]) => (
         <div key={category}>
           {/* Category header */}
-          <h4 className="text-[11px] font-body font-semibold text-text-muted uppercase tracking-wide mb-2.5">
+          <h4 className="font-body text-text-muted mb-2.5 text-[11px] font-semibold tracking-wide uppercase">
             {CATEGORY_LABELS[category] ?? category.replace(/_/g, ' ')}
           </h4>
 

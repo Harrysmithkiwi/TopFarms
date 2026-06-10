@@ -8,7 +8,10 @@ export interface StatusBannerProps {
   className?: string
 }
 
-const bannerVariants: Record<StatusVariant, { wrapper: string; title: string; body: string; titleColor: string }> = {
+const bannerVariants: Record<
+  StatusVariant,
+  { wrapper: string; title: string; body: string; titleColor: string }
+> = {
   shortlisted: {
     wrapper: 'bg-warn-bg border-warn',
     title: "Great news \u2014 you've been shortlisted!",
@@ -39,26 +42,10 @@ export function StatusBanner({ variant, actions, className }: StatusBannerProps)
   const config = bannerVariants[variant]
 
   return (
-    <div
-      className={cn(
-        'rounded-[12px] border-[1.5px] p-4',
-        config.wrapper,
-        className,
-      )}
-    >
-      <p className={cn('text-[16px] font-semibold font-body', config.titleColor)}>
-        {config.title}
-      </p>
-      {config.body && (
-        <p className="text-[14px] text-text-muted font-body mt-1">
-          {config.body}
-        </p>
-      )}
-      {actions && (
-        <div className="flex gap-2 mt-3">
-          {actions}
-        </div>
-      )}
+    <div className={cn('rounded-[12px] border-[1.5px] p-4', config.wrapper, className)}>
+      <p className={cn('font-body text-[16px] font-semibold', config.titleColor)}>{config.title}</p>
+      {config.body && <p className="text-text-muted font-body mt-1 text-[14px]">{config.body}</p>}
+      {actions && <div className="mt-3 flex gap-2">{actions}</div>}
     </div>
   )
 }

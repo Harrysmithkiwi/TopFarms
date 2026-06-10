@@ -17,9 +17,7 @@ vi.mock('@/lib/supabase', () => ({
   supabase: {
     from: fromMock,
     auth: {
-      getSession: vi
-        .fn()
-        .mockResolvedValue({ data: { session: { user: { id: 'u1' } } } }),
+      getSession: vi.fn().mockResolvedValue({ data: { session: { user: { id: 'u1' } } } }),
       onAuthStateChange: vi.fn().mockReturnValue({
         data: { subscription: { unsubscribe: vi.fn() } },
       }),
@@ -51,9 +49,7 @@ async function mountAndCapture(): Promise<AuthSnapshot> {
     captured = { role: auth.role, isActive: auth.isActive, loading: auth.loading }
     return null
   }
-  render(
-    createElement(AuthProvider, { children: createElement(Probe) as ReactNode }),
-  )
+  render(createElement(AuthProvider, { children: createElement(Probe) as ReactNode }))
   return new Promise<AuthSnapshot>((resolve) => {
     setTimeout(() => resolve(captured), 0)
   }).then(() => captured)
@@ -72,9 +68,7 @@ describe('AuthContext.loadRole is_active extension (IS-ACTIVE-02, IS-ACTIVE-03)'
       expect(eqMock).toHaveBeenCalledWith('user_id', 'u1')
     })
     // Single round-trip: only one .from('user_roles') call during mount
-    const userRolesCalls = fromMock.mock.calls.filter(
-      (c) => c[0] === 'user_roles',
-    ).length
+    const userRolesCalls = fromMock.mock.calls.filter((c) => c[0] === 'user_roles').length
     expect(userRolesCalls).toBe(1)
   })
 

@@ -31,26 +31,20 @@ export function Nav() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
 
-  const navLinks = session
-    ? role === 'employer'
-      ? employerLinks
-      : seekerLinks
-    : publicLinks
+  const navLinks = session ? (role === 'employer' ? employerLinks : seekerLinks) : publicLinks
 
   const avatarLetter = session?.user?.email?.[0]?.toUpperCase() ?? '?'
 
   const navLinkClass = (isActive: boolean) =>
     [
       'text-xs font-semibold px-3 py-1.5 rounded-full transition-all',
-      isActive
-        ? 'text-white bg-surface/8'
-        : 'text-white/50 hover:text-white/80',
+      isActive ? 'text-white bg-surface/8' : 'text-white/50 hover:text-white/80',
     ].join(' ')
 
   return (
     <>
       <nav
-        className="sticky top-0 z-50 h-14 flex items-center px-4 md:px-6"
+        className="sticky top-0 z-50 flex h-14 items-center px-4 md:px-6"
         style={{
           backgroundColor: 'var(--color-brand-900)',
           borderBottom: '1px solid rgba(255,255,255,0.06)',
@@ -59,7 +53,7 @@ export function Nav() {
         {/* Logo */}
         <Link
           to="/"
-          className="font-display text-[20px] font-semibold mr-8 flex-shrink-0 inline-flex items-center gap-1.5"
+          className="font-display mr-8 inline-flex flex-shrink-0 items-center gap-1.5 text-[20px] font-semibold"
           style={{ color: 'var(--color-text-on-brand)' }}
           aria-label="TopFarms"
         >
@@ -68,7 +62,7 @@ export function Nav() {
         </Link>
 
         {/* Desktop nav links */}
-        <div className="hidden md:flex items-center gap-1 flex-1">
+        <div className="hidden flex-1 items-center gap-1 md:flex">
           {navLinks.map((link) => (
             <NavLink
               key={link.to}
@@ -81,12 +75,12 @@ export function Nav() {
         </div>
 
         {/* Desktop right section */}
-        <div className="hidden md:flex items-center gap-3 ml-auto">
+        <div className="ml-auto hidden items-center gap-3 md:flex">
           {session ? (
             <div className="relative">
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-opacity hover:opacity-80"
+                className="flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold transition-opacity hover:opacity-80"
                 style={{
                   backgroundColor: 'var(--color-brand)',
                   color: 'var(--color-surface)',
@@ -98,12 +92,9 @@ export function Nav() {
 
               {userMenuOpen && (
                 <>
+                  <div className="fixed inset-0 z-10" onClick={() => setUserMenuOpen(false)} />
                   <div
-                    className="fixed inset-0 z-10"
-                    onClick={() => setUserMenuOpen(false)}
-                  />
-                  <div
-                    className="absolute right-0 top-10 z-20 w-48 rounded-lg border shadow-lg py-1"
+                    className="absolute top-10 right-0 z-20 w-48 rounded-lg border py-1 shadow-lg"
                     style={{
                       backgroundColor: 'var(--color-surface)',
                       borderColor: 'var(--color-border)',
@@ -113,7 +104,7 @@ export function Nav() {
                       <Link
                         to={dashboardPathFor(role)}
                         onClick={() => setUserMenuOpen(false)}
-                        className="block px-4 py-2 text-sm hover:bg-surface-2 transition-colors"
+                        className="hover:bg-surface-2 block px-4 py-2 text-sm transition-colors"
                         style={{ color: 'var(--color-text)' }}
                       >
                         Dashboard
@@ -127,7 +118,7 @@ export function Nav() {
                         setUserMenuOpen(false)
                         signOut()
                       }}
-                      className="w-full text-left px-4 py-2 text-sm hover:bg-surface-2 transition-colors"
+                      className="hover:bg-surface-2 w-full px-4 py-2 text-left text-sm transition-colors"
                       style={{ color: 'var(--color-danger)' }}
                     >
                       Sign Out
@@ -140,14 +131,14 @@ export function Nav() {
             <>
               <Link
                 to="/login"
-                className="text-sm font-medium px-3 py-1.5 rounded-lg transition-colors hover:bg-surface/8"
+                className="hover:bg-surface/8 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors"
                 style={{ color: 'var(--color-text-on-brand)' }}
               >
                 Log in
               </Link>
               <Link
                 to="/signup"
-                className="text-sm font-semibold px-4 py-1.5 rounded-lg transition-colors"
+                className="rounded-lg px-4 py-1.5 text-sm font-semibold transition-colors"
                 style={{
                   backgroundColor: 'var(--color-brand)',
                   color: 'var(--color-surface)',
@@ -161,7 +152,7 @@ export function Nav() {
 
         {/* Mobile hamburger */}
         <button
-          className="md:hidden ml-auto p-1.5 rounded-lg transition-colors hover:bg-surface/8"
+          className="hover:bg-surface/8 ml-auto rounded-lg p-1.5 transition-colors md:hidden"
           style={{ color: 'var(--color-text-on-brand)' }}
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
@@ -173,13 +164,13 @@ export function Nav() {
       {/* Mobile slide-out menu */}
       {mobileOpen && (
         <div
-          className="md:hidden fixed inset-x-0 top-14 z-40 border-b shadow-lg"
+          className="fixed inset-x-0 top-14 z-40 border-b shadow-lg md:hidden"
           style={{
             backgroundColor: 'var(--color-brand-900)',
             borderColor: 'rgba(255,255,255,0.06)',
           }}
         >
-          <div className="px-4 py-3 space-y-1">
+          <div className="space-y-1 px-4 py-3">
             {navLinks.map((link) => (
               <NavLink
                 key={link.to}
@@ -187,10 +178,8 @@ export function Nav() {
                 onClick={() => setMobileOpen(false)}
                 className={({ isActive }) =>
                   [
-                    'block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
-                    isActive
-                      ? 'text-white bg-surface/8'
-                      : 'text-white/60 hover:text-white/90',
+                    'block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                    isActive ? 'bg-surface/8 text-white' : 'text-white/60 hover:text-white/90',
                   ].join(' ')
                 }
               >
@@ -199,14 +188,14 @@ export function Nav() {
             ))}
           </div>
 
-          <div className="px-4 py-3 border-t" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+          <div className="border-t px-4 py-3" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
             {session ? (
               <button
                 onClick={() => {
                   setMobileOpen(false)
                   signOut()
                 }}
-                className="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-colors"
+                className="w-full rounded-lg px-3 py-2.5 text-left text-sm font-medium transition-colors"
                 style={{ color: 'var(--color-danger)' }}
               >
                 Sign Out
@@ -216,7 +205,7 @@ export function Nav() {
                 <Link
                   to="/login"
                   onClick={() => setMobileOpen(false)}
-                  className="flex-1 text-center py-2.5 px-3 rounded-lg text-sm font-medium border transition-colors"
+                  className="flex-1 rounded-lg border px-3 py-2.5 text-center text-sm font-medium transition-colors"
                   style={{
                     borderColor: 'rgba(255,255,255,0.2)',
                     color: 'var(--color-text-on-brand)',
@@ -227,7 +216,7 @@ export function Nav() {
                 <Link
                   to="/signup"
                   onClick={() => setMobileOpen(false)}
-                  className="flex-1 text-center py-2.5 px-3 rounded-lg text-sm font-semibold transition-colors"
+                  className="flex-1 rounded-lg px-3 py-2.5 text-center text-sm font-semibold transition-colors"
                   style={{
                     backgroundColor: 'var(--color-brand)',
                     color: 'var(--color-surface)',

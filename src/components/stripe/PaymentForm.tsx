@@ -51,11 +51,17 @@ function PaymentFormInner({
     <form onSubmit={handleSubmit} className="space-y-4">
       <PaymentElement />
 
-      <Button type="submit" variant="primary" size="lg" disabled={!stripe || loading} className="w-full mt-4">
+      <Button
+        type="submit"
+        variant="primary"
+        size="lg"
+        disabled={!stripe || loading}
+        className="mt-4 w-full"
+      >
         {loading ? (
           <span className="flex items-center gap-2">
             <span
-              className="w-4 h-4 rounded-full border-[2px] border-t-transparent animate-spin"
+              className="h-4 w-4 animate-spin rounded-full border-[2px] border-t-transparent"
               style={{ borderColor: 'rgba(255,255,255,0.6)', borderTopColor: 'transparent' }}
             />
             Processing...

@@ -26,10 +26,10 @@ export function StepIndicator({ currentStep, totalSteps, labels, className }: St
         {Array.from({ length: totalSteps }).map((_, i) => (
           <React.Fragment key={i}>
             {/* Step circle */}
-            <div className="flex flex-col items-center flex-shrink-0">
+            <div className="flex flex-shrink-0 flex-col items-center">
               <div
                 className={cn(
-                  'w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-body font-bold flex-shrink-0 transition-colors duration-200',
+                  'font-body flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full font-bold transition-colors duration-200 sm:h-8 sm:w-8',
                   'text-[10px] sm:text-[13px]',
                   i < currentStep && 'bg-brand text-white',
                   i === currentStep && 'bg-brand-hover text-white',
@@ -37,7 +37,7 @@ export function StepIndicator({ currentStep, totalSteps, labels, className }: St
                 )}
               >
                 {i < currentStep ? (
-                  <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[2.5]" />
+                  <Check className="h-3 w-3 stroke-[2.5] sm:h-3.5 sm:w-3.5" />
                 ) : (
                   i + 1
                 )}
@@ -46,7 +46,7 @@ export function StepIndicator({ currentStep, totalSteps, labels, className }: St
               {labels?.[i] && (
                 <span
                   className={cn(
-                    'hidden sm:block mt-1.5 text-[10px] font-body text-center max-w-[60px] leading-tight',
+                    'font-body mt-1.5 hidden max-w-[60px] text-center text-[10px] leading-tight sm:block',
                     i < currentStep && 'text-brand font-medium',
                     i === currentStep && 'text-brand-hover font-semibold',
                     i > currentStep && 'text-text-subtle',
@@ -61,7 +61,7 @@ export function StepIndicator({ currentStep, totalSteps, labels, className }: St
             {i < totalSteps - 1 && (
               <div
                 className={cn(
-                  'flex-1 h-0.5 transition-colors duration-200',
+                  'h-0.5 flex-1 transition-colors duration-200',
                   i < currentStep ? 'bg-brand' : 'bg-surface-2',
                 )}
               />

@@ -73,9 +73,7 @@ describe('AdminSkillCoverage page — ANLY-01/02/TAX-04', () => {
     )
 
     // Competency row renders
-    await waitFor(() =>
-      expect(screen.getByText('Dairy cattle management')).toBeInTheDocument(),
-    )
+    await waitFor(() => expect(screen.getByText('Dairy cattle management')).toBeInTheDocument())
 
     // Supply column value for Dairy cattle management
     expect(screen.getByText('3')).toBeInTheDocument()
@@ -124,9 +122,7 @@ describe('AdminSkillCoverage page — ANLY-01/02/TAX-04', () => {
       </MemoryRouter>,
     )
 
-    await waitFor(() =>
-      expect(screen.getByText('Dairy cattle management')).toBeInTheDocument(),
-    )
+    await waitFor(() => expect(screen.getByText('Dairy cattle management')).toBeInTheDocument())
 
     // Column headers: supply = Seekers, demand = Jobs
     expect(screen.getByText(/seekers/i)).toBeInTheDocument()
@@ -143,12 +139,12 @@ describe('AdminSkillCoverage page — ANLY-01/02/TAX-04', () => {
   // friendly label renders AND the raw slug does not.
   it('ANLY-01/02 regression: every category slug maps to a friendly label (no raw slugs rendered)', async () => {
     const allCategories = [
-      { slug: 'livestock',                       label: 'Livestock' },
-      { slug: 'cropping_agronomy',               label: 'Cropping & agronomy' },
-      { slug: 'machinery_equipment',             label: 'Machinery & equipment' },
-      { slug: 'farm_operations_infrastructure',  label: 'Farm operations & infrastructure' },
-      { slug: 'management_business',             label: 'Management & business' },
-      { slug: 'cross_cutting',                   label: 'Cross-cutting' },
+      { slug: 'livestock', label: 'Livestock' },
+      { slug: 'cropping_agronomy', label: 'Cropping & agronomy' },
+      { slug: 'machinery_equipment', label: 'Machinery & equipment' },
+      { slug: 'farm_operations_infrastructure', label: 'Farm operations & infrastructure' },
+      { slug: 'management_business', label: 'Management & business' },
+      { slug: 'cross_cutting', label: 'Cross-cutting' },
     ]
 
     rpcMock.mockResolvedValueOnce({
@@ -181,7 +177,10 @@ describe('AdminSkillCoverage page — ANLY-01/02/TAX-04', () => {
       // appear in the page intro/copy — scope the negative assertion to cells.)
       const cells = screen.getAllByRole('cell')
       const slugInCells = cells.some((c) => c.textContent === slug)
-      expect(slugInCells, `raw slug '${slug}' rendered in a cell — CATEGORY_LABELS missing key`).toBe(false)
+      expect(
+        slugInCells,
+        `raw slug '${slug}' rendered in a cell — CATEGORY_LABELS missing key`,
+      ).toBe(false)
     }
   })
 })

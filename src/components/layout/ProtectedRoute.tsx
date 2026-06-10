@@ -13,10 +13,10 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-bg">
+      <div className="bg-bg flex min-h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div
-            className="w-10 h-10 rounded-full border-4 border-border border-t-moss animate-spin"
+            className="border-border border-t-moss h-10 w-10 animate-spin rounded-full border-4"
             aria-label="Loading"
           />
           <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
@@ -41,10 +41,10 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
   // is manual nav. Acceptable for MVP.
   if (requiredRole && role === null) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-bg">
+      <div className="bg-bg flex min-h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div
-            className="w-10 h-10 rounded-full border-4 border-border border-t-moss animate-spin"
+            className="border-border border-t-moss h-10 w-10 animate-spin rounded-full border-4"
             aria-label="Loading"
           />
           <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>

@@ -9,19 +9,22 @@ const testimonials: Testimonial[] = [
   {
     name: 'Sarah M.',
     farm: 'Greenfield Dairy, Waikato',
-    quote: 'Found our new herd manager within two weeks. The match scoring saved us hours of screening.',
+    quote:
+      'Found our new herd manager within two weeks. The match scoring saved us hours of screening.',
     initial: 'S',
   },
   {
     name: 'James T.',
     farm: 'Highview Station, Canterbury',
-    quote: 'Best platform for farm work in NZ. The agriculture-specific filters actually understand what matters.',
+    quote:
+      'Best platform for farm work in NZ. The agriculture-specific filters actually understand what matters.',
     initial: 'J',
   },
   {
     name: 'Rachel & Tom K.',
     farm: 'Valley View Farms, Southland',
-    quote: 'As a couple looking for dairy work, TopFarms was the only platform that matched us together.',
+    quote:
+      'As a couple looking for dairy work, TopFarms was the only platform that matched us together.',
     initial: 'R',
   },
 ]
@@ -35,16 +38,9 @@ const stats = [
 
 function StarRating() {
   return (
-    <div className="flex gap-0.5 mb-4">
+    <div className="mb-4 flex gap-0.5">
       {[1, 2, 3, 4, 5].map((i) => (
-        <svg
-          key={i}
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          fill="none"
-          aria-hidden="true"
-        >
+        <svg key={i} width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
           <path
             d="M8 1.5l1.854 3.756 4.146.602-3 2.924.708 4.128L8 10.81l-3.708 1.1.708-4.128-3-2.924 4.146-.602L8 1.5z"
             fill="var(--color-warn)"
@@ -57,27 +53,27 @@ function StarRating() {
 
 export function TestimonialsSection() {
   return (
-    <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-brand-900)' }}>
-      <div className="max-w-6xl mx-auto">
+    <section className="px-4 py-20" style={{ backgroundColor: 'var(--color-brand-900)' }}>
+      <div className="mx-auto max-w-6xl">
         {/* Stat blocks row — above the testimonial heading/cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+        <div className="mb-16 grid grid-cols-2 gap-6 md:grid-cols-4">
           {stats.map((stat, i) => (
             <div
               key={stat.label}
-              className="text-center py-6 md:border-r"
+              className="py-6 text-center md:border-r"
               style={{
                 borderColor: 'rgba(255,255,255,0.12)',
                 borderRight: i === stats.length - 1 ? 'none' : undefined,
               }}
             >
               <p
-                className="text-3xl md:text-4xl font-bold font-display mb-1"
+                className="font-display mb-1 text-3xl font-bold md:text-4xl"
                 style={{ color: 'var(--color-text-on-brand)' }}
               >
                 {stat.value}
               </p>
               <p
-                className="text-sm uppercase tracking-wider"
+                className="text-sm tracking-wider uppercase"
                 style={{ color: 'rgba(255,255,255,0.5)' }}
               >
                 {stat.label}
@@ -87,9 +83,9 @@ export function TestimonialsSection() {
         </div>
 
         {/* Title */}
-        <div className="text-center mb-12">
+        <div className="mb-12 text-center">
           <h2
-            className="font-display font-bold text-4xl md:text-5xl"
+            className="font-display text-4xl font-bold md:text-5xl"
             style={{ color: 'var(--color-text-on-brand)' }}
           >
             Trusted by farms across{' '}
@@ -98,11 +94,11 @@ export function TestimonialsSection() {
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {testimonials.map((t) => (
             <div
               key={t.name}
-              className="rounded-2xl p-6 flex flex-col gap-4"
+              className="flex flex-col gap-4 rounded-2xl p-6"
               style={{
                 backgroundColor: 'rgba(255,255,255,0.05)',
                 border: '1px solid rgba(255,255,255,0.08)',
@@ -112,7 +108,7 @@ export function TestimonialsSection() {
 
               {/* Quote */}
               <blockquote
-                className="text-base italic leading-relaxed flex-1"
+                className="flex-1 text-base leading-relaxed italic"
                 style={{ color: 'rgba(255,255,255,0.8)' }}
               >
                 "{t.quote}"
@@ -121,7 +117,7 @@ export function TestimonialsSection() {
               {/* Author */}
               <div className="flex items-center gap-3 pt-2">
                 <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
+                  className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold"
                   style={{
                     backgroundColor: 'var(--color-brand-hover)',
                     color: 'var(--color-text-on-brand)',
@@ -130,7 +126,10 @@ export function TestimonialsSection() {
                   {t.initial}
                 </div>
                 <div>
-                  <p className="text-sm font-semibold" style={{ color: 'var(--color-text-on-brand)' }}>
+                  <p
+                    className="text-sm font-semibold"
+                    style={{ color: 'var(--color-text-on-brand)' }}
+                  >
                     {t.name}
                   </p>
                   <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
@@ -140,7 +139,7 @@ export function TestimonialsSection() {
                 {/* Verified badge */}
                 <div className="ml-auto flex-shrink-0">
                   <span
-                    className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                    className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
                     style={{
                       backgroundColor: 'rgba(122,175,63,0.15)',
                       color: 'var(--color-brand)',

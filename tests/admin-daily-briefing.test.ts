@@ -18,7 +18,11 @@ describe('admin daily briefing (ADMIN-VIEW-DAILY)', () => {
         applications_yesterday: 12,
         placements_acked_yesterday: 1,
         revenue_snapshot: { placements_acked_this_month: 5, placements_confirmed_this_month: 2 },
-        resend_stats: { fresh: true, cached_at: '2026-05-04T10:00:00Z', value: { rate: 0.97, total: 100 } },
+        resend_stats: {
+          fresh: true,
+          cached_at: '2026-05-04T10:00:00Z',
+          value: { rate: 0.97, total: 100 },
+        },
       },
       error: null,
     })

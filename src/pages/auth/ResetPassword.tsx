@@ -40,7 +40,9 @@ export function ResetPassword() {
 
   useEffect(() => {
     // Listen for PASSWORD_RECOVERY event from Supabase
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'PASSWORD_RECOVERY') {
         setRecoveryReady(true)
       }
@@ -90,27 +92,24 @@ export function ResetPassword() {
   // Timed out without PASSWORD_RECOVERY — invalid or expired link
   if (timedOut && !recoveryReady) {
     return (
-      <AuthLayout
-        title="Link expired"
-        subtitle="This reset link is no longer valid"
-      >
+      <AuthLayout title="Link expired" subtitle="This reset link is no longer valid">
         <div className="space-y-6">
           <div className="flex justify-center">
             <div
-              className="w-16 h-16 rounded-full flex items-center justify-center"
+              className="flex h-16 w-16 items-center justify-center rounded-full"
               style={{ backgroundColor: 'var(--color-danger-bg)' }}
             >
               <AlertCircle size={32} style={{ color: 'var(--color-danger)' }} />
             </div>
           </div>
 
-          <p className="text-sm text-center" style={{ color: 'var(--color-text-muted)' }}>
+          <p className="text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
             This password reset link is invalid or has expired. Reset links are valid for 1 hour.
           </p>
 
           <Link
             to="/forgot-password"
-            className="block w-full py-2.5 px-4 rounded-lg text-sm font-semibold text-center"
+            className="block w-full rounded-lg px-4 py-2.5 text-center text-sm font-semibold"
             style={{
               backgroundColor: 'var(--color-brand-900)',
               color: 'var(--color-text-on-brand)',
@@ -129,10 +128,10 @@ export function ResetPassword() {
       <AuthLayout title="Verifying reset link...">
         <div className="flex flex-col items-center gap-4 py-8">
           <div
-            className="w-10 h-10 border-2 border-t-transparent rounded-full animate-spin"
+            className="h-10 w-10 animate-spin rounded-full border-2 border-t-transparent"
             style={{ borderColor: 'var(--color-brand)' }}
           />
-          <p className="text-sm text-center" style={{ color: 'var(--color-text-muted)' }}>
+          <p className="text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
             Verifying your reset link...
           </p>
         </div>
@@ -142,16 +141,13 @@ export function ResetPassword() {
 
   // PASSWORD_RECOVERY event received — show new password form
   return (
-    <AuthLayout
-      title="Set new password"
-      subtitle="Choose a strong password for your account"
-    >
+    <AuthLayout title="Set new password" subtitle="Choose a strong password for your account">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         {/* New password */}
         <div>
           <label
             htmlFor="password"
-            className="block text-sm font-medium mb-1.5"
+            className="mb-1.5 block text-sm font-medium"
             style={{ color: 'var(--color-text)' }}
           >
             New password
@@ -162,7 +158,7 @@ export function ResetPassword() {
               type={showPassword ? 'text' : 'password'}
               autoComplete="new-password"
               {...register('password')}
-              className="w-full px-3.5 py-2.5 pr-10 rounded-lg border text-sm outline-none transition-colors"
+              className="w-full rounded-lg border px-3.5 py-2.5 pr-10 text-sm transition-colors outline-none"
               style={{
                 borderColor: errors.password ? 'var(--color-danger)' : 'var(--color-border)',
                 backgroundColor: 'var(--color-surface)',
@@ -172,7 +168,7 @@ export function ResetPassword() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2"
+              className="absolute top-1/2 right-3 -translate-y-1/2"
               style={{ color: 'var(--color-text-subtle)' }}
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
@@ -180,7 +176,7 @@ export function ResetPassword() {
             </button>
           </div>
           {errors.password && (
-            <p className="text-xs mt-1" style={{ color: 'var(--color-danger)' }}>
+            <p className="mt-1 text-xs" style={{ color: 'var(--color-danger)' }}>
               {errors.password.message}
             </p>
           )}
@@ -190,7 +186,7 @@ export function ResetPassword() {
         <div>
           <label
             htmlFor="confirmPassword"
-            className="block text-sm font-medium mb-1.5"
+            className="mb-1.5 block text-sm font-medium"
             style={{ color: 'var(--color-text)' }}
           >
             Confirm new password
@@ -201,7 +197,7 @@ export function ResetPassword() {
               type={showConfirm ? 'text' : 'password'}
               autoComplete="new-password"
               {...register('confirmPassword')}
-              className="w-full px-3.5 py-2.5 pr-10 rounded-lg border text-sm outline-none transition-colors"
+              className="w-full rounded-lg border px-3.5 py-2.5 pr-10 text-sm transition-colors outline-none"
               style={{
                 borderColor: errors.confirmPassword ? 'var(--color-danger)' : 'var(--color-border)',
                 backgroundColor: 'var(--color-surface)',
@@ -211,7 +207,7 @@ export function ResetPassword() {
             <button
               type="button"
               onClick={() => setShowConfirm(!showConfirm)}
-              className="absolute right-3 top-1/2 -translate-y-1/2"
+              className="absolute top-1/2 right-3 -translate-y-1/2"
               style={{ color: 'var(--color-text-subtle)' }}
               aria-label={showConfirm ? 'Hide password' : 'Show password'}
             >
@@ -219,7 +215,7 @@ export function ResetPassword() {
             </button>
           </div>
           {errors.confirmPassword && (
-            <p className="text-xs mt-1" style={{ color: 'var(--color-danger)' }}>
+            <p className="mt-1 text-xs" style={{ color: 'var(--color-danger)' }}>
               {errors.confirmPassword.message}
             </p>
           )}
@@ -229,7 +225,7 @@ export function ResetPassword() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full py-2.5 px-4 rounded-lg text-sm font-semibold transition-opacity disabled:opacity-60"
+          className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold transition-opacity disabled:opacity-60"
           style={{
             backgroundColor: 'var(--color-brand-900)',
             color: 'var(--color-text-on-brand)',

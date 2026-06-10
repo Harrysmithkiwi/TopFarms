@@ -14,13 +14,15 @@ export function SelectRole() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-bg">
+      <div className="bg-bg flex min-h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div
-            className="w-10 h-10 rounded-full border-4 border-border border-t-moss animate-spin"
+            className="border-border border-t-moss h-10 w-10 animate-spin rounded-full border-4"
             aria-label="Loading"
           />
-          <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Loading...</p>
+          <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+            Loading...
+          </p>
         </div>
       </div>
     )
@@ -50,10 +52,7 @@ export function SelectRole() {
   }
 
   return (
-    <AuthLayout
-      title="Choose your role"
-      subtitle="How will you use TopFarms?"
-    >
+    <AuthLayout title="Choose your role" subtitle="How will you use TopFarms?">
       <div className="space-y-6">
         <p className="text-sm font-medium" style={{ color: 'var(--color-text)' }}>
           I am joining as...
@@ -64,24 +63,24 @@ export function SelectRole() {
             type="button"
             onClick={() => handleRoleSelect('employer')}
             disabled={isSubmitting}
-            className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 text-left transition-all hover:border-brand hover:bg-warn-bg disabled:opacity-60"
+            className="hover:border-brand hover:bg-warn-bg flex flex-col items-center gap-2 rounded-xl border-2 p-4 text-left transition-all disabled:opacity-60"
             style={{
               borderColor: 'var(--color-border)',
               backgroundColor: 'var(--color-surface)',
             }}
           >
-            <Building2
-              size={28}
-              style={{ color: 'var(--color-text-subtle)' }}
-            />
+            <Building2 size={28} style={{ color: 'var(--color-text-subtle)' }} />
             <div>
               <p
-                className="font-semibold text-sm text-center"
+                className="text-center text-sm font-semibold"
                 style={{ color: 'var(--color-text)' }}
               >
                 Employer
               </p>
-              <p className="text-xs text-center mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+              <p
+                className="mt-0.5 text-center text-xs"
+                style={{ color: 'var(--color-text-muted)' }}
+              >
                 Post farm jobs
               </p>
             </div>
@@ -92,24 +91,24 @@ export function SelectRole() {
             type="button"
             onClick={() => handleRoleSelect('seeker')}
             disabled={isSubmitting}
-            className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 text-left transition-all hover:border-brand hover:bg-warn-bg disabled:opacity-60"
+            className="hover:border-brand hover:bg-warn-bg flex flex-col items-center gap-2 rounded-xl border-2 p-4 text-left transition-all disabled:opacity-60"
             style={{
               borderColor: 'var(--color-border)',
               backgroundColor: 'var(--color-surface)',
             }}
           >
-            <User
-              size={28}
-              style={{ color: 'var(--color-text-subtle)' }}
-            />
+            <User size={28} style={{ color: 'var(--color-text-subtle)' }} />
             <div>
               <p
-                className="font-semibold text-sm text-center"
+                className="text-center text-sm font-semibold"
                 style={{ color: 'var(--color-text)' }}
               >
                 Seeker
               </p>
-              <p className="text-xs text-center mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+              <p
+                className="mt-0.5 text-center text-xs"
+                style={{ color: 'var(--color-text-muted)' }}
+              >
                 Find farm work
               </p>
             </div>

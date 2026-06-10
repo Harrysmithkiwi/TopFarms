@@ -22,10 +22,10 @@ type SignInForm = z.infer<typeof signInSchema>
 // so the inline duplication is intentional within the scope of Phase 20.1.
 function SpinnerBlock() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-bg">
+    <div className="bg-bg flex min-h-screen items-center justify-center">
       <div className="flex flex-col items-center gap-4">
         <div
-          className="w-10 h-10 rounded-full border-4 border-border border-t-moss animate-spin"
+          className="border-border border-t-moss h-10 w-10 animate-spin rounded-full border-4"
           aria-label="Loading"
         />
         <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
@@ -42,8 +42,8 @@ function SpinnerBlock() {
 // (ProfileDrawer error-display: inline role="alert" + --color-danger tokens) is reused.
 function AccessDeniedView({ role }: { role: 'employer' | 'seeker' }) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-bg p-6">
-      <div className="w-full max-w-md flex flex-col gap-4">
+    <div className="bg-bg flex min-h-screen items-center justify-center p-6">
+      <div className="flex w-full max-w-md flex-col gap-4">
         <div
           role="alert"
           className="rounded-[12px] border-[1.5px] p-4"
@@ -53,19 +53,14 @@ function AccessDeniedView({ role }: { role: 'employer' | 'seeker' }) {
             color: 'var(--color-danger)',
           }}
         >
-          <p className="text-[16px] font-semibold font-body">
-            Access denied
-          </p>
-          <p
-            className="text-[14px] font-body mt-1"
-            style={{ color: 'var(--color-text-muted)' }}
-          >
+          <p className="font-body text-[16px] font-semibold">Access denied</p>
+          <p className="font-body mt-1 text-[14px]" style={{ color: 'var(--color-text-muted)' }}>
             Your account does not have admin privileges.
           </p>
         </div>
         <Link
           to={dashboardPathFor(role)}
-          className="inline-flex items-center justify-center px-4 py-2 rounded-[8px] font-body font-medium text-sm"
+          className="font-body inline-flex items-center justify-center rounded-[8px] px-4 py-2 text-sm font-medium"
           style={{
             backgroundColor: 'var(--color-brand)',
             color: 'var(--color-bg)',
@@ -106,28 +101,24 @@ export function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-bg p-6">
-      <div className="w-full max-w-md flex flex-col gap-6">
+    <div className="bg-bg flex min-h-screen items-center justify-center p-6">
+      <div className="flex w-full max-w-md flex-col gap-6">
         <div className="flex flex-col gap-1">
           <p
-            className="text-xs font-body uppercase tracking-wide"
+            className="font-body text-xs tracking-wide uppercase"
             style={{ color: 'var(--color-text-muted)' }}
           >
             Admin login
           </p>
           <h1
-            className="text-2xl font-display font-semibold"
+            className="font-display text-2xl font-semibold"
             style={{ color: 'var(--color-text)' }}
           >
             Sign in to TopFarms admin
           </h1>
         </div>
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col gap-4"
-          noValidate
-        >
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" noValidate>
           <Input
             label="Email"
             type="email"
@@ -146,7 +137,7 @@ export function AdminLoginPage() {
           {submitError && (
             <div
               role="alert"
-              className="rounded-[8px] border p-3 text-sm font-body"
+              className="font-body rounded-[8px] border p-3 text-sm"
               style={{
                 backgroundColor: 'var(--color-danger-bg)',
                 borderColor: 'var(--color-danger)',
@@ -163,7 +154,7 @@ export function AdminLoginPage() {
         </form>
 
         <div
-          className="flex flex-col gap-2 text-sm font-body"
+          className="font-body flex flex-col gap-2 text-sm"
           style={{ color: 'var(--color-text-muted)' }}
         >
           <Link to="/forgot-password" style={{ color: 'var(--color-brand)' }}>

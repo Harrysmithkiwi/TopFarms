@@ -16,14 +16,14 @@ import { VALID_TRANSITIONS, APPLICATION_STATUS_LABELS } from '@/types/domain'
 type TagVariant = 'green' | 'warn' | 'blue' | 'grey' | 'orange' | 'purple' | 'red'
 
 const STATUS_TAG_VARIANT: Record<ApplicationStatus, TagVariant> = {
-  applied:     'blue',
-  review:      'warn',
-  interview:   'orange',
+  applied: 'blue',
+  review: 'warn',
+  interview: 'orange',
   shortlisted: 'purple',
-  offered:     'green',
-  hired:       'green',
-  declined:    'red',
-  withdrawn:   'grey',
+  offered: 'green',
+  hired: 'green',
+  declined: 'red',
+  withdrawn: 'grey',
 }
 
 interface SeekerProfile {
@@ -71,13 +71,17 @@ interface ApplicantPanelProps {
 }
 
 const PROFICIENCY_VARIANT: Record<string, TagVariant> = {
-  basic:        'grey',
+  basic: 'grey',
   intermediate: 'warn',
-  advanced:     'green',
+  advanced: 'green',
 }
 
 function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('en-NZ', { month: 'short', day: 'numeric', year: 'numeric' })
+  return new Date(dateStr).toLocaleDateString('en-NZ', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  })
 }
 
 function getMatchHighlights(score: MatchScore, profile: SeekerProfile): string[] {
@@ -85,7 +89,8 @@ function getMatchHighlights(score: MatchScore, profile: SeekerProfile): string[]
   const bd = score.breakdown
 
   if (bd.shed_type > 15) highlights.push('Rotary/herringbone shed experience')
-  if (bd.location >= 16) highlights.push(profile.region ? `Same region (${profile.region})` : 'Location match')
+  if (bd.location >= 16)
+    highlights.push(profile.region ? `Same region (${profile.region})` : 'Location match')
   else if (bd.location > 0) highlights.push('Open to relocation')
   if (bd.accommodation > 15) highlights.push('Accommodation needs match')
   if (bd.visa > 0) highlights.push('Eligible to work in NZ')
@@ -146,7 +151,8 @@ export function ApplicantPanel({
 
   const transitionOptions = validNext.map((s) => ({
     value: s,
-    label: s === 'shortlisted' ? 'Shortlist — unlocks contact details' : APPLICATION_STATUS_LABELS[s],
+    label:
+      s === 'shortlisted' ? 'Shortlist — unlocks contact details' : APPLICATION_STATUS_LABELS[s],
   }))
 
   const seekerLabel = [
@@ -167,14 +173,14 @@ export function ApplicantPanel({
   const highlights = matchScore ? getMatchHighlights(matchScore, seeker) : []
 
   return (
-    <div className="bg-surface border-[1.5px] border-border rounded-[12px] overflow-hidden">
+    <div className="bg-surface border-border overflow-hidden rounded-[12px] border-[1.5px]">
       {/* Collapsed row */}
       <button
         type="button"
         onClick={onToggle}
         className={cn(
-          'w-full flex items-center gap-4 p-4 text-left hover:bg-surface-2/40 transition-colors',
-          expanded && 'border-b border-border',
+          'hover:bg-surface-2/40 flex w-full items-center gap-4 p-4 text-left transition-colors',
+          expanded && 'border-border border-b',
         )}
       >
         {/* Checkbox for bulk selection */}
@@ -184,21 +190,21 @@ export function ApplicantPanel({
             checked={isSelected ?? false}
             onChange={() => onSelect?.(application.id)}
             onClick={(e) => e.stopPropagation()}
-            className="w-4 h-4 rounded border-border text-brand focus:ring-brand flex-shrink-0"
+            className="border-border text-brand focus:ring-brand h-4 w-4 flex-shrink-0 rounded"
           />
         )}
 
         {/* Seeker label */}
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <p className="text-[14px] font-body font-semibold text-text truncate">{seekerLabel}</p>
+            <p className="font-body text-text truncate text-[14px] font-semibold">{seekerLabel}</p>
             {/* Phase 21 plan 21-08 — Track B: visible to employer when seeker has ≥1 approved doc. */}
             <DocumentsVerifiedBadge hasVerifiedDocuments={hasVerifiedDocuments} />
           </div>
           {application.seeker_skills && application.seeker_skills.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-1">
+            <div className="mt-1 flex flex-wrap gap-1">
               {application.seeker_skills.slice(0, 3).map((sk) => (
-                <Tag key={sk.skill_id} variant="grey" className="text-[10px] py-0.5 px-2">
+                <Tag key={sk.skill_id} variant="grey" className="px-2 py-0.5 text-[10px]">
                   {sk.skills.name}
                 </Tag>
               ))}
@@ -212,22 +218,24 @@ export function ApplicantPanel({
         )}
 
         {/* Applied date + status tag */}
-        <div className="flex flex-col items-end gap-1 flex-shrink-0">
+        <div className="flex flex-shrink-0 flex-col items-end gap-1">
           <Tag variant={STATUS_TAG_VARIANT[application.status]}>
             {APPLICATION_STATUS_LABELS[application.status]}
           </Tag>
-          <span className="text-[11px] font-body text-text-subtle">{formatDate(application.created_at)}</span>
+          <span className="font-body text-text-subtle text-[11px]">
+            {formatDate(application.created_at)}
+          </span>
         </div>
 
         {/* Chevron */}
-        <div className="flex-shrink-0 text-text-muted">
-          {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        <div className="text-text-muted flex-shrink-0">
+          {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
         </div>
       </button>
 
       {/* Expanded panel */}
       {expanded && (
-        <div className="p-4 space-y-4">
+        <div className="space-y-4 p-4">
           {/* AI Summary */}
           <AICandidateSummary
             applicationId={application.id}
@@ -239,24 +247,24 @@ export function ApplicantPanel({
           />
 
           {/* Tab bar */}
-          <div className="flex border-b border-border">
+          <div className="border-border flex border-b">
             {(['cv', 'match', 'interview', 'notes'] as const).map((tab) => (
               <button
                 key={tab}
                 type="button"
                 onClick={() => setActiveTab(tab)}
                 className={cn(
-                  'px-4 py-2 text-[13px] font-body font-semibold capitalize transition-colors',
+                  'font-body px-4 py-2 text-[13px] font-semibold capitalize transition-colors',
                   activeTab === tab
-                    ? 'text-brand border-b-2 border-brand'
+                    ? 'text-brand border-brand border-b-2'
                     : 'text-text-muted hover:text-text',
                 )}
               >
                 {tab === 'cv'
                   ? 'CV'
                   : tab === 'match'
-                  ? 'Match Breakdown'
-                  : tab.charAt(0).toUpperCase() + tab.slice(1)}
+                    ? 'Match Breakdown'
+                    : tab.charAt(0).toUpperCase() + tab.slice(1)}
               </button>
             ))}
           </div>
@@ -268,15 +276,18 @@ export function ApplicantPanel({
               {highlights.length > 0 && (
                 <div>
                   <p
-                    className="text-[11px] font-body font-semibold uppercase tracking-wide mb-2"
+                    className="font-body mb-2 text-[11px] font-semibold tracking-wide uppercase"
                     style={{ color: 'var(--color-text-subtle)' }}
                   >
                     Match Highlights
                   </p>
                   <ul className="space-y-1">
                     {highlights.map((h) => (
-                      <li key={h} className="flex items-center gap-2 text-[13px] font-body text-text-muted">
-                        <span className="w-1.5 h-1.5 rounded-full bg-brand flex-shrink-0" />
+                      <li
+                        key={h}
+                        className="font-body text-text-muted flex items-center gap-2 text-[13px]"
+                      >
+                        <span className="bg-brand h-1.5 w-1.5 flex-shrink-0 rounded-full" />
                         {h}
                       </li>
                     ))}
@@ -287,7 +298,7 @@ export function ApplicantPanel({
               {/* Seeker profile details */}
               <div>
                 <p
-                  className="text-[11px] font-body font-semibold uppercase tracking-wide mb-2"
+                  className="font-body mb-2 text-[11px] font-semibold tracking-wide uppercase"
                   style={{ color: 'var(--color-text-subtle)' }}
                 >
                   Seeker Profile
@@ -295,56 +306,66 @@ export function ApplicantPanel({
                 <div className="grid grid-cols-2 gap-x-6 gap-y-2">
                   {seeker.region && (
                     <div>
-                      <span className="text-[11px] font-body text-text-subtle">Region</span>
-                      <p className="text-[13px] font-body text-text">{seeker.region}</p>
+                      <span className="font-body text-text-subtle text-[11px]">Region</span>
+                      <p className="font-body text-text text-[13px]">{seeker.region}</p>
                     </div>
                   )}
                   {seeker.years_experience != null && (
                     <div>
-                      <span className="text-[11px] font-body text-text-subtle">Experience</span>
-                      <p className="text-[13px] font-body text-text">{seeker.years_experience} years</p>
+                      <span className="font-body text-text-subtle text-[11px]">Experience</span>
+                      <p className="font-body text-text text-[13px]">
+                        {seeker.years_experience} years
+                      </p>
                     </div>
                   )}
                   {seeker.visa_status && (
                     <div>
-                      <span className="text-[11px] font-body text-text-subtle">Visa Status</span>
-                      <p className="text-[13px] font-body text-text capitalize">
+                      <span className="font-body text-text-subtle text-[11px]">Visa Status</span>
+                      <p className="font-body text-text text-[13px] capitalize">
                         {seeker.visa_status.replace(/_/g, ' ')}
                       </p>
                     </div>
                   )}
                   {seeker.dairynz_level && (
                     <div>
-                      <span className="text-[11px] font-body text-text-subtle">DairyNZ Level</span>
-                      <p className="text-[13px] font-body text-text capitalize">
+                      <span className="font-body text-text-subtle text-[11px]">DairyNZ Level</span>
+                      <p className="font-body text-text text-[13px] capitalize">
                         {seeker.dairynz_level.replace(/_/g, ' ')}
                       </p>
                     </div>
                   )}
                   {seeker.shed_types_experienced && seeker.shed_types_experienced.length > 0 && (
                     <div>
-                      <span className="text-[11px] font-body text-text-subtle">Shed Types</span>
-                      <p className="text-[13px] font-body text-text capitalize">
+                      <span className="font-body text-text-subtle text-[11px]">Shed Types</span>
+                      <p className="font-body text-text text-[13px] capitalize">
                         {seeker.shed_types_experienced.join(', ')}
                       </p>
                     </div>
                   )}
                   {seeker.herd_sizes_worked && seeker.herd_sizes_worked.length > 0 && (
                     <div>
-                      <span className="text-[11px] font-body text-text-subtle">Herd Sizes</span>
-                      <p className="text-[13px] font-body text-text">{seeker.herd_sizes_worked.join(', ')}</p>
+                      <span className="font-body text-text-subtle text-[11px]">Herd Sizes</span>
+                      <p className="font-body text-text text-[13px]">
+                        {seeker.herd_sizes_worked.join(', ')}
+                      </p>
                     </div>
                   )}
                   {seeker.couples_seeking != null && (
                     <div>
-                      <span className="text-[11px] font-body text-text-subtle">Couples Seeking</span>
-                      <p className="text-[13px] font-body text-text">{seeker.couples_seeking ? 'Yes' : 'No'}</p>
+                      <span className="font-body text-text-subtle text-[11px]">
+                        Couples Seeking
+                      </span>
+                      <p className="font-body text-text text-[13px]">
+                        {seeker.couples_seeking ? 'Yes' : 'No'}
+                      </p>
                     </div>
                   )}
                   {seeker.accommodation_needed != null && (
                     <div>
-                      <span className="text-[11px] font-body text-text-subtle">Accommodation Needed</span>
-                      <p className="text-[13px] font-body text-text">
+                      <span className="font-body text-text-subtle text-[11px]">
+                        Accommodation Needed
+                      </span>
+                      <p className="font-body text-text text-[13px]">
                         {seeker.accommodation_needed ? 'Yes' : 'No'}
                       </p>
                     </div>
@@ -356,7 +377,7 @@ export function ApplicantPanel({
               {application.seeker_skills && application.seeker_skills.length > 0 && (
                 <div>
                   <p
-                    className="text-[11px] font-body font-semibold uppercase tracking-wide mb-2"
+                    className="font-body mb-2 text-[11px] font-semibold tracking-wide uppercase"
                     style={{ color: 'var(--color-text-subtle)' }}
                   >
                     Skills
@@ -364,8 +385,11 @@ export function ApplicantPanel({
                   <div className="flex flex-wrap gap-2">
                     {application.seeker_skills.map((sk) => (
                       <div key={sk.skill_id} className="flex items-center gap-1.5">
-                        <span className="text-[12px] font-body text-text">{sk.skills.name}</span>
-                        <Tag variant={PROFICIENCY_VARIANT[sk.proficiency] ?? 'grey'} className="text-[10px]">
+                        <span className="font-body text-text text-[12px]">{sk.skills.name}</span>
+                        <Tag
+                          variant={PROFICIENCY_VARIANT[sk.proficiency] ?? 'grey'}
+                          className="text-[10px]"
+                        >
                           {sk.proficiency}
                         </Tag>
                       </div>
@@ -386,35 +410,41 @@ export function ApplicantPanel({
               {['shortlisted', 'offered', 'hired'].includes(application.status) && (
                 <div>
                   <p
-                    className="text-[11px] font-body font-semibold uppercase tracking-wide mb-2"
+                    className="font-body mb-2 text-[11px] font-semibold tracking-wide uppercase"
                     style={{ color: 'var(--color-text-subtle)' }}
                   >
                     Contact Details
                   </p>
                   <div className="grid grid-cols-2 gap-x-6 gap-y-2">
                     <div>
-                      <span className="text-[11px] font-body text-text-subtle">Phone</span>
+                      <span className="font-body text-text-subtle text-[11px]">Phone</span>
                       {contacts ? (
                         contacts.phone ? (
-                          <p className="text-[13px] font-body text-text">{contacts.phone}</p>
+                          <p className="font-body text-text text-[13px]">{contacts.phone}</p>
                         ) : (
-                          <p className="text-[13px] font-body text-text-subtle italic">Not provided</p>
+                          <p className="font-body text-text-subtle text-[13px] italic">
+                            Not provided
+                          </p>
                         )
                       ) : (
-                        <p className="font-mono text-[13px] text-text-muted select-none blur-sm">••• ••• ••••</p>
+                        <p className="text-text-muted font-mono text-[13px] blur-sm select-none">
+                          ••• ••• ••••
+                        </p>
                       )}
                     </div>
                     <div>
-                      <span className="text-[11px] font-body text-text-subtle">Email</span>
+                      <span className="font-body text-text-subtle text-[11px]">Email</span>
                       {contacts ? (
-                        <p className="text-[13px] font-body text-text">{contacts.email}</p>
+                        <p className="font-body text-text text-[13px]">{contacts.email}</p>
                       ) : (
-                        <p className="font-mono text-[13px] text-text-muted select-none blur-sm">j•••@gmail.com</p>
+                        <p className="text-text-muted font-mono text-[13px] blur-sm select-none">
+                          j•••@gmail.com
+                        </p>
                       )}
                     </div>
                   </div>
                   {!contacts && (
-                    <p className="mt-2 text-[11px] font-body uppercase tracking-wide text-text-subtle italic">
+                    <p className="font-body text-text-subtle mt-2 text-[11px] tracking-wide uppercase italic">
                       Contact details unlock when you shortlist this candidate.
                     </p>
                   )}
@@ -425,12 +455,12 @@ export function ApplicantPanel({
               {application.cover_note && (
                 <div>
                   <p
-                    className="text-[11px] font-body font-semibold uppercase tracking-wide mb-2"
+                    className="font-body mb-2 text-[11px] font-semibold tracking-wide uppercase"
                     style={{ color: 'var(--color-text-subtle)' }}
                   >
                     Cover Note
                   </p>
-                  <blockquote className="border-l-[3px] border-border pl-3 text-[13px] font-body text-text-muted italic">
+                  <blockquote className="border-border font-body text-text-muted border-l-[3px] pl-3 text-[13px] italic">
                     {application.cover_note}
                   </blockquote>
                 </div>
@@ -439,19 +469,19 @@ export function ApplicantPanel({
               {/* Pipeline stage */}
               <div>
                 <p
-                  className="text-[11px] font-body font-semibold uppercase tracking-wide mb-2"
+                  className="font-body mb-2 text-[11px] font-semibold tracking-wide uppercase"
                   style={{ color: 'var(--color-text-subtle)' }}
                 >
                   Pipeline Stage
                 </p>
-                <div className="flex items-center gap-3 flex-wrap">
+                <div className="flex flex-wrap items-center gap-3">
                   <Tag variant={STATUS_TAG_VARIANT[application.status]}>
                     {APPLICATION_STATUS_LABELS[application.status]}
                   </Tag>
                 </div>
 
                 {isFinalStage ? (
-                  <p className="mt-2 text-[13px] font-body text-text-subtle italic">Final stage</p>
+                  <p className="font-body text-text-subtle mt-2 text-[13px] italic">Final stage</p>
                 ) : (
                   <div className="mt-3 space-y-3">
                     <Select
@@ -465,7 +495,7 @@ export function ApplicantPanel({
                     <button
                       type="button"
                       onClick={() => setShowNote((p) => !p)}
-                      className="text-[12px] font-body text-text-muted hover:text-text transition-colors"
+                      className="font-body text-text-muted hover:text-text text-[12px] transition-colors"
                     >
                       {showNote ? 'Hide note' : '+ Add transition note'}
                     </button>
@@ -476,7 +506,7 @@ export function ApplicantPanel({
                         placeholder="Optional note..."
                         value={transitionNote}
                         onChange={(e) => setTransitionNote(e.target.value)}
-                        className="w-full border-[1.5px] border-border rounded-[8px] px-3 py-2 text-[13px] font-body text-text bg-surface-2 focus:outline-none focus:border-brand-hover resize-none"
+                        className="border-border font-body text-text bg-surface-2 focus:border-brand-hover w-full resize-none rounded-[8px] border-[1.5px] px-3 py-2 text-[13px] focus:outline-none"
                       />
                     )}
 
@@ -485,9 +515,9 @@ export function ApplicantPanel({
                       onClick={handleUpdateStatus}
                       disabled={!selectedStatus}
                       className={cn(
-                        'px-4 py-2 rounded-[8px] text-[13px] font-body font-semibold transition-colors',
+                        'font-body rounded-[8px] px-4 py-2 text-[13px] font-semibold transition-colors',
                         selectedStatus
-                          ? 'bg-brand text-white hover:bg-brand-hover'
+                          ? 'bg-brand hover:bg-brand-hover text-white'
                           : 'bg-surface-2 text-text-subtle cursor-not-allowed',
                       )}
                     >
@@ -500,18 +530,16 @@ export function ApplicantPanel({
           )}
 
           {/* Match Breakdown tab */}
-          {activeTab === 'match' && matchScore && (
-            <MatchBreakdown score={matchScore} />
-          )}
+          {activeTab === 'match' && matchScore && <MatchBreakdown score={matchScore} />}
           {activeTab === 'match' && !matchScore && (
-            <p className="text-[13px] font-body text-text-subtle italic">
+            <p className="font-body text-text-subtle text-[13px] italic">
               No match score available for this applicant.
             </p>
           )}
 
           {/* Interview tab */}
           {activeTab === 'interview' && (
-            <p className="text-[14px] font-body text-text-muted py-4">
+            <p className="font-body text-text-muted py-4 text-[14px]">
               Interview scheduling is coming in a future release.
             </p>
           )}
@@ -524,7 +552,7 @@ export function ApplicantPanel({
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Add private notes about this applicant..."
                 rows={4}
-                className="w-full border-[1.5px] border-border rounded-[8px] px-3 py-2 text-[13px] font-body text-text bg-surface focus:outline-none focus:border-brand resize-none"
+                className="border-border font-body text-text bg-surface focus:border-brand w-full resize-none rounded-[8px] border-[1.5px] px-3 py-2 text-[13px] focus:outline-none"
               />
               <button
                 type="button"
@@ -539,8 +567,8 @@ export function ApplicantPanel({
                 }}
                 disabled={savingNotes}
                 className={cn(
-                  'px-3 py-1.5 rounded-[8px] text-[12px] font-body font-semibold transition-colors',
-                  'bg-brand text-white hover:bg-brand-hover disabled:opacity-50',
+                  'font-body rounded-[8px] px-3 py-1.5 text-[12px] font-semibold transition-colors',
+                  'bg-brand hover:bg-brand-hover text-white disabled:opacity-50',
                 )}
               >
                 {savingNotes ? 'Saving...' : 'Save Notes'}

@@ -104,7 +104,8 @@ export function SeekerDashboard() {
           if (allApps) {
             const counts = allApps.reduce(
               (acc, app) => {
-                acc[app.status as ApplicationStatus] = (acc[app.status as ApplicationStatus] ?? 0) + 1
+                acc[app.status as ApplicationStatus] =
+                  (acc[app.status as ApplicationStatus] ?? 0) + 1
                 return acc
               },
               {} as Record<ApplicationStatus, number>,
@@ -146,7 +147,6 @@ export function SeekerDashboard() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-
         {/* Onboarding prompt (only if not complete) */}
         {!isOnboardingComplete && (
           <>
@@ -163,21 +163,18 @@ export function SeekerDashboard() {
             </div>
 
             <Card className="p-6">
-              <div className="flex flex-col md:flex-row md:items-center gap-6">
+              <div className="flex flex-col gap-6 md:flex-row md:items-center">
                 <div
-                  className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0 text-3xl"
+                  className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl text-3xl"
                   style={{ backgroundColor: 'var(--color-brand-50)' }}
                 >
                   🧑‍🌾
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h2
-                    className="text-lg font-semibold mb-1"
-                    style={{ color: 'var(--color-text)' }}
-                  >
+                <div className="min-w-0 flex-1">
+                  <h2 className="mb-1 text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
                     Complete your profile to start matching with jobs
                   </h2>
-                  <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>
+                  <p className="mb-4 text-sm" style={{ color: 'var(--color-text-muted)' }}>
                     Tell us about your experience, skills, and what you're looking for to get
                     matched with the best roles
                   </p>
@@ -190,8 +187,8 @@ export function SeekerDashboard() {
                   <Link
                     to="/onboarding/seeker"
                     className={cn(
-                      'font-body font-bold rounded-[8px] transition-all duration-200 inline-flex items-center justify-center',
-                      'bg-brand text-white hover:bg-brand-hover',
+                      'font-body inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
+                      'bg-brand hover:bg-brand-hover text-white',
                       'px-4 py-2 text-[13px]',
                     )}
                   >
@@ -221,64 +218,88 @@ export function SeekerDashboard() {
 
             {/* Profile summary card */}
             <Card className="p-6">
-              <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-3">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+                <div className="min-w-0 flex-1">
+                  <div className="mb-3 flex items-center justify-between">
                     <h2 className="text-base font-semibold" style={{ color: 'var(--color-text)' }}>
                       Your Profile
                     </h2>
                     <Link
                       to="/onboarding/seeker"
-                      className="text-sm font-body font-semibold"
+                      className="font-body text-sm font-semibold"
                       style={{ color: 'var(--color-brand)' }}
                     >
                       Edit Profile
                     </Link>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+                  <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
                     {profile?.years_experience != null && (
                       <div>
-                        <p className="text-[11px] uppercase tracking-wide font-semibold" style={{ color: 'var(--color-text-subtle)' }}>
+                        <p
+                          className="text-[11px] font-semibold tracking-wide uppercase"
+                          style={{ color: 'var(--color-text-subtle)' }}
+                        >
                           Experience
                         </p>
-                        <p className="text-sm font-semibold mt-0.5" style={{ color: 'var(--color-text)' }}>
+                        <p
+                          className="mt-0.5 text-sm font-semibold"
+                          style={{ color: 'var(--color-text)' }}
+                        >
                           {profile.years_experience}y
                         </p>
                       </div>
                     )}
                     {profile?.dairynz_level && profile.dairynz_level !== 'none' && (
                       <div>
-                        <p className="text-[11px] uppercase tracking-wide font-semibold" style={{ color: 'var(--color-text-subtle)' }}>
+                        <p
+                          className="text-[11px] font-semibold tracking-wide uppercase"
+                          style={{ color: 'var(--color-text-subtle)' }}
+                        >
                           DairyNZ
                         </p>
-                        <p className="text-sm font-semibold mt-0.5 capitalize" style={{ color: 'var(--color-text)' }}>
+                        <p
+                          className="mt-0.5 text-sm font-semibold capitalize"
+                          style={{ color: 'var(--color-text)' }}
+                        >
                           {profile.dairynz_level.replace('_', ' ')}
                         </p>
                       </div>
                     )}
                     {profile?.region && (
                       <div>
-                        <p className="text-[11px] uppercase tracking-wide font-semibold" style={{ color: 'var(--color-text-subtle)' }}>
+                        <p
+                          className="text-[11px] font-semibold tracking-wide uppercase"
+                          style={{ color: 'var(--color-text-subtle)' }}
+                        >
                           Region
                         </p>
-                        <p className="text-sm font-semibold mt-0.5" style={{ color: 'var(--color-text)' }}>
+                        <p
+                          className="mt-0.5 text-sm font-semibold"
+                          style={{ color: 'var(--color-text)' }}
+                        >
                           {profile.region}
                         </p>
                       </div>
                     )}
                     {profile?.visa_status && (
                       <div>
-                        <p className="text-[11px] uppercase tracking-wide font-semibold" style={{ color: 'var(--color-text-subtle)' }}>
+                        <p
+                          className="text-[11px] font-semibold tracking-wide uppercase"
+                          style={{ color: 'var(--color-text-subtle)' }}
+                        >
                           Visa
                         </p>
-                        <p className="text-sm font-semibold mt-0.5 capitalize" style={{ color: 'var(--color-text)' }}>
+                        <p
+                          className="mt-0.5 text-sm font-semibold capitalize"
+                          style={{ color: 'var(--color-text)' }}
+                        >
                           {profile.visa_status.replace(/_/g, ' ')}
                         </p>
                       </div>
                     )}
                   </div>
                   <div>
-                    <div className="flex items-center justify-between mb-1">
+                    <div className="mb-1 flex items-center justify-between">
                       <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
                         Profile strength
                       </p>
@@ -293,37 +314,46 @@ export function SeekerDashboard() {
             </Card>
 
             {/* Quick stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <Card className="p-5">
                 <p
-                  className="text-[12px] font-body font-semibold uppercase tracking-wide mb-1"
+                  className="font-body mb-1 text-[12px] font-semibold tracking-wide uppercase"
                   style={{ color: 'var(--color-text-subtle)' }}
                 >
                   Active Applications
                 </p>
-                <p className="text-3xl font-display font-semibold" style={{ color: 'var(--color-brand-900)' }}>
+                <p
+                  className="font-display text-3xl font-semibold"
+                  style={{ color: 'var(--color-brand-900)' }}
+                >
                   {activeApplicationCount}
                 </p>
               </Card>
               <Card className="p-5">
                 <p
-                  className="text-[12px] font-body font-semibold uppercase tracking-wide mb-1"
+                  className="font-body mb-1 text-[12px] font-semibold tracking-wide uppercase"
                   style={{ color: 'var(--color-text-subtle)' }}
                 >
                   Profile Views
                 </p>
-                <p className="text-3xl font-display font-semibold" style={{ color: 'var(--color-brand-900)' }}>
+                <p
+                  className="font-display text-3xl font-semibold"
+                  style={{ color: 'var(--color-brand-900)' }}
+                >
                   0
                 </p>
               </Card>
               <Card className="p-5">
                 <p
-                  className="text-[12px] font-body font-semibold uppercase tracking-wide mb-1"
+                  className="font-body mb-1 text-[12px] font-semibold tracking-wide uppercase"
                   style={{ color: 'var(--color-text-subtle)' }}
                 >
                   Profile Strength
                 </p>
-                <p className="text-3xl font-display font-semibold" style={{ color: 'var(--color-brand-900)' }}>
+                <p
+                  className="font-display text-3xl font-semibold"
+                  style={{ color: 'var(--color-brand-900)' }}
+                >
                   {profileStrength}%
                 </p>
               </Card>
@@ -331,13 +361,13 @@ export function SeekerDashboard() {
 
             {/* Recent Applications */}
             <Card className="p-6">
-              <div className="flex items-center justify-between mb-4">
+              <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-base font-semibold" style={{ color: 'var(--color-text)' }}>
                   Recent Applications
                 </h2>
                 <Link
                   to="/dashboard/seeker/applications"
-                  className="text-sm font-body font-semibold"
+                  className="font-body text-sm font-semibold"
                   style={{ color: 'var(--color-brand)' }}
                 >
                   View all
@@ -345,15 +375,15 @@ export function SeekerDashboard() {
               </div>
 
               {recentApplications.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-sm mb-3" style={{ color: 'var(--color-text-muted)' }}>
+                <div className="py-8 text-center">
+                  <p className="mb-3 text-sm" style={{ color: 'var(--color-text-muted)' }}>
                     No applications yet
                   </p>
                   <Link
                     to="/jobs"
                     className={cn(
-                      'font-body font-bold rounded-[8px] transition-all duration-200 inline-flex items-center justify-center',
-                      'bg-brand text-white hover:bg-brand-hover',
+                      'font-body inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
+                      'bg-brand hover:bg-brand-hover text-white',
                       'px-4 py-2 text-[13px]',
                     )}
                   >

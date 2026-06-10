@@ -39,8 +39,7 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
     async function loadApplicants() {
       setLoadingApplicants(true)
       try {
-        const { data, error } = await supabase
-          .rpc('get_applicants_for_job', { p_job_id: jobId })
+        const { data, error } = await supabase.rpc('get_applicants_for_job', { p_job_id: jobId })
 
         if (error) {
           console.error('MarkFilledModal: failed to load applicants', error)
@@ -93,32 +92,26 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
   return (
     <>
       {/* Backdrop */}
-      <div
-        className="fixed inset-0 z-40 bg-black/40"
-        onClick={onClose}
-        aria-hidden="true"
-      />
+      <div className="fixed inset-0 z-40 bg-black/40" onClick={onClose} aria-hidden="true" />
 
       {/* Modal */}
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="mark-filled-heading"
-        className={cn(
-          'fixed inset-0 z-50 flex items-center justify-center p-4',
-        )}
+        className={cn('fixed inset-0 z-50 flex items-center justify-center p-4')}
       >
         <div
-          className="bg-surface rounded-[16px] shadow-xl w-full max-w-md border-[1.5px] border-border"
+          className="bg-surface border-border w-full max-w-md rounded-[16px] border-[1.5px] shadow-xl"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-border">
+          <div className="border-border flex items-center justify-between border-b px-6 pt-5 pb-4">
             <div className="flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-brand" />
+              <CheckCircle className="text-brand h-5 w-5" />
               <h2
                 id="mark-filled-heading"
-                className="text-[16px] font-body font-bold"
+                className="font-body text-[16px] font-bold"
                 style={{ color: 'var(--color-text)' }}
               >
                 Mark as Filled
@@ -127,15 +120,15 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
             <button
               type="button"
               onClick={onClose}
-              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-2 transition-colors"
+              className="hover:bg-surface-2 flex h-8 w-8 items-center justify-center rounded-full transition-colors"
               aria-label="Close modal"
             >
-              <X className="w-4 h-4 text-text-muted" />
+              <X className="text-text-muted h-4 w-4" />
             </button>
           </div>
 
           {/* Body */}
-          <div className="px-6 py-5 space-y-5">
+          <div className="space-y-5 px-6 py-5">
             <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
               Marking this listing as filled will remove it from active search results. This action
               cannot be undone.
@@ -143,7 +136,10 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
 
             {/* Applicants section */}
             <div>
-              <p className="text-[13px] font-body font-semibold mb-2" style={{ color: 'var(--color-text)' }}>
+              <p
+                className="font-body mb-2 text-[13px] font-semibold"
+                style={{ color: 'var(--color-text)' }}
+              >
                 Who did you hire?
               </p>
 
@@ -156,20 +152,26 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
                   className="rounded-[10px] p-4 text-center"
                   style={{ backgroundColor: 'var(--color-surface-2)' }}
                 >
-                  <UserCircle className="w-8 h-8 mx-auto mb-2" style={{ color: 'var(--color-text-subtle)' }} />
-                  <p className="text-sm font-body font-medium" style={{ color: 'var(--color-text-muted)' }}>
+                  <UserCircle
+                    className="mx-auto mb-2 h-8 w-8"
+                    style={{ color: 'var(--color-text-subtle)' }}
+                  />
+                  <p
+                    className="font-body text-sm font-medium"
+                    style={{ color: 'var(--color-text-muted)' }}
+                  >
                     No applicants via TopFarms
                   </p>
-                  <p className="text-xs mt-1" style={{ color: 'var(--color-text-subtle)' }}>
+                  <p className="mt-1 text-xs" style={{ color: 'var(--color-text-subtle)' }}>
                     You can still mark this position as filled if you hired externally.
                   </p>
                 </div>
               ) : (
-                <div className="space-y-2 max-h-48 overflow-y-auto">
+                <div className="max-h-48 space-y-2 overflow-y-auto">
                   {/* "Hired externally" option */}
                   <label
                     className={cn(
-                      'flex items-center gap-3 p-3 rounded-[8px] border-[1.5px] cursor-pointer transition-all duration-150',
+                      'flex cursor-pointer items-center gap-3 rounded-[8px] border-[1.5px] p-3 transition-all duration-150',
                       selectedApplicantId === null
                         ? 'border-brand bg-[rgba(74,124,47,0.04)]'
                         : 'border-border hover:border-brand-hover',
@@ -181,9 +183,9 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
                       value=""
                       checked={selectedApplicantId === null}
                       onChange={() => setSelectedApplicantId(null)}
-                      className="w-4 h-4 accent-brand"
+                      className="accent-brand h-4 w-4"
                     />
-                    <span className="text-sm font-body" style={{ color: 'var(--color-text)' }}>
+                    <span className="font-body text-sm" style={{ color: 'var(--color-text)' }}>
                       Hired externally
                     </span>
                   </label>
@@ -192,7 +194,7 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
                     <label
                       key={applicant.id}
                       className={cn(
-                        'flex items-center gap-3 p-3 rounded-[8px] border-[1.5px] cursor-pointer transition-all duration-150',
+                        'flex cursor-pointer items-center gap-3 rounded-[8px] border-[1.5px] p-3 transition-all duration-150',
                         selectedApplicantId === applicant.id
                           ? 'border-brand bg-[rgba(74,124,47,0.04)]'
                           : 'border-border hover:border-brand-hover',
@@ -204,10 +206,12 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
                         value={applicant.id}
                         checked={selectedApplicantId === applicant.id}
                         onChange={() => setSelectedApplicantId(applicant.id)}
-                        className="w-4 h-4 accent-brand"
+                        className="accent-brand h-4 w-4"
                       />
-                      <span className="text-sm font-body" style={{ color: 'var(--color-text)' }}>
-                        {applicant.display_name} • <span className="capitalize">{applicant.status}</span> • {applicant.match_score}pts
+                      <span className="font-body text-sm" style={{ color: 'var(--color-text)' }}>
+                        {applicant.display_name} •{' '}
+                        <span className="capitalize">{applicant.status}</span> •{' '}
+                        {applicant.match_score}pts
                       </span>
                     </label>
                   ))}
@@ -219,7 +223,7 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
             <div>
               <label
                 htmlFor="hire-date"
-                className="block text-[13px] font-body font-semibold mb-1.5"
+                className="font-body mb-1.5 block text-[13px] font-semibold"
                 style={{ color: 'var(--color-text)' }}
               >
                 Hire Date{' '}
@@ -233,8 +237,8 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
                 value={hireDate}
                 onChange={(e) => setHireDate(e.target.value)}
                 className={cn(
-                  'w-full px-3 py-2 rounded-[8px] border-[1.5px] border-border text-sm font-body',
-                  'text-text bg-surface focus:outline-none focus:border-brand transition-colors',
+                  'border-border font-body w-full rounded-[8px] border-[1.5px] px-3 py-2 text-sm',
+                  'text-text bg-surface focus:border-brand transition-colors focus:outline-none',
                 )}
                 style={{ color: 'var(--color-text)' }}
               />

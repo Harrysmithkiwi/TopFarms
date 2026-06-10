@@ -95,9 +95,7 @@ describe('MarkFilledModal — mark_job_filled RPC contract', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /confirm filled/i }))
 
-    await waitFor(() =>
-      expect(rpcMock).toHaveBeenCalledWith('mark_job_filled', expect.any(Object))
-    )
+    await waitFor(() => expect(rpcMock).toHaveBeenCalledWith('mark_job_filled', expect.any(Object)))
 
     // No update path through fromMock — fromMock should not be called at all
     const sourceCallShape = JSON.stringify(fromMock.mock.calls)
@@ -138,9 +136,7 @@ describe('MarkFilledModal — SC-10 display_name row rendering', () => {
       return Promise.resolve({ data: null, error: null })
     })
 
-    render(
-      <MarkFilledModal jobId="job-1" isOpen onClose={vi.fn()} onFilled={vi.fn()} />
-    )
+    render(<MarkFilledModal jobId="job-1" isOpen onClose={vi.fn()} onFilled={vi.fn()} />)
 
     await waitFor(() => {
       expect(screen.getByText(/John Smith/)).toBeInTheDocument()
@@ -169,9 +165,7 @@ describe('MarkFilledModal — SC-10 display_name row rendering', () => {
       return Promise.resolve({ data: null, error: null })
     })
 
-    render(
-      <MarkFilledModal jobId="job-1" isOpen onClose={vi.fn()} onFilled={vi.fn()} />
-    )
+    render(<MarkFilledModal jobId="job-1" isOpen onClose={vi.fn()} onFilled={vi.fn()} />)
 
     await waitFor(() => {
       expect(screen.getByText(/unknown@example\.com/)).toBeInTheDocument()
@@ -198,9 +192,7 @@ describe('MarkFilledModal — SC-10 display_name row rendering', () => {
       return Promise.resolve({ data: null, error: null })
     })
 
-    render(
-      <MarkFilledModal jobId="job-1" isOpen onClose={vi.fn()} onFilled={vi.fn()} />
-    )
+    render(<MarkFilledModal jobId="job-1" isOpen onClose={vi.fn()} onFilled={vi.fn()} />)
 
     await waitFor(() => {
       expect(screen.getByText(/ab12cd34/)).toBeInTheDocument()
@@ -228,9 +220,7 @@ describe('MarkFilledModal — SC-10 display_name row rendering', () => {
       return Promise.resolve({ data: null, error: null })
     })
 
-    render(
-      <MarkFilledModal jobId="job-1" isOpen onClose={vi.fn()} onFilled={vi.fn()} />
-    )
+    render(<MarkFilledModal jobId="job-1" isOpen onClose={vi.fn()} onFilled={vi.fn()} />)
 
     // Wait for applicants to load
     await waitFor(() => {
