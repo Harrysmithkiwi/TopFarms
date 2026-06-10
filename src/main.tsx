@@ -107,6 +107,9 @@ const AdminDocumentsQueue = lazy(() =>
 const AdminSkillCoverage = lazy(() =>
   import('@/pages/admin/AdminSkillCoverage').then((m) => ({ default: m.AdminSkillCoverage })),
 )
+const AdminAnalytics = lazy(() =>
+  import('@/pages/admin/AdminAnalytics').then((m) => ({ default: m.AdminAnalytics })),
+)
 
 // Full-page fallback shown while a route chunk loads. Mirrors the in-app
 // spinner style (brand-colored ring) so chunk loads read as ordinary loading.
@@ -345,6 +348,21 @@ const router = createBrowserRouter([
         {s(
           <AdminLayout>
             <AdminSkillCoverage />
+          </AdminLayout>,
+        )}
+      </ProtectedRoute>
+    ),
+  },
+  {
+    // Founder analytics dashboard (PHASE-ANALYTICS-DESIGN.md, 2026-06-11).
+    // Access tier: existing admin role per operator decision; server-side
+    // gate is the admin_analytics_* SECURITY DEFINER RPCs (migration 039).
+    path: '/admin/analytics',
+    element: (
+      <ProtectedRoute requiredRole="admin">
+        {s(
+          <AdminLayout>
+            <AdminAnalytics />
           </AdminLayout>,
         )}
       </ProtectedRoute>
