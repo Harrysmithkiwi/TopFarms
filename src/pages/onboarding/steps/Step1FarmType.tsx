@@ -41,7 +41,7 @@ export function Step1FarmType({ onComplete, defaultValues }: Step1Props) {
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      farm_type: defaultValues?.farm_type as FormData['farm_type'] | undefined,
+      farm_type: defaultValues?.farm_type,
     },
   })
 

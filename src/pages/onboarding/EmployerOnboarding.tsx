@@ -30,7 +30,9 @@ const TOTAL_STEPS = 8
 // Profile data accumulated across steps
 export interface EmployerProfileData {
   // Existing fields
-  farm_type?: string
+  // Legacy single-select; constrained to the Step1FarmType zod enum (NOT the
+  // wider FarmType union in domain.ts, which backs the farm_types array).
+  farm_type?: 'dairy' | 'sheep_beef'
   farm_name?: string
   region?: string
   herd_size?: number
