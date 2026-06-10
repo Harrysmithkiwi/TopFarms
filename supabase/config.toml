@@ -39,6 +39,17 @@ verify_jwt = true
 # function is invoked by pg_cron with no user context.
 verify_jwt = false
 
+[functions.stripe-webhook]
+# Called by STRIPE's webhook delivery — no Authorization header is ever sent,
+# only `stripe-signature`. Without this section the function deployed with the
+# default verify_jwt = true and the gateway 401'd
+# (UNAUTHORIZED_NO_AUTH_HEADER) every delivery before the handler ran —
+# discovered 2026-06-10 by probing the live endpoint. Auth for this function
+# is the Stripe signature verification INSIDE the handler
+# (constructEventAsync + STRIPE_WEBHOOK_SECRET) — the standard Stripe webhook
+# pattern, same shape as notify-job-filled's in-function secret check.
+verify_jwt = false
+
 [functions.send-document-status-email]
 # Phase 21 Track B (plan 21-06). Invoked from the /admin/documents queue page
 # (Wave 5 plan 21-07) via supabase.functions.invoke after a successful admin
