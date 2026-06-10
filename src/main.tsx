@@ -1,44 +1,73 @@
-import { StrictMode } from 'react'
+import { StrictMode, Suspense, lazy, type ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router'
 import { Toaster } from 'sonner'
 import { AuthProvider } from '@/contexts/AuthContext'
 import './index.css'
 
+// ─── Code splitting (audit task 2.1, F5) ────────────────────────────────────
+// Home stays eager: it IS the landing chunk, and lazy-loading it would just
+// add a fallback flash to the first paint. ProtectedRoute stays eager (tiny,
+// used by most routes). Every other page — and the admin/job-search layouts,
+// which only their own routes use — is a lazy chunk so visitors don't download
+// dashboards, wizards, admin, or Stripe code to view the landing page.
 import { Home } from '@/pages/Home'
-import { Login } from '@/pages/auth/Login'
-import { SignUp } from '@/pages/auth/SignUp'
-import { VerifyEmail } from '@/pages/auth/VerifyEmail'
-import { ForgotPassword } from '@/pages/auth/ForgotPassword'
-import { ResetPassword } from '@/pages/auth/ResetPassword'
-import { SelectRole } from '@/pages/auth/SelectRole'
-import { Suspended } from '@/pages/auth/Suspended'
-import { EmployerDashboard } from '@/pages/dashboard/EmployerDashboard'
-import { SeekerDashboard } from '@/pages/dashboard/SeekerDashboard'
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
-import { JobSearchLayout } from '@/components/layout/JobSearchLayout'
-import { EmployerOnboarding } from '@/pages/onboarding/EmployerOnboarding'
-import { SeekerOnboarding } from '@/pages/onboarding/SeekerOnboarding'
-import { PostJob } from '@/pages/jobs/PostJob'
-import { JobDetail } from '@/pages/jobs/JobDetail'
-import { EmployerVerification } from '@/pages/verification/EmployerVerification'
-import { DocumentUpload } from '@/pages/verification/DocumentUpload'
-import { FarmPhotoUpload } from '@/pages/verification/FarmPhotoUpload'
-import { ForEmployers } from '@/pages/ForEmployers'
-import { Pricing } from '@/pages/Pricing'
-import { JobSearch } from '@/pages/jobs/JobSearch'
-import { MyApplications } from '@/pages/dashboard/seeker/MyApplications'
-import { SavedSearches } from '@/pages/dashboard/seeker/SavedSearches'
-import { SeekerDocuments } from '@/pages/dashboard/seeker/SeekerDocuments'
-import { ApplicantDashboard } from '@/pages/dashboard/employer/ApplicantDashboard'
-import { AdminLayout } from '@/components/layout/AdminLayout'
-import { AdminGate } from '@/pages/admin/AdminLoginPage'
-import { EmployerList } from '@/pages/admin/EmployerList'
-import { SeekerList } from '@/pages/admin/SeekerList'
-import { JobsManagement } from '@/pages/admin/JobsManagement'
-import { PlacementPipeline } from '@/pages/admin/PlacementPipeline'
-import { AdminDocumentsQueue } from '@/pages/admin/AdminDocumentsQueue'
-import { AdminSkillCoverage } from '@/pages/admin/AdminSkillCoverage'
+
+// Pages export named components; map them onto React.lazy's default slot.
+const Login = lazy(() => import('@/pages/auth/Login').then((m) => ({ default: m.Login })))
+const SignUp = lazy(() => import('@/pages/auth/SignUp').then((m) => ({ default: m.SignUp })))
+const VerifyEmail = lazy(() => import('@/pages/auth/VerifyEmail').then((m) => ({ default: m.VerifyEmail })))
+const ForgotPassword = lazy(() => import('@/pages/auth/ForgotPassword').then((m) => ({ default: m.ForgotPassword })))
+const ResetPassword = lazy(() => import('@/pages/auth/ResetPassword').then((m) => ({ default: m.ResetPassword })))
+const SelectRole = lazy(() => import('@/pages/auth/SelectRole').then((m) => ({ default: m.SelectRole })))
+const Suspended = lazy(() => import('@/pages/auth/Suspended').then((m) => ({ default: m.Suspended })))
+const EmployerDashboard = lazy(() => import('@/pages/dashboard/EmployerDashboard').then((m) => ({ default: m.EmployerDashboard })))
+const SeekerDashboard = lazy(() => import('@/pages/dashboard/SeekerDashboard').then((m) => ({ default: m.SeekerDashboard })))
+const JobSearchLayout = lazy(() => import('@/components/layout/JobSearchLayout').then((m) => ({ default: m.JobSearchLayout })))
+const EmployerOnboarding = lazy(() => import('@/pages/onboarding/EmployerOnboarding').then((m) => ({ default: m.EmployerOnboarding })))
+const SeekerOnboarding = lazy(() => import('@/pages/onboarding/SeekerOnboarding').then((m) => ({ default: m.SeekerOnboarding })))
+const PostJob = lazy(() => import('@/pages/jobs/PostJob').then((m) => ({ default: m.PostJob })))
+const JobDetail = lazy(() => import('@/pages/jobs/JobDetail').then((m) => ({ default: m.JobDetail })))
+const EmployerVerification = lazy(() => import('@/pages/verification/EmployerVerification').then((m) => ({ default: m.EmployerVerification })))
+const DocumentUpload = lazy(() => import('@/pages/verification/DocumentUpload').then((m) => ({ default: m.DocumentUpload })))
+const FarmPhotoUpload = lazy(() => import('@/pages/verification/FarmPhotoUpload').then((m) => ({ default: m.FarmPhotoUpload })))
+const ForEmployers = lazy(() => import('@/pages/ForEmployers').then((m) => ({ default: m.ForEmployers })))
+const Pricing = lazy(() => import('@/pages/Pricing').then((m) => ({ default: m.Pricing })))
+const JobSearch = lazy(() => import('@/pages/jobs/JobSearch').then((m) => ({ default: m.JobSearch })))
+const MyApplications = lazy(() => import('@/pages/dashboard/seeker/MyApplications').then((m) => ({ default: m.MyApplications })))
+const SavedSearches = lazy(() => import('@/pages/dashboard/seeker/SavedSearches').then((m) => ({ default: m.SavedSearches })))
+const SeekerDocuments = lazy(() => import('@/pages/dashboard/seeker/SeekerDocuments').then((m) => ({ default: m.SeekerDocuments })))
+const ApplicantDashboard = lazy(() => import('@/pages/dashboard/employer/ApplicantDashboard').then((m) => ({ default: m.ApplicantDashboard })))
+const AdminLayout = lazy(() => import('@/components/layout/AdminLayout').then((m) => ({ default: m.AdminLayout })))
+const AdminGate = lazy(() => import('@/pages/admin/AdminLoginPage').then((m) => ({ default: m.AdminGate })))
+const EmployerList = lazy(() => import('@/pages/admin/EmployerList').then((m) => ({ default: m.EmployerList })))
+const SeekerList = lazy(() => import('@/pages/admin/SeekerList').then((m) => ({ default: m.SeekerList })))
+const JobsManagement = lazy(() => import('@/pages/admin/JobsManagement').then((m) => ({ default: m.JobsManagement })))
+const PlacementPipeline = lazy(() => import('@/pages/admin/PlacementPipeline').then((m) => ({ default: m.PlacementPipeline })))
+const AdminDocumentsQueue = lazy(() => import('@/pages/admin/AdminDocumentsQueue').then((m) => ({ default: m.AdminDocumentsQueue })))
+const AdminSkillCoverage = lazy(() => import('@/pages/admin/AdminSkillCoverage').then((m) => ({ default: m.AdminSkillCoverage })))
+
+// Full-page fallback shown while a route chunk loads. Mirrors the in-app
+// spinner style (brand-colored ring) so chunk loads read as ordinary loading.
+function RouteFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div
+        className="w-8 h-8 rounded-full border-[3px] border-t-transparent animate-spin"
+        style={{ borderColor: 'var(--color-brand)', borderTopColor: 'transparent' }}
+        aria-label="Loading page"
+        role="status"
+      />
+    </div>
+  )
+}
+
+// Each lazy element gets its own boundary so navigation only suspends the
+// destination route, never the whole app shell.
+function s(element: ReactNode) {
+  return <Suspense fallback={<RouteFallback />}>{element}</Suspense>
+}
 
 const router = createBrowserRouter([
   // ─── Public routes ──────────────────────────────────────────────────────────
@@ -48,27 +77,27 @@ const router = createBrowserRouter([
   },
   {
     path: '/login',
-    element: <Login />,
+    element: s(<Login />),
   },
   {
     path: '/signup',
-    element: <SignUp />,
+    element: s(<SignUp />),
   },
   {
     path: '/auth/verify',
-    element: <VerifyEmail />,
+    element: s(<VerifyEmail />),
   },
   {
     path: '/forgot-password',
-    element: <ForgotPassword />,
+    element: s(<ForgotPassword />),
   },
   {
     path: '/auth/reset',
-    element: <ResetPassword />,
+    element: s(<ResetPassword />),
   },
   {
     path: '/auth/select-role',
-    element: <SelectRole />,
+    element: s(<SelectRole />),
   },
   {
     // Phase 21 Track B — gate page for suspended users (isActive=false). MUST NOT
@@ -76,7 +105,7 @@ const router = createBrowserRouter([
     // dashboards by ProtectedRoute's isActive guard, which redirects HERE.
     // Wrapping would cause infinite redirect.
     path: '/suspended',
-    element: <Suspended />,
+    element: s(<Suspended />),
   },
 
   // ─── Jobs ───────────────────────────────────────────────────────────────────
@@ -84,11 +113,11 @@ const router = createBrowserRouter([
   // from treating "new" as a dynamic :id param.
   {
     path: '/for-employers',
-    element: <ForEmployers />,
+    element: s(<ForEmployers />),
   },
   {
     path: '/pricing',
-    element: <Pricing />,
+    element: s(<Pricing />),
   },
   {
     // /jobs uses JobSearchLayout — Nav header only, no dashboard sidebar.
@@ -98,17 +127,17 @@ const router = createBrowserRouter([
     // hideSidebar (commit eb7e2f1, 2026-05-04 morning) but that introduced
     // max-w + p-6 layout constraints that conflicted with JobSearch's flex split.
     path: '/jobs',
-    element: (
+    element: s(
       <JobSearchLayout>
         <JobSearch />
-      </JobSearchLayout>
+      </JobSearchLayout>,
     ),
   },
   {
     path: '/jobs/new',
     element: (
       <ProtectedRoute requiredRole="employer">
-        <PostJob />
+        {s(<PostJob />)}
       </ProtectedRoute>
     ),
   },
@@ -116,14 +145,14 @@ const router = createBrowserRouter([
     path: '/jobs/:id/edit',
     element: (
       <ProtectedRoute requiredRole="employer">
-        <PostJob />
+        {s(<PostJob />)}
       </ProtectedRoute>
     ),
   },
   {
     // PUBLIC — no ProtectedRoute wrapper. Component handles auth-gated views internally.
     path: '/jobs/:id',
-    element: <JobDetail />,
+    element: s(<JobDetail />),
   },
 
   // ─── Employer dashboard & verification ──────────────────────────────────────
@@ -132,7 +161,7 @@ const router = createBrowserRouter([
     path: '/dashboard/employer/jobs/:id/applicants',
     element: (
       <ProtectedRoute requiredRole="employer">
-        <ApplicantDashboard />
+        {s(<ApplicantDashboard />)}
       </ProtectedRoute>
     ),
   },
@@ -140,7 +169,7 @@ const router = createBrowserRouter([
     path: '/dashboard/employer',
     element: (
       <ProtectedRoute requiredRole="employer">
-        <EmployerDashboard />
+        {s(<EmployerDashboard />)}
       </ProtectedRoute>
     ),
   },
@@ -148,7 +177,7 @@ const router = createBrowserRouter([
     path: '/dashboard/employer/verification',
     element: (
       <ProtectedRoute requiredRole="employer">
-        <EmployerVerification />
+        {s(<EmployerVerification />)}
       </ProtectedRoute>
     ),
   },
@@ -156,7 +185,7 @@ const router = createBrowserRouter([
     path: '/dashboard/employer/verification/documents',
     element: (
       <ProtectedRoute requiredRole="employer">
-        <DocumentUpload />
+        {s(<DocumentUpload />)}
       </ProtectedRoute>
     ),
   },
@@ -164,7 +193,7 @@ const router = createBrowserRouter([
     path: '/dashboard/employer/verification/photos',
     element: (
       <ProtectedRoute requiredRole="employer">
-        <FarmPhotoUpload />
+        {s(<FarmPhotoUpload />)}
       </ProtectedRoute>
     ),
   },
@@ -176,7 +205,7 @@ const router = createBrowserRouter([
     path: '/dashboard/seeker/applications',
     element: (
       <ProtectedRoute requiredRole="seeker">
-        <MyApplications />
+        {s(<MyApplications />)}
       </ProtectedRoute>
     ),
   },
@@ -184,7 +213,7 @@ const router = createBrowserRouter([
     path: '/dashboard/seeker/saved-searches',
     element: (
       <ProtectedRoute requiredRole="seeker">
-        <SavedSearches />
+        {s(<SavedSearches />)}
       </ProtectedRoute>
     ),
   },
@@ -192,7 +221,7 @@ const router = createBrowserRouter([
     path: '/dashboard/seeker/documents',
     element: (
       <ProtectedRoute requiredRole="seeker">
-        <SeekerDocuments />
+        {s(<SeekerDocuments />)}
       </ProtectedRoute>
     ),
   },
@@ -200,7 +229,7 @@ const router = createBrowserRouter([
     path: '/dashboard/seeker',
     element: (
       <ProtectedRoute requiredRole="seeker">
-        <SeekerDashboard />
+        {s(<SeekerDashboard />)}
       </ProtectedRoute>
     ),
   },
@@ -210,7 +239,7 @@ const router = createBrowserRouter([
     path: '/onboarding/employer',
     element: (
       <ProtectedRoute requiredRole="employer">
-        <EmployerOnboarding />
+        {s(<EmployerOnboarding />)}
       </ProtectedRoute>
     ),
   },
@@ -218,7 +247,7 @@ const router = createBrowserRouter([
     path: '/onboarding/seeker',
     element: (
       <ProtectedRoute requiredRole="seeker">
-        <SeekerOnboarding />
+        {s(<SeekerOnboarding />)}
       </ProtectedRoute>
     ),
   },
@@ -228,18 +257,19 @@ const router = createBrowserRouter([
   // security boundary is the SECURITY DEFINER RPC layer (migration 023) — every
   // admin_* RPC validates get_user_role(auth.uid()) = 'admin' server-side, so
   // even a DevTools bypass of the frontend gate cannot exfiltrate data.
-  // List view pages are placeholders this commit; filled in plan 20-06 / 20-07.
   {
     path: '/admin',
-    element: <AdminGate />,
+    element: s(<AdminGate />),
   },
   {
     path: '/admin/employers',
     element: (
       <ProtectedRoute requiredRole="admin">
-        <AdminLayout>
-          <EmployerList />
-        </AdminLayout>
+        {s(
+          <AdminLayout>
+            <EmployerList />
+          </AdminLayout>,
+        )}
       </ProtectedRoute>
     ),
   },
@@ -247,9 +277,11 @@ const router = createBrowserRouter([
     path: '/admin/seekers',
     element: (
       <ProtectedRoute requiredRole="admin">
-        <AdminLayout>
-          <SeekerList />
-        </AdminLayout>
+        {s(
+          <AdminLayout>
+            <SeekerList />
+          </AdminLayout>,
+        )}
       </ProtectedRoute>
     ),
   },
@@ -257,9 +289,11 @@ const router = createBrowserRouter([
     path: '/admin/jobs',
     element: (
       <ProtectedRoute requiredRole="admin">
-        <AdminLayout>
-          <JobsManagement />
-        </AdminLayout>
+        {s(
+          <AdminLayout>
+            <JobsManagement />
+          </AdminLayout>,
+        )}
       </ProtectedRoute>
     ),
   },
@@ -267,9 +301,11 @@ const router = createBrowserRouter([
     path: '/admin/placements',
     element: (
       <ProtectedRoute requiredRole="admin">
-        <AdminLayout>
-          <PlacementPipeline />
-        </AdminLayout>
+        {s(
+          <AdminLayout>
+            <PlacementPipeline />
+          </AdminLayout>,
+        )}
       </ProtectedRoute>
     ),
   },
@@ -282,9 +318,11 @@ const router = createBrowserRouter([
     path: '/admin/documents',
     element: (
       <ProtectedRoute requiredRole="admin">
-        <AdminLayout>
-          <AdminDocumentsQueue />
-        </AdminLayout>
+        {s(
+          <AdminLayout>
+            <AdminDocumentsQueue />
+          </AdminLayout>,
+        )}
       </ProtectedRoute>
     ),
   },
@@ -296,9 +334,11 @@ const router = createBrowserRouter([
     path: '/admin/skills',
     element: (
       <ProtectedRoute requiredRole="admin">
-        <AdminLayout>
-          <AdminSkillCoverage />
-        </AdminLayout>
+        {s(
+          <AdminLayout>
+            <AdminSkillCoverage />
+          </AdminLayout>,
+        )}
       </ProtectedRoute>
     ),
   },
