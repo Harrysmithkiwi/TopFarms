@@ -228,6 +228,9 @@ export function JobDetail() {
         .neq('id', jobId)
         .limit(3)
       setSimilarJobs(
+        // Untyped nested-join shape; `any` goes away with generated DB types
+        // (audit task 2.3).
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ((similarData ?? []) as any[]).map((j) => ({
           id: j.id,
           title: j.title,

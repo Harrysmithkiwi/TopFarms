@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it } from 'vitest'
 
 // This file tests the VALID_TRANSITIONS state machine logic.
 // Unlike other stubs, some tests here should be immediately implementable

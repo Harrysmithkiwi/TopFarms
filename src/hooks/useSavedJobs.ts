@@ -24,7 +24,11 @@ export function useSavedJobs(userId: string | null) {
     // Optimistic update
     setSavedJobIds(prev => {
       const next = new Set(prev)
-      wasSaved ? next.delete(jobId) : next.add(jobId)
+      if (wasSaved) {
+        next.delete(jobId)
+      } else {
+        next.add(jobId)
+      }
       return next
     })
     try {
@@ -37,7 +41,11 @@ export function useSavedJobs(userId: string | null) {
       // Revert
       setSavedJobIds(prev => {
         const next = new Set(prev)
-        wasSaved ? next.add(jobId) : next.delete(jobId)
+        if (wasSaved) {
+          next.add(jobId)
+        } else {
+          next.delete(jobId)
+        }
         return next
       })
       toast.error('Could not save job \u2014 please try again')

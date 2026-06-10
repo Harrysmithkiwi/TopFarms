@@ -100,6 +100,9 @@ export function MyApplications() {
         .from('saved_jobs')
         .select('job_id, jobs(title, employer_profiles(farm_name))')
         .eq('user_id', session.user.id)
+      // Untyped nested-join shape; `any` goes away with generated DB types
+      // (audit task 2.3).
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setSavedJobDetails((savedData ?? []).map((s: any) => ({
         job_id: s.job_id,
         title: s.jobs?.title ?? 'Unknown',
@@ -115,7 +118,7 @@ export function MyApplications() {
       if (profileRow) {
         const fields = ['region', 'years_experience', 'dairynz_level', 'sector_pref', 'shed_types_experienced', 'accommodation_needed']
         const filled = fields.filter(f => {
-          const val = (profileRow as any)[f]
+          const val = (profileRow as Record<string, unknown>)[f]
           return val !== null && val !== undefined && val !== '' && !(Array.isArray(val) && val.length === 0)
         }).length
         setProfileStrength(Math.round((filled / fields.length) * 100))

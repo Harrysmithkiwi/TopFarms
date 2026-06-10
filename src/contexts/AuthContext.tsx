@@ -260,6 +260,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
+// Provider + hook intentionally co-located (AUTH-FIX single-subscription
+// design); fast refresh falls back to a full reload for this module.
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth(): AuthHookReturn {
   const ctx = useContext(AuthContext)
   if (!ctx) {

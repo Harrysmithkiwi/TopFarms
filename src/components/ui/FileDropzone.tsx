@@ -204,16 +204,14 @@ export function FileDropzone({
     },
     onDropRejected: (rejections) => {
       const firstError = rejections[0]?.errors[0]
+      const setMsg = multiple ? setMultiErrorMessage : setErrorMessage
       if (firstError?.code === 'file-too-large') {
         const maxMb = Math.round(maxSize / 1024 / 1024)
-        const msg = `File is too large. Maximum size is ${maxMb}MB.`
-        multiple ? setMultiErrorMessage(msg) : setErrorMessage(msg)
+        setMsg(`File is too large. Maximum size is ${maxMb}MB.`)
       } else if (firstError?.code === 'file-invalid-type') {
-        const msg = 'File type not accepted. Please check the allowed formats.'
-        multiple ? setMultiErrorMessage(msg) : setErrorMessage(msg)
+        setMsg('File type not accepted. Please check the allowed formats.')
       } else {
-        const msg = firstError?.message ?? 'File rejected.'
-        multiple ? setMultiErrorMessage(msg) : setErrorMessage(msg)
+        setMsg(firstError?.message ?? 'File rejected.')
       }
     },
   })

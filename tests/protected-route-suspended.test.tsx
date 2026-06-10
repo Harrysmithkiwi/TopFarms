@@ -15,7 +15,8 @@ vi.mock('@/lib/supabase', () => ({
 }))
 
 vi.mock('@/hooks/useAuth', () => ({ useAuth: vi.fn() }))
-// eslint-disable-next-line import/first
+// import-after-mock is intentional (vi.mock hoists above imports); the old
+// `import/first` disable referenced a plugin this config doesn't use.
 import { useAuth } from '@/hooks/useAuth'
 
 function mockAuth(opts: {

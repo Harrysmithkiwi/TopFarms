@@ -209,7 +209,7 @@ export function ApplicantDashboard() {
         .map((a) => a.seeker_profiles?.id)
         .filter((id): id is string => !!id)
 
-      let skillsMap = new Map<string, Omit<SeekerSkill, 'seeker_id'>[]>()
+      const skillsMap = new Map<string, Omit<SeekerSkill, 'seeker_id'>[]>()
 
       if (seekerIds.length > 0) {
         const { data: skillsData } = await supabase
@@ -236,7 +236,7 @@ export function ApplicantDashboard() {
       }))
 
       // Fetch batch match scores using seeker IDs for this single job
-      let newScoreMap = new Map<string, MatchScore>()
+      const newScoreMap = new Map<string, MatchScore>()
 
       if (seekerIds.length > 0) {
         // Load all pre-computed scores for this job in one query
@@ -673,7 +673,11 @@ export function ApplicantDashboard() {
                     onSelect={(id) =>
                       setSelectedIds((prev) => {
                         const next = new Set(prev)
-                        next.has(id) ? next.delete(id) : next.add(id)
+                        if (next.has(id)) {
+                          next.delete(id)
+                        } else {
+                          next.add(id)
+                        }
                         return next
                       })
                     }
