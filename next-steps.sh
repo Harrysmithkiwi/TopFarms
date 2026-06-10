@@ -38,6 +38,9 @@ cat <<'EOF'
       .planning/REGISTRY-REPAIR-PLAN-2026-06-10.md (now incl. 036 AND 038)
   [ ] PRE-LAUNCH: SEEKER-PROFILE-EXPOSURE-01 — seekers can read all 39
       employer_profiles columns incl. stripe_customer_id (filed 2026-06-10)
-  [ ] Set E2E_* GitHub secrets so role-gated e2e flows run in CI
+  [ ] Set E2E_* GitHub secrets so role-gated e2e flows run in CI (now also
+      covers the /admin/analytics panel flow)
+  [x] Founder analytics dashboard shipped 2026-06-11 (feature, not audit):
+      migration 039 applied; /admin/analytics; suite 400 green
 EOF
 echo "Done. Re-run this script after Milestone 0 to confirm gates are green."

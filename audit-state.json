@@ -250,6 +250,19 @@
           "SEEKER-PROFILE-EXPOSURE-01 (Medium, filed)"
         ],
         "commits": ["7539c85", "8bfbe08"]
+      },
+      {
+        "date": "2026-06-11",
+        "type": "ADDITIVE FEATURE WORK — not audit remediation",
+        "shipped": [
+          "Founder analytics dashboard: design doc (.planning/PHASE-ANALYTICS-DESIGN.md, operator-approved; tier decision = reuse admin)",
+          "Migration 039 (APPLIED): 4 admin_analytics_* definer RPCs — funnel/cohorts/match-quality/revenue, aggregates only, authenticated-only + explicit REVOKE FROM PUBLIC/anon (born compliant with staged-037 posture)",
+          "/admin/analytics route + page + sidebar (lazy 2.3 kB chunk, no new deps)",
+          "10 adversarial tests (suite 390 -> 400) + cred-gated e2e panel flow"
+        ],
+        "blocked_on_launch": "revenue panel data (PEND-01); true cohort retention needs analytics_events instrumentation (write path, deliberately not built)",
+        "security_surface_note": "New surface = 4 RPCs gated identically to the 023 family but with stricter birth grants; anon rejected at ACL (42501) before _admin_gate. Watch item: founder/verifier tier split documented for when a second admin human exists.",
+        "commits": ["design+039+page+tests commits of 2026-06-11"]
       }
     ]
   }
