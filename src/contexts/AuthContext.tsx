@@ -39,15 +39,11 @@ export interface AuthHookReturn {
 async function loadRole(
   userId: string,
 ): Promise<{ role: UserRole | null; isActive: boolean }> {
-  // [AUTH-FIX-02] Timing instrumentation — Phase 18.2 SC-7 diagnostic
-  // Remove once root cause confirmed or fix landed.
-  console.time('[AUTH-FIX-02] loadRole:db-query')
   const { data, error } = await supabase
     .from('user_roles')
     .select('role, is_active')
     .eq('user_id', userId)
     .single()
-  console.timeEnd('[AUTH-FIX-02] loadRole:db-query')
   // RESEARCH §Pattern 1: default isActive=true on error/null so a transient
   // failure does NOT incorrectly block a valid user. Only an explicit DB
   // is_active=false marks the user as suspended.

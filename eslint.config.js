@@ -33,6 +33,10 @@ export default tseslint.config(
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' },
       ],
+      // Diagnostics belong behind warn/error; anything chattier (log, time,
+      // info) is debug residue and must not ship (audit F13 precedent:
+      // [AUTH-FIX-02] console.time lived in the prod auth path for a month).
+      'no-console': ['error', { allow: ['warn', 'error'] }],
       // React Compiler diagnostics, downgraded to warn: this project does not
       // run the compiler, and the flagged patterns (sync setState in fetch
       // effects, RHF ref access, deliberately-narrow useCallback deps) are
@@ -41,6 +45,15 @@ export default tseslint.config(
       'react-hooks/set-state-in-effect': 'warn',
       'react-hooks/preserve-manual-memoization': 'warn',
       'react-hooks/refs': 'warn',
+    },
+  },
+  {
+    // App entry: boots the root, has no exports, and hosts the lazy() route
+    // consts — fast refresh always falls back to a full reload here, so the
+    // react-refresh rule cannot apply.
+    files: ['src/main.tsx'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
     },
   },
   {
