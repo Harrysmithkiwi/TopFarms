@@ -132,7 +132,7 @@
       "what": "employer-photos public bucket allows listing all objects",
       "loc": "advisor public_bucket_allows_listing; migration 007",
       "status": "closed",
-      "resolution": "18700a2 — migration 036 APPLIED 2026-06-10 (operator-sanctioned storage-policy write via Management API): owner-prefix SELECT replaces bucket-wide; advisor lint cleared; public-URL display path verified intact"
+      "resolution": "18700a2 — migration 036 APPLIED 2026-06-10 (operator-sanctioned storage-policy write via Management API): owner-prefix SELECT replaces bucket-wide; advisor lint cleared; public-URL display path verified intact; display verified BY CONSTRUCTION (bucket empty, getPublicUrl bypasses object RLS) — re-verify visually after first real photo upload"
     },
     {
       "id": "F13",
@@ -171,8 +171,16 @@
       "sev": "High",
       "what": "Marketplace empty for anonymous visitors (and cross-employer browsing): employer_profiles has no anon SELECT policy, so the employer_profiles!inner join in JobSearch.tsx prunes every job. Proven via PostgREST as anon: jobs visible alone, [] with the join. Launch blocker for visitor acquisition.",
       "loc": "JobSearch.tsx:259 (!inner, HOMEBUG-03); employer_profiles policies (migration 002); e2e guard: seeker-browse-jobs.spec.ts test.fail()",
+      "status": "closed",
+      "resolution": "8bfbe08 — migration 038 APPLIED (operator-selected view approach): marketplace_employer_profiles exposes 10/39 visitor-rendered columns for non-draft-listing employers; 4 embed sites repointed incl. FeaturedListings (landing also affected); anon-verified via PostgREST; e2e guard live (test.fail removed, passes genuinely)"
+    },
+    {
+      "id": "SEEKER-PROFILE-EXPOSURE-01",
+      "sev": "Medium",
+      "what": "Pre-existing: the 'seekers can view' policy grants any seeker account ALL 39 employer_profiles columns including stripe_customer_id and user_id. Surfaced during RLS-MKT-01 column inventory. Consider repointing seeker reads at the 038 view (or a wider seeker view) and narrowing the policy.",
+      "loc": "employer_profiles policy \"seekers can view\" (migration 002); column list in session log 2026-06-10",
       "status": "open",
-      "resolution": "diagnosed 2026-06-10; fix is an RLS product decision (expose profile rows backing active jobs vs view-based column exposure) — proposal in session summary, awaiting operator choice"
+      "resolution": "filed for pre-launch session alongside 037"
     }
   ],
   "strengths": [
@@ -190,7 +198,7 @@
       "RLS-enabled-no-policy on admin_audit_log etc. — deny-by-default is intentional (RPC-only access)"
     ]
   },
-  "next_review": "pre-launch session: apply 037 (F7/F8) + registry repair + RLS-MKT-01 fix decision + push (deploys webhook fix) + live Stripe swap (PEND-01) + F9 toggle + E2E_* secrets",
+  "next_review": "pre-launch session: PUSH main (deploys both webhook fixes; then live-endpoint re-probe: bad sig -> 400 from handler not 401 from gateway), apply 037, registry repair (incl. 038 row), SEEKER-PROFILE-EXPOSURE-01, live Stripe swap (PEND-01), F9 toggle (operator), E2E_* secrets",
   "remediation_log": {
     "date": "2026-06-10",
     "scope": "Milestone 0 + safe high-leverage wins (operator-directed; F7/F8 DB hardening and live-Stripe explicitly excluded)",
@@ -226,6 +234,22 @@
           "pooler/§6 blocker moot on CLI >= 2.98 (login role)"
         ],
         "commits": ["aefe255", "5416550", "18700a2", "75e301a", "bee0a98", "c4e660e"]
+      },
+      {
+        "date": "2026-06-10 (session 3)",
+        "closed": [
+          "RLS-MKT-01 (038 applied + code repointed + e2e guard genuine)",
+          "stripe-webhook SECOND root cause: gateway verify_jwt=true 401d all deliveries before handler — config.toml section added (7539c85); deploys on push with 75e301a"
+        ],
+        "verified": [
+          "push-to-main runs NO DB migration step (double gate: paths filter + job-level if workflow_dispatch); WARNING: do not use Actions Run-workflow button on supabase-deploy.yml — dispatch is what runs the migrations job",
+          "deno check all 11 functions post-prettier: 1 pre-existing failure (get-applicant-document-url, identical at origin/main; --use-api bundling does not typecheck)"
+        ],
+        "discovered": [
+          "FeaturedListings (landing) shared the RLS-MKT-01 inner-join bug",
+          "SEEKER-PROFILE-EXPOSURE-01 (Medium, filed)"
+        ],
+        "commits": ["7539c85", "8bfbe08"]
       }
     ]
   }

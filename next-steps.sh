@@ -25,13 +25,22 @@ cat <<'EOF'
   [x] employer-photos listing policy — migration 036 APPLIED (F12, 18700a2)
   [x] Playwright e2e suite committed + CI jobs (F16, aefe255)
   [ ] Supabase dashboard → Auth → enable leaked-password protection (audit F9)
+  [x] RLS-MKT-01 fixed — migration 038 view APPLIED + 4 embeds repointed
+      (8bfbe08); e2e marketplace guard now genuine
+  [ ] PUSH to main — SAFE (verified: migrations job double-gated; push runs
+      functions deploy + CI only). Deploys BOTH webhook fixes: verify_jwt
+      gate (7539c85) + constructEventAsync (75e301a). Until pushed, Stripe
+      deliveries 401 at the gateway.
+      ⚠ NEVER use the Actions 'Run workflow' button on supabase-deploy.yml —
+        workflow_dispatch is exactly what UN-gates the migrations job (the
+        incomplete-repair trap). Plain git push only.
+  [ ] AFTER PUSH: re-probe live endpoint — missing/bad sig must return 400
+      from the handler (today: 401 from the gateway)
   [ ] PRE-LAUNCH: apply migrations/037_definer_function_hardening.sql (F7/F8,
-      staged c4e660e — review checklist in file header) then registry repair
-      per .planning/REGISTRY-REPAIR-PLAN-2026-06-10.md (F4)
-  [ ] PRE-LAUNCH: decide + apply RLS-MKT-01 fix (anon job marketplace empty);
-      then remove test.fail() in tests/e2e/seeker-browse-jobs.spec.ts
-  [ ] PUSH to main — deploys the stripe-webhook constructEventAsync fix
-      (75e301a); prod webhook 400s ALL events until deployed
+      staged c4e660e — checklist in file header) + registry repair per
+      .planning/REGISTRY-REPAIR-PLAN-2026-06-10.md (now incl. 036 AND 038)
+  [ ] PRE-LAUNCH: SEEKER-PROFILE-EXPOSURE-01 — seekers can read all 39
+      employer_profiles columns incl. stripe_customer_id (filed 2026-06-10)
   [ ] Set E2E_* GitHub secrets so role-gated e2e flows run in CI
 EOF
 echo "Done. Re-run this script after Milestone 0 to confirm gates are green."

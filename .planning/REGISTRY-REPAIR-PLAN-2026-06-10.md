@@ -40,7 +40,9 @@ supabase migration repair --status reverted \
   20260428043338 20260428053314 20260429031148 20260503000000 20260503210000
 
 # 2. Record the disk identities as applied:
-supabase migration repair --status applied 018 019 020 021 022 036
+#    (038 added later on 2026-06-10 — marketplace view, applied same path as 036.
+#     037 stays OUT of this list until it is actually applied at pre-launch.)
+supabase migration repair --status applied 018 019 020 021 022 036 038
 ```
 
 ## Verification (after repair, before any push)
