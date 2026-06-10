@@ -1,3 +1,7 @@
+// Warning ratchet: `npm run lint` pins --max-warnings to the current count
+// (package.json). The backlog (React Compiler diagnostics + exhaustive-deps,
+// see rules below) may shrink but never grow — lower the pin when you clear
+// warnings; never raise it without a deliberate decision.
 import js from '@eslint/js'
 import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'

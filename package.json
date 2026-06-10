@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "typecheck": "tsc -b",
-    "lint": "eslint .",
+    "lint": "eslint . --max-warnings 41",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "preview": "vite preview",
