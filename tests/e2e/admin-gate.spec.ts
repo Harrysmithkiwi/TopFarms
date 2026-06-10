@@ -22,6 +22,16 @@ test.describe('admin role', () => {
       timeout: 15_000,
     })
   })
+
+  test('admin opens /admin/analytics and sees all four panels', async ({ page }) => {
+    await page.goto('/admin/analytics')
+    await expect(page.getByRole('heading', { name: 'Founder Analytics' })).toBeVisible({
+      timeout: 15_000,
+    })
+    for (const panel of ['Funnel', 'Cohort retention', 'Match quality', 'Revenue']) {
+      await expect(page.getByRole('heading', { name: panel })).toBeVisible({ timeout: 15_000 })
+    }
+  })
 })
 
 test.describe('non-admin denied', () => {
