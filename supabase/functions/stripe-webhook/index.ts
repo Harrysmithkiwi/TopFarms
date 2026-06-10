@@ -1,6 +1,14 @@
 import Stripe from 'https://esm.sh/stripe@14'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
+// Deno has no synchronous crypto: the esm.sh denonext build of stripe wires
+// SubtleCryptoProvider as the default, and sync constructEvent() THROWS
+// unconditionally ("SubtleCryptoProvider cannot be used in a synchronous
+// context") — meaning the previous code 400'd EVERY event, valid or not.
+// Proven empirically 2026-06-10 (deno 2.7.14, stripe 14.25.0). Always use
+// constructEventAsync with this provider under Deno.
+const cryptoProvider = Stripe.createSubtleCryptoProvider()
+
 Deno.serve(async (req) => {
   const signature = req.headers.get('stripe-signature')
   const body = await req.text()
@@ -30,7 +38,13 @@ Deno.serve(async (req) => {
   let event: Stripe.Event
 
   try {
-    event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
+    event = await stripe.webhooks.constructEventAsync(
+      body,
+      signature,
+      webhookSecret,
+      undefined,
+      cryptoProvider,
+    )
   } catch (err) {
     console.error('Webhook signature verification failed:', err)
     return new Response(JSON.stringify({ error: 'Webhook signature verification failed' }), {
