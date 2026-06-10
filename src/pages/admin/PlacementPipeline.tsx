@@ -1,7 +1,9 @@
 import { AdminTable } from '@/components/admin/AdminTable'
 import { Tag } from '@/components/ui/Tag'
 
-interface PlacementRow {
+// type (not interface): AdminTable<TRow extends Record<string, unknown>> needs
+// the implicit index signature that only type-alias object literals get.
+type PlacementRow = {
   id: string
   employer_id: string
   employer_name: string | null

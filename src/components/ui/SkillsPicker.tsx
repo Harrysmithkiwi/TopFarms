@@ -16,8 +16,6 @@ interface SkillsPickerProps {
   className?: string
 }
 
-type RequirementLevel = 'required' | 'preferred'
-
 const CATEGORY_LABELS: Record<string, string> = {
   livestock: 'Livestock',
   cropping_agronomy: 'Cropping & agronomy',

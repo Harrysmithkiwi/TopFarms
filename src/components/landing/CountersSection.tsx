@@ -83,9 +83,9 @@ export function CountersSection() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x"
-          style={{ divideColor: 'rgba(255,255,255,0.08)' }}
-        >
+        {/* divide color via utility class — `divideColor` is not a CSS property,
+            so the previous inline style was silently ignored by React. */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-white/[0.08]">
           <CounterBlock label="Jobs Posted" target={stats.jobs} active={inView} />
           <CounterBlock label="Workers Registered" target={stats.seekers} active={inView} />
           <CounterBlock label="Matches Made" target={stats.matches} active={inView} />

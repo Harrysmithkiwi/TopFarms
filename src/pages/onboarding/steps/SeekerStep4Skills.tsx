@@ -12,7 +12,7 @@ interface SeekerStep4Props {
   sectorPref?: string[]
 }
 
-export function SeekerStep4Skills({ onComplete, onBack, seekerId, sectorPref }: SeekerStep4Props) {
+export function SeekerStep4Skills({ onComplete, onBack, seekerId }: SeekerStep4Props) {
   const [selectedSkills, setSelectedSkills] = useState<SelectedSkill[]>([])
   const [saving, setSaving] = useState(false)
   const [loadingSkills, setLoadingSkills] = useState(false)

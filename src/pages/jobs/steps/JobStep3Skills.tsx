@@ -28,7 +28,7 @@ interface Step3Props {
   defaultValues?: Step3DefaultValues
 }
 
-export function JobStep3Skills({ jobId, sector, onComplete, onBack, defaultValues }: Step3Props) {
+export function JobStep3Skills({ jobId, onComplete, onBack, defaultValues }: Step3Props) {
   const [selectedSkills, setSelectedSkills] = useState<SelectedSkill[]>([])
   const [saving, setSaving] = useState(false)
   const [minExperience, setMinExperience] = useState(defaultValues?.min_dairy_experience ?? '')

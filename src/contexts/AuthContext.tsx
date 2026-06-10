@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
-import { AuthError, type Session } from '@supabase/supabase-js'
+import { AuthError, type Session, type User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import type { UserRole } from '@/types/domain'
 
@@ -8,22 +8,30 @@ export interface AuthHookReturn {
   role: UserRole | null
   isActive: boolean
   loading: boolean
+  // ReturnType of these supabase.auth methods is already a Promise — wrapping
+  // it in another Promise<> made the implementations unassignable (TS2322).
+  // signUpWithRole widens AuthResponse: the role-backfill failure branch
+  // returns the created user/session alongside an AuthError, which the plain
+  // AuthResponse union forbids (its error arm pins data to null/null).
   signUpWithRole: (
     email: string,
     password: string,
     role: 'employer' | 'seeker',
-  ) => Promise<ReturnType<typeof supabase.auth.signUp>>
+  ) => Promise<
+    | Awaited<ReturnType<typeof supabase.auth.signUp>>
+    | { data: { user: User | null; session: Session | null }; error: AuthError }
+  >
   signIn: (
     email: string,
     password: string,
-  ) => Promise<ReturnType<typeof supabase.auth.signInWithPassword>>
+  ) => ReturnType<typeof supabase.auth.signInWithPassword>
   signOut: () => Promise<void>
   resetPassword: (
     email: string,
-  ) => Promise<ReturnType<typeof supabase.auth.resetPasswordForEmail>>
+  ) => ReturnType<typeof supabase.auth.resetPasswordForEmail>
   updatePassword: (
     newPassword: string,
-  ) => Promise<ReturnType<typeof supabase.auth.updateUser>>
+  ) => ReturnType<typeof supabase.auth.updateUser>
   signInWithOAuth: (provider: 'google' | 'facebook') => Promise<void>
   refreshRole: () => Promise<UserRole | null>
 }

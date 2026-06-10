@@ -366,9 +366,6 @@ export function JobDetail() {
   // Determine CTA type
   const isVisitor = !session
   const isSeeker = session && role === 'seeker'
-  const isOwnerEmployer =
-    session && role === 'employer' // Simplified — in Phase 2 all employers see edit for any job (ownership check deferred)
-
   const isFeatured = job.listing_tier === 2
   const isPremium = job.listing_tier === 3
 

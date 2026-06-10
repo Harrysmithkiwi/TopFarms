@@ -3,7 +3,9 @@ import { AdminTable } from '@/components/admin/AdminTable'
 import { ProfileDrawer } from '@/components/admin/ProfileDrawer'
 import { Tag } from '@/components/ui/Tag'
 
-interface SeekerRow {
+// type (not interface): AdminTable<TRow extends Record<string, unknown>> needs
+// the implicit index signature that only type-alias object literals get.
+type SeekerRow = {
   user_id: string
   name: string
   email: string

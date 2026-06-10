@@ -146,7 +146,8 @@ export function MyApplications() {
     )
   }
 
-  async function handleAcceptInterview(applicationId: string) {
+  // _applicationId: placeholder handler — real accept flow not yet wired.
+  async function handleAcceptInterview(_applicationId: string) {
     toast.success('Interview accepted — the employer will be in touch shortly.')
   }
 
