@@ -1,0 +1,52 @@
+# E2E against real Vercel preview deployments (audit task 2.2).
+#
+# Vercel's GitHub integration emits a `deployment_status` event when a preview
+# finishes building; `environment_url` is the live preview URL. Setting
+# BASE_URL makes playwright.config.ts skip the local webServer and hit the
+# deployment directly. Role-gated flows skip until E2E_* repo secrets exist.
+#
+# NOTE: the anonymous flows exercise the PRODUCTION Supabase project (the
+# preview frontend ships prod VITE_SUPABASE_URL). They are read-only except
+# SIGNUP-01, which intentionally posts an invalid email and asserts the 400.
+
+name: E2E (Vercel preview)
+
+on:
+  deployment_status:
+
+jobs:
+  e2e-preview:
+    if: github.event.deployment_status.state == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.deployment.sha }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install Playwright chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E suite against deployment
+        run: npx playwright test
+        env:
+          BASE_URL: ${{ github.event.deployment_status.environment_url }}
+          E2E_SEEKER_EMAIL: ${{ secrets.E2E_SEEKER_EMAIL }}
+          E2E_SEEKER_PASSWORD: ${{ secrets.E2E_SEEKER_PASSWORD }}
+          E2E_EMPLOYER_EMAIL: ${{ secrets.E2E_EMPLOYER_EMAIL }}
+          E2E_EMPLOYER_PASSWORD: ${{ secrets.E2E_EMPLOYER_PASSWORD }}
+          E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
+          E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report-preview
+          path: playwright-report/
+          retention-days: 7
