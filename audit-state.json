@@ -239,7 +239,7 @@
         "date": "2026-06-10 (session 3)",
         "closed": [
           "RLS-MKT-01 (038 applied + code repointed + e2e guard genuine)",
-          "stripe-webhook SECOND root cause: gateway verify_jwt=true 401d all deliveries before handler — config.toml section added (7539c85); deploys on push with 75e301a"
+          "stripe-webhook BOTH layers fixed AND DEPLOYED (push 027fe6a, run 27272885574: functions=success, migrations=skipped). Post-deploy probe 2026-06-10: missing sig -> HTTP 400 {\"error\":\"Missing stripe-signature header\"}; bad sig -> HTTP 400 {\"error\":\"Webhook signature verification failed\"} — handler bodies, not gateway 401. VERIFIED LIVE."
         ],
         "verified": [
           "push-to-main runs NO DB migration step (double gate: paths filter + job-level if workflow_dispatch); WARNING: do not use Actions Run-workflow button on supabase-deploy.yml — dispatch is what runs the migrations job",

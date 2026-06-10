@@ -27,15 +27,12 @@ cat <<'EOF'
   [ ] Supabase dashboard → Auth → enable leaked-password protection (audit F9)
   [x] RLS-MKT-01 fixed — migration 038 view APPLIED + 4 embeds repointed
       (8bfbe08); e2e marketplace guard now genuine
-  [ ] PUSH to main — SAFE (verified: migrations job double-gated; push runs
-      functions deploy + CI only). Deploys BOTH webhook fixes: verify_jwt
-      gate (7539c85) + constructEventAsync (75e301a). Until pushed, Stripe
-      deliveries 401 at the gateway.
-      ⚠ NEVER use the Actions 'Run workflow' button on supabase-deploy.yml —
-        workflow_dispatch is exactly what UN-gates the migrations job (the
-        incomplete-repair trap). Plain git push only.
-  [ ] AFTER PUSH: re-probe live endpoint — missing/bad sig must return 400
-      from the handler (today: 401 from the gateway)
+  [x] PUSHED 2026-06-10 (027fe6a) — functions deployed, migrations skipped
+      (gate held). ⚠ standing rule: NEVER use the Actions 'Run workflow'
+      button on supabase-deploy.yml — dispatch un-gates the migrations job.
+  [x] Post-deploy probe PASSED: missing sig -> 400 handler body; bad sig ->
+      400 'Webhook signature verification failed' (was 401 gateway). Webhook
+      live path verified; valid-event positive path proven locally pre-push.
   [ ] PRE-LAUNCH: apply migrations/037_definer_function_hardening.sql (F7/F8,
       staged c4e660e — checklist in file header) + registry repair per
       .planning/REGISTRY-REPAIR-PLAN-2026-06-10.md (now incl. 036 AND 038)
