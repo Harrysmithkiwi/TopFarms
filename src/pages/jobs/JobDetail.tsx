@@ -165,12 +165,17 @@ export function JobDetail() {
     async function loadJob() {
       setLoading(true)
 
-      // 1. Load job with employer profile
+      // 1. Load job with employer profile — via the marketplace view
+      // (RLS-MKT-01, migration 038) so visitors get farm info too. The view
+      // exposes exactly the EmployerProfile interface fields and only for
+      // employers with a non-draft, non-archived job. Known edge: an employer
+      // previewing their OWN draft (no listed jobs yet) gets null farm info
+      // here — the wizard's Step 6 preview is the draft-preview surface.
       const { data: jobData, error: jobError } = await supabase
         .from('jobs')
         .select(
           `*,
-          employer_profiles(*)`,
+          employer_profiles:marketplace_employer_profiles(*)`,
         )
         .eq('id', jobId)
         .single()

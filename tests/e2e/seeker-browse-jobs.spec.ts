@@ -6,13 +6,10 @@ import { hasState, statePath, SKIP_NO_CREDS } from './helpers'
 // RLS-MKT-01 — the bug where /jobs renders "0 jobs found" for visitors.
 
 test.describe('visitor (anonymous) marketplace', () => {
-  // KNOWN BUG — RLS-MKT-01 (diagnosed 2026-06-10, fix pending operator review):
-  // employer_profiles has no anon SELECT policy, so the employer_profiles!inner
-  // join in JobSearch.tsx prunes every job for anonymous visitors. test.fail()
-  // keeps the suite green while the bug exists AND forces this annotation to be
-  // removed when the RLS fix lands (an unexpected pass fails the run).
+  // RLS-MKT-01 regression guard (fixed by migration 038 + the aliased
+  // marketplace_employer_profiles embeds): visitors must always see a
+  // non-empty marketplace while >=1 active job exists.
   test('visitor sees a non-empty marketplace on /jobs', async ({ page }) => {
-    test.fail(true, 'RLS-MKT-01: anon cannot read employer_profiles; !inner join hides all jobs')
     await page.goto('/jobs')
     // Wait for the query to settle, then require: no empty state AND at least
     // one job-card heading that is not the empty-state heading.

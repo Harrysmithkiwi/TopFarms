@@ -254,11 +254,19 @@ export function JobSearch() {
         const from = (pageParam - 1) * PAGE_SIZE
         const to = from + PAGE_SIZE - 1
 
+        // RLS-MKT-01 (migration 038): embed goes through the public
+        // marketplace_employer_profiles VIEW — the base table has no anon
+        // SELECT policy, so embedding it directly made !inner prune every job
+        // for visitors. The `employer_profiles:` alias keeps the response key
+        // (and the .overlaps filter path below) unchanged.
         let query = supabase
           .from('jobs')
-          .select('*, employer_profiles!inner(id, farm_name, region, accommodation_extras)', {
-            count: 'exact',
-          })
+          .select(
+            '*, employer_profiles:marketplace_employer_profiles!inner(id, farm_name, region, accommodation_extras)',
+            {
+              count: 'exact',
+            },
+          )
           .eq('status', 'active')
           .range(from, to)
 

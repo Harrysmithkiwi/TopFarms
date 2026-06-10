@@ -129,7 +129,7 @@ export function FeaturedListings() {
       const { data: featuredData } = await supabase
         .from('jobs')
         .select(
-          'id, title, region, contract_type, salary_min, salary_max, listing_tier, created_at, shed_type, accommodation, visa_sponsorship, couples_welcome, employer_profiles!inner(farm_name, region, id)',
+          'id, title, region, contract_type, salary_min, salary_max, listing_tier, created_at, shed_type, accommodation, visa_sponsorship, couples_welcome, employer_profiles:marketplace_employer_profiles!inner(farm_name, region, id)',
         )
         .eq('status', 'active')
         // 2=featured, 3=premium per getTierBadge helper (FeaturedListings.tsx:33-38). listing_tier is int NOT NULL DEFAULT 1 in supabase/migrations/001_initial_schema.sql:129. HOMEBUG-02: previously passed string array which yields Postgres 22P02 invalid_text_representation.
@@ -147,7 +147,7 @@ export function FeaturedListings() {
       const { data: fallbackData } = await supabase
         .from('jobs')
         .select(
-          'id, title, region, contract_type, salary_min, salary_max, listing_tier, created_at, shed_type, accommodation, visa_sponsorship, couples_welcome, employer_profiles!inner(farm_name, region, id)',
+          'id, title, region, contract_type, salary_min, salary_max, listing_tier, created_at, shed_type, accommodation, visa_sponsorship, couples_welcome, employer_profiles:marketplace_employer_profiles!inner(farm_name, region, id)',
         )
         .eq('status', 'active')
         .order('created_at', { ascending: false })
