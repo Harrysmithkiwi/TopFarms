@@ -128,23 +128,33 @@ function StageRow({ label, value, rate }: { label: string; value: number; rate?:
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
+interface LeadsPayload {
+  total: number
+  by_status: { new: number; contacted: number; onboarded: number; dead: number }
+  by_type: { employer: number; seeker: number }
+  converted: number
+  pending_review: number
+}
+
 export function AdminAnalytics() {
   const [funnel, setFunnel] = useState<FunnelPayload | null>(null)
   const [cohorts, setCohorts] = useState<CohortsPayload | null>(null)
   const [match, setMatch] = useState<MatchQualityPayload | null>(null)
   const [revenue, setRevenue] = useState<RevenuePayload | null>(null)
+  const [leads, setLeads] = useState<LeadsPayload | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function load() {
-      const [f, c, m, r] = await Promise.all([
+      const [f, c, m, r, ld] = await Promise.all([
         supabase.rpc('admin_analytics_funnel', { p_from: null, p_to: null }),
         supabase.rpc('admin_analytics_cohorts'),
         supabase.rpc('admin_analytics_match_quality'),
         supabase.rpc('admin_analytics_revenue', { p_from: null, p_to: null }),
+        supabase.rpc('admin_analytics_leads'),
       ])
-      const firstError = f.error ?? c.error ?? m.error ?? r.error
+      const firstError = f.error ?? c.error ?? m.error ?? r.error ?? ld.error
       if (firstError) {
         setError(firstError.message)
       } else {
@@ -152,6 +162,7 @@ export function AdminAnalytics() {
         setCohorts(c.data as unknown as CohortsPayload)
         setMatch(m.data as unknown as MatchQualityPayload)
         setRevenue(r.data as unknown as RevenuePayload)
+        setLeads(ld.data as unknown as LeadsPayload)
       }
       setLoading(false)
     }
@@ -187,7 +198,7 @@ export function AdminAnalytics() {
         <p className="text-danger text-sm">Failed to load analytics: {error}. Refresh the page.</p>
       )}
 
-      {!loading && !error && funnel && cohorts && match && revenue && (
+      {!loading && !error && funnel && cohorts && match && revenue && leads && (
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
           {/* ── Funnel ── */}
           <Panel
@@ -386,6 +397,35 @@ export function AdminAnalytics() {
                 value={revenue.pipeline.acknowledged_unconfirmed}
                 rate={nzd(revenue.pipeline.value_nzd)}
               />
+            </div>
+          </Panel>
+
+          {/* ── Leads (top-of-funnel; L4 wiring) ── */}
+          <Panel
+            title="Leads"
+            caption="Top-of-funnel pipeline from discovery → signup. Approved leads only; staging awaits review."
+          >
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <p className="text-[12px] font-semibold tracking-wide uppercase opacity-60">
+                  By status
+                </p>
+                <StageRow label="New" value={leads.by_status.new} />
+                <StageRow label="Contacted" value={leads.by_status.contacted} />
+                <StageRow
+                  label="Onboarded (converted)"
+                  value={leads.by_status.onboarded}
+                  rate={pct(leads.converted, leads.total)}
+                />
+                <StageRow label="Dead" value={leads.by_status.dead} />
+              </div>
+              <div>
+                <p className="text-[12px] font-semibold tracking-wide uppercase opacity-60">Mix</p>
+                <StageRow label="Employers" value={leads.by_type.employer} />
+                <StageRow label="Seekers" value={leads.by_type.seeker} />
+                <StageRow label="Total leads" value={leads.total} />
+                <StageRow label="Pending review (staging)" value={leads.pending_review} />
+              </div>
             </div>
           </Panel>
         </div>
