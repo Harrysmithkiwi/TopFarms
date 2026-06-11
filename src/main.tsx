@@ -110,6 +110,12 @@ const AdminSkillCoverage = lazy(() =>
 const AdminAnalytics = lazy(() =>
   import('@/pages/admin/AdminAnalytics').then((m) => ({ default: m.AdminAnalytics })),
 )
+const AdminLeadsStaging = lazy(() =>
+  import('@/pages/admin/AdminLeadsStaging').then((m) => ({ default: m.AdminLeadsStaging })),
+)
+const AdminLeads = lazy(() =>
+  import('@/pages/admin/AdminLeads').then((m) => ({ default: m.AdminLeads })),
+)
 
 // Full-page fallback shown while a route chunk loads. Mirrors the in-app
 // spinner style (brand-colored ring) so chunk loads read as ordinary loading.
@@ -363,6 +369,34 @@ const router = createBrowserRouter([
         {s(
           <AdminLayout>
             <AdminAnalytics />
+          </AdminLayout>,
+        )}
+      </ProtectedRoute>
+    ),
+  },
+  {
+    // Leads pipeline L0 (PHASE-LEADS-DESIGN). NOTE: /admin/leads/staging
+    // declared BEFORE /admin/leads (React Router ordering convention used
+    // throughout this table). Server-side gate: admin_lead* SECURITY DEFINER
+    // RPCs (migration 041), corrected-037 grants.
+    path: '/admin/leads/staging',
+    element: (
+      <ProtectedRoute requiredRole="admin">
+        {s(
+          <AdminLayout>
+            <AdminLeadsStaging />
+          </AdminLayout>,
+        )}
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/admin/leads',
+    element: (
+      <ProtectedRoute requiredRole="admin">
+        {s(
+          <AdminLayout>
+            <AdminLeads />
           </AdminLayout>,
         )}
       </ProtectedRoute>

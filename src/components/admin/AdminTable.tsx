@@ -12,6 +12,8 @@ type AdminListRpc =
   | 'admin_list_document_queue'
   | 'admin_skill_coverage'
   | 'admin_list_analytics_events'
+  | 'admin_leads_staging_list'
+  | 'admin_leads_list'
 
 interface AdminTableProps<TRow> {
   /** Name of the SECURITY DEFINER RPC to call (e.g., 'admin_list_employers'). */
