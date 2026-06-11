@@ -43,7 +43,7 @@ supabase migration repair --status reverted \
 #    (038 added 2026-06-10 — marketplace view; 039 added 2026-06-11 — analytics
 #     RPCs; both applied via the same Management-API path as 036.
 #     037 + 040 applied 2026-06-11 — all of 036-040 now live, none registered.)
-supabase migration repair --status applied 018 019 020 021 022 036 037 038 039 040
+supabase migration repair --status applied 018 019 020 021 022 036 037 038 039 040 041
 ```
 
 ## Verification (after repair, before any push)
