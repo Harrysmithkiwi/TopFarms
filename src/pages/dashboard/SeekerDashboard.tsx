@@ -86,7 +86,7 @@ export function SeekerDashboard() {
           // Load recent applications (last 3)
           const { data: appsData } = await supabase
             .from('applications')
-            .select('*, jobs(title, region, employer_profiles(farm_name))')
+            .select('*, jobs(title, region, employer_profiles:marketplace_employer_profiles(farm_name))')
             .eq('seeker_id', profileData.id)
             .order('created_at', { ascending: false })
             .limit(3)

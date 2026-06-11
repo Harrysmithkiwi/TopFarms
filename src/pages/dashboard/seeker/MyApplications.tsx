@@ -66,7 +66,7 @@ export function MyApplications() {
       // Load applications with job details
       const { data, error } = await supabase
         .from('applications')
-        .select('*, jobs(*, employer_profiles(farm_name, region))')
+        .select('*, jobs(*, employer_profiles:marketplace_employer_profiles(farm_name, region))')
         .eq('seeker_id', profileId)
         .order('created_at', { ascending: false })
 
@@ -104,7 +104,7 @@ export function MyApplications() {
       // Fetch saved jobs with titles for sidebar
       const { data: savedData } = await supabase
         .from('saved_jobs')
-        .select('job_id, jobs(title, employer_profiles(farm_name))')
+        .select('job_id, jobs(title, employer_profiles:marketplace_employer_profiles(farm_name))')
         .eq('user_id', session.user.id)
       // Untyped nested-join shape; `any` goes away with generated DB types
       // (audit task 2.3).

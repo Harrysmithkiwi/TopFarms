@@ -227,7 +227,7 @@ export function JobDetail() {
       // 5. Similar jobs: 3 active jobs in same region, excluding current
       const { data: similarData } = await supabase
         .from('jobs')
-        .select('id, title, salary_min, salary_max, employer_profiles(farm_name, region)')
+        .select('id, title, salary_min, salary_max, employer_profiles:marketplace_employer_profiles(farm_name, region)')
         .eq('status', 'active')
         .eq('region', loadedJob.region ?? '')
         .neq('id', jobId)
