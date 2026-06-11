@@ -37,6 +37,73 @@ const SOURCE_LABELS: Record<string, string> = {
   fb_manual_capture: 'FB (manual capture)',
 }
 
+function PastePanel({ onCaptured }: { onCaptured: () => void }) {
+  const [source, setSource] = useState('fb_own_group')
+  const [text, setText] = useState('')
+  const [busy, setBusy] = useState(false)
+
+  // L1 batch lane (§9.2): paste one or MANY posts; lead-intake structures
+  // them with Claude Haiku server-side (degrades to confidence-0 staging
+  // rows until ANTHROPIC_API_KEY is set in Edge secrets).
+  async function submit() {
+    if (!text.trim()) return
+    setBusy(true)
+    const { data, error } = await supabase.functions.invoke('lead-intake', {
+      body: { source, items: [{ raw_text: text }] },
+    })
+    setBusy(false)
+    if (error) {
+      toast.error(`Intake failed: ${error.message}`)
+      return
+    }
+    const r = (data as { results?: Record<string, number>; structuring?: string }) ?? {}
+    toast.success(
+      `Staged ${r.results?.inserted ?? 0} (dupes ${r.results?.exact_duplicate ?? 0}, suppressed ${r.results?.suppressed ?? 0}) — ${r.structuring ?? ''}`,
+    )
+    setText('')
+    onCaptured()
+  }
+
+  const inputCls =
+    'border-border bg-surface w-full rounded-[8px] border px-3 py-2 text-sm outline-none focus:border-brand'
+
+  return (
+    <div className="bg-surface border-border rounded-[12px] border p-5">
+      <h2 className="text-[15px] font-semibold" style={{ color: 'var(--color-text)' }}>
+        Paste posts (batch)
+      </h2>
+      <p className="mt-0.5 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
+        Paste one or many posts — structuring, dedupe and suppression run automatically; results
+        land in the staging queue for your approval.
+      </p>
+      <div className="mt-3 flex flex-col gap-3 sm:flex-row">
+        <select
+          className={`${inputCls} sm:w-56`}
+          value={source}
+          onChange={(e) => setSource(e.target.value)}
+        >
+          <option value="fb_own_group">FB (own group)</option>
+          <option value="fb_manual_capture">FB (manual capture)</option>
+        </select>
+        <button
+          type="button"
+          disabled={busy || !text.trim()}
+          onClick={submit}
+          className="bg-brand rounded-[8px] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+        >
+          {busy ? 'Structuring…' : 'Stage batch'}
+        </button>
+      </div>
+      <textarea
+        className={`${inputCls} mt-3 h-32`}
+        placeholder="Paste post text here — multiple posts in one paste is fine"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+      />
+    </div>
+  )
+}
+
 function CaptureForm({ onCaptured }: { onCaptured: () => void }) {
   const [source, setSource] = useState('fb_manual_capture')
   const [type, setType] = useState<'employer' | 'seeker'>('employer')
@@ -207,6 +274,7 @@ export function AdminLeadsStaging() {
       >
         Lead Staging
       </h1>
+      <PastePanel onCaptured={() => setRefreshKey((k) => k + 1)} />
       <CaptureForm onCaptured={() => setRefreshKey((k) => k + 1)} />
 
       {selected && (
