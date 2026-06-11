@@ -24,13 +24,21 @@ const FIRECRAWL = 'https://api.firecrawl.dev/v2'
 interface Board {
   source: string
   map_url: string
+  search?: string
+  map_limit?: number
   url_include: string
   url_exclude: string[]
 }
 const BOARDS: Board[] = [
   {
     source: 'nzfarmingjobs',
-    map_url: 'https://nzfarmingjobs.co.nz/jobs/',
+    // ROOT, not /jobs/: the /jobs/ listing page only exposed ~12 links on the
+    // first live run (mapped 12 → 0 /job/ ads). The individual ads live at
+    // /job/<id> and are discoverable by mapping the site root. Confirmed config
+    // via the ?probe=1 matrix before trusting this for a real run.
+    map_url: 'https://nzfarmingjobs.co.nz',
+    search: 'job',
+    map_limit: 500,
     url_include: '/job/',
     url_exclude: ['/company/', '/resume/'],
   },
@@ -100,6 +108,36 @@ Deno.serve(async (req) => {
   const key = Deno.env.get('FIRECRAWL_API_KEY')
   if (!key) return json({ skipped: 'FIRECRAWL_API_KEY not configured' }, 200)
 
+  // ── Probe mode (?probe=1): read-only discovery diagnostic. Maps a matrix of
+  // candidate configs and returns the ACTUAL urls + counts so we can SEE what
+  // gets discovered/filtered before spending any extraction credits. No scrape,
+  // no DB writes. Maps are cheap.
+  if (new URL(req.url).searchParams.get('probe') === '1') {
+    const root = 'https://nzfarmingjobs.co.nz'
+    const candidates = [
+      { label: 'root + search=job', url: root, opts: { search: 'job', limit: 500 } },
+      { label: 'root, no search', url: root, opts: { limit: 500 } },
+      { label: 'root + search=farm', url: root, opts: { search: 'farm', limit: 500 } },
+      { label: '/jobs/ + search=job (orig — got 12)', url: `${root}/jobs/`, opts: { search: 'job', limit: 200 } },
+    ]
+    const report: unknown[] = []
+    for (const c of candidates) {
+      const m = await firecrawlMap(key, c.url, c.opts)
+      if (!m.ok) { report.push({ ...c, error: m.error }); continue }
+      const ads = m.links.filter(
+        (u) => u.includes('/job/') && !u.includes('/company/') && !u.includes('/resume/'),
+      )
+      report.push({
+        label: c.label, url: c.url, opts: c.opts,
+        total_links: m.links.length,
+        job_ads: ads.length,
+        sample_ads: ads.slice(0, 25),
+        sample_links: m.links.slice(0, 15),
+      })
+    }
+    return json({ probe: true, report })
+  }
+
   const db = createClient(
     Deno.env.get('SUPABASE_URL') ?? '',
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
@@ -108,7 +146,10 @@ Deno.serve(async (req) => {
   const results: Record<string, unknown> = {}
 
   for (const board of BOARDS) {
-    const mapped = await firecrawlMap(key, board.map_url)
+    const mapped = await firecrawlMap(key, board.map_url, {
+      search: board.search,
+      limit: board.map_limit,
+    })
     if (!mapped.ok) {
       results[board.source] = { note: mapped.error }
       continue
@@ -154,12 +195,15 @@ Deno.serve(async (req) => {
 async function firecrawlMap(
   key: string,
   url: string,
+  opts?: { search?: string; limit?: number },
 ): Promise<{ ok: true; links: string[] } | { ok: false; error: string }> {
   try {
+    const reqBody: Record<string, unknown> = { url, limit: opts?.limit ?? 200 }
+    if (opts?.search) reqBody.search = opts.search
     const res = await fetch(`${FIRECRAWL}/map`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url, search: 'job', limit: 200 }),
+      body: JSON.stringify(reqBody),
     })
     if (!res.ok) return { ok: false, error: `map ${res.status}` }
     const body = (await res.json()) as { links?: { url?: string }[] }
