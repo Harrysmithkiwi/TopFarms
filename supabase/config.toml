@@ -62,3 +62,13 @@ verify_jwt = false
 # (Phase 18.1 SC-3 pattern) so even a non-admin user with a valid JWT cannot
 # trigger emails — the admin queue page is the only caller that holds the secret.
 verify_jwt = true
+
+[functions.lead-intake]
+# Webhook lane of the leads intake door (PHASE-LEADS-DESIGN §3). Called by
+# Apify scheduled actors (L2) with X-Webhook-Secret (LEAD_INTAKE_SECRET in
+# Edge secrets) — same in-function secret pattern as notify-job-filled.
+# verify_jwt=false because Apify sends no JWT; consequently any JWT reaching
+# the handler is UNVERIFIED (CLAUDE §5), so the founder's capture form does
+# NOT call this function — it uses the admin_lead_capture RPC. Both converge
+# on _lead_intake() in Postgres (service_role-only grant).
+verify_jwt = false
