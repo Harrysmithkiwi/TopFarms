@@ -152,3 +152,44 @@ supabase secrets set \
    lane stays as the fallback + for other-groups human capture.
 3. Registry backlog at 036–042; a harvest-cron migration (043) will be staged,
    not applied — backlog flagged, not grown live, until the pre-launch repair.
+
+---
+
+## lead-harvest REWRITE spec (2026-06-12 — proved on nzfarmingjobs, build next session)
+
+Proof: Firecrawl LLM-extract on a real `/job/` ad returned every field clean
+(business_name, region mapped, salary_text, contact_email/name/phone/notes,
+company_profile_url, no-leak summary). **5 credits per extract.**
+
+Pattern is map→filter→dedupe→extract (NOT single /v2/extract on a listing URL):
+
+1. **Map** `POST /v2/map { url: <map_url> }` per board.
+2. **Filter** links: keep `url_include` ('/job/'), drop `url_exclude`
+   (['/company/','/resume/']). The /company/ directory is spam-polluted —
+   NEVER scrape it.
+3. **Dedupe BEFORE spending credits**: drop URLs already present as
+   `source_ref` in `leads` or `lead_staging` (query via service role).
+   Steady-state = only NEW ads get extracted → a handful/day, not 80.
+4. **Extract** each new URL: `POST /v2/scrape { url, formats:['json'],
+   jsonOptions:{ schema:<rich schema> } }` → `data.json`. 5 credits each.
+5. Normalise → `structured` for `_lead_intake`: assemble
+   `contact = {email,phone,url,name,notes}` from the flat contact_* fields;
+   set salary_text, summary, company_profile_url, region, display_name
+   (business_name ?? job_title), role_or_category (job_title); source_ref =
+   the scraped URL.
+
+Per-board config (replaces the hardcoded FIRECRAWL_SEEK_URLS pair):
+```
+[{ source:'nzfarmingjobs', map_url:'https://nzfarmingjobs.co.nz/jobs/',
+   url_include:'/job/', url_exclude:['/company/','/resume/'] }]
+```
+- New source value `nzfarmingjobs` (and a generic path for future boards) needs
+  adding to the lead source CHECK constraints (041) — fold into a migration.
+- Seek/TradeMe: JS-heavy SPAs — defer until the static board is proven live;
+  may need scrape `--wait-for` / FIRE-1 agent. Per-board verdict still pending
+  their real map/extract runs.
+
+Endpoints to VERIFY before coding (don't guess): `/v2/map` request+response,
+`/v2/scrape` with `formats:['json']` + `jsonOptions.schema`. Migration 044
+(staged) widens leads for the rich fields. Rich schema: /tmp/topfarms-ad-schema.json
+(regenerate from the field list above if cleared).
