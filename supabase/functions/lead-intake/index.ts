@@ -52,6 +52,22 @@ interface StructuredLead {
   missing_fields: string[]
 }
 
+interface IntakeItem {
+  source_ref?: string
+  raw_text?: string
+  structured?: Record<string, unknown>
+  confidence?: number
+  missing_fields?: string[]
+}
+
+// Apify webhook event envelope (ACTOR.RUN.SUCCEEDED). `resource` mirrors the
+// Get-Actor-run API response; defaultDatasetId is the run's results dataset.
+interface ApifyEvent {
+  eventType?: string
+  resource?: { defaultDatasetId?: string; id?: string }
+  eventData?: { actorRunId?: string }
+}
+
 Deno.serve(async (req) => {
   const db = createClient(
     Deno.env.get('SUPABASE_URL') ?? '',
@@ -61,28 +77,46 @@ Deno.serve(async (req) => {
   const authed = await authorize(req, db as unknown as RoleLookupDb)
   if (!authed.ok) return json({ error: authed.error }, authed.status)
 
-  let body: {
-    source?: string
-    items?: {
-      source_ref?: string
-      raw_text?: string
-      structured?: Record<string, unknown>
-      confidence?: number
-      missing_fields?: string[]
-    }[]
-  }
+  const reqUrl = new URL(req.url)
+  let body: unknown
   try {
     body = await req.json()
   } catch {
     return json({ error: 'invalid JSON' }, 400)
   }
 
-  const source = body.source ?? ''
-  if (!ALLOWED_SOURCES.includes(source)) {
-    return json({ error: `source must be one of ${ALLOWED_SOURCES.join(', ')}` }, 400)
+  // Two body shapes converge on the shared loop below:
+  //   A. Direct  { source, items:[...] }  — L1 paste lane + the replay script.
+  //   B. Apify webhook event { resource:{ defaultDatasetId } }  — L2 scheduled
+  //      actors. `source` comes from the URL (?source=seek|trademe); items are
+  //      FETCHED from the run's dataset with APIFY_TOKEN. Dedupe on source_ref
+  //      makes Apify's at-least-once webhook retries idempotent.
+  let source: string
+  let items: IntakeItem[]
+  const apifyDatasetId = (body as ApifyEvent)?.resource?.defaultDatasetId
+
+  if (apifyDatasetId) {
+    source = reqUrl.searchParams.get('source') ?? ''
+    if (!ALLOWED_SOURCES.includes(source)) {
+      return json({ error: `?source must be one of ${ALLOWED_SOURCES.join(', ')}` }, 400)
+    }
+    const fetched = await fetchApifyDataset(apifyDatasetId)
+    if (!fetched.ok) return json({ error: fetched.error }, 502)
+    items = fetched.items
+  } else {
+    const b = body as { source?: string; items?: IntakeItem[] }
+    source = b.source ?? ''
+    if (!ALLOWED_SOURCES.includes(source)) {
+      return json({ error: `source must be one of ${ALLOWED_SOURCES.join(', ')}` }, 400)
+    }
+    items = Array.isArray(b.items) ? b.items : []
   }
-  const items = Array.isArray(body.items) ? body.items.slice(0, 200) : []
-  if (items.length === 0) return json({ error: 'items[] required' }, 400)
+
+  // Cap: each item is one inline Haiku call. NZ-ag listing volume per 2x/day
+  // run is small (design §L2); if it ever exceeds this, structuring moves to a
+  // queue rather than raising the cap.
+  items = items.slice(0, 50)
+  if (items.length === 0) return json({ error: 'no items' }, 400)
 
   const results: Record<string, number> = {
     inserted: 0,
@@ -178,6 +212,33 @@ async function authorize(
     }
   }
   return { ok: false, status: 403, error: 'forbidden' }
+}
+
+// ─── Apify dataset fetch (L2 commercial feeds) ───────────────────────────────
+// Field names vary per actor, so we do NOT couple to a specific actor schema:
+// the whole row JSON is handed to Haiku structuring, and source_ref is lifted
+// from common listing-URL keys so dedupe makes retries idempotent.
+async function fetchApifyDataset(
+  datasetId: string,
+): Promise<{ ok: true; items: IntakeItem[] } | { ok: false; error: string }> {
+  const token = Deno.env.get('APIFY_TOKEN')
+  if (!token) return { ok: false, error: 'APIFY_TOKEN not configured' }
+  try {
+    const res = await fetch(
+      `https://api.apify.com/v2/datasets/${datasetId}/items?clean=true&format=json`,
+      { headers: { Authorization: `Bearer ${token}` } },
+    )
+    if (!res.ok) return { ok: false, error: `apify dataset fetch ${res.status}` }
+    const rows = (await res.json()) as Record<string, unknown>[]
+    const urlKeys = ['url', 'link', 'jobUrl', 'listingUrl', 'positionUrl', 'adUrl']
+    const items: IntakeItem[] = rows.map((row) => {
+      const ref = urlKeys.map((k) => row[k]).find((v) => typeof v === 'string') as string | undefined
+      return { source_ref: ref, raw_text: JSON.stringify(row).slice(0, 8000) }
+    })
+    return { ok: true, items }
+  } catch (e) {
+    return { ok: false, error: `apify unreachable: ${(e as Error).message}` }
+  }
 }
 
 // ─── Claude Haiku structuring (design §4) ─────────────────────────────────────
