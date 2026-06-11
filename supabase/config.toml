@@ -72,3 +72,10 @@ verify_jwt = true
 # NOT call this function — it uses the admin_lead_capture RPC. Both converge
 # on _lead_intake() in Postgres (service_role-only grant).
 verify_jwt = false
+
+[functions.lead-harvest]
+# PULL feed for Seek/TradeMe via Firecrawl (PHASE-LEADS-FEEDS-ARCHITECTURE.md).
+# Cron-triggered by pg_cron→pg_net with X-Webhook-Secret (no user JWT), so
+# verify_jwt=false; auth is the in-function LEAD_INTAKE_SECRET check. Calls
+# _lead_intake (service_role) with pre-structured listings — no Haiku.
+verify_jwt = false
