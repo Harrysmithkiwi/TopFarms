@@ -42,8 +42,8 @@ supabase migration repair --status reverted \
 # 2. Record the disk identities as applied:
 #    (038 added 2026-06-10 — marketplace view; 039 added 2026-06-11 — analytics
 #     RPCs; both applied via the same Management-API path as 036.
-#     037 stays OUT of this list until it is actually applied at pre-launch.)
-supabase migration repair --status applied 018 019 020 021 022 036 038 039
+#     037 + 040 applied 2026-06-11 — all of 036-040 now live, none registered.)
+supabase migration repair --status applied 018 019 020 021 022 036 037 038 039 040
 ```
 
 ## Verification (after repair, before any push)
