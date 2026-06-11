@@ -277,6 +277,19 @@
           "signup e2e guard committed but rate-limit-skipped at session time; background retry running — 037 signup checklist item stays OPEN until it passes",
           "LEAD_INTAKE_SECRET not yet set in Edge secrets (needed at L2, not before)"
         ]
+      },
+      {
+        "date": "2026-06-11 (leads L2 + L4)",
+        "type": "FEATURE: leads pipeline L2 (Apify receiving) + L4 (funnel wiring) — completes L0-L4 in-repo",
+        "shipped": [
+          "L2: lead-intake handles Apify ACTOR.RUN.SUCCEEDED webhook — fetches run dataset (APIFY_TOKEN), maps rows -> structuring -> intake; idempotent on retries; capped 50/run. Apify API shape confirmed vs docs. Verified locally. Pushed, CI+deploy green. .planning/PHASE-LEADS-L2-APIFY.md + scripts/verify-lead-intake.sh.",
+          "L4: migration 042 APPLIED — admin_analytics_leads (cockpit block), admin_lead_conversion_suggestions, admin_lead_link_user; corrected-037 grants; 5 posture tests (suite 414). AdminAnalytics leads panel + AdminLeads linking UI.",
+          "L3 effectively delivered by L1 batch-paste panel (fb_own_group source) — semi-automated batch per operator §9.2; no separate build."
+        ],
+        "flags": [
+          "REGISTRY BACKLOG now 036-042 (042 = leads L4) applied/unregistered — repair stays deferred per operator",
+          "EXTERNAL pending to go live: Apify account + actors + schedules; Edge secrets LEAD_INTAKE_SECRET, APIFY_TOKEN, ANTHROPIC_API_KEY (never the bundle)"
+        ]
       }
     ]
   }
