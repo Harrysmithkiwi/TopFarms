@@ -35,6 +35,7 @@ const SOURCE_LABELS: Record<string, string> = {
   trademe: 'TradeMe',
   fb_own_group: 'FB (own group)',
   fb_manual_capture: 'FB (manual capture)',
+  nzfarmingjobs: 'NZ Farming Jobs',
 }
 
 function PastePanel({ onCaptured }: { onCaptured: () => void }) {
