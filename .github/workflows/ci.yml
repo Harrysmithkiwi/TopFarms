@@ -13,6 +13,16 @@ on:
   push:
     branches: [main]
 
+# PUBLIC client config (the anon key ships in every browser bundle by design —
+# this is not a secret; service-role/Stripe-secret keys must NEVER appear here).
+# Required because .env is gitignored: without these, `vite build` produces a
+# backend-less bundle (every e2e network flow times out) and
+# tests/search-preview.test.tsx throws 'supabaseUrl is required' — the root
+# cause of CI being red from runs 027fe6a..f7c6e24 (2026-06-10/11).
+env:
+  VITE_SUPABASE_URL: https://inlagtgpynemhipnqvty.supabase.co
+  VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlubGFndGdweW5lbWhpcG5xdnR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2NTUyMDUsImV4cCI6MjA4OTIzMTIwNX0.1V7Th0L9YgfUPdc0ic6FN08qOLXq8tllhH9tCaOoXwE
+
 jobs:
   quality:
     runs-on: ubuntu-latest
