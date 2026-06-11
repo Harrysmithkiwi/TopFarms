@@ -92,7 +92,7 @@
       "what": "32 SECURITY DEFINER fns REST-callable by anon incl. trigger fns (handle_new_user, rls_auto_enable, cleanup_match_scores_on_status_change); admin_* fns mitigated by _admin_gate()",
       "loc": "advisor output; migrations 012,016,018,023,033",
       "status": "closed",
-      "resolution": "APPLIED 2026-06-11 (corrected during apply: original staged draft revoked FROM anon only — no-op vs implicit PUBLIC grant; fixed to REVOKE FROM PUBLIC + explicit authenticated re-grants). Anon definer lint 32 -> 2 by design; search_path pinned; residual: signup re-probe pending auth rate-limit"
+      "resolution": "APPLIED 2026-06-11 (corrected during apply: original staged draft revoked FROM anon only — no-op vs implicit PUBLIC grant; fixed to REVOKE FROM PUBLIC + explicit authenticated re-grants). Anon definer lint 32 -> 2 by design; search_path pinned; signup checklist item CLOSED 2026-06-11: e2e signup-flow PASSED (attempt 3 after rate-limit backoff) — auth user created, user_roles role=seeker assigned, is_active=true; test account deleted post-verification"
     },
     {
       "id": "F8",
@@ -100,7 +100,7 @@
       "what": "get_platform_stats: SECURITY DEFINER + mutable search_path",
       "loc": "supabase/migrations/012_platform_stats_rpc.sql",
       "status": "closed",
-      "resolution": "APPLIED 2026-06-11 (corrected during apply: original staged draft revoked FROM anon only — no-op vs implicit PUBLIC grant; fixed to REVOKE FROM PUBLIC + explicit authenticated re-grants). Anon definer lint 32 -> 2 by design; search_path pinned; residual: signup re-probe pending auth rate-limit"
+      "resolution": "APPLIED 2026-06-11 (corrected during apply: original staged draft revoked FROM anon only — no-op vs implicit PUBLIC grant; fixed to REVOKE FROM PUBLIC + explicit authenticated re-grants). Anon definer lint 32 -> 2 by design; search_path pinned; signup checklist item CLOSED 2026-06-11: e2e signup-flow PASSED (attempt 3 after rate-limit backoff) — auth user created, user_roles role=seeker assigned, is_active=true; test account deleted post-verification"
     },
     {
       "id": "F9",
