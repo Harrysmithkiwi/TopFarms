@@ -1,72 +1,102 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-// lead-harvest — the PULL feed for commercial boards (Seek + TradeMe) via
-// Firecrawl extract (PHASE-LEADS-FEEDS-ARCHITECTURE.md). Cron-triggered (pg_cron
-// → pg_net.http_post with X-Webhook-Secret). Unlike lead-intake (push: Apify
-// webhooks + manual paste), this function reaches OUT on a schedule.
+// lead-harvest — PULL feed for commercial ag job boards via Firecrawl
+// (PHASE-LEADS-FEEDS-ARCHITECTURE.md). Cron-triggered (pg_cron → pg_net with
+// X-Webhook-Secret). Pattern proved on nzfarmingjobs 2026-06-12:
 //
-// Firecrawl /v2/extract is async: POST → jobId → poll /v2/extract/{jobId}.
-// Extracted listings are already STRUCTURED (schema below), so they go to the
-// _lead_intake core PRE-STRUCTURED at high confidence — Haiku is not spent on
-// clean commercial HTML. Dedupe on listing_url (source_ref) makes re-runs
-// idempotent.
+//   map(map_url) → filter to /job/ ads (drop the spam-polluted /company/
+//   directory + /resume/) → dedupe against existing source_refs BEFORE
+//   spending credits → /v2/scrape (json+schema) each NEW ad → normalise →
+//   _lead_intake (service_role).
 //
-// Honest-degrade: no FIRECRAWL_API_KEY → { skipped } (no error, no fake data).
-// Employer-only (§9.5). No anti-detection (§3) — Firecrawl is an identifiable,
-// rate-limited extraction service.
+// 5 credits per scrape, so dedupe-before-extract is the cost control: steady
+// state = only NEW ads each run. The map step is cheap. Honest-degrade: no
+// FIRECRAWL_API_KEY → {skipped}. Employer-only (§9.5); no anti-detection (§3).
+// Recruiter split: business_name = hiring farm; advertiser_name = agency;
+// is_recruiter flags agency-placed ads. Never-infer: contact_* only when
+// printed (enforced in the schema descriptions + prompt).
 
-const FIRECRAWL_BASE = 'https://api.firecrawl.dev/v2/extract'
+const FIRECRAWL = 'https://api.firecrawl.dev/v2'
 
-// Search URLs per board, comma-separated in env (so they widen without a
-// deploy). Empty until the operator confirms the NZ-ag search URLs to target.
-const SOURCE_URLS: Record<string, string> = {
-  seek: Deno.env.get('FIRECRAWL_SEEK_URLS') ?? '',
-  trademe: Deno.env.get('FIRECRAWL_TRADEME_URLS') ?? '',
+// Per-board config. Add boards here; each new `source` value must also be added
+// to the leads/lead_staging source CHECK (migration 044). Seek/TradeMe are
+// JS-heavy SPAs — deferred until proven (may need wait-for / FIRE-1 agent).
+interface Board {
+  source: string
+  map_url: string
+  url_include: string
+  url_exclude: string[]
 }
+const BOARDS: Board[] = [
+  {
+    source: 'nzfarmingjobs',
+    map_url: 'https://nzfarmingjobs.co.nz/jobs/',
+    url_include: '/job/',
+    url_exclude: ['/company/', '/resume/'],
+  },
+]
 
-const EXTRACT_SCHEMA = {
+// Cap NEW ads scraped per board per run (bounds credit burn; 5 credits each).
+// Skips beyond the cap are reported, never silently dropped.
+const MAX_EXTRACTS_PER_BOARD = 25
+
+const EXTRACT_PROMPT =
+  'Extract this NZ agricultural EMPLOYER job ad. business_name is the HIRING ' +
+  'FARM/station, NOT the recruitment agency; if an agency placed it for a farm, ' +
+  'business_name=the farm and advertiser_name=the agency and is_recruiter=true. ' +
+  'Map region to one of the 16 NZ regions. Include contact email/name/phone/notes ' +
+  'ONLY if explicitly printed in the ad — NEVER infer or construct them. Write ' +
+  'summary as one clean paragraph with no contact details.'
+
+const SCHEMA = {
   type: 'object',
   properties: {
-    listings: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          business_name: { type: 'string' },
-          job_title: { type: 'string' },
-          region: { type: 'string' },
-          listing_url: { type: 'string' },
-          public_contact: { type: 'string' },
-        },
-        required: ['job_title', 'listing_url'],
-      },
-    },
+    business_name: { type: ['string', 'null'] },
+    advertiser_name: { type: ['string', 'null'] },
+    is_recruiter: { type: 'boolean' },
+    job_title: { type: 'string' },
+    region: { type: ['string', 'null'] },
+    salary_text: { type: ['string', 'null'] },
+    contact_email: { type: ['string', 'null'] },
+    contact_name: { type: ['string', 'null'] },
+    contact_phone: { type: ['string', 'null'] },
+    contact_notes: { type: ['string', 'null'] },
+    company_profile_url: { type: ['string', 'null'] },
+    summary: { type: ['string', 'null'] },
+    listing_url: { type: ['string', 'null'] },
   },
-  required: ['listings'],
+  required: ['job_title', 'is_recruiter'],
 }
 
-const REGIONS = new Set([
-  'Northland', 'Auckland', 'Waikato', 'Bay of Plenty', 'Gisborne', "Hawke's Bay",
-  'Taranaki', 'Manawatū-Whanganui', 'Wellington', 'Tasman', 'Nelson',
-  'Marlborough', 'West Coast', 'Canterbury', 'Otago', 'Southland',
-])
+interface Extracted {
+  business_name?: string | null
+  advertiser_name?: string | null
+  is_recruiter?: boolean
+  job_title?: string | null
+  region?: string | null
+  salary_text?: string | null
+  contact_email?: string | null
+  contact_name?: string | null
+  contact_phone?: string | null
+  contact_notes?: string | null
+  company_profile_url?: string | null
+  summary?: string | null
+}
 
-interface Listing {
-  business_name?: string
-  job_title?: string
-  region?: string
-  listing_url?: string
-  public_contact?: string
+// Narrow structural type: only the read surface dropKnown needs (the full
+// SupabaseClient generics don't unify across esm.sh call sites — same fix as
+// lead-intake).
+type Db = {
+  from: (t: string) => {
+    select: (c: string) => { in: (col: string, vals: string[]) => PromiseLike<{ data: unknown }> }
+  }
 }
 
 Deno.serve(async (req) => {
-  // Called by pg_cron (no user JWT) — gate on the shared secret, same pattern
-  // as notify-job-filled / lead-intake's webhook lane.
   const secret = Deno.env.get('LEAD_INTAKE_SECRET')
   if (!secret || req.headers.get('x-webhook-secret') !== secret) {
     return json({ error: 'forbidden' }, 403)
   }
-
   const key = Deno.env.get('FIRECRAWL_API_KEY')
   if (!key) return json({ skipped: 'FIRECRAWL_API_KEY not configured' }, 200)
 
@@ -75,38 +105,38 @@ Deno.serve(async (req) => {
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
   )
 
-  const results: Record<string, { inserted: number; exact_duplicate: number; suppressed: number; error: number; note?: string }> = {}
+  const results: Record<string, unknown> = {}
 
-  for (const source of ['seek', 'trademe'] as const) {
-    const urls = SOURCE_URLS[source].split(',').map((u) => u.trim()).filter(Boolean)
-    if (urls.length === 0) {
-      results[source] = { inserted: 0, exact_duplicate: 0, suppressed: 0, error: 0, note: 'no search URLs configured' }
+  for (const board of BOARDS) {
+    const mapped = await firecrawlMap(key, board.map_url)
+    if (!mapped.ok) {
+      results[board.source] = { note: mapped.error }
       continue
     }
+    // Filter to individual ad URLs; the /company/ directory is spam-polluted.
+    const ads = mapped.links.filter(
+      (u) => u.includes(board.url_include) && !board.url_exclude.some((x) => u.includes(x)),
+    )
+    // Dedupe BEFORE spending credits: drop URLs already seen as a source_ref.
+    const fresh = await dropKnown(db as unknown as Db, ads)
+    const toScrape = fresh.slice(0, MAX_EXTRACTS_PER_BOARD)
 
-    const tally = { inserted: 0, exact_duplicate: 0, suppressed: 0, error: 0 }
-    const extracted = await firecrawlExtract(key, urls)
-    if (!extracted.ok) {
-      results[source] = { ...tally, note: extracted.error }
-      continue
-    }
+    const tally = { mapped: mapped.links.length, ads: ads.length, new: fresh.length,
+                    scraped: 0, inserted: 0, exact_duplicate: 0, suppressed: 0, error: 0,
+                    skipped_over_cap: Math.max(0, fresh.length - toScrape.length) }
 
-    for (const lst of extracted.listings.slice(0, 50)) {
-      if (!lst.listing_url || !lst.job_title) continue
-      const structured = {
-        type: 'employer',
-        display_name: lst.business_name ?? lst.job_title,
-        region: lst.region && REGIONS.has(lst.region) ? lst.region : null,
-        role_or_category: lst.job_title,
-        contact: contactFrom(lst.public_contact),
-      }
+    for (const url of toScrape) {
+      const ex = await firecrawlScrape(key, url)
+      tally.scraped++
+      if (!ex.ok) { tally.error++; continue }
+      const structured = normalise(ex.data, url)
       const { data, error } = await db.rpc('_lead_intake', {
-        p_source: source,
-        p_source_ref: lst.listing_url,
-        p_raw_excerpt: JSON.stringify(lst).slice(0, 2000),
+        p_source: board.source,
+        p_source_ref: url,
+        p_raw_excerpt: JSON.stringify(ex.data).slice(0, 2000),
         p_structured: structured,
         p_confidence: 0.9,
-        p_missing_fields: lst.business_name ? [] : ['business_name'],
+        p_missing_fields: missingOf(structured),
       })
       if (error) tally.error++
       else {
@@ -114,64 +144,103 @@ Deno.serve(async (req) => {
         if (outcome in tally) (tally as Record<string, number>)[outcome]++
       }
     }
-    results[source] = tally
+    results[board.source] = tally
   }
 
-  return json({ results })
+  return json({ results, credits_note: '~5 credits per scrape (json+schema); map is cheap' })
 })
 
-// ── Firecrawl extract (async: POST jobId, then poll) ─────────────────────────
-async function firecrawlExtract(
+// ── Firecrawl ────────────────────────────────────────────────────────────────
+async function firecrawlMap(
   key: string,
-  urls: string[],
-): Promise<{ ok: true; listings: Listing[] } | { ok: false; error: string }> {
+  url: string,
+): Promise<{ ok: true; links: string[] } | { ok: false; error: string }> {
   try {
-    const start = await fetch(FIRECRAWL_BASE, {
+    const res = await fetch(`${FIRECRAWL}/map`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url, search: 'job', limit: 200 }),
+    })
+    if (!res.ok) return { ok: false, error: `map ${res.status}` }
+    const body = (await res.json()) as { links?: { url?: string }[] }
+    return { ok: true, links: (body.links ?? []).map((l) => l.url).filter((u): u is string => !!u) }
+  } catch (e) {
+    return { ok: false, error: `map unreachable: ${(e as Error).message}` }
+  }
+}
+
+async function firecrawlScrape(
+  key: string,
+  url: string,
+): Promise<{ ok: true; data: Extracted } | { ok: false; error: string }> {
+  try {
+    const res = await fetch(`${FIRECRAWL}/scrape`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        urls,
-        prompt:
-          'Extract every NZ agricultural EMPLOYER job listing (farms hiring). ' +
-          'Ignore "wanted work" / job-seeker ads. region must be one of the 16 NZ regions or null. ' +
-          'Only include public_contact if explicitly stated in the ad.',
-        schema: EXTRACT_SCHEMA,
+        url,
+        formats: [{ type: 'json', schema: SCHEMA, prompt: EXTRACT_PROMPT }],
       }),
     })
-    if (!start.ok) return { ok: false, error: `firecrawl start ${start.status}` }
-    const started = (await start.json()) as { success?: boolean; id?: string; data?: { listings?: Listing[] } }
-    // Some responses complete synchronously; otherwise poll the job id.
-    if (started.data?.listings) return { ok: true, listings: started.data.listings }
-    const jobId = started.id
-    if (!jobId) return { ok: false, error: 'firecrawl: no job id' }
-
-    for (let i = 0; i < 12; i++) {
-      await sleep(5000)
-      const poll = await fetch(`${FIRECRAWL_BASE}/${jobId}`, {
-        headers: { Authorization: `Bearer ${key}` },
-      })
-      if (!poll.ok) return { ok: false, error: `firecrawl poll ${poll.status}` }
-      const body = (await poll.json()) as { status?: string; data?: { listings?: Listing[] } }
-      if (body.status === 'completed') return { ok: true, listings: body.data?.listings ?? [] }
-      if (body.status === 'failed' || body.status === 'cancelled') {
-        return { ok: false, error: `firecrawl ${body.status}` }
-      }
+    if (!res.ok) return { ok: false, error: `scrape ${res.status}` }
+    const body = (await res.json()) as { data?: { json?: Extracted } & Record<string, unknown> }
+    // v2 returns the structured object at data.json; fall back defensively and
+    // log the shape so the first live run surfaces any API drift.
+    const extracted = (body.data?.json ?? body.data) as Extracted | undefined
+    if (!extracted || typeof extracted !== 'object') {
+      console.error('scrape: unexpected shape', JSON.stringify(body).slice(0, 300))
+      return { ok: false, error: 'scrape: no json in response' }
     }
-    return { ok: false, error: 'firecrawl poll timeout (60s)' }
+    return { ok: true, data: extracted }
   } catch (e) {
-    return { ok: false, error: `firecrawl unreachable: ${(e as Error).message}` }
+    return { ok: false, error: `scrape unreachable: ${(e as Error).message}` }
   }
 }
 
-function contactFrom(raw?: string): { email?: string; phone?: string; url?: string } | null {
-  if (!raw) return null
-  if (/@/.test(raw)) return { email: raw.trim() }
-  if (/^https?:\/\//.test(raw)) return { url: raw.trim() }
-  if (/\d{6,}/.test(raw)) return { phone: raw.trim() }
-  return null
+// ── helpers ──────────────────────────────────────────────────────────────────
+// service_role bypasses RLS, so it can read the deny-by-default leads tables.
+async function dropKnown(db: Db, urls: string[]): Promise<string[]> {
+  if (urls.length === 0) return []
+  const known = new Set<string>()
+  for (const tbl of ['leads', 'lead_staging']) {
+    const { data } = await db.from(tbl).select('source_ref').in('source_ref', urls)
+    ;(data as { source_ref: string }[] | null)?.forEach((r) => known.add(r.source_ref))
+  }
+  return urls.filter((u) => !known.has(u))
 }
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+function contactObj(x: Extracted): Record<string, string> | null {
+  const c: Record<string, string> = {}
+  if (x.contact_email) c.email = x.contact_email
+  if (x.contact_phone) c.phone = x.contact_phone
+  if (x.contact_name) c.name = x.contact_name
+  if (x.contact_notes) c.notes = x.contact_notes
+  return Object.keys(c).length ? c : null
+}
+
+function normalise(x: Extracted, url: string): Record<string, unknown> {
+  return {
+    type: 'employer',
+    display_name: x.business_name ?? x.job_title ?? '(unnamed)',
+    region: x.region ?? null,
+    role_or_category: x.job_title ?? null,
+    contact: contactObj(x),
+    salary_text: x.salary_text ?? null,
+    summary: x.summary ?? null,
+    company_profile_url: x.company_profile_url ?? null,
+    advertiser_name: x.advertiser_name ?? null,
+    is_recruiter: x.is_recruiter ?? false,
+    source_ref: url,
+  }
+}
+
+function missingOf(s: Record<string, unknown>): string[] {
+  const m: string[] = []
+  if (!s.contact) m.push('contact')
+  if (!s.region) m.push('region')
+  if (s.display_name === '(unnamed)') m.push('business_name')
+  return m
+}
 
 function json(payload: unknown, status = 200): Response {
   return new Response(JSON.stringify(payload), {
