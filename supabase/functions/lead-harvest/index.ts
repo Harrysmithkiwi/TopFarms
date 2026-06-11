@@ -48,9 +48,13 @@ const BOARDS: Board[] = [
   },
 ]
 
-// Cap NEW ads scraped per board per run (bounds credit burn; 5 credits each).
-// Skips beyond the cap are reported, never silently dropped.
-const MAX_EXTRACTS_PER_BOARD = 25
+// Cap NEW ads scraped per board per run. Bounds two things: credit burn (5
+// credits each) AND wall-clock — scrapes run sequentially and each json+schema
+// extract is a full LLM call (~5-10s), so N must stay well under the Edge
+// Function wall-clock ceiling. 10 → ~80s, a clean complete tally per run; the
+// dedupe-before-extract rolls any over-cap backlog into the next run. Skips
+// beyond the cap are reported (skipped_over_cap), never silently dropped.
+const MAX_EXTRACTS_PER_BOARD = 10
 
 const EXTRACT_PROMPT =
   'Extract this NZ agricultural EMPLOYER job ad. business_name is the HIRING ' +
