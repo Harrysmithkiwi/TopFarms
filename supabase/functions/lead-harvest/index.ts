@@ -25,6 +25,7 @@ interface Board {
   source: string
   map_url: string
   search?: string
+  sitemap?: 'skip' | 'include' | 'only'
   map_limit?: number
   url_include: string
   url_exclude: string[]
@@ -32,13 +33,16 @@ interface Board {
 const BOARDS: Board[] = [
   {
     source: 'nzfarmingjobs',
-    // ROOT, not /jobs/: the /jobs/ listing page only exposed ~12 links on the
-    // first live run (mapped 12 → 0 /job/ ads). The individual ads live at
-    // /job/<id> and are discoverable by mapping the site root. Confirmed config
-    // via the ?probe=1 matrix before trusting this for a real run.
+    // ROOT + SITEMAP, no search: the /jobs/ listing exposed only ~12 links;
+    // worse, Firecrawl's `search` param pre-filters by slug keyword and silently
+    // drops ads whose slugs lack the term (probe: search=job→6, search=farm→14,
+    // both << the ~40 live ads). The sitemap is the authoritative complete list
+    // of /job/ pages — no keyword guessing, no missed ads. limit 5000 (the API
+    // default; our earlier 500 truncated on /company/ URLs). Confirmed via the
+    // ?probe=1 matrix before a real run.
     map_url: 'https://nzfarmingjobs.co.nz',
-    search: 'job',
-    map_limit: 500,
+    sitemap: 'only',
+    map_limit: 5000,
     url_include: '/job/',
     url_exclude: ['/company/', '/resume/'],
   },
@@ -114,11 +118,10 @@ Deno.serve(async (req) => {
   // no DB writes. Maps are cheap.
   if (new URL(req.url).searchParams.get('probe') === '1') {
     const root = 'https://nzfarmingjobs.co.nz'
-    const candidates = [
-      { label: 'root + search=job', url: root, opts: { search: 'job', limit: 500 } },
-      { label: 'root, no search', url: root, opts: { limit: 500 } },
-      { label: 'root + search=farm', url: root, opts: { search: 'farm', limit: 500 } },
-      { label: '/jobs/ + search=job (orig — got 12)', url: `${root}/jobs/`, opts: { search: 'job', limit: 200 } },
+    const candidates: { label: string; url: string; opts: MapOpts }[] = [
+      { label: 'root sitemap=only, no search, limit 5000', url: root, opts: { sitemap: 'only', limit: 5000 } },
+      { label: 'root sitemap=include, no search, limit 5000', url: root, opts: { sitemap: 'include', limit: 5000 } },
+      { label: 'root + search=farm (prior best — 14)', url: root, opts: { search: 'farm', limit: 500 } },
     ]
     const report: unknown[] = []
     for (const c of candidates) {
@@ -148,6 +151,7 @@ Deno.serve(async (req) => {
   for (const board of BOARDS) {
     const mapped = await firecrawlMap(key, board.map_url, {
       search: board.search,
+      sitemap: board.sitemap,
       limit: board.map_limit,
     })
     if (!mapped.ok) {
@@ -192,14 +196,17 @@ Deno.serve(async (req) => {
 })
 
 // ── Firecrawl ────────────────────────────────────────────────────────────────
+type MapOpts = { search?: string; sitemap?: 'skip' | 'include' | 'only'; limit?: number }
+
 async function firecrawlMap(
   key: string,
   url: string,
-  opts?: { search?: string; limit?: number },
+  opts?: MapOpts,
 ): Promise<{ ok: true; links: string[] } | { ok: false; error: string }> {
   try {
-    const reqBody: Record<string, unknown> = { url, limit: opts?.limit ?? 200 }
+    const reqBody: Record<string, unknown> = { url, limit: opts?.limit ?? 5000 }
     if (opts?.search) reqBody.search = opts.search
+    if (opts?.sitemap) reqBody.sitemap = opts.sitemap
     const res = await fetch(`${FIRECRAWL}/map`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
