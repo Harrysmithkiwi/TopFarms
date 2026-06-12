@@ -22,7 +22,18 @@ interface StagingRow extends Record<string, unknown> {
     display_name?: string
     region?: string
     role_or_category?: string
-    contact?: { email?: string; phone?: string; url?: string }
+    contact?: {
+      email?: string
+      phone?: string
+      url?: string
+      name?: string
+      notes?: string
+    } | null
+    salary_text?: string | null
+    summary?: string | null
+    advertiser_name?: string | null
+    is_recruiter?: boolean
+    company_profile_url?: string | null
   }
   confidence: number
   missing_fields: string[]
@@ -288,6 +299,97 @@ export function AdminLeadsStaging() {
                 {SOURCE_LABELS[selected.source]} · confidence{' '}
                 {Math.round(selected.confidence * 100)}%
               </p>
+
+              {selected.structured.role_or_category && (
+                <p className="mt-1 text-[13px] font-medium">{selected.structured.role_or_category}</p>
+              )}
+
+              {/* Recruiter split (044): farm = display_name; agency = advertiser_name. */}
+              {selected.structured.is_recruiter && (
+                <p className="mt-1 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
+                  <span className="bg-surface-2 mr-1 rounded px-1.5 py-0.5 text-[11px] font-semibold">
+                    Recruiter-placed
+                  </span>
+                  {selected.structured.advertiser_name
+                    ? `via ${selected.structured.advertiser_name}`
+                    : 'agency not named'}
+                </p>
+              )}
+
+              {selected.structured.salary_text && (
+                <p className="mt-1 text-[13px]">💰 {selected.structured.salary_text}</p>
+              )}
+
+              {/* Contact — extract-only (never inferred); the reason the lead is workable. */}
+              {selected.structured.contact &&
+              Object.keys(selected.structured.contact).length > 0 ? (
+                <div
+                  className="bg-surface-2 mt-2 rounded p-2 text-[12px]"
+                  style={{ color: 'var(--color-text)' }}
+                >
+                  {selected.structured.contact.name && (
+                    <div className="font-medium">{selected.structured.contact.name}</div>
+                  )}
+                  {selected.structured.contact.email && (
+                    <div>
+                      <a className="text-brand underline" href={`mailto:${selected.structured.contact.email}`}>
+                        {selected.structured.contact.email}
+                      </a>
+                    </div>
+                  )}
+                  {selected.structured.contact.phone && (
+                    <div>
+                      <a
+                        className="text-brand underline"
+                        href={`tel:${selected.structured.contact.phone.replace(/\s/g, '')}`}
+                      >
+                        {selected.structured.contact.phone}
+                      </a>
+                    </div>
+                  )}
+                  {selected.structured.contact.url && (
+                    <div>
+                      <a
+                        className="text-brand underline"
+                        href={selected.structured.contact.url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {selected.structured.contact.url}
+                      </a>
+                    </div>
+                  )}
+                  {selected.structured.contact.notes && (
+                    <div className="mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+                      {selected.structured.contact.notes}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="mt-2 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
+                  No contact printed in the ad
+                </p>
+              )}
+
+              {selected.structured.summary && (
+                <p className="mt-2 text-[13px] leading-5" style={{ color: 'var(--color-text)' }}>
+                  {selected.structured.summary}
+                </p>
+              )}
+
+              {selected.structured.company_profile_url && (
+                <p className="mt-1 text-[12px]">
+                  <a
+                    className="text-brand underline"
+                    href={selected.structured.company_profile_url}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Employer profile ↗
+                  </a>
+                </p>
+              )}
+
               {selected.dedupe_status === 'suspect_duplicate' && (
                 <p className="text-warn mt-1 text-[12px]">
                   ⚠ Possible duplicate of an existing lead — approve only if genuinely distinct.
