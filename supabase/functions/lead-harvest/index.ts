@@ -182,7 +182,11 @@ Deno.serve(async (req) => {
       const { data, error } = await db.rpc('_lead_intake', {
         p_source: board.source,
         p_source_ref: url,
-        p_raw_excerpt: JSON.stringify(ex.data).slice(0, 2000),
+        // #5: harvested rows are fully structured — the raw Firecrawl JSON is
+        // redundant noise next to the summary, so leave raw_excerpt empty (the
+        // review panel's excerpt box then doesn't render). The paste/FB lanes
+        // still pass the genuine raw post text via lead-intake.
+        p_raw_excerpt: '',
         p_structured: structured,
         p_confidence: 0.9,
         p_missing_fields: missingOf(structured),
@@ -273,18 +277,58 @@ function contactObj(x: Extracted): Record<string, string> | null {
   return Object.keys(c).length ? c : null
 }
 
+// Board guard (#1): the listing site is NOT a recruiter. When the LLM puts the
+// board's own name in advertiser_name (e.g. "NZ Farming Jobs",
+// "nzfarmingjobs.co.nz") it mistook the site for a placing agency. Strip
+// non-letters and match the board token — real agencies like "Rural Directions"
+// → "ruraldirections" never match.
+function isBoardName(name: string | null | undefined): boolean {
+  if (!name) return false
+  return name.toLowerCase().replace(/[^a-z]/g, '').includes('nzfarmingjobs')
+}
+
+// Region canonicalisation (#2): enforce the 16-region set; do NOT trust the
+// LLM's free text. Exact match wins; known variants map via aliases; anything
+// else → null (surfaces as a missing field for manual review rather than
+// polluting region filtering with off-set values).
+const NZ_REGIONS = [
+  'Northland', 'Auckland', 'Waikato', 'Bay of Plenty', 'Gisborne', "Hawke's Bay",
+  'Taranaki', 'Manawatu-Whanganui', 'Wellington', 'Tasman', 'Nelson',
+  'Marlborough', 'West Coast', 'Canterbury', 'Otago', 'Southland',
+]
+const REGION_ALIASES: Record<string, string> = {
+  'wairarapa': 'Wellington', // Wairarapa sits within the Wellington region
+  'manawatu-wanganui': 'Manawatu-Whanganui',
+  'manawatu': 'Manawatu-Whanganui',
+  'wanganui': 'Manawatu-Whanganui',
+  'whanganui': 'Manawatu-Whanganui',
+  'hawkes bay': "Hawke's Bay",
+  'hawke s bay': "Hawke's Bay",
+}
+function canonicalRegion(r: string | null | undefined): string | null {
+  if (!r) return null
+  const key = r.trim().toLowerCase()
+  const exact = NZ_REGIONS.find((x) => x.toLowerCase() === key)
+  if (exact) return exact
+  return REGION_ALIASES[key] ?? null
+}
+
 function normalise(x: Extracted, url: string): Record<string, unknown> {
+  // #1: if the "advertiser" is really the board, it's a direct-from-farm ad —
+  // null the advertiser and clear the recruiter flag. Genuine agencies (Rural
+  // Directions, etc.) pass through unchanged.
+  const advertiserIsBoard = isBoardName(x.advertiser_name)
   return {
     type: 'employer',
     display_name: x.business_name ?? x.job_title ?? '(unnamed)',
-    region: x.region ?? null,
+    region: canonicalRegion(x.region), // #2
     role_or_category: x.job_title ?? null,
     contact: contactObj(x),
     salary_text: x.salary_text ?? null,
     summary: x.summary ?? null,
     company_profile_url: x.company_profile_url ?? null,
-    advertiser_name: x.advertiser_name ?? null,
-    is_recruiter: x.is_recruiter ?? false,
+    advertiser_name: advertiserIsBoard ? null : (x.advertiser_name ?? null),
+    is_recruiter: advertiserIsBoard ? false : (x.is_recruiter ?? false),
     source_ref: url,
   }
 }
