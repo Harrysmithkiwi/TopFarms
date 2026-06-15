@@ -300,47 +300,58 @@ export function AdminLeadsStaging() {
                 {Math.round(selected.confidence * 100)}%
               </p>
 
-              {selected.structured.role_or_category && (
-                <p className="mt-1 text-[13px] font-medium">{selected.structured.role_or_category}</p>
-              )}
-
-              {/* Recruiter split (044): farm = display_name; agency = advertiser_name. */}
-              {selected.structured.is_recruiter && (
-                <p className="mt-1 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
-                  <span className="bg-surface-2 mr-1 rounded px-1.5 py-0.5 text-[11px] font-semibold">
-                    Recruiter-placed
+              <div className="mt-1 flex flex-wrap items-center gap-2">
+                {selected.structured.role_or_category && (
+                  <span className="text-[13px] font-medium">
+                    {selected.structured.role_or_category}
                   </span>
-                  {selected.structured.advertiser_name
-                    ? `via ${selected.structured.advertiser_name}`
-                    : 'agency not named'}
-                </p>
-              )}
+                )}
+                {selected.structured.salary_text && (
+                  <span className="text-[13px]">💰 {selected.structured.salary_text}</span>
+                )}
+                {/* Recruiter flag (044) — colour-coded amber so a genuine agency
+                    placement is unmissable. The board-guard in normalise() stops
+                    the listing site itself triggering this. */}
+                {selected.structured.is_recruiter && (
+                  <span className="border-warn text-warn rounded border px-1.5 py-0.5 text-[11px] font-semibold">
+                    Recruiter-placed
+                    {selected.structured.advertiser_name
+                      ? ` · ${selected.structured.advertiser_name}`
+                      : ''}
+                  </span>
+                )}
+              </div>
 
-              {selected.structured.salary_text && (
-                <p className="mt-1 text-[13px]">💰 {selected.structured.salary_text}</p>
-              )}
-
-              {/* Contact — extract-only (never inferred); the reason the lead is workable. */}
+              {/* Contact is the point of the panel — most prominent block, right
+                  under the role. Extract-only (never inferred). */}
               {selected.structured.contact &&
               Object.keys(selected.structured.contact).length > 0 ? (
-                <div
-                  className="bg-surface-2 mt-2 rounded p-2 text-[12px]"
-                  style={{ color: 'var(--color-text)' }}
-                >
+                <div className="border-brand/40 bg-surface-2 mt-2 rounded-[8px] border p-3">
+                  <p
+                    className="text-[10px] font-semibold tracking-wide uppercase"
+                    style={{ color: 'var(--color-text-muted)' }}
+                  >
+                    Contact
+                  </p>
                   {selected.structured.contact.name && (
-                    <div className="font-medium">{selected.structured.contact.name}</div>
+                    <div className="mt-0.5 text-[15px] font-semibold">
+                      {selected.structured.contact.name}
+                    </div>
                   )}
                   {selected.structured.contact.email && (
-                    <div>
-                      <a className="text-brand underline" href={`mailto:${selected.structured.contact.email}`}>
+                    <div className="mt-0.5">
+                      <a
+                        className="text-brand text-[14px] font-medium underline"
+                        href={`mailto:${selected.structured.contact.email}`}
+                      >
                         {selected.structured.contact.email}
                       </a>
                     </div>
                   )}
                   {selected.structured.contact.phone && (
-                    <div>
+                    <div className="mt-0.5">
                       <a
-                        className="text-brand underline"
+                        className="text-brand text-[14px] font-medium underline"
                         href={`tel:${selected.structured.contact.phone.replace(/\s/g, '')}`}
                       >
                         {selected.structured.contact.phone}
@@ -348,9 +359,9 @@ export function AdminLeadsStaging() {
                     </div>
                   )}
                   {selected.structured.contact.url && (
-                    <div>
+                    <div className="mt-0.5">
                       <a
-                        className="text-brand underline"
+                        className="text-brand text-[13px] underline"
                         href={selected.structured.contact.url}
                         target="_blank"
                         rel="noreferrer"
@@ -360,7 +371,7 @@ export function AdminLeadsStaging() {
                     </div>
                   )}
                   {selected.structured.contact.notes && (
-                    <div className="mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+                    <div className="mt-1 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
                       {selected.structured.contact.notes}
                     </div>
                   )}
@@ -372,7 +383,7 @@ export function AdminLeadsStaging() {
               )}
 
               {selected.structured.summary && (
-                <p className="mt-2 text-[13px] leading-5" style={{ color: 'var(--color-text)' }}>
+                <p className="mt-2 text-[13px] leading-5" style={{ color: 'var(--color-text-muted)' }}>
                   {selected.structured.summary}
                 </p>
               )}
