@@ -48,13 +48,20 @@ const BOARDS: Board[] = [
   },
 ]
 
-// Cap NEW ads scraped per board per run. Bounds two things: credit burn (5
-// credits each) AND wall-clock — scrapes run sequentially and each json+schema
-// extract is a full LLM call (~5-10s), so N must stay well under the Edge
-// Function wall-clock ceiling. 10 → ~80s, a clean complete tally per run; the
-// dedupe-before-extract rolls any over-cap backlog into the next run. Skips
-// beyond the cap are reported (skipped_over_cap), never silently dropped.
-const MAX_EXTRACTS_PER_BOARD = 10
+// Background time budget. The scrape loop runs inside EdgeRuntime.waitUntil
+// AFTER we return 202, so it gets the full worker wall-clock (Free tier: 150s —
+// Supabase docs verified 2026-06-16), NOT the 60s gateway response cut (which we
+// sidestep by returning immediately). Stop STARTING new scrapes once elapsed
+// exceeds the budget, leaving ~25s headroom for the in-flight scrape (~5-10s) +
+// the run-table finalise. Time-budgeting adapts to per-ad latency drift where a
+// fixed count can't; BACKSTOP_MAX is a hard ceiling so a pathological run can't
+// spin to the wall. Over-budget ads roll into the next run via dedupe.
+const HARVEST_BUDGET_MS = 125_000 // ~125s of a 150s Free wall-clock
+const BACKSTOP_MAX = 60
+
+// Supabase global for background tasks: keeps the worker alive until the promise
+// settles (bounded by the wall-clock limit).
+declare const EdgeRuntime: { waitUntil: (p: Promise<unknown>) => void }
 
 const EXTRACT_PROMPT =
   'Extract this NZ agricultural EMPLOYER job ad. business_name is the HIRING ' +
@@ -145,63 +152,110 @@ Deno.serve(async (req) => {
     return json({ probe: true, report })
   }
 
+  // Fire-and-return: the sequential scrape loop is far longer than the 60s
+  // gateway response window, so run it as a background task and return 202
+  // immediately. The caller (cron via pg_net, or a manual trigger) gets the
+  // run_id; the tally lands in lead_harvest_runs + the logs, not this response.
+  const runId = crypto.randomUUID()
+  EdgeRuntime.waitUntil(runHarvest(runId, key))
+  return json(
+    { status: 'started', run_id: runId,
+      check: 'SELECT status, tally FROM lead_harvest_runs WHERE id = <run_id>' },
+    202,
+  )
+})
+
+// ── Background harvest ───────────────────────────────────────────────────────
+// Module-level handle so the beforeunload safety net can flush a partial tally
+// to the logs if the worker is killed mid-run (wall-clock hit or crash). In that
+// case the lead_harvest_runs row also stays at status='running' — a stale
+// 'running' row is itself the timeout signal.
+let activeRun: { id: string; tally: Record<string, unknown> } | null = null
+
+addEventListener('beforeunload', () => {
+  if (activeRun) {
+    console.log(
+      `harvest-run ${activeRun.id} INTERRUPTED (worker shutdown) partial=${JSON.stringify(activeRun.tally)}`,
+    )
+  }
+})
+
+async function runHarvest(runId: string, key: string): Promise<void> {
   const db = createClient(
     Deno.env.get('SUPABASE_URL') ?? '',
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
   )
+  const startedMs = Date.now()
+  const tally: Record<string, unknown> = {}
+  activeRun = { id: runId, tally }
+  let status: 'complete' | 'partial' | 'error' = 'complete'
 
-  const results: Record<string, unknown> = {}
+  // Start marker (a stale 'running' row later = a run the worker never finalised).
+  const ins = await db.from('lead_harvest_runs').insert({ id: runId, status: 'running', tally: {} })
+  if (ins.error) console.error('lead_harvest_runs insert:', ins.error.message)
 
-  for (const board of BOARDS) {
-    const mapped = await firecrawlMap(key, board.map_url, {
-      search: board.search,
-      sitemap: board.sitemap,
-      limit: board.map_limit,
-    })
-    if (!mapped.ok) {
-      results[board.source] = { note: mapped.error }
-      continue
-    }
-    // Filter to individual ad URLs; the /company/ directory is spam-polluted.
-    const ads = mapped.links.filter(
-      (u) => u.includes(board.url_include) && !board.url_exclude.some((x) => u.includes(x)),
-    )
-    // Dedupe BEFORE spending credits: drop URLs already seen as a source_ref.
-    const fresh = await dropKnown(db as unknown as Db, ads)
-    const toScrape = fresh.slice(0, MAX_EXTRACTS_PER_BOARD)
-
-    const tally = { mapped: mapped.links.length, ads: ads.length, new: fresh.length,
-                    scraped: 0, inserted: 0, exact_duplicate: 0, suppressed: 0, error: 0,
-                    skipped_over_cap: Math.max(0, fresh.length - toScrape.length) }
-
-    for (const url of toScrape) {
-      const ex = await firecrawlScrape(key, url)
-      tally.scraped++
-      if (!ex.ok) { tally.error++; continue }
-      const structured = normalise(ex.data, url)
-      const { data, error } = await db.rpc('_lead_intake', {
-        p_source: board.source,
-        p_source_ref: url,
-        // #5: harvested rows are fully structured — the raw Firecrawl JSON is
-        // redundant noise next to the summary, so leave raw_excerpt empty (the
-        // review panel's excerpt box then doesn't render). The paste/FB lanes
-        // still pass the genuine raw post text via lead-intake.
-        p_raw_excerpt: '',
-        p_structured: structured,
-        p_confidence: 0.9,
-        p_missing_fields: missingOf(structured),
+  try {
+    for (const board of BOARDS) {
+      const mapped = await firecrawlMap(key, board.map_url, {
+        search: board.search,
+        sitemap: board.sitemap,
+        limit: board.map_limit,
       })
-      if (error) tally.error++
-      else {
-        const outcome = (data as { outcome?: string })?.outcome ?? 'error'
-        if (outcome in tally) (tally as Record<string, number>)[outcome]++
+      if (!mapped.ok) { tally[board.source] = { note: mapped.error }; continue }
+      // Filter to individual ad URLs; the /company/ directory is spam-polluted.
+      const ads = mapped.links.filter(
+        (u) => u.includes(board.url_include) && !board.url_exclude.some((x) => u.includes(x)),
+      )
+      // Dedupe BEFORE spending credits: drop URLs already seen as a source_ref.
+      const fresh = await dropKnown(db as unknown as Db, ads)
+
+      const bt = { mapped: mapped.links.length, ads: ads.length, new: fresh.length,
+                   scraped: 0, inserted: 0, exact_duplicate: 0, suppressed: 0, error: 0,
+                   skipped_over_budget: 0 }
+      tally[board.source] = bt
+
+      for (let i = 0; i < fresh.length; i++) {
+        // Stop starting new scrapes at the time budget or the hard backstop; the
+        // remainder rolls into the next run (dedupe makes that idempotent).
+        if (i >= BACKSTOP_MAX || Date.now() - startedMs > HARVEST_BUDGET_MS) {
+          bt.skipped_over_budget = fresh.length - i
+          status = 'partial'
+          break
+        }
+        const url = fresh[i]
+        const ex = await firecrawlScrape(key, url)
+        bt.scraped++
+        if (!ex.ok) { bt.error++; continue }
+        const structured = normalise(ex.data, url)
+        // raw_excerpt '' (#5): harvested rows are fully structured; the raw JSON
+        // is noise next to the summary, so the review panel's excerpt box hides.
+        const { data, error } = await db.rpc('_lead_intake', {
+          p_source: board.source,
+          p_source_ref: url,
+          p_raw_excerpt: '',
+          p_structured: structured,
+          p_confidence: 0.9,
+          p_missing_fields: missingOf(structured),
+        })
+        if (error) bt.error++
+        else {
+          const outcome = (data as { outcome?: string })?.outcome ?? 'error'
+          if (outcome in bt) (bt as Record<string, number>)[outcome]++
+        }
       }
     }
-    results[board.source] = tally
+  } catch (e) {
+    status = 'error'
+    tally.error = (e as Error).message
   }
 
-  return json({ results, credits_note: '~5 credits per scrape (json+schema); map is cheap' })
-})
+  const upd = await db.from('lead_harvest_runs')
+    .update({ finished_at: new Date().toISOString(), status, tally })
+    .eq('id', runId)
+  if (upd.error) console.error('lead_harvest_runs update:', upd.error.message)
+  console.log(`harvest-run ${runId} ${status} ${JSON.stringify(tally)}`)
+  activeRun = null
+}
 
 // ── Firecrawl ────────────────────────────────────────────────────────────────
 type MapOpts = { search?: string; sitemap?: 'skip' | 'include' | 'only'; limit?: number }

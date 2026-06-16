@@ -79,3 +79,12 @@ verify_jwt = false
 # verify_jwt=false; auth is the in-function LEAD_INTAKE_SECRET check. Calls
 # _lead_intake (service_role) with pre-structured listings — no Haiku.
 verify_jwt = false
+
+# Background tasks (EdgeRuntime.waitUntil) — used by lead-harvest to run the
+# scrape loop after returning 202. Hosted Supabase runs background tasks by
+# default; LOCAL `supabase functions serve` terminates the worker when the
+# request completes UNLESS the runtime keeps it alive per-worker. This makes a
+# local background-task test faithful to production. (Production-hosted behaviour
+# is unaffected by this local-dev setting.)
+[edge_runtime]
+policy = "per_worker"
