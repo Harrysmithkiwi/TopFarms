@@ -1,3 +1,10 @@
+> ⛔ **SUPERSEDED — DO NOT USE (archived 2026-06-20).** This is the retired **v1** brand
+> (soil/moss earth-tones + Fraunces/DM Sans). The live brand is **v2** (single green `#16A34A`,
+> Inter), implemented in `src/index.css`. Canonical sources:
+> `.planning/v2-migration/TopFarms_Brand_Spec_v2.md` (brand bible) and
+> `.planning/v2-migration/DESIGN.md` (implementation contract), summarised in
+> `docs/_canonical/`. Kept only as a historical record. **Do not paste this into any tool.**
+
 # TopFarms Design System
 
 Paste this as context into any generative UI tool (v0, Google Stitch, Figma, etc.) when building screens.
