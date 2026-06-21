@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
+import { Sparkles } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 
 interface FeaturedJob {
@@ -30,23 +31,32 @@ function formatSalary(min: number | null, max: number | null): string {
   return 'Salary negotiable'
 }
 
+// Credibility guard: never surface test / UAT / demo / declined records on the
+// marketing page, even if such rows leak into an "active" query result.
+const TEST_RECORD = /\b(uat|test|testing|demo|sample|dummy|placeholder|declined|do not use)\b/i
+function isRealListing(job: FeaturedJob): boolean {
+  const haystack = `${job.title ?? ''} ${job.employer_profiles?.farm_name ?? ''}`
+  return !TEST_RECORD.test(haystack)
+}
+
 function getTierBadge(tier: string | number): { label: string; color: string; bg: string } | null {
   const t = String(tier)
   if (t === '3' || t === 'premium')
-    return { label: 'Premium', color: 'var(--color-warn)', bg: 'rgba(245,158,11,0.12)' }
+    return {
+      label: 'Premium',
+      color: 'var(--color-warn-text-on-bg)',
+      bg: 'var(--color-warn-bg)',
+    }
   if (t === '2' || t === 'featured')
-    return { label: 'Featured', color: 'var(--color-brand)', bg: 'rgba(122,175,63,0.1)' }
+    return {
+      label: 'Featured',
+      color: 'var(--color-brand)',
+      bg: 'color-mix(in oklab, var(--color-brand) 10%, transparent)',
+    }
   return null
 }
 
-const MOCK_MATCH_SCORES = [94, 87, 91, 82]
-
-interface JobCardProps {
-  job: FeaturedJob
-  matchScore: number
-}
-
-function JobCard({ job, matchScore }: JobCardProps) {
+function JobCard({ job }: { job: FeaturedJob }) {
   const badge = getTierBadge(job.listing_tier)
   const farmName = job.employer_profiles?.farm_name ?? 'Farm'
   const region = job.employer_profiles?.region ?? job.region
@@ -54,27 +64,15 @@ function JobCard({ job, matchScore }: JobCardProps) {
   return (
     <Link
       to={`/jobs/${job.id}`}
-      className="relative block rounded-2xl p-5 transition-shadow hover:shadow-md"
+      className="group relative block rounded-2xl p-5 transition-[box-shadow,transform] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md"
       style={{
         backgroundColor: 'var(--color-surface)',
         border: '1px solid var(--color-border)',
       }}
     >
-      {/* Match score circle */}
-      <div
-        className="absolute top-3 right-3 flex h-12 w-12 items-center justify-center rounded-full text-sm font-bold"
-        style={{
-          backgroundColor: 'rgba(122,175,63,0.2)',
-          color: 'var(--color-brand)',
-          border: '2px solid var(--color-brand)',
-        }}
-      >
-        {matchScore}%
-      </div>
-
-      {/* Badge row */}
-      <div className="mb-3 flex items-start justify-between">
-        <div className="min-w-0 flex-1 pr-14">
+      {/* Header: title + farm, with tier badge */}
+      <div className="mb-3 flex items-start justify-between gap-2">
+        <div className="min-w-0 flex-1">
           <h3
             className="font-display mb-0.5 truncate text-base leading-snug font-semibold"
             style={{ color: 'var(--color-brand-900)' }}
@@ -87,7 +85,7 @@ function JobCard({ job, matchScore }: JobCardProps) {
         </div>
         {badge && (
           <span
-            className="ml-2 flex-shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold"
+            className="flex-shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold"
             style={{ color: badge.color, backgroundColor: badge.bg }}
           >
             {badge.label}
@@ -96,25 +94,35 @@ function JobCard({ job, matchScore }: JobCardProps) {
       </div>
 
       {/* Tags row */}
-      <div className="mb-3 flex flex-wrap gap-1.5">
+      <div className="mb-4 flex flex-wrap gap-1.5">
         <span
           className="rounded-full px-2 py-0.5 text-[11px] font-medium"
-          style={{ backgroundColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
+          style={{ backgroundColor: 'var(--color-surface-2)', color: 'var(--color-text-muted)' }}
         >
           {region}
         </span>
         <span
           className="rounded-full px-2 py-0.5 text-[11px] font-medium capitalize"
-          style={{ backgroundColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
+          style={{ backgroundColor: 'var(--color-surface-2)', color: 'var(--color-text-muted)' }}
         >
           {job.contract_type}
         </span>
       </div>
 
-      {/* Salary */}
-      <p className="text-sm font-semibold" style={{ color: 'var(--color-brand-900)' }}>
-        {formatSalary(job.salary_min, job.salary_max)}
-      </p>
+      {/* Footer: salary + honest match-scored marker */}
+      <div className="flex items-center justify-between">
+        <p className="text-sm font-semibold" style={{ color: 'var(--color-brand-900)' }}>
+          {formatSalary(job.salary_min, job.salary_max)}
+        </p>
+        <span
+          className="inline-flex items-center gap-1 text-[11px] font-semibold"
+          style={{ color: 'var(--color-brand)' }}
+          title="Sign in to see how well you match this role"
+        >
+          <Sparkles size={12} strokeWidth={2.5} aria-hidden="true" />
+          Match-scored
+        </span>
+      </div>
     </Link>
   )
 }
@@ -125,35 +133,37 @@ export function FeaturedListings() {
 
   useEffect(() => {
     async function fetchJobs() {
-      // First try featured/premium jobs
+      const columns =
+        'id, title, region, contract_type, salary_min, salary_max, listing_tier, created_at, shed_type, accommodation, visa_sponsorship, couples_welcome, employer_profiles:marketplace_employer_profiles!inner(farm_name, region, id)'
+
+      // First try featured/premium jobs.
+      // 2=featured, 3=premium per getTierBadge helper. listing_tier is int NOT NULL DEFAULT 1
+      // in supabase/migrations/001_initial_schema.sql:129. HOMEBUG-02: previously passed a string
+      // array which yields Postgres 22P02 invalid_text_representation.
       const { data: featuredData } = await supabase
         .from('jobs')
-        .select(
-          'id, title, region, contract_type, salary_min, salary_max, listing_tier, created_at, shed_type, accommodation, visa_sponsorship, couples_welcome, employer_profiles:marketplace_employer_profiles!inner(farm_name, region, id)',
-        )
+        .select(columns)
         .eq('status', 'active')
-        // 2=featured, 3=premium per getTierBadge helper (FeaturedListings.tsx:33-38). listing_tier is int NOT NULL DEFAULT 1 in supabase/migrations/001_initial_schema.sql:129. HOMEBUG-02: previously passed string array which yields Postgres 22P02 invalid_text_representation.
         .in('listing_tier', [2, 3])
         .order('created_at', { ascending: false })
         .limit(6)
 
-      if (featuredData && featuredData.length > 0) {
-        setFeaturedJobs(featuredData as unknown as FeaturedJob[])
+      const featured = ((featuredData as unknown as FeaturedJob[]) ?? []).filter(isRealListing)
+      if (featured.length > 0) {
+        setFeaturedJobs(featured)
         setLoading(false)
         return
       }
 
-      // Fallback: show up to 3 most recent active jobs of any tier
+      // Fallback: up to 3 most recent active jobs of any tier.
       const { data: fallbackData } = await supabase
         .from('jobs')
-        .select(
-          'id, title, region, contract_type, salary_min, salary_max, listing_tier, created_at, shed_type, accommodation, visa_sponsorship, couples_welcome, employer_profiles:marketplace_employer_profiles!inner(farm_name, region, id)',
-        )
+        .select(columns)
         .eq('status', 'active')
         .order('created_at', { ascending: false })
-        .limit(3)
+        .limit(6)
 
-      setFeaturedJobs((fallbackData as unknown as FeaturedJob[]) ?? [])
+      setFeaturedJobs(((fallbackData as unknown as FeaturedJob[]) ?? []).filter(isRealListing).slice(0, 3))
       setLoading(false)
     }
 
@@ -173,20 +183,20 @@ export function FeaturedListings() {
                 className="text-xs font-bold tracking-widest uppercase"
                 style={{ color: 'var(--color-brand)' }}
               >
-                Live Listings
+                Get Started
               </p>
             </div>
             <h2
-              className="font-display text-4xl font-bold md:text-5xl"
+              className="font-display text-4xl font-bold tracking-tight md:text-5xl"
               style={{ color: 'var(--color-brand-900)' }}
             >
-              Featured{' '}
-              <em style={{ color: 'var(--color-brand)', fontStyle: 'italic' }}>Opportunities</em>
+              Be first to the{' '}
+              <em style={{ color: 'var(--color-brand)', fontStyle: 'italic' }}>next role</em>
             </h2>
           </div>
           <Link
             to="/jobs"
-            className="hidden items-center gap-1 text-sm font-semibold transition-colors hover:opacity-70 sm:inline-flex"
+            className="hidden items-center gap-1 text-sm font-semibold transition-opacity hover:opacity-70 sm:inline-flex"
             style={{ color: 'var(--color-brand-900)' }}
           >
             View all jobs
@@ -201,51 +211,59 @@ export function FeaturedListings() {
               <div
                 key={i}
                 className="h-40 animate-pulse rounded-2xl"
-                style={{ backgroundColor: 'var(--color-border)' }}
+                style={{ backgroundColor: 'var(--color-surface-2)' }}
               />
             ))}
           </div>
         ) : featuredJobs.length === 0 ? (
-          /* Empty state */
+          /* Empty state — honest pre-launch framing, no fabricated inventory */
           <div className="flex justify-center">
             <div
-              className="max-w-sm rounded-2xl p-10 text-center"
+              className="max-w-md rounded-2xl p-10 text-center"
               style={{
                 backgroundColor: 'var(--color-surface)',
                 border: '1px solid var(--color-border)',
               }}
             >
-              <div className="mb-4 text-4xl">🌾</div>
               <h3
                 className="font-display mb-2 text-lg font-semibold"
                 style={{ color: 'var(--color-brand-900)' }}
               >
-                Be the first to post a featured job
+                New roles are landing now
               </h3>
-              <p className="mb-6 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                Get your farm in front of top candidates across New Zealand.
+              <p className="mb-6 text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
+                We are onboarding farms across New Zealand. Be the first your candidates see, or set
+                up a profile and we will match you the moment a fitting role goes live.
               </p>
-              <Link
-                to="/signup?role=employer"
-                className="inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
-                style={{
-                  backgroundColor: 'var(--color-brand-900)',
-                  color: 'var(--color-text-on-brand)',
-                }}
-              >
-                Post a Job
-              </Link>
+              <div className="flex flex-wrap justify-center gap-3">
+                <Link
+                  to="/signup?role=employer"
+                  className="inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
+                  style={{
+                    backgroundColor: 'var(--color-brand-900)',
+                    color: 'var(--color-text-on-brand)',
+                  }}
+                >
+                  Post a Job
+                </Link>
+                <Link
+                  to="/signup?role=seeker"
+                  className="inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold transition-colors"
+                  style={{
+                    border: '1px solid var(--color-border-strong)',
+                    color: 'var(--color-brand-900)',
+                  }}
+                >
+                  Create a worker profile
+                </Link>
+              </div>
             </div>
           </div>
         ) : (
           <>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {featuredJobs.map((job, index) => (
-                <JobCard
-                  key={job.id}
-                  job={job}
-                  matchScore={MOCK_MATCH_SCORES[index % MOCK_MATCH_SCORES.length]}
-                />
+              {featuredJobs.map((job) => (
+                <JobCard key={job.id} job={job} />
               ))}
             </div>
 

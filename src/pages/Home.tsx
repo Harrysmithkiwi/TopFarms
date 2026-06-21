@@ -1,6 +1,10 @@
 import { Nav } from '@/components/layout/Nav'
 import { HeroSection } from '@/components/landing/HeroSection'
-import { CountersSection } from '@/components/landing/CountersSection'
+// CountersSection (live DB counters) is retained in the codebase and intentionally
+// not rendered pre-launch — it would show ~0 jobs until real listings land. Swapped
+// for CapabilitiesSection (no numbers). Wire CountersSection back in here once there
+// is genuine traction. See CapabilitiesSection.tsx header.
+import { CapabilitiesSection } from '@/components/landing/CapabilitiesSection'
 import { AIMatchingSection } from '@/components/landing/AIMatchingSection'
 import { HowItWorksSection } from '@/components/landing/HowItWorksSection'
 import { FarmTypesStrip } from '@/components/landing/FarmTypesStrip'
@@ -16,7 +20,7 @@ export function Home() {
     <div className="min-h-screen" style={{ backgroundColor: 'var(--color-bg)' }}>
       <Nav />
       <HeroSection />
-      <CountersSection />
+      <CapabilitiesSection />
       <AIMatchingSection />
       <HowItWorksSection />
       <FarmTypesStrip />

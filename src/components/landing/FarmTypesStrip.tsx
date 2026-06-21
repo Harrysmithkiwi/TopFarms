@@ -1,23 +1,39 @@
-import { motion } from 'motion/react'
+// NOTE: 2026-06-20 — removed fabricated per-sector listing counts ("12 listings",
+// "8 listings", ...) which both invented inventory and contradicted the live
+// counters. Sectors now reflect real current scope; future verticals are marked
+// "Coming soon" rather than implying open roles. (Scope: docs/_canonical/PRD.md §3.)
+import { motion, useReducedMotion, type Variants } from 'motion/react'
 
-const sectors = [
-  { name: 'Dairy', count: 12, icon: '🐄' },
-  { name: 'Sheep & Beef', count: 8, icon: '🐑' },
-  { name: 'Horticulture', count: 5, icon: '🌱' },
-  { name: 'Viticulture', count: 3, icon: '🍇' },
-  { name: 'Arable', count: 4, icon: '🌾' },
+interface Sector {
+  name: string
+  icon: string
+  status: 'live' | 'soon'
+}
+
+const sectors: Sector[] = [
+  { name: 'Dairy', icon: '🐄', status: 'live' },
+  { name: 'Sheep & Beef', icon: '🐑', status: 'live' },
+  { name: 'Arable & Cropping', icon: '🌾', status: 'live' },
+  { name: 'Machinery & Contracting', icon: '🚜', status: 'live' },
+  { name: 'Farm Management', icon: '📋', status: 'live' },
+  { name: 'Horticulture', icon: '🌱', status: 'soon' },
+  { name: 'Viticulture', icon: '🍇', status: 'soon' },
 ]
 
 export function FarmTypesStrip() {
+  const reduce = useReducedMotion()
+  const container: Variants = {
+    hidden: {},
+    show: { transition: { staggerChildren: reduce ? 0 : 0.05 } },
+  }
+  const item: Variants = {
+    hidden: reduce ? { opacity: 0 } : { opacity: 0, y: 16 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] } },
+  }
+
   return (
-    <section className="px-4 py-20" style={{ backgroundColor: 'var(--color-surface)' }}>
-      <motion.div
-        className="mx-auto max-w-6xl"
-        initial={{ opacity: 0, y: 32 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.15 }}
-        transition={{ duration: 0.55, ease: 'easeOut' }}
-      >
+    <section className="px-4 py-24" style={{ backgroundColor: 'var(--color-surface)' }}>
+      <div className="mx-auto max-w-6xl">
         {/* Eyebrow */}
         <div className="mb-4 flex items-center gap-3">
           <div className="h-px w-8" style={{ backgroundColor: 'var(--color-brand)' }} />
@@ -31,34 +47,55 @@ export function FarmTypesStrip() {
 
         {/* Heading */}
         <h2
-          className="font-display mb-10 text-4xl font-bold md:text-5xl"
+          className="font-display mb-10 max-w-2xl text-4xl font-bold tracking-tight md:text-5xl"
           style={{ color: 'var(--color-brand-900)' }}
         >
-          Opportunities Across Every Sector
+          Built for the breadth of{' '}
+          <em style={{ color: 'var(--color-brand)', fontStyle: 'italic' }}>New Zealand farming</em>
         </h2>
 
-        {/* Sector cards — horizontal scroll on mobile, grid on sm+ */}
-        <div className="flex snap-x gap-4 overflow-x-auto pb-2 sm:grid sm:grid-cols-3 sm:pb-0 lg:grid-cols-5">
+        {/* Sector cards */}
+        <motion.div
+          className="flex snap-x gap-4 overflow-x-auto pb-2 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0 lg:grid-cols-4"
+          variants={container}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.1 }}
+        >
           {sectors.map((sector) => (
-            <div
+            <motion.div
               key={sector.name}
-              className="min-w-[160px] cursor-default snap-center rounded-xl p-6 text-center transition-shadow hover:shadow-lg sm:min-w-0"
+              variants={item}
+              className="flex min-w-[160px] snap-center items-center gap-3 rounded-xl p-5 transition-[box-shadow,transform] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md sm:min-w-0"
               style={{
-                backgroundColor: 'var(--color-surface)',
+                backgroundColor: 'var(--color-bg)',
                 border: '1px solid var(--color-border)',
               }}
             >
-              <div className="mb-3 text-3xl">{sector.icon}</div>
-              <p className="mb-1 text-sm font-bold" style={{ color: 'var(--color-brand-900)' }}>
-                {sector.name}
-              </p>
-              <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-                {sector.count} listings
-              </p>
-            </div>
+              <span className="text-2xl" aria-hidden="true">
+                {sector.icon}
+              </span>
+              <div className="min-w-0">
+                <p
+                  className="truncate text-sm font-semibold"
+                  style={{ color: 'var(--color-brand-900)' }}
+                >
+                  {sector.name}
+                </p>
+                {sector.status === 'soon' ? (
+                  <p className="text-xs font-medium" style={{ color: 'var(--color-text-subtle)' }}>
+                    Coming soon
+                  </p>
+                ) : (
+                  <p className="text-xs font-medium" style={{ color: 'var(--color-brand)' }}>
+                    Open to roles
+                  </p>
+                )}
+              </div>
+            </motion.div>
           ))}
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
     </section>
   )
 }

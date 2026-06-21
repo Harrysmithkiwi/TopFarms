@@ -17,14 +17,14 @@ export function HeroSection() {
       className="relative min-h-screen overflow-hidden pt-14"
       style={{ backgroundColor: 'var(--color-brand-900)' }}
     >
-      {/* Radial gradient blobs */}
+      {/* Radial brand glow — one green, no earth-tones */}
       <div
         className="pointer-events-none absolute inset-0"
         aria-hidden="true"
         style={{
           background: `
-            radial-gradient(ellipse 60% 50% at 90% 10%, rgba(74,124,47,0.18) 0%, transparent 70%),
-            radial-gradient(ellipse 50% 40% at 5% 90%, rgba(212,168,67,0.08) 0%, transparent 70%)
+            radial-gradient(ellipse 60% 50% at 90% 8%, color-mix(in oklab, var(--color-brand) 20%, transparent) 0%, transparent 70%),
+            radial-gradient(ellipse 55% 45% at 0% 100%, color-mix(in oklab, var(--color-brand) 12%, transparent) 0%, transparent 70%)
           `,
         }}
       />
@@ -36,8 +36,8 @@ export function HeroSection() {
         style={{
           backgroundImage: `repeating-linear-gradient(
             0deg,
-            rgba(122,175,63,0.04) 0px,
-            rgba(122,175,63,0.04) 1px,
+            color-mix(in oklab, var(--color-brand) 5%, transparent) 0px,
+            color-mix(in oklab, var(--color-brand) 5%, transparent) 1px,
             transparent 1px,
             transparent 29px
           )`,
@@ -53,8 +53,8 @@ export function HeroSection() {
             <div
               className="flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold tracking-widest uppercase"
               style={{
-                borderColor: 'rgba(122,175,63,0.3)',
-                backgroundColor: 'rgba(122,175,63,0.1)',
+                borderColor: 'color-mix(in oklab, var(--color-brand) 30%, transparent)',
+                backgroundColor: 'color-mix(in oklab, var(--color-brand) 10%, transparent)',
                 color: 'var(--color-brand)',
               }}
             >
@@ -78,27 +78,28 @@ export function HeroSection() {
             }}
           >
             <motion.span variants={lineVariants} className="block">
-              Where New Zealand's
+              Great farms and
             </motion.span>
             <motion.span
               variants={lineVariants}
               className="block"
               style={{ color: 'var(--color-brand-50)', fontStyle: 'italic' }}
             >
-              Best Farms
+              great people,
             </motion.span>
             <motion.span variants={lineVariants} className="block">
-              Find Their Next Team
+              matched on what matters.
             </motion.span>
           </motion.h1>
 
           {/* Subtext */}
           <p
             className="max-w-xl text-lg leading-relaxed md:text-xl"
-            style={{ color: 'rgba(255,255,255,0.65)' }}
+            style={{ color: 'rgba(255,255,255,0.7)' }}
           >
-            TopFarms matches skilled farm workers with quality employers across dairy, sheep &amp;
-            beef, and livestock operations.
+            TopFarms scores every match on the real texture of farm work: accommodation, couples,
+            shed type, livestock, region, experience. Workers find roles that fit. Employers hire
+            people who stay.
           </p>
 
           {/* Dual CTA fork */}
@@ -156,14 +157,14 @@ export function HeroSection() {
                   Find Skilled Workers
                 </p>
                 <p className="text-sm" style={{ color: 'rgba(255,255,255,0.55)' }}>
-                  AI-matched candidates for your farm
+                  Candidates ranked by Match Score
                 </p>
               </div>
               <Link
                 to="/signup?role=employer"
-                className="hover:bg-warn/10 mt-1 inline-flex items-center justify-center rounded-xl border px-5 py-2.5 text-sm font-semibold transition-colors"
+                className="mt-1 inline-flex items-center justify-center rounded-xl border px-5 py-2.5 text-sm font-semibold transition-colors hover:bg-white/10"
                 style={{
-                  borderColor: 'var(--color-text-on-brand)',
+                  borderColor: 'rgba(255,255,255,0.4)',
                   color: 'var(--color-text-on-brand)',
                 }}
               >
@@ -190,16 +191,16 @@ export function HeroSection() {
                   className="font-display mb-0.5 text-base font-semibold"
                   style={{ color: 'var(--color-text-on-brand)' }}
                 >
-                  Senior Dairy Farm Manager
+                  Dairy Farm Manager
                 </p>
                 <p className="text-sm" style={{ color: 'rgba(255,255,255,0.6)' }}>
-                  Greenfield Dairy, Waikato
+                  Waikato · Permanent
                 </p>
               </div>
               <div
                 className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold"
                 style={{
-                  backgroundColor: 'rgba(122,175,63,0.2)',
+                  backgroundColor: 'color-mix(in oklab, var(--color-brand) 22%, transparent)',
                   color: 'var(--color-brand)',
                   border: '2px solid var(--color-brand)',
                 }}
@@ -236,18 +237,18 @@ export function HeroSection() {
               <div
                 className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold"
                 style={{
-                  backgroundColor: 'rgba(74,124,47,0.3)',
+                  backgroundColor: 'color-mix(in oklab, var(--color-brand) 28%, transparent)',
                   color: 'var(--color-brand)',
                 }}
               >
-                JD
+                SC
               </div>
               <div>
                 <p
                   className="text-sm font-semibold"
                   style={{ color: 'var(--color-text-on-brand)' }}
                 >
-                  Jamie D.
+                  Sample candidate
                 </p>
                 <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
                   5 yrs dairy experience
@@ -288,8 +289,8 @@ export function HeroSection() {
           <div
             className="ml-4 flex items-center gap-3 self-start rounded-xl px-4 py-3 shadow-lg"
             style={{
-              backgroundColor: 'rgba(122,175,63,0.15)',
-              border: '1px solid rgba(122,175,63,0.3)',
+              backgroundColor: 'color-mix(in oklab, var(--color-brand) 16%, transparent)',
+              border: '1px solid color-mix(in oklab, var(--color-brand) 30%, transparent)',
               backdropFilter: 'blur(8px)',
             }}
           >
