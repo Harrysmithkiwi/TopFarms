@@ -14,6 +14,7 @@ export default tseslint.config(
       'dist',
       'coverage',
       'TopFarms_Launch_Pack',
+      '_archive',
       // Deno runtime (Deno.serve, URL imports) — not lintable with this
       // browser/Node config. Typecheck happens at deploy via Supabase CLI.
       'supabase/functions',

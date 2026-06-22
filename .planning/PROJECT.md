@@ -95,7 +95,7 @@ Full scope, taxonomy detail, migration plan, and gate criteria: `.planning/v2.1-
 ## Context
 
 Shipped v1.0 MVP + v1.1 SPEC Compliance with ~20k LOC TypeScript across 116 files.
-MILESTONE_LAUNCH.md is the authoritative launch guide — all gaps assessed against it.
+Live authority is `.planning/REQUIREMENTS.md` + `.planning/ROADMAP.md`. (The earlier `MILESTONE_LAUNCH.md` launch guide was superseded and archived 2026-06-20 → `_archive/2026-06-20/MILESTONE_LAUNCH.md`; canonical summaries live in `docs/_canonical/`.)
 Tech stack: React 19, TypeScript, Vite 6, Tailwind v4, Supabase, Claude API, Stripe, Resend, Vercel.
 Added: motion library for landing page animations.
 
@@ -104,7 +104,7 @@ Added: motion library for landing page animations.
 - 76% of NZ dairy seekers require on-farm accommodation — major decision factor
 - Shed type (rotary vs herringbone) is the primary skill differentiator in dairy
 - 28% of seekers are couples — couples matching is a significant filter
-- All 8 MVP screens are fully wireframed as interactive HTML files in `TopFarms_Launch_Pack/wireframes/`
+- All 8 MVP screens were originally wireframed as interactive HTML files (now superseded by the shipped `src/` UI; archived 2026-06-20 → `_archive/2026-06-20/TopFarms_Launch_Pack/wireframes/`)
 - v1.1 tech debt: hasApplied hardcoded to false in JobSearch, interview Accept is toast-only (no DB write), document viewing via signed URL not yet implemented
 
 ## Constraints
