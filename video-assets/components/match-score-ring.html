@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<!--
+  TopFarms — Match-Score Ring (HERO video asset)
+  Source lineage: claude.ai/design "Design System" › components/MatchScoreRing.html + styles.css
+  Self-contained: tokens embedded, fonts via CDN, no build / router / external CSS.
+
+  ANIMATE THE FILL — single settable value:
+    The fill arc reads its progress from one CSS custom property: --ring-offset
+    (on [data-anim="ring-fill"]). Geometry: r=86 → circumference C = 2·π·86 ≈ 540.35.
+      • 0%   (empty) → --ring-offset: 540.35
+      • 92%  (preset)→ --ring-offset: 43.23      (C · 0.08)
+    To fill the ring on, tween --ring-offset from 540.35 down to 43.23.
+    (Equivalent: animate the circle's stroke-dashoffset directly.)
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Match-Score Ring — TopFarms</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #fafbf9;
+    --text: #0b1f10;
+    --text-muted: #5b6b5f;
+    --ai: #8b5cf6;          /* match-score accent (reserved) */
+    --ai-bg: #f5f3ff;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', Menlo, Consolas, monospace;
+
+    /* The one settable value the film drives. 540.35 = 0%, 43.23 = 92%. */
+    --ring-offset: 43.23;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg); font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  .num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+  .ring { position: relative; width: 200px; height: 200px; }
+  .ring__svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring__track { fill: none; stroke: var(--ai-bg); stroke-width: 14; }
+  .ring__fill {
+    fill: none; stroke: var(--ai); stroke-width: 14; stroke-linecap: round;
+    stroke-dasharray: 540.35;
+    stroke-dashoffset: var(--ring-offset);
+  }
+  .ring__center {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  }
+  .ring__pct { font: 500 52px/1 var(--font-mono); color: var(--text); letter-spacing: -0.02em; }
+  .ring__pct sup { font-size: 24px; top: -0.85em; color: var(--text-muted); }
+  .ring__label {
+    font: 600 11px/1 var(--font-sans); letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--ai);
+  }
+</style>
+</head>
+<body>
+  <div class="ring" data-anim="match-ring" role="img" aria-label="Match score 92 percent">
+    <svg class="ring__svg" viewBox="0 0 200 200" aria-hidden="true">
+      <circle class="ring__track" cx="100" cy="100" r="86"></circle>
+      <circle class="ring__fill" data-anim="ring-fill" cx="100" cy="100" r="86"></circle>
+    </svg>
+    <div class="ring__center">
+      <div class="ring__pct" data-anim="ring-pct"><span class="num">92</span><sup>%</sup></div>
+      <div class="ring__label">Match score</div>
+    </div>
+  </div>
+</body>
+</html>
