@@ -40,3 +40,7 @@ deno.lock
 tests/e2e/.auth/
 playwright-report/
 test-results/
+
+# Rendered video outputs (regenerable from the HyperFrames source — keep big binaries out of git)
+video-assets/**/*.mp4
+video-assets/**/*.wav

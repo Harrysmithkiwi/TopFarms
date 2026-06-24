@@ -1,0 +1,7 @@
+# scaffold-injected skill copies and deps — not part of the cut
+.claude/
+node_modules/
+
+# rendered outputs (regenerable from index.html + audio.filtergraph)
+*.mp4
+*.wav

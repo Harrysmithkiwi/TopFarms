@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1080px; height: 1920px; overflow: hidden;
+        background: #0a2d19;                 /* the film's canvas — deep green-black */
+        font-family: "Inter", sans-serif;
+      }
+      .mono { font-family: "JetBrains Mono", monospace; font-variant-numeric: tabular-nums; }
+
+      #stage  { position: absolute; inset: 0; }
+      #camera { position: absolute; inset: 0; transform-origin: 540px 960px; }
+
+      /* ── Device viewports (real UI on the dark canvas) ──────────────── */
+      .device { position: absolute; overflow: hidden; background: #0a2d19;
+        border: 1px solid rgba(255,255,255,0.10); opacity: 0; }
+      .device iframe { border: 0; display: block; }
+
+      #landing { left: 60px; top: 140px; width: 960px; height: 1440px; border-radius: 28px; }
+      #landingScroll { position: absolute; left: 0; top: 0; width: 1440px; height: 6204px;
+        transform: scale(0.6667); transform-origin: 0 0; }
+      #landing iframe { width: 1440px; height: 6204px; }
+
+      #seeker, #employer { left: 72px; top: 170px; width: 936px; height: 1580px; border-radius: 46px; }
+      #seekerScroll, #employerScroll { position: absolute; left: 0; top: 0; width: 390px;
+        transform: scale(2.4); transform-origin: 0 0; }
+      #seeker iframe, #employer iframe { width: 390px; height: 1900px; }
+
+      /* ── Inline interactive wireframes (phone surfaces) ─────────────── */
+      .wf { position: absolute; left: 72px; top: 170px; width: 936px; height: 1580px;
+        border-radius: 46px; overflow: hidden; border: 1px solid rgba(255,255,255,0.10);
+        background: #fafbf9; opacity: 0; }
+      .wf-phone { position: absolute; inset: 0; display: flex; flex-direction: column; background: #fafbf9; }
+      .wf-bar { background: #0f3d22; padding: 30px 36px; display: flex; align-items: center; justify-content: space-between; }
+      .wf-logo { display: inline-flex; align-items: center; gap: 16px; }
+      .wf-logo svg { width: 44px; height: 44px; }
+      .wf-logo .leaf { fill: #6fcb92; }
+      .wf-logo .vein { fill: none; stroke: #0f3d22; stroke-width: 1.5; stroke-linecap: round; }
+      .wf-logo .word { font-size: 38px; font-weight: 600; color: #fafbf9; letter-spacing: -0.01em; }
+      .wf-avatar { width: 60px; height: 60px; border-radius: 50%; background: #16a34a; color: #fff;
+        display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; }
+
+      /* job search */
+      .js-hero { padding: 34px 36px 26px; background: #0a2d19; }
+      .js-eyebrow { font-size: 22px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #6fcb92; }
+      .js-title { font-size: 40px; font-weight: 600; color: #fafbf9; margin-top: 12px; letter-spacing: -0.01em; }
+      .js-searchbar { margin-top: 24px; display: flex; align-items: center; gap: 14px; background: #fff;
+        border: 1px solid #e5e8e2; border-radius: 16px; padding: 14px 16px; }
+      .js-searchbar .mag { width: 32px; height: 32px; flex-shrink: 0; stroke: #5b6b5f; fill: none; stroke-width: 2.4; }
+      .js-q { flex: 1; min-width: 0; font-size: 30px; color: #0b1f10; white-space: nowrap; overflow: hidden; }
+      .js-q .caret { color: #16a34a; font-weight: 400; }
+      .js-q .ph { color: #b3bdb5; }
+      .js-region { display: inline-flex; align-items: center; gap: 8px; font-size: 26px; color: #5b6b5f;
+        padding: 0 16px; border-left: 1px solid #e5e8e2; white-space: nowrap; opacity: 0; }
+      .js-region b { color: #0b1f10; font-weight: 600; }
+      .js-go { background: #16a34a; color: #fff; font-size: 27px; font-weight: 600; border-radius: 12px;
+        padding: 14px 26px; white-space: nowrap; }
+      .js-filters { padding: 26px 36px 10px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+      .js-flabel { font-size: 24px; font-weight: 600; color: #5b6b5f; margin-right: 4px; }
+      .js-fchip { display: inline-flex; align-items: center; gap: 10px; height: 60px; padding: 0 22px;
+        border-radius: 999px; background: #f3f5f0; border: 1px solid #e5e8e2; color: #5b6b5f;
+        font-size: 25px; font-weight: 600; white-space: nowrap; }
+      .js-fchip .tick { width: 24px; height: 24px; opacity: 0; }
+      .js-fchip .tick path { fill: none; stroke: #15803d; stroke-width: 2.6; stroke-linecap: round;
+        stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+      .js-fchip b { font-weight: 700; color: #15803d; opacity: 0; }
+      .js-results { padding: 16px 36px 0; display: flex; flex-direction: column; gap: 16px; }
+      .js-reshead { display: flex; align-items: baseline; justify-content: space-between; padding: 0 2px 4px; }
+      .js-count { font-size: 30px; font-weight: 700; color: #0b1f10; }
+      .js-count .mono { color: #16a34a; }
+      .js-sort { font-size: 22px; font-weight: 600; color: #5b6b5f; }
+      .js-card { display: flex; align-items: center; gap: 20px; background: #fff; border: 1px solid #e5e8e2;
+        border-radius: 16px; padding: 22px 24px; overflow: hidden; opacity: 0; }
+      .js-card .cbody { flex: 1; min-width: 0; }
+      .js-card .ct { font-size: 28px; font-weight: 600; color: #0b1f10; }
+      .js-card .cf { font-size: 22px; color: #5b6b5f; margin-top: 5px; }
+      .js-card .cc { display: flex; gap: 9px; margin-top: 12px; flex-wrap: wrap; }
+      .js-card .cc span { font-size: 19px; font-weight: 600; color: #5b6b5f; background: #f3f5f0; padding: 6px 12px; border-radius: 999px; }
+      .js-badge { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+        min-width: 84px; height: 56px; padding: 0 18px; border-radius: 999px; background: #e8f5ec;
+        color: #15803d; font-size: 28px; font-weight: 700; }
+      .js-badge.low { background: #f3f5f0; color: #8a968d; }
+
+      /* post a job */
+      .pj-head { padding: 32px 40px 18px; }
+      .pj-title { font-size: 46px; font-weight: 700; color: #0b1f10; letter-spacing: -0.02em; }
+      .pj-sub { font-size: 24px; color: #5b6b5f; margin-top: 8px; }
+      .pj-steps { display: flex; align-items: center; gap: 10px; margin-top: 26px; }
+      .pj-step { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 9px; }
+      .pj-step .dot { width: 100%; height: 8px; border-radius: 999px; background: #e5e8e2; }
+      .pj-step .lab { font-size: 17px; font-weight: 600; color: #8a968d; letter-spacing: 0.02em; }
+      .pj-form { padding: 8px 40px 0; display: flex; flex-direction: column; gap: 22px; }
+      .pj-field { display: flex; flex-direction: column; gap: 9px; }
+      .pj-label { font-size: 22px; font-weight: 600; color: #5b6b5f; }
+      .pj-input { min-height: 64px; border: 1px solid #e5e8e2; border-radius: 12px; background: #fff;
+        padding: 14px 18px; font-size: 28px; color: #0b1f10; display: flex; align-items: center; }
+      .pj-input .caret { color: #16a34a; margin-left: 1px; }
+      .pj-input .ph { color: #b3bdb5; }
+      .pj-row2 { display: flex; gap: 18px; } .pj-row2 .pj-field { flex: 1; }
+      .pj-chips { display: flex; gap: 12px; flex-wrap: wrap; }
+      .pj-chip { height: 58px; padding: 0 24px; border-radius: 999px; background: #f3f5f0; border: 1px solid #e5e8e2;
+        color: #5b6b5f; font-size: 25px; font-weight: 600; display: inline-flex; align-items: center; }
+      .pj-toggle { display: inline-flex; align-items: center; gap: 14px; }
+      .pj-switch { width: 76px; height: 42px; border-radius: 999px; background: #d8ddd3; position: relative; }
+      .pj-switch .knob { position: absolute; top: 4px; left: 4px; width: 34px; height: 34px; border-radius: 50%; background: #fff; }
+      .pj-toggle .tl { font-size: 26px; font-weight: 600; color: #0b1f10; }
+      .pj-publish { margin-top: 8px; height: 84px; border-radius: 14px; background: #16a34a; color: #fff;
+        font-size: 32px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 14px; }
+      .pj-success { position: absolute; inset: 0; background: #fafbf9; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; gap: 26px; padding: 0 60px; opacity: 0; }
+      .pj-check { width: 150px; height: 150px; border-radius: 50%; background: #e8f5ec; display: flex; align-items: center; justify-content: center; }
+      .pj-check svg { width: 84px; height: 84px; }
+      .pj-check path { fill: none; stroke: #16a34a; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round;
+        stroke-dasharray: 1; stroke-dashoffset: 1; }
+      .pj-stitle { font-size: 46px; font-weight: 700; color: #0b1f10; letter-spacing: -0.02em; }
+      .pj-ssub { font-size: 28px; color: #5b6b5f; text-align: center; }
+
+      /* ── The match-score ring (the fixed hinge) ─────────────────────── */
+      #ringPos { position: absolute; left: 540px; top: 960px; transform: translate(-50%, -50%); }
+      #ring { width: 380px; height: 380px; opacity: 0; }
+      #ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+      .ring-track { fill: none; stroke: rgba(139,92,246,0.20); stroke-width: 14; }
+      .ring-fill  { fill: none; stroke: #8b5cf6; stroke-width: 14; stroke-linecap: round; }
+      #ring .center { position: absolute; inset: 0; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; gap: 6px; }
+      #ring .pct { font-size: 112px; line-height: 1; color: #fff; letter-spacing: -0.02em; font-weight: 500; }
+      #ring .pct sup { font-size: 48px; top: -0.85em; color: rgba(255,255,255,0.6); }
+      #ring .label { font-size: 22px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #c4b5fd; }
+
+      /* ── Seeker criteria chips (tick to ✓) ──────────────────────────── */
+      #chips { position: absolute; left: 0; right: 0; top: 1300px; display: flex;
+        justify-content: center; gap: 16px; flex-wrap: wrap; padding: 0 80px; opacity: 0; }
+      .cchip { display: inline-flex; align-items: center; gap: 12px; height: 64px; padding: 0 26px;
+        border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14);
+        color: rgba(255,255,255,0.62); font-size: 26px; font-weight: 600; white-space: nowrap; }
+      .cchip svg { width: 26px; height: 26px; flex-shrink: 0; overflow: visible; }
+      .cchip .tick { fill: none; stroke: #6fcb92; stroke-width: 2.4; stroke-linecap: round;
+        stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+
+      /* ── Employer context band (above the hinge) ────────────────────── */
+      #empPos { position: absolute; left: 540px; top: 480px; transform: translate(-50%, -50%); }
+      #empBand { width: 820px; display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; opacity: 0; }
+      .stat { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.10);
+        border-radius: 12px; padding: 22px 20px; text-align: left; }
+      .stat .n { font-size: 46px; font-weight: 700; color: #fff; letter-spacing: -0.02em; }
+      .stat .l { font-size: 17px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-top: 4px; }
+
+      /* ── Shortlist rows (the clarity, below the hinge) ──────────────── */
+      #rows { position: absolute; left: 540px; top: 1480px; transform: translate(-50%, -50%);
+        width: 880px; display: flex; flex-direction: column; gap: 20px; }
+      .srow { display: flex; align-items: center; gap: 20px; background: #fff;
+        border: 1px solid #d8ddd3; border-radius: 16px; padding: 24px 26px; opacity: 0; }
+      .srow .body { flex: 1; min-width: 0; }
+      .srow .nm { font-size: 32px; font-weight: 600; color: #0b1f10; }
+      .srow .ro { font-size: 21px; color: #5b6b5f; margin-top: 5px; }
+      .srow .sk { display: flex; gap: 10px; margin-top: 13px; flex-wrap: wrap; }
+      .srow .sk span { font-size: 17px; font-weight: 600; color: #5b6b5f; background: #f3f5f0; padding: 7px 13px; border-radius: 999px; }
+      .badge { display: inline-flex; align-items: center; height: 50px; padding: 0 22px;
+        border-radius: 999px; background: #e8f5ec; color: #15803d; font-size: 29px; font-weight: 600; flex-shrink: 0; }
+
+      /* ── Text captions / beats ──────────────────────────────────────── */
+      .cap { position: absolute; left: 0; right: 0; text-align: center; opacity: 0; padding: 0 70px; }
+      .cap .l1 { font-size: 58px; font-weight: 700; letter-spacing: -0.02em; color: #fafbf9; line-height: 1.05; }
+      .cap .l2 { font-size: 38px; font-weight: 600; letter-spacing: 0.01em; color: rgba(255,255,255,0.72); margin-top: 14px; }
+      .cap .l2 .d { color: #6fcb92; }
+      #capReveal   { top: 1640px; }
+      #capSeeker   { top: 360px; }
+      #capEmployer { top: 1648px; }
+
+      #scrim { position: absolute; left: 0; right: 0; bottom: 0; height: 460px; opacity: 0;
+        background: linear-gradient(to top, #0a2d19 22%, rgba(10,45,25,0) 100%); }
+
+      /* ── Logo lockup (open + close) ─────────────────────────────────── */
+      #logoWrap { position: absolute; left: 0; right: 0; top: 0; bottom: 0;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 40px; opacity: 0; }
+      .logo { display: inline-flex; align-items: center; gap: 26px; }
+      .logo svg { width: 132px; height: 132px; overflow: visible; }
+      .logo__leaf        { fill: #6fcb92; opacity: 0; }
+      .logo__leaf-stroke { fill: none; stroke: #6fcb92; stroke-width: 0.9; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+      .logo__vein        { fill: none; stroke: #0a2d19; stroke-width: 1.5; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+      .logo__word { font-size: 96px; font-weight: 600; letter-spacing: -0.01em; color: #fafbf9; }
+
+      /* ── CTA close ──────────────────────────────────────────────────── */
+      #cta { position: absolute; left: 0; right: 0; top: 0; bottom: 0;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 30px; opacity: 0; }
+      #cta .logo svg { width: 84px; height: 84px; }
+      #cta .logo__word { font-size: 60px; }
+      #cta .lines { display: flex; flex-direction: column; gap: 22px; margin-top: 30px; align-items: center; }
+      .ctaline { display: inline-flex; align-items: center; gap: 18px; font-size: 44px; font-weight: 600; color: #fafbf9; }
+      .ctaline .dot { width: 14px; height: 14px; border-radius: 50%; background: #6fcb92; flex-shrink: 0; }
+      .ctaline .free { color: #6fcb92; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="39" data-width="1080" data-height="1920">
+      <div id="stage">
+        <div id="camera">
+
+          <!-- ░░ REAL UI DEVICES ░░ -->
+          <div class="device" id="landing" data-layout-allow-overlap>
+            <div id="landingScroll"><iframe src="../landing-establishing.html" scrolling="no"></iframe></div>
+          </div>
+          <div class="device" id="seeker" data-layout-allow-overlap>
+            <div id="seekerScroll"><iframe src="../screens/seeker-job-feed.html" scrolling="no"></iframe></div>
+          </div>
+          <div class="device" id="employer" data-layout-allow-overlap>
+            <div id="employerScroll"><iframe src="../screens/employer-shortlist.html" scrolling="no"></iframe></div>
+          </div>
+
+          <!-- ░░ SEEKER · SEARCH & FILTER (inline, interactive) ░░ -->
+          <div class="wf" id="jobsearch" data-layout-allow-overlap>
+            <div class="wf-phone">
+              <div class="wf-bar">
+                <span class="wf-logo"><svg viewBox="0 0 24 24"><path class="leaf" d="M3 21C3 12 9 5 21 3C19 13 13 19 3 21Z"></path><path class="vein" d="M6.5 17.5C9 13 13 8.5 17 6"></path></svg><span class="word">TopFarms</span></span>
+                <span class="wf-avatar">J</span>
+              </div>
+              <div class="js-hero">
+                <div class="js-eyebrow">Find work</div>
+                <div class="js-title">Find your next farming role</div>
+                <div class="js-searchbar">
+                  <svg class="mag" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg>
+                  <span class="js-q" id="jsq"><span class="ph">Search jobs, roles, farms…</span></span>
+                  <span class="js-region" id="jsregion">in <b>Waikato</b></span>
+                  <span class="js-go">Search</span>
+                </div>
+              </div>
+              <div class="js-filters" id="jsfilters">
+                <span class="js-flabel">Filters</span>
+                <span class="js-fchip"><svg class="tick" viewBox="0 0 16 16"><path pathLength="1" d="M3 8.5 L6.5 12 L13 4.5"></path></svg>Shed type<b> · Rotary</b></span>
+                <span class="js-fchip"><svg class="tick" viewBox="0 0 16 16"><path pathLength="1" d="M3 8.5 L6.5 12 L13 4.5"></path></svg>Region<b> · Waikato</b></span>
+                <span class="js-fchip"><svg class="tick" viewBox="0 0 16 16"><path pathLength="1" d="M3 8.5 L6.5 12 L13 4.5"></path></svg>Accommodation<b></b></span>
+                <span class="js-fchip"><svg class="tick" viewBox="0 0 16 16"><path pathLength="1" d="M3 8.5 L6.5 12 L13 4.5"></path></svg>Visa<b> · AEWV</b></span>
+              </div>
+              <div class="js-results">
+                <div class="js-reshead"><span class="js-count" id="jscount"><span class="mono">14</span> jobs</span><span class="js-sort">Sorted by match</span></div>
+                <div class="js-card" data-keep="1"><div class="cbody"><div class="ct">Dairy Farm Manager</div><div class="cf">Riverbend Dairy · Waikato</div><div class="cc"><span>Dairy</span><span>Rotary shed</span><span>Accommodation</span></div></div><span class="js-badge">94%</span></div>
+                <div class="js-card" data-keep="1"><div class="cbody"><div class="ct">Herd Manager</div><div class="cf">Clearwater Farms · Waikato</div><div class="cc"><span>Dairy</span><span>Rotary shed</span><span>AEWV</span></div></div><span class="js-badge">88%</span></div>
+                <div class="js-card" data-keep="0"><div class="cbody"><div class="ct">Tractor Operator</div><div class="cf">Plains Co · Canterbury</div><div class="cc"><span>Arable</span><span>Herringbone</span></div></div><span class="js-badge low">44%</span></div>
+                <div class="js-card" data-keep="1"><div class="cbody"><div class="ct">Relief Milker</div><div class="cf">Southern Pastures · Waikato</div><div class="cc"><span>Dairy</span><span>Rotary shed</span></div></div><span class="js-badge">81%</span></div>
+                <div class="js-card" data-keep="0"><div class="cbody"><div class="ct">General Hand</div><div class="cf">Coastal Farms · Taranaki</div><div class="cc"><span>Mixed</span><span>No accom.</span></div></div><span class="js-badge low">38%</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ░░ EMPLOYER · POST A JOB (inline, interactive) ░░ -->
+          <div class="wf" id="postjob" data-layout-allow-overlap>
+            <div class="wf-phone">
+              <div class="wf-bar">
+                <span class="wf-logo"><svg viewBox="0 0 24 24"><path class="leaf" d="M3 21C3 12 9 5 21 3C19 13 13 19 3 21Z"></path><path class="vein" d="M6.5 17.5C9 13 13 8.5 17 6"></path></svg><span class="word">TopFarms</span></span>
+                <span class="wf-avatar">H</span>
+              </div>
+              <div class="pj-head">
+                <div class="pj-title">Post a job</div>
+                <div class="pj-sub">Complete the steps to publish your listing</div>
+                <div class="pj-steps" id="pjsteps">
+                  <div class="pj-step"><span class="dot"></span><span class="lab">Basics</span></div>
+                  <div class="pj-step"><span class="dot"></span><span class="lab">Farm</span></div>
+                  <div class="pj-step"><span class="dot"></span><span class="lab">Pay</span></div>
+                  <div class="pj-step"><span class="dot"></span><span class="lab">Review</span></div>
+                  <div class="pj-step"><span class="dot"></span><span class="lab">Publish</span></div>
+                </div>
+              </div>
+              <div class="pj-form">
+                <div class="pj-field"><span class="pj-label">Job title</span><div class="pj-input" id="pjtitle"><span class="ph">e.g. Dairy Farm Manager</span></div></div>
+                <div class="pj-row2">
+                  <div class="pj-field"><span class="pj-label">Farm</span><div class="pj-input" id="pjfarm"><span class="ph">Farm name</span></div></div>
+                  <div class="pj-field"><span class="pj-label">Region</span><div class="pj-input" id="pjregion"><span class="ph">Region</span></div></div>
+                </div>
+                <div class="pj-field"><span class="pj-label">Shed type</span>
+                  <div class="pj-chips"><span class="pj-chip" id="pjshed">Rotary</span><span class="pj-chip">Herringbone</span><span class="pj-chip">AMS</span></div>
+                </div>
+                <div class="pj-field"><span class="pj-label">Pay range</span><div class="pj-input" id="pjpay"><span class="ph">Annual salary</span></div></div>
+                <div class="pj-field"><span class="pj-label">Accommodation</span>
+                  <div class="pj-toggle"><span class="pj-switch" id="pjsw"><span class="knob"></span></span><span class="tl">Provided on-farm</span></div>
+                </div>
+                <button class="pj-publish" id="pjpublish">Publish job</button>
+              </div>
+              <div class="pj-success" id="pjsuccess">
+                <div class="pj-check"><svg viewBox="0 0 24 24"><path pathLength="1" d="M5 12.5 L10 17.5 L19 7"></path></svg></div>
+                <div class="pj-stitle">Your job is live</div>
+                <div class="pj-ssub">Matching candidates across NZ now…</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ░░ THE HINGE ░░ -->
+          <div id="ringPos" data-layout-allow-overlap>
+            <div id="ring" data-anim="match-ring">
+              <svg viewBox="0 0 200 200" aria-hidden="true">
+                <circle class="ring-track" cx="100" cy="100" r="86"></circle>
+                <circle class="ring-fill" data-anim="ring-fill" cx="100" cy="100" r="86" style="stroke-dasharray:540.35; stroke-dashoffset:540.35;"></circle>
+              </svg>
+              <div class="center">
+                <div class="pct mono" id="ringPct">0<sup>%</sup></div>
+                <div class="label">Match score</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ░░ SEEKER CRITERIA CHIPS ░░ -->
+          <div id="chips" data-layout-allow-overlap>
+            <div class="cchip"><svg viewBox="0 0 16 16"><path class="tick" pathLength="1" d="M3 8.5 L6.5 12 L13 4.5"></path></svg><span>Region</span></div>
+            <div class="cchip"><svg viewBox="0 0 16 16"><path class="tick" pathLength="1" d="M3 8.5 L6.5 12 L13 4.5"></path></svg><span>Shed type</span></div>
+            <div class="cchip"><svg viewBox="0 0 16 16"><path class="tick" pathLength="1" d="M3 8.5 L6.5 12 L13 4.5"></path></svg><span>Accommodation</span></div>
+            <div class="cchip"><svg viewBox="0 0 16 16"><path class="tick" pathLength="1" d="M3 8.5 L6.5 12 L13 4.5"></path></svg><span>Experience</span></div>
+          </div>
+
+          <!-- ░░ EMPLOYER CONTEXT ░░ -->
+          <div id="empPos" data-layout-allow-overlap>
+            <div id="empBand">
+              <div class="stat"><div class="n mono">14</div><div class="l">Applicants</div></div>
+              <div class="stat"><div class="n mono">3</div><div class="l">Shortlisted</div></div>
+              <div class="stat"><div class="n mono">92%</div><div class="l">Top match</div></div>
+            </div>
+          </div>
+
+          <!-- ░░ THE CLARITY — three worth calling ░░ -->
+          <div id="rows" data-layout-allow-overlap>
+            <div class="srow" data-anim="shortlist-row" data-top>
+              <div class="body"><div class="nm">Alex R.</div><div class="ro">Dairy Farm Manager · Waikato</div><div class="sk"><span>Herd Management</span><span>Rotary shed</span><span>5 yrs</span></div></div>
+              <span class="badge mono" data-anim="match-badge">92%</span>
+            </div>
+            <div class="srow" data-anim="shortlist-row" data-top>
+              <div class="body"><div class="nm">Jordan M.</div><div class="ro">Herd Manager · Bay of Plenty</div><div class="sk"><span>Pasture</span><span>Herringbone</span><span>3 yrs</span></div></div>
+              <span class="badge mono" data-anim="match-badge">85%</span>
+            </div>
+            <div class="srow" data-anim="shortlist-row" data-top>
+              <div class="body"><div class="nm">Sam T.</div><div class="ro">Relief Milker · Waikato</div><div class="sk"><span>Milking</span><span>AMS</span><span>2 yrs</span></div></div>
+              <span class="badge mono" data-anim="match-badge">81%</span>
+            </div>
+          </div>
+
+          <!-- ░░ CAPTIONS ░░ -->
+          <div id="scrim" data-layout-allow-overlap></div>
+          <div class="cap" id="capReveal" data-layout-allow-overlap>
+            <div class="l1">NZ-built farm hiring.</div>
+            <div class="l2"><span class="d">Match</span> · <span class="d">Train</span> · <span class="d">Retain</span></div>
+          </div>
+          <div class="cap" id="capSeeker" data-layout-allow-overlap><div class="l1">Find work that fits.</div></div>
+          <div class="cap" id="capEmployer" data-layout-allow-overlap><div class="l1">Hire people who stay.</div></div>
+
+          <!-- ░░ LOGO (open) ░░ -->
+          <div id="logoWrap" data-layout-allow-overlap>
+            <span class="logo">
+              <svg viewBox="0 0 24 24" aria-label="TopFarms logo">
+                <path class="logo__leaf"        data-anim="logo-leaf"        d="M3 21C3 12 9 5 21 3C19 13 13 19 3 21Z"></path>
+                <path class="logo__leaf-stroke" data-anim="logo-leaf-stroke" pathLength="1" d="M3 21C3 12 9 5 21 3C19 13 13 19 3 21Z"></path>
+                <path class="logo__vein"        data-anim="logo-vein"        pathLength="1" d="M6.5 17.5C9 13 13 8.5 17 6"></path>
+              </svg>
+              <span class="logo__word" data-anim="logo-word">TopFarms</span>
+            </span>
+          </div>
+
+          <!-- ░░ CTA (close) ░░ -->
+          <div id="cta" data-layout-allow-overlap>
+            <span class="logo">
+              <svg viewBox="0 0 24 24" aria-label="TopFarms logo">
+                <path class="logo__leaf" style="opacity:1" d="M3 21C3 12 9 5 21 3C19 13 13 19 3 21Z"></path>
+                <path class="logo__vein" style="stroke-dashoffset:0" d="M6.5 17.5C9 13 13 8.5 17 6"></path>
+              </svg>
+              <span class="logo__word">TopFarms</span>
+            </span>
+            <div class="lines">
+              <span class="ctaline"><span class="dot"></span>Find farm work — <span class="free">free</span></span>
+              <span class="ctaline"><span class="dot"></span>Post a job — <span class="free">first one's free</span></span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <audio id="aud" class="clip" data-start="0" data-duration="39" data-track-index="0" src="audio-stem.wav" data-volume="1"></audio>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      const $ = (s) => document.querySelector(s);
+
+      /* seek-safe typewriter: drives innerHTML purely from tween progress */
+      function typewriter(sel, text, t, dur) {
+        const el = typeof sel === "string" ? $(sel) : sel, o = { n: 0 };
+        tl.to(o, { n: text.length, duration: dur, ease: "none", immediateRender: false,
+          onUpdate: () => {
+            const k = Math.round(o.n);
+            el.innerHTML = text.slice(0, k) + (k < text.length ? '<span class="caret">|</span>' : "");
+          } }, t);
+      }
+
+      /* very slight global life — never on content, only the wrapper */
+      tl.fromTo("#camera", { scale: 1.0 }, { scale: 1.02, duration: 39, ease: "none" }, 0);
+
+      /* ════════ ACT A · REVEAL (0–6.3) ════════ */
+      tl.to("#logoWrap", { opacity: 1, duration: 0.3 }, 0.15);
+      tl.to(".logo__leaf-stroke", { strokeDashoffset: 0, duration: 0.9, ease: "power2.out" }, 0.25);
+      tl.to(".logo__leaf",        { opacity: 1, duration: 0.5, ease: "power1.out" }, 0.9);
+      tl.to(".logo__vein",        { strokeDashoffset: 0, duration: 0.5, ease: "power2.out" }, 1.15);
+      tl.fromTo(".logo__word", { opacity: 0, x: -18 }, { opacity: 1, x: 0, duration: 0.55, ease: "power2.out" }, 1.2);
+      tl.to("#logoWrap", { opacity: 0, duration: 0.45, ease: "power2.in" }, 2.15);
+
+      tl.to("#landing", { opacity: 1, duration: 0.6, ease: "power1.out" }, 2.2);
+      tl.fromTo("#landing", { scale: 1.0 }, { scale: 1.06, duration: 3.9, ease: "power2.out" }, 2.4);
+      tl.fromTo("#landingScroll", { y: 0 }, { y: -1380, duration: 3.6, ease: "power2.out" }, 2.5);
+      tl.to("#scrim", { opacity: 1, duration: 0.6 }, 2.9);
+      tl.fromTo("#capReveal", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 3.1);
+      tl.to("#capReveal", { opacity: 0, duration: 0.45, ease: "power2.in" }, 5.85);
+      tl.to("#scrim", { opacity: 0, duration: 0.45, ease: "power2.in" }, 5.95);
+      tl.to("#landing", { opacity: 0, duration: 0.5, ease: "power2.in" }, 5.95);
+
+      /* ════════ ACT B1 · SEEKER — SEARCH & FILTER (6.3–12.2) ════════ */
+      tl.fromTo("#jobsearch", { opacity: 0, scale: 0.99 }, { opacity: 1, scale: 1, duration: 0.55, ease: "power2.out" }, 6.35);
+      typewriter("#jsq", "Dairy Farm Manager", 6.85, 1.0);
+      tl.fromTo("#jsregion", { opacity: 0, x: 8 }, { opacity: 1, x: 0, duration: 0.3 }, 7.7);
+      tl.fromTo(".js-go", { scale: 1 }, { scale: 0.94, duration: 0.12, yoyo: true, repeat: 1, ease: "power2.inOut" }, 8.0);
+      tl.fromTo(".js-card", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.4, stagger: 0.08, ease: "power2.out" }, 8.1);
+
+      const jschips = gsap.utils.toArray("#jsfilters .js-fchip");
+      jschips.forEach((c, i) => {
+        const t = 8.7 + i * 0.4;
+        tl.to(c, { backgroundColor: "#e8f5ec", borderColor: "#16a34a", color: "#15803d", duration: 0.25, ease: "power1.out" }, t);
+        tl.to(c.querySelector(".tick"), { opacity: 1, duration: 0.1 }, t);
+        tl.to(c.querySelector(".tick path"), { strokeDashoffset: 0, duration: 0.3, ease: "power2.out" }, t + 0.03);
+        tl.to(c.querySelector("b"), { opacity: 1, duration: 0.2 }, t + 0.08);
+      });
+
+      const cnt = { v: 14 }, cel = $("#jscount");
+      tl.to(cnt, { v: 3, duration: 1.4, ease: "power2.inOut", immediateRender: false,
+        onUpdate: () => { const k = Math.round(cnt.v); cel.innerHTML = '<span class="mono">' + k + '</span> ' + (k === 3 ? "matches" : "jobs"); } }, 9.1);
+      gsap.utils.toArray(".js-card").forEach((c) => {
+        if (c.getAttribute("data-keep") === "0")
+          tl.to(c, { opacity: 0, height: 0, paddingTop: 0, paddingBottom: 0, marginTop: -16, duration: 0.45, ease: "power2.in" }, 9.3);
+      });
+      tl.to("#jobsearch", { opacity: 0, scale: 0.97, duration: 0.55, ease: "power2.in" }, 11.9);
+
+      /* ════════ ACT B2 · SEEKER — BROWSE THE MATCHED FEED (12.1–15.5) ════════ */
+      tl.to("#seeker", { opacity: 1, duration: 0.55, ease: "power1.out" }, 12.1);
+      tl.fromTo("#seeker", { scale: 0.99 }, { scale: 1.05, duration: 3.0, ease: "power2.out" }, 12.3);
+      tl.fromTo("#seekerScroll", { y: 470 }, { y: -70, duration: 3.0, ease: "power2.out" }, 12.45);
+      tl.to("#seeker", { opacity: 0, scale: 0.92, duration: 0.6, ease: "power2.in" }, 15.35);
+
+      /* ════════ ACT B3 · FIND THE FIT — ring blooms to 92% (15.5–18.8) ════════ */
+      tl.fromTo("#ring", { opacity: 0, scale: 0.86 }, { opacity: 1, scale: 1, duration: 0.7, ease: "power3.out" }, 15.45);
+      tl.fromTo(".ring-fill", { strokeDashoffset: 540.35 }, { strokeDashoffset: 43.23, duration: 1.4, ease: "power2.out" }, 15.7);
+      const pct = { v: 0 };
+      tl.to(pct, { v: 92, duration: 1.4, ease: "power2.out", immediateRender: false,
+        onUpdate: () => { $("#ringPct").innerHTML = Math.round(pct.v) + "<sup>%</sup>"; } }, 15.7);
+      tl.fromTo("#capSeeker", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 15.8);
+      tl.to("#chips", { opacity: 1, duration: 0.4 }, 16.6);
+      gsap.utils.toArray("#chips .cchip").forEach((c, i) => {
+        const t = 16.8 + i * 0.36;
+        tl.to(c, { backgroundColor: "rgba(111,203,146,0.16)", borderColor: "rgba(111,203,146,0.5)", color: "#dff3e6", duration: 0.3, ease: "power1.out" }, t);
+        tl.to(c.querySelector(".tick"), { strokeDashoffset: 0, duration: 0.34, ease: "power2.out" }, t + 0.04);
+      });
+      tl.to("#capSeeker", { opacity: 0, duration: 0.4, ease: "power2.in" }, 18.5);
+      tl.to("#chips", { opacity: 0, y: -16, duration: 0.45, ease: "power2.in" }, 18.5);
+      tl.to("#ring", { opacity: 0, duration: 0.5, ease: "power2.in" }, 18.75);
+
+      /* ════════ ACT C1 · EMPLOYER — POST A JOB (18.9–25.3) ════════ */
+      tl.fromTo("#postjob", { opacity: 0, scale: 0.99 }, { opacity: 1, scale: 1, duration: 0.55, ease: "power2.out" }, 18.95);
+      const pjsteps = gsap.utils.toArray("#pjsteps .pj-step");
+      function pjActivate(i, t) {
+        tl.to(pjsteps[i].querySelector(".dot"), { backgroundColor: "#16a34a", duration: 0.3, ease: "power1.out" }, t);
+        tl.to(pjsteps[i].querySelector(".lab"), { color: "#15803d", duration: 0.3 }, t);
+      }
+      pjActivate(0, 19.2);
+      typewriter("#pjtitle", "Dairy Farm Manager", 19.3, 0.9);
+      tl.to("#pjtitle", { borderColor: "#b7c8bd", duration: 0.2 }, 19.3);
+      pjActivate(1, 20.3);
+      typewriter("#pjfarm", "Riverbend Dairy", 20.4, 0.5);
+      tl.to("#pjfarm", { borderColor: "#b7c8bd", duration: 0.2 }, 20.4);
+      typewriter("#pjregion", "Waikato", 20.98, 0.4);
+      tl.to("#pjregion", { borderColor: "#b7c8bd", duration: 0.2 }, 20.98);
+      tl.to("#pjshed", { backgroundColor: "#e8f5ec", borderColor: "#16a34a", color: "#15803d", duration: 0.3, ease: "power1.out" }, 21.2);
+      tl.fromTo("#pjshed", { scale: 1 }, { scale: 0.94, duration: 0.12, yoyo: true, repeat: 1, ease: "power2.inOut" }, 21.2);
+      pjActivate(2, 21.6);
+      typewriter("#pjpay", "$85,000 – $95,000", 21.7, 0.7);
+      tl.to("#pjpay", { borderColor: "#b7c8bd", duration: 0.2 }, 21.7);
+      tl.to("#pjsw", { backgroundColor: "#16a34a", duration: 0.3, ease: "power1.out" }, 22.6);
+      tl.fromTo("#pjsw .knob", { x: 0 }, { x: 34, duration: 0.32, ease: "power2.out" }, 22.6);
+      pjActivate(3, 23.0);
+      pjActivate(4, 23.4);
+      tl.to("#pjpublish", { scale: 1.02, duration: 0.25, ease: "power2.out" }, 23.4);
+      tl.to("#pjpublish", { scale: 0.95, duration: 0.12, ease: "power2.in" }, 23.7);
+      tl.to("#pjpublish", { scale: 1, duration: 0.15, ease: "power2.out" }, 23.82);
+      tl.to("#pjsuccess", { opacity: 1, duration: 0.4, ease: "power2.out" }, 23.95);
+      tl.fromTo(".pj-check", { scale: 0.7 }, { scale: 1, duration: 0.45, ease: "back.out(1.6)" }, 24.0);
+      tl.fromTo(".pj-check path", { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.42, ease: "power2.out" }, 24.15);
+      tl.to("#postjob", { opacity: 0, scale: 0.97, duration: 0.55, ease: "power2.in" }, 25.3);
+
+      /* ════════ ACT C2 · EMPLOYER — THE REAL SHORTLIST (25.5–29.3) ════════ */
+      tl.to("#employer", { opacity: 1, duration: 0.55, ease: "power1.out" }, 25.5);
+      tl.fromTo("#employer", { scale: 0.99 }, { scale: 1.05, duration: 3.0, ease: "power2.out" }, 25.7);
+      tl.fromTo("#employerScroll", { y: 250 }, { y: -120, duration: 3.0, ease: "power2.out" }, 25.85);
+      tl.to("#scrim", { opacity: 1, duration: 0.5 }, 26.0);
+      tl.fromTo("#capEmployer", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 26.2);
+      tl.to("#capEmployer", { opacity: 0, duration: 0.4, ease: "power2.in" }, 28.7);
+      tl.to("#scrim", { opacity: 0, duration: 0.4, ease: "power2.in" }, 28.8);
+      tl.to("#employer", { opacity: 0, scale: 0.94, duration: 0.6, ease: "power2.in" }, 29.2);
+
+      /* ════════ ACT D · MATCH-CUT + PAYOFF (29.2–34.0) ════════ */
+      tl.to("#ring", { opacity: 1, duration: 0.6, ease: "power3.out" }, 29.25);
+      tl.fromTo("#empBand", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.65, ease: "power3.out" }, 29.6);
+      tl.fromTo(".srow", { opacity: 0, scale: 1.06 }, { opacity: 1, scale: 1, duration: 0.5, ease: "power3.out", stagger: 0.13 }, 30.2);
+      tl.to(["#empBand", "#rows", "#ring"], { opacity: 0, duration: 0.5, ease: "power2.in" }, 33.7);
+
+      /* ════════ ACT E · CTA CLOSE (34.0–39) ════════ */
+      tl.fromTo("#cta", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 34.0);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
