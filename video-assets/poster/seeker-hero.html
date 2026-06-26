@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
+<style>
+  :root{
+    --bg:#FAFBF9; --surface:#FFFFFF; --surface-2:#F3F5F0; --border:#E5E8E2;
+    --text:#0B1F10; --muted:#5B6B5F; --muted-dk:#46544B; --subtle:#8A968D;
+    --brand:#16A34A; --brand-hover:#15803D; --brand-900:#0F3D22; --brand-50:#E8F5EC;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+  .poster{position:relative;width:1920px;height:1080px;background:var(--bg);overflow:hidden;display:flex}
+
+  /* ── LEFT: headline + CTA as one anchored block ─────── */
+  .left{position:relative;width:980px;flex-shrink:0;padding:0 40px 0 96px;display:flex;flex-direction:column;justify-content:center}
+  .wordmark{position:absolute;top:88px;left:96px;display:inline-flex;align-items:center;gap:14px}
+  .wordmark svg{width:38px;height:38px}
+  .wordmark .leaf{fill:var(--brand)}
+  .wordmark .vein{fill:none;stroke:var(--bg);stroke-width:1.5;stroke-linecap:round}
+  .wordmark .word{font-size:31px;font-weight:600;letter-spacing:-0.01em;color:var(--text)}
+  .eyebrow{font-size:15px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--subtle)}
+  .headline{margin-top:18px}
+  .headline span{display:block;font-size:108px;line-height:0.95;font-weight:800;letter-spacing:-0.04em;color:var(--text)}
+  .headline em{font-style:normal;color:var(--brand)}
+  .cta-row{margin-top:50px;display:flex;align-items:center;gap:26px}
+  .cta{display:inline-flex;align-items:center;height:80px;padding:0 40px;border-radius:14px;background:var(--brand);color:#fff;font-size:30px;font-weight:700;letter-spacing:-0.01em}
+  .cta-row .u{font-size:23px;font-weight:600;color:var(--text)}
+  .cta-row .u .s{display:block;font-size:15px;font-weight:500;color:var(--subtle);margin-top:2px}
+
+  /* ── RIGHT: checklist + matched card as one tight block ── */
+  .right{flex:1;padding:88px 96px 88px 24px;display:flex;flex-direction:column;justify-content:center}
+  .check{position:relative}
+  .check-tag{display:flex;align-items:baseline;gap:11px;margin-bottom:18px}
+  .check-tag .n{font-size:23px;font-weight:800;color:var(--brand);letter-spacing:-0.02em}
+  .check-tag .t{font-size:13px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--subtle)}
+  .crow{position:relative;display:flex;align-items:center;gap:18px;height:62px}
+  .crow + .crow{margin-top:7px}
+  .tick{position:relative;width:46px;height:46px;border-radius:50%;background:var(--brand);display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:2}
+  .tick svg{width:24px;height:24px;fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+  .crow:not(:last-child) .tick::after{content:'';position:absolute;left:50%;top:46px;transform:translateX(-50%);width:3px;height:23px;background:rgba(22,163,74,0.28);z-index:1}
+  .crow .lab{font-size:29px;font-weight:700;color:var(--text);letter-spacing:-0.01em}
+  .crow .det{margin-left:auto;font-size:23px;font-weight:600;color:var(--muted-dk)}
+
+  .matched{margin-top:24px;background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:28px 32px}
+  .m-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+  .m-head .lhs{display:flex;align-items:center;gap:11px}
+  .m-head .leaf{width:23px;height:23px;fill:var(--brand)}
+  .m-head .ttl{font-size:17px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:var(--text)}
+  .m-head .meta{font-size:17px;font-weight:600;color:var(--brand-hover)}
+  .m-job{display:flex;align-items:center;gap:22px;padding:22px 22px;border-radius:15px;background:var(--brand-50)}
+  .m-job .av{width:64px;height:64px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .m-job .av svg{width:35px;height:35px;fill:var(--brand)}
+  .m-job .body{flex:1;min-width:0}
+  .m-job .title{font-size:32px;font-weight:700;color:var(--text);letter-spacing:-0.015em}
+  .m-job .farm{font-size:21px;font-weight:500;color:var(--muted);margin-top:3px}
+  .m-job .score{display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0}
+  .m-job .score .v{font-size:52px;font-weight:800;color:var(--brand);letter-spacing:-0.03em;line-height:0.9;font-variant-numeric:tabular-nums}
+  .m-job .score .u{font-size:16px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--brand)}
+</style>
+</head>
+<body>
+  <div class="poster">
+    <div class="left">
+      <span class="wordmark">
+        <svg viewBox="0 0 24 24" aria-label="TopFarms"><path class="leaf" d="M3 21C3 12 9 5 21 3C19 13 13 19 3 21Z"></path><path class="vein" d="M6.5 17.5C9 13 13 8.5 17 6"></path></svg>
+        <span class="word">TopFarms</span>
+      </span>
+      <span class="eyebrow">For farm workers</span>
+      <h1 class="headline"><span>The job that fits</span><span>your <em>life.</em></span><span>Not just your CV.</span></h1>
+      <div class="cta-row">
+        <span class="cta">Find farm work — free</span>
+        <span class="u">topfarms.co.nz<span class="s">Match · Train · Retain</span></span>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="check">
+        <div class="check-tag"><span class="n">✓</span><span class="t">What the listings never tell you</span></div>
+        <div class="crow"><span class="tick"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></span><span class="lab">Accommodation</span><span class="det">On-farm, included</span></div>
+        <div class="crow"><span class="tick"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></span><span class="lab">Couples role</span><span class="det">Partner's work sorted</span></div>
+        <div class="crow"><span class="tick"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></span><span class="lab">Visa — AEWV</span><span class="det">Accredited employer</span></div>
+        <div class="crow"><span class="tick"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></span><span class="lab">Rotary shed</span><span class="det">Your experience</span></div>
+        <div class="crow"><span class="tick"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></span><span class="lab">Starts after calving</span><span class="det">Right timing</span></div>
+      </div>
+      <div class="matched">
+        <div class="m-head"><span class="lhs"><svg class="leaf" viewBox="0 0 24 24"><path d="M3 21C3 12 9 5 21 3C19 13 13 19 3 21Z"></path></svg><span class="ttl">Your match</span></span><span class="meta">5 of 5 must-haves met</span></div>
+        <div class="m-job"><span class="av"><svg viewBox="0 0 24 24"><path d="M3 21C3 12 9 5 21 3C19 13 13 19 3 21Z"></path></svg></span><span class="body"><div class="title">Dairy Farm Manager</div><div class="farm">Riverbend Dairy · Waikato · Permanent</div></span><span class="score"><span class="v">96</span><span class="u">% fit</span></span></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

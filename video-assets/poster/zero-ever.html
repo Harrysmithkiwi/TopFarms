@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
+<style>
+  :root{
+    --ground:#0F3D22; --ink:#0A2D19;
+    --white:#FAFBF9; --bright:#6FCB92;          /* the one green, legible on dark */
+    --mut:rgba(255,255,255,0.60); --hair:rgba(255,255,255,0.14);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+  .poster{position:relative;width:1080px;height:1350px;background:var(--ground);overflow:hidden;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px}
+
+  .wordmark{position:absolute;top:64px;left:50%;transform:translateX(-50%);display:inline-flex;align-items:center;gap:14px}
+  .wordmark svg{width:38px;height:38px}
+  .wordmark .leaf{fill:var(--bright)}
+  .wordmark .vein{fill:none;stroke:var(--ground);stroke-width:1.5;stroke-linecap:round}
+  .wordmark .word{font-size:30px;font-weight:600;letter-spacing:-0.01em;color:var(--white)}
+
+  .stage{display:flex;flex-direction:column;align-items:center;text-align:center;transform:translateY(40px)}
+  .zero{font-size:440px;line-height:0.78;font-weight:800;letter-spacing:-0.05em;color:var(--bright)}
+  .rule{width:96px;height:5px;border-radius:3px;background:var(--hair);margin:18px 0 40px}
+  .stmt{font-size:62px;line-height:1.04;font-weight:800;letter-spacing:-0.03em;color:var(--white)}
+  .stmt .br{color:var(--bright)}
+  .support{margin-top:20px;font-size:26px;font-weight:600;letter-spacing:0.01em;color:rgba(255,255,255,0.85)}
+
+  .foot{position:absolute;bottom:60px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:14px;
+    font-size:20px;font-weight:600;color:var(--mut)}
+  .foot .dot{width:5px;height:5px;border-radius:50%;background:var(--bright)}
+</style>
+</head>
+<body>
+  <div class="poster">
+    <span class="wordmark">
+      <svg viewBox="0 0 24 24" aria-label="TopFarms"><path class="leaf" d="M3 21C3 12 9 5 21 3C19 13 13 19 3 21Z"></path><path class="vein" d="M6.5 17.5C9 13 13 8.5 17 6"></path></svg>
+      <span class="word">TopFarms</span>
+    </span>
+
+    <div class="stage">
+      <div class="zero">$0</div>
+      <div class="rule"></div>
+      <div class="stmt">The worker never pays.<br><span class="br">Not now. Not ever.</span></div>
+      <div class="support">No recruiter fees. Built fair, NZ-built.</div>
+    </div>
+
+    <div class="foot"><span>topfarms.co.nz</span><span class="dot"></span><span>Match · Train · Retain</span></div>
+  </div>
+</body>
+</html>

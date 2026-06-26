@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
+<style>
+  :root{
+    --bg:#FAFBF9; --surface:#FFFFFF; --surface-2:#F3F5F0; --border:#E5E8E2;
+    --text:#0B1F10; --muted:#5B6B5F; --subtle:#8A968D;
+    --brand:#16A34A; --brand-hover:#15803D; --brand-900:#0F3D22; --brand-50:#E8F5EC;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+  .poster{position:relative;width:1080px;height:1350px;background:var(--bg);overflow:hidden;
+    padding:64px 80px 60px;display:flex;flex-direction:column}
+
+  header{display:flex;align-items:center;justify-content:space-between}
+  .wordmark{display:inline-flex;align-items:center;gap:13px}
+  .wordmark svg{width:36px;height:36px}
+  .wordmark .leaf{fill:var(--brand)}
+  .wordmark .vein{fill:none;stroke:var(--bg);stroke-width:1.5;stroke-linecap:round}
+  .wordmark .word{font-size:29px;font-weight:600;letter-spacing:-0.01em;color:var(--text)}
+  .eyebrow{font-size:14px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--subtle)}
+
+  /* ── headline lead ──────────────────────────────────── */
+  .headline{margin-top:56px}
+  .headline .l1,.headline .l2{display:block;font-size:90px;line-height:0.98;font-weight:800;letter-spacing:-0.04em;color:var(--text)}
+  .headline .l2{margin-top:6px}
+  .headline em{font-style:normal;color:var(--brand)}
+  .sub{margin-top:26px;font-size:28px;font-weight:600;color:var(--muted)}
+  .sub b{color:var(--brand-hover);font-weight:700}
+
+  /* ── the verified candidate (proof) ─────────────────── */
+  .verif{margin-top:50px;background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:44px 44px 46px;position:relative}
+  .v-top{display:flex;align-items:center;gap:26px;padding-bottom:38px;border-bottom:1px solid var(--border)}
+  .v-top .av{width:90px;height:90px;border-radius:50%;background:var(--brand-50);display:flex;align-items:center;justify-content:center;
+    font-size:34px;font-weight:700;color:var(--brand-hover);flex-shrink:0}
+  .v-top .body{flex:1;min-width:0}
+  .v-top .nm{font-size:42px;font-weight:700;color:var(--text);letter-spacing:-0.015em}
+  .v-top .ro{font-size:24px;font-weight:500;color:var(--muted);margin-top:4px}
+  .vbadge{display:inline-flex;align-items:center;gap:11px;height:66px;padding:0 28px;border-radius:999px;background:var(--brand);flex-shrink:0}
+  .vbadge svg{width:30px;height:30px;fill:#fff}
+  .vbadge span{font-size:23px;font-weight:800;letter-spacing:0.08em;color:#fff}
+  .v-rows{display:grid;grid-template-columns:1fr 1fr;gap:40px 40px;margin-top:44px}
+  .vrow{display:flex;align-items:center;gap:18px}
+  .vrow .tick{width:56px;height:56px;border-radius:50%;background:var(--brand-50);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .vrow .tick svg{width:28px;height:28px;fill:none;stroke:var(--brand);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+  .vrow .k{font-size:30px;font-weight:700;color:var(--text)}
+  .vrow .vv{font-size:21px;font-weight:500;color:var(--muted);margin-top:2px}
+  .vrow .col{display:flex;flex-direction:column;line-height:1.12}
+  .v-note{display:flex;align-items:center;gap:10px;margin-top:46px}
+  .v-note svg{width:24px;height:24px;fill:var(--subtle)}
+  .v-note span{font-size:20px;font-weight:500;color:var(--subtle)}
+
+  footer{margin-top:auto;display:flex;align-items:center;justify-content:space-between}
+  .cta{display:inline-flex;align-items:center;height:74px;padding:0 36px;border-radius:14px;background:var(--brand);color:#fff;font-size:27px;font-weight:700;letter-spacing:-0.01em}
+  .foot-r{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+  .foot-r .u{font-size:22px;font-weight:600;color:var(--text)}
+  .foot-r .s{font-size:15px;font-weight:500;color:var(--subtle)}
+</style>
+</head>
+<body>
+  <div class="poster">
+    <header>
+      <span class="wordmark">
+        <svg viewBox="0 0 24 24" aria-label="TopFarms"><path class="leaf" d="M3 21C3 12 9 5 21 3C19 13 13 19 3 21Z"></path><path class="vein" d="M6.5 17.5C9 13 13 8.5 17 6"></path></svg>
+        <span class="word">TopFarms</span>
+      </span>
+      <span class="eyebrow">For farm employers</span>
+    </header>
+
+    <h1 class="headline">
+      <span class="l1">Hire someone</span>
+      <span class="l2">who <em>shows up.</em></span>
+    </h1>
+    <div class="sub">Document-verified <b>before you call</b> — the one thing job boards never check.</div>
+
+    <div class="verif">
+      <div class="v-top">
+        <span class="av">AR</span>
+        <span class="body"><div class="nm">Alex R.</div><div class="ro">Dairy Farm Manager · Waikato · 5 yrs</div></span>
+        <span class="vbadge">
+          <svg viewBox="0 0 24 24"><path d="M12 2l7.5 2.8v6.2c0 4.8-3.3 8-7.5 10.4C7.8 19 4.5 15.8 4.5 11V4.8L12 2zm-1 13.2l5-5-1.6-1.6-3.4 3.4-1.6-1.6L7.8 12l3.2 3.2z"></path></svg>
+          <span>VERIFIED</span>
+        </span>
+      </div>
+      <div class="v-rows">
+        <div class="vrow"><span class="tick"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></span><span class="col"><span class="k">Identity</span><span class="vv">Photo ID confirmed</span></span></div>
+        <div class="vrow"><span class="tick"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></span><span class="col"><span class="k">Right to work</span><span class="vv">AEWV — valid</span></span></div>
+        <div class="vrow"><span class="tick"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></span><span class="col"><span class="k">References</span><span class="vv">2 of 2 checked</span></span></div>
+        <div class="vrow"><span class="tick"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></span><span class="col"><span class="k">Licences</span><span class="vv">AI ticket, Class 2</span></span></div>
+      </div>
+      <div class="v-note">
+        <svg viewBox="0 0 24 24"><path d="M12 1l9 4v6c0 5.5-3.8 10-9 12-5.2-2-9-6.5-9-12V5l9-4z"></path></svg>
+        <span>Checked by TopFarms against source documents — not self-reported.</span>
+      </div>
+    </div>
+
+    <footer>
+      <span class="cta">Post your first listing — free</span>
+      <span class="foot-r"><span class="u">topfarms.co.nz</span><span class="s">Match · Train · Retain</span></span>
+    </footer>
+  </div>
+</body>
+</html>
