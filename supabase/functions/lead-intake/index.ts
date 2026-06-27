@@ -47,7 +47,15 @@ const REGIONS = [
 // canonical; aliases fold common variants in. Previously this lane only did
 // exact-match-or-null with no aliases.
 const REGION_ALIASES: Record<string, string> = {
+  // Wairarapa is administratively part of the Wellington region; its towns rarely
+  // say "Wellington" in FB posts, so fold the common ones in (else they go null).
   'wairarapa': 'Wellington',
+  'south wairarapa': 'Wellington',
+  'masterton': 'Wellington',
+  'carterton': 'Wellington',
+  'greytown': 'Wellington',
+  'featherston': 'Wellington',
+  'martinborough': 'Wellington',
   'manawatu-whanganui': 'Manawatū-Whanganui',
   'manawatu-wanganui': 'Manawatū-Whanganui',
   'manawatu': 'Manawatū-Whanganui',

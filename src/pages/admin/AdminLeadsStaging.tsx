@@ -51,7 +51,9 @@ const SOURCE_LABELS: Record<string, string> = {
 }
 
 function PastePanel({ onCaptured }: { onCaptured: () => void }) {
-  const [source, setSource] = useState('fb_own_group')
+  // Default to manual-capture: most pastes are other people's groups (NZ Dairy
+  // Jobs etc.), not our own group. fb_own_group is the exception, selectable below.
+  const [source, setSource] = useState('fb_manual_capture')
   const [text, setText] = useState('')
   const [busy, setBusy] = useState(false)
 
