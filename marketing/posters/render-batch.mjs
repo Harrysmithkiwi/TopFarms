@@ -1,12 +1,13 @@
 import { chromium } from 'playwright';
 
-// Each entry: [htmlFile, outPng, width, height]
+// Each entry: [htmlFile, outPng, width, height] — paths relative to this file
+// (marketing/posters/); each poster lives in its audience subfolder.
 const jobs = [
-  ['seeker-void.html',      'seeker-void.png',      1080, 1350],
-  ['zero-ever.html',        'zero-ever.png',        1080, 1350],
-  ['employer-verified.html','employer-verified.png',1080, 1350],
-  ['employer-hero.html',    'employer-hero.png',    1920, 1080],
-  ['seeker-hero.html',      'seeker-hero.png',      1920, 1080],
+  ['seeker/seeker-void.html',          'seeker/seeker-void.png',          1080, 1350],
+  ['brand/zero-ever.html',             'brand/zero-ever.png',             1080, 1350],
+  ['employer/employer-verified.html',  'employer/employer-verified.png',  1080, 1350],
+  ['employer/employer-hero.html',      'employer/employer-hero.png',      1920, 1080],
+  ['seeker/seeker-hero.html',          'seeker/seeker-hero.png',          1920, 1080],
 ];
 
 const only = process.argv.slice(2);                      // optional: render only these html files

@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
+<style>
+  :root{
+    --brand:#16A34A; --brand-hover:#15803D; --brand-900:#0F3D22; --brand-50:#E8F5EC;
+    --text:#0B1F10; --muted:#5B6B5F; --subtle:#8A968D; --border:#E5E8E2;
+    --ink:#FFFFFF; --ink-soft:rgba(255,255,255,0.90); --ink-mute:rgba(244,250,246,0.74);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+
+  /* ── the green ground: strictly banked brand greens ─────────────── */
+  .poster{position:relative;width:1080px;height:1350px;overflow:hidden;
+    padding:74px 80px 64px;display:flex;flex-direction:column;
+    background:
+      radial-gradient(130% 90% at 50% -6%, #1C8A47 0%, rgba(28,138,71,0) 52%),
+      radial-gradient(120% 70% at 86% 108%, rgba(22,163,74,0.55) 0%, rgba(22,163,74,0) 55%),
+      linear-gradient(168deg, #0F3D22 0%, #14572F 50%, #0E3A21 100%);
+    color:var(--ink-soft)}
+  /* grain — kills banding on the large dark gradient, premium texture */
+  .grain{position:absolute;inset:0;pointer-events:none;mix-blend-mode:overlay;opacity:0.07;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>")}
+  /* soft vignette for depth */
+  .poster::after{content:'';position:absolute;inset:0;pointer-events:none;
+    box-shadow:inset 0 0 240px 40px rgba(7,30,16,0.45)}
+  .poster > *{position:relative;z-index:1}
+
+  /* ── header ─────────────────────────────────────────────────────── */
+  header{display:flex;align-items:center;justify-content:space-between}
+  .wordmark{display:inline-flex;align-items:center;gap:13px}
+  .wordmark svg{width:36px;height:36px}
+  .wordmark .leaf{fill:#fff}
+  .wordmark .vein{fill:none;stroke:var(--brand);stroke-width:1.6;stroke-linecap:round}
+  .wordmark .word{font-size:29px;font-weight:600;letter-spacing:-0.01em;color:#fff}
+  .eyebrow{font-size:14px;font-weight:700;letter-spacing:0.20em;text-transform:uppercase;color:rgba(255,255,255,0.62)}
+
+  /* core block — centered vertically so slack splits evenly top & bottom */
+  .core{flex:1;display:flex;flex-direction:column;justify-content:center}
+
+  /* ── the feeling (headline) ─────────────────────────────────────── */
+  .headline .l1{display:block;font-size:84px;line-height:0.98;font-weight:800;
+    letter-spacing:-0.045em;color:var(--ink)}
+  .headline .l2{display:block;margin-top:20px;font-size:37px;line-height:1.15;font-weight:500;
+    letter-spacing:-0.015em;color:var(--ink-mute)}
+  /* em = soft mint underline stroke (brand-50 tint, not a second green) */
+  .headline em{font-style:normal;color:#fff;
+    background:linear-gradient(transparent 84%, rgba(255,255,255,0.85) 84% 97%, transparent 97%)}
+
+  /* ── the flow: your preferences → one match ─────────────────────── */
+  .flow{margin-top:56px}
+  .flow-tag{display:flex;align-items:baseline;gap:14px;margin-bottom:22px}
+  .flow-tag .t{font-size:13px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.60)}
+  .flow-tag .s{font-size:20px;font-weight:500;color:var(--ink-soft);letter-spacing:-0.01em}
+  .chips{display:flex;justify-content:space-between;gap:12px}
+  .chip{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;
+    height:54px;padding:0 10px;border-radius:999px;
+    background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.24);
+    -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+    box-shadow:0 2px 14px rgba(7,30,16,0.18);
+    font-size:18px;font-weight:600;color:#fff;letter-spacing:-0.01em;white-space:nowrap}
+
+  .funnel{display:block;width:100%;height:118px;margin-top:4px}
+  .funnel path{fill:none;stroke:rgba(255,255,255,0.30);stroke-width:2.5;stroke-linecap:round}
+  .funnel .node{fill:#fff}
+  .funnel .node-leaf{fill:var(--brand)}
+
+  /* ── the match, brought to you (white surface = green pops) ─────── */
+  .matched{margin-top:-6px;background:#fff;border-radius:24px;
+    padding:28px 32px;box-shadow:0 24px 60px -18px rgba(7,30,16,0.55)}
+  .m-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+  .m-head .lhs{display:flex;align-items:center;gap:11px}
+  .m-head .leaf{width:21px;height:21px;fill:var(--brand)}
+  .m-head .ttl{font-size:16px;font-weight:800;letter-spacing:0.10em;text-transform:uppercase;color:var(--brand-hover)}
+  .m-head .pill{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 16px;border-radius:999px;
+    background:var(--brand-50);color:var(--brand-hover);font-size:16px;font-weight:700;letter-spacing:-0.01em}
+  .m-head .pill svg{width:17px;height:17px;fill:none;stroke:var(--brand);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+  .m-job{display:flex;align-items:center;gap:22px;padding:20px;border-radius:16px;background:var(--brand-50)}
+  .m-job .av{width:64px;height:64px;border-radius:15px;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .m-job .av svg{width:34px;height:34px;fill:var(--brand)}
+  .m-job .body{flex:1;min-width:0}
+  .m-job .title{font-size:33px;font-weight:700;color:var(--text);letter-spacing:-0.018em}
+  .m-job .farm{font-size:20px;font-weight:500;color:var(--muted);margin-top:4px}
+  .m-foot{display:flex;align-items:center;gap:10px;margin-top:18px;padding:0 4px}
+  .m-foot svg{width:21px;height:21px;fill:none;stroke:var(--brand);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+  .m-foot .a{font-size:20px;font-weight:700;color:var(--text)}
+  .m-foot .b{font-size:20px;font-weight:500;color:var(--muted)}
+
+  /* ── CTA ────────────────────────────────────────────────────────── */
+  footer{padding-top:46px;display:flex;align-items:center;justify-content:space-between}
+  .cta{display:inline-flex;align-items:center;height:74px;padding:0 38px;border-radius:14px;
+    background:var(--brand);color:#fff;font-size:27px;font-weight:700;letter-spacing:-0.01em;
+    box-shadow:0 14px 34px -10px rgba(22,163,74,0.65)}
+  .foot-r{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+  .foot-r .u{font-size:22px;font-weight:600;color:#fff}
+  .foot-r .s{font-size:15px;font-weight:500;color:rgba(255,255,255,0.55)}
+</style>
+</head>
+<body>
+  <div class="poster">
+    <div class="grain"></div>
+
+    <header>
+      <span class="wordmark">
+        <svg viewBox="0 0 24 24" aria-label="TopFarms"><path class="leaf" d="M3 21C3 12 9 5 21 3C19 13 13 19 3 21Z"></path><path class="vein" d="M6.5 17.5C9 13 13 8.5 17 6"></path></svg>
+        <span class="word">TopFarms</span>
+      </span>
+      <span class="eyebrow">For farm workers</span>
+    </header>
+
+    <div class="core">
+    <h1 class="headline">
+      <span class="l1" id="l1">Work that <em>gets</em> you.</span>
+      <span class="l2" id="l2">Not just work that&rsquo;ll have you.</span>
+    </h1>
+
+    <div class="flow">
+      <div class="flow-tag"><span class="t">What matters to you</span><span class="s">&mdash; the things your work actually has to fit.</span></div>
+      <div class="chips">
+        <span class="chip">Accommodation</span>
+        <span class="chip">Couples role</span>
+        <span class="chip">Rotary shed</span>
+        <span class="chip">After calving</span>
+        <span class="chip">AEWV visa</span>
+      </div>
+      <svg class="funnel" viewBox="0 0 1080 118" preserveAspectRatio="none">
+        <path d="M172 6 C172 58 540 40 540 96"></path>
+        <path d="M356 6 C356 56 540 48 540 96"></path>
+        <path d="M540 6 L540 96"></path>
+        <path d="M724 6 C724 56 540 48 540 96"></path>
+        <path d="M908 6 C908 58 540 40 540 96"></path>
+        <circle class="node" cx="540" cy="100" r="15"></circle>
+        <path class="node-leaf" d="M534 106C534 100 537 96 547 95C546 101 542 105 534 106Z" transform="translate(-1,-1)"></path>
+      </svg>
+    </div>
+
+    <div class="matched">
+      <div class="m-head">
+        <span class="lhs">
+          <svg class="leaf" viewBox="0 0 24 24"><path d="M3 21C3 12 9 5 21 3C19 13 13 19 3 21Z"></path></svg>
+          <span class="ttl">Matched to you</span>
+        </span>
+        <span class="pill"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>Fits all five</span>
+      </div>
+      <div class="m-job">
+        <span class="av"><svg viewBox="0 0 24 24"><path d="M3 21C3 12 9 5 21 3C19 13 13 19 3 21Z"></path></svg></span>
+        <span class="body"><div class="title">Dairy Farm Manager</div><div class="farm">Riverbend Dairy &middot; Waikato &middot; Permanent</div></span>
+      </div>
+      <div class="m-foot">
+        <svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>
+        <span class="a">Brought to you.</span><span class="b">Everything you asked for, sorted.</span>
+      </div>
+    </div>
+    </div>
+
+    <footer>
+      <span class="cta">Find farm work &mdash; free</span>
+      <span class="foot-r"><span class="u">topfarms.co.nz</span><span class="s">Match &middot; Train &middot; Retain</span></span>
+    </footer>
+  </div>
+</body>
+</html>

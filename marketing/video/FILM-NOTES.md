@@ -4,7 +4,7 @@
 TopFarms launch film consistently with the **locked reference shot** (Act 4). It assumes no
 memory of prior sessions. Everything here is verified against the locked files in this folder.
 
-The reference shot lives at `video-assets/act4-hero/` (composition `index.html` + `audio-stem.wav`).
+The reference shot lives at `marketing/video/act4-hero/` (composition `index.html` + `audio-stem.wav`).
 It is **locked** — match its language, don't redesign it. The film is vertical, 1080×1920, 30fps.
 
 ---
@@ -144,25 +144,26 @@ names in the React app, PR #3). Use these exact names in new shots so the film s
 
 ---
 
-## 5. Asset inventory (`video-assets/`)
+## 5. Asset inventory (paths relative to `marketing/`)
 
 Framework-free, self-contained HTML (tokens inlined, fonts via CDN, no build/router/auth/external
-images). Source these for markup/CSS/values when authoring shots; **`manifest.md` is the index** and
-lists every file's dimensions and key selectors.
+images). Source assets live in `marketing/source-assets/`; the locked composition is in
+`marketing/video/act4-hero/`. Source these for markup/CSS/values when authoring shots;
+**`source-assets/manifest.md` is the index** and lists every file's dimensions and key selectors.
 
 | Path | What it is | Use in film |
 |---|---|---|
-| `manifest.md` | the asset index + selector map + dimensions | read first when picking assets |
-| `components/match-score-ring.html` | hero ring; fill = single settable `--ring-offset` (preset 92%) | the connective motif / Act 4 hinge |
-| `components/job-card.html` | job card, chip row (Dairy·Rotary shed·Accommodation·AEWV), 94% badge | seeker-side beats |
-| `components/shortlist-row.html` | one ranked row + match badge (×3 = the payoff) | the "3 worth calling" clarity |
-| `components/chip.html` | pill, unchecked→checked with strokeable ✓ | filter / criteria moments |
-| `components/logo-lockup.html` | leaf (fill + strokeable) + wordmark, draw-on | open/close brand sting |
-| `screens/seeker-job-feed.html` | assembled seeker mobile screen (390px) | establishing/wide shots |
-| `screens/employer-shortlist.html` | assembled employer mobile screen (390px) | establishing/wide shots |
-| `landing-establishing.html` | flattened static snapshot of the live launch page, **1440×6204**, `establishing-scroll` | slow wide auto-scroll + gentle push-in (establishing, NOT a walkthrough) |
-| `act4-hero/` | **the LOCKED reference composition** (HyperFrames project) | copy its patterns for every act |
-| `act4-hero/audio.filtergraph` | the audio envelope source | adapt per-shot duration/settle |
+| `source-assets/manifest.md` | the asset index + selector map + dimensions | read first when picking assets |
+| `source-assets/components/match-score-ring.html` | hero ring; fill = single settable `--ring-offset` (preset 92%) | the connective motif / Act 4 hinge |
+| `source-assets/components/job-card.html` | job card, chip row (Dairy·Rotary shed·Accommodation·AEWV), 94% badge | seeker-side beats |
+| `source-assets/components/shortlist-row.html` | one ranked row + match badge (×3 = the payoff) | the "3 worth calling" clarity |
+| `source-assets/components/chip.html` | pill, unchecked→checked with strokeable ✓ | filter / criteria moments |
+| `source-assets/components/logo-lockup.html` | leaf (fill + strokeable) + wordmark, draw-on | open/close brand sting |
+| `source-assets/screens/seeker-job-feed.html` | assembled seeker mobile screen (390px) | establishing/wide shots |
+| `source-assets/screens/employer-shortlist.html` | assembled employer mobile screen (390px) | establishing/wide shots |
+| `source-assets/landing-establishing.html` | flattened static snapshot of the live launch page, **1440×6204**, `establishing-scroll` | slow wide auto-scroll + gentle push-in (establishing, NOT a walkthrough) |
+| `video/act4-hero/` | **the LOCKED reference composition** (HyperFrames project) | copy its patterns for every act |
+| `video/act4-hero/audio.filtergraph` | the audio envelope source | adapt per-shot duration/settle |
 
 The three shortlist data sets (reuse verbatim): Alex R. · Dairy Farm Manager · Waikato — Herd
 Management / Rotary shed / 5 yrs — **92%**; Jordan M. · Herd Manager · Bay of Plenty — Pasture /
@@ -178,7 +179,7 @@ FFmpeg, Chrome headless-shell (auto-cached). `doctor` flags low RAM (8GB) — ke
 
 ### Scaffold
 ```
-cd video-assets
+cd marketing/video
 npx --yes hyperframes@0.7.4 init <act-name>        # creates <act-name>/index.html + config
 ```
 
@@ -231,7 +232,7 @@ Reuse the camera/wrapper, deterministic-seed, and check/render patterns above.
 **Next task on deck:** a **20-second product cut** assembled against these notes. It will likely
 chain establishing (`landing-establishing.html` slow scroll) → the ring/match explainer → the
 Act-4 collapse-to-three as the climax → a logo-lockup close, with one continuous audio envelope
-that lands its settle on the collapse. Build it as its own HyperFrames project under `video-assets/`.
+that lands its settle on the collapse. Build it as its own HyperFrames project under `marketing/video/`.
 
 ---
 _Last locked: Act 4 v2 (10s) — held-alone ending + pushed chaos. This doc is the carrier; if it and
