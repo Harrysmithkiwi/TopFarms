@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { AdminTable } from '@/components/admin/AdminTable'
+import { ContactGlyphs, LeadContactCard, type LeadContact } from '@/components/admin/LeadContact'
 import { supabase } from '@/lib/supabase'
 
 /**
  * /admin/leads — the pipeline view (L0, PHASE-LEADS-DESIGN §6).
- * Approved leads with status new -> contacted -> onboarded -> dead.
- * Conversion linking (converted_user_id suggestion flow) lands in L4.
+ * Two axes (design 2026-06-16): status = lifecycle (new/contacted/onboarded/dead
+ * /follow_up); category = classification (domestic/overseas). Park-with-reason-
+ * and-when via admin_lead_categorise. Conversion linking (L4) unchanged.
  */
 
 interface LeadRow extends Record<string, unknown> {
@@ -18,13 +20,21 @@ interface LeadRow extends Record<string, unknown> {
   role_or_category: string | null
   source: string
   source_ref: string | null
-  contact: { email?: string; phone?: string; url?: string } | null
+  contact: LeadContact | null
   notes: string | null
-  status: 'new' | 'contacted' | 'onboarded' | 'dead'
+  status: 'new' | 'contacted' | 'onboarded' | 'dead' | 'follow_up'
   status_changed_at: string
   converted_user_id: string | null
+  category: 'domestic' | 'overseas'
+  follow_up_date: string | null
+  salary_text: string | null
+  summary: string | null
+  advertiser_name: string | null
+  is_recruiter: boolean
 }
 
+// Quick lifecycle buttons. follow_up is set via the categorise form (it needs a
+// date), so it's not a one-click button here.
 const STATUSES: LeadRow['status'][] = ['new', 'contacted', 'onboarded', 'dead']
 
 interface Suggestion {
@@ -32,6 +42,94 @@ interface Suggestion {
   candidate_user_id: string
   candidate_email: string
   match: 'email' | 'farm_name'
+}
+
+/**
+ * Park-with-reason-and-when. One gate-guarded call (admin_lead_categorise) sets
+ * category + follow-up date + notes; entering a follow-up date parks the lead
+ * (status='follow_up'); clearing it wipes the date. Mounted with key={lead.id}
+ * so its state resets per selection — no useEffect.
+ */
+function CategoriseForm({ lead, onSaved }: { lead: LeadRow; onSaved: () => void }) {
+  const [category, setCategory] = useState<LeadRow['category']>(lead.category)
+  const [followUp, setFollowUp] = useState(lead.follow_up_date ?? '')
+  const [notes, setNotes] = useState(lead.notes ?? '')
+  const [saving, setSaving] = useState(false)
+
+  async function save() {
+    setSaving(true)
+    const clearing = !followUp && !!lead.follow_up_date
+    const { error } = await supabase.rpc('admin_lead_categorise', {
+      p_lead_id: lead.id,
+      p_status: followUp ? 'follow_up' : null, // a follow-up date parks the lead
+      p_category: category,
+      p_follow_up_date: followUp || null,
+      p_notes: notes.trim() || null,
+      p_clear_follow_up_date: clearing,
+    })
+    setSaving(false)
+    if (error) {
+      toast.error(`Save failed: ${error.message}`)
+      return
+    }
+    toast.success('Lead updated')
+    onSaved()
+  }
+
+  const inputCls =
+    'border-border bg-surface rounded-[8px] border px-2 py-1 text-sm outline-none focus:border-brand'
+
+  return (
+    <div className="border-border mt-4 border-t pt-3">
+      <p
+        className="text-[11px] font-semibold tracking-wide uppercase"
+        style={{ color: 'var(--color-text-muted)' }}
+      >
+        Park / categorise
+      </p>
+      <div className="mt-2 flex flex-wrap items-center gap-3 text-sm">
+        <label className="flex items-center gap-1.5">
+          Category
+          <select
+            className={inputCls}
+            value={category}
+            onChange={(e) => setCategory(e.target.value as LeadRow['category'])}
+          >
+            <option value="domestic">domestic</option>
+            <option value="overseas">overseas</option>
+          </select>
+        </label>
+        <label className="flex items-center gap-1.5">
+          Follow-up
+          <input
+            type="date"
+            className={inputCls}
+            value={followUp}
+            onChange={(e) => setFollowUp(e.target.value)}
+          />
+        </label>
+        {followUp && (
+          <span className="text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
+            → parks as <span className="font-semibold">follow_up</span>
+          </span>
+        )}
+      </div>
+      <textarea
+        className={`${inputCls} mt-2 h-16 w-full`}
+        placeholder="Notes — why parked / context for when you pick this up"
+        value={notes}
+        onChange={(e) => setNotes(e.target.value)}
+      />
+      <button
+        type="button"
+        disabled={saving}
+        onClick={save}
+        className="bg-brand mt-2 rounded-[8px] px-3 py-1.5 text-sm font-semibold text-white disabled:opacity-50"
+      >
+        {saving ? 'Saving…' : 'Save categorisation'}
+      </button>
+    </div>
+  )
 }
 
 export function AdminLeads() {
@@ -97,28 +195,49 @@ export function AdminLeads() {
 
       {selected && (
         <div className="bg-surface border-brand rounded-[12px] border-2 p-5">
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex items-start justify-between gap-4">
             <div className="min-w-0 text-sm">
               <p className="font-semibold">{selected.display_name}</p>
               <p style={{ color: 'var(--color-text-muted)' }}>
                 {selected.type} · {selected.region ?? 'no region'} · currently{' '}
                 <span className="font-semibold">{selected.status}</span>
-                {selected.contact?.url && (
-                  <>
-                    {' · '}
-                    <a
-                      className="text-brand underline"
-                      href={selected.contact.url}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      contact
-                    </a>
-                  </>
+                {selected.category === 'overseas' && (
+                  <span className="border-warn text-warn ml-2 rounded border px-1.5 py-0.5 text-[11px] font-semibold">
+                    🌏 overseas
+                  </span>
+                )}
+                {selected.status === 'follow_up' && selected.follow_up_date && (
+                  <span className="ml-2 text-[12px]">↻ {selected.follow_up_date}</span>
                 )}
               </p>
+
+              {selected.role_or_category && (
+                <p className="mt-1 text-[13px] font-medium">{selected.role_or_category}</p>
+              )}
+              {(selected.salary_text || selected.is_recruiter) && (
+                <p className="mt-1 flex flex-wrap items-center gap-2 text-[13px]">
+                  {selected.salary_text && <span>💰 {selected.salary_text}</span>}
+                  {selected.is_recruiter && (
+                    <span
+                      className="border-warn text-warn rounded border px-1.5 py-0.5 text-[11px] font-semibold"
+                      title={selected.advertiser_name ?? 'agency-placed'}
+                    >
+                      Recruiter-placed{selected.advertiser_name ? ` · ${selected.advertiser_name}` : ''}
+                    </span>
+                  )}
+                </p>
+              )}
+
+              {/* Contact — the work-the-lead target. Shared card with staging. */}
+              <LeadContactCard contact={selected.contact} />
+
+              {selected.summary && (
+                <p className="mt-2 text-[13px] leading-5" style={{ color: 'var(--color-text-muted)' }}>
+                  {selected.summary}
+                </p>
+              )}
             </div>
-            <div className="flex shrink-0 gap-2">
+            <div className="flex shrink-0 flex-col gap-2">
               {STATUSES.filter((s) => s !== selected.status).map((s) => (
                 <button
                   key={s}
@@ -131,6 +250,17 @@ export function AdminLeads() {
               ))}
             </div>
           </div>
+
+          {/* Park / categorise (design 2026-06-16): keyed by lead id so the
+              form's local state resets per selection without a useEffect. */}
+          <CategoriseForm
+            key={selected.id}
+            lead={selected}
+            onSaved={() => {
+              setSelected(null)
+              setRefreshKey((k) => k + 1)
+            }}
+          />
 
           {/* Conversion linking (L4) */}
           <div className="border-border mt-4 border-t pt-3">
@@ -187,10 +317,11 @@ export function AdminLeads() {
         }}
         columns={[
           { key: 'display_name', label: 'Name / business' },
+          { key: 'contact', label: 'Contact' },
           { key: 'type', label: 'Type' },
           { key: 'region', label: 'Region' },
-          { key: 'source', label: 'Source' },
           { key: 'status', label: 'Status' },
+          { key: 'source', label: 'Source' },
           { key: 'status_changed_at', label: 'Updated' },
         ]}
         renderRow={(row, onClick) => (
@@ -199,11 +330,31 @@ export function AdminLeads() {
             onClick={onClick}
             className="border-border hover:bg-surface-2/50 h-[52px] cursor-pointer border-t"
           >
-            <td className="px-3 font-medium">{row.display_name}</td>
+            <td className="px-3 font-medium">
+              <div className="max-w-[220px] truncate" title={row.display_name}>
+                {row.display_name}
+              </div>
+            </td>
+            {/* A2: contact-at-a-glance so the pipeline is workable from the list. */}
+            <td className="px-3">
+              <ContactGlyphs contact={row.contact} />
+            </td>
             <td className="px-3">{row.type}</td>
             <td className="px-3">{row.region ?? '—'}</td>
+            <td className="px-3">
+              <span className="font-semibold">{row.status}</span>
+              {row.category === 'overseas' && (
+                <span className="text-warn ml-1.5 text-[11px]" title="overseas">
+                  🌏
+                </span>
+              )}
+              {row.status === 'follow_up' && row.follow_up_date && (
+                <span className="ml-1.5 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
+                  ↻ {row.follow_up_date}
+                </span>
+              )}
+            </td>
             <td className="px-3">{row.source}</td>
-            <td className="px-3 font-semibold">{row.status}</td>
             <td className="px-3">{new Date(row.status_changed_at).toLocaleDateString('en-NZ')}</td>
           </tr>
         )}
