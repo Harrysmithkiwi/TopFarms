@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Launch Readiness
-status: verifying
-stopped_at: 23-02-admin-analytics-page-PLAN.md complete. Phase 23 all 3/3 plans done — ready for phase verifier.
-last_updated: "2026-05-30T18:11:35.227Z"
+status: phase-23-complete-off-roadmap-work-active
+stopped_at: Phase 23 closed + verified (2026-05-30). Since then, off-roadmap work on branch chore/video-assets — video/poster creative track + in-flight leads-admin track.
+last_updated: "2026-06-26T00:00:00.000Z"
 progress:
   total_phases: 19
   completed_phases: 12
@@ -23,10 +23,10 @@ See: .planning/PROJECT.md (updated 2026-04-03)
 
 ## Current Position
 
-Phase: v2.1 Phase 23 — Skills Taxonomy Consolidation + Admin Analytics. In execution.
-Plan: 23-02 complete (AdminSkillCoverage page + AdminListRpc union + sidebar + route). All 3 plans done.
-Status: Phase 23 complete — all 3/3 plans done; ready for phase verifier
-Progress: [░░░░░░░░░░] 0/1 v2.1 phases complete
+Phase: v2.1 Phase 23 — Skills Taxonomy Consolidation + Admin Analytics. CLOSED + verified 2026-05-30 (ROADMAP [x], 8/8 requirements, commit beb2425). Phases 24-26 remain sales-gated.
+Plan: All 3 plans done + verified.
+Status: v2.1 in-scope work complete. Current activity is OFF-ROADMAP (not in .planning/phases) on branch chore/video-assets — see Session Continuity.
+Progress: [██████████] 1/1 v2.1 in-scope phases complete (24-26 gated)
 
 ### v2.0 close-out summary (Phase 22 complete 2026-05-26)
 All 5 P0s closed: SIGNUP-01 (a6cc3f5) + HOMEBUG-02 (73ed245) + HOMEBUG-03 (9673eb1) + HOMEBUG-01 (fb60aa2) + UXBUG-01 (498d7fb); plan 22-05 MAIL docs audit (055507e); Phase 22 verified + complete (dae8b1d). v2.1 bridge artifacts: codebase map (1ac5b04) + HTML repo overview (f4ff942). §6 pooler auth deferred/blocked on Supabase support (a9645ee + memory). v2.0 milestone close gated only on PEND-01 (Stripe live-mode swap, 9-item checklist in DECISIONS-PENDING.md, separate operator session).
@@ -226,7 +226,21 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ## Session Continuity
 
-Last session: 2026-05-30T00:10:00.000Z
-Stopped at: 23-02-admin-analytics-page-PLAN.md complete. Phase 23 all 3/3 plans done — ready for phase verifier.
+Last session: 2026-06-26 (resume + branch untangle)
+
+Stopped at: Off-roadmap work on branch `chore/video-assets`. GSD roadmap is quiescent — Phase 23 closed+verified 2026-05-30; Phases 24-26 sales-gated; v2.0 close still blocked only on PEND-01. Recent activity (last ~4 weeks) has been outside GSD: a leads-harvest pipeline + admin-leads UI, and a video/poster creative track.
+
+Branch state after 2026-06-26 untangle (two unrelated tracks were piled on `chore/video-assets`, now separated):
+- **Video/poster track — DONE, committed.** `4bc5416 chore(video-assets): poster set` committed `marketing/posters/` (31 files: HTML compositions + rendered PNGs + render scripts). Safe.
+- **Leads-admin track — PARKED, uncommitted (WIP).** Left deliberately uncommitted in the working tree for a future focused session:
+  - `supabase/migrations/046_leads_keep_categorise.sql` — **GATED: DO NOT APPLY** (self-marked in header). Adds `follow_up_date` + `category` (domestic/overseas) axes to `leads`. Not applied, not committed.
+  - `src/components/admin/LeadContact.tsx` (new) + modified `src/pages/admin/AdminLeads.tsx` / `AdminLeadsStaging.tsx` — UI consuming the new fields.
+- Untouched, untracked, belongs to neither track: `docs/index.docx`, `.claude/skills/playwright-skill/`.
+
 Resume file: None
-Next operator action: Phase 23 verifier. After Phase 23 verified: execute PEND-01 9-item checklist in `.planning/DECISIONS-PENDING.md §PEND-01` (Stripe live-mode swap → completes v2.0 milestone close) + sales / customer acquisition before resuming Phase 24.
+
+Next operator action: operator-directed. Open threads, none auto-started:
+  1. **Leads-admin track** (when ready to context-switch into code): review migration 046, apply via Studio SQL Editor per CLAUDE §2, then finish + commit the LeadContact/AdminLeads UI.
+  2. **PEND-01** (Stripe live-mode swap) — 9-item checklist in `.planning/DECISIONS-PENDING.md §PEND-01`; completes v2.0 milestone close. Separate focused session.
+  3. **Phases 24-26** remain gated behind real ag-employer liquidity.
+  Note: the leads-harvest + admin-leads work is not represented in `.planning/phases/` — if it continues, consider roadmapping it as a phase.
