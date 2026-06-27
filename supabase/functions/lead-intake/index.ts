@@ -140,7 +140,23 @@ interface ApifyEvent {
   eventData?: { actorRunId?: string }
 }
 
+// CORS: matches the repo's browser-invoked functions (get-applicant-document-url,
+// notify-job-filled, send-followup-emails). WITHOUT the OPTIONS preflight handler
+// + these headers, supabase.functions.invoke() from the admin paste UI fails with
+// "Failed to send a request to the Edge Function" before the POST is ever sent.
+// The server lanes (pg_cron→pg_net, Apify webhooks) are unaffected — they don't
+// do a CORS preflight — which is why only the browser paste lane was broken.
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
 Deno.serve(async (req) => {
+  // CORS preflight — must return before anything else (incl. JSON parsing).
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
+  }
+
   const db = createClient(
     Deno.env.get('SUPABASE_URL') ?? '',
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
@@ -516,6 +532,6 @@ async function draftReply(
 function json(payload: unknown, status = 200): Response {
   return new Response(JSON.stringify(payload), {
     status,
-    headers: { 'Content-Type': 'application/json' },
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   })
 }
