@@ -42,12 +42,63 @@ const REGIONS = [
   'Southland',
 ]
 
+// Region canonicalisation ported from lead-harvest (Phase 1 A3): exact match →
+// alias → null. Keeps lead-intake's macron spelling ('Manawatū-Whanganui') as
+// canonical; aliases fold common variants in. Previously this lane only did
+// exact-match-or-null with no aliases.
+const REGION_ALIASES: Record<string, string> = {
+  'wairarapa': 'Wellington',
+  'manawatu-whanganui': 'Manawatū-Whanganui',
+  'manawatu-wanganui': 'Manawatū-Whanganui',
+  'manawatu': 'Manawatū-Whanganui',
+  'wanganui': 'Manawatū-Whanganui',
+  'whanganui': 'Manawatū-Whanganui',
+  'hawkes bay': "Hawke's Bay",
+  'hawke s bay': "Hawke's Bay",
+}
+function canonicalRegion(r: string | null | undefined): string | null {
+  if (!r) return null
+  const key = r.trim().toLowerCase()
+  const exact = REGIONS.find((x) => x.toLowerCase() === key)
+  if (exact) return exact
+  return REGION_ALIASES[key] ?? null
+}
+
+// Lane classification (Phase 1 A2) — in CODE, not the LLM. A regex backstop
+// promotes any clear email/phone found in application_method / raw text into
+// contact before the test, so a misfiled contact doesn't produce a false Lane B.
+const EMAIL_RE = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/
+const PHONE_RE = /(?:\+?64|0)[\s-]?(?:2\d|[3-9])(?:[\s-]?\d){6,8}/
+type Contact = { email?: string; phone?: string; url?: string; name?: string; notes?: string }
+function classifyLane(
+  contact: Contact | null | undefined,
+  applicationMethod: string | null | undefined,
+  rawText: string,
+): { lane: 'a' | 'b'; contact: Contact | null } {
+  const c: Contact = { ...(contact ?? {}) }
+  const hay = [applicationMethod ?? '', rawText ?? ''].join(' ')
+  if (!c.email) {
+    const m = hay.match(EMAIL_RE)
+    if (m) c.email = m[0]
+  }
+  if (!c.phone) {
+    const m = hay.match(PHONE_RE)
+    if (m) c.phone = m[0].trim()
+  }
+  const lane: 'a' | 'b' = c.email || c.phone ? 'a' : 'b'
+  return { lane, contact: Object.keys(c).length ? c : null }
+}
+
 interface StructuredLead {
   type: 'employer' | 'seeker' | null
   display_name: string | null
   region: string | null
   role_or_category: string | null
-  contact: { email?: string; phone?: string; url?: string } | null
+  contact: Contact | null
+  // FB extract fields (Phase 1 A1) — NEVER-INFER, null unless literally present.
+  shed_type: string | null
+  herd_details: string | null
+  application_method: string | null
   confidence: number
   missing_fields: string[]
 }
@@ -58,6 +109,19 @@ interface IntakeItem {
   structured?: Record<string, unknown>
   confidence?: number
   missing_fields?: string[]
+  // Founder-supplied FB paste metadata (NOT Claude-extracted — no hallucinated
+  // URLs). post_url is passed as source_ref; these two ride into structured.
+  source_group?: string
+  post_timestamp?: string
+}
+
+// Minimal config-read surface for draftReply (service_role bypasses RLS).
+type ConfigDb = {
+  from: (t: string) => {
+    select: (c: string) => {
+      eq: (k: string, v: number) => { single: () => PromiseLike<{ data: unknown }> }
+    }
+  }
 }
 
 // Apify webhook event envelope (ACTOR.RUN.SUCCEEDED). `resource` mirrors the
@@ -140,17 +204,28 @@ Deno.serve(async (req) => {
     } else {
       const parsed = await structureWithClaude(item.raw_text ?? '')
       structuredNote.push(parsed.note)
-      leads = parsed.leads.map((l) => ({
-        structured: {
-          type: l.type,
-          display_name: l.display_name,
-          region: l.region,
-          role_or_category: l.role_or_category,
-          contact: l.contact,
-        },
-        confidence: l.confidence,
-        missing: l.missing_fields,
-      }))
+      leads = parsed.leads.map((l) => {
+        // Lane in CODE (A2) + regex backstop; FB fields + paste metadata ride in
+        // structured (passed through 041's _lead_intake untouched).
+        const { lane, contact } = classifyLane(l.contact, l.application_method, item.raw_text ?? '')
+        return {
+          structured: {
+            type: l.type,
+            display_name: l.display_name,
+            region: l.region,
+            role_or_category: l.role_or_category,
+            contact,
+            shed_type: l.shed_type ?? null,
+            herd_details: l.herd_details ?? null,
+            application_method: l.application_method ?? null,
+            source_group: item.source_group ?? null,
+            post_timestamp: item.post_timestamp ?? null,
+            lane,
+          },
+          confidence: l.confidence,
+          missing: l.missing_fields,
+        }
+      })
     }
 
     for (const lead of leads) {
@@ -165,9 +240,22 @@ Deno.serve(async (req) => {
       if (error) {
         console.error('intake error:', error.message)
         results.error++
-      } else {
-        const outcome = (data as { outcome?: string })?.outcome ?? 'error'
-        results[outcome] = (results[outcome] ?? 0) + 1
+        continue
+      }
+      const outcome = (data as { outcome?: string; staging_id?: string })?.outcome ?? 'error'
+      results[outcome] = (results[outcome] ?? 0) + 1
+
+      // Lane B + freshly staged → seed a drafted FB reply (A4). The draft itself
+      // is a PLACEHOLDER until lead_outreach_config is populated — see draftReply.
+      const stagingId = (data as { staging_id?: string })?.staging_id
+      if (outcome === 'inserted' && stagingId && lead.structured.lane === 'b') {
+        const drafted = await draftReply(lead.structured, db as unknown as ConfigDb)
+        const { error: seedErr } = await db.rpc('_lead_outreach_seed', {
+          p_staging_id: stagingId,
+          p_draft: drafted.draft,
+          p_model: drafted.model,
+        })
+        if (seedErr) console.error('outreach seed error:', seedErr.message)
       }
     }
   }
@@ -255,6 +343,9 @@ async function structureWithClaude(
         region: null,
         role_or_category: null,
         contact: null,
+        shed_type: null,
+        herd_details: null,
+        application_method: null,
         confidence: 0,
         missing_fields: [`all — ${note}`],
       } as StructuredLead,
@@ -283,6 +374,9 @@ async function structureWithClaude(
           `region MUST be one of: ${REGIONS.join(', ')} — or null if not stated.`,
           'NZ-ag vocabulary: 2IC = second in charge; OAD = once-a-day milking;',
           'herd manager / farm assistant / calf rearing / relief milking are roles.',
+          'shed_type = milking shed (rotary / herringbone / N-bail), verbatim.',
+          'herd_details = herd size / calving pattern if stated (e.g. "550 cows, split calving").',
+          'application_method = VERBATIM how to apply ("PM me", "email jane@x.co.nz", "call 027…").',
           'NEVER guess or infer absent fields — use null and list them in',
           'missing_fields. Only include contact details EXPLICITLY stated in the',
           'post (no enrichment, no inference). confidence is your 0-1 certainty',
@@ -307,6 +401,9 @@ async function structureWithClaude(
                       'region',
                       'role_or_category',
                       'contact',
+                      'shed_type',
+                      'herd_details',
+                      'application_method',
                       'confidence',
                       'missing_fields',
                     ],
@@ -321,8 +418,13 @@ async function structureWithClaude(
                           email: { type: 'string' },
                           phone: { type: 'string' },
                           url: { type: 'string' },
+                          name: { type: 'string' },
+                          notes: { type: 'string' },
                         },
                       },
+                      shed_type: { type: ['string', 'null'] },
+                      herd_details: { type: ['string', 'null'] },
+                      application_method: { type: ['string', 'null'] },
                       confidence: { type: 'number' },
                       missing_fields: { type: 'array', items: { type: 'string' } },
                     },
@@ -351,7 +453,10 @@ async function structureWithClaude(
       note: `claude-haiku structured ${leads.length} lead(s)`,
       leads: leads.map((l) => ({
         ...l,
-        region: l.region && REGIONS.includes(l.region) ? l.region : null,
+        region: canonicalRegion(l.region),
+        shed_type: l.shed_type ?? null,
+        herd_details: l.herd_details ?? null,
+        application_method: l.application_method ?? null,
         confidence: Math.max(0, Math.min(1, Number(l.confidence) || 0)),
         missing_fields: Array.isArray(l.missing_fields) ? l.missing_fields : [],
       })),
@@ -359,6 +464,44 @@ async function structureWithClaude(
   } catch (e) {
     console.error('claude call failed:', (e as Error).message)
     return fallback('unstructured (claude unreachable)')
+  }
+}
+
+// ─── Lane B reply draft (A4) ──────────────────────────────────────────────────
+// MECHANISM is built (loads the swappable lead_outreach_config row); the actual
+// Claude prompt ASSEMBLY is intentionally a PLACEHOLDER. Per operator: no reply is
+// drafted without the do-not rules, and the prompt construction is reviewed before
+// going live. Until config (do-not rules + voice + template) is supplied via
+// admin_outreach_set_config AND the assembly is signed off, seed a placeholder.
+async function draftReply(
+  _structured: Record<string, unknown>,
+  db: ConfigDb,
+): Promise<{ draft: string; model: string }> {
+  let cfg: { do_not_rules?: unknown[]; voice_guide?: string; template?: string } = {}
+  try {
+    const { data } = await db.from('lead_outreach_config').select('*').eq('id', 1).single()
+    cfg = (data as typeof cfg) ?? {}
+  } catch {
+    /* fall through to placeholder */
+  }
+
+  const ready = !!cfg.template && Array.isArray(cfg.do_not_rules) && cfg.do_not_rules.length > 0
+  if (!ready) {
+    return {
+      draft:
+        '[Draft pending — set the reply-draft config (do-not rules + voice guide + template) ' +
+        'via admin_outreach_set_config. No reply is generated without the do-not rules.]',
+      model: 'placeholder',
+    }
+  }
+
+  // ⚠️ A4 PLACEHOLDER ASSEMBLY — finalise with operator sign-off once config lands:
+  //   build the Claude system prompt from cfg.voice_guide + cfg.do_not_rules +
+  //   cfg.template + the structured lead, call claude-haiku-4-5, return the reply.
+  // Dormant by design until then.
+  return {
+    draft: '[Outreach config present — Claude draft assembly pending operator sign-off]',
+    model: 'placeholder',
   }
 }
 
