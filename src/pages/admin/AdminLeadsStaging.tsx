@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { AdminTable } from '@/components/admin/AdminTable'
+import { ContactGlyphs, LeadContactCard, type LeadContact } from '@/components/admin/LeadContact'
 import { supabase } from '@/lib/supabase'
 import { NZ_REGIONS } from '@/lib/constants'
 
@@ -22,13 +23,7 @@ interface StagingRow extends Record<string, unknown> {
     display_name?: string
     region?: string
     role_or_category?: string
-    contact?: {
-      email?: string
-      phone?: string
-      url?: string
-      name?: string
-      notes?: string
-    } | null
+    contact?: LeadContact | null
     salary_text?: string | null
     summary?: string | null
     advertiser_name?: string | null
@@ -323,64 +318,8 @@ export function AdminLeadsStaging() {
               </div>
 
               {/* Contact is the point of the panel — most prominent block, right
-                  under the role. Extract-only (never inferred). */}
-              {selected.structured.contact &&
-              Object.keys(selected.structured.contact).length > 0 ? (
-                <div className="border-brand/40 bg-surface-2 mt-2 rounded-[8px] border p-3">
-                  <p
-                    className="text-[10px] font-semibold tracking-wide uppercase"
-                    style={{ color: 'var(--color-text-muted)' }}
-                  >
-                    Contact
-                  </p>
-                  {selected.structured.contact.name && (
-                    <div className="mt-0.5 text-[15px] font-semibold">
-                      {selected.structured.contact.name}
-                    </div>
-                  )}
-                  {selected.structured.contact.email && (
-                    <div className="mt-0.5">
-                      <a
-                        className="text-brand text-[14px] font-medium underline"
-                        href={`mailto:${selected.structured.contact.email}`}
-                      >
-                        {selected.structured.contact.email}
-                      </a>
-                    </div>
-                  )}
-                  {selected.structured.contact.phone && (
-                    <div className="mt-0.5">
-                      <a
-                        className="text-brand text-[14px] font-medium underline"
-                        href={`tel:${selected.structured.contact.phone.replace(/\s/g, '')}`}
-                      >
-                        {selected.structured.contact.phone}
-                      </a>
-                    </div>
-                  )}
-                  {selected.structured.contact.url && (
-                    <div className="mt-0.5">
-                      <a
-                        className="text-brand text-[13px] underline"
-                        href={selected.structured.contact.url}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        {selected.structured.contact.url}
-                      </a>
-                    </div>
-                  )}
-                  {selected.structured.contact.notes && (
-                    <div className="mt-1 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
-                      {selected.structured.contact.notes}
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <p className="mt-2 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
-                  No contact printed in the ad
-                </p>
-              )}
+                  under the role. Shared with the approved pipeline. */}
+              <LeadContactCard contact={selected.structured.contact} />
 
               {selected.structured.summary && (
                 <p className="mt-2 text-[13px] leading-5" style={{ color: 'var(--color-text-muted)' }}>
@@ -461,8 +400,9 @@ export function AdminLeadsStaging() {
         onRowClick={(row) => setSelected(row)}
         columns={[
           { key: 'display_name', label: 'Name / business' },
-          { key: 'type', label: 'Type' },
+          { key: 'contact', label: 'Contact' },
           { key: 'region', label: 'Region' },
+          { key: 'via', label: 'Via' },
           { key: 'source', label: 'Source' },
           { key: 'confidence', label: 'Confidence' },
           { key: 'dedupe_status', label: 'Dedupe' },
@@ -473,9 +413,28 @@ export function AdminLeadsStaging() {
             onClick={onClick}
             className="border-border hover:bg-surface-2/50 h-[52px] cursor-pointer border-t"
           >
-            <td className="px-3 font-medium">{row.structured.display_name ?? '(unnamed)'}</td>
-            <td className="px-3">{row.structured.type ?? '—'}</td>
+            {/* B3: truncate long names (e.g. Tautara Matawhaura…) so the column
+                grid stays aligned; full name on hover. */}
+            <td className="px-3 font-medium">
+              <div className="max-w-[220px] truncate" title={row.structured.display_name ?? ''}>
+                {row.structured.display_name ?? '(unnamed)'}
+              </div>
+            </td>
+            {/* B1: contact-at-a-glance — triage who's workable without opening each. */}
+            <td className="px-3">
+              <ContactGlyphs contact={row.structured.contact} />
+            </td>
             <td className="px-3">{row.structured.region ?? '—'}</td>
+            {/* B2: recruiter flag in-row — direct vs agency-placed. */}
+            <td className="px-3 text-[12px]">
+              {row.structured.is_recruiter ? (
+                <span className="text-warn" title={row.structured.advertiser_name ?? 'agency-placed'}>
+                  agency
+                </span>
+              ) : (
+                <span style={{ color: 'var(--color-text-muted)' }}>direct</span>
+              )}
+            </td>
             <td className="px-3">{SOURCE_LABELS[row.source] ?? row.source}</td>
             <td className="px-3">{Math.round(row.confidence * 100)}%</td>
             <td className="px-3">
