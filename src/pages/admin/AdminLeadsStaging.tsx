@@ -29,6 +29,12 @@ interface StagingRow extends Record<string, unknown> {
     advertiser_name?: string | null
     is_recruiter?: boolean
     company_profile_url?: string | null
+    // FB triage (Phase 1): lane computed in the Edge Fn; FB extract fields.
+    lane?: 'a' | 'b'
+    shed_type?: string | null
+    herd_details?: string | null
+    application_method?: string | null
+    source_group?: string | null
   }
   confidence: number
   missing_fields: string[]
@@ -294,6 +300,46 @@ export function AdminLeadsStaging() {
                 {SOURCE_LABELS[selected.source]} · confidence{' '}
                 {Math.round(selected.confidence * 100)}%
               </p>
+
+              {/* Lane (Phase 1): A = contactable directly; B = no contact, routed
+                  to the outreach queue with a drafted reply. */}
+              {selected.structured.lane && (
+                <p className="mt-1">
+                  {selected.structured.lane === 'b' ? (
+                    <span className="border-warn text-warn rounded border px-1.5 py-0.5 text-[11px] font-semibold">
+                      Lane B · no contact → Outreach
+                    </span>
+                  ) : (
+                    <span className="border-brand text-brand rounded border px-1.5 py-0.5 text-[11px] font-semibold">
+                      Lane A · contactable
+                    </span>
+                  )}
+                </p>
+              )}
+
+              {/* FB extract fields (Phase 1) */}
+              {(selected.structured.shed_type ||
+                selected.structured.herd_details ||
+                selected.structured.application_method ||
+                selected.structured.source_group) && (
+                <p className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-[13px]">
+                  {selected.structured.shed_type && <span>🥛 {selected.structured.shed_type}</span>}
+                  {selected.structured.herd_details && (
+                    <span>🐄 {selected.structured.herd_details}</span>
+                  )}
+                  {selected.structured.application_method && (
+                    <span>
+                      <span style={{ color: 'var(--color-text-muted)' }}>Apply: </span>
+                      {selected.structured.application_method}
+                    </span>
+                  )}
+                  {selected.structured.source_group && (
+                    <span style={{ color: 'var(--color-text-muted)' }}>
+                      group: {selected.structured.source_group}
+                    </span>
+                  )}
+                </p>
+              )}
 
               <div className="mt-1 flex flex-wrap items-center gap-2">
                 {selected.structured.role_or_category && (

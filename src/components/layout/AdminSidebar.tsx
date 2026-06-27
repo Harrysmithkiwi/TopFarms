@@ -10,6 +10,7 @@ import {
   BarChart2,
   TrendingUp,
   Inbox,
+  Send,
   Target,
 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
@@ -30,6 +31,7 @@ const adminItems: NavItem[] = [
   { to: '/admin/skills', label: 'Skills', icon: BarChart2 },
   { to: '/admin/analytics', label: 'Analytics', icon: TrendingUp },
   { to: '/admin/leads/staging', label: 'Lead Staging', icon: Inbox },
+  { to: '/admin/leads/outreach', label: 'Outreach', icon: Send },
   { to: '/admin/leads', label: 'Leads', icon: Target },
 ]
 

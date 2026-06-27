@@ -116,6 +116,9 @@ const AdminLeadsStaging = lazy(() =>
 const AdminLeads = lazy(() =>
   import('@/pages/admin/AdminLeads').then((m) => ({ default: m.AdminLeads })),
 )
+const AdminLeadsOutreach = lazy(() =>
+  import('@/pages/admin/AdminLeadsOutreach').then((m) => ({ default: m.AdminLeadsOutreach })),
+)
 
 // Full-page fallback shown while a route chunk loads. Mirrors the in-app
 // spinner style (brand-colored ring) so chunk loads read as ordinary loading.
@@ -385,6 +388,19 @@ const router = createBrowserRouter([
         {s(
           <AdminLayout>
             <AdminLeadsStaging />
+          </AdminLayout>,
+        )}
+      </ProtectedRoute>
+    ),
+  },
+  {
+    // Lane B outreach queue (Phase 1). Sub-path declared BEFORE /admin/leads.
+    path: '/admin/leads/outreach',
+    element: (
+      <ProtectedRoute requiredRole="admin">
+        {s(
+          <AdminLayout>
+            <AdminLeadsOutreach />
           </AdminLayout>,
         )}
       </ProtectedRoute>
