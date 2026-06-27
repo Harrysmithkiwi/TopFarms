@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
+<style>
+  :root{
+    --bg:#FAFBF9; --surface:#FFFFFF; --surface-2:#F3F5F0; --border:#E5E8E2;
+    --text:#0B1F10; --muted:#5B6B5F; --subtle:#8A968D;
+    --brand:#16A34A; --brand-hover:#15803D; --brand-900:#0F3D22; --brand-50:#E8F5EC;
+    /* shared grey-noise treatment (matches employer swarm) */
+    --noise:#CDD4CB; --noise-2:#DCE2DA; --noise-chip:#EEF1EC;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+  .poster{position:relative;width:1080px;height:1350px;background:var(--bg);overflow:hidden;
+    padding:64px 80px 60px;display:flex;flex-direction:column}
+
+  header{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:5}
+  .wordmark{display:inline-flex;align-items:center;gap:13px}
+  .wordmark svg{width:36px;height:36px}
+  .wordmark .leaf{fill:var(--brand)}
+  .wordmark .vein{fill:none;stroke:var(--bg);stroke-width:1.5;stroke-linecap:round}
+  .wordmark .word{font-size:29px;font-weight:600;letter-spacing:-0.01em;color:var(--text)}
+  .eyebrow{font-size:14px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--subtle)}
+
+  /* ── THE VOID (silence) — a compressed, suffocating mass of seen, dead messages ── */
+  .swarm{position:relative;height:360px;margin:16px -80px 0}
+  .swarm-tag{position:absolute;left:80px;top:2px;z-index:4;display:flex;align-items:baseline;gap:11px}
+  .swarm-tag .n{font-size:23px;font-weight:800;color:var(--subtle);letter-spacing:-0.02em;font-variant-numeric:tabular-nums}
+  .swarm-tag .t{font-size:13px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--subtle)}
+  .msg{position:absolute;display:flex;align-items:center;gap:5px;height:18px;padding:0 7px;border-radius:9px;
+    border-bottom-left-radius:3px;background:var(--noise-chip);border:1px solid var(--border)}
+  .msg .d{width:9px;height:9px;border-radius:50%;background:var(--noise);flex-shrink:0}
+  .msg .b{height:5px;border-radius:3px;background:var(--noise-2)}
+
+  /* ── THE TURN (room to breathe) ─────────────────────── */
+  .headline{position:relative;z-index:5;margin-top:50px}
+  .headline .l1,.headline .l2{display:block;font-size:84px;line-height:1.0;font-weight:800;letter-spacing:-0.04em;color:var(--text)}
+  .headline .l2{margin-top:10px}
+  .headline em{font-style:normal;color:var(--brand)}
+
+  /* ── THE REPLY (one crisp green result, enlarged) ───── */
+  .matched{margin-top:40px;background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:34px 36px}
+  .m-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+  .m-head .lhs{display:flex;align-items:center;gap:11px}
+  .m-head .leaf{width:23px;height:23px;fill:var(--brand)}
+  .m-head .ttl{font-size:18px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:var(--text)}
+  .m-head .meta{font-size:18px;font-weight:600;color:var(--brand-hover)}
+  .m-job{display:flex;align-items:center;gap:24px;padding:26px 26px;border-radius:16px;background:var(--brand-50)}
+  .m-job .av{width:74px;height:74px;border-radius:16px;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .m-job .av svg{width:40px;height:40px;fill:var(--brand)}
+  .m-job .body{flex:1;min-width:0}
+  .m-job .title{font-size:36px;font-weight:700;color:var(--text);letter-spacing:-0.015em}
+  .m-job .farm{font-size:22px;font-weight:500;color:var(--muted);margin-top:4px}
+  .m-job .pill{display:inline-flex;align-items:center;gap:10px;height:62px;padding:0 26px;border-radius:999px;background:var(--brand);flex-shrink:0}
+  .m-job .pill svg{width:26px;height:26px;fill:#fff}
+  .m-job .pill span{font-size:24px;font-weight:700;color:#fff;letter-spacing:-0.01em}
+  .m-foot{display:flex;align-items:center;gap:10px;margin-top:22px;padding:0 4px}
+  .m-foot svg{width:24px;height:24px;fill:none;stroke:var(--brand);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+  .m-foot .a{font-size:22px;font-weight:700;color:var(--text)}
+  .m-foot .b{font-size:22px;font-weight:500;color:var(--muted)}
+
+  footer{margin-top:auto;display:flex;align-items:center;justify-content:space-between}
+  .cta{display:inline-flex;align-items:center;height:74px;padding:0 36px;border-radius:14px;background:var(--brand);color:#fff;font-size:27px;font-weight:700;letter-spacing:-0.01em}
+  .foot-r{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+  .foot-r .u{font-size:22px;font-weight:600;color:var(--text)}
+  .foot-r .s{font-size:15px;font-weight:500;color:var(--subtle)}
+</style>
+</head>
+<body>
+  <div class="poster">
+    <header>
+      <span class="wordmark">
+        <svg viewBox="0 0 24 24" aria-label="TopFarms"><path class="leaf" d="M3 21C3 12 9 5 21 3C19 13 13 19 3 21Z"></path><path class="vein" d="M6.5 17.5C9 13 13 8.5 17 6"></path></svg>
+        <span class="word">TopFarms</span>
+      </span>
+      <span class="eyebrow">For farm workers</span>
+    </header>
+
+    <div class="swarm" id="swarm">
+      <div class="swarm-tag"><span class="n">40</span><span class="t">messages · seen · no reply</span></div>
+    </div>
+
+    <h1 class="headline">
+      <span class="l1" id="l1">Sent. Seen. Ignored.</span>
+      <span class="l2" id="l2">This one’s <em>expecting you.</em></span>
+    </h1>
+
+    <div class="matched">
+      <div class="m-head">
+        <span class="lhs">
+          <svg class="leaf" viewBox="0 0 24 24"><path d="M3 21C3 12 9 5 21 3C19 13 13 19 3 21Z"></path></svg>
+          <span class="ttl">Matched</span>
+        </span>
+        <span class="meta">A reply that means it</span>
+      </div>
+      <div class="m-job">
+        <span class="av"><svg viewBox="0 0 24 24"><path d="M3 21C3 12 9 5 21 3C19 13 13 19 3 21Z"></path></svg></span>
+        <span class="body"><div class="title">Riverbend Dairy</div><div class="farm">Dairy Farm Manager · Waikato</div></span>
+        <span class="pill"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a13 13 0 006 6l2-2a1.2 1.2 0 011.2-.3 9 9 0 002.7.5 1.2 1.2 0 011.2 1.2V20a1.2 1.2 0 01-1.2 1.2A16 16 0 013.8 5.2 1.2 1.2 0 015 4h2.5a1.2 1.2 0 011.2 1.2 9 9 0 00.5 2.7 1.2 1.2 0 01-.3 1.2z"></path></svg><span>Expecting your call</span></span>
+      </div>
+      <div class="m-foot">
+        <svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>
+        <span class="a">They’ve read your profile.</span><span class="b">The call is yours to make.</span>
+      </div>
+    </div>
+
+    <footer>
+      <span class="cta">Find farm work — free</span>
+      <span class="foot-r"><span class="u">topfarms.co.nz</span><span class="s">Match · Train · Retain</span></span>
+    </footer>
+  </div>
+
+  <script>
+    function mulberry32(a){return function(){a|=0;a=(a+0x6d2b79f5)|0;let t=Math.imul(a^(a>>>15),1|a);t=(t+Math.imul(t^(t>>>7),61|t))^t;return ((t^(t>>>14))>>>0)/4294967296}}
+    const rnd = mulberry32(0x5c19a7);
+    const swarm = document.getElementById('swarm');
+    // suffocating: a dense, overlapping mass filling the whole compressed band
+    const W=1080, H=360, N=320;
+    for(let i=0;i<N;i++){
+      const bw = 14 + Math.floor(rnd()*52);
+      const sc = 0.74 + rnd()*0.56;
+      const x = -90 + rnd()*(W+170);
+      const y = 30 + Math.pow(rnd(), 1.15) * (H-46);
+      const rot = (rnd()-0.5)*30;
+      const op = 0.42 + rnd()*0.48;
+      const el=document.createElement('div');
+      el.className='msg';
+      el.style.left=x+'px'; el.style.top=y+'px';
+      el.style.transform='rotate('+rot+'deg) scale('+sc+')'; el.style.opacity=op;
+      el.innerHTML='<span class="d"></span><span class="b" style="width:'+bw+'px"></span>';
+      swarm.appendChild(el);
+    }
+  </script>
+</body>
+</html>

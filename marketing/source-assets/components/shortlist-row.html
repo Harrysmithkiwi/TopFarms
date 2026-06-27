@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<!--
+  TopFarms — Shortlist Row (video asset; single candidate row)
+  Source lineage: claude.ai/design "Design System" › components/ShortlistRow.html + styles.css
+  Self-contained: tokens embedded, fonts via CDN, no build / router / external CSS.
+
+  This is ONE row — the film instantiates it x3 for the bubble-collapse payoff.
+  The three data sets (top "worth calling" candidates) are:
+    1) Alex R. · Dairy Farm Manager   — Herd Management / Rotary shed / 5 yrs — 92%   (this file)
+    2) Jordan M. · Herd Manager        — Pasture / Herringbone / 3 yrs        — 85%
+    3) Sam T. · Relief Milker          — Milking / AMS / 2 yrs                — 81%
+  (All three composed together also live in screens/employer-shortlist.html.)
+
+  Targets: [data-anim="shortlist-row"] the row · [data-anim="match-badge"] the % pill
+           · [data-top] marks a "worth calling" (brand-tinted border) row.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shortlist Row — TopFarms</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #fafbf9; --surface: #ffffff; --surface-2: #f3f5f0;
+    --border: #e5e8e2;
+    --text: #0b1f10; --text-muted: #5b6b5f;
+    --brand: #16a34a; --brand-hover: #15803d; --brand-50: #e8f5ec;
+    --r-md: 12px; --r-pill: 999px;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh;
+    display: flex; align-items: center; justify-content: center; padding: 48px;
+    background: var(--bg); font-family: var(--font-sans); -webkit-font-smoothing: antialiased;
+  }
+  .num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+  .srow {
+    width: 520px; display: flex; align-items: center; gap: 12px; padding: 16px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md);
+  }
+  .srow[data-top] { border-color: color-mix(in srgb, var(--brand) 35%, var(--border)); }
+  .srow__body { min-width: 0; flex: 1; }
+  .srow__name { font: 600 14px/1.2 var(--font-sans); color: var(--text); }
+  .srow__role { font: 400 12px/1.2 var(--font-sans); color: var(--text-muted); margin-top: 2px; }
+  .srow__skills { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+  .srow__skill { font: 600 10px/1 var(--font-sans); padding: 4px 7px; border-radius: var(--r-pill); background: var(--surface-2); color: var(--text-muted); }
+
+  .match-badge {
+    display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 11px;
+    border-radius: var(--r-pill); background: var(--brand-50); color: var(--brand-hover);
+    font: 600 13px/1 var(--font-sans); flex-shrink: 0;
+  }
+  .match-badge .num { font-weight: 500; }
+</style>
+</head>
+<body>
+  <div class="srow" data-anim="shortlist-row" data-top>
+    <div class="srow__body">
+      <div class="srow__name">Alex R.</div>
+      <div class="srow__role">Dairy Farm Manager · Waikato</div>
+      <div class="srow__skills">
+        <span class="srow__skill">Herd Management</span>
+        <span class="srow__skill">Rotary shed</span>
+        <span class="srow__skill">5 yrs</span>
+      </div>
+    </div>
+    <span class="match-badge" data-anim="match-badge"><span class="num">92%</span></span>
+  </div>
+</body>
+</html>

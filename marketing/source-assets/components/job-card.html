@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<!--
+  TopFarms — Job Listing Card (video asset)
+  Source lineage: claude.ai/design "Design System" › components/JobCard.html + styles.css
+  Self-contained: tokens embedded, fonts via CDN, no build / router / external CSS.
+
+  Targets: [data-anim="job-card"] whole card · [data-anim="chip"] each pill (4)
+           · [data-anim="ring-fill"] badge arc (r=22 → C≈138.23; 94% = offset 8.29).
+  Chips can stagger-in; the ring-badge arc fills the same way as the hero ring.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Job Listing Card — TopFarms</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #fafbf9; --surface: #ffffff; --surface-2: #f3f5f0;
+    --border: #e5e8e2;
+    --text: #0b1f10; --text-muted: #5b6b5f;
+    --brand: #16a34a;
+    --r-md: 12px; --r-pill: 999px;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh;
+    display: flex; align-items: center; justify-content: center; padding: 48px;
+    background: var(--bg); font-family: var(--font-sans); -webkit-font-smoothing: antialiased;
+  }
+  .num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+  .card { width: 380px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 20px; }
+  .job__top { display: flex; align-items: flex-start; gap: 16px; }
+  .job__body { min-width: 0; flex: 1; }
+  .job__title { font: 600 17px/1.3 var(--font-sans); color: var(--text); margin: 0; }
+  .job__farm { font: 400 14px/1.3 var(--font-sans); color: var(--text-muted); margin: 3px 0 0; }
+  .job__chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .job__salary { font: 500 14px/1 var(--font-mono); color: var(--text); margin: 12px 0 0; }
+
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px;
+    border-radius: var(--r-pill); background: var(--surface-2); border: 1px solid var(--border);
+    color: var(--text-muted); font: 500 13px/1 var(--font-sans); white-space: nowrap;
+  }
+
+  .ring-badge { position: relative; width: 52px; height: 52px; flex-shrink: 0; }
+  .ring-badge__svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring-badge__track { fill: none; stroke: rgba(22,163,74,.18); stroke-width: 4; }
+  .ring-badge__fill {
+    fill: none; stroke: var(--brand); stroke-width: 4; stroke-linecap: round;
+    stroke-dasharray: 138.23; stroke-dashoffset: var(--ring-offset, 8.29);
+  }
+  .ring-badge__pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font: 500 13px/1 var(--font-mono); color: var(--brand); }
+</style>
+</head>
+<body>
+  <article class="card" data-anim="job-card">
+    <div class="job__top">
+      <div class="job__body">
+        <h3 class="job__title">Dairy Farm Manager</h3>
+        <p class="job__farm">Riverbend Dairy · Waikato</p>
+        <div class="job__chips">
+          <span class="chip" data-anim="chip">Dairy</span>
+          <span class="chip" data-anim="chip">Rotary shed</span>
+          <span class="chip" data-anim="chip">Accommodation</span>
+          <span class="chip" data-anim="chip">AEWV</span>
+        </div>
+        <p class="job__salary">$85k – $95k /yr</p>
+      </div>
+      <div class="ring-badge" data-anim="match-ring" data-variant="badge" role="img" aria-label="94% match">
+        <svg class="ring-badge__svg" viewBox="0 0 52 52" aria-hidden="true">
+          <circle class="ring-badge__track" cx="26" cy="26" r="22"></circle>
+          <circle class="ring-badge__fill" data-anim="ring-fill" cx="26" cy="26" r="22"></circle>
+        </svg>
+        <span class="ring-badge__pct"><span class="num">94</span></span>
+      </div>
+    </div>
+  </article>
+</body>
+</html>

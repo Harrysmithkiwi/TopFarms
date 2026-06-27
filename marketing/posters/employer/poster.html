@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
+<style>
+  :root{
+    --bg:#FAFBF9; --surface:#FFFFFF; --surface-2:#F3F5F0;
+    --border:#E5E8E2;
+    --text:#0B1F10; --muted:#5B6B5F; --subtle:#8A968D;
+    --brand:#16A34A; --brand-hover:#15803D; --brand-900:#0F3D22; --brand-50:#E8F5EC;
+    --noise:#CDD4CB; --noise-2:#DCE2DA; --noise-chip:#EEF1EC;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+  .poster{position:relative;width:1080px;height:1350px;background:var(--bg);overflow:hidden;
+    padding:64px 80px 60px;display:flex;flex-direction:column}
+
+  /* ── header ─────────────────────────────────────────── */
+  header{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:5}
+  .wordmark{display:inline-flex;align-items:center;gap:13px}
+  .wordmark svg{width:36px;height:36px}
+  .wordmark .leaf{fill:var(--brand)}
+  .wordmark .vein{fill:none;stroke:var(--bg);stroke-width:1.5;stroke-linecap:round}
+  .wordmark .word{font-size:29px;font-weight:600;letter-spacing:-0.01em;color:var(--text)}
+  .eyebrow{font-size:14px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--subtle)}
+
+  /* ── THE SWARM (overwhelm) — chaotic, bleeding, tilted ── */
+  .swarm{position:relative;height:486px;margin:18px -80px 0}
+  .swarm-tag{position:absolute;left:80px;top:6px;z-index:4;display:flex;align-items:baseline;gap:11px}
+  .swarm-tag .n{font-size:23px;font-weight:800;color:var(--subtle);letter-spacing:-0.02em;font-variant-numeric:tabular-nums}
+  .swarm-tag .t{font-size:13px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--subtle)}
+  .mark{position:absolute;display:flex;align-items:center;gap:5px;height:18px;padding:0 7px;border-radius:9px;
+    background:var(--noise-chip);border:1px solid var(--border)}
+  .mark .d{width:9px;height:9px;border-radius:50%;background:var(--noise);flex-shrink:0}
+  .mark .b{height:5px;border-radius:3px;background:var(--noise-2)}
+  .mark.match{background:var(--brand);border-color:var(--brand);height:21px;padding:0 9px;gap:6px;z-index:3}
+  .mark.match .d{background:#fff;width:10px;height:10px}
+  .mark.match .b{background:rgba(255,255,255,0.82);height:6px}
+
+  /* ── THE TURN (headline) — the dominant element ─────── */
+  .headline{position:relative;z-index:5;margin-top:30px}
+  .headline .l1,.headline .l2{display:block;font-size:84px;line-height:0.98;font-weight:800;
+    letter-spacing:-0.04em;color:var(--text)}
+  .headline .l2{margin-top:6px}
+  .headline em{font-style:normal;color:var(--brand)}
+
+  /* ── THE CLARITY (one calm white card) ──────────────── */
+  .shortlist{margin-top:34px;background:var(--surface);border:1px solid var(--border);border-radius:22px;
+    padding:30px 34px 34px}
+  .sl-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+  .sl-head .lhs{display:flex;align-items:center;gap:11px}
+  .sl-head .leaf{width:22px;height:22px;fill:var(--brand)}
+  .sl-head .ttl{font-size:17px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:var(--text)}
+  .sl-head .meta{font-size:17px;font-weight:600;color:var(--brand-hover)}
+  .row{display:flex;align-items:center;gap:20px;padding:18px 18px;border-radius:14px}
+  .row + .row{margin-top:6px}
+  .row.top{background:var(--brand-50)}
+  .row .rank{font-size:21px;font-weight:700;color:var(--subtle);width:16px;text-align:center;font-variant-numeric:tabular-nums}
+  .row .av{width:58px;height:58px;border-radius:50%;background:#fff;border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;font-size:23px;font-weight:700;color:var(--brand-hover);flex-shrink:0}
+  .row.top .av{background:#fff;border-color:transparent}
+  .row .body{flex:1;min-width:0}
+  .row .nm{font-size:30px;font-weight:700;color:var(--text);letter-spacing:-0.015em;display:flex;align-items:center;gap:12px}
+  .row .tag{font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--brand-hover);
+    background:#fff;border-radius:999px;padding:4px 11px}
+  .row .ro{font-size:20px;font-weight:500;color:var(--muted);margin-top:3px}
+  .row .score{display:flex;align-items:baseline;gap:5px;flex-shrink:0}
+  .row .score .v{font-size:46px;font-weight:800;color:var(--brand);letter-spacing:-0.03em;font-variant-numeric:tabular-nums;line-height:1}
+  .row .score .u{font-size:18px;font-weight:700;color:var(--brand)}
+
+  /* ── CTA ────────────────────────────────────────────── */
+  footer{margin-top:auto;display:flex;align-items:center;justify-content:space-between}
+  .cta{display:inline-flex;align-items:center;height:74px;padding:0 36px;border-radius:14px;
+    background:var(--brand);color:#fff;font-size:27px;font-weight:700;letter-spacing:-0.01em}
+  .foot-r{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+  .foot-r .u{font-size:22px;font-weight:600;color:var(--text)}
+  .foot-r .s{font-size:15px;font-weight:500;color:var(--subtle)}
+</style>
+</head>
+<body>
+  <div class="poster">
+    <header>
+      <span class="wordmark">
+        <svg viewBox="0 0 24 24" aria-label="TopFarms"><path class="leaf" d="M3 21C3 12 9 5 21 3C19 13 13 19 3 21Z"></path><path class="vein" d="M6.5 17.5C9 13 13 8.5 17 6"></path></svg>
+        <span class="word">TopFarms</span>
+      </span>
+      <span class="eyebrow">For farm employers</span>
+    </header>
+
+    <div class="swarm" id="swarm">
+      <div class="swarm-tag"><span class="n">40</span><span class="t">applied this week</span></div>
+    </div>
+
+    <h1 class="headline">
+      <span class="l1" id="l1">Forty applied.</span>
+      <span class="l2" id="l2">We found your <em>three.</em></span>
+    </h1>
+
+    <div class="shortlist">
+      <div class="sl-head">
+        <span class="lhs">
+          <svg class="leaf" viewBox="0 0 24 24"><path d="M3 21C3 12 9 5 21 3C19 13 13 19 3 21Z"></path></svg>
+          <span class="ttl">Your shortlist</span>
+        </span>
+        <span class="meta">Top 3 of 40</span>
+      </div>
+      <div class="row top">
+        <span class="rank">1</span>
+        <span class="av">AR</span>
+        <span class="body"><div class="nm">Alex R. <span class="tag">Top match</span></div><div class="ro">Dairy Farm Manager · Waikato · 5 yrs</div></span>
+        <span class="score"><span class="v">92</span><span class="u">%</span></span>
+      </div>
+      <div class="row">
+        <span class="rank">2</span>
+        <span class="av">JM</span>
+        <span class="body"><div class="nm">Jordan M.</div><div class="ro">Herd Manager · Bay of Plenty · 3 yrs</div></span>
+        <span class="score"><span class="v">85</span><span class="u">%</span></span>
+      </div>
+      <div class="row">
+        <span class="rank">3</span>
+        <span class="av">ST</span>
+        <span class="body"><div class="nm">Sam T.</div><div class="ro">Relief Milker · Waikato · 2 yrs</div></span>
+        <span class="score"><span class="v">81</span><span class="u">%</span></span>
+      </div>
+    </div>
+
+    <footer>
+      <span class="cta">Post your first listing — free</span>
+      <span class="foot-r"><span class="u">topfarms.co.nz</span><span class="s">Match · Train · Retain</span></span>
+    </footer>
+  </div>
+
+  <script>
+    // Deterministic chaotic swarm — the overwhelm. ~95 tiny tilted overlapping marks
+    // bleeding off top/sides, denser up top; THREE lit green = matched, not discarded.
+    function mulberry32(a){return function(){a|=0;a=(a+0x6d2b79f5)|0;let t=Math.imul(a^(a>>>15),1|a);t=(t+Math.imul(t^(t>>>7),61|t))^t;return ((t^(t>>>14))>>>0)/4294967296}}
+    const rnd = mulberry32(0x7a3f21);
+    const swarm = document.getElementById('swarm');
+    const W = 1080, H = 486, N = 210;
+    const matchIdx = new Set([60, 118, 171]);    // three of them are the matches
+    const marks = [];
+    for(let i=0;i<N;i++){
+      const isMatch = matchIdx.has(i);
+      const dot = !isMatch && rnd() < 0.22;                 // some are bare dots → denser, more numerous
+      const bw = 12 + Math.floor(rnd()*40);                 // bar width
+      const sc = 0.72 + rnd()*0.6;                          // varied scale
+      // packed at the top, thinning downward; bleed past left/right edges
+      const x = -80 + rnd()*(W+160);
+      const y = Math.pow(rnd(), 2.3) * (H-16);
+      const rot = (rnd()-0.5)*46;
+      const op = isMatch ? 1 : (0.34 + rnd()*0.5);
+      marks.push({i,isMatch,dot,x,y,rot,op,bw,sc});
+    }
+    // lift the three matches to deliberate, visible, spread positions in the crowd
+    const spots = [[244,176],[566,250],[806,150]];
+    let s=0;
+    for(const m of marks){
+      if(m.isMatch){ m.x=spots[s][0]; m.y=spots[s][1]; m.rot=(s-1)*6; m.sc=1; s++; }
+      const el=document.createElement('div');
+      el.className='mark'+(m.isMatch?' match':'');
+      el.style.left=m.x+'px'; el.style.top=m.y+'px';
+      el.style.transform='rotate('+m.rot+'deg) scale('+m.sc+')'; el.style.opacity=m.op;
+      el.innerHTML = m.dot ? '<span class="d"></span>'
+                           : '<span class="d"></span><span class="b" style="width:'+m.bw+'px"></span>';
+      swarm.appendChild(el);
+    }
+  </script>
+</body>
+</html>

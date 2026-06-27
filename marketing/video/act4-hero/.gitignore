@@ -1,0 +1,3 @@
+# scaffold-injected skill copies and deps — not part of the shot
+.claude/
+node_modules/

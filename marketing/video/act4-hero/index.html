@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1080px; height: 1920px; overflow: hidden;
+        background: #0a2d19;                 /* deep dark frame — brand green-black */
+        font-family: "Inter", sans-serif;
+      }
+      .mono { font-family: "JetBrains Mono", monospace; font-variant-numeric: tabular-nums; }
+
+      /* camera wrapper — push-in / orbit live here, never on content */
+      #stage { position: absolute; inset: 0; }
+      #camera { position: absolute; inset: 0; transform-origin: 540px 960px; }
+
+      .layer { position: absolute; inset: 0; }
+
+      /* ── Match-score ring (the hinge) ───────────────────────────── */
+      /* positioning wrappers carry the centering transform; GSAP only ever
+         animates the inner element, so it never clobbers the centering */
+      #ringPos { position: absolute; left: 540px; top: 960px; transform: translate(-50%, -50%); }
+      #ring { width: 380px; height: 380px; }
+      #ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+      .ring-track { fill: none; stroke: rgba(139,92,246,0.20); stroke-width: 14; }
+      .ring-fill  { fill: none; stroke: #8b5cf6; stroke-width: 14; stroke-linecap: round; }
+      #ring .center { position: absolute; inset: 0; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; gap: 6px; }
+      #ring .pct { font-size: 112px; line-height: 1; color: #ffffff; letter-spacing: -0.02em; font-weight: 500; }
+      #ring .pct sup { font-size: 48px; top: -0.85em; color: rgba(255,255,255,0.6); }
+      #ring .label { font-size: 22px; font-weight: 600; letter-spacing: 0.12em;
+        text-transform: uppercase; color: #c4b5fd; }
+
+      /* ── Seeker job card (above ring, 0–~1.3s) ──────────────────── */
+      #seekerPos { position: absolute; left: 540px; top: 470px; transform: translate(-50%, -50%); }
+      #seekerCard { width: 720px; background: #ffffff; border: 1px solid #e5e8e2; border-radius: 16px; padding: 28px 30px; }
+      #seekerCard .jt { font-size: 32px; font-weight: 600; color: #0b1f10; }
+      #seekerCard .jf { font-size: 22px; color: #5b6b5f; margin-top: 6px; }
+      #seekerCard .chips { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+      .chip { display: inline-flex; align-items: center; height: 44px; padding: 0 18px; border-radius: 999px;
+        background: #f3f5f0; border: 1px solid #e5e8e2; color: #5b6b5f; font-size: 20px; font-weight: 500; white-space: nowrap; }
+
+      /* ── Employer context band (below ring, ~1.4–2.4s) ──────────── */
+      #empPos { position: absolute; left: 540px; top: 1380px; transform: translate(-50%, -50%); }
+      #empBand { width: 760px; display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+      .stat { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.10);
+        border-radius: 12px; padding: 22px 18px; text-align: left; }
+      .stat .n { font-size: 44px; font-weight: 700; color: #ffffff; letter-spacing: -0.02em; }
+      .stat .l { font-size: 17px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+        color: rgba(255,255,255,0.5); margin-top: 4px; }
+
+      /* ── Bubble field (the chaos, ~2–4.78s) ─────────────────────── */
+      #bubbles { transform-origin: 540px 960px; }
+      .bubble { position: absolute; border-radius: 16px; background: rgba(255,255,255,0.14);
+        border: 1px solid rgba(255,255,255,0.22); display: flex; flex-direction: column;
+        justify-content: center; gap: 7px; padding: 0 14px; opacity: 0; }
+      .bubble i { display: block; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.34); }
+
+      /* ── Shortlist rows (the clarity, 4.78–9s) ──────────────────── */
+      #rows { position: absolute; left: 540px; top: 960px; transform: translate(-50%, -50%);
+        width: 880px; display: flex; flex-direction: column; gap: 22px; }
+      .srow { display: flex; align-items: center; gap: 20px; background: #ffffff;
+        border: 1px solid #d8ddd3; border-radius: 16px; padding: 26px 28px; opacity: 0; }
+      .srow .body { flex: 1; min-width: 0; }
+      .srow .nm { font-size: 34px; font-weight: 600; color: #0b1f10; }
+      .srow .ro { font-size: 22px; color: #5b6b5f; margin-top: 5px; }
+      .srow .sk { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+      .srow .sk span { font-size: 18px; font-weight: 600; color: #5b6b5f; background: #f3f5f0;
+        padding: 8px 14px; border-radius: 999px; }
+      .badge { display: inline-flex; align-items: center; height: 52px; padding: 0 22px;
+        border-radius: 999px; background: #e8f5ec; color: #15803d; font-size: 30px; font-weight: 600; flex-shrink: 0; }
+
+      /* ── Payoff text beats (6.2–9s) ─────────────────────────────── */
+      #beats { position: absolute; left: 0; right: 0; top: 470px; text-align: center; }
+      .beat { position: absolute; left: 0; right: 0; font-size: 90px; font-weight: 700;
+        letter-spacing: -0.02em; color: #fafbf9; opacity: 0; }
+      .beat .g { color: #6fcb92; }   /* brand green, brightened for legibility on dark */
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="10"
+      data-width="1080"
+      data-height="1920"
+    >
+      <div id="stage">
+        <div id="camera">
+          <!-- chaos field -->
+          <div id="bubbles" class="layer"></div>
+
+          <!-- the hinge -->
+          <div id="ringPos" data-layout-allow-overlap>
+            <div id="ring" data-anim="match-ring">
+              <svg viewBox="0 0 200 200" aria-hidden="true">
+                <circle class="ring-track" cx="100" cy="100" r="86"></circle>
+                <circle class="ring-fill" data-anim="ring-fill" cx="100" cy="100" r="86"
+                  style="stroke-dasharray:540.35; stroke-dashoffset:43.23;"></circle>
+              </svg>
+              <div class="center">
+                <div class="pct mono">92<sup>%</sup></div>
+                <div class="label">Match score</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- seeker context -->
+          <div id="seekerPos" data-layout-allow-overlap>
+            <div id="seekerCard">
+              <div class="jt">Dairy Farm Manager</div>
+              <div class="jf">Riverbend Dairy · Waikato</div>
+              <div class="chips">
+                <span class="chip">Dairy</span>
+                <span class="chip">Rotary shed</span>
+                <span class="chip">Accommodation</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- employer context (swaps in) -->
+          <div id="empPos" data-layout-allow-overlap>
+            <div id="empBand">
+              <div class="stat"><div class="n mono">14</div><div class="l">Applicants</div></div>
+              <div class="stat"><div class="n mono">3</div><div class="l">Shortlisted</div></div>
+              <div class="stat"><div class="n mono">92%</div><div class="l">Top match</div></div>
+            </div>
+          </div>
+
+          <!-- the clarity -->
+          <div id="rows" data-layout-allow-overlap>
+            <div class="srow" data-anim="shortlist-row" data-top>
+              <div class="body">
+                <div class="nm">Alex R.</div>
+                <div class="ro">Dairy Farm Manager · Waikato</div>
+                <div class="sk"><span>Herd Management</span><span>Rotary shed</span><span>5 yrs</span></div>
+              </div>
+              <span class="badge mono" data-anim="match-badge">92%</span>
+            </div>
+            <div class="srow" data-anim="shortlist-row" data-top>
+              <div class="body">
+                <div class="nm">Jordan M.</div>
+                <div class="ro">Herd Manager · Bay of Plenty</div>
+                <div class="sk"><span>Pasture</span><span>Herringbone</span><span>3 yrs</span></div>
+              </div>
+              <span class="badge mono" data-anim="match-badge">85%</span>
+            </div>
+            <div class="srow" data-anim="shortlist-row" data-top>
+              <div class="body">
+                <div class="nm">Sam T.</div>
+                <div class="ro">Relief Milker · Waikato</div>
+                <div class="sk"><span>Milking</span><span>AMS</span><span>2 yrs</span></div>
+              </div>
+              <span class="badge mono" data-anim="match-badge">81%</span>
+            </div>
+          </div>
+
+          <!-- payoff beats -->
+          <div id="beats" data-layout-allow-overlap>
+            <div class="beat" id="b1">Post once.</div>
+            <div class="beat" id="b2">Skip the sorting.</div>
+            <div class="beat" id="b3"><span class="g">3</span> worth calling.</div>
+          </div>
+        </div>
+      </div>
+
+      <audio id="aud" class="clip" data-start="0" data-duration="10" data-track-index="0"
+             src="audio-stem.wav" data-volume="1"></audio>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+
+      // ── Deterministic bubble field (seeded; no Math.random) ──────────
+      function mulberry32(a) {
+        return function () {
+          a |= 0; a = (a + 0x6d2b79f5) | 0;
+          let t = Math.imul(a ^ (a >>> 15), 1 | a);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+      const rnd = mulberry32(0x70f4a3);          // fixed seed → identical every render
+      const CX = 540, CY = 960, N = 64;          // pushed density — the overwhelm before relief
+      const field = document.getElementById("bubbles");
+      const bubbles = [];
+      for (let k = 0; k < N; k++) {
+        const w = 84 + Math.floor(rnd() * 96);   // 84–180
+        const h = 48 + Math.floor(rnd() * 26);   // 48–74
+        // scatter across the frame so the field reads as a crowd
+        const x = 90 + rnd() * (1080 - 180 - w);
+        const y = 360 + rnd() * (1560 - 360 - h);
+        const el = document.createElement("div");
+        el.className = "bubble";
+        el.style.width = w + "px";
+        el.style.height = h + "px";
+        el.style.left = x + "px";
+        el.style.top = y + "px";
+        const barCount = 1 + (k % 2);
+        for (let b = 0; b < barCount; b++) {
+          const bar = document.createElement("i");
+          bar.style.width = (40 + ((k * 7 + b * 23) % (w - 28))) + "px";
+          el.appendChild(bar);
+        }
+        field.appendChild(el);
+        bubbles.push({ el, cx: x + w / 2, cy: y + h / 2 });
+      }
+
+      const tl = gsap.timeline({ paused: true });
+
+      // ── CAMERA: slow push-in across the whole shot ───────────────────
+      tl.fromTo("#camera", { scale: 1.0 }, { scale: 1.075, duration: 10, ease: "power1.out" }, 0);
+      // subtle orbit of the chaos field (its own element — no prop conflict)
+      tl.fromTo("#bubbles", { rotation: -2.4, x: -10 }, { rotation: 1.6, x: 12, duration: 4, ease: "sine.inOut" }, 2.0);
+
+      // ── 0–2s · THE LINK (ring is the fixed hinge) ────────────────────
+      tl.fromTo("#ring", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.7, ease: "power3.out" }, 0.15);
+      tl.fromTo("#seekerCard", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.45);
+      // seeker swaps to employer — context changes, ring never moves
+      tl.to("#seekerCard", { opacity: 0, y: -26, duration: 0.5, ease: "power2.in" }, 1.3);
+      tl.fromTo("#empBand", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 1.5);
+
+      // ── 2–6s · THE COLLAPSE ──────────────────────────────────────────
+      // employer band recedes as the chaos floods
+      tl.to("#empBand", { opacity: 0, duration: 0.5, ease: "power2.in" }, 2.25);
+      // ring hands off to the chaos (stays the convergence point)
+      tl.to("#ring", { opacity: 0, duration: 0.8, ease: "power2.in" }, 2.2);
+      // ~40 bubbles flood in, cluttered
+      tl.fromTo(".bubble", { opacity: 0, scale: 0.5 },
+        { opacity: 1, scale: 1, duration: 0.5, ease: "power2.out", stagger: { each: 0.013, from: "edges" } }, 2.0);
+
+      // the compression — every bubble drains inward to the hinge point, accelerating (relief)
+      bubbles.forEach((b, i) => {
+        const dx = CX - b.cx, dy = CY - b.cy;
+        tl.to(b.el, { x: dx, y: dy, scale: 0.06, opacity: 0, duration: 0.62, ease: "power2.in" },
+          4.02 + (i % 8) * 0.006);
+      });
+
+      // 40 → 3 : the rows land with weight and settle (no slide, no bounce)
+      tl.fromTo(".srow", { opacity: 0, scale: 1.06 },
+        { opacity: 1, scale: 1, duration: 0.5, ease: "power3.out", stagger: 0.12 }, 4.8);
+
+      // ── 6–9s · THE PAYOFF (one beat at a time, then HOLD) ────────────
+      tl.fromTo("#b1", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 6.05);
+      tl.to("#b1", { opacity: 0, y: -18, duration: 0.4, ease: "power2.in" }, 6.75);
+      tl.fromTo("#b2", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 6.8);
+      tl.to("#b2", { opacity: 0, y: -18, duration: 0.4, ease: "power2.in" }, 7.5);
+      tl.fromTo("#b3", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.55, ease: "expo.out" }, 7.6);
+      // the line is read, then it goes — leaving the three rows alone
+      tl.to("#b3", { opacity: 0, duration: 0.55, ease: "power2.in" }, 8.55);
+      // ~9.1–10.0s · the held breath — three clean rows alone on the dark, near
+      // silence. Nothing else. Let it sit.
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

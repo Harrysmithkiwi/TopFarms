@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<!--
+  TopFarms — Chip / Pill (video asset; animatable check state)
+  Source lineage: claude.ai/design "Design System" › components/Chip.html + styles.css
+  Self-contained: tokens embedded, fonts via CDN, no build / router / external CSS.
+
+  DEFAULT STATE IS UNCHECKED (not hardcoded checked). To animate the check on:
+    1) flip the host:  [data-anim="chip"] data-state="unchecked" → "checked"
+       (this crossfades fill/border/text to the brand-tinted checked styles and
+        expands the tick's slot)
+    2) draw the tick:  [data-anim="chip-tick"] uses a normalised path (pathLength=1);
+       tween its stroke-dashoffset from 1 (hidden) → 0 (fully drawn)
+  Both are driven by simple CSS transitions already wired to data-state; the film
+  can either toggle the attribute and let the transition run, or drive the values
+  directly for precise timing.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chip / Pill — TopFarms</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #fafbf9; --surface-2: #f3f5f0;
+    --border: #e5e8e2;
+    --text-muted: #5b6b5f;
+    --brand: #16a34a; --brand-hover: #15803d; --brand-50: #e8f5ec;
+    --r-pill: 999px;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg); font-family: var(--font-sans); -webkit-font-smoothing: antialiased;
+  }
+
+  .chip {
+    display: inline-flex; align-items: center; height: 28px; padding: 0 12px;
+    border-radius: var(--r-pill); border: 1px solid var(--border);
+    background: var(--surface-2); color: var(--text-muted);
+    font: 500 13px/1 var(--font-sans); white-space: nowrap;
+    transition: background-color .25s ease, border-color .25s ease, color .25s ease;
+  }
+  /* Checked state — brand-tinted */
+  .chip[data-state="checked"] {
+    background: var(--brand-50); border-color: var(--brand-50); color: var(--brand-hover);
+  }
+
+  /* Tick slot: collapsed (0 width) when unchecked, expands when checked */
+  .chip__tick {
+    display: inline-flex; align-items: center; overflow: hidden;
+    width: 0; margin-right: 0; color: var(--brand);
+    transition: width .25s ease, margin-right .25s ease;
+  }
+  .chip[data-state="checked"] .chip__tick { width: 14px; margin-right: 6px; }
+
+  /* Normalised path (pathLength=1): dashoffset 1 = hidden, 0 = drawn */
+  .chip__tick path {
+    stroke-dasharray: 1; stroke-dashoffset: 1;
+    transition: stroke-dashoffset .35s ease .1s;
+  }
+  .chip[data-state="checked"] .chip__tick path { stroke-dashoffset: 0; }
+</style>
+</head>
+<body>
+  <span class="chip" data-anim="chip" data-state="unchecked">
+    <span class="chip__tick" aria-hidden="true">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path data-anim="chip-tick" pathLength="1" d="M20 6 L9 17 L4 12"></path>
+      </svg>
+    </span>
+    Accommodation
+  </span>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --ground:#0F3D22; --bright:#6FCB92; --white:#FAFBF9;
+    --off:rgba(255,255,255,0.86);
+    --hair:rgba(111,203,146,0.34); --hair-soft:rgba(111,203,146,0.18);
+    --mono:rgba(233,245,236,0.46); --mono-g:rgba(111,203,146,0.78);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+  .mono{font-family:'JetBrains Mono',monospace}
+  .poster{position:relative;width:1080px;height:1350px;background:var(--ground);overflow:hidden}
+
+  /* ── instrument plate ───────────────────────────────── */
+  .frame{position:absolute;inset:50px;border:1px solid var(--hair-soft)}
+  .reg{position:absolute;width:20px;height:20px}
+  .reg::before,.reg::after{content:'';position:absolute;background:var(--hair)}
+  .reg::before{left:50%;top:0;width:1px;height:100%;transform:translateX(-0.5px)}
+  .reg::after{top:50%;left:0;height:1px;width:100%;transform:translateY(-0.5px)}
+  .reg.tl{left:40px;top:40px}.reg.tr{right:40px;top:40px}.reg.bl{left:40px;bottom:40px}.reg.br{right:40px;bottom:40px}
+
+  /* corner annotations + wordmark */
+  .tag{position:absolute;top:74px;font-size:14px;font-weight:500;letter-spacing:0.22em;color:var(--mono)}
+  .tag.l{left:84px}.tag.r{right:84px}
+  .wordmark{position:absolute;top:120px;left:50%;transform:translateX(-50%);display:inline-flex;align-items:center;gap:13px}
+  .wordmark svg{width:34px;height:34px}
+  .wordmark .leaf{fill:var(--bright)}
+  .wordmark .vein{fill:none;stroke:var(--ground);stroke-width:1.5;stroke-linecap:round}
+  .wordmark .word{font-size:27px;font-weight:600;letter-spacing:-0.01em;color:var(--white)}
+
+  /* side rulers (patient repetition) */
+  .ruler{position:absolute;top:230px;bottom:230px;width:1px;background:var(--hair-soft)}
+  .ruler.l{left:84px}.ruler.r{right:84px}
+  .ruler i{position:absolute;height:1px;background:var(--hair);right:0}
+  .ruler.r i{right:auto;left:0}
+
+  /* ── the monument ───────────────────────────────────── */
+  .stage{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;text-align:center}
+  .ov{font-size:15px;font-weight:600;letter-spacing:0.42em;color:var(--mono-g);margin-bottom:44px;padding-left:0.42em}
+  .zero{font-size:384px;line-height:0.9;font-weight:900;letter-spacing:-0.055em;color:var(--bright)}
+  .measure{position:relative;width:620px;height:30px;margin-top:20px}
+  .measure .base{position:absolute;left:0;right:0;top:0;height:1px;background:var(--hair)}
+  .measure i{position:absolute;top:0;width:1px;background:var(--hair-soft)}
+  .measure .o{position:absolute;left:50%;top:-3px;height:15px;width:1px;background:var(--bright);transform:translateX(-0.5px)}
+  .measure .olab{position:absolute;left:50%;top:18px;transform:translateX(-50%);font-size:13px;font-weight:600;letter-spacing:0.1em;color:var(--mono-g)}
+  .cap{font-size:14px;font-weight:500;letter-spacing:0.24em;color:var(--mono);margin-top:34px}
+
+  .stmt{font-size:62px;line-height:1.06;font-weight:800;letter-spacing:-0.03em;color:var(--white);margin-top:54px}
+  .stmt .g{color:var(--bright)}
+  .support{font-size:25px;font-weight:600;letter-spacing:0.005em;color:var(--off);margin-top:20px}
+
+  /* footer apparatus */
+  .frule{position:absolute;left:84px;right:84px;bottom:120px;height:1px;background:var(--hair-soft)}
+  .foot{position:absolute;left:84px;right:84px;bottom:80px;display:flex;align-items:center;justify-content:space-between;
+    font-size:14px;font-weight:500;letter-spacing:0.2em;color:var(--mono)}
+  .foot .c{letter-spacing:0.26em}
+</style>
+</head>
+<body>
+  <div class="poster">
+    <div class="frame"></div>
+    <span class="reg tl"></span><span class="reg tr"></span><span class="reg bl"></span><span class="reg br"></span>
+
+    <span class="tag l mono">FIG. 01 — THE CONSTANT</span>
+    <span class="tag r mono">EST. AOTEAROA · NZ</span>
+    <span class="wordmark">
+      <svg viewBox="0 0 24 24" aria-label="TopFarms"><path class="leaf" d="M3 21C3 12 9 5 21 3C19 13 13 19 3 21Z"></path><path class="vein" d="M6.5 17.5C9 13 13 8.5 17 6"></path></svg>
+      <span class="word">TopFarms</span>
+    </span>
+
+    <div class="ruler l" id="rulerL"></div>
+    <div class="ruler r" id="rulerR"></div>
+
+    <div class="stage">
+      <div class="ov mono">THE FAIR-PAY DATUM</div>
+      <div class="zero">$0</div>
+      <div class="measure" id="measure">
+        <div class="base"></div>
+        <div class="o"></div>
+        <div class="olab mono">0.00</div>
+      </div>
+      <div class="cap mono">OWED BY THE WORKER · HELD AS A CONSTANT</div>
+      <div class="stmt">The worker never pays.<br><span class="g">Not now. Not ever.</span></div>
+      <div class="support">No recruiter fees. Built fair, NZ-built.</div>
+    </div>
+
+    <div class="frule"></div>
+    <div class="foot mono"><span>TOPFARMS.CO.NZ</span><span class="c">MATCH · TRAIN · RETAIN</span><span>41°S · 175°E</span></div>
+  </div>
+
+  <script>
+    // measure rule — patiently repeated ticks, taller every fifth, origin at centre
+    const m=document.getElementById('measure'), MW=620, step=20, n=Math.floor(MW/step);
+    for(let k=0;k<=n;k++){
+      const x=k*step; if(Math.abs(x-MW/2)<2) continue;       // leave the origin to the green tick
+      const t=document.createElement('i');
+      const tall=(k%5===0);
+      t.style.left=x+'px'; t.style.height=(tall?11:6)+'px';
+      m.appendChild(t);
+    }
+    // side rulers — faint horizontal ticks at regular intervals
+    function fill(id,len){const r=document.getElementById(id);const H=890,s=22;
+      for(let y=0;y<=H;y+=s){const i=document.createElement('i');i.style.top=y+'px';i.style.width=((y/s)%4===0?12:6)+'px';r.appendChild(i);}}
+    fill('rulerL'); fill('rulerR');
+  </script>
+</body>
+</html>

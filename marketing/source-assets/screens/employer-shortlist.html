@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<!--
+  TopFarms — Employer · Shortlist (assembled screen; establishing/wide shot asset)
+  Source lineage: claude.ai/design "Design System" › screens/EmployerShortlist.html + styles.css
+  Self-contained: full token + component sheet embedded, fonts via CDN, no build / router / external CSS.
+  Natural frame: 390px wide phone column (see manifest for height).
+
+  Targets inside: [data-anim="logo-leaf"] · dark job-context band stats
+    · [data-anim="shortlist-row"] x5 ([data-top] on the 3 "worth calling")
+    · [data-anim="match-badge"] x5. The 3 top rows are the bubble-collapse payoff.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Employer Shortlist — TopFarms</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #fafbf9; --surface: #ffffff; --surface-2: #f3f5f0;
+    --border: #e5e8e2; --border-strong: #d0d5cc;
+    --text: #0b1f10; --text-muted: #5b6b5f; --text-subtle: #8a968d; --text-on-brand: #ffffff;
+    --brand: #16a34a; --brand-hover: #15803d; --brand-900: #0f3d22; --brand-50: #e8f5ec;
+    --dark: #0f3d22; --dark-surface: rgba(255,255,255,0.045); --dark-border: rgba(255,255,255,0.10);
+    --on-dark: #ffffff; --on-dark-muted: rgba(255,255,255,0.70); --on-dark-subtle: rgba(255,255,255,0.50);
+    --brand-bright: color-mix(in srgb, var(--brand) 62%, white);
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', Menlo, Consolas, monospace;
+    --r-sm: 8px; --r-md: 12px; --r-pill: 999px;
+    --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:20px; --s-6:24px;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: var(--font-sans); background: var(--surface-2); color: var(--text);
+    font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; margin: 0;
+    display: flex; justify-content: center; padding: 24px 0; min-height: 100vh; }
+  .num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+  .tf-logo { display: inline-flex; align-items: center; gap: 10px; }
+  .tf-logo__leaf { fill: var(--brand-bright); }
+  .tf-logo__vein { fill: none; stroke: var(--dark); stroke-width: 1.5; stroke-linecap: round; }
+  .tf-logo__word { font: 600 17px/1 var(--font-sans); letter-spacing: -0.01em; color: var(--on-dark); }
+
+  .tf-match-badge { display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 11px; border-radius: var(--r-pill); background: var(--brand-50); color: var(--brand-hover); font: 600 13px/1 var(--font-sans); }
+  .tf-match-badge .num { font-weight: 500; }
+  .tf-stat__num { font: 700 22px/1 var(--font-sans); font-variant-numeric: tabular-nums; color: #fff; letter-spacing: -0.02em; }
+  .tf-stat__label { font: 600 11px/1 var(--font-sans); letter-spacing: 0.08em; text-transform: uppercase; color: var(--on-dark-subtle); }
+
+  .phone { width: 390px; background: var(--bg); min-height: 844px; overflow: hidden; display: flex; flex-direction: column; }
+  .bar { background: var(--dark); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; }
+  .bar__avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--brand); color: #fff; display: flex; align-items: center; justify-content: center; font: 700 13px/1 var(--font-sans); }
+  .ctx { background: var(--dark); padding: 4px 18px 22px; }
+  .ctx__eyebrow { font: 700 10px/1 var(--font-sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--brand); }
+  .ctx__title { font: 700 22px/1.15 var(--font-sans); letter-spacing: -0.02em; color: #fff; margin: 8px 0 0; }
+  .ctx__meta { font: 400 13px/1.3 var(--font-sans); color: var(--on-dark-muted); margin: 4px 0 0; }
+  .ctx__stats { display: grid; grid-template-columns: repeat(3,1fr); gap: var(--s-2); margin-top: var(--s-4); }
+  .ctx__stat { background: var(--dark-surface); border: 1px solid var(--dark-border); border-radius: var(--r-sm); padding: 10px 12px; }
+  .scroll { padding: var(--s-5); display: flex; flex-direction: column; gap: var(--s-3); }
+  .call { font: 600 11px/1 var(--font-sans); letter-spacing: 0.06em; text-transform: uppercase; color: var(--brand); display: inline-flex; align-items: center; gap: 6px; }
+  .call::before { content:""; width: 6px; height: 6px; border-radius: 50%; background: var(--brand); }
+  .callnote { font: 400 13px/1.4 var(--font-sans); color: var(--text-muted); margin: 6px 0 var(--s-1); }
+  .srow { display: flex; align-items: center; gap: var(--s-3); padding: var(--s-4); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); }
+  .srow--top { border-color: color-mix(in srgb, var(--brand) 35%, var(--border)); }
+  .srow__name { font: 600 14px/1.2 var(--font-sans); color: var(--text); }
+  .srow__role { font: 400 12px/1.2 var(--font-sans); color: var(--text-muted); margin-top: 2px; }
+  .srow__skills { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+  .srow__skill { font: 600 10px/1 var(--font-sans); padding: 4px 7px; border-radius: var(--r-pill); background: var(--surface-2); color: var(--text-muted); }
+  .divider { height: 1px; background: var(--border); margin: var(--s-3) 0 var(--s-1); }
+  .rest { font: 600 11px/1 var(--font-sans); letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-subtle); }
+</style>
+</head>
+<body>
+  <div class="phone">
+    <div class="bar">
+      <span class="tf-logo">
+        <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+          <path class="tf-logo__leaf" data-anim="logo-leaf" d="M3 21C3 12 9 5 21 3C19 13 13 19 3 21Z"></path>
+          <path class="tf-logo__vein" data-anim="logo-vein" d="M6.5 17.5C9 13 13 8.5 17 6"></path>
+        </svg>
+        <span class="tf-logo__word">TopFarms</span>
+      </span>
+      <span class="bar__avatar">H</span>
+    </div>
+
+    <div class="ctx">
+      <span class="ctx__eyebrow">Your job posting</span>
+      <h1 class="ctx__title">Dairy Farm Manager</h1>
+      <p class="ctx__meta">Riverbend Dairy · Waikato · Permanent</p>
+      <div class="ctx__stats">
+        <div class="ctx__stat"><div class="tf-stat__num">14</div><div class="tf-stat__label">Applicants</div></div>
+        <div class="ctx__stat"><div class="tf-stat__num">3</div><div class="tf-stat__label">Shortlisted</div></div>
+        <div class="ctx__stat"><div class="tf-stat__num num">92%</div><div class="tf-stat__label">Top match</div></div>
+      </div>
+    </div>
+
+    <div class="scroll">
+      <div>
+        <span class="call">Three worth calling</span>
+        <p class="callnote">Ranked by Match Score on shed type, region, accommodation and skills.</p>
+      </div>
+
+      <div class="srow srow--top" data-anim="shortlist-row" data-top>
+        <div style="flex:1;min-width:0">
+          <div class="srow__name">Alex R.</div>
+          <div class="srow__role">Dairy Farm Manager · Waikato</div>
+          <div class="srow__skills"><span class="srow__skill">Herd Management</span><span class="srow__skill">Rotary shed</span><span class="srow__skill">5 yrs</span></div>
+        </div>
+        <span class="tf-match-badge" data-anim="match-badge"><span class="num">92%</span></span>
+      </div>
+
+      <div class="srow srow--top" data-anim="shortlist-row" data-top>
+        <div style="flex:1;min-width:0">
+          <div class="srow__name">Jordan M.</div>
+          <div class="srow__role">Herd Manager · Bay of Plenty</div>
+          <div class="srow__skills"><span class="srow__skill">Pasture</span><span class="srow__skill">Herringbone</span><span class="srow__skill">3 yrs</span></div>
+        </div>
+        <span class="tf-match-badge" data-anim="match-badge"><span class="num">85%</span></span>
+      </div>
+
+      <div class="srow srow--top" data-anim="shortlist-row" data-top>
+        <div style="flex:1;min-width:0">
+          <div class="srow__name">Sam T.</div>
+          <div class="srow__role">Relief Milker · Waikato</div>
+          <div class="srow__skills"><span class="srow__skill">Milking</span><span class="srow__skill">AMS</span><span class="srow__skill">2 yrs</span></div>
+        </div>
+        <span class="tf-match-badge" data-anim="match-badge"><span class="num">81%</span></span>
+      </div>
+
+      <div class="divider"></div>
+      <span class="rest">11 more applicants</span>
+
+      <div class="srow" data-anim="shortlist-row">
+        <div style="flex:1;min-width:0">
+          <div class="srow__name">Pat L.</div>
+          <div class="srow__role">Dairy Assistant · Canterbury</div>
+          <div class="srow__skills"><span class="srow__skill">Milking</span><span class="srow__skill">1 yr</span></div>
+        </div>
+        <span class="tf-match-badge" data-anim="match-badge"><span class="num">68%</span></span>
+      </div>
+
+      <div class="srow" data-anim="shortlist-row">
+        <div style="flex:1;min-width:0">
+          <div class="srow__name">Casey W.</div>
+          <div class="srow__role">Trainee · Southland</div>
+          <div class="srow__skills"><span class="srow__skill">Fencing</span><span class="srow__skill">New</span></div>
+        </div>
+        <span class="tf-match-badge" data-anim="match-badge"><span class="num">54%</span></span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

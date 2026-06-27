@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
+<style>
+  :root{
+    --bg:#FAFBF9; --surface:#FFFFFF; --surface-2:#F3F5F0; --border:#E5E8E2;
+    --text:#0B1F10; --muted:#5B6B5F; --subtle:#8A968D;
+    --brand:#16A34A; --brand-hover:#15803D; --brand-900:#0F3D22; --brand-50:#E8F5EC;
+    --noise:#CDD4CB; --noise-2:#DCE2DA; --noise-chip:#EEF1EC;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+  .poster{position:relative;width:1920px;height:1080px;background:var(--bg);overflow:hidden;display:flex}
+
+  /* ── LEFT: the message ──────────────────────────────── */
+  .left{width:880px;flex-shrink:0;padding:84px 0 80px 96px;display:flex;flex-direction:column}
+  .wordmark{display:inline-flex;align-items:center;gap:14px}
+  .wordmark svg{width:38px;height:38px}
+  .wordmark .leaf{fill:var(--brand)}
+  .wordmark .vein{fill:none;stroke:var(--bg);stroke-width:1.5;stroke-linecap:round}
+  .wordmark .word{font-size:31px;font-weight:600;letter-spacing:-0.01em;color:var(--text)}
+  .eyebrow{margin-top:auto;font-size:15px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--subtle)}
+  .headline{margin-top:18px}
+  .headline .l1,.headline .l2{display:block;font-size:104px;line-height:0.96;font-weight:800;letter-spacing:-0.04em;color:var(--text)}
+  .headline .l2{margin-top:6px}
+  .headline em{font-style:normal;color:var(--brand)}
+  .cta-row{margin-top:46px;display:flex;align-items:center;gap:26px}
+  .cta{display:inline-flex;align-items:center;height:78px;padding:0 38px;border-radius:14px;background:var(--brand);color:#fff;font-size:29px;font-weight:700;letter-spacing:-0.01em}
+  .cta-row .u{font-size:22px;font-weight:600;color:var(--text)}
+  .cta-row .u .s{display:block;font-size:15px;font-weight:500;color:var(--subtle);margin-top:2px}
+  .spacer{margin-top:auto}
+
+  /* ── RIGHT: the swarm → the shortlist ───────────────── */
+  .right{position:relative;flex:1}
+  .swarm{position:absolute;left:0;right:-40px;top:80px;height:516px}
+  .swarm-tag{position:absolute;left:40px;top:0;z-index:4;display:flex;align-items:baseline;gap:11px}
+  .swarm-tag .n{font-size:23px;font-weight:800;color:var(--subtle);letter-spacing:-0.02em;font-variant-numeric:tabular-nums}
+  .swarm-tag .t{font-size:13px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--subtle)}
+  .mark{position:absolute;display:flex;align-items:center;gap:5px;height:18px;padding:0 7px;border-radius:9px;background:var(--noise-chip);border:1px solid var(--border)}
+  .mark .d{width:9px;height:9px;border-radius:50%;background:var(--noise);flex-shrink:0}
+  .mark .b{height:5px;border-radius:3px;background:var(--noise-2)}
+  .mark.match{background:var(--brand);border-color:var(--brand);height:21px;padding:0 9px;gap:6px;z-index:3}
+  .mark.match .d{background:#fff;width:10px;height:10px}
+  .mark.match .b{background:rgba(255,255,255,0.82);height:6px}
+
+  .shortlist{position:absolute;left:40px;right:96px;bottom:120px;background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:28px 32px 30px}
+  .sl-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .sl-head .lhs{display:flex;align-items:center;gap:11px}
+  .sl-head .leaf{width:22px;height:22px;fill:var(--brand)}
+  .sl-head .ttl{font-size:16px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:var(--text)}
+  .sl-head .meta{font-size:16px;font-weight:600;color:var(--brand-hover)}
+  .row{display:flex;align-items:center;gap:18px;padding:15px 16px;border-radius:13px}
+  .row + .row{margin-top:5px}
+  .row.top{background:var(--brand-50)}
+  .row .rank{font-size:19px;font-weight:700;color:var(--subtle);width:14px;text-align:center}
+  .row .av{width:52px;height:52px;border-radius:50%;background:#fff;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--brand-hover);flex-shrink:0}
+  .row.top .av{border-color:transparent}
+  .row .body{flex:1;min-width:0}
+  .row .nm{font-size:26px;font-weight:700;color:var(--text);letter-spacing:-0.015em;display:flex;align-items:center;gap:11px}
+  .row .tag{font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--brand-hover);background:#fff;border-radius:999px;padding:3px 10px}
+  .row .ro{font-size:18px;font-weight:500;color:var(--muted);margin-top:2px}
+  .row .score{display:flex;align-items:baseline;gap:4px;flex-shrink:0}
+  .row .score .v{font-size:40px;font-weight:800;color:var(--brand);letter-spacing:-0.03em;font-variant-numeric:tabular-nums;line-height:1}
+  .row .score .u{font-size:16px;font-weight:700;color:var(--brand)}
+</style>
+</head>
+<body>
+  <div class="poster">
+    <div class="left">
+      <span class="wordmark">
+        <svg viewBox="0 0 24 24" aria-label="TopFarms"><path class="leaf" d="M3 21C3 12 9 5 21 3C19 13 13 19 3 21Z"></path><path class="vein" d="M6.5 17.5C9 13 13 8.5 17 6"></path></svg>
+        <span class="word">TopFarms</span>
+      </span>
+      <div class="spacer"></div>
+      <span class="eyebrow">For farm employers</span>
+      <h1 class="headline"><span class="l1">Forty applied.</span><span class="l2">We found your <em>three.</em></span></h1>
+      <div class="cta-row">
+        <span class="cta">Post your first listing — free</span>
+        <span class="u">topfarms.co.nz<span class="s">Match · Train · Retain</span></span>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="swarm" id="swarm"><div class="swarm-tag"><span class="n">40</span><span class="t">applied this week</span></div></div>
+      <div class="shortlist">
+        <div class="sl-head"><span class="lhs"><svg class="leaf" viewBox="0 0 24 24"><path d="M3 21C3 12 9 5 21 3C19 13 13 19 3 21Z"></path></svg><span class="ttl">Your shortlist</span></span><span class="meta">Top 3 of 40</span></div>
+        <div class="row top"><span class="rank">1</span><span class="av">AR</span><span class="body"><div class="nm">Alex R. <span class="tag">Top match</span></div><div class="ro">Dairy Farm Manager · Waikato · 5 yrs</div></span><span class="score"><span class="v">92</span><span class="u">%</span></span></div>
+        <div class="row"><span class="rank">2</span><span class="av">JM</span><span class="body"><div class="nm">Jordan M.</div><div class="ro">Herd Manager · Bay of Plenty · 3 yrs</div></span><span class="score"><span class="v">85</span><span class="u">%</span></span></div>
+        <div class="row"><span class="rank">3</span><span class="av">ST</span><span class="body"><div class="nm">Sam T.</div><div class="ro">Relief Milker · Waikato · 2 yrs</div></span><span class="score"><span class="v">81</span><span class="u">%</span></span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function mulberry32(a){return function(){a|=0;a=(a+0x6d2b79f5)|0;let t=Math.imul(a^(a>>>15),1|a);t=(t+Math.imul(t^(t>>>7),61|t))^t;return ((t^(t>>>14))>>>0)/4294967296}}
+    const rnd=mulberry32(0x7a3f21);
+    const sw=document.getElementById('swarm');
+    const W=984,H=516,N=210;
+    const M=new Set([54,112,168]);
+    const spots=[[150,150],[470,235],[760,140]];let s=0;
+    for(let i=0;i<N;i++){
+      const isM=M.has(i), dot=!isM&&rnd()<0.22;
+      const bw=12+Math.floor(rnd()*38), sc=0.72+rnd()*0.6;
+      let x=-40+rnd()*(W+80), y=Math.pow(rnd(),2.0)*(H-16), rot=(rnd()-0.5)*46, op=isM?1:(0.34+rnd()*0.5);
+      if(isM){x=spots[s][0];y=spots[s][1];rot=(s-1)*6;s++;}
+      const el=document.createElement('div');el.className='mark'+(isM?' match':'');
+      el.style.left=x+'px';el.style.top=y+'px';el.style.transform='rotate('+rot+'deg) scale('+(isM?1:sc)+')';el.style.opacity=op;
+      el.innerHTML=dot?'<span class="d"></span>':'<span class="d"></span><span class="b" style="width:'+bw+'px"></span>';
+      sw.appendChild(el);
+    }
+  </script>
+</body>
+</html>

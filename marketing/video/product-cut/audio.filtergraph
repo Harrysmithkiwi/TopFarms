@@ -1,0 +1,9 @@
+[0:a]lowpass=f=160,volume='0.16*min(1\,t/2)*min(1\,max(0\,(36-t)/5))':eval=frame[drone];
+[1:a]lowpass=f=220,volume='0.09*min(1\,t/2.2)*min(1\,max(0\,(36-t)/5))':eval=frame[drone2];
+[2:a]bandpass=f=1200:w=1800,tremolo=f=10:d=0.6,volume='if(lt(t\,8)\,0\,if(lt(t\,30.15)\,0.10+0.55*pow((t-8)/22.15\,1.4)\,0))':eval=frame[wash];
+[3:a]lowpass=f=200,volume='if(gte(t\,30.4)\,0.60*exp(-(t-30.4)*3.0)\,0)':eval=frame[hit];
+[4:a]lowpass=f=120,volume='if(gte(t\,30.4)\,0.50*exp(-(t-30.4)*2.4)\,0)':eval=frame[sub];
+[5:a]highpass=f=2000,volume='if(between(t\,30.4\,30.62)\,0.24*exp(-(t-30.4)*20)\,0)':eval=frame[tick];
+[6:a]lowpass=f=520,volume='if(lt(t\,8)\,0\,if(lt(t\,30.15)\,0.16*pow((t-8)/22.15\,1.3)\,0))':eval=frame[tension];
+[7:a]lowpass=f=380,volume='if(between(t\,31.6\,38)\,0.030*min(1\,(t-31.6)/1.6)*max(0\,1-(t-36)/2)\,0)':eval=frame[breath];
+[drone][drone2][wash][hit][sub][tick][tension][breath]amix=inputs=8:normalize=0,alimiter=limit=0.95,aformat=channel_layouts=stereo:sample_rates=48000[out]
