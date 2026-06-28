@@ -1,8 +1,13 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { MapPin, ExternalLink, AlertTriangle } from 'lucide-react'
 import { AdminTable } from '@/components/admin/AdminTable'
+import { DrawerShell, DrawerSection } from '@/components/admin/DrawerShell'
 import { LeadContactCard, type LeadContact } from '@/components/admin/LeadContact'
+import { Button } from '@/components/ui/Button'
+import { Tag } from '@/components/ui/Tag'
 import { supabase } from '@/lib/supabase'
+import { formatLeadName, regionLocalityLabel, sourceLabel } from '@/lib/leadDisplay'
 
 /**
  * /admin/leads/outreach — Lane B work surface (PHASE-1-SPEC §E).
@@ -18,6 +23,7 @@ import { supabase } from '@/lib/supabase'
 interface OutreachStructured {
   display_name?: string | null
   region?: string | null
+  locality?: string | null // P-8 — populated by the GATE-2 lead-intake change
   role_or_category?: string | null
   contact?: LeadContact | null
   shed_type?: string | null
@@ -42,9 +48,30 @@ interface OutreachRow extends Record<string, unknown> {
   responded_at: string | null
 }
 
+const STATUS_TAG: Record<OutreachRow['outreach_status'], { label: string; variant: 'grey' | 'blue' | 'green' }> = {
+  drafted: { label: 'Drafted', variant: 'grey' },
+  approved: { label: 'Approved', variant: 'blue' },
+  sent: { label: 'Sent', variant: 'blue' },
+  responded: { label: 'Responded', variant: 'green' },
+}
+
+function DetailRow({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex gap-2 text-[13px]">
+      <span
+        className="shrink-0 text-xs font-semibold uppercase"
+        style={{ color: 'var(--color-text-subtle)', letterSpacing: '0.04em', lineHeight: '1.4rem' }}
+      >
+        {label}
+      </span>
+      <span style={{ color: 'var(--color-text)' }}>{children}</span>
+    </div>
+  )
+}
+
 /**
  * The draft editor + state actions. Keyed by row id so local draft text resets
- * per selection without a useEffect (CategoriseForm precedent in AdminLeads).
+ * per selection without a useEffect.
  */
 function DraftPanel({ row, onDone }: { row: OutreachRow; onDone: () => void }) {
   const [draft, setDraft] = useState(row.drafted_reply ?? '')
@@ -94,73 +121,54 @@ function DraftPanel({ row, onDone }: { row: OutreachRow; onDone: () => void }) {
   const isPlaceholder = draft.startsWith('[Draft pending') || draft.startsWith('[Outreach config')
 
   return (
-    <div className="border-border mt-4 border-t pt-3">
-      <p
-        className="text-[11px] font-semibold tracking-wide uppercase"
-        style={{ color: 'var(--color-text-muted)' }}
-      >
-        Drafted reply — you send this manually on Facebook
-      </p>
+    <DrawerSection label="Drafted reply — you send this manually on Facebook">
       {isPlaceholder && (
-        <p className="text-warn mt-1 text-[12px]">
-          ⚠ Placeholder — reply drafting goes live once the outreach config (do-not rules + voice +
+        <p className="text-warn flex items-start gap-1.5 text-[12px]">
+          <AlertTriangle size={13} className="mt-0.5 shrink-0" />
+          Placeholder — reply drafting goes live once the outreach config (do-not rules + voice +
           template) is set.
         </p>
       )}
       <textarea
-        className="border-border bg-surface mt-2 h-32 w-full rounded-[8px] border px-2 py-1.5 text-sm outline-none focus:border-brand"
+        className="border-border bg-surface h-40 w-full rounded-[8px] border px-3 py-2 text-sm outline-none focus:border-brand"
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
       />
-      <div className="mt-2 flex flex-wrap gap-2">
+      {/* One primary per state; secondary actions are outline/ghost. */}
+      <div className="flex flex-wrap items-center gap-2">
         {(status === 'drafted' || status === 'approved') && (
           <>
-            <button
-              type="button"
-              disabled={busy}
-              onClick={() => saveDraft('drafted')}
-              className="border-border hover:bg-surface-2 rounded-[8px] border px-3 py-1.5 text-sm disabled:opacity-50"
-            >
-              Save edit
-            </button>
-            {status === 'drafted' && (
-              <button
-                type="button"
-                disabled={busy}
-                onClick={() => saveDraft('approved')}
-                className="border-border hover:bg-surface-2 rounded-[8px] border px-3 py-1.5 text-sm disabled:opacity-50"
-              >
-                Approve draft
-              </button>
-            )}
-            <button
-              type="button"
+            <Button
+              variant="primary"
+              size="sm"
               disabled={busy || isPlaceholder}
               onClick={copyAndSend}
               title={isPlaceholder ? 'Set the outreach config before sending placeholder text' : ''}
-              className="bg-brand rounded-[8px] px-3 py-1.5 text-sm font-semibold text-white disabled:opacity-50"
             >
               Copy reply &amp; mark sent
-            </button>
-            <button
-              type="button"
-              disabled={busy}
-              onClick={skip}
-              className="text-warn hover:bg-surface-2 rounded-[8px] px-3 py-1.5 text-sm disabled:opacity-50"
-            >
+            </Button>
+            <Button variant="outline" size="sm" disabled={busy} onClick={() => saveDraft('drafted')}>
+              Save edit
+            </Button>
+            {status === 'drafted' && (
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={busy}
+                onClick={() => saveDraft('approved')}
+              >
+                Approve draft
+              </Button>
+            )}
+            <Button variant="ghost" size="sm" disabled={busy} onClick={skip}>
               Skip
-            </button>
+            </Button>
           </>
         )}
         {status === 'sent' && (
-          <button
-            type="button"
-            disabled={busy}
-            onClick={markResponded}
-            className="bg-brand rounded-[8px] px-3 py-1.5 text-sm font-semibold text-white disabled:opacity-50"
-          >
+          <Button variant="primary" size="sm" disabled={busy} onClick={markResponded}>
             Mark responded
-          </button>
+          </Button>
         )}
         {status === 'responded' && (
           <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
@@ -168,7 +176,88 @@ function DraftPanel({ row, onDone }: { row: OutreachRow; onDone: () => void }) {
           </p>
         )}
       </div>
-    </div>
+    </DrawerSection>
+  )
+}
+
+function OutreachDrawer({ row, onDone, onClose }: { row: OutreachRow; onDone: () => void; onClose: () => void }) {
+  const s = row.structured
+  const tag = STATUS_TAG[row.outreach_status]
+  const hasDetailFields = s.shed_type || s.herd_details || s.application_method || s.source_group
+
+  return (
+    <DrawerShell label="Outreach" onClose={onClose}>
+      {/* Header */}
+      <div className="space-y-2">
+        <h2
+          className="text-[20px] leading-7 font-semibold"
+          style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
+          title={s.display_name ?? ''}
+        >
+          {formatLeadName(s.display_name)}
+        </h2>
+        <div className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
+          {sourceLabel(row.source)}
+        </div>
+        {(s.region || s.locality) && (
+          <div
+            className="flex items-center gap-1.5 text-[13px]"
+            style={{ color: 'var(--color-text-muted)' }}
+          >
+            <MapPin size={14} />
+            {regionLocalityLabel(s)}
+          </div>
+        )}
+        <div className="flex flex-wrap items-center gap-2 pt-1">
+          <Tag variant={tag.variant}>{tag.label}</Tag>
+          {row.source_ref && (
+            <a
+              href={row.source_ref}
+              target="_blank"
+              rel="noreferrer"
+              className="text-brand inline-flex items-center gap-1 text-[13px] underline"
+            >
+              Open post <ExternalLink size={13} />
+            </a>
+          )}
+        </div>
+      </div>
+
+      {s.role_or_category && (
+        <DrawerSection label="Role">
+          <div className="text-[14px] font-medium" style={{ color: 'var(--color-text)' }}>
+            {s.role_or_category}
+          </div>
+        </DrawerSection>
+      )}
+
+      {hasDetailFields && (
+        <DrawerSection label="Details">
+          {s.shed_type && <DetailRow label="Shed">{s.shed_type}</DetailRow>}
+          {s.herd_details && <DetailRow label="Herd">{s.herd_details}</DetailRow>}
+          {s.application_method && <DetailRow label="Apply">{s.application_method}</DetailRow>}
+          {s.source_group && <DetailRow label="Group">{s.source_group}</DetailRow>}
+        </DrawerSection>
+      )}
+
+      {/* Contact is usually empty for Lane B (that's why it's Lane B) */}
+      <DrawerSection label="Contact">
+        <LeadContactCard contact={s.contact ?? null} />
+      </DrawerSection>
+
+      {row.raw_excerpt && (
+        <DrawerSection label="Original post">
+          <p
+            className="bg-surface-2 max-h-40 overflow-y-auto rounded-[8px] p-3 text-[12px] leading-5 whitespace-pre-wrap"
+            style={{ color: 'var(--color-text-muted)' }}
+          >
+            {row.raw_excerpt}
+          </p>
+        </DrawerSection>
+      )}
+
+      <DraftPanel key={row.id} row={row} onDone={onDone} />
+    </DrawerShell>
   )
 }
 
@@ -183,76 +272,18 @@ export function AdminLeadsOutreach() {
 
   return (
     <div className="space-y-6">
-      <h1
-        className="text-[20px] leading-7 font-semibold"
-        style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
-      >
-        Lane B Outreach
-      </h1>
-      <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-        FB posts with no contact — reach out from your own account. Edit the drafted reply, approve,
-        copy it, and send it manually on Facebook, then mark it sent.
-      </p>
-
-      {selected && (
-        <div className="bg-surface border-brand rounded-[12px] border-2 p-5">
-          <div className="text-sm">
-            <p className="font-semibold">{selected.structured.display_name ?? '(unnamed)'}</p>
-            <p style={{ color: 'var(--color-text-muted)' }}>
-              {selected.structured.region ?? 'no region'} · {selected.source} · status{' '}
-              <span className="font-semibold">{selected.outreach_status}</span>
-              {selected.source_ref && (
-                <>
-                  {' · '}
-                  <a
-                    href={selected.source_ref}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-brand underline"
-                  >
-                    open post ↗
-                  </a>
-                </>
-              )}
-            </p>
-
-            {selected.structured.role_or_category && (
-              <p className="mt-1 text-[13px] font-medium">{selected.structured.role_or_category}</p>
-            )}
-            <p className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-[13px]">
-              {selected.structured.shed_type && <span>🥛 {selected.structured.shed_type}</span>}
-              {selected.structured.herd_details && <span>🐄 {selected.structured.herd_details}</span>}
-              {selected.structured.source_group && (
-                <span style={{ color: 'var(--color-text-muted)' }}>
-                  group: {selected.structured.source_group}
-                </span>
-              )}
-            </p>
-            {selected.structured.application_method && (
-              <p className="mt-1 text-[13px]">
-                <span style={{ color: 'var(--color-text-muted)' }}>Apply: </span>
-                {selected.structured.application_method}
-              </p>
-            )}
-
-            {/* contact is usually empty for Lane B (that's why it's Lane B) */}
-            <LeadContactCard contact={selected.structured.contact ?? null} />
-
-            {selected.raw_excerpt && (
-              <details className="mt-2">
-                <summary className="cursor-pointer text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
-                  Original post
-                </summary>
-                <p className="mt-1 text-[13px] leading-5 whitespace-pre-wrap" style={{ color: 'var(--color-text-muted)' }}>
-                  {selected.raw_excerpt}
-                </p>
-              </details>
-            )}
-          </div>
-
-          <DraftPanel key={selected.id} row={selected} onDone={refresh} />
-        </div>
-      )}
+      <div>
+        <h1
+          className="text-[20px] leading-7 font-semibold"
+          style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
+        >
+          Lane B Outreach
+        </h1>
+        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+          FB posts with no contact — reach out from your own account. Edit the drafted reply,
+          approve, copy it, send it manually on Facebook, then mark it sent.
+        </p>
+      </div>
 
       <AdminTable<OutreachRow>
         key={refreshKey}
@@ -265,29 +296,36 @@ export function AdminLeadsOutreach() {
         onRowClick={(row) => setSelected(row)}
         columns={[
           { key: 'display_name', label: 'Name / business' },
-          { key: 'region', label: 'Region' },
-          { key: 'outreach_status', label: 'Outreach' },
+          { key: 'region', label: 'Region · locality' },
+          { key: 'outreach_status', label: 'Status' },
           { key: 'created_at', label: 'Captured' },
         ]}
-        renderRow={(row, onClick) => (
-          <tr
-            key={row.id}
-            onClick={onClick}
-            className="border-border hover:bg-surface-2/50 h-[52px] cursor-pointer border-t"
-          >
-            <td className="px-3 font-medium">
-              <div className="max-w-[220px] truncate" title={row.structured.display_name ?? ''}>
-                {row.structured.display_name ?? '(unnamed)'}
-              </div>
-            </td>
-            <td className="px-3">{row.structured.region ?? '—'}</td>
-            <td className="px-3">
-              <span className="font-semibold">{row.outreach_status}</span>
-            </td>
-            <td className="px-3">{new Date(row.created_at).toLocaleDateString('en-NZ')}</td>
-          </tr>
-        )}
+        renderRow={(row, onClick) => {
+          const tag = STATUS_TAG[row.outreach_status]
+          return (
+            <tr
+              key={row.id}
+              onClick={onClick}
+              className="border-border hover:bg-surface-hover h-[52px] cursor-pointer border-t transition-colors"
+            >
+              <td className="px-4 font-medium">
+                <div className="max-w-[240px] truncate" title={row.structured.display_name ?? ''}>
+                  {formatLeadName(row.structured.display_name)}
+                </div>
+              </td>
+              <td className="px-4 text-[13px]">{regionLocalityLabel(row.structured)}</td>
+              <td className="px-4">
+                <Tag variant={tag.variant}>{tag.label}</Tag>
+              </td>
+              <td className="px-4 text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
+                {new Date(row.created_at).toLocaleDateString('en-NZ')}
+              </td>
+            </tr>
+          )
+        }}
       />
+
+      {selected && <OutreachDrawer row={selected} onDone={refresh} onClose={() => setSelected(null)} />}
     </div>
   )
 }

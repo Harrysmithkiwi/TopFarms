@@ -32,8 +32,12 @@ interface AdminTableProps<TRow> {
   searchPlaceholder?: string
   /** Column headers — array of {key, label} objects. */
   columns: { key: string; label: string }[]
-  /** Render a single row. Receives the row payload + click handler. */
-  renderRow: (row: TRow, onClick: () => void) => ReactNode
+  /**
+   * Render a single row. Receives the row payload, click handler, and the
+   * active (debounced) search term — so a row can surface WHY it matched when
+   * the hit isn't in a visible column (e.g. a locality buried in raw post text).
+   */
+  renderRow: (row: TRow, onClick: () => void, search: string) => ReactNode
   /** Called when a row is clicked — typically opens ProfileDrawer. */
   onRowClick?: (row: TRow) => void
   /** Empty state heading + body (per UI-SPEC Copywriting Contract per view). */
@@ -193,7 +197,7 @@ export function AdminTable<TRow extends Record<string, unknown>>({
                     }}
                     onClick={handleRowClick}
                   >
-                    {renderRow(row, handleRowClick)}
+                    {renderRow(row, handleRowClick, debouncedSearch)}
                   </tr>
                 )
               })}
