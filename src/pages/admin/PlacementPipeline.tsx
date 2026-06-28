@@ -1,4 +1,5 @@
 import { AdminTable } from '@/components/admin/AdminTable'
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
 import { Tag } from '@/components/ui/Tag'
 
 // type (not interface): AdminTable<TRow extends Record<string, unknown>> needs
@@ -61,15 +62,15 @@ function stripeUrl(row: PlacementRow): string | null {
 export function PlacementPipeline() {
   return (
     <div className="space-y-6">
-      <h1
-        className="text-[20px] leading-7 font-semibold"
-        style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
-      >
-        Placement Pipeline
-      </h1>
+      <AdminPageHeader
+        eyebrow="Jobs & Revenue"
+        title="Placement Pipeline"
+        description="Acknowledged placements awaiting an invoice. Overdue (>14 days) is flagged; click through to Stripe to bill."
+      />
 
       <AdminTable<PlacementRow>
         rpc="admin_list_placements"
+        inCard
         searchable={false}
         emptyHeading="No placements yet"
         emptyBody="Acknowledged placements will appear here."
@@ -78,7 +79,6 @@ export function PlacementPipeline() {
           { key: 'employer', label: 'Employer' },
           { key: 'acked', label: 'Acknowledged' },
           { key: 'days_since', label: 'Days since acknowledged' },
-          { key: 'hired', label: 'Hired' },
           { key: 'invoice', label: 'Invoice' },
         ]}
         renderRow={(row) => {
@@ -108,13 +108,6 @@ export function PlacementPipeline() {
                   >
                     {row.days_since_ack}
                   </span>
-                )}
-              </td>
-              <td className="px-4 py-3">
-                {row.confirmed_at ? (
-                  <Tag variant="green">Hired</Tag>
-                ) : (
-                  <Tag variant="grey">Pending</Tag>
                 )}
               </td>
               <td className="px-4 py-3">
