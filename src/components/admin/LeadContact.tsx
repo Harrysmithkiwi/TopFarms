@@ -80,8 +80,10 @@ export function LeadContactCard({ contact }: { contact?: LeadContact | null }) {
  * row's onClick.
  */
 export function ContactGlyphs({ contact }: { contact?: LeadContact | null }) {
+  // No contact → blank, not a dash. A "—" in an otherwise-populated row reads as
+  // a load failure; an empty cell reads as "no contact" (i.e. a Lane B lead).
   if (!hasContact(contact)) {
-    return <span style={{ color: 'var(--color-text-muted)' }}>—</span>
+    return null
   }
   const stop = (e: MouseEvent) => e.stopPropagation()
   return (

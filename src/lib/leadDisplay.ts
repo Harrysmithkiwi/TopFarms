@@ -77,7 +77,7 @@ export function leadLocality(
   return null
 }
 
-/** "Waikato · Tirohanga" / "Waikato" / "—" for region+locality display. */
+/** "Waikato · Tirohanga" / "Waikato" / "" (blank) for region+locality display. */
 export function regionLocalityLabel(
   structured: { region?: string | null; locality?: string | null; display_name?: string | null },
 ): string {
@@ -86,7 +86,9 @@ export function regionLocalityLabel(
   if (region && locality && locality.toLowerCase() !== region.toLowerCase()) {
     return `${region} · ${locality}`
   }
-  return region || locality || '—'
+  // Blank (not "—") when neither is known — a dash in a populated row reads as
+  // a load failure; an empty cell reads as "no region", which is the truth.
+  return region || locality || ''
 }
 
 /**

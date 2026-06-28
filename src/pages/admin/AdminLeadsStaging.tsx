@@ -240,11 +240,8 @@ function ManualCapture({ onCaptured }: { onCaptured: () => void }) {
 function LaneTag({ lane }: { lane?: 'a' | 'b' }) {
   if (lane === 'a') return <Tag variant="green" title="Lane A · contactable">A</Tag>
   if (lane === 'b') return <Tag variant="blue" title="Lane B · no contact → Outreach">B</Tag>
-  return (
-    <span className="text-[13px]" style={{ color: 'var(--color-text-subtle)' }}>
-      —
-    </span>
-  )
+  // Unknown lane → blank, not a dash (a dash reads as a failed load).
+  return null
 }
 
 /** Detail rows: small uppercase label + value (replaces emoji-prefixed fields). */
@@ -533,7 +530,7 @@ export function AdminLeadsStaging() {
                 {regionLocalityLabel(row.structured)}
               </td>
               <td className="px-4 text-[13px] whitespace-nowrap" style={{ color: 'var(--color-text-muted)' }}>
-                {new Date(row.created_at).toLocaleDateString('en-NZ', { day: '2-digit', month: 'short' })}
+                {new Date(row.created_at).toLocaleDateString('en-NZ', { day: '2-digit', month: 'short', year: 'numeric' })}
               </td>
               <td className="px-4 text-[13px] whitespace-nowrap" style={{ color: 'var(--color-text-muted)' }}>
                 {Math.round(row.confidence * 100)}%
