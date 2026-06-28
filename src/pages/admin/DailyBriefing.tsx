@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Card } from '@/components/ui/Card'
+import { ArrowUp, ArrowDown } from 'lucide-react'
+import { Card } from '@/components/tremor/Card'
+import { AreaChart } from '@/components/tremor/AreaChart'
 import { Tag } from '@/components/ui/Tag'
-import { StatsStrip } from '@/components/ui/StatsStrip'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'sonner'
 
@@ -37,24 +38,130 @@ interface SystemAlertsPayload {
 }
 
 /**
- * ResendIndicator — renders the Resend delivery-rate stat from the cached
- * admin_metrics_cache row exposed by admin_get_daily_briefing.
+ * DailyBriefing — `/admin` landing page and the Phase-0 reference screen for the
+ * admin UI uplift (Tremor Raw cards + chart, all reading our @theme tokens). The
+ * pattern here (KPI cards with delta pills, a token-green AreaChart, eyebrow+title
+ * carded panels, soft --shadow-card elevation) is what every other admin screen
+ * adopts next.
  *
- * Three branches per UI-SPEC §"Resend delivery-rate approach":
- *   - unavailable → renders the honest "Delivery data unavailable" copy below
- *     (visible side of the MAIL-02 carryforward; see CONTEXT.md item 1).
- *   - stale     → rate + "Stale · Last checked …"
- *   - fresh     → rate + "Last checked …"
- *
- * Tag variant follows UI-SPEC §Color semantic mapping:
- *   >=95% green, 80-94% warn, <80% red.
+ * Data sources (RPCs from migration 023):
+ *   - admin_get_daily_briefing  → counts + revenue + Resend cache snapshot
+ *   - admin_get_system_alerts   → webhook_failures + cron_health
+ */
+
+/** Eyebrow + title header, consistent across every admin card. */
+function CardHeading({
+  eyebrow,
+  title,
+  right,
+}: {
+  eyebrow: string
+  title: string
+  right?: React.ReactNode
+}) {
+  return (
+    <div className="flex items-start justify-between gap-3">
+      <div>
+        <div
+          className="text-text-subtle text-[11px] font-semibold uppercase"
+          style={{ letterSpacing: '0.04em' }}
+        >
+          {eyebrow}
+        </div>
+        <div className="text-text mt-0.5 text-[15px] font-semibold">{title}</div>
+      </div>
+      {right}
+    </div>
+  )
+}
+
+/**
+ * Delta vs prior day. The briefing RPC only returns yesterday's single counts, so
+ * there's no baseline to compute a real delta yet — we render an honest "—"
+ * rather than fabricate a trend.
+ * TODO(DELTA-WIRE): add prior-day counts to admin_get_daily_briefing (or a
+ * dedicated RPC) and pass a real `delta` so these pills go live.
+ */
+function DeltaPill({ delta }: { delta: number | null }) {
+  if (delta === null) {
+    return (
+      <span className="text-text-subtle text-[11px]" title="Prior-day delta not wired yet">
+        vs prior day —
+      </span>
+    )
+  }
+  const up = delta >= 0
+  return (
+    <Tag variant={up ? 'green' : 'red'} className="gap-0.5">
+      {up ? <ArrowUp size={11} /> : <ArrowDown size={11} />}
+      {Math.abs(delta)}%
+    </Tag>
+  )
+}
+
+function KpiCard({
+  label,
+  value,
+  delta,
+}: {
+  label: string
+  value: number
+  delta: number | null
+}) {
+  return (
+    // h-full + grid stretch = equal-height cards; mt-auto pins the number row to
+    // the bottom so numbers stay aligned even when a label wraps to two lines.
+    <Card className="flex h-full flex-col">
+      <div
+        className="text-text-subtle text-[11px] font-semibold uppercase"
+        style={{ letterSpacing: '0.04em' }}
+      >
+        {label}
+      </div>
+      <div className="mt-auto flex items-end justify-between gap-2 pt-3">
+        <span
+          className="text-text text-[28px] leading-none font-semibold"
+          style={{ fontVariantNumeric: 'tabular-nums' }}
+        >
+          {value}
+        </span>
+        <DeltaPill delta={delta} />
+      </div>
+    </Card>
+  )
+}
+
+/**
+ * 14-day signups trend. The briefing RPC has no timeseries, so this renders a
+ * typed mock, clearly flagged "Sample data" on screen, until the data is wired.
+ * TODO(TREND-WIRE): add an admin_get_signups_trend(days) RPC and replace MOCK_TREND.
+ */
+const MOCK_TREND: { date: string; Signups: number }[] = [
+  { date: 'Jun 15', Signups: 4 },
+  { date: 'Jun 16', Signups: 6 },
+  { date: 'Jun 17', Signups: 5 },
+  { date: 'Jun 18', Signups: 9 },
+  { date: 'Jun 19', Signups: 7 },
+  { date: 'Jun 20', Signups: 11 },
+  { date: 'Jun 21', Signups: 8 },
+  { date: 'Jun 22', Signups: 13 },
+  { date: 'Jun 23', Signups: 10 },
+  { date: 'Jun 24', Signups: 15 },
+  { date: 'Jun 25', Signups: 12 },
+  { date: 'Jun 26', Signups: 18 },
+  { date: 'Jun 27', Signups: 14 },
+  { date: 'Jun 28', Signups: 19 },
+]
+
+/**
+ * ResendIndicator — Resend delivery-rate stat from admin_metrics_cache.
+ * Branches: unavailable → honest copy; stale/fresh → rate + last-checked.
+ * Tag variant: >=95% green, 80-94% warn, <80% red.
  */
 function ResendIndicator({ resend }: { resend: DailyBriefingPayload['resend_stats'] }) {
   if ('unavailable' in resend) {
     return (
-      <div className="text-[13px]" style={{ color: 'var(--color-text-subtle)' }}>
-        Delivery data unavailable. Check Resend dashboard.
-      </div>
+      <div className="text-text-subtle text-[13px]">Delivery data unavailable. Check Resend dashboard.</div>
     )
   }
   const rate = resend.value?.rate ?? 0
@@ -65,36 +172,20 @@ function ResendIndicator({ resend }: { resend: DailyBriefingPayload['resend_stat
     <div className="space-y-1">
       <div className="flex items-baseline gap-2">
         <span
-          className="text-[24px] font-semibold"
-          style={{ color: 'var(--color-text)', fontVariantNumeric: 'tabular-nums' }}
+          className="text-text text-[24px] font-semibold"
+          style={{ fontVariantNumeric: 'tabular-nums' }}
         >
           {ratePct}%
         </span>
         <Tag variant={variant}>{`${ratePct}% delivery rate`}</Tag>
       </div>
-      <div className="text-[13px]" style={{ color: 'var(--color-text-subtle)' }}>
+      <div className="text-text-subtle text-[13px]">
         {isStale ? 'Stale · ' : ''}Last checked {new Date(resend.cached_at).toLocaleString()}
       </div>
     </div>
   )
 }
 
-/**
- * DailyBriefing — `/admin` landing page.
- *
- * Layout (UI-SPEC §"Daily briefing card layout"):
- *   1. <StatsStrip> — yesterday's signups / jobs posted / applications / placements acknowledged
- *   2. Two-column md:grid:
- *        Left  — System Alerts card (webhook failures table, max 5 rows on briefing)
- *        Right — Email Delivery card (ResendIndicator) + Revenue card stacked
- *   3. Single-column on mobile (<768px)
- *
- * Data sources (RPCs from migration 023):
- *   - admin_get_daily_briefing  → counts + revenue + Resend cache snapshot
- *   - admin_get_system_alerts   → webhook_failures + cron_health
- *
- * On error, surfaces a sonner toast + inline error copy per UI-SPEC error-state contract.
- */
 export function DailyBriefing() {
   const [briefing, setBriefing] = useState<DailyBriefingPayload | null>(null)
   const [alerts, setAlerts] = useState<SystemAlertsPayload | null>(null)
@@ -125,50 +216,68 @@ export function DailyBriefing() {
   return (
     <div className="space-y-6">
       <h1
-        className="text-[20px] leading-7 font-semibold"
-        style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
+        className="text-text text-[20px] leading-7 font-semibold"
+        style={{ letterSpacing: '-0.01em' }}
       >
         Daily Briefing
       </h1>
 
-      {loading && (
-        <div className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-          Loading…
-        </div>
-      )}
+      {loading && <div className="text-text-muted text-sm">Loading…</div>}
 
       {errored && (
-        <div className="text-sm" style={{ color: 'var(--color-danger)' }}>
+        <div className="text-danger text-sm">
           Failed to load daily briefing. Refresh the page or check your connection.
         </div>
       )}
 
       {!loading && !errored && briefing && (
         <>
-          <StatsStrip
-            stats={[
-              { label: 'Signups yesterday', value: briefing.signups_yesterday },
-              { label: 'Jobs posted yesterday', value: briefing.jobs_posted_yesterday },
-              { label: 'Applications yesterday', value: briefing.applications_yesterday },
-              {
-                label: 'Placements acknowledged yesterday',
-                value: briefing.placements_acked_yesterday,
-              },
-            ]}
-          />
+          {/* Four KPI cards — big tabular number + delta pill (delta stubbed). */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <KpiCard label="Signups yesterday" value={briefing.signups_yesterday} delta={null} />
+            <KpiCard
+              label="Jobs posted yesterday"
+              value={briefing.jobs_posted_yesterday}
+              delta={null}
+            />
+            <KpiCard
+              label="Applications yesterday"
+              value={briefing.applications_yesterday}
+              delta={null}
+            />
+            <KpiCard
+              label="Placements acknowledged yesterday"
+              value={briefing.placements_acked_yesterday}
+              delta={null}
+            />
+          </div>
+
+          {/* Signups trend — token-green AreaChart (mock data, flagged on screen). */}
+          <Card>
+            <CardHeading
+              eyebrow="Growth"
+              title="Signups, last 14 days"
+              right={<Tag variant="warn">Sample data</Tag>}
+            />
+            <AreaChart
+              className="mt-4 h-56"
+              data={MOCK_TREND}
+              index="date"
+              categories={['Signups']}
+              colors={['brand']}
+              showLegend={false}
+              startEndOnly
+              fill="gradient"
+            />
+          </Card>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            {/* Left column — System Alerts */}
+            {/* System Alerts */}
             <Card>
-              <div className="space-y-3">
-                <h2
-                  className="text-xs font-semibold tracking-wider uppercase"
-                  style={{ color: 'var(--color-text-subtle)', letterSpacing: '0.04em' }}
-                >
-                  System Alerts
-                </h2>
+              <CardHeading eyebrow="Monitoring" title="System Alerts" />
+              <div className="mt-4">
                 {alerts && alerts.webhook_failures.length === 0 ? (
-                  <div className="text-[13px]" style={{ color: 'var(--color-text-subtle)' }}>
+                  <div className="text-text-subtle text-[13px]">
                     No system alerts in the last 24 hours
                   </div>
                 ) : (
@@ -177,40 +286,27 @@ export function DailyBriefing() {
                     style={{ fontVariantNumeric: 'tabular-nums' }}
                   >
                     <thead>
-                      <tr style={{ borderBottom: '1px solid var(--color-border)' }}>
-                        <th
-                          className="py-2 text-left text-xs font-semibold uppercase"
-                          style={{ color: 'var(--color-text-subtle)' }}
-                        >
-                          Endpoint
-                        </th>
-                        <th
-                          className="py-2 text-left text-xs font-semibold uppercase"
-                          style={{ color: 'var(--color-text-subtle)' }}
-                        >
-                          Status
-                        </th>
-                        <th
-                          className="py-2 text-left text-xs font-semibold uppercase"
-                          style={{ color: 'var(--color-text-subtle)' }}
-                        >
-                          When
-                        </th>
+                      <tr className="border-border border-b">
+                        {['Endpoint', 'Status', 'When'].map((h) => (
+                          <th
+                            key={h}
+                            className="text-text-subtle px-2 py-2 text-left text-xs font-semibold uppercase first:pl-0"
+                          >
+                            {h}
+                          </th>
+                        ))}
                       </tr>
                     </thead>
                     <tbody>
                       {alerts?.webhook_failures.slice(0, 5).map((f) => (
-                        <tr key={f.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                          <td
-                            className="max-w-[220px] truncate py-2"
-                            style={{ color: 'var(--color-text)' }}
-                          >
+                        <tr key={f.id} className="border-border border-b last:border-0">
+                          <td className="text-text max-w-[220px] truncate px-2 py-2 pl-0">
                             {f.error_body?.slice(0, 60) ?? '—'}
                           </td>
-                          <td className="py-2">
+                          <td className="px-2 py-2">
                             <Tag variant="red">{String(f.status_code ?? 'failed')}</Tag>
                           </td>
-                          <td className="py-2" style={{ color: 'var(--color-text-muted)' }}>
+                          <td className="text-text-muted px-2 py-2">
                             {new Date(f.created).toLocaleString()}
                           </td>
                         </tr>
@@ -221,53 +317,31 @@ export function DailyBriefing() {
               </div>
             </Card>
 
-            {/* Right column — Resend + Revenue stack */}
+            {/* Email Delivery + Revenue stacked */}
             <div className="space-y-6">
               <Card>
-                <div className="space-y-3">
-                  <h2
-                    className="text-xs font-semibold tracking-wider uppercase"
-                    style={{ color: 'var(--color-text-subtle)', letterSpacing: '0.04em' }}
-                  >
-                    Email Delivery
-                  </h2>
+                <CardHeading eyebrow="Deliverability" title="Email Delivery" />
+                <div className="mt-4">
                   <ResendIndicator resend={briefing.resend_stats} />
                 </div>
               </Card>
 
               <Card>
-                <div className="space-y-3">
-                  <h2
-                    className="text-xs font-semibold tracking-wider uppercase"
-                    style={{ color: 'var(--color-text-subtle)', letterSpacing: '0.04em' }}
-                  >
-                    Revenue
-                  </h2>
-                  <div
-                    className="grid grid-cols-2 gap-4"
-                    style={{ fontVariantNumeric: 'tabular-nums' }}
-                  >
-                    <div>
-                      <div className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
-                        Acknowledged this month
-                      </div>
-                      <div
-                        className="text-[24px] font-semibold"
-                        style={{ color: 'var(--color-text)' }}
-                      >
-                        {briefing.revenue_snapshot.placements_acked_this_month}
-                      </div>
+                <CardHeading eyebrow="Revenue" title="Placements this month" />
+                <div
+                  className="mt-4 grid grid-cols-2 gap-4"
+                  style={{ fontVariantNumeric: 'tabular-nums' }}
+                >
+                  <div>
+                    <div className="text-text-muted text-[13px]">Acknowledged</div>
+                    <div className="text-text text-[24px] font-semibold">
+                      {briefing.revenue_snapshot.placements_acked_this_month}
                     </div>
-                    <div>
-                      <div className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
-                        Invoiced this month
-                      </div>
-                      <div
-                        className="text-[24px] font-semibold"
-                        style={{ color: 'var(--color-text)' }}
-                      >
-                        {briefing.revenue_snapshot.placements_confirmed_this_month}
-                      </div>
+                  </div>
+                  <div>
+                    <div className="text-text-muted text-[13px]">Invoiced</div>
+                    <div className="text-text text-[24px] font-semibold">
+                      {briefing.revenue_snapshot.placements_confirmed_this_month}
                     </div>
                   </div>
                 </div>
