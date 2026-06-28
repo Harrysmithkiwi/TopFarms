@@ -107,7 +107,40 @@ export function matchSnippet(
   if (!hay || needle.length < 2) return null
   const idx = hay.toLowerCase().indexOf(needle.toLowerCase())
   if (idx < 0) return null
-  const start = Math.max(0, idx - radius)
-  const end = Math.min(hay.length, idx + needle.length + radius)
+  const matchEnd = idx + needle.length
+  let start = Math.max(0, idx - radius)
+  let end = Math.min(hay.length, matchEnd + radius)
+  // Snap to whole-word boundaries so the window never cuts mid-word
+  // ("…farm locate…"). Move start right to a word start, end left to a word end,
+  // never crossing into the matched term itself.
+  if (start > 0) while (start < idx && hay[start - 1] !== ' ') start++
+  if (end < hay.length) while (end > matchEnd && hay[end] !== ' ') end--
   return (start > 0 ? '…' : '') + hay.slice(start, end).trim() + (end < hay.length ? '…' : '')
+}
+
+/**
+ * Split `text` into segments around (case-insensitive) occurrences of `term`,
+ * flagging the matches so a caller can bold them. Pure + testable; the snippet
+ * consumer renders match segments in <strong>. Returns a single non-match
+ * segment when the term is empty/absent.
+ */
+export function highlightParts(
+  text: string,
+  term: string,
+): { text: string; match: boolean }[] {
+  const needle = term.trim()
+  if (!text || needle.length < 2) return [{ text, match: false }]
+  const parts: { text: string; match: boolean }[] = []
+  const lowerHay = text.toLowerCase()
+  const lowerNeedle = needle.toLowerCase()
+  let from = 0
+  for (;;) {
+    const hit = lowerHay.indexOf(lowerNeedle, from)
+    if (hit < 0) break
+    if (hit > from) parts.push({ text: text.slice(from, hit), match: false })
+    parts.push({ text: text.slice(hit, hit + needle.length), match: true })
+    from = hit + needle.length
+  }
+  if (from < text.length) parts.push({ text: text.slice(from), match: false })
+  return parts
 }

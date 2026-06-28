@@ -8,6 +8,7 @@ import {
   leadLocality,
   regionLocalityLabel,
   matchSnippet,
+  highlightParts,
   sourceLabel,
 } from '@/lib/leadDisplay'
 
@@ -77,6 +78,40 @@ describe('matchSnippet (P-10)', () => {
   it('returns null for trivial term or empty text', () => {
     expect(matchSnippet('anything', 'a')).toBeNull()
     expect(matchSnippet(null, 'tirohanga')).toBeNull()
+  })
+  it('T-4: snaps to whole-word boundaries — never cuts mid-word', () => {
+    const text = 'We need an experienced sharemilker for a 450-cow farm located near Rotherham this season'
+    const snip = matchSnippet(text, 'farm', 12)!
+    // The matched term survives intact, and no partial word sits against an ellipsis.
+    expect(snip).toContain('farm')
+    // every token in the window is a whole word from the source text — the
+    // robust guarantee that nothing was cut mid-word.
+    const sourceTokens = text.toLowerCase().split(/\s+/)
+    for (const piece of snip.replace(/…/g, ' ').trim().split(/\s+/)) {
+      expect(sourceTokens).toContain(piece.toLowerCase().replace(/[.,]/g, ''))
+    }
+  })
+  it('T-4: keeps the matched term whole even when the radius lands inside it', () => {
+    const snip = matchSnippet('alpha sharemilker omega', 'sharemilker', 2)!
+    expect(snip).toContain('sharemilker')
+  })
+})
+
+describe('highlightParts (T-4 bold)', () => {
+  it('splits around a case-insensitive match and flags it', () => {
+    expect(highlightParts('a Farm here', 'farm')).toEqual([
+      { text: 'a ', match: false },
+      { text: 'Farm', match: true },
+      { text: ' here', match: false },
+    ])
+  })
+  it('flags every occurrence', () => {
+    const parts = highlightParts('farm farm', 'farm')
+    expect(parts.filter((p) => p.match)).toHaveLength(2)
+  })
+  it('returns one inert segment when the term is absent or trivial', () => {
+    expect(highlightParts('no match here', 'xyz')).toEqual([{ text: 'no match here', match: false }])
+    expect(highlightParts('a', 'a')).toEqual([{ text: 'a', match: false }])
   })
 })
 
