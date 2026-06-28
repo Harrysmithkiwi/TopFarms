@@ -26,6 +26,12 @@
   --color-brand-900: #0f3d22;
   --color-brand-50: #e8f5ec;
 
+  /* Brand ramp completion — additive shades for multi-series charts (Phase 0).
+     One-Green: greens carry the primary series. brand-700 references
+     --color-brand-hover (single source of truth — no duplicate literal). */
+  --color-brand-300: #5ece8e; /* light green — derived from brand hue (142deg) */
+  --color-brand-700: var(--color-brand-hover); /* deep green — tracks the hover green */
+
   /* Semantic */
   --color-success: #16a34a;
   --color-success-bg: #e8f5ec;
@@ -38,6 +44,17 @@
   --color-info-bg: #e0f2fe;
   --color-ai: #8b5cf6;
   --color-ai-bg: #f5f3ff;
+
+  /* Card elevation — soft, low, tinted-neutral (brand ink at low alpha, no gloss).
+     Pairs with the existing 1px --color-border; not a heavy drop shadow. */
+  --shadow-card: 0 1px 2px 0 rgb(11 31 16 / 0.04), 0 1px 2px -1px rgb(11 31 16 / 0.05);
+
+  /* Radius tokens — additive, numeric-keyed to avoid clobbering Tailwind's default
+     rounded-sm/md/lg. Existing rounded-[8px]/[12px]/[16px] literals keep working;
+     new components use rounded-8 / rounded-12 / rounded-16. */
+  --radius-8: 8px;
+  --radius-12: 12px;
+  --radius-16: 16px;
 
   /* === v1 legacy aliases REMOVED in Phase 6 (2026-05-04) ===
      All consumers migrated to canonical v2 token names across Phases 1-5 + 19b.
