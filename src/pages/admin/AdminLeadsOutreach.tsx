@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { MapPin, ExternalLink, AlertTriangle } from 'lucide-react'
 import { AdminTable } from '@/components/admin/AdminTable'
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
 import { DrawerShell, DrawerSection } from '@/components/admin/DrawerShell'
 import { LeadContactCard, type LeadContact } from '@/components/admin/LeadContact'
 import { Button } from '@/components/ui/Button'
@@ -48,8 +49,13 @@ interface OutreachRow extends Record<string, unknown> {
   responded_at: string | null
 }
 
-const STATUS_TAG: Record<OutreachRow['outreach_status'], { label: string; variant: 'grey' | 'blue' | 'green' }> = {
-  drafted: { label: 'Drafted', variant: 'grey' },
+const STATUS_TAG: Record<
+  OutreachRow['outreach_status'],
+  { label: string; variant: 'purple' | 'blue' | 'green' }
+> = {
+  // drafted = an AI-drafted reply awaiting your review → the AI/purple token
+  // (real badge, was a flat grey pill). Progresses blue (in flight) → green (replied).
+  drafted: { label: 'Drafted', variant: 'purple' },
   approved: { label: 'Approved', variant: 'blue' },
   sent: { label: 'Sent', variant: 'blue' },
   responded: { label: 'Responded', variant: 'green' },
@@ -277,26 +283,20 @@ export function AdminLeadsOutreach() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1
-          className="text-[20px] leading-7 font-semibold"
-          style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
-        >
-          Lane B Outreach
-        </h1>
-        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-          FB posts with no contact — reach out from your own account. Edit the drafted reply,
-          approve, copy it, send it manually on Facebook, then mark it sent.
-        </p>
-      </div>
+      <AdminPageHeader
+        eyebrow="Leads"
+        title="Outreach"
+        description="FB posts with no listed contact — reach out from your own account. Edit the drafted reply, approve, copy it, send it manually on Facebook, then mark it sent."
+      />
 
       <AdminTable<OutreachRow>
         key={refreshKey}
         rpc="admin_outreach_list"
+        inCard
         searchable
         searchPlaceholder="Search by name or region…"
         emptyHeading="No outreach in flight"
-        emptyBody="Paste a Lane B (no-contact) FB post in Lead Staging — it lands here with a drafted reply."
+        emptyBody="Paste a no-contact FB post in Lead Staging — it lands here with a drafted reply."
         errorCopy="Failed to load outreach. Refresh the page."
         onRowClick={(row) => setSelected(row)}
         columns={[
@@ -305,14 +305,11 @@ export function AdminLeadsOutreach() {
           { key: 'outreach_status', label: 'Status' },
           { key: 'created_at', label: 'Captured' },
         ]}
-        renderRow={(row, onClick) => {
+        renderRow={(row) => {
           const tag = STATUS_TAG[row.outreach_status]
+          // Return cells only — AdminTable provides the <tr> (hover/click/height).
           return (
-            <tr
-              key={row.id}
-              onClick={onClick}
-              className="border-border hover:bg-surface-hover h-[52px] cursor-pointer border-t transition-colors"
-            >
+            <>
               <td className="px-4 font-medium">
                 <div className="max-w-[240px] truncate" title={row.structured.display_name ?? ''}>
                   {formatLeadName(row.structured.display_name)}
@@ -325,7 +322,7 @@ export function AdminLeadsOutreach() {
               <td className="px-4 text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
                 {new Date(row.created_at).toLocaleDateString('en-NZ')}
               </td>
-            </tr>
+            </>
           )
         }}
       />
