@@ -78,7 +78,12 @@ function DraftPanel({ row, onDone }: { row: OutreachRow; onDone: () => void }) {
   const [busy, setBusy] = useState(false)
   const status = row.outreach_status
 
-  async function call(fn: () => Promise<{ error: { message: string } | null }>, ok: string) {
+  // PromiseLike (not Promise): supabase's query builder is a thenable, not a full
+  // Promise — it lacks .catch/.finally. Typing the param as PromiseLike accepts the
+  // builder directly (and real Promises), so the admin_outreach_* RPC calls below
+  // need no cast. (These RPCs live in migration 047, Studio-applied, so they're not
+  // in supabase-js's generated function union — but awaiting them is well-typed.)
+  async function call(fn: () => PromiseLike<{ error: { message: string } | null }>, ok: string) {
     setBusy(true)
     const { error } = await fn()
     setBusy(false)
