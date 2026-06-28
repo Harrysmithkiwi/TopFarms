@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v2.2
 milestone_name: Lead Acquisition & Admin Ops
-status: phase-28-scoped-shipped-28b-filed
-stopped_at: "Phase 28 (scoped: Lead Staging + Outreach) SHIPPED 2026-06-28 — PR #7 merged to main (13465c6); Vercel auto-deploys prod; lead-intake Edge Fn deployed via CI (P-8 locality + P-5 prompt, applies to NEW leads). Operator visual-verified on preview. Landed P-4(scoped)/P-5/P-8/P-10. Deferred (untouched): P-9 admin-login toggle, Daily Briefing pass, Leads pipeline page. NEXT INCREMENT filed: Phase 28b triage-power round (T-1..T-5) in .planning/leads-triage/PUNCHLIST.md — NOT yet scoped/actioned. Operator to verify prod."
-last_updated: "2026-06-28T02:00:00.000Z"
+status: admin-tremor-uplift-shipped
+stopped_at: "ADMIN UI UPLIFT (Tremor Raw) SHIPPED COMPLETE 2026-06-28 — operator-directed, off the GSD roadmap (like leads-triage). Phase 0 (PR #11) = Tremor foundation: owned copy-paste source in src/components/tremor/ (Card/AreaChart/BarChart) reading @theme; additive tokens in src/index.css (--color-brand-300, --color-brand-700=var(hover), --shadow-card, --radius-8/12/16); chartColors rewired to brand ramp; rebuilt Daily Briefing reference screen. Phase 1 = every admin screen on the pattern (AdminPageHeader + inCard AdminTable): Lead Staging #12 (blessed template), Outreach #13 (+lead-table column-align fix), Analytics #14 (+BarChart), Employers/Seekers/Documents #15, Placement Pipeline #16 (+dropped dead L-1 Hired column). All merged to main (HEAD dd34f9e), tsc -b + vitest 432 green, live on prod. STANDING RULE: tsc -b is THE typecheck gate, never tsc --noEmit (memory: feedback_tsc_b_gate). DEFERRED (honest, not faked, small data-wiring round): KPI delta pills (TODO(DELTA-WIRE), needs prior-day counts in admin_get_daily_briefing), Daily Briefing trend AreaChart (TODO(TREND-WIRE), 'Sample data', needs a signups-timeseries RPC), Placement Pipeline KPI cards (needs an aggregate placements RPC). Phase 28b triage round (T-1/2/4/5) + V-1/V-2/L-1-superseded still filed in .planning/leads-triage/PUNCHLIST.md."
+last_updated: "2026-06-28T03:00:00.000Z"
 progress:
   total_phases: 19
   completed_phases: 12
