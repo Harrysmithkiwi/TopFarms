@@ -1,10 +1,10 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.0
-milestone_name: Launch Readiness
-status: phase-23-complete-off-roadmap-work-active
-stopped_at: Phase 23 closed + verified (2026-05-30). Since then, off-roadmap work on branch chore/video-assets — video/poster creative track + in-flight leads-admin track.
-last_updated: "2026-06-26T00:00:00.000Z"
+milestone: v2.2
+milestone_name: Lead Acquisition & Admin Ops
+status: phase-28-gate1-passed-ready-to-build
+stopped_at: "Phase 28 GATE 1 PASSED 2026-06-28. Direction approved (ProfileDrawer detail; capture demoted to one prominent button; scope = Lead Staging + Outreach only this run; P-9 + Daily Briefing + Leads deferred). Build NOT started — begin in a FRESH session: branch off main, read .planning/phases/28-admin-ui-ux-rework/28-CONTEXT.md (GATE 1 decisions) + 28-AUDIT.md, then build autonomously to GATE 2. Lands P-4(scoped)/P-5/P-8/P-10."
+last_updated: "2026-06-28T00:00:00.000Z"
 progress:
   total_phases: 19
   completed_phases: 12
@@ -23,10 +23,10 @@ See: .planning/PROJECT.md (updated 2026-04-03)
 
 ## Current Position
 
-Phase: v2.1 Phase 23 — Skills Taxonomy Consolidation + Admin Analytics. CLOSED + verified 2026-05-30 (ROADMAP [x], 8/8 requirements, commit beb2425). Phases 24-26 remain sales-gated.
-Plan: All 3 plans done + verified.
-Status: v2.1 in-scope work complete. Current activity is OFF-ROADMAP (not in .planning/phases) on branch chore/video-assets — see Session Continuity.
-Progress: [██████████] 1/1 v2.1 in-scope phases complete (24-26 gated)
+Phase: v2.2 Phase 28 — Admin Dashboard UI/UX Rework. IN PROGRESS, at GATE 1 (taste). Design audit done (.planning/phases/28-admin-ui-ux-rework/28-AUDIT.md); awaiting operator approval of audit + direction before redesign code.
+Milestone: v2.2 Lead Acquisition & Admin Ops (new 2026-06-28). Phase 27 (Lead Triage & Lane-B Outreach) recorded ✅ shipped retroactively; detail in .planning/leads-triage/.
+Prior: v2.1 Phase 23 closed+verified 2026-05-30; Phases 24-26 sales-gated; v2.0 close pending PEND-01.
+Run model: autonomous with two gates — GATE 1 (taste, after audit, NOW) + GATE 2 (safety: DB migration/merge/prod deploy, operator-actioned).
 
 ### v2.0 close-out summary (Phase 22 complete 2026-05-26)
 All 5 P0s closed: SIGNUP-01 (a6cc3f5) + HOMEBUG-02 (73ed245) + HOMEBUG-03 (9673eb1) + HOMEBUG-01 (fb60aa2) + UXBUG-01 (498d7fb); plan 22-05 MAIL docs audit (055507e); Phase 22 verified + complete (dae8b1d). v2.1 bridge artifacts: codebase map (1ac5b04) + HTML repo overview (f4ff942). §6 pooler auth deferred/blocked on Supabase support (a9645ee + memory). v2.0 milestone close gated only on PEND-01 (Stripe live-mode swap, 9-item checklist in DECISIONS-PENDING.md, separate operator session).

@@ -49,7 +49,7 @@ Full details: `.planning/milestones/v1.1-ROADMAP.md`
 - [x] **Phase 21: v2.0 Close + Post-Launch Ops** — completed 2026-05-18 (all 10 plans shipped: Track A v2.0 closeout operator UAT + Track B post-launch ops features). Track B: `is_active` login-blocking gate (suspended users see `/suspended` page instead of broken dashboard; re-activation via admin ProfileDrawer toggle) + doc verification queue at `/admin/documents` (admin reviews seeker docs with Approve/Reject-with-reason/Request-More-Info actions; Documents Verified badge visible to employers on applicant cards after approval). Track A: 5/5 visual smoke tests PASS (closes 4 Phase 18.2 + 1 Phase 20.1 human-verification gates) + 5/5 Track B UATs PASS + 2 Edge Functions deployed with HTTP/2 200 smokes. Plan 21-09 Task 2 (PEND-01 Stripe live-mode swap) DEFERRED to separate session per operator decision 2026-05-18; Task 6 (`/gsd:complete-milestone v2.0`) BLOCKED on PEND-01 closure — see `.planning/phases/21-v20-close-post-launch-ops/21-VERIFICATION.md` Verdict for full disposition.
 - [x] **Phase 22: Pre-Launch P0 Closure** — 5 P0 launch blockers (SIGNUP-01 toast, HOMEBUG-02 listing query, HOMEBUG-03 accommodation filter, HOMEBUG-01 stats prod confirm, UXBUG-01 chips prod confirm) + MAIL-01/02 docs audit (completed 2026-05-26; see `.planning/phases/22-pre-launch-p0-closure/`)
 
-### v2.1 Match + Train + Retain (Current Milestone)
+### v2.1 Match + Train + Retain (Phase 23 complete; 24-26 gated)
 
 **Milestone Goal:** Begin delivering the train + retain brand pillars by cleaning up the skills taxonomy for agriculture-broad matching and standing up admin analytics. Phase 23 is in active scope now; Phases 24-26 are gated behind real ag-employer liquidity.
 
@@ -61,6 +61,15 @@ Full scope + gate criteria: `.planning/v2.1-MILESTONE-SCOPING.md`
 - ⛔ **Phase 24: Skills-Gap Analysis** — GATED — behind real ag-employer liquidity (see scoping doc)
 - ⛔ **Phase 25: Training Directory + Funding Navigation** — GATED — behind real ag-employer liquidity (see scoping doc)
 - ⛔ **Phase 26: Credential / Expiry Tracking** — GATED — behind real ag-employer liquidity (see scoping doc)
+
+### v2.2 Lead Acquisition & Admin Ops (Current Milestone)
+
+**Milestone Goal:** Founder-GTM + admin tooling for going to market — capture employer leads from Facebook + job boards, triage them (Lane A contactable / Lane B manual-outreach), and run them through a polished admin console. A distinct track from the v2.1 seeker-facing skills work; folds the previously off-roadmap leads-triage spikes into tracked history.
+
+Shipped-triage detail: `.planning/leads-triage/` (PHASE-1-SPEC.md, PUNCHLIST.md).
+
+- [x] **Phase 27: Lead Triage & Lane-B Outreach** — Capture FB / job-board employer leads → human-approval staging → in-code Lane A/B split (contact present? = directly contactable vs manual FB outreach) → Lane B manual-send outreach queue with Claude-drafted replies (placeholder pending the operator reply-draft config); `lead-intake` FB extraction + region canonicalisation + CORS fix; migrations 041–048; `/admin/leads/{staging,outreach}` + Leads pipeline. Built off-roadmap, recorded retroactively (resolves the "Phase 1" name collision with v1.0 Foundation). (completed 2026-06-28 — detail in `.planning/leads-triage/`)
+- [ ] **Phase 28: Admin Dashboard UI/UX Rework** — Bring the admin surfaces (Daily Briefing, Lead Staging, Outreach, Leads, admin login) to a cohesive standard that conforms to the v2 design system; fix alignment / spacing / hierarchy / formatting; absorbs punch-list P-4 (rework), P-5 (display-name), P-8 (locality), P-9 (admin-login password show/hide), P-10 (matched-term on rows). Opens with a written design audit (GATE 1 taste approval) before any redesign code. P-11 (admin-door hardening) is future/optional, NOT in scope. Detail: `.planning/phases/28-admin-ui-ux-rework/`. (in progress 2026-06-28)
 
 
 ## Phase Details

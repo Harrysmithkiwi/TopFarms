@@ -3,6 +3,27 @@
 **Defined:** 2026-04-02
 **Core Value:** Farm employers and seekers can find each other through agriculture-specific matching that no generic platform provides
 
+## v2.2 Requirements (Lead Acquisition & Admin Ops)
+
+**Milestone started:** 2026-06-28 · **Detail:** `.planning/leads-triage/` + `.planning/phases/28-admin-ui-ux-rework/`
+
+Founder-GTM + admin tooling. Phase 27 folds the previously off-roadmap leads-triage work in as tracked history; Phase 28 is the admin UI/UX rework.
+
+### Lead Triage & Outreach (Phase 27 — shipped)
+
+- [x] **LEAD-01** *(closed 2026-06-28)*: Employer leads captured from Facebook (manual paste) and job boards (Firecrawl/Apify) land in a human-approval staging queue; nothing auto-inserts into the public `jobs` table. Gated SECURITY DEFINER RPCs + deny-by-default RLS (migrations 041–048).
+- [x] **LEAD-02** *(closed 2026-06-28)*: Each captured post is triaged into Lane A (contact present → directly contactable) or Lane B (no contact → manual FB outreach) by an in-code rule (email/phone present?) with a regex backstop — not LLM judgement.
+- [x] **LEAD-03** *(closed 2026-06-28)*: Lane B leads surface in an Outreach queue (`/admin/leads/outreach`) with a Claude-drafted reply the founder edits, approves, copies, and sends MANUALLY on Facebook (no automated posting); state machine drafted→approved→sent→responded.
+- [x] **LEAD-04** *(closed 2026-06-28)*: `lead-intake` Edge Function extracts FB fields (shed type, herd, application method, locality, source group) + canonicalises region, with CORS/OPTIONS so the admin paste UI can invoke it.
+- [ ] **LEAD-05** *(open)*: The Lane B reply-draft is generated from a swappable `lead_outreach_config` (do-not rules + voice + template + groups) set via `admin_outreach_set_config` — placeholder until the operator supplies the config; then the Claude draft assembly is wired.
+
+### Admin Dashboard UI/UX (Phase 28 — in progress)
+
+- [ ] **ADMINUX-01**: The admin surfaces (Daily Briefing, Lead Staging, Outreach, Leads, admin login) present a cohesive visual standard — consistent alignment, spacing (4-pt grid), type scale, section labels, radii, and card patterns — conforming to the v2 design system (`src/index.css` tokens + `Brand_and_Design.md`). No drift to generic SaaS.
+- [ ] **ADMINUX-02** *(P-5)*: Lead cards/rows show a clean business/farm name, not a raw listing headline.
+- [ ] **ADMINUX-03** *(P-8/P-10)*: The specific locality (e.g. "Tirohanga") is surfaced on cards and on search-result rows alongside region, including the term that matched a search.
+- [ ] **ADMINUX-04** *(P-9)*: The admin login password field has a show/hide (eye) toggle.
+
 ## v2.1 Requirements (Match + Train + Retain — ag-broad)
 
 **Milestone started:** 2026-05-29 · **Scope detail:** `.planning/v2.1-MILESTONE-SCOPING.md`
