@@ -44,3 +44,11 @@ pattern — mirror it).
 **Symptom:** searching "Tirohanga" returns the Halter Farm row, but the row shows only "Waikato"
 — the matched word (locality) isn't visible, so it's unclear why the row matched.
 **Fix (UI/UX pass):** surface the matched locality/term on the result row. Pairs with P-8.
+
+## P-11 — Harden the admin door (FUTURE / OPTIONAL — security, not on any current path)
+**Context:** current auth is two authentication doors (normal `/login` + dedicated `/admin`
+login) converging on one role-based authorization gate (`requiredRole="admin"` on every route +
+`_admin_gate()` on every RPC + RLS). Sound as-is — the role is the boundary, checked everywhere.
+**Optional enhancement (only if desired):** narrow admin *authentication* specifically — e.g.
+block admin accounts from signing in via the normal `/login` (force the `/admin` door), and/or
+add 2FA on the admin login. Deliberate hardening, NOT a bug fix. Do not action unless requested.
