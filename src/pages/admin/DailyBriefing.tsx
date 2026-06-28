@@ -109,14 +109,16 @@ function KpiCard({
   delta: number | null
 }) {
   return (
-    <Card>
+    // h-full + grid stretch = equal-height cards; mt-auto pins the number row to
+    // the bottom so numbers stay aligned even when a label wraps to two lines.
+    <Card className="flex h-full flex-col">
       <div
         className="text-text-subtle text-[11px] font-semibold uppercase"
         style={{ letterSpacing: '0.04em' }}
       >
         {label}
       </div>
-      <div className="mt-3 flex items-end justify-between gap-2">
+      <div className="mt-auto flex items-end justify-between gap-2 pt-3">
         <span
           className="text-text text-[28px] leading-none font-semibold"
           style={{ fontVariantNumeric: 'tabular-nums' }}

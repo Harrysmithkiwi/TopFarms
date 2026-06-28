@@ -114,7 +114,9 @@ export function AdminSidebar() {
               <NavLink
                 key={item.to}
                 to={item.to}
-                end={item.to === '/admin'}
+                // Exact match on every item: /admin/leads/outreach must NOT also
+                // light up the /admin/leads parent (both rendered active otherwise).
+                end
                 className={({ isActive }) =>
                   [
                     'flex items-center gap-3 rounded-8 px-3 py-2.5 text-sm transition-all',
