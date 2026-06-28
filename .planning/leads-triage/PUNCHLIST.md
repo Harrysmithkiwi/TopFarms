@@ -88,10 +88,11 @@ different workflows; own captures shouldn't be buried under harvested volume. Fi
 source/origin (the `source` field already distinguishes `fb_manual_capture` / `nzfarmingjobs` /
 harvested lanes — a filter toggle or grouped view).
 
-## T-3 — Region·Locality column too narrow
-**Symptom:** "Canterbury · Rotherham" wraps in the Region·Locality column.
-**Fix:** widen the column or restructure (e.g. region as primary, locality as a secondary line
-under it, mirroring the matched-snippet treatment).
+## T-3 — Region·Locality column too narrow ✅ DONE 2026-06-28 (PR #8)
+**Symptom:** "Canterbury · Rotherham" wrapped to 3 lines in the Region·Locality column.
+**Shipped:** Lead Staging table trimmed to 4 work-the-lead columns (Name · Contact ·
+Region·Locality · Source); Via/Confidence/Dedupe moved to the drawer; `whitespace-nowrap` on
+Region·Locality + Source. No wrap, no horizontal scroll. Operator-verified on preview.
 
 ## T-4 — Matched-snippet truncates mid-word
 **Symptom:** `matchSnippet` cuts mid-word ("…farm locate…").
@@ -103,3 +104,19 @@ helper + its tests.
 **Need:** as Lane B leads accumulate, the Outreach queue needs sort/grouping by `outreach_status`
 (drafted vs approved vs sent vs awaiting-response) so in-flight work is separable from done.
 Pairs with T-1 (same sortable-column mechanism, applied to `admin_outreach_list`).
+
+---
+
+# Latent bugs (filed, not actioned)
+
+## L-1 — Placements "Hired" column dead-state
+**Symptom:** on `/admin/placements` the **"Hired"** column renders a Tag keyed on `confirmed_at`
+(`confirmed_at ? "Hired" : "Pending"`), but `admin_list_placements` (migration 023) only returns
+rows where `acknowledged_at IS NOT NULL AND confirmed_at IS NULL`. So `confirmed_at` is always
+null in this list → the column can never render anything but "Pending"; the "Hired" branch is
+dead. (Also a label-truth nuance: `confirmed_at` means *fee invoiced*, not *hired* — the hire is
+implied at acknowledgement.) Found during the Phase-28 polish jargon pass; not on any current
+path.
+**Decide later (when actually working placements):** wire a confirmed/invoiced view (show
+acknowledged + invoiced rows and let this column distinguish them), OR relabel the column to
+match what it really tracks, OR drop it. Behaviour question, not jargon — deferred per operator.
