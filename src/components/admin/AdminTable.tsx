@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, type ReactNode } from 'react'
-import { Search } from 'lucide-react'
+import { Search, ArrowUp, ArrowDown, ChevronsUpDown } from 'lucide-react'
 import { Input } from '@/components/ui/Input'
 import { Pagination } from '@/components/ui/Pagination'
 import { Card } from '@/components/tremor/Card'
@@ -18,6 +18,8 @@ type AdminListRpc =
   | 'admin_leads_list'
   | 'admin_outreach_list'
 
+type SortDir = 'asc' | 'desc'
+
 interface AdminTableProps<TRow> {
   /** Name of the SECURITY DEFINER RPC to call (e.g., 'admin_list_employers'). */
   rpc: AdminListRpc
@@ -34,7 +36,18 @@ interface AdminTableProps<TRow> {
   /** Placeholder text for the search input. */
   searchPlaceholder?: string
   /** Column headers — array of {key, label} objects. */
-  columns: { key: string; label: string }[]
+  /**
+   * Column headers. A column with `sortKey` becomes a clickable, server-sorted
+   * header — `sortKey` is the allowlist token the RPC validates (e.g.
+   * 'captured'). Columns without `sortKey` are inert (the default), so screens
+   * that don't opt in are byte-identical to before.
+   */
+  columns: { key: string; label: string; sortKey?: string }[]
+  /**
+   * Initial server sort. Sets the RPC's p_sort/p_dir and the header indicator.
+   * Only meaningful alongside `sortKey` columns; omit for unsorted tables.
+   */
+  defaultSort?: { key: string; dir: SortDir }
   /**
    * Render a single row. Receives the row payload, click handler, and the
    * active (debounced) search term — so a row can surface WHY it matched when
@@ -74,6 +87,7 @@ export function AdminTable<TRow extends Record<string, unknown>>({
   paginated = true,
   searchPlaceholder = 'Search…',
   columns,
+  defaultSort,
   renderRow,
   onRowClick,
   emptyHeading,
@@ -84,6 +98,7 @@ export function AdminTable<TRow extends Record<string, unknown>>({
 }: AdminTableProps<TRow>) {
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
+  const [sort, setSort] = useState<{ key: string; dir: SortDir } | null>(defaultSort ?? null)
   const [page, setPage] = useState(1)
   const [rows, setRows] = useState<TRow[]>([])
   const [total, setTotal] = useState(0)
@@ -111,6 +126,13 @@ export function AdminTable<TRow extends Record<string, unknown>>({
         args.p_offset = offset
       }
       if (searchable) args.p_search = debouncedSearch || null
+      // Server-side sort: the RPC validates p_sort against its own allowlist, so
+      // an off-list value can't reach the ORDER BY. Only sent when a sort is set
+      // (sortable tables), keeping every other screen's RPC call unchanged.
+      if (sort) {
+        args.p_sort = sort.key
+        args.p_dir = sort.dir
+      }
       // Supabase generated types treat rpc names as a literal union; the admin_list_*
       // and admin_skill_coverage functions all return jsonb {rows, total}.
       // Type-asserting via `as never` keeps tsc happy without weakening the
@@ -128,13 +150,22 @@ export function AdminTable<TRow extends Record<string, unknown>>({
     } finally {
       setLoading(false)
     }
-  }, [rpc, debouncedSearch, offset, pageSize, searchable, paginated, errorCopy])
+  }, [rpc, debouncedSearch, sort, offset, pageSize, searchable, paginated, errorCopy])
 
   useEffect(() => {
     void load()
   }, [load])
 
   const totalPages = useMemo(() => Math.max(1, Math.ceil(total / pageSize)), [total, pageSize])
+
+  // Click a sortable header: flip direction if already active, else sort by it
+  // ascending. Either way jump back to page 1 so the new top-of-queue is shown.
+  const toggleSort = useCallback((key: string) => {
+    setSort((prev) =>
+      prev?.key === key ? { key, dir: prev.dir === 'asc' ? 'desc' : 'asc' } : { key, dir: 'asc' },
+    )
+    setPage(1)
+  }, [])
 
   const searchField = searchable ? (
     inCard ? (
@@ -167,15 +198,46 @@ export function AdminTable<TRow extends Record<string, unknown>>({
     <table className="w-full" style={{ fontVariantNumeric: 'tabular-nums' }}>
       <thead>
         <tr style={{ borderBottom: '1px solid var(--color-border)' }}>
-          {columns.map((c) => (
-            <th
-              key={c.key}
-              className="px-4 py-3 text-left text-xs font-semibold uppercase"
-              style={{ color: 'var(--color-text-subtle)', letterSpacing: '0.04em' }}
-            >
-              {c.label}
-            </th>
-          ))}
+          {columns.map((c) => {
+            const active = c.sortKey && sort?.key === c.sortKey
+            const ariaSort = !c.sortKey
+              ? undefined
+              : active
+                ? sort?.dir === 'asc'
+                  ? 'ascending'
+                  : 'descending'
+                : 'none'
+            return (
+              <th
+                key={c.key}
+                aria-sort={ariaSort}
+                className="px-4 py-3 text-left text-xs font-semibold uppercase"
+                style={{ color: 'var(--color-text-subtle)', letterSpacing: '0.04em' }}
+              >
+                {c.sortKey ? (
+                  <button
+                    type="button"
+                    onClick={() => toggleSort(c.sortKey!)}
+                    className="hover:text-text inline-flex items-center gap-1 uppercase transition-colors"
+                    style={{ color: active ? 'var(--color-text)' : 'inherit' }}
+                  >
+                    {c.label}
+                    {active ? (
+                      sort?.dir === 'asc' ? (
+                        <ArrowUp size={12} />
+                      ) : (
+                        <ArrowDown size={12} />
+                      )
+                    ) : (
+                      <ChevronsUpDown size={12} className="opacity-40" />
+                    )}
+                  </button>
+                ) : (
+                  c.label
+                )}
+              </th>
+            )
+          })}
         </tr>
       </thead>
       <tbody>
