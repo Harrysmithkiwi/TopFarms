@@ -219,9 +219,11 @@ export function AdminTable<TRow extends Record<string, unknown>>({
       </div>
     </div>
   ) : inCard ? (
-    // In a Card the Card is the surface — drop the table's own border; a top
-    // divider separates it from the search field above.
-    <div className="border-border overflow-x-auto border-t">{tableEl}</div>
+    // In a Card the Card is the surface (no table border). Inset the table (px-4)
+    // so its header + rows + hover highlight breathe off the card walls instead of
+    // running flush to them, roughly aligning the content with the search field's
+    // text (its pl-9 icon offset). pt-2 gives air below the search field.
+    <div className="overflow-x-auto px-4 pt-2">{tableEl}</div>
   ) : (
     <div
       className="overflow-x-auto rounded-lg border"
