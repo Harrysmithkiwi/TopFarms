@@ -72,12 +72,12 @@ export function PlacementPipeline() {
         rpc="admin_list_placements"
         searchable={false}
         emptyHeading="No placements yet"
-        emptyBody="Ack'd placements will appear here."
+        emptyBody="Acknowledged placements will appear here."
         errorCopy="Failed to load placements. Refresh the page or check your connection."
         columns={[
           { key: 'employer', label: 'Employer' },
-          { key: 'acked', label: "Ack'd" },
-          { key: 'days_since', label: 'Days since ack' },
+          { key: 'acked', label: 'Acknowledged' },
+          { key: 'days_since', label: 'Days since acknowledged' },
           { key: 'hired', label: 'Hired' },
           { key: 'invoice', label: 'Invoice' },
         ]}
