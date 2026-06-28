@@ -132,3 +132,11 @@ Operator read the live samples and is inclined to leave it — reads fine / auth
 **If wanted later:** one-line addition to the config `voice_guide` (e.g. "use macrons on Māori
 place names: Taupō, Whangārei, Ōtorohanga"). Not a code change — edit the doc, re-run the 049
 seed in Studio. Deferred per operator; not blocking LEAD-05.
+
+## V-2 — Don't reference a poster's private difficulties too directly (optional)
+**Context:** the first live Sonnet draft (Tirohanga, 2026-06-28) wrote "given the circumstances",
+referencing the poster's staffing situation. It reads slightly knowing/presumptuous on a public
+FB comment. The manual approve gate catches it per-post, so not urgent.
+**If wanted later:** one-line addition to the config `voice_guide` or hard rules (e.g. "Don't
+reference the poster's private difficulties or speculate about why they're hiring; stick to what
+the post plainly states"). Edit the doc + re-run the 049 seed in Studio. Deferred per operator.
