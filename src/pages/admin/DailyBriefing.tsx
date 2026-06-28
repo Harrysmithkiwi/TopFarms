@@ -83,7 +83,7 @@ function ResendIndicator({ resend }: { resend: DailyBriefingPayload['resend_stat
  * DailyBriefing — `/admin` landing page.
  *
  * Layout (UI-SPEC §"Daily briefing card layout"):
- *   1. <StatsStrip> — yesterday's signups / jobs posted / applications / placements acked
+ *   1. <StatsStrip> — yesterday's signups / jobs posted / applications / placements acknowledged
  *   2. Two-column md:grid:
  *        Left  — System Alerts card (webhook failures table, max 5 rows on briefing)
  *        Right — Email Delivery card (ResendIndicator) + Revenue card stacked
@@ -150,7 +150,10 @@ export function DailyBriefing() {
               { label: 'Signups yesterday', value: briefing.signups_yesterday },
               { label: 'Jobs posted yesterday', value: briefing.jobs_posted_yesterday },
               { label: 'Applications yesterday', value: briefing.applications_yesterday },
-              { label: "Placements ack'd yesterday", value: briefing.placements_acked_yesterday },
+              {
+                label: 'Placements acknowledged yesterday',
+                value: briefing.placements_acked_yesterday,
+              },
             ]}
           />
 
@@ -246,7 +249,7 @@ export function DailyBriefing() {
                   >
                     <div>
                       <div className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
-                        Acked this month
+                        Acknowledged this month
                       </div>
                       <div
                         className="text-[24px] font-semibold"
@@ -257,7 +260,7 @@ export function DailyBriefing() {
                     </div>
                     <div>
                       <div className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
-                        Confirmed this month
+                        Invoiced this month
                       </div>
                       <div
                         className="text-[24px] font-semibold"
