@@ -232,6 +232,18 @@ function ManualCapture({ onCaptured }: { onCaptured: () => void }) {
   )
 }
 
+/**
+ * Compact lane badge for the staging row (T-1). Mirrors the drawer's semantics:
+ * A = contactable (green), B = no contact → Outreach (blue). Unknown → muted dash.
+ * Full meaning sits in the title; the column stays narrow to honour T-3's no-wrap.
+ */
+function LaneTag({ lane }: { lane?: 'a' | 'b' }) {
+  if (lane === 'a') return <Tag variant="green" title="Lane A · contactable">A</Tag>
+  if (lane === 'b') return <Tag variant="blue" title="Lane B · no contact → Outreach">B</Tag>
+  // Unknown lane → blank, not a dash (a dash reads as a failed load).
+  return null
+}
+
 /** Detail rows: small uppercase label + value (replaces emoji-prefixed fields). */
 function DetailRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -460,14 +472,19 @@ export function AdminLeadsStaging() {
         emptyBody="Captured and collected leads appear here for your approval. Use Capture / Paste post to add some."
         errorCopy="Failed to load the staging queue. Refresh the page."
         onRowClick={(row) => setSelected(row)}
-        // 4 work-the-lead columns; Via / Confidence / Dedupe live in the drawer
-        // (T-equivalent triage signals — confidence is a triage-the-machine
-        // number, already in the drawer header). Suspect-duplicate stays
-        // glanceable via an inline Tag under the name (below).
+        // T-1: triage the queue at a glance. Lane (was drawer-only) + Captured +
+        // Confidence join the row, and the four triage dimensions are sortable
+        // server-side (the queue spans pages, so a client sort would only order
+        // the loaded slice). Added columns are narrow + nowrap to keep T-3's
+        // no-wrap promise. Dedupe stays a glanceable inline Tag under the name.
+        defaultSort={{ key: 'captured', dir: 'desc' }}
         columns={[
           { key: 'display_name', label: 'Name / business' },
+          { key: 'lane', label: 'Lane', sortKey: 'lane' },
           { key: 'contact', label: 'Contact' },
-          { key: 'region', label: 'Region · locality' },
+          { key: 'region', label: 'Region · locality', sortKey: 'region' },
+          { key: 'captured', label: 'Captured', sortKey: 'captured' },
+          { key: 'confidence', label: 'Confidence', sortKey: 'confidence' },
           { key: 'source', label: 'Source' },
         ]}
         renderRow={(row, _onClick, search) => {
@@ -504,10 +521,19 @@ export function AdminLeadsStaging() {
                 )}
               </td>
               <td className="px-4">
+                <LaneTag lane={row.structured.lane} />
+              </td>
+              <td className="px-4">
                 <ContactGlyphs contact={row.structured.contact} />
               </td>
               <td className="px-4 text-[13px] whitespace-nowrap">
                 {regionLocalityLabel(row.structured)}
+              </td>
+              <td className="px-4 text-[13px] whitespace-nowrap" style={{ color: 'var(--color-text-muted)' }}>
+                {new Date(row.created_at).toLocaleDateString('en-NZ', { day: '2-digit', month: 'short', year: 'numeric' })}
+              </td>
+              <td className="px-4 text-[13px] whitespace-nowrap" style={{ color: 'var(--color-text-muted)' }}>
+                {Math.round(row.confidence * 100)}%
               </td>
               <td className="px-4 text-[13px] whitespace-nowrap">{sourceLabel(row.source)}</td>
             </>

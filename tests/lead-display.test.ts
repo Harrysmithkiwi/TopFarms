@@ -59,8 +59,8 @@ describe('regionLocalityLabel (P-8)', () => {
   it('does not duplicate when region equals locality', () => {
     expect(regionLocalityLabel({ region: 'Waikato', locality: 'waikato' })).toBe('Waikato')
   })
-  it('falls back to em dash', () => {
-    expect(regionLocalityLabel({})).toBe('—')
+  it('falls back to blank when no region/locality (a dash reads as a failed load)', () => {
+    expect(regionLocalityLabel({})).toBe('')
   })
 })
 
