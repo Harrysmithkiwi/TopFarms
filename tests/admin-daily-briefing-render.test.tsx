@@ -47,6 +47,11 @@ describe('DailyBriefing render — honest unavailable copy (ADMIN-VIEW-RESEND, M
       data: { webhook_failures: [], cron_health: [] },
       error: null,
     })
+    // Third call: admin_get_signups_trend
+    rpcMock.mockResolvedValueOnce({
+      data: [{ date: '2026-06-28', signups: 3 }],
+      error: null,
+    })
 
     render(
       <>
