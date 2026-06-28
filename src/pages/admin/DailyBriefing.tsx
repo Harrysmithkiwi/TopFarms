@@ -142,27 +142,26 @@ function KpiCard({
   )
 }
 
-/**
- * 14-day signups trend. The briefing RPC has no timeseries, so this renders a
- * typed mock, clearly flagged "Sample data" on screen, until the data is wired.
- * TODO(TREND-WIRE): add an admin_get_signups_trend(days) RPC and replace MOCK_TREND.
- */
-const MOCK_TREND: { date: string; Signups: number }[] = [
-  { date: 'Jun 15', Signups: 4 },
-  { date: 'Jun 16', Signups: 6 },
-  { date: 'Jun 17', Signups: 5 },
-  { date: 'Jun 18', Signups: 9 },
-  { date: 'Jun 19', Signups: 7 },
-  { date: 'Jun 20', Signups: 11 },
-  { date: 'Jun 21', Signups: 8 },
-  { date: 'Jun 22', Signups: 13 },
-  { date: 'Jun 23', Signups: 10 },
-  { date: 'Jun 24', Signups: 15 },
-  { date: 'Jun 25', Signups: 12 },
-  { date: 'Jun 26', Signups: 18 },
-  { date: 'Jun 27', Signups: 14 },
-  { date: 'Jun 28', Signups: 19 },
-]
+const TREND_DAYS = 14
+
+/** One day in the signups timeseries from admin_get_signups_trend (ISO date + count). */
+interface SignupsTrendRow {
+  date: string // 'YYYY-MM-DD' (UTC calendar day)
+  signups: number
+}
+
+/** Map RPC rows to the AreaChart shape: short day label + capitalised category. */
+export function formatTrend(rows: SignupsTrendRow[]): { date: string; Signups: number }[] {
+  return rows.map((r) => ({
+    // append T00:00:00 so the ISO date parses as local midnight, not UTC —
+    // keeps the day label from drifting a day under NZ's UTC+12/13 offset.
+    date: new Date(r.date + 'T00:00:00').toLocaleDateString('en-NZ', {
+      day: '2-digit',
+      month: 'short',
+    }),
+    Signups: r.signups,
+  }))
+}
 
 /**
  * ResendIndicator — Resend delivery-rate stat from admin_metrics_cache.
@@ -200,6 +199,7 @@ function ResendIndicator({ resend }: { resend: DailyBriefingPayload['resend_stat
 export function DailyBriefing() {
   const [briefing, setBriefing] = useState<DailyBriefingPayload | null>(null)
   const [alerts, setAlerts] = useState<SystemAlertsPayload | null>(null)
+  const [trend, setTrend] = useState<SignupsTrendRow[]>([])
   const [loading, setLoading] = useState(true)
   const [errored, setErrored] = useState(false)
 
@@ -209,12 +209,15 @@ export function DailyBriefing() {
     void Promise.all([
       supabase.rpc('admin_get_daily_briefing' as never),
       supabase.rpc('admin_get_system_alerts' as never),
+      supabase.rpc('admin_get_signups_trend' as never, { p_days: TREND_DAYS } as never),
     ])
-      .then(([briefingRes, alertsRes]) => {
+      .then(([briefingRes, alertsRes, trendRes]) => {
         if (briefingRes.error) throw briefingRes.error
         if (alertsRes.error) throw alertsRes.error
+        if (trendRes.error) throw trendRes.error
         setBriefing(briefingRes.data as DailyBriefingPayload)
         setAlerts(alertsRes.data as SystemAlertsPayload)
+        setTrend(trendRes.data as SignupsTrendRow[])
       })
       .catch((e) => {
         console.error('DailyBriefing load failed', e)
@@ -267,16 +270,12 @@ export function DailyBriefing() {
             />
           </div>
 
-          {/* Signups trend — token-green AreaChart (mock data, flagged on screen). */}
+          {/* Signups trend — token-green AreaChart on live daily signups. */}
           <Card>
-            <CardHeading
-              eyebrow="Growth"
-              title="Signups, last 14 days"
-              right={<Tag variant="warn">Sample data</Tag>}
-            />
+            <CardHeading eyebrow="Growth" title={`Signups, last ${TREND_DAYS} days`} />
             <AreaChart
               className="mt-4 h-56"
-              data={MOCK_TREND}
+              data={formatTrend(trend)}
               index="date"
               categories={['Signups']}
               colors={['brand']}
