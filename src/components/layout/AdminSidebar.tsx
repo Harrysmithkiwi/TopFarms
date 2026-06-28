@@ -22,18 +22,43 @@ interface NavItem {
   icon: React.ComponentType<{ size?: number; className?: string }>
 }
 
-const adminItems: NavItem[] = [
-  { to: '/admin', label: 'Daily Briefing', icon: LayoutDashboard },
-  { to: '/admin/employers', label: 'Employers', icon: Building2 },
-  { to: '/admin/seekers', label: 'Seekers', icon: Users },
-  { to: '/admin/documents', label: 'Documents', icon: FileText },
-  { to: '/admin/jobs', label: 'Jobs', icon: Briefcase },
-  { to: '/admin/placements', label: 'Placement Pipeline', icon: DollarSign },
-  { to: '/admin/skills', label: 'Skills', icon: BarChart2 },
-  { to: '/admin/analytics', label: 'Analytics', icon: TrendingUp },
-  { to: '/admin/leads/staging', label: 'Lead Staging', icon: Inbox },
-  { to: '/admin/leads/outreach', label: 'Outreach', icon: Send },
-  { to: '/admin/leads', label: 'Leads', icon: Target },
+interface NavGroup {
+  label: string | null
+  items: NavItem[]
+}
+
+const navGroups: NavGroup[] = [
+  {
+    label: null, // Overview — no eyebrow, sits directly under "Admin"
+    items: [
+      { to: '/admin', label: 'Daily Briefing', icon: LayoutDashboard },
+      { to: '/admin/analytics', label: 'Analytics', icon: TrendingUp },
+      { to: '/admin/skills', label: 'Skills', icon: BarChart2 },
+    ],
+  },
+  {
+    label: 'People',
+    items: [
+      { to: '/admin/employers', label: 'Employers', icon: Building2 },
+      { to: '/admin/seekers', label: 'Seekers', icon: Users },
+      { to: '/admin/documents', label: 'Documents', icon: FileText },
+    ],
+  },
+  {
+    label: 'Jobs & Revenue',
+    items: [
+      { to: '/admin/jobs', label: 'Jobs', icon: Briefcase },
+      { to: '/admin/placements', label: 'Placement Pipeline', icon: DollarSign },
+    ],
+  },
+  {
+    label: 'Leads',
+    items: [
+      { to: '/admin/leads/staging', label: 'Lead Staging', icon: Inbox },
+      { to: '/admin/leads/outreach', label: 'Outreach', icon: Send },
+      { to: '/admin/leads', label: 'Leads', icon: Target },
+    ],
+  },
 ]
 
 export function AdminSidebar() {
@@ -74,27 +99,37 @@ export function AdminSidebar() {
       {/* 8px divider per UI-SPEC */}
       <div className="my-2" />
 
-      <nav className="flex flex-col gap-0.5 p-3">
-        {adminItems.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            end={item.to === '/admin'}
-            className={({ isActive }) =>
-              [
-                'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all',
-                isActive ? 'font-semibold' : 'hover:bg-surface-2/50',
-              ].join(' ')
-            }
-            style={({ isActive }) =>
-              isActive
-                ? { color: 'var(--color-brand)', backgroundColor: 'rgba(22,163,74,0.08)' }
-                : { color: 'var(--color-text-muted)' }
-            }
-          >
-            <item.icon size={18} />
-            <span>{item.label}</span>
-          </NavLink>
+      <nav className="flex flex-col gap-0.5 px-3 pb-3">
+        {navGroups.map((group, gi) => (
+          <div key={group.label ?? `group-${gi}`} className={gi > 0 ? 'mt-4' : ''}>
+            {group.label && (
+              <div
+                className="text-text-subtle px-3 pb-1 text-[11px] font-semibold uppercase"
+                style={{ letterSpacing: '0.04em' }}
+              >
+                {group.label}
+              </div>
+            )}
+            {group.items.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === '/admin'}
+                className={({ isActive }) =>
+                  [
+                    'flex items-center gap-3 rounded-8 px-3 py-2.5 text-sm transition-all',
+                    // Filled brand active state (tokenised); white icon + label.
+                    isActive
+                      ? 'bg-brand text-text-on-brand font-semibold'
+                      : 'text-text-muted hover:bg-surface-2/50',
+                  ].join(' ')
+                }
+              >
+                <item.icon size={18} />
+                <span>{item.label}</span>
+              </NavLink>
+            ))}
+          </div>
         ))}
       </nav>
 
