@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { AdminTable } from '@/components/admin/AdminTable'
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
 import { ProfileDrawer } from '@/components/admin/ProfileDrawer'
 import { Tag } from '@/components/ui/Tag'
 
@@ -49,15 +50,15 @@ export function EmployerList() {
 
   return (
     <div className="space-y-6">
-      <h1
-        className="text-[20px] leading-7 font-semibold"
-        style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
-      >
-        Employers
-      </h1>
+      <AdminPageHeader
+        eyebrow="People"
+        title="Employers"
+        description="Employer accounts — verification tier, jobs posted, and account status."
+      />
 
       <AdminTable<EmployerRow>
         rpc="admin_list_employers"
+        inCard
         searchable
         searchPlaceholder="Search by name or email…"
         emptyHeading="No employers yet"

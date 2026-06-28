@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { AdminTable } from '@/components/admin/AdminTable'
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
 import { ProfileDrawer } from '@/components/admin/ProfileDrawer'
 import { Tag } from '@/components/ui/Tag'
 
@@ -37,15 +38,15 @@ export function SeekerList() {
 
   return (
     <div className="space-y-6">
-      <h1
-        className="text-[20px] leading-7 font-semibold"
-        style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
-      >
-        Seekers
-      </h1>
+      <AdminPageHeader
+        eyebrow="People"
+        title="Seekers"
+        description="Seeker accounts — onboarding progress, match scores, and region."
+      />
 
       <AdminTable<SeekerRow>
         rpc="admin_list_seekers"
+        inCard
         searchable
         searchPlaceholder="Search by name or email…"
         emptyHeading="No seekers yet"
