@@ -49,6 +49,18 @@ interface AdminTableProps<TRow> {
    */
   defaultSort?: { key: string; dir: SortDir }
   /**
+   * Extra RPC args forwarded verbatim (e.g. `{ p_source: 'mine' }` for a
+   * server-side filter). Changing them refetches and resets to page 1 — same
+   * lifecycle as search/sort. The RPC validates them; AdminTable just passes
+   * them through. Generic so future filters (and T-5's outreach sort) reuse it.
+   */
+  extraArgs?: Record<string, unknown>
+  /**
+   * Optional controls rendered in the card header beside the search (e.g. a
+   * source-filter segmented control), so filter + search + table stay one card.
+   */
+  toolbar?: ReactNode
+  /**
    * Render a single row. Receives the row payload, click handler, and the
    * active (debounced) search term — so a row can surface WHY it matched when
    * the hit isn't in a visible column (e.g. a locality buried in raw post text).
@@ -88,6 +100,8 @@ export function AdminTable<TRow extends Record<string, unknown>>({
   searchPlaceholder = 'Search…',
   columns,
   defaultSort,
+  extraArgs,
+  toolbar,
   renderRow,
   onRowClick,
   emptyHeading,
@@ -114,6 +128,14 @@ export function AdminTable<TRow extends Record<string, unknown>>({
     return () => clearTimeout(timer)
   }, [search])
 
+  // Serialize extraArgs so the load effect re-runs on value change, not on the
+  // new object identity the parent passes each render.
+  const extraArgsKey = JSON.stringify(extraArgs ?? {})
+  // Reset to page 1 when the filter changes (mirrors the search/sort lifecycle).
+  useEffect(() => {
+    setPage(1)
+  }, [extraArgsKey])
+
   const offset = (page - 1) * pageSize
 
   const load = useCallback(async () => {
@@ -133,6 +155,8 @@ export function AdminTable<TRow extends Record<string, unknown>>({
         args.p_sort = sort.key
         args.p_dir = sort.dir
       }
+      // Caller-supplied filter args (e.g. p_source). RPC validates them.
+      if (extraArgs) Object.assign(args, extraArgs)
       // Supabase generated types treat rpc names as a literal union; the admin_list_*
       // and admin_skill_coverage functions all return jsonb {rows, total}.
       // Type-asserting via `as never` keeps tsc happy without weakening the
@@ -150,7 +174,8 @@ export function AdminTable<TRow extends Record<string, unknown>>({
     } finally {
       setLoading(false)
     }
-  }, [rpc, debouncedSearch, sort, offset, pageSize, searchable, paginated, errorCopy])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- extraArgsKey is the stable serialization of extraArgs
+  }, [rpc, debouncedSearch, sort, extraArgsKey, offset, pageSize, searchable, paginated, errorCopy])
 
   useEffect(() => {
     void load()
@@ -299,9 +324,18 @@ export function AdminTable<TRow extends Record<string, unknown>>({
     <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
   )
 
+  // Search + toolbar share one header row (search grows, toolbar sits right).
+  const header =
+    toolbar || searchField ? (
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        {searchField && <div className="flex-1">{searchField}</div>}
+        {toolbar}
+      </div>
+    ) : null
+
   const content = (
     <>
-      {searchField}
+      {header}
       {body}
       {pagination}
     </>

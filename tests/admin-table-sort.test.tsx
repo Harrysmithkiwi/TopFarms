@@ -56,6 +56,30 @@ describe('AdminTable server-side sort (T-1 mechanism, reused by T-5)', () => {
     expect(args).toMatchObject({ p_sort: 'captured', p_dir: 'asc', p_offset: 0 })
   })
 
+  it('forwards extraArgs (e.g. p_source) into the RPC call', async () => {
+    render(
+      <AdminTable
+        rpc={'admin_leads_staging_list' as never}
+        searchable={false}
+        defaultSort={{ key: 'captured', dir: 'desc' }}
+        extraArgs={{ p_source: 'mine' }}
+        columns={[{ key: 'captured', label: 'Captured', sortKey: 'captured' }]}
+        renderRow={() => <td>c</td>}
+        emptyHeading="empty"
+        emptyBody="empty"
+        errorCopy="err"
+      />,
+    )
+    await waitFor(() => expect(rpcMock).toHaveBeenCalled())
+    // Filter composes with sort in one call — both reach the same RPC.
+    expect(rpcMock.mock.calls[0][1]).toMatchObject({
+      p_source: 'mine',
+      p_sort: 'captured',
+      p_dir: 'desc',
+      p_offset: 0,
+    })
+  })
+
   it('reflects sort state in aria-sort and leaves non-sortable headers inert', async () => {
     renderSortable()
     await waitFor(() => expect(rpcMock).toHaveBeenCalled())

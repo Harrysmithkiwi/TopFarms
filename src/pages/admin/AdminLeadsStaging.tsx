@@ -7,6 +7,7 @@ import { DrawerShell, DrawerSection } from '@/components/admin/DrawerShell'
 import { ContactGlyphs, LeadContactCard, type LeadContact } from '@/components/admin/LeadContact'
 import { Button } from '@/components/ui/Button'
 import { Tag } from '@/components/ui/Tag'
+import { SegmentedControl } from '@/components/ui/SegmentedControl'
 import { supabase } from '@/lib/supabase'
 import { NZ_REGIONS } from '@/lib/constants'
 import {
@@ -413,13 +414,37 @@ function StagingDrawer({
   )
 }
 
+type SourceFilter = 'mine' | 'harvested' | 'all'
+
 export function AdminLeadsStaging() {
   const [selected, setSelected] = useState<StagingRow | null>(null)
   const [capturing, setCapturing] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
   const [acting, setActing] = useState(false)
+  // Default to MY hand-captures — the work the founder chases — not the harvested
+  // wall. (T-2; the RPC defaults to 'all', so this front-end default is what makes
+  // "Mine" the morning view.)
+  const [sourceFilter, setSourceFilter] = useState<SourceFilter>('mine')
 
   const bumpRefresh = () => setRefreshKey((k) => k + 1)
+
+  // Filter-aware empty state. With Mine as the default, a quiet morning shows the
+  // "mine" slice empty — which must NOT read as "the whole queue is empty" when
+  // harvested rows are still sitting under Harvested/All.
+  const emptyCopy = {
+    mine: {
+      heading: 'No hand-captured leads waiting',
+      body: 'Your captures land here for approval. Switch to Harvested or All to see collected leads — or use Capture / Paste post to add one.',
+    },
+    harvested: {
+      heading: 'No harvested leads waiting',
+      body: 'Harvested listings (e.g. NZ Farming Jobs) appear here. Switch to Mine or All to see the rest.',
+    },
+    all: {
+      heading: 'Staging queue is empty',
+      body: 'Captured and collected leads appear here for your approval. Use Capture / Paste post to add some.',
+    },
+  }[sourceFilter]
 
   async function act(kind: 'approve' | 'reject' | 'reject_suppress') {
     if (!selected) return
@@ -468,8 +493,21 @@ export function AdminLeadsStaging() {
         inCard
         searchable
         searchPlaceholder="Search staging by name, region, locality, source…"
-        emptyHeading="Staging queue is empty"
-        emptyBody="Captured and collected leads appear here for your approval. Use Capture / Paste post to add some."
+        extraArgs={{ p_source: sourceFilter }}
+        toolbar={
+          <SegmentedControl<SourceFilter>
+            aria-label="Filter leads by source"
+            value={sourceFilter}
+            onChange={setSourceFilter}
+            options={[
+              { value: 'mine', label: 'Mine' },
+              { value: 'harvested', label: 'Harvested' },
+              { value: 'all', label: 'All' },
+            ]}
+          />
+        }
+        emptyHeading={emptyCopy.heading}
+        emptyBody={emptyCopy.body}
         errorCopy="Failed to load the staging queue. Refresh the page."
         onRowClick={(row) => setSelected(row)}
         // T-1: triage the queue at a glance. Lane (was drawer-only) + Captured +
