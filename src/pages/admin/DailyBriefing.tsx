@@ -8,9 +8,13 @@ import { toast } from 'sonner'
 
 interface DailyBriefingPayload {
   signups_yesterday: number
+  signups_prior: number
   jobs_posted_yesterday: number
+  jobs_posted_prior: number
   applications_yesterday: number
+  applications_prior: number
   placements_acked_yesterday: number
+  placements_acked_prior: number
   revenue_snapshot: {
     placements_acked_this_month: number
     placements_confirmed_this_month: number
@@ -76,11 +80,18 @@ function CardHeading({
 }
 
 /**
- * Delta vs prior day. The briefing RPC only returns yesterday's single counts, so
- * there's no baseline to compute a real delta yet — we render an honest "—"
- * rather than fabricate a trend.
- * TODO(DELTA-WIRE): add prior-day counts to admin_get_daily_briefing (or a
- * dedicated RPC) and pass a real `delta` so these pills go live.
+ * Percentage change yesterday vs the prior day. Null when the prior day was 0 —
+ * there's no baseline to divide by, so we render an honest "—" rather than a
+ * fabricated "∞%". Exported for unit coverage of the divide-by-zero branch.
+ */
+export function pctDelta(today: number, prior: number): number | null {
+  if (!prior) return null // 0 / undefined / NaN → no baseline, render "—"
+  return Math.round(((today - prior) / prior) * 100)
+}
+
+/**
+ * Delta vs prior day. Null → honest "—" (no baseline); a number lights up the
+ * coloured ↑/↓ pill.
  */
 function DeltaPill({ delta }: { delta: number | null }) {
   if (delta === null) {
@@ -232,23 +243,27 @@ export function DailyBriefing() {
 
       {!loading && !errored && briefing && (
         <>
-          {/* Four KPI cards — big tabular number + delta pill (delta stubbed). */}
+          {/* Four KPI cards — big tabular number + delta pill vs prior day. */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <KpiCard label="Signups yesterday" value={briefing.signups_yesterday} delta={null} />
+            <KpiCard
+              label="Signups yesterday"
+              value={briefing.signups_yesterday}
+              delta={pctDelta(briefing.signups_yesterday, briefing.signups_prior)}
+            />
             <KpiCard
               label="Jobs posted yesterday"
               value={briefing.jobs_posted_yesterday}
-              delta={null}
+              delta={pctDelta(briefing.jobs_posted_yesterday, briefing.jobs_posted_prior)}
             />
             <KpiCard
               label="Applications yesterday"
               value={briefing.applications_yesterday}
-              delta={null}
+              delta={pctDelta(briefing.applications_yesterday, briefing.applications_prior)}
             />
             <KpiCard
               label="Placements acknowledged yesterday"
               value={briefing.placements_acked_yesterday}
-              delta={null}
+              delta={pctDelta(briefing.placements_acked_yesterday, briefing.placements_acked_prior)}
             />
           </div>
 
