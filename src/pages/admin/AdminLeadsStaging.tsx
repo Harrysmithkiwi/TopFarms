@@ -1,15 +1,28 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { ClipboardPaste, DollarSign, MapPin, ExternalLink, AlertTriangle } from 'lucide-react'
 import { AdminTable } from '@/components/admin/AdminTable'
+import { DrawerShell, DrawerSection } from '@/components/admin/DrawerShell'
 import { ContactGlyphs, LeadContactCard, type LeadContact } from '@/components/admin/LeadContact'
+import { Button } from '@/components/ui/Button'
+import { Tag } from '@/components/ui/Tag'
 import { supabase } from '@/lib/supabase'
 import { NZ_REGIONS } from '@/lib/constants'
+import {
+  formatLeadName,
+  regionLocalityLabel,
+  leadLocality,
+  matchSnippet,
+  sourceLabel,
+  SOURCE_LABELS,
+} from '@/lib/leadDisplay'
 
 /**
- * /admin/leads/staging — capture form + the approval queue (L0,
- * PHASE-LEADS-DESIGN §6). The approval gate here IS the privacy checkpoint:
- * nothing reaches the live leads table except through admin_lead_approve.
- * L1 swaps the field-by-field capture form for paste-post -> Claude Haiku.
+ * /admin/leads/staging — the approval queue (primary) with capture demoted
+ * behind one button (Phase 28). The approval gate here IS the privacy
+ * checkpoint: nothing reaches the live leads table except through
+ * admin_lead_approve. Pasting FB posts is the most frequent GTM action, so the
+ * "Capture / Paste post" button stays one obvious click away.
  */
 
 interface StagingRow extends Record<string, unknown> {
@@ -22,6 +35,7 @@ interface StagingRow extends Record<string, unknown> {
     type?: string
     display_name?: string
     region?: string
+    locality?: string | null // P-8 — populated by the GATE-2 lead-intake change
     role_or_category?: string
     contact?: LeadContact | null
     salary_text?: string | null
@@ -42,24 +56,19 @@ interface StagingRow extends Record<string, unknown> {
   dedupe_match_id: string | null
 }
 
-const SOURCE_LABELS: Record<string, string> = {
-  seek: 'Seek',
-  trademe: 'TradeMe',
-  fb_own_group: 'FB (own group)',
-  fb_manual_capture: 'FB (manual capture)',
-  nzfarmingjobs: 'NZ Farming Jobs',
-}
+const inputCls =
+  'border-border bg-surface w-full rounded-[8px] border px-3 py-2 text-sm outline-none focus:border-brand'
 
-function PastePanel({ onCaptured }: { onCaptured: () => void }) {
+/** Paste-batch capture — the primary, most-frequent path. */
+function PasteCapture({ onCaptured }: { onCaptured: () => void }) {
   // Default to manual-capture: most pastes are other people's groups (NZ Dairy
   // Jobs etc.), not our own group. fb_own_group is the exception, selectable below.
   const [source, setSource] = useState('fb_manual_capture')
   const [text, setText] = useState('')
   const [busy, setBusy] = useState(false)
 
-  // L1 batch lane (§9.2): paste one or MANY posts; lead-intake structures
-  // them with Claude Haiku server-side (degrades to confidence-0 staging
-  // rows until ANTHROPIC_API_KEY is set in Edge secrets).
+  // L1 batch lane (§9.2): paste one or MANY posts; lead-intake structures them
+  // with Claude Haiku server-side.
   async function submit() {
     if (!text.trim()) return
     setBusy(true)
@@ -79,47 +88,31 @@ function PastePanel({ onCaptured }: { onCaptured: () => void }) {
     onCaptured()
   }
 
-  const inputCls =
-    'border-border bg-surface w-full rounded-[8px] border px-3 py-2 text-sm outline-none focus:border-brand'
-
   return (
-    <div className="bg-surface border-border rounded-[12px] border p-5">
-      <h2 className="text-[15px] font-semibold" style={{ color: 'var(--color-text)' }}>
-        Paste posts (batch)
-      </h2>
-      <p className="mt-0.5 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
-        Paste one or many posts — structuring, dedupe and suppression run automatically; results
-        land in the staging queue for your approval.
+    <DrawerSection label="Paste posts (batch)">
+      <p className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
+        Paste one or many posts — structuring, dedupe and suppression run automatically; results land
+        in the queue for your approval.
       </p>
-      <div className="mt-3 flex flex-col gap-3 sm:flex-row">
-        <select
-          className={`${inputCls} sm:w-56`}
-          value={source}
-          onChange={(e) => setSource(e.target.value)}
-        >
-          <option value="fb_own_group">FB (own group)</option>
-          <option value="fb_manual_capture">FB (manual capture)</option>
-        </select>
-        <button
-          type="button"
-          disabled={busy || !text.trim()}
-          onClick={submit}
-          className="bg-brand rounded-[8px] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
-        >
-          {busy ? 'Structuring…' : 'Stage batch'}
-        </button>
-      </div>
+      <select className={inputCls} value={source} onChange={(e) => setSource(e.target.value)}>
+        <option value="fb_own_group">FB (own group)</option>
+        <option value="fb_manual_capture">FB (manual capture)</option>
+      </select>
       <textarea
-        className={`${inputCls} mt-3 h-32`}
+        className={`${inputCls} h-40`}
         placeholder="Paste post text here — multiple posts in one paste is fine"
         value={text}
         onChange={(e) => setText(e.target.value)}
       />
-    </div>
+      <Button variant="primary" size="sm" disabled={busy || !text.trim()} onClick={submit}>
+        {busy ? 'Structuring…' : 'Stage batch'}
+      </Button>
+    </DrawerSection>
   )
 }
 
-function CaptureForm({ onCaptured }: { onCaptured: () => void }) {
+/** Manual field-by-field capture — the secondary path. */
+function ManualCapture({ onCaptured }: { onCaptured: () => void }) {
   const [source, setSource] = useState('fb_manual_capture')
   const [type, setType] = useState<'employer' | 'seeker'>('employer')
   const [name, setName] = useState('')
@@ -156,7 +149,7 @@ function CaptureForm({ onCaptured }: { onCaptured: () => void }) {
     }
     const outcome = (data as { outcome?: string })?.outcome
     if (outcome === 'inserted') {
-      toast.success('Captured — pending your approval below')
+      toast.success('Captured — pending your approval in the queue')
       setName('')
       setRole('')
       setContact('')
@@ -170,19 +163,13 @@ function CaptureForm({ onCaptured }: { onCaptured: () => void }) {
     }
   }
 
-  const inputCls =
-    'border-border bg-surface w-full rounded-[8px] border px-3 py-2 text-sm outline-none focus:border-brand'
-
   return (
-    <div className="bg-surface border-border rounded-[12px] border p-5">
-      <h2 className="text-[15px] font-semibold" style={{ color: 'var(--color-text)' }}>
-        Capture a lead
-      </h2>
-      <p className="mt-0.5 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
-        Manual capture (you read it, you file it). Captures land in the staging queue below — not
-        the live pipeline — until you approve them.
+    <DrawerSection label="Manual capture">
+      <p className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
+        You read it, you file it. Captures land in the queue — not the live pipeline — until you
+        approve them.
       </p>
-      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <select className={inputCls} value={source} onChange={(e) => setSource(e.target.value)}>
           {Object.entries(SOURCE_LABELS).map(([v, l]) => (
             <option key={v} value={v}>
@@ -225,34 +212,201 @@ function CaptureForm({ onCaptured }: { onCaptured: () => void }) {
           onChange={(e) => setContact(e.target.value)}
         />
         <input
-          className={`${inputCls} lg:col-span-2`}
+          className={`${inputCls} sm:col-span-2`}
           placeholder="Post / listing permalink"
           value={sourceRef}
           onChange={(e) => setSourceRef(e.target.value)}
         />
-        <button
-          type="button"
-          disabled={submitting}
-          onClick={submit}
-          className="bg-brand rounded-[8px] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
-        >
-          {submitting ? 'Capturing…' : 'Capture'}
-        </button>
       </div>
       <textarea
-        className={`${inputCls} mt-3 h-20`}
+        className={`${inputCls} h-20`}
         placeholder="Raw post text (optional context for review — purged with staging, never stored on the lead)"
         value={rawText}
         onChange={(e) => setRawText(e.target.value)}
       />
+      <Button variant="outline" size="sm" disabled={submitting} onClick={submit}>
+        {submitting ? 'Capturing…' : 'Capture lead'}
+      </Button>
+    </DrawerSection>
+  )
+}
+
+/** Detail rows: small uppercase label + value (replaces emoji-prefixed fields). */
+function DetailRow({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex gap-2 text-[13px]">
+      <span
+        className="shrink-0 text-xs font-semibold uppercase"
+        style={{ color: 'var(--color-text-subtle)', letterSpacing: '0.04em', lineHeight: '1.4rem' }}
+      >
+        {label}
+      </span>
+      <span style={{ color: 'var(--color-text)' }}>{children}</span>
     </div>
+  )
+}
+
+function StagingDrawer({
+  row,
+  acting,
+  onAct,
+  onClose,
+}: {
+  row: StagingRow
+  acting: boolean
+  onAct: (kind: 'approve' | 'reject' | 'reject_suppress') => void
+  onClose: () => void
+}) {
+  const s = row.structured
+  const locality = leadLocality(s)
+  const hasDetailFields = s.shed_type || s.herd_details || s.application_method || s.source_group
+
+  return (
+    <DrawerShell
+      label="Lead"
+      onClose={onClose}
+      footer={
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <Button variant="ghost" size="sm" disabled={acting} onClick={() => onAct('reject_suppress')}>
+            Reject + suppress
+          </Button>
+          <Button variant="outline" size="sm" disabled={acting} onClick={() => onAct('reject')}>
+            Reject
+          </Button>
+          <Button variant="primary" size="sm" disabled={acting} onClick={() => onAct('approve')}>
+            {acting ? 'Working…' : 'Approve'}
+          </Button>
+        </div>
+      }
+    >
+      {/* Header */}
+      <div className="space-y-2">
+        <h2
+          className="text-[20px] leading-7 font-semibold"
+          style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
+          title={s.display_name ?? ''}
+        >
+          {formatLeadName(s.display_name)}
+        </h2>
+        <div className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
+          {s.type ?? 'lead'} · {sourceLabel(row.source)} · confidence{' '}
+          {Math.round(row.confidence * 100)}%
+        </div>
+        {(s.region || locality) && (
+          <div
+            className="flex items-center gap-1.5 text-[13px]"
+            style={{ color: 'var(--color-text-muted)' }}
+          >
+            <MapPin size={14} />
+            {regionLocalityLabel(s)}
+          </div>
+        )}
+        <div className="flex flex-wrap items-center gap-2 pt-1">
+          {s.lane === 'b' ? (
+            <Tag variant="blue">Lane B · no contact → Outreach</Tag>
+          ) : s.lane === 'a' ? (
+            <Tag variant="green">Lane A · contactable</Tag>
+          ) : null}
+          {s.is_recruiter && (
+            <Tag variant="grey">
+              Recruiter-placed{s.advertiser_name ? ` · ${s.advertiser_name}` : ''}
+            </Tag>
+          )}
+          {row.dedupe_status === 'suspect_duplicate' && (
+            <Tag variant="warn">Possible duplicate</Tag>
+          )}
+        </div>
+      </div>
+
+      {/* Role + salary */}
+      {(s.role_or_category || s.salary_text) && (
+        <DrawerSection label="Role">
+          {s.role_or_category && (
+            <div className="text-[14px] font-medium" style={{ color: 'var(--color-text)' }}>
+              {s.role_or_category}
+            </div>
+          )}
+          {s.salary_text && (
+            <div
+              className="flex items-center gap-1.5 text-[13px]"
+              style={{ color: 'var(--color-text-muted)' }}
+            >
+              <DollarSign size={14} />
+              {s.salary_text}
+            </div>
+          )}
+        </DrawerSection>
+      )}
+
+      {/* FB extract fields */}
+      {hasDetailFields && (
+        <DrawerSection label="Details">
+          {s.shed_type && <DetailRow label="Shed">{s.shed_type}</DetailRow>}
+          {s.herd_details && <DetailRow label="Herd">{s.herd_details}</DetailRow>}
+          {s.application_method && <DetailRow label="Apply">{s.application_method}</DetailRow>}
+          {s.source_group && <DetailRow label="Group">{s.source_group}</DetailRow>}
+        </DrawerSection>
+      )}
+
+      {/* Contact — the work-the-lead target */}
+      <DrawerSection label="Contact">
+        <LeadContactCard contact={s.contact} />
+        {s.company_profile_url && (
+          <a
+            className="text-brand inline-flex items-center gap-1 text-[13px] underline"
+            href={s.company_profile_url}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Employer profile <ExternalLink size={13} />
+          </a>
+        )}
+      </DrawerSection>
+
+      {/* Summary / notes */}
+      {(s.summary || row.missing_fields.length > 0 || row.dedupe_status === 'suspect_duplicate') && (
+        <DrawerSection label="Notes">
+          {s.summary && (
+            <p className="text-[13px] leading-5" style={{ color: 'var(--color-text-muted)' }}>
+              {s.summary}
+            </p>
+          )}
+          {row.dedupe_status === 'suspect_duplicate' && (
+            <p className="text-warn flex items-start gap-1.5 text-[12px]">
+              <AlertTriangle size={13} className="mt-0.5 shrink-0" />
+              Possible duplicate of an existing lead — approve only if genuinely distinct.
+            </p>
+          )}
+          {row.missing_fields.length > 0 && (
+            <p className="text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
+              Missing: {row.missing_fields.join(', ')}
+            </p>
+          )}
+        </DrawerSection>
+      )}
+
+      {/* Raw post */}
+      {row.raw_excerpt && (
+        <DrawerSection label="Original post">
+          <p
+            className="bg-surface-2 max-h-40 overflow-y-auto rounded-[8px] p-3 text-[12px] leading-5 whitespace-pre-wrap"
+            style={{ color: 'var(--color-text-muted)' }}
+          >
+            {row.raw_excerpt}
+          </p>
+        </DrawerSection>
+      )}
+    </DrawerShell>
   )
 }
 
 export function AdminLeadsStaging() {
   const [selected, setSelected] = useState<StagingRow | null>(null)
+  const [capturing, setCapturing] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
   const [acting, setActing] = useState(false)
+
+  const bumpRefresh = () => setRefreshKey((k) => k + 1)
 
   async function act(kind: 'approve' | 'reject' | 'reject_suppress') {
     if (!selected) return
@@ -278,223 +432,129 @@ export function AdminLeadsStaging() {
           : 'Rejected',
     )
     setSelected(null)
-    setRefreshKey((k) => k + 1)
+    bumpRefresh()
   }
 
   return (
     <div className="space-y-6">
-      <h1
-        className="text-[20px] leading-7 font-semibold"
-        style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
-      >
-        Lead Staging
-      </h1>
-      <PastePanel onCaptured={() => setRefreshKey((k) => k + 1)} />
-      <CaptureForm onCaptured={() => setRefreshKey((k) => k + 1)} />
-
-      {selected && (
-        <div className="bg-surface border-brand rounded-[12px] border-2 p-5">
-          <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0 text-sm">
-              <p className="font-semibold">{selected.structured.display_name ?? '(unnamed)'}</p>
-              <p style={{ color: 'var(--color-text-muted)' }}>
-                {selected.structured.type} · {selected.structured.region ?? 'no region'} ·{' '}
-                {SOURCE_LABELS[selected.source]} · confidence{' '}
-                {Math.round(selected.confidence * 100)}%
-              </p>
-
-              {/* Lane (Phase 1): A = contactable directly; B = no contact, routed
-                  to the outreach queue with a drafted reply. */}
-              {selected.structured.lane && (
-                <p className="mt-1">
-                  {selected.structured.lane === 'b' ? (
-                    <span className="border-warn text-warn rounded border px-1.5 py-0.5 text-[11px] font-semibold">
-                      Lane B · no contact → Outreach
-                    </span>
-                  ) : (
-                    <span className="border-brand text-brand rounded border px-1.5 py-0.5 text-[11px] font-semibold">
-                      Lane A · contactable
-                    </span>
-                  )}
-                </p>
-              )}
-
-              {/* FB extract fields (Phase 1) */}
-              {(selected.structured.shed_type ||
-                selected.structured.herd_details ||
-                selected.structured.application_method ||
-                selected.structured.source_group) && (
-                <p className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-[13px]">
-                  {selected.structured.shed_type && <span>🥛 {selected.structured.shed_type}</span>}
-                  {selected.structured.herd_details && (
-                    <span>🐄 {selected.structured.herd_details}</span>
-                  )}
-                  {selected.structured.application_method && (
-                    <span>
-                      <span style={{ color: 'var(--color-text-muted)' }}>Apply: </span>
-                      {selected.structured.application_method}
-                    </span>
-                  )}
-                  {selected.structured.source_group && (
-                    <span style={{ color: 'var(--color-text-muted)' }}>
-                      group: {selected.structured.source_group}
-                    </span>
-                  )}
-                </p>
-              )}
-
-              <div className="mt-1 flex flex-wrap items-center gap-2">
-                {selected.structured.role_or_category && (
-                  <span className="text-[13px] font-medium">
-                    {selected.structured.role_or_category}
-                  </span>
-                )}
-                {selected.structured.salary_text && (
-                  <span className="text-[13px]">💰 {selected.structured.salary_text}</span>
-                )}
-                {/* Recruiter flag (044) — colour-coded amber so a genuine agency
-                    placement is unmissable. The board-guard in normalise() stops
-                    the listing site itself triggering this. */}
-                {selected.structured.is_recruiter && (
-                  <span className="border-warn text-warn rounded border px-1.5 py-0.5 text-[11px] font-semibold">
-                    Recruiter-placed
-                    {selected.structured.advertiser_name
-                      ? ` · ${selected.structured.advertiser_name}`
-                      : ''}
-                  </span>
-                )}
-              </div>
-
-              {/* Contact is the point of the panel — most prominent block, right
-                  under the role. Shared with the approved pipeline. */}
-              <LeadContactCard contact={selected.structured.contact} />
-
-              {selected.structured.summary && (
-                <p className="mt-2 text-[13px] leading-5" style={{ color: 'var(--color-text-muted)' }}>
-                  {selected.structured.summary}
-                </p>
-              )}
-
-              {selected.structured.company_profile_url && (
-                <p className="mt-1 text-[12px]">
-                  <a
-                    className="text-brand underline"
-                    href={selected.structured.company_profile_url}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Employer profile ↗
-                  </a>
-                </p>
-              )}
-
-              {selected.dedupe_status === 'suspect_duplicate' && (
-                <p className="text-warn mt-1 text-[12px]">
-                  ⚠ Possible duplicate of an existing lead — approve only if genuinely distinct.
-                </p>
-              )}
-              {selected.missing_fields.length > 0 && (
-                <p className="mt-1 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
-                  Missing: {selected.missing_fields.join(', ')}
-                </p>
-              )}
-              {selected.raw_excerpt && (
-                <p
-                  className="bg-surface-2 mt-2 max-h-24 overflow-y-auto rounded p-2 text-[12px]"
-                  style={{ color: 'var(--color-text-muted)' }}
-                >
-                  {selected.raw_excerpt}
-                </p>
-              )}
-            </div>
-            <div className="flex shrink-0 flex-col gap-2">
-              <button
-                type="button"
-                disabled={acting}
-                onClick={() => act('approve')}
-                className="bg-brand rounded-[8px] px-3 py-1.5 text-sm font-semibold text-white disabled:opacity-50"
-              >
-                Approve
-              </button>
-              <button
-                type="button"
-                disabled={acting}
-                onClick={() => act('reject')}
-                className="border-border rounded-[8px] border px-3 py-1.5 text-sm disabled:opacity-50"
-              >
-                Reject
-              </button>
-              <button
-                type="button"
-                disabled={acting}
-                onClick={() => act('reject_suppress')}
-                className="text-danger border-danger rounded-[8px] border px-3 py-1.5 text-sm disabled:opacity-50"
-              >
-                Reject + suppress
-              </button>
-            </div>
-          </div>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1
+            className="text-[20px] leading-7 font-semibold"
+            style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
+          >
+            Lead Staging
+          </h1>
+          <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+            Review captured leads and approve them into the pipeline. Nothing goes live until you
+            approve it here.
+          </p>
         </div>
-      )}
+        <Button
+          variant="primary"
+          size="sm"
+          className="shrink-0 gap-1.5"
+          onClick={() => setCapturing(true)}
+        >
+          <ClipboardPaste size={15} />
+          Capture / Paste post
+        </Button>
+      </div>
 
       <AdminTable<StagingRow>
         key={refreshKey}
         rpc="admin_leads_staging_list"
         searchable
-        searchPlaceholder="Search staging by name, region, source…"
+        searchPlaceholder="Search staging by name, region, locality, source…"
         emptyHeading="Staging queue is empty"
-        emptyBody="Captured and collected leads appear here for your approval."
+        emptyBody="Captured and collected leads appear here for your approval. Use Capture / Paste post to add some."
         errorCopy="Failed to load the staging queue. Refresh the page."
         onRowClick={(row) => setSelected(row)}
         columns={[
           { key: 'display_name', label: 'Name / business' },
           { key: 'contact', label: 'Contact' },
-          { key: 'region', label: 'Region' },
+          { key: 'region', label: 'Region · locality' },
           { key: 'via', label: 'Via' },
           { key: 'source', label: 'Source' },
           { key: 'confidence', label: 'Confidence' },
           { key: 'dedupe_status', label: 'Dedupe' },
         ]}
-        renderRow={(row, onClick) => (
-          <tr
-            key={row.id}
-            onClick={onClick}
-            className="border-border hover:bg-surface-2/50 h-[52px] cursor-pointer border-t"
-          >
-            {/* B3: truncate long names (e.g. Tautara Matawhaura…) so the column
-                grid stays aligned; full name on hover. */}
-            <td className="px-3 font-medium">
-              <div className="max-w-[220px] truncate" title={row.structured.display_name ?? ''}>
-                {row.structured.display_name ?? '(unnamed)'}
-              </div>
-            </td>
-            {/* B1: contact-at-a-glance — triage who's workable without opening each. */}
-            <td className="px-3">
-              <ContactGlyphs contact={row.structured.contact} />
-            </td>
-            <td className="px-3">{row.structured.region ?? '—'}</td>
-            {/* B2: recruiter flag in-row — direct vs agency-placed. */}
-            <td className="px-3 text-[12px]">
-              {row.structured.is_recruiter ? (
-                <span className="text-warn" title={row.structured.advertiser_name ?? 'agency-placed'}>
-                  agency
-                </span>
-              ) : (
-                <span style={{ color: 'var(--color-text-muted)' }}>direct</span>
-              )}
-            </td>
-            <td className="px-3">{SOURCE_LABELS[row.source] ?? row.source}</td>
-            <td className="px-3">{Math.round(row.confidence * 100)}%</td>
-            <td className="px-3">
-              {row.dedupe_status === 'suspect_duplicate' ? (
-                <span className="text-warn">suspect</span>
-              ) : (
-                'unique'
-              )}
-            </td>
-          </tr>
-        )}
+        renderRow={(row, onClick, search) => {
+          // P-10 — when the search matched hidden raw-post text (e.g. a locality
+          // not shown in any column), surface why the row matched.
+          const visible = `${row.structured.display_name ?? ''} ${row.structured.region ?? ''} ${regionLocalityLabel(row.structured)}`
+          const snippet =
+            search && !visible.toLowerCase().includes(search.toLowerCase().trim())
+              ? matchSnippet(row.raw_excerpt, search)
+              : null
+          return (
+            <tr
+              key={row.id}
+              onClick={onClick}
+              className="border-border hover:bg-surface-hover h-[52px] cursor-pointer border-t transition-colors"
+            >
+              <td className="px-4 font-medium">
+                <div className="max-w-[240px] truncate" title={row.structured.display_name ?? ''}>
+                  {formatLeadName(row.structured.display_name)}
+                </div>
+                {snippet && (
+                  <div
+                    className="max-w-[240px] truncate text-[12px]"
+                    style={{ color: 'var(--color-text-subtle)' }}
+                    title={row.raw_excerpt ?? ''}
+                  >
+                    matched: {snippet}
+                  </div>
+                )}
+              </td>
+              <td className="px-4">
+                <ContactGlyphs contact={row.structured.contact} />
+              </td>
+              <td className="px-4 text-[13px]">{regionLocalityLabel(row.structured)}</td>
+              <td className="px-4">
+                {row.structured.is_recruiter ? (
+                  <Tag variant="grey" title={row.structured.advertiser_name ?? 'agency-placed'}>
+                    agency
+                  </Tag>
+                ) : (
+                  <span className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
+                    direct
+                  </span>
+                )}
+              </td>
+              <td className="px-4 text-[13px]">{sourceLabel(row.source)}</td>
+              <td className="px-4 text-[13px]" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                {Math.round(row.confidence * 100)}%
+              </td>
+              <td className="px-4">
+                {row.dedupe_status === 'suspect_duplicate' ? (
+                  <Tag variant="warn">suspect</Tag>
+                ) : (
+                  <span className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
+                    unique
+                  </span>
+                )}
+              </td>
+            </tr>
+          )
+        }}
       />
+
+      {capturing && (
+        <DrawerShell label="Capture lead" onClose={() => setCapturing(false)}>
+          <PasteCapture onCaptured={bumpRefresh} />
+          <ManualCapture onCaptured={bumpRefresh} />
+        </DrawerShell>
+      )}
+
+      {selected && (
+        <StagingDrawer
+          row={selected}
+          acting={acting}
+          onAct={act}
+          onClose={() => setSelected(null)}
+        />
+      )}
     </div>
   )
 }

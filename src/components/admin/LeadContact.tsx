@@ -1,4 +1,5 @@
 import type { MouseEvent } from 'react'
+import { Mail, Phone, Link2 } from 'lucide-react'
 
 /**
  * Shared lead-contact rendering for the staging review panel and the approved
@@ -32,8 +33,8 @@ export function LeadContactCard({ contact }: { contact?: LeadContact | null }) {
   return (
     <div className="border-brand/40 bg-surface-2 mt-2 rounded-[8px] border p-3">
       <p
-        className="text-[10px] font-semibold tracking-wide uppercase"
-        style={{ color: 'var(--color-text-muted)' }}
+        className="text-xs font-semibold uppercase"
+        style={{ color: 'var(--color-text-subtle)', letterSpacing: '0.04em' }}
       >
         Contact
       </p>
@@ -84,18 +85,30 @@ export function ContactGlyphs({ contact }: { contact?: LeadContact | null }) {
   }
   const stop = (e: MouseEvent) => e.stopPropagation()
   return (
-    <span className="flex items-center gap-2 text-[13px]">
+    <span className="flex items-center gap-2.5" style={{ color: 'var(--color-text-muted)' }}>
       {contact.email && (
-        <a href={`mailto:${contact.email}`} title={contact.email} onClick={stop}>
-          ✉
+        <a
+          href={`mailto:${contact.email}`}
+          title={contact.email}
+          onClick={stop}
+          className="hover:text-brand"
+        >
+          <Mail size={15} aria-label="Email" />
         </a>
       )}
       {contact.phone && (
-        <a href={telHref(contact.phone)} title={contact.phone} onClick={stop}>
-          ☎
+        <a
+          href={telHref(contact.phone)}
+          title={contact.phone}
+          onClick={stop}
+          className="hover:text-brand"
+        >
+          <Phone size={15} aria-label="Phone" />
         </a>
       )}
-      {!contact.email && !contact.phone && contact.url && <span title="profile link only">🔗</span>}
+      {!contact.email && !contact.phone && contact.url && (
+        <Link2 size={15} aria-label="Profile link only" />
+      )}
     </span>
   )
 }

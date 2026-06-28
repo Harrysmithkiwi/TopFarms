@@ -101,6 +101,9 @@ interface StructuredLead {
   type: 'employer' | 'seeker' | null
   display_name: string | null
   region: string | null
+  // P-8: town / settlement (e.g. "Tirohanga"), distinct from the macro region.
+  // NEVER-INFER — null unless literally stated.
+  locality: string | null
   role_or_category: string | null
   contact: Contact | null
   // FB extract fields (Phase 1 A1) — NEVER-INFER, null unless literally present.
@@ -237,6 +240,7 @@ Deno.serve(async (req) => {
             type: l.type,
             display_name: l.display_name,
             region: l.region,
+            locality: l.locality ?? null,
             role_or_category: l.role_or_category,
             contact,
             shed_type: l.shed_type ?? null,
@@ -365,6 +369,7 @@ async function structureWithClaude(
         type: null,
         display_name: null,
         region: null,
+        locality: null,
         role_or_category: null,
         contact: null,
         shed_type: null,
@@ -395,7 +400,15 @@ async function structureWithClaude(
           'You extract recruitment leads from raw NZ agricultural job/seeker posts',
           '(Seek, TradeMe, Facebook farming groups). The text may contain MULTIPLE',
           'distinct posts — return one object per distinct lead via the emit_leads tool.',
+          'display_name = a clean, scannable name for the lead: prefer a business /',
+          'farm / person name (e.g. "Smith Farms Ltd", "Jane Smith"). Do NOT use a',
+          'descriptive listing headline ("110ha Pivot-Irrigated Dairy Farm") as the',
+          'name — if only a headline is given, use the most name-like fragment and',
+          'put the town in locality, not the name.',
           `region MUST be one of: ${REGIONS.join(', ')} — or null if not stated.`,
+          'locality = the town / settlement / district named in the post (e.g.',
+          '"Tirohanga", "Rotherham"), verbatim — distinct from the macro region;',
+          'null if no town is stated. NEVER infer it from the region.',
           'NZ-ag vocabulary: 2IC = second in charge; OAD = once-a-day milking;',
           'herd manager / farm assistant / calf rearing / relief milking are roles.',
           'shed_type = milking shed (rotary / herringbone / N-bail), verbatim.',
@@ -423,6 +436,7 @@ async function structureWithClaude(
                       'type',
                       'display_name',
                       'region',
+                      'locality',
                       'role_or_category',
                       'contact',
                       'shed_type',
@@ -435,6 +449,7 @@ async function structureWithClaude(
                       type: { type: ['string', 'null'], enum: ['employer', 'seeker', null] },
                       display_name: { type: ['string', 'null'] },
                       region: { type: ['string', 'null'] },
+                      locality: { type: ['string', 'null'] },
                       role_or_category: { type: ['string', 'null'] },
                       contact: {
                         type: ['object', 'null'],
@@ -478,6 +493,7 @@ async function structureWithClaude(
       leads: leads.map((l) => ({
         ...l,
         region: canonicalRegion(l.region),
+        locality: l.locality ?? null,
         shed_type: l.shed_type ?? null,
         herd_details: l.herd_details ?? null,
         application_method: l.application_method ?? null,
