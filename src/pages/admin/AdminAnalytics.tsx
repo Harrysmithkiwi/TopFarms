@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
+import { Card } from '@/components/tremor/Card'
+import { BarChart } from '@/components/tremor/BarChart'
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
 
 /**
  * Founder analytics dashboard at /admin/analytics (PHASE-ANALYTICS-DESIGN.md,
@@ -85,26 +88,28 @@ const pct = (num: number, den: number) => (den > 0 ? `${Math.round((num / den) *
 // ─── Shared bits ──────────────────────────────────────────────────────────────
 
 function Panel({
+  eyebrow,
   title,
   caption,
   children,
 }: {
+  eyebrow: string
   title: string
   caption?: string
   children: React.ReactNode
 }) {
   return (
-    <section className="bg-surface border-border rounded-[12px] border p-5">
-      <h2 className="text-[15px] font-semibold" style={{ color: 'var(--color-text)' }}>
-        {title}
-      </h2>
-      {caption && (
-        <p className="mt-0.5 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
-          {caption}
-        </p>
-      )}
+    <Card>
+      <div
+        className="text-text-subtle text-[11px] font-semibold uppercase"
+        style={{ letterSpacing: '0.04em' }}
+      >
+        {eyebrow}
+      </div>
+      <div className="text-text mt-0.5 text-[15px] font-semibold">{title}</div>
+      {caption && <p className="text-text-muted mt-1 text-[12px]">{caption}</p>}
       <div className="mt-4">{children}</div>
-    </section>
+    </Card>
   )
 }
 
@@ -177,17 +182,11 @@ export function AdminAnalytics() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1
-          className="text-[20px] leading-7 font-semibold"
-          style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
-        >
-          Founder Analytics
-        </h1>
-        <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-          Funnel, retention, match quality and revenue — aggregates only, all-time range.
-        </p>
-      </div>
+      <AdminPageHeader
+        eyebrow="Overview"
+        title="Founder Analytics"
+        description="Funnel, retention, match quality and revenue — aggregates only, all-time range."
+      />
 
       {loading && (
         <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
@@ -202,6 +201,7 @@ export function AdminAnalytics() {
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
           {/* ── Funnel ── */}
           <Panel
+            eyebrow="Acquisition"
             title="Funnel"
             caption="Snapshot — the pipeline has no transition timestamps yet, so time-in-stage is not shown (design §2.1)."
           >
@@ -262,6 +262,7 @@ export function AdminAnalytics() {
 
           {/* ── Cohorts ── */}
           <Panel
+            eyebrow="Retention"
             title="Cohort retention"
             caption="Proxies: sign-in recency + took-an-action in months 1–3 after joining. True retention curves need event instrumentation (design §2.2)."
           >
@@ -302,6 +303,7 @@ export function AdminAnalytics() {
 
           {/* ── Match quality ── */}
           <Panel
+            eyebrow="Quality"
             title="Match quality"
             caption="Do higher match scores convert to hires? Completed applications only (hired/declined)."
           >
@@ -310,6 +312,20 @@ export function AdminAnalytics() {
                 Low volume — {match.completed_total} completed application
                 {match.completed_total === 1 ? '' : 's'}; needs ~30 for signal.
               </p>
+            )}
+            {match.bands.length > 0 && (
+              <BarChart
+                className="mb-4 h-48"
+                data={match.bands.map((b) => ({
+                  band: b.band,
+                  Applications: b.applications,
+                  Hired: b.hired,
+                }))}
+                index="band"
+                categories={['Applications', 'Hired']}
+                colors={['brand', 'brandLight']}
+                showLegend
+              />
             )}
             <table className="w-full text-left text-sm">
               <thead>
@@ -344,6 +360,7 @@ export function AdminAnalytics() {
 
           {/* ── Revenue ── */}
           <Panel
+            eyebrow="Revenue"
             title="Revenue"
             caption={
               revenueIsEmpty
@@ -402,6 +419,7 @@ export function AdminAnalytics() {
 
           {/* ── Leads (top-of-funnel; L4 wiring) ── */}
           <Panel
+            eyebrow="Top of funnel"
             title="Leads"
             caption="Top-of-funnel pipeline from discovery → signup. Approved leads only; staging awaits review."
           >
