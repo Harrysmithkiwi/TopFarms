@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { CheckCircle2, XCircle, RotateCcw } from 'lucide-react'
 import { AdminTable } from '@/components/admin/AdminTable'
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
 import { Tag } from '@/components/ui/Tag'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -153,20 +154,16 @@ export function AdminDocumentsQueue() {
 
   return (
     <div className="space-y-6">
-      <h1
-        className="text-[20px] leading-7 font-semibold"
-        style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
-      >
-        Document Queue
-      </h1>
-      <p style={{ color: 'var(--color-text-muted)' }} className="text-sm">
-        Review seeker-uploaded documents. Approve to grant the &ldquo;Documents Verified&rdquo;
-        badge; reject with a reason or request a resubmission.
-      </p>
+      <AdminPageHeader
+        eyebrow="People"
+        title="Document Queue"
+        description="Review seeker-uploaded documents. Approve to grant the “Documents Verified” badge; reject with a reason or request a resubmission."
+      />
 
       <AdminTable<DocumentRow>
         key={refreshKey}
         rpc="admin_list_document_queue"
+        inCard
         searchable={false}
         emptyHeading="Queue is empty"
         emptyBody="No documents waiting for review."
