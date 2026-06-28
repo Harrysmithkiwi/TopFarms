@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { ClipboardPaste, DollarSign, MapPin, ExternalLink, AlertTriangle } from 'lucide-react'
 import { AdminTable } from '@/components/admin/AdminTable'
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
 import { DrawerShell, DrawerSection } from '@/components/admin/DrawerShell'
 import { ContactGlyphs, LeadContactCard, type LeadContact } from '@/components/admin/LeadContact'
 import { Button } from '@/components/ui/Button'
@@ -437,33 +438,22 @@ export function AdminLeadsStaging() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1
-            className="text-[20px] leading-7 font-semibold"
-            style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
-          >
-            Lead Staging
-          </h1>
-          <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-            Review captured leads and approve them into the pipeline. Nothing goes live until you
-            approve it here.
-          </p>
-        </div>
-        <Button
-          variant="primary"
-          size="sm"
-          className="shrink-0 gap-1.5"
-          onClick={() => setCapturing(true)}
-        >
-          <ClipboardPaste size={15} />
-          Capture / Paste post
-        </Button>
-      </div>
+      <AdminPageHeader
+        eyebrow="Leads"
+        title="Lead Staging"
+        description="Review captured leads and approve them into the pipeline. Nothing goes live until you approve it here."
+        action={
+          <Button variant="primary" size="sm" className="gap-1.5" onClick={() => setCapturing(true)}>
+            <ClipboardPaste size={15} />
+            Capture / Paste post
+          </Button>
+        }
+      />
 
       <AdminTable<StagingRow>
         key={refreshKey}
         rpc="admin_leads_staging_list"
+        inCard
         searchable
         searchPlaceholder="Search staging by name, region, locality, source…"
         emptyHeading="Staging queue is empty"
