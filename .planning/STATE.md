@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v2.2
 milestone_name: Lead Acquisition & Admin Ops
-status: phase-28-gate1-passed-ready-to-build
-stopped_at: "Phase 28 GATE 1 PASSED 2026-06-28. Direction approved (ProfileDrawer detail; capture demoted to one prominent button; scope = Lead Staging + Outreach only this run; P-9 + Daily Briefing + Leads deferred). Build NOT started — begin in a FRESH session: branch off main, read .planning/phases/28-admin-ui-ux-rework/28-CONTEXT.md (GATE 1 decisions) + 28-AUDIT.md, then build autonomously to GATE 2. Lands P-4(scoped)/P-5/P-8/P-10."
-last_updated: "2026-06-28T00:00:00.000Z"
+status: phase-28-scoped-shipped-28b-filed
+stopped_at: "Phase 28 (scoped: Lead Staging + Outreach) SHIPPED 2026-06-28 — PR #7 merged to main (13465c6); Vercel auto-deploys prod; lead-intake Edge Fn deployed via CI (P-8 locality + P-5 prompt, applies to NEW leads). Operator visual-verified on preview. Landed P-4(scoped)/P-5/P-8/P-10. Deferred (untouched): P-9 admin-login toggle, Daily Briefing pass, Leads pipeline page. NEXT INCREMENT filed: Phase 28b triage-power round (T-1..T-5) in .planning/leads-triage/PUNCHLIST.md — NOT yet scoped/actioned. Operator to verify prod."
+last_updated: "2026-06-28T02:00:00.000Z"
 progress:
   total_phases: 19
   completed_phases: 12
@@ -23,7 +23,7 @@ See: .planning/PROJECT.md (updated 2026-04-03)
 
 ## Current Position
 
-Phase: v2.2 Phase 28 — Admin Dashboard UI/UX Rework. IN PROGRESS, at GATE 1 (taste). Design audit done (.planning/phases/28-admin-ui-ux-rework/28-AUDIT.md); awaiting operator approval of audit + direction before redesign code.
+Phase: v2.2 Phase 28 — Admin Dashboard UI/UX Rework. Scoped run (Lead Staging + Outreach) SHIPPED 2026-06-28 (PR #7 → main 13465c6; Edge Fn deployed). Landed P-4(scoped)/P-5/P-8/P-10. Next: Phase 28b triage-power round (T-1..T-5, filed in .planning/leads-triage/PUNCHLIST.md, unscoped) + the deferred P-9 / Daily Briefing / Leads surfaces.
 Milestone: v2.2 Lead Acquisition & Admin Ops (new 2026-06-28). Phase 27 (Lead Triage & Lane-B Outreach) recorded ✅ shipped retroactively; detail in .planning/leads-triage/.
 Prior: v2.1 Phase 23 closed+verified 2026-05-30; Phases 24-26 sales-gated; v2.0 close pending PEND-01.
 Run model: autonomous with two gates — GATE 1 (taste, after audit, NOW) + GATE 2 (safety: DB migration/merge/prod deploy, operator-actioned).
