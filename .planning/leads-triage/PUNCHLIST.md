@@ -120,3 +120,15 @@ path.
 **Decide later (when actually working placements):** wire a confirmed/invoiced view (show
 acknowledged + invoiced rows and let this column distinguish them), OR relabel the column to
 match what it really tracks, OR drop it. Behaviour question, not jargon — deferred per operator.
+
+---
+
+# Optional voice tweaks (Lane B outreach config)
+
+## V-1 — Macron-on for place names (optional)
+**Context:** the outreach reply-config (`docs/_canonical/TopFarms_Outreach_Reply_Config.md` +
+`049_seed_outreach_config.sql`) writes place names without macrons (e.g. "Taupo", not "Taupō").
+Operator read the live samples and is inclined to leave it — reads fine / authentically casual.
+**If wanted later:** one-line addition to the config `voice_guide` (e.g. "use macrons on Māori
+place names: Taupō, Whangārei, Ōtorohanga"). Not a code change — edit the doc, re-run the 049
+seed in Studio. Deferred per operator; not blocking LEAD-05.
