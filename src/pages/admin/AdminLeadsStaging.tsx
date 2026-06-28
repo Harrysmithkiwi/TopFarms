@@ -470,7 +470,7 @@ export function AdminLeadsStaging() {
           { key: 'region', label: 'Region · locality' },
           { key: 'source', label: 'Source' },
         ]}
-        renderRow={(row, onClick, search) => {
+        renderRow={(row, _onClick, search) => {
           // P-10 — when the search matched hidden raw-post text (e.g. a locality
           // not shown in any column), surface why the row matched.
           const visible = `${row.structured.display_name ?? ''} ${row.structured.region ?? ''} ${regionLocalityLabel(row.structured)}`
@@ -478,12 +478,9 @@ export function AdminLeadsStaging() {
             search && !visible.toLowerCase().includes(search.toLowerCase().trim())
               ? matchSnippet(row.raw_excerpt, search)
               : null
+          // Return cells only — AdminTable provides the <tr> (hover/click/height).
           return (
-            <tr
-              key={row.id}
-              onClick={onClick}
-              className="border-border hover:bg-surface-hover h-[52px] cursor-pointer border-t transition-colors"
-            >
+            <>
               <td className="px-4 font-medium">
                 <div className="flex max-w-[260px] items-center gap-2">
                   <span className="truncate" title={row.structured.display_name ?? ''}>
@@ -513,7 +510,7 @@ export function AdminLeadsStaging() {
                 {regionLocalityLabel(row.structured)}
               </td>
               <td className="px-4 text-[13px] whitespace-nowrap">{sourceLabel(row.source)}</td>
-            </tr>
+            </>
           )
         }}
       />
