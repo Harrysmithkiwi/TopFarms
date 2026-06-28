@@ -1,6 +1,21 @@
+import { useEffect, useState } from 'react'
 import { AdminTable } from '@/components/admin/AdminTable'
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
+import { KpiCard } from '@/components/admin/KpiCard'
 import { Tag } from '@/components/ui/Tag'
+import { supabase } from '@/lib/supabase'
+
+interface PlacementsSummary {
+  count: number
+  overdue: number
+  value_nzd: number
+}
+
+const nzd = new Intl.NumberFormat('en-NZ', {
+  style: 'currency',
+  currency: 'NZD',
+  maximumFractionDigits: 0,
+})
 
 // type (not interface): AdminTable<TRow extends Record<string, unknown>> needs
 // the implicit index signature that only type-alias object literals get.
@@ -60,6 +75,20 @@ function stripeUrl(row: PlacementRow): string | null {
  * pipeline.
  */
 export function PlacementPipeline() {
+  // Summary KPIs load independently of the table — a failure here just hides the
+  // strip; the AdminTable below owns its own load/error state.
+  const [summary, setSummary] = useState<PlacementsSummary | null>(null)
+
+  useEffect(() => {
+    void supabase.rpc('admin_get_placements_summary' as never).then(({ data, error }) => {
+      if (error) {
+        console.error('placements summary load failed', error)
+        return
+      }
+      setSummary(data as PlacementsSummary)
+    })
+  }, [])
+
   return (
     <div className="space-y-6">
       <AdminPageHeader
@@ -67,6 +96,14 @@ export function PlacementPipeline() {
         title="Placement Pipeline"
         description="Acknowledged placements awaiting an invoice. Overdue (>14 days) is flagged; click through to Stripe to bill."
       />
+
+      {summary && (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <KpiCard label="In-flight placements" value={summary.count} />
+          <KpiCard label="Overdue (>14 days)" value={summary.overdue} />
+          <KpiCard label="Pipeline value" value={nzd.format(summary.value_nzd)} />
+        </div>
+      )}
 
       <AdminTable<PlacementRow>
         rpc="admin_list_placements"

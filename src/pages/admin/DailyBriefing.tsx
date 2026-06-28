@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { ArrowUp, ArrowDown } from 'lucide-react'
 import { Card } from '@/components/tremor/Card'
 import { AreaChart } from '@/components/tremor/AreaChart'
 import { Tag } from '@/components/ui/Tag'
+import { KpiCard } from '@/components/admin/KpiCard'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'sonner'
 
@@ -87,59 +87,6 @@ function CardHeading({
 export function pctDelta(today: number, prior: number): number | null {
   if (!prior) return null // 0 / undefined / NaN → no baseline, render "—"
   return Math.round(((today - prior) / prior) * 100)
-}
-
-/**
- * Delta vs prior day. Null → honest "—" (no baseline); a number lights up the
- * coloured ↑/↓ pill.
- */
-function DeltaPill({ delta }: { delta: number | null }) {
-  if (delta === null) {
-    return (
-      <span className="text-text-subtle text-[11px]" title="Prior-day delta not wired yet">
-        vs prior day —
-      </span>
-    )
-  }
-  const up = delta >= 0
-  return (
-    <Tag variant={up ? 'green' : 'red'} className="gap-0.5">
-      {up ? <ArrowUp size={11} /> : <ArrowDown size={11} />}
-      {Math.abs(delta)}%
-    </Tag>
-  )
-}
-
-function KpiCard({
-  label,
-  value,
-  delta,
-}: {
-  label: string
-  value: number
-  delta: number | null
-}) {
-  return (
-    // h-full + grid stretch = equal-height cards; mt-auto pins the number row to
-    // the bottom so numbers stay aligned even when a label wraps to two lines.
-    <Card className="flex h-full flex-col">
-      <div
-        className="text-text-subtle text-[11px] font-semibold uppercase"
-        style={{ letterSpacing: '0.04em' }}
-      >
-        {label}
-      </div>
-      <div className="mt-auto flex items-end justify-between gap-2 pt-3">
-        <span
-          className="text-text text-[28px] leading-none font-semibold"
-          style={{ fontVariantNumeric: 'tabular-nums' }}
-        >
-          {value}
-        </span>
-        <DeltaPill delta={delta} />
-      </div>
-    </Card>
-  )
 }
 
 /**
