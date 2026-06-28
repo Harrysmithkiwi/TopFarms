@@ -470,14 +470,15 @@ export function AdminLeadsStaging() {
         emptyBody="Captured and collected leads appear here for your approval. Use Capture / Paste post to add some."
         errorCopy="Failed to load the staging queue. Refresh the page."
         onRowClick={(row) => setSelected(row)}
+        // 4 work-the-lead columns; Via / Confidence / Dedupe live in the drawer
+        // (T-equivalent triage signals — confidence is a triage-the-machine
+        // number, already in the drawer header). Suspect-duplicate stays
+        // glanceable via an inline Tag under the name (below).
         columns={[
           { key: 'display_name', label: 'Name / business' },
           { key: 'contact', label: 'Contact' },
           { key: 'region', label: 'Region · locality' },
-          { key: 'via', label: 'Via' },
           { key: 'source', label: 'Source' },
-          { key: 'confidence', label: 'Confidence' },
-          { key: 'dedupe_status', label: 'Dedupe' },
         ]}
         renderRow={(row, onClick, search) => {
           // P-10 — when the search matched hidden raw-post text (e.g. a locality
@@ -494,12 +495,20 @@ export function AdminLeadsStaging() {
               className="border-border hover:bg-surface-hover h-[52px] cursor-pointer border-t transition-colors"
             >
               <td className="px-4 font-medium">
-                <div className="max-w-[240px] truncate" title={row.structured.display_name ?? ''}>
-                  {formatLeadName(row.structured.display_name)}
+                <div className="flex max-w-[260px] items-center gap-2">
+                  <span className="truncate" title={row.structured.display_name ?? ''}>
+                    {formatLeadName(row.structured.display_name)}
+                  </span>
+                  {/* Only actionable dedupe signal stays glanceable; the rest is in the drawer. */}
+                  {row.dedupe_status === 'suspect_duplicate' && (
+                    <Tag variant="warn" className="shrink-0">
+                      possible duplicate
+                    </Tag>
+                  )}
                 </div>
                 {snippet && (
                   <div
-                    className="max-w-[240px] truncate text-[12px]"
+                    className="max-w-[260px] truncate text-[12px]"
                     style={{ color: 'var(--color-text-subtle)' }}
                     title={row.raw_excerpt ?? ''}
                   >
@@ -510,31 +519,10 @@ export function AdminLeadsStaging() {
               <td className="px-4">
                 <ContactGlyphs contact={row.structured.contact} />
               </td>
-              <td className="px-4 text-[13px]">{regionLocalityLabel(row.structured)}</td>
-              <td className="px-4">
-                {row.structured.is_recruiter ? (
-                  <Tag variant="grey" title={row.structured.advertiser_name ?? 'agency-placed'}>
-                    agency
-                  </Tag>
-                ) : (
-                  <span className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
-                    direct
-                  </span>
-                )}
+              <td className="px-4 text-[13px] whitespace-nowrap">
+                {regionLocalityLabel(row.structured)}
               </td>
-              <td className="px-4 text-[13px]">{sourceLabel(row.source)}</td>
-              <td className="px-4 text-[13px]" style={{ fontVariantNumeric: 'tabular-nums' }}>
-                {Math.round(row.confidence * 100)}%
-              </td>
-              <td className="px-4">
-                {row.dedupe_status === 'suspect_duplicate' ? (
-                  <Tag variant="warn">suspect</Tag>
-                ) : (
-                  <span className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
-                    unique
-                  </span>
-                )}
-              </td>
+              <td className="px-4 text-[13px] whitespace-nowrap">{sourceLabel(row.source)}</td>
             </tr>
           )
         }}
