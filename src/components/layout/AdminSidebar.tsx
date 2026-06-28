@@ -12,6 +12,7 @@ import {
   Inbox,
   Send,
   Target,
+  LogOut,
 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 
@@ -36,7 +37,7 @@ const adminItems: NavItem[] = [
 ]
 
 export function AdminSidebar() {
-  const { role } = useAuth()
+  const { role, signOut } = useAuth()
   // Back-to-app target uses primary role if known; falls back to /dashboard/seeker.
   // The admin operator may also have a non-admin row in user_roles via legacy seeker
   // signup (handle_new_user trigger COALESCEs to seeker). The Studio-SQL bootstrap
@@ -96,6 +97,21 @@ export function AdminSidebar() {
           </NavLink>
         ))}
       </nav>
+
+      {/* Sign out — pinned to the bottom (mt-auto). Clean logout matters on
+          shared machines. signOut() clears the Supabase session; AuthContext's
+          onAuthStateChange then drops the admin guard and routes to login. */}
+      <div className="mt-auto border-t p-3" style={{ borderColor: 'var(--color-border)' }}>
+        <button
+          type="button"
+          onClick={() => signOut()}
+          className="hover:bg-surface-2/50 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all"
+          style={{ color: 'var(--color-text-muted)' }}
+        >
+          <LogOut size={18} />
+          <span>Sign out</span>
+        </button>
+      </div>
     </aside>
   )
 }
