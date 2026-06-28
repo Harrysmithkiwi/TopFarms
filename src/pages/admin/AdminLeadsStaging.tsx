@@ -7,6 +7,7 @@ import { DrawerShell, DrawerSection } from '@/components/admin/DrawerShell'
 import { ContactGlyphs, LeadContactCard, type LeadContact } from '@/components/admin/LeadContact'
 import { Button } from '@/components/ui/Button'
 import { Tag } from '@/components/ui/Tag'
+import { SegmentedControl } from '@/components/ui/SegmentedControl'
 import { supabase } from '@/lib/supabase'
 import { NZ_REGIONS } from '@/lib/constants'
 import {
@@ -413,11 +414,17 @@ function StagingDrawer({
   )
 }
 
+type SourceFilter = 'mine' | 'harvested' | 'all'
+
 export function AdminLeadsStaging() {
   const [selected, setSelected] = useState<StagingRow | null>(null)
   const [capturing, setCapturing] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
   const [acting, setActing] = useState(false)
+  // Default to MY hand-captures — the work the founder chases — not the harvested
+  // wall. (T-2; the RPC defaults to 'all', so this front-end default is what makes
+  // "Mine" the morning view.)
+  const [sourceFilter, setSourceFilter] = useState<SourceFilter>('mine')
 
   const bumpRefresh = () => setRefreshKey((k) => k + 1)
 
@@ -468,6 +475,19 @@ export function AdminLeadsStaging() {
         inCard
         searchable
         searchPlaceholder="Search staging by name, region, locality, source…"
+        extraArgs={{ p_source: sourceFilter }}
+        toolbar={
+          <SegmentedControl<SourceFilter>
+            aria-label="Filter leads by source"
+            value={sourceFilter}
+            onChange={setSourceFilter}
+            options={[
+              { value: 'mine', label: 'Mine' },
+              { value: 'harvested', label: 'Harvested' },
+              { value: 'all', label: 'All' },
+            ]}
+          />
+        }
         emptyHeading="Staging queue is empty"
         emptyBody="Captured and collected leads appear here for your approval. Use Capture / Paste post to add some."
         errorCopy="Failed to load the staging queue. Refresh the page."
