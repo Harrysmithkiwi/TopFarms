@@ -277,7 +277,11 @@ Deno.serve(async (req) => {
       // is a PLACEHOLDER until lead_outreach_config is populated — see draftReply.
       const stagingId = (data as { staging_id?: string })?.staging_id
       if (outcome === 'inserted' && stagingId && lead.structured.lane === 'b') {
-        const drafted = await draftReply(lead.structured, db as unknown as ConfigDb)
+        const drafted = await draftReply(
+          lead.structured,
+          item.raw_text ?? '',
+          db as unknown as ConfigDb,
+        )
         const { error: seedErr } = await db.rpc('_lead_outreach_seed', {
           p_staging_id: stagingId,
           p_draft: drafted.draft,
@@ -508,23 +512,99 @@ async function structureWithClaude(
 }
 
 // ─── Lane B reply draft (A4) ──────────────────────────────────────────────────
-// MECHANISM is built (loads the swappable lead_outreach_config row); the actual
-// Claude prompt ASSEMBLY is intentionally a PLACEHOLDER. Per operator: no reply is
-// drafted without the do-not rules, and the prompt construction is reviewed before
-// going live. Until config (do-not rules + voice + template) is supplied via
-// admin_outreach_set_config AND the assembly is signed off, seed a placeholder.
+// Reads the swappable lead_outreach_config row (do-not rules + voice guide +
+// worked-example register, set by the operator via admin_outreach_set_config /
+// Studio) and writes a TAILORED first-contact FB message for this specific lead.
+// NOT a fixed template: the post is read and written to, in Harry's voice, within
+// the rules, varying shape per the variation kit. Source of truth is the config
+// row — edit the config, not this code, to change voice/rules. Every draft lands
+// as `drafted`; the operator reads/edits/approves/sends manually on FB (the gate
+// never auto-sends). See docs/_canonical/TopFarms_Outreach_Reply_Config.md.
+
+// Voice-critical + low volume (Lane B = no-contact posts only) + the operator
+// reads every draft → use the stronger writer, not the haiku used for bulk
+// structuring. Temperature is high on purpose: drafts must NOT converge on one
+// shape across a small community (see config §5 variation kit).
+const DRAFT_MODEL = 'claude-sonnet-4-6'
+const DRAFT_TEMPERATURE = 1.0
+// Where the message points. The CTA lands a cold employer on the employer entry
+// page. Overridable via APP_URL secret; path is the employer signup/post entry.
+const outreachLink = () => (Deno.env.get('APP_URL') ?? 'https://topfarms.co.nz') + '/for-employers'
+
+interface OutreachConfigRow {
+  do_not_rules?: unknown[]
+  voice_guide?: string | null
+  template?: string | null
+}
+
+/** Assemble the system prompt from the operator's config + the resolved link. */
+function buildDraftSystemPrompt(cfg: OutreachConfigRow, link: string): string {
+  const rules = (cfg.do_not_rules ?? [])
+    .map((r) => `- ${String(r)}`)
+    .join('\n')
+  return [
+    'You are Harry, writing a single first-contact Facebook message to the author of a',
+    'New Zealand farm job post that gave no contact details (a Lane B lead). You saw their',
+    'post and reckon you can help. You are writing as yourself, a real person, never as a',
+    'company representative.',
+    '',
+    'HOW TO WRITE (voice, structure, and variation):',
+    cfg.voice_guide ?? '',
+    '',
+    'HARD RULES — never break any of these:',
+    rules,
+    '',
+    'REGISTER — worked examples of the right register. Do NOT copy them. They deliberately',
+    'vary in shape and length; yours must vary too. Read the actual post and write a fresh',
+    'message for THAT post.',
+    cfg.template ?? '',
+    '',
+    `THE LINK — include this exact URL where the message points to TopFarms: ${link}`,
+    'Never output a placeholder like [link]; write the real URL.',
+    '',
+    'OUTPUT: only the message text itself. No preamble, no quotation marks, no subject line,',
+    'no sign-off label, no notes about your choices. Just the message, ready to paste.',
+  ].join('\n')
+}
+
+/** The specific lead, as context for the draft. */
+function buildLeadUserMessage(structured: Record<string, unknown>, rawText: string): string {
+  const s = structured as Record<string, string | null | undefined>
+  const facts: string[] = []
+  if (s.role_or_category) facts.push(`Looking for: ${s.role_or_category}`)
+  const place = [s.region, s.locality].filter(Boolean).join(' / ')
+  if (place) facts.push(`Where: ${place}`)
+  if (s.shed_type) facts.push(`Shed: ${s.shed_type}`)
+  if (s.herd_details) facts.push(`Herd: ${s.herd_details}`)
+  if (s.application_method) facts.push(`How they said to apply: ${s.application_method}`)
+  if (s.summary) facts.push(`Summary: ${s.summary}`)
+  return [
+    'The post (verbatim — read it and write to THIS post specifically):',
+    '"""',
+    (rawText ?? '').slice(0, 4000).trim() || '(no raw post text captured)',
+    '"""',
+    '',
+    facts.length ? 'What we extracted from it:' : '',
+    facts.map((f) => `- ${f}`).join('\n'),
+  ]
+    .filter(Boolean)
+    .join('\n')
+}
+
 async function draftReply(
-  _structured: Record<string, unknown>,
+  structured: Record<string, unknown>,
+  rawText: string,
   db: ConfigDb,
 ): Promise<{ draft: string; model: string }> {
-  let cfg: { do_not_rules?: unknown[]; voice_guide?: string; template?: string } = {}
+  let cfg: OutreachConfigRow = {}
   try {
     const { data } = await db.from('lead_outreach_config').select('*').eq('id', 1).single()
-    cfg = (data as typeof cfg) ?? {}
+    cfg = (data as OutreachConfigRow) ?? {}
   } catch {
     /* fall through to placeholder */
   }
 
+  // No reply is drafted without the do-not rules + register present.
   const ready = !!cfg.template && Array.isArray(cfg.do_not_rules) && cfg.do_not_rules.length > 0
   if (!ready) {
     return {
@@ -535,13 +615,44 @@ async function draftReply(
     }
   }
 
-  // ⚠️ A4 PLACEHOLDER ASSEMBLY — finalise with operator sign-off once config lands:
-  //   build the Claude system prompt from cfg.voice_guide + cfg.do_not_rules +
-  //   cfg.template + the structured lead, call claude-haiku-4-5, return the reply.
-  // Dormant by design until then.
-  return {
-    draft: '[Outreach config present — Claude draft assembly pending operator sign-off]',
-    model: 'placeholder',
+  const key = Deno.env.get('ANTHROPIC_API_KEY')
+  // All non-real outcomes start with '[Draft pending' so the Outreach UI keeps the
+  // send button disabled (AdminLeadsOutreach isPlaceholder check) until a real draft exists.
+  if (!key) {
+    return { draft: '[Draft pending — ANTHROPIC_API_KEY not configured in Edge secrets]', model: 'placeholder' }
+  }
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: DRAFT_MODEL,
+        max_tokens: 400,
+        temperature: DRAFT_TEMPERATURE,
+        system: buildDraftSystemPrompt(cfg, outreachLink()),
+        messages: [{ role: 'user', content: buildLeadUserMessage(structured, rawText) }],
+      }),
+    })
+    if (!res.ok) {
+      console.error('draftReply claude error:', res.status, (await res.text()).slice(0, 200))
+      return { draft: '[Draft pending — draft generation failed, re-stage to retry]', model: 'error' }
+    }
+    const msg = await res.json()
+    const text = (msg.content as { type: string; text?: string }[] | undefined)
+      ?.find((c) => c.type === 'text')
+      ?.text?.trim()
+    if (!text) {
+      return { draft: '[Draft pending — draft generation returned empty, re-stage to retry]', model: 'error' }
+    }
+    return { draft: text, model: DRAFT_MODEL }
+  } catch (e) {
+    console.error('draftReply call failed:', (e as Error).message)
+    return { draft: '[Draft pending — draft generation unreachable, re-stage to retry]', model: 'error' }
   }
 }
 
