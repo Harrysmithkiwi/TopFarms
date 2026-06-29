@@ -15,6 +15,7 @@ import {
   regionLocalityLabel,
   leadLocality,
   matchSnippet,
+  highlightParts,
   sourceLabel,
   SOURCE_LABELS,
 } from '@/lib/leadDisplay'
@@ -554,7 +555,16 @@ export function AdminLeadsStaging() {
                     style={{ color: 'var(--color-text-subtle)' }}
                     title={row.raw_excerpt ?? ''}
                   >
-                    matched: {snippet}
+                    matched:{' '}
+                    {highlightParts(snippet, search).map((p, i) =>
+                      p.match ? (
+                        <strong key={i} style={{ color: 'var(--color-text)', fontWeight: 600 }}>
+                          {p.text}
+                        </strong>
+                      ) : (
+                        <span key={i}>{p.text}</span>
+                      ),
+                    )}
                   </div>
                 )}
               </td>
