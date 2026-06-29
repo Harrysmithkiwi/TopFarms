@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
 
 // Mock supabase first so transitive imports inside SUT chain don't try to hit network.
@@ -67,11 +68,38 @@ describe('AdminGate hybrid route', () => {
       </MemoryRouter>,
     )
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument()
+    // selector: 'input' — the show/hide toggle button carries an aria-label containing
+    // "password", so scope this query to the field itself.
+    expect(screen.getByLabelText(/password/i, { selector: 'input' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument()
     // No OAuth buttons (CONTEXT GA-1 explicit lock)
     expect(screen.queryByRole('button', { name: /google/i })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /facebook/i })).not.toBeInTheDocument()
+  })
+
+  it('password show/hide toggle reveals and re-hides the password (P-9)', async () => {
+    const user = userEvent.setup()
+    mockAuth({ session: null, role: null, loading: false })
+    render(
+      <MemoryRouter>
+        <AdminGate />
+      </MemoryRouter>,
+    )
+
+    const passwordInput = screen.getByLabelText(/password/i, { selector: 'input' })
+    // Default: masked
+    expect(passwordInput).toHaveAttribute('type', 'password')
+
+    const toggle = screen.getByRole('button', { name: /show password/i })
+    expect(toggle).toHaveAttribute('aria-pressed', 'false')
+
+    await user.click(toggle)
+    expect(passwordInput).toHaveAttribute('type', 'text')
+    const hideToggle = screen.getByRole('button', { name: /hide password/i })
+    expect(hideToggle).toHaveAttribute('aria-pressed', 'true')
+
+    await user.click(hideToggle)
+    expect(passwordInput).toHaveAttribute('type', 'password')
   })
 
   it('renders Access denied for non-admin authenticated user (employer)', () => {
