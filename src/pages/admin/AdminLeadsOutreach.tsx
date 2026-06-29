@@ -322,7 +322,7 @@ export function AdminLeadsOutreach() {
                 <Tag variant={tag.variant}>{tag.label}</Tag>
               </td>
               <td className="px-4 text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
-                {new Date(row.created_at).toLocaleDateString('en-NZ')}
+                {new Date(row.created_at).toLocaleDateString('en-NZ', { day: '2-digit', month: 'short', year: 'numeric' })}
               </td>
             </>
           )

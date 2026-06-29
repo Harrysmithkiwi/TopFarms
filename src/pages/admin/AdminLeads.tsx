@@ -355,7 +355,7 @@ export function AdminLeads() {
               )}
             </td>
             <td className="px-3">{row.source}</td>
-            <td className="px-3">{new Date(row.status_changed_at).toLocaleDateString('en-NZ')}</td>
+            <td className="px-3">{new Date(row.status_changed_at).toLocaleDateString('en-NZ', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
           </tr>
         )}
       />
