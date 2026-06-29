@@ -27,7 +27,8 @@ VALUES (
     $$Never bash how they hire now (Facebook, word of mouth, the local grapevine). Never imply it is broken, outdated, or a waste of time.$$,
     $$No AI as a selling point. Do not pitch "AI matching" or "Claude-powered" to a stranger.$$,
     $$No overselling or promises. No "perfect hire", no "guaranteed quality staff", no "leading site". Understate, do not oversell.$$,
-    $$Name the company once, lightly, and never first. Say "I built TopFarms" or "I run TopFarms" confidently, never "a little site I made". Humble is good, apologetic is not.$$
+    $$Name the company once, lightly, and never first. Say "I built TopFarms" or "I run TopFarms" confidently, never "a little site I made". Humble is good, apologetic is not.$$,
+    $$Never reference the poster's private or sensitive circumstances, even when the post states them: a staff member's health or injury, a death, family or personal hardship, financial trouble, a relationship breakdown. Respond to the job itself (the role, the farm, the location, what they need), never to the private reason behind the vacancy. Do not echo or allude to it. A line like "given the circumstances" reads as knowing and presumptuous on a public post. Stay warm and direct in the usual voice, just blind to private difficulty.$$
   ),
   $voice$GOAL: get the employer to click through and post their job on TopFarms. One direct message, one link, no back-and-forth required. It is a cold first contact, not a conversation opener that waits for a reply. It gives them everything they need to act in a single message.
 
@@ -81,4 +82,4 @@ COMMIT;
 --   SELECT jsonb_array_length(do_not_rules) AS rules,
 --          length(voice_guide) AS voice_len, length(template) AS tpl_len, updated_at
 --   FROM public.lead_outreach_config WHERE id = 1;
--- Expect: rules = 9, voice_len and tpl_len both > 0.
+-- Expect: rules = 10, voice_len and tpl_len both > 0.

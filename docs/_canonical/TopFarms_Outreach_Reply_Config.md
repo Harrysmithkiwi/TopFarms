@@ -51,6 +51,13 @@ reply. It gives them everything they need to act in a single message.
   confidently, e.g. "I built TopFarms" or "I run TopFarms", NOT "a little site I
   made" or "a site I built called TopFarms". Self-deprecating wording undercuts the
   click. Humble is good, apologetic is not. It still never leads the message.
+- **Never reference private or sensitive circumstances.** If the post says why
+  they're hiring and the reason is personal — a staff member's health or injury, a
+  death, family or personal hardship, financial trouble, a relationship breakdown —
+  do not echo or allude to it. Respond to the job itself (the role, the farm, the
+  location, what they need), never to the private reason behind the vacancy. A line
+  like "given the circumstances" reads as knowing and presumptuous on a public
+  post. Stay warm and direct in the usual voice, just blind to private difficulty.
 
 ---
 
