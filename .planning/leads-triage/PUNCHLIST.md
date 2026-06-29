@@ -133,10 +133,15 @@ Operator read the live samples and is inclined to leave it — reads fine / auth
 place names: Taupō, Whangārei, Ōtorohanga"). Not a code change — edit the doc, re-run the 049
 seed in Studio. Deferred per operator; not blocking LEAD-05.
 
-## V-2 — Don't reference a poster's private difficulties too directly (optional)
+## V-2 — Don't reference a poster's private difficulties too directly ✅ DONE 2026-06-29
 **Context:** the first live Sonnet draft (Tirohanga, 2026-06-28) wrote "given the circumstances",
 referencing the poster's staffing situation. It reads slightly knowing/presumptuous on a public
 FB comment. The manual approve gate catches it per-post, so not urgent.
-**If wanted later:** one-line addition to the config `voice_guide` or hard rules (e.g. "Don't
-reference the poster's private difficulties or speculate about why they're hiring; stick to what
-the post plainly states"). Edit the doc + re-run the 049 seed in Studio. Deferred per operator.
+**Shipped (PR #26, main 6552652):** added a 10th `do_not_rule` to `lead_outreach_config` (and the
+canonical doc §2 + migration 049) — the draft must not reference or allude to the poster's private
+reason for hiring (staff health/injury, a death, family/personal hardship, financial trouble, a
+relationship breakdown); respond to the job itself, no "given the circumstances" line. Re-seeded
+in Studio per CLAUDE §2 (rules=10, voice/tpl lengths intact). **Validated against a LIVE deployed
+draft run** (not just the seed): operator pasted a Halter "staff member with a health condition"
+post through /admin → Lead Staging; the deployed Sonnet 4.6 draft answered the job and stayed
+silent on the health detail.
