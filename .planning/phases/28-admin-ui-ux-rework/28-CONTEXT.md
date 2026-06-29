@@ -1,6 +1,6 @@
 # Phase 28 — Admin Dashboard UI/UX Rework (CONTEXT)
 
-**Milestone:** v2.2 Lead Acquisition & Admin Ops · **Status:** in progress (2026-06-28)
+**Milestone:** v2.2 Lead Acquisition & Admin Ops · **Status:** SHIPPED — redesign shipped 2026-06-28 (PR #7); triage-power follow-up Phase 28b (T-1..T-5) shipped 2026-06-29 (HEAD cd8966a). Only P-9 (admin-login password toggle) remains open — see PUNCHLIST.md. (Originally: in progress 2026-06-28)
 
 ## Goal
 Bring the admin surfaces — **Daily Briefing, Lead Staging, Outreach, Leads, admin login** — to a

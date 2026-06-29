@@ -23,10 +23,10 @@ See: .planning/PROJECT.md (updated 2026-04-03)
 
 ## Current Position
 
-Phase: v2.2 Phase 28 — Admin Dashboard UI/UX Rework. Scoped run (Lead Staging + Outreach) SHIPPED 2026-06-28 (PR #7 → main 13465c6; Edge Fn deployed). Landed P-4(scoped)/P-5/P-8/P-10. Next: Phase 28b triage-power round (T-1..T-5, filed in .planning/leads-triage/PUNCHLIST.md, unscoped) + the deferred P-9 / Daily Briefing / Leads surfaces.
+Phase: v2.2 Phase 28 + 28b — Admin UI/UX Rework + triage-power round — SHIPPED & COMPLETE. Phase 28 redesign (P-4 scoped / P-5 / P-8 / P-10) shipped 2026-06-28 (PR #7 → main 13465c6); Phase 28b triage-power round (T-1..T-5) shipped 2026-06-29 (HEAD cd8966a; migrations 050-055 in sync). Status: leads-triage-complete. GATE 1 (taste) + GATE 2 (safety) both long passed — redesign code and all DB migrations are live in prod; no build in flight. Remaining items are deferred/optional, off the critical path: P-9 admin-login password toggle (keeps ROADMAP Phase 28 [ ] per §7), V-1/V-2 voice tweaks, L-1 placements Hired column — all filed in .planning/leads-triage/PUNCHLIST.md.
 Milestone: v2.2 Lead Acquisition & Admin Ops (new 2026-06-28). Phase 27 (Lead Triage & Lane-B Outreach) recorded ✅ shipped retroactively; detail in .planning/leads-triage/.
 Prior: v2.1 Phase 23 closed+verified 2026-05-30; Phases 24-26 sales-gated; v2.0 close pending PEND-01.
-Run model: autonomous with two gates — GATE 1 (taste, after audit, NOW) + GATE 2 (safety: DB migration/merge/prod deploy, operator-actioned).
+Run model: autonomous with two gates — GATE 1 (taste) + GATE 2 (safety) — both passed for Phase 28/28b.
 
 ### v2.0 close-out summary (Phase 22 complete 2026-05-26)
 All 5 P0s closed: SIGNUP-01 (a6cc3f5) + HOMEBUG-02 (73ed245) + HOMEBUG-03 (9673eb1) + HOMEBUG-01 (fb60aa2) + UXBUG-01 (498d7fb); plan 22-05 MAIL docs audit (055507e); Phase 22 verified + complete (dae8b1d). v2.1 bridge artifacts: codebase map (1ac5b04) + HTML repo overview (f4ff942). §6 pooler auth deferred/blocked on Supabase support (a9645ee + memory). v2.0 milestone close gated only on PEND-01 (Stripe live-mode swap, 9-item checklist in DECISIONS-PENDING.md, separate operator session).
