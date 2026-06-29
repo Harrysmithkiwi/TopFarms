@@ -299,11 +299,13 @@ export function AdminLeadsOutreach() {
         emptyBody="Paste a no-contact FB post in Lead Staging — it lands here with a drafted reply."
         errorCopy="Failed to load outreach. Refresh the page."
         onRowClick={(row) => setSelected(row)}
+        defaultSort={{ key: 'captured', dir: 'desc' }}
         columns={[
           { key: 'display_name', label: 'Name / business' },
           { key: 'region', label: 'Region · locality' },
-          { key: 'outreach_status', label: 'Status' },
-          { key: 'created_at', label: 'Captured' },
+          // Status sorts by urgency (responded-first), not alphabetical — see mig 055.
+          { key: 'outreach_status', label: 'Status', sortKey: 'status' },
+          { key: 'created_at', label: 'Captured', sortKey: 'captured' },
         ]}
         renderRow={(row) => {
           const tag = STATUS_TAG[row.outreach_status]
