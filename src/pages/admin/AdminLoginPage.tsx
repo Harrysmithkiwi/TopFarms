@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
+import { Eye, EyeOff } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -79,6 +80,7 @@ function AccessDeniedView({ role }: { role: 'employer' | 'seeker' }) {
 export function AdminLoginPage() {
   const { signIn } = useAuth()
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [showPassword, setShowPassword] = useState(false)
 
   const {
     register,
@@ -128,10 +130,22 @@ export function AdminLoginPage() {
           />
           <Input
             label="Password"
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             autoComplete="current-password"
             {...register('password')}
             error={errors.password?.message}
+            endAdornment={
+              <button
+                type="button"
+                onClick={() => setShowPassword((s) => !s)}
+                className="absolute top-1/2 right-1 flex -translate-y-1/2 items-center justify-center"
+                style={{ minWidth: 44, minHeight: 44, color: 'var(--color-text-subtle)' }}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-pressed={showPassword}
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            }
           />
 
           {submitError && (
