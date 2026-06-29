@@ -30,13 +30,17 @@ type MockOpts = {
   loading: boolean
 }
 
+// Module-level so submit tests can assert the args signIn was called with.
+const signInMock = vi.fn()
+
 function mockAuth(opts: MockOpts) {
+  signInMock.mockResolvedValue({ data: {}, error: null })
   vi.mocked(useAuth).mockReturnValue({
     session: opts.session,
     role: opts.role,
     loading: opts.loading,
     signUpWithRole: vi.fn(),
-    signIn: vi.fn().mockResolvedValue({ data: {}, error: null }),
+    signIn: signInMock,
     signOut: vi.fn(),
     resetPassword: vi.fn(),
     updatePassword: vi.fn(),
@@ -100,6 +104,30 @@ describe('AdminGate hybrid route', () => {
 
     await user.click(hideToggle)
     expect(passwordInput).toHaveAttribute('type', 'password')
+  })
+
+  it('still submits with the correct password value — masked AND after reveal (P-9 binding regression)', async () => {
+    const user = userEvent.setup()
+    mockAuth({ session: null, role: null, loading: false })
+    render(
+      <MemoryRouter>
+        <AdminGate />
+      </MemoryRouter>,
+    )
+
+    await user.type(screen.getByLabelText(/email/i), 'admin@topfarms.co.nz')
+    await user.type(screen.getByLabelText(/password/i, { selector: 'input' }), 'TopFarms2026!')
+
+    // Submit while masked (default type=password)
+    await user.click(screen.getByRole('button', { name: /sign in/i }))
+    expect(signInMock).toHaveBeenCalledWith('admin@topfarms.co.nz', 'TopFarms2026!')
+
+    // Reveal (type flips to text) then submit again — register('password') binding
+    // must survive the type switch and still carry the full value.
+    signInMock.mockClear()
+    await user.click(screen.getByRole('button', { name: /show password/i }))
+    await user.click(screen.getByRole('button', { name: /sign in/i }))
+    expect(signInMock).toHaveBeenCalledWith('admin@topfarms.co.nz', 'TopFarms2026!')
   })
 
   it('renders Access denied for non-admin authenticated user (employer)', () => {
