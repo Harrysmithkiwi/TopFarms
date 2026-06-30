@@ -66,6 +66,21 @@ login) converging on one role-based authorization gate (`requiredRole="admin"` o
 block admin accounts from signing in via the normal `/login` (force the `/admin` door), and/or
 add 2FA on the admin login. Deliberate hardening, NOT a bug fix. Do not action unless requested.
 
+## P-12 — Harvested leads have no staleness / dead-listing detection (NEXT ROADMAP ITEM — filed 2026-06-30)
+**Context:** the `lead-harvest` cron is insert-only — it maps + scrapes only NEW ad URLs (deduped
+against existing `source_ref`s) and never revisits a listing once captured. So a harvested lead sits
+in staging indefinitely with copy that still *looks* live, even after the underlying ad was filled
+and taken down weeks ago.
+**Risk:** the staging queue slowly accumulates stale leads that look current → wasted outreach on
+dead jobs. The T-1 "Captured" column shows when WE grabbed it, not the ad's true age/liveness — so it
+differentiates an overnight batch but does NOT solve staleness.
+**Scope guard — NOT a re-scrape engine.** Deliberately out of scope for the v1 harvest go-live. The
+lightweight fix is an AGE SIGNAL, not a liveness re-check: flag/badge a harvested lead that's sat
+unworked in staging > N days as "may be stale — verify before outreach". A column or badge keyed on
+`created_at` + `outreach_status='none'`, not a Firecrawl revisit. (If true liveness ever matters, a
+periodic HEAD/200-check on `source_ref` is a separate, larger piece — explicitly deferred beyond this.)
+**Pairs with:** T-1 (Captured column = the date basis), T-2 (harvested-vs-hand-captured split).
+
 ---
 
 # Phase 28b — Triage-power round (NEXT INCREMENT — filed 2026-06-28, not yet actioned)
