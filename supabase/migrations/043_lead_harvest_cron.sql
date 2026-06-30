@@ -1,34 +1,34 @@
--- 043: schedule the Firecrawl commercial harvest (leads — Seek/TradeMe)
+-- 043: schedule the Firecrawl commercial harvest (nzfarmingjobs)
 --
--- ███ STAGED — DO NOT APPLY until lead-harvest is DEPLOYED and the secrets are
--- set (FIRECRAWL_API_KEY, LEAD_INTAKE_SECRET, FIRECRAWL_SEEK_URLS /
--- FIRECRAWL_TRADEME_URLS). Applying earlier just fires an unkeyed function that
--- 200-skips twice daily — pointless until live. ███
+-- pg_cron → pg_net.http_post → lead-harvest Edge Function, X-Webhook-Secret read
+-- from Vault (029 precedent) so the secret never sits in the migration text or the
+-- cron row. Mirrors refresh-resend-stats.
 --
--- Pattern: pg_cron → pg_net.http_post → lead-harvest, with the X-Webhook-Secret
--- header (same as get-resend-stats / notify-job-filled). The secret is read
--- from Vault at apply time (migration 029 precedent) so it never sits in the
--- migration text or the cron row.
+-- Preconditions (all met 2026-06-30):
+--   • lead-harvest deployed (proven: manual run 2026-06-16 wrote lead_harvest_runs).
+--   • FIRECRAWL_API_KEY set (the map step returned 1880 links that run).
+--   • Edge Fn secret LEAD_INTAKE_SECRET set, SAME value in Vault as 'lead_intake_secret'
+--     (the cron header must equal the function gate — proven 2026-06-30: pg_net probe
+--     returned 202 + a fresh lead_harvest_runs row, not 403).
 --
--- Apply (go-live, operator present):
---   1) Vault: ensure secret 'lead_intake_secret' holds the LEAD_INTAKE_SECRET value.
---   2) Run this migration via Studio/Management API.
---   3) registry repair: ...repair --status applied 043 (see REGISTRY-REPAIR-PLAN).
+-- Board scope = nzfarmingjobs only (single BOARDS entry); Seek/TradeMe stay deferred
+-- in the function, so no Seek/TradeMe env vars are required.
+-- Apply via Studio SQL Editor; verify via cron.job, not list_migrations.
 
 BEGIN;
 
--- Twice daily (03:10 and 15:10 UTC). cron.schedule is idempotent on name.
+-- Twice daily (03:10 + 15:10 UTC). cron.schedule is idempotent on the job name.
 SELECT cron.schedule(
-  'lead-harvest-seek-trademe',
+  'lead-harvest-nzfarmingjobs',
   '10 3,15 * * *',
   $$
   SELECT net.http_post(
-    url    := 'https://inlagtgpynemhipnqvty.functions.supabase.co/lead-harvest',
+    url     := 'https://inlagtgpynemhipnqvty.functions.supabase.co/lead-harvest',
     headers := jsonb_build_object(
-      'Content-Type', 'application/json',
+      'Content-Type',     'application/json',
       'X-Webhook-Secret', (SELECT decrypted_secret FROM vault.decrypted_secrets WHERE name = 'lead_intake_secret')
     ),
-    body   := '{}'::jsonb
+    body    := '{}'::jsonb
   );
   $$
 );
