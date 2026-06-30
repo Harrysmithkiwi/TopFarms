@@ -22,9 +22,11 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT"   # gws --upload only accepts paths INSIDE the current directory
 MANIFEST="$ROOT/docs/_canonical/.drive-mirror.json"
 SRC_DIR="$ROOT/docs/_canonical"
-WORK="$(mktemp -d)"
+WORK=".canon-sync-tmp"   # repo-local (cwd) so gws --upload accepts it; gitignored
+mkdir -p "$WORK"
 trap 'rm -rf "$WORK"' EXIT
 
 ONLY=""
@@ -41,8 +43,16 @@ done
 for dep in jq npx; do
   command -v "$dep" >/dev/null || { echo "missing dependency: $dep" >&2; exit 1; }
 done
-[ "$DRY" -eq 1 ] || command -v gws >/dev/null || { echo "missing dependency: gws (or use --dry-run)" >&2; exit 1; }
 [ -f "$MANIFEST" ] || { echo "manifest not found: $MANIFEST" >&2; exit 1; }
+if [ "$DRY" -eq 0 ]; then
+  command -v gws >/dev/null || { echo "missing dependency: gws (or use --dry-run)" >&2; exit 1; }
+  # gws's own OAuth client is broken; borrow a gcloud-minted Drive token (gws honors
+  # GOOGLE_WORKSPACE_CLI_TOKEN as highest priority). One token lasts ~1h — fine per run.
+  : "${GOOGLE_WORKSPACE_CLI_TOKEN:=$(gcloud auth print-access-token 2>/dev/null)}"
+  export GOOGLE_WORKSPACE_CLI_TOKEN
+  [ -n "$GOOGLE_WORKSPACE_CLI_TOKEN" ] || {
+    echo "no Drive token — run: gcloud auth login --enable-gdrive-access" >&2; exit 1; }
+fi
 
 FOLDER_ID="$(jq -r '.mirror_folder_id // ""' "$MANIFEST")"
 if [ "$DRY" -eq 0 ] && [ -z "$FOLDER_ID" ]; then
