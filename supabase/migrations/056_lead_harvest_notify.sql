@@ -106,10 +106,11 @@ $fn$;
 
 REVOKE ALL ON FUNCTION public.lead_harvest_notify_check(boolean) FROM PUBLIC, anon, authenticated;
 
--- 30 min after each harvest (:10 → :40). Idempotent on name.
+-- 30 min after the harvest (02:00 → 02:30 UTC). Idempotent on name.
+-- Fixed UTC; follows the harvest's DST drift (see 043) — ~3pm NZ under NZDT. Not a bug.
 SELECT cron.schedule(
   'lead-harvest-notify',
-  '40 3,15 * * *',
+  '30 2 * * *',
   $$SELECT public.lead_harvest_notify_check();$$
 );
 
