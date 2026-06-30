@@ -17,10 +17,13 @@
 
 BEGIN;
 
--- Twice daily (03:10 + 15:10 UTC). cron.schedule is idempotent on the job name.
+-- Once daily, 02:00 UTC = 2pm NZST (UTC+12). cron.schedule is idempotent on the job name.
+-- NOTE: schedule is fixed UTC and does NOT track NZ daylight saving. When NZDT (UTC+13)
+-- starts ~late Sept the run lands at 3pm NZ, not 2pm — expected drift, harmless for a daily
+-- harvest, do NOT "fix" it.
 SELECT cron.schedule(
   'lead-harvest-nzfarmingjobs',
-  '10 3,15 * * *',
+  '0 2 * * *',
   $$
   SELECT net.http_post(
     url     := 'https://inlagtgpynemhipnqvty.functions.supabase.co/lead-harvest',
