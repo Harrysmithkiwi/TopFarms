@@ -1,0 +1,12 @@
+{
+  "_comment": "Maps each repo canonical markdown file -> its read-only Google Docs mirror. The repo is the ONLY source of truth; the Drive Docs are overwritten in place (same drive_file_id) on every sync — repo always wins, no duplicates. Do NOT edit the Google Docs. Managed by scripts/sync-canon-to-drive.sh.",
+  "mirror_folder_id": "",
+  "source_dir": "docs/_canonical",
+  "docs": [
+    { "file": "TopFarms_Master_Compendium.md",   "title": "TopFarms Master Compendium",     "drive_file_id": "" },
+    { "file": "PRD.md",                            "title": "TopFarms PRD",                    "drive_file_id": "" },
+    { "file": "Brand_and_Design.md",               "title": "TopFarms Brand & Design",         "drive_file_id": "" },
+    { "file": "Data_Architecture.md",              "title": "TopFarms Data Architecture",      "drive_file_id": "" },
+    { "file": "TopFarms_Outreach_Reply_Config.md", "title": "TopFarms Outreach Reply Config",  "drive_file_id": "" }
+  ]
+}
