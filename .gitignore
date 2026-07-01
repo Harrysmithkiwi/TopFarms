@@ -44,3 +44,6 @@ test-results/
 # Rendered video outputs (regenerable from the HyperFrames source — keep big binaries out of git)
 marketing/video/**/*.mp4
 marketing/video/**/*.wav
+
+# canon→Drive sync scratch (gws --upload needs cwd-local temp)
+.canon-sync-tmp/
