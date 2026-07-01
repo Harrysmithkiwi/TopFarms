@@ -1,12 +1,39 @@
 {
   "_comment": "Maps each repo canonical markdown file -> its read-only Google Docs mirror. The repo is the ONLY source of truth; the Drive Docs are overwritten in place (same drive_file_id) on every sync — repo always wins, no duplicates. Do NOT edit the Google Docs. Managed by scripts/sync-canon-to-drive.sh.",
-  "mirror_folder_id": "",
+  "mirror_folder_id": "1jDmjeEcRlrOWzK0ytF6xYPCTHLnvuBE-",
   "source_dir": "docs/_canonical",
   "docs": [
-    { "file": "TopFarms_Master_Compendium.md",   "title": "TopFarms Master Compendium",     "drive_file_id": "" },
-    { "file": "PRD.md",                            "title": "TopFarms PRD",                    "drive_file_id": "" },
-    { "file": "Brand_and_Design.md",               "title": "TopFarms Brand & Design",         "drive_file_id": "" },
-    { "file": "Data_Architecture.md",              "title": "TopFarms Data Architecture",      "drive_file_id": "" },
-    { "file": "TopFarms_Outreach_Reply_Config.md", "title": "TopFarms Outreach Reply Config",  "drive_file_id": "" }
-  ]
+    {
+      "file": "TopFarms_Master_Compendium.md",
+      "title": "TopFarms Master Compendium",
+      "drive_file_id": ""
+    },
+    {
+      "file": "PRD.md",
+      "title": "TopFarms PRD",
+      "drive_file_id": ""
+    },
+    {
+      "file": "Brand_and_Design.md",
+      "title": "TopFarms Brand & Design",
+      "drive_file_id": ""
+    },
+    {
+      "file": "Data_Architecture.md",
+      "title": "TopFarms Data Architecture",
+      "drive_file_id": "1vyW05ELUASCaZLWzjHObHJ1cWHnToixk9F38N_dO8cg"
+    },
+    {
+      "file": "TopFarms_Outreach_Reply_Config.md",
+      "title": "TopFarms Outreach Reply Config",
+      "drive_file_id": ""
+    }
+  ],
+  "folders": {
+    "topfarms": "1UJCZh1LhkRfKoDcGeoHA4qjJGg6fbNXG",
+    "canon_mirror": "1jDmjeEcRlrOWzK0ytF6xYPCTHLnvuBE-",
+    "operational": "1nX76hprmxvBas1i7L8SJTtjIuH-bJFii",
+    "creative": "1X70T8R1TvNqnPRLF98iblisprZ74DOxy",
+    "archive": "1NRlvICY4XX9vSyNu6krs0pCN7mSBDUJJ"
+  }
 }
