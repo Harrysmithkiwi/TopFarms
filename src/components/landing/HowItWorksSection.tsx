@@ -22,7 +22,7 @@ const seekerSteps: Step[] = [
     icon: '🎯',
     title: 'Get Matched',
     description:
-      'Our AI scores your profile against active listings based on skills, location, and preferences.',
+      'Your Match Score ranks you against active listings on skills, location, and what actually fits.',
   },
   {
     number: 3,

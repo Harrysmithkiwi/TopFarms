@@ -59,9 +59,30 @@ test('HOMEBUG-03: accommodation filter produces 200 (no PostgREST 400)', async (
 test('HOMEBUG-01: get_platform_stats RPC returns 200 with {jobs,seekers,matches}', async ({
   page,
 }) => {
-  const stats = page.waitForResponse((r) => r.url().includes('/rest/v1/rpc/get_platform_stats'))
+  // CountersSection (the only in-app caller of get_platform_stats) was removed
+  // from the homepage pre-launch, so the page no longer fires this RPC — waiting
+  // for it timed out. Re-point the guard at the RPC endpoint DIRECTLY so it holds
+  // regardless of which UI component happens to call it.
+  //
+  // Derive the Supabase origin + anon apikey from the app's own traffic (the
+  // homepage fires /rest/v1/jobs for FeaturedListings) rather than env vars —
+  // the e2e-preview job does not export VITE_SUPABASE_*, so this stays
+  // self-contained across both the local-preview and preview-deployment jobs.
+  const firstRestReq = page.waitForRequest((r) => r.url().includes('/rest/v1/'))
   await page.goto('/')
-  const res = await stats
+  const req = await firstRestReq
+  const origin = new URL(req.url()).origin
+  const apikey = req.headers()['apikey']
+  expect(apikey, 'anon apikey captured from app traffic').toBeTruthy()
+
+  const res = await page.request.post(`${origin}/rest/v1/rpc/get_platform_stats`, {
+    headers: {
+      apikey,
+      Authorization: `Bearer ${apikey}`,
+      'Content-Type': 'application/json',
+    },
+    data: {},
+  })
   expect(res.status()).toBe(200)
   const body = await res.json()
   expect(body).toEqual(

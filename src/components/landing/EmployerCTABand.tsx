@@ -4,7 +4,7 @@ import { Link } from 'react-router'
 
 const checklist = [
   'Post a job in under 5 minutes',
-  'AI-matched candidates delivered to your dashboard',
+  'Ranked candidates delivered to your dashboard',
   'Track applications and schedule interviews',
   'Only pay when you find the right person',
 ]
@@ -43,7 +43,9 @@ export function EmployerCTABand() {
                 <li key={item} className="flex items-start gap-3">
                   <span
                     className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full"
-                    style={{ backgroundColor: 'rgba(122,175,63,0.2)' }}
+                    style={{
+                      backgroundColor: 'color-mix(in oklab, var(--color-brand) 18%, transparent)',
+                    }}
                   >
                     <Check size={12} style={{ color: 'var(--color-brand)' }} strokeWidth={3} />
                   </span>
@@ -83,13 +85,22 @@ export function EmployerCTABand() {
             className="overflow-hidden rounded-xl shadow-xl"
             style={{ backgroundColor: 'var(--color-surface)' }}
           >
-            <div className="border-b px-5 py-4" style={{ borderColor: 'var(--color-border)' }}>
+            <div
+              className="flex items-center justify-between border-b px-5 py-4"
+              style={{ borderColor: 'var(--color-border)' }}
+            >
               <p
                 className="font-display text-base font-bold"
                 style={{ color: 'var(--color-brand-900)' }}
               >
                 Your Dashboard
               </p>
+              <span
+                className="rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wide uppercase"
+                style={{ backgroundColor: 'var(--color-surface-2)', color: 'var(--color-text-subtle)' }}
+              >
+                Preview
+              </span>
             </div>
 
             <div className="p-5">
@@ -141,7 +152,7 @@ export function EmployerCTABand() {
                   <span
                     className="rounded-full px-2 py-1 text-xs font-bold"
                     style={{
-                      backgroundColor: 'rgba(122,175,63,0.12)',
+                      backgroundColor: 'color-mix(in oklab, var(--color-brand) 12%, transparent)',
                       color: 'var(--color-brand)',
                     }}
                   >

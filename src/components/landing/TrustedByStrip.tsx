@@ -1,40 +1,39 @@
-import { motion } from 'motion/react'
+// NOTE: Repurposed 2026-06-20. Previously a fabricated partner-logo wall
+// ("Fonterra Sharemilkers", "Silver Fern Farms", etc.) implying endorsements
+// that do not exist. Replaced with honest, defensible positioning statements.
+// VERIFY before launch: each claim below must be true (see changelog flags).
+import { motion, useReducedMotion } from 'motion/react'
+import { MapPin, HeartHandshake, Sparkles, ShieldCheck } from 'lucide-react'
 
-const brands = [
-  'Fonterra Sharemilkers',
-  'Silver Fern Farms',
-  'Greenfield Agriculture',
-  'Highview Station',
-  'Valley View Dairy',
+const values: { icon: typeof MapPin; label: string }[] = [
+  { icon: MapPin, label: 'Built in NZ for NZ farming' },
+  { icon: Sparkles, label: 'TopFarms Match Score' },
+  { icon: HeartHandshake, label: 'Always free for workers' },
+  { icon: ShieldCheck, label: 'First job post free' },
 ]
 
 export function TrustedByStrip() {
+  const reduce = useReducedMotion()
   return (
-    <section className="px-4 py-16" style={{ backgroundColor: 'var(--color-bg)' }}>
+    <section className="px-4 py-14" style={{ backgroundColor: 'var(--color-bg)' }}>
       <motion.div
-        initial={{ opacity: 0, y: 32 }}
+        initial={reduce ? { opacity: 0 } : { opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.15 }}
-        transition={{ duration: 0.55, ease: 'easeOut' }}
-        className="mx-auto max-w-5xl"
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-10 gap-y-4"
       >
-        <p
-          className="mb-8 text-center text-sm font-semibold tracking-widest uppercase"
-          style={{ color: 'var(--color-text-muted)' }}
-        >
-          Trusted by Leading New Zealand Farms
-        </p>
-        <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
-          {brands.map((brand) => (
+        {values.map(({ icon: Icon, label }) => (
+          <div key={label} className="inline-flex items-center gap-2.5">
+            <Icon size={16} strokeWidth={2} style={{ color: 'var(--color-brand)' }} aria-hidden="true" />
             <span
-              key={brand}
-              className="text-lg font-bold md:text-xl"
-              style={{ color: 'var(--color-text-muted)', opacity: 0.5 }}
+              className="text-sm font-semibold tracking-tight"
+              style={{ color: 'var(--color-text-muted)' }}
             >
-              {brand}
+              {label}
             </span>
-          ))}
-        </div>
+          </div>
+        ))}
       </motion.div>
     </section>
   )

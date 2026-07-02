@@ -68,8 +68,8 @@ export function CountersSection() {
           <div
             className="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold tracking-widest uppercase"
             style={{
-              borderColor: 'rgba(122,175,63,0.3)',
-              backgroundColor: 'rgba(122,175,63,0.08)',
+              borderColor: 'color-mix(in oklab, var(--color-brand) 30%, transparent)',
+              backgroundColor: 'color-mix(in oklab, var(--color-brand) 8%, transparent)',
               color: 'var(--color-brand)',
             }}
           >
@@ -88,6 +88,15 @@ export function CountersSection() {
           <CounterBlock label="Workers Registered" target={stats.seekers} active={inView} />
           <CounterBlock label="Matches Made" target={stats.matches} active={inView} />
         </div>
+
+        {/* Honest framing — these are real, live counts from get_platform_stats,
+            small by design at launch. Better an honest number than an invented one. */}
+        <p
+          className="pb-12 text-center text-sm"
+          style={{ color: 'rgba(255,255,255,0.5)' }}
+        >
+          Real numbers, updated live as farms and workers join.
+        </p>
       </div>
     </section>
   )
