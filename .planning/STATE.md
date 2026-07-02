@@ -255,10 +255,15 @@ Branch state after 2026-06-26 untangle (two unrelated tracks were piled on `chor
 
 Resume file: None
 
-Next operator action: operator-directed. Open threads, none auto-started:
-  1. **New-sources research** (THE next task, fresh head): Seek / TradeMe / nzfarmsource as additional harvest boards — **API-first, NOT scrape-first**. Off-roadmap continuation of the leads-harvest pipeline. nzfarmingjobs lane is fully live (once-daily 2pm-NZ harvest + watchdog notify); this extends it to new sources.
-  2. **PEND-01** (Stripe live-mode swap) — 9-item checklist in `.planning/DECISIONS-PENDING.md §PEND-01`; completes v2.0 milestone close. Separate focused session.
-  3. **Phases 24-26** remain gated behind real ag-employer liquidity.
-  4. **P-12** (deferred) — harvested-lead staleness age-signal; lightweight badge keyed on `created_at` + `outreach_status='none'`, NOT a re-scrape engine. In `.planning/leads-triage/PUNCHLIST.md`.
+Next operator action: operator-directed. Open threads, none auto-started (all deserve a fresh head):
+  1. **Data-ingestion architecture** (design DONE — `.planning/INGESTION-ARCHITECTURE.md`): decisions settled — store raw = YES, FB = assisted-capture + RETIRE the dead Apify FB actor, Haiku-only for now. Still open within it: Seek/TradeMe API-first is its OWN research (thread 2, not decided here); Sheets usage PARKED pending operator input. The doc is still an UNCOMMITTED working file — decide next session whether to commit it into history. Build order when picked up: **(1) adapter contract + raw landing zone first.**
+  2. **New-sources research** (Seek / TradeMe / nzfarmsource) — **API-first, NOT scrape-first**, per-source (API available? partnership? ToS? feasibility?). Off-roadmap continuation of leads-harvest. nzfarmingjobs lane fully live; this extends it. Feeds thread 1's board adapters.
+  3. **GTM research** — gooseworks skills/plugins (skills.gooseworks.ai + the GitHub repo). Evaluate for go-to-market.
+  4. **Vercel MCP** — evaluate for build-log visibility; pairs with the "fix red CI" tech-debt.
+  5. **PEND-01** (Stripe live-mode swap) — 9-item checklist in `.planning/DECISIONS-PENDING.md §PEND-01`; completes v2.0 milestone close. Separate focused session.
+  6. **Phases 24-26** remain gated behind real ag-employer liquidity.
+  7. **P-12** (deferred) — harvested-lead staleness age-signal; lightweight badge keyed on `created_at` + `outreach_status='none'`, NOT a re-scrape engine. In `.planning/leads-triage/PUNCHLIST.md`.
+  Note (TECH-DEBT, not urgent): **compact STATE.md frontmatter** — the `stopped_at` field is now one enormous unbroken single-line string carrying the whole multi-day history (admin UI → leads-triage → harvest → read-only → domain). Accurate, but big enough that a fresh session will struggle to parse it. At some point: tighten to a summary + move the detail to an archive/history section.
+  Note (DELIVERY-VERIFY, loose end): the harvest notification email (Resend 200, id 4d94f468, 2026-06-30) was never confirmed as LANDING in gmail — only that Resend accepted it. Next time in gmail, search "TopFarms harvest" and confirm actual delivery.
   Note: MCP write access is CLOSED (--read-only ON) as of 2026-07-01, probe-verified against the LIVE process after a full restart (`CREATE TEMP TABLE` → ERROR 25006 read-only-transaction). To confirm write state in any future session, PROBE THE LIVE PROCESS: 25006 = CLOSED, rows_written=1 = OPEN — never trust the .mcp.json file. If a future task needs writes, flip the flag OFF in .mcp.json + full restart per CLAUDE §2 (reconnect won't respawn).
   Note: the leads-harvest + admin-leads work is not represented in `.planning/phases/` — if it continues, consider roadmapping it as a phase.
