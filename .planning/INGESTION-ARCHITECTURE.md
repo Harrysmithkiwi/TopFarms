@@ -335,6 +335,12 @@ Settled — this doc now reflects what's decided vs still-open:
 2. **FB level (§4) — ✅ assisted capture; retire the dead Apify FB actor.** The
    Capture browser-extension is a **LATER** upgrade — noted, **not built now**.
    Assisted paste (`admin_lead_capture()`, already live) is the level for v1.
+   **Why (verified evidence):** `LEAD-SOURCES-RESEARCH.md` §1c/§2 — the Meta
+   Graph API path to group posts was **removed Apr 2024** (confirmed against live
+   sources), so there is *no sanctioned automated route*; every automated option
+   must drive the group's own admin account (ban risk), while assisted capture
+   wins on fragility/overhead/account-safety. The decision rests on a verified
+   fact, not a guess.
 3. **Seek / Trade Me — ⏸ NOT decided here.** This doc's "API-first, Firecrawl
    fallback" is a **placeholder**. Seek/TradeMe gets its **own research task**
    (already queued) — per-source: official API? partnership? ToS? feasibility?
