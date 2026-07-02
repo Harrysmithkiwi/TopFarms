@@ -120,6 +120,15 @@ const AdminLeadsOutreach = lazy(() =>
   import('@/pages/admin/AdminLeadsOutreach').then((m) => ({ default: m.AdminLeadsOutreach })),
 )
 
+// Design-system import (mobile screens) — standalone previews with mock data,
+// pending wire-up to real seeker/employer data.
+const SeekerJobFeed = lazy(() =>
+  import('@/pages/seeker/JobFeed').then((m) => ({ default: m.JobFeed })),
+)
+const EmployerShortlist = lazy(() =>
+  import('@/pages/employer/Shortlist').then((m) => ({ default: m.Shortlist })),
+)
+
 // Full-page fallback shown while a route chunk loads. Mirrors the in-app
 // spinner style (brand-colored ring) so chunk loads read as ordinary loading.
 function RouteFallback() {
@@ -143,6 +152,14 @@ function s(element: ReactNode) {
 
 const router = createBrowserRouter([
   // ─── Public routes ──────────────────────────────────────────────────────────
+  {
+    path: '/preview/seeker-feed',
+    element: s(<SeekerJobFeed />),
+  },
+  {
+    path: '/preview/employer-shortlist',
+    element: s(<EmployerShortlist />),
+  },
   {
     path: '/',
     element: <Home />,
