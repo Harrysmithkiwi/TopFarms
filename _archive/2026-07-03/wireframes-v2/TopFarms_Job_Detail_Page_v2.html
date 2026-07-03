@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dairy Farm Assistant — Greenfield Farms · TopFarms</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="topfarms-v2.css" />
+<style>
+  .breadcrumb {
+    padding: 16px 0;
+    font-size: 13px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .breadcrumb a { color: var(--text-muted); }
+  .breadcrumb a:hover { color: var(--brand); }
+  .breadcrumb-current { color: var(--text); font-weight: 500; }
+  .breadcrumb svg { color: var(--text-subtle); }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 32px;
+    padding-bottom: 96px;
+    align-items: start;
+  }
+
+  .detail-main {}
+
+  /* Header card */
+  .detail-head {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+  .detail-head-top {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .company-logo {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--r-md);
+    background: linear-gradient(135deg, var(--brand-50), var(--brand-100));
+    color: var(--brand-900);
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .company-block { flex: 1; min-width: 0; }
+  .company-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .company-name strong { color: var(--text); font-weight: 600; }
+  .job-title {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+  .job-meta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .job-meta-item { display: flex; align-items: center; gap: 5px; }
+
+  .quick-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  .q-stat {}
+  .q-stat-num {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .q-stat-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .q-stat-accent { color: var(--brand); }
+
+  /* Content blocks */
+  .detail-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+  .block-title {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .block-title svg { color: var(--brand); }
+  .block-body {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--text);
+  }
+  .block-body p { margin-bottom: 14px; }
+  .block-body p:last-child { margin-bottom: 0; }
+
+  /* Responsibility list */
+  .resp-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .resp-list li {
+    display: flex;
+    gap: 10px;
+    padding-left: 0;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--text);
+  }
+  .resp-marker {
+    width: 20px;
+    height: 20px;
+    border-radius: var(--r-sm);
+    background: var(--brand-50);
+    color: var(--brand);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* Skills matrix */
+  .skills-table {
+    margin-top: 16px;
+  }
+  .skill-row-table {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+    gap: 12px;
+  }
+  .skill-row-table:last-child { border-bottom: none; }
+  .skill-info { display: flex; align-items: center; gap: 10px; }
+  .skill-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--brand);
+  }
+  .skill-dot.pref { background: var(--warn); }
+  .skill-dot.bonus { background: var(--text-subtle); }
+  .skill-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .skill-legend {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 8px;
+    padding: 10px 14px;
+    background: var(--surface-2);
+    border-radius: var(--r);
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .skill-legend-item { display: flex; align-items: center; gap: 6px; }
+  .skill-legend .skill-dot { width: 8px; height: 8px; }
+
+  /* Compensation grid */
+  .comp-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: 8px;
+  }
+  .comp-item {}
+  .comp-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    margin-bottom: 6px;
+  }
+  .comp-value {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .comp-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* Accommodation card */
+  .accom-visual {
+    margin-top: 12px;
+    padding: 16px;
+    background: var(--surface-2);
+    border-radius: var(--r-md);
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+  .accom-pic {
+    width: 80px;
+    height: 80px;
+    border-radius: var(--r);
+    background: linear-gradient(135deg, #E8F5EC 0%, #D1EADC 100%);
+    display: grid;
+    place-items: center;
+    color: var(--brand);
+    flex-shrink: 0;
+  }
+
+  /* About the farm */
+  .farm-gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .gallery-tile {
+    aspect-ratio: 4 / 3;
+    background: linear-gradient(135deg, #DBEEFF 0%, #E8F5EC 60%, #9DD4A8 100%);
+    border-radius: var(--r-md);
+    position: relative;
+    overflow: hidden;
+  }
+  .gallery-tile::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.08), transparent 40%);
+  }
+  .gallery-tile svg { position: absolute; inset: 0; margin: auto; color: rgba(255,255,255,0.7); width: 40px; height: 40px; }
+
+  /* Sidebar */
+  .side-card {
+    position: sticky;
+    top: 76px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* Match breakdown */
+  .match-header {
+    text-align: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+  .match-score-giant {
+    position: relative;
+    width: 112px;
+    height: 112px;
+    margin: 0 auto 12px;
+  }
+  .match-score-giant-num {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--brand);
+    letter-spacing: -0.03em;
+  }
+  .match-label-big {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .match-label-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .match-bar-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    margin-bottom: 12px;
+    align-items: center;
+  }
+  .match-bar-head {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--text);
+    grid-column: 1 / -1;
+    margin-bottom: 6px;
+  }
+  .match-bar-name { font-weight: 500; }
+  .match-bar-value { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .match-bar-track {
+    height: 6px;
+    background: var(--surface-2);
+    border-radius: 3px;
+    overflow: hidden;
+    grid-column: 1 / -1;
+  }
+  .match-bar-fill {
+    height: 100%;
+    background: var(--brand);
+    border-radius: 3px;
+  }
+  .match-bar-fill.partial { background: var(--warn); }
+
+  .apply-block {
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    margin-top: 20px;
+  }
+  .apply-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  /* AI summary in sidebar */
+  .ai-summary {
+    background: var(--ai-bg);
+    border: 1px solid #E4DEF8;
+    border-radius: var(--r-md);
+    padding: 14px;
+    margin-top: 16px;
+  }
+  .ai-summary-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ai);
+    margin-bottom: 6px;
+  }
+  .ai-summary-body {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--text);
+  }
+
+  .side-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .side-actions .btn { flex: 1; }
+
+  /* Similar jobs */
+  .similar-block { margin-top: 20px; }
+  .similar-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    margin-bottom: 12px;
+  }
+  .similar-item {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    cursor: pointer;
+  }
+  .similar-item:last-child { border-bottom: none; }
+  .similar-item:hover .similar-role { color: var(--brand); }
+  .similar-score {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--brand);
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+    min-width: 36px;
+  }
+  .similar-role {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+    transition: color 150ms;
+  }
+  .similar-company {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  @media (max-width: 900px) {
+    .detail-grid { grid-template-columns: 1fr; }
+    .side-card { position: static; }
+    .quick-stats { grid-template-columns: repeat(2, 1fr); }
+    .job-title { font-size: 26px; }
+    .comp-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ NAV ═══════════ -->
+<nav class="app-nav">
+  <div class="container app-nav-inner">
+    <a href="#" class="logo">
+      <span class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19.2 2.96c.81 1.1 1.64 3.08 1.3 5.78C20.12 12.7 16.5 18.5 11 20Z"/>
+          <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+        </svg>
+      </span>
+      <span>TopFarms</span>
+    </a>
+    <div class="nav-links-app">
+      <a href="#" class="nav-link active">Find work</a>
+      <a href="#" class="nav-link">My applications</a>
+      <a href="#" class="nav-link">Profile</a>
+      <a href="#" class="nav-link">CV builder</a>
+    </div>
+    <div class="nav-actions">
+      <button class="icon-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="icon-btn-dot"></span></button>
+      <div class="avatar-sm">JT</div>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <a href="#">Find work</a>
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+    <a href="#">Dairy</a>
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+    <a href="#">Waikato</a>
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+    <span class="breadcrumb-current">Dairy Farm Assistant — Greenfield Farms</span>
+  </div>
+
+  <!-- ═══════════ DETAIL ═══════════ -->
+  <div class="detail-grid">
+
+    <!-- ─── MAIN COLUMN ─── -->
+    <div class="detail-main">
+
+      <!-- Header -->
+      <div class="detail-head">
+        <div class="detail-head-top">
+          <div class="company-logo">GF</div>
+          <div class="company-block">
+            <div class="company-name">
+              <strong>Greenfield Farms Ltd</strong>
+              <span class="pill pill-success">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                Verified
+              </span>
+              <span class="pill pill-warn">★ Featured</span>
+            </div>
+            <h1 class="job-title">Dairy Farm Assistant</h1>
+            <div class="job-meta">
+              <span class="job-meta-item">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="3"/></svg>
+                Te Awamutu, Waikato
+              </span>
+              <span class="job-meta-item">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
+                Full-time, permanent
+              </span>
+              <span class="job-meta-item">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Start 1 June 2026
+              </span>
+              <span class="job-meta-item" style="color: var(--brand); font-weight: 600;">18 days remaining</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="quick-stats">
+          <div class="q-stat">
+            <div class="q-stat-num">23</div>
+            <div class="q-stat-label">Applications</div>
+          </div>
+          <div class="q-stat">
+            <div class="q-stat-num">89</div>
+            <div class="q-stat-label">Views</div>
+          </div>
+          <div class="q-stat">
+            <div class="q-stat-num q-stat-accent">$52–62k</div>
+            <div class="q-stat-label">Per year</div>
+          </div>
+          <div class="q-stat">
+            <div class="q-stat-num">12 days</div>
+            <div class="q-stat-label">Posted ago</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Role overview -->
+      <div class="detail-block">
+        <h2 class="block-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Role overview
+        </h2>
+        <div class="block-body">
+          <p>We're looking for a reliable, enthusiastic dairy farm assistant to join our tight-knit team on our family-owned rotary operation outside Te Awamutu. This is a permanent, full-time role with genuine opportunity for growth — we back our people and support ongoing training through DairyNZ.</p>
+          <p>You'll be working alongside the farm owner and one other assistant, taking real ownership of your responsibilities from day one. The role suits someone who takes pride in animal care, wants to develop their skills, and is looking for a place to settle in for the long term — not just a season.</p>
+        </div>
+      </div>
+
+      <!-- Day-to-day -->
+      <div class="detail-block">
+        <h2 class="block-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Day-to-day responsibilities
+        </h2>
+        <ul class="resp-list">
+          <li><span class="resp-marker"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Twice-daily milking on a 50-bail rotary shed (AM and PM rotations, shared with team)</li>
+          <li><span class="resp-marker"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Herd health monitoring — identifying and reporting animal health concerns to the farm owner</li>
+          <li><span class="resp-marker"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Calf rearing during calving season (spring, August–October)</li>
+          <li><span class="resp-marker"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> General farm maintenance — fencing, laneways, water troughs and infrastructure upkeep</li>
+          <li><span class="resp-marker"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Tractor operation for feed-out and pasture management tasks</li>
+          <li><span class="resp-marker"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Assisting with pasture management and farm record keeping</li>
+          <li><span class="resp-marker"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> On-call responsibilities on a shared roster (typically 1 in 3 weekends)</li>
+        </ul>
+      </div>
+
+      <!-- Skills matrix -->
+      <div class="detail-block">
+        <h2 class="block-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Skills & requirements
+        </h2>
+
+        <div class="skill-legend">
+          <div class="skill-legend-item"><span class="skill-dot"></span>Required</div>
+          <div class="skill-legend-item"><span class="skill-dot pref"></span>Preferred</div>
+          <div class="skill-legend-item"><span class="skill-dot bonus"></span>Bonus</div>
+        </div>
+
+        <div class="skills-table">
+          <div class="skill-row-table">
+            <div class="skill-info">
+              <span class="skill-dot"></span>
+              <span class="skill-label">Rotary shed experience</span>
+            </div>
+            <span class="pill pill-success">Required</span>
+          </div>
+          <div class="skill-row-table">
+            <div class="skill-info">
+              <span class="skill-dot"></span>
+              <span class="skill-label">Full NZ driver's licence</span>
+            </div>
+            <span class="pill pill-success">Required</span>
+          </div>
+          <div class="skill-row-table">
+            <div class="skill-info">
+              <span class="skill-dot"></span>
+              <span class="skill-label">Dairy herd management basics</span>
+            </div>
+            <span class="pill pill-success">Required</span>
+          </div>
+          <div class="skill-row-table">
+            <div class="skill-info">
+              <span class="skill-dot"></span>
+              <span class="skill-label">Basic animal health & welfare</span>
+            </div>
+            <span class="pill pill-success">Required</span>
+          </div>
+          <div class="skill-row-table">
+            <div class="skill-info">
+              <span class="skill-dot pref"></span>
+              <span class="skill-label">Tractor operation</span>
+            </div>
+            <span class="pill pill-warn">Preferred</span>
+          </div>
+          <div class="skill-row-table">
+            <div class="skill-info">
+              <span class="skill-dot pref"></span>
+              <span class="skill-label">DairyNZ Level 2 or higher</span>
+            </div>
+            <span class="pill pill-warn">Preferred</span>
+          </div>
+          <div class="skill-row-table">
+            <div class="skill-info">
+              <span class="skill-dot pref"></span>
+              <span class="skill-label">Pasture management</span>
+            </div>
+            <span class="pill pill-warn">Preferred</span>
+          </div>
+          <div class="skill-row-table">
+            <div class="skill-info">
+              <span class="skill-dot bonus"></span>
+              <span class="skill-label">Calf rearing experience</span>
+            </div>
+            <span class="pill">Bonus</span>
+          </div>
+          <div class="skill-row-table">
+            <div class="skill-info">
+              <span class="skill-dot bonus"></span>
+              <span class="skill-label">Fencing experience</span>
+            </div>
+            <span class="pill">Bonus</span>
+          </div>
+          <div class="skill-row-table">
+            <div class="skill-info">
+              <span class="skill-dot bonus"></span>
+              <span class="skill-label">Vet / treatment certificate</span>
+            </div>
+            <span class="pill">Bonus</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Compensation -->
+      <div class="detail-block">
+        <h2 class="block-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          Compensation & conditions
+        </h2>
+        <div class="comp-grid">
+          <div class="comp-item">
+            <div class="comp-label">Salary</div>
+            <div class="comp-value">$52,000 – $62,000</div>
+            <div class="comp-sub">Per year, reviewed annually. Depends on experience + DairyNZ level.</div>
+          </div>
+          <div class="comp-item">
+            <div class="comp-label">Accommodation</div>
+            <div class="comp-value">3-bed house included</div>
+            <div class="comp-sub">On-farm. Partner/couple welcome, pets negotiable. Utilities covered.</div>
+          </div>
+          <div class="comp-item">
+            <div class="comp-label">Hours</div>
+            <div class="comp-value">AM + PM milking roster</div>
+            <div class="comp-sub">~45 hrs/week avg, flexible lunch break. Rostered weekends 1 in 3.</div>
+          </div>
+          <div class="comp-item">
+            <div class="comp-label">Benefits</div>
+            <div class="comp-value">DairyNZ training support</div>
+            <div class="comp-sub">Training paid, L2–L3 pathway. 4 weeks annual leave. Vehicle usage.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accommodation detail -->
+      <div class="detail-block">
+        <h2 class="block-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          Accommodation
+        </h2>
+        <div class="block-body">
+          <p>A comfortable 3-bedroom, 1-bathroom weatherboard house 400m from the cowshed. Recently painted, heatpump installed 2023, Fisher & Paykel whiteware. Large fenced yard suitable for dogs (negotiable). Partner welcome — space for a home office / second worker. Power & water provided as part of the package.</p>
+        </div>
+        <div class="accom-visual">
+          <div class="accom-pic">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <div>
+            <div style="font-size: 14px; font-weight: 600; color: var(--text);">3-bedroom weatherboard house</div>
+            <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">400m from shed · Heatpump · Large fenced yard · Couples welcome · Pets negotiable</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- About the farm -->
+      <div class="detail-block">
+        <h2 class="block-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-5 7 5v14"/><rect x="10" y="13" width="4" height="8"/></svg>
+          About Greenfield Farms
+        </h2>
+        <div class="block-body">
+          <p>Family-owned third-generation dairy operation in the Waipā district. 520 Friesian-Jersey cross cows on 160ha, milked through a 50-bail rotary with auto cup-removers. Supplies Fonterra. Focus on efficient, low-stress stockmanship and sustainable pasture management.</p>
+          <p>Small tight team — owner-operator Dave Henderson, one senior farm assistant, and this role. Good work-life balance, genuine support for professional development, and a culture where your input actually matters.</p>
+        </div>
+        <div class="farm-gallery">
+          <div class="gallery-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z"/><circle cx="9" cy="9" r="2"/><polyline points="21 15 16 10 5 21"/></svg></div>
+          <div class="gallery-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z"/><circle cx="9" cy="9" r="2"/><polyline points="21 15 16 10 5 21"/></svg></div>
+          <div class="gallery-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z"/><circle cx="9" cy="9" r="2"/><polyline points="21 15 16 10 5 21"/></svg></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── SIDEBAR ─── -->
+    <aside>
+      <div class="side-card">
+        <div class="match-header">
+          <div class="match-score-giant">
+            <svg width="112" height="112">
+              <circle cx="56" cy="56" r="48" fill="none" stroke="var(--surface-2)" stroke-width="8"/>
+              <circle cx="56" cy="56" r="48" fill="none" stroke="var(--brand)" stroke-width="8" stroke-linecap="round" stroke-dasharray="301.6" stroke-dashoffset="18.1" transform="rotate(-90 56 56)"/>
+            </svg>
+            <div class="match-score-giant-num">94</div>
+          </div>
+          <div class="match-label-big">Excellent match</div>
+          <div class="match-label-sub">Top 5% of candidates for this role</div>
+        </div>
+
+        <!-- Match bars -->
+        <div>
+          <div class="match-bar-row">
+            <div class="match-bar-head">
+              <span class="match-bar-name">Shed type experience</span>
+              <span class="match-bar-value">25 / 25</span>
+            </div>
+            <div class="match-bar-track"><div class="match-bar-fill" style="width: 100%;"></div></div>
+          </div>
+          <div class="match-bar-row">
+            <div class="match-bar-head">
+              <span class="match-bar-name">Location fit</span>
+              <span class="match-bar-value">20 / 20</span>
+            </div>
+            <div class="match-bar-track"><div class="match-bar-fill" style="width: 100%;"></div></div>
+          </div>
+          <div class="match-bar-row">
+            <div class="match-bar-head">
+              <span class="match-bar-name">Accommodation match</span>
+              <span class="match-bar-value">20 / 20</span>
+            </div>
+            <div class="match-bar-track"><div class="match-bar-fill" style="width: 100%;"></div></div>
+          </div>
+          <div class="match-bar-row">
+            <div class="match-bar-head">
+              <span class="match-bar-name">Skills</span>
+              <span class="match-bar-value">16 / 20</span>
+            </div>
+            <div class="match-bar-track"><div class="match-bar-fill partial" style="width: 80%;"></div></div>
+          </div>
+          <div class="match-bar-row">
+            <div class="match-bar-head">
+              <span class="match-bar-name">Salary alignment</span>
+              <span class="match-bar-value">9 / 10</span>
+            </div>
+            <div class="match-bar-track"><div class="match-bar-fill" style="width: 90%;"></div></div>
+          </div>
+          <div class="match-bar-row">
+            <div class="match-bar-head">
+              <span class="match-bar-name">Visa & life</span>
+              <span class="match-bar-value">4 / 5</span>
+            </div>
+            <div class="match-bar-track"><div class="match-bar-fill" style="width: 80%;"></div></div>
+          </div>
+        </div>
+
+        <!-- AI summary -->
+        <div class="ai-summary">
+          <div class="ai-summary-head">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5z"/></svg>
+            AI insight
+          </div>
+          <div class="ai-summary-body">Strong fit — your rotary expertise matches exactly. Only minor gap is tractor experience at 'Some' level; role prefers 'Comfortable'. Consider mentioning on application.</div>
+        </div>
+
+        <!-- Apply -->
+        <div class="apply-block">
+          <button class="btn btn-primary btn-lg" style="width: 100%;">
+            Apply with my profile
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </button>
+          <div class="side-actions">
+            <button class="btn btn-secondary">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+              Save
+            </button>
+            <button class="btn btn-secondary">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+              Share
+            </button>
+          </div>
+          <div class="apply-meta">Your profile is already complete. One tap to apply.</div>
+        </div>
+      </div>
+
+      <!-- Similar jobs -->
+      <div class="side-card similar-block" style="position: static;">
+        <div class="similar-title">Similar matches</div>
+        <div class="similar-item">
+          <span class="similar-score">87%</span>
+          <div>
+            <div class="similar-role">Herd Manager 2IC</div>
+            <div class="similar-company">Mackenzie High Country · Canterbury</div>
+          </div>
+        </div>
+        <div class="similar-item">
+          <span class="similar-score">82%</span>
+          <div>
+            <div class="similar-role">Relief Milker</div>
+            <div class="similar-company">Rangitane Dairy · Cambridge</div>
+          </div>
+        </div>
+        <div class="similar-item">
+          <span class="similar-score">76%</span>
+          <div>
+            <div class="similar-role">Farm Assistant — Calving</div>
+            <div class="similar-company">Tasman Valley Dairy · Canterbury</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</div>
+
+</body>
+</html>
