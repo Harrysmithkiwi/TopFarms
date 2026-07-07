@@ -56,4 +56,28 @@ Phase 21 plan 21-09 Tasks 1, 3, 4, 5 are COMPLETE and verified (Edge fn deploys 
 
 ---
 
-*Last updated: 2026-05-18 — Phase 21 plan 21-09 Task 5 deferral note added; PEND-01 carryforward to separate session confirmed.*
+## Before match_scores repopulate with real seekers
+
+### PEND-02: visa_status NULL-scoring gap + right-to-work gate decision (consider together)
+
+- **Logged:** 2026-07-08
+- **Trigger:** before `match_scores` repopulates at scale — i.e. before real seekers exist and the nightly recompute (`010`) produces scores that matter. `match_scores` is currently empty (0 rows, post-034 taxonomy wipe), so nothing is corrupted *yet*; both issues below go live the moment scores recompute.
+- **Why pending:** surfaced by the platform audit ([`docs/_canonical/TopFarms_Platform_Audit.md`](../docs/_canonical/TopFarms_Platform_Audit.md) §3.3, MA-1). Both concern the visa dimension of `compute_match_score` (migration 009) and should be decided as one, because the fix for each shapes the other.
+- **Owner:** harry
+
+**The two linked issues:**
+
+1. **NULL `visa_status` silently scores 0.** The scoring block only awards points for `IN ('nz_citizen','permanent_resident')` or `IN ('working_holiday','needs_sponsorship') AND job.visa_sponsorship`. A seeker who is actually a citizen/PR but left the field blank (or holds an off-vocab value) gets `visa=0` — a real correctness gap, not just cosmetic. Live check 2026-07-08: 1 of 3 seekers has NULL `visa_status`.
+2. **Visa is a soft 5-pt weight, not a hard gate.** The demand-signal study's core finding is that right-to-work is a **veto** (14% migrant seekers × 50% visa-gated farms). Today a needs-sponsorship seeker matched to a no-sponsorship job scores low but still surfaces (audit MA-1).
+
+**Decision checklist (do NOT action now — decide before the trigger):**
+
+1. [ ] **NULL handling:** require `visa_status` when `onboarding_complete = true` (app-level guard or a partial constraint), OR handle NULL explicitly in `compute_match_score`. Pick one.
+2. [ ] **Gate vs weight:** confirm whether the visa dimension becomes a hard right-to-work gate (MA-1) — exclude the pair when a needs-sponsorship seeker meets a visa-gated / not-accredited / no-sponsorship job — or stays a weight. If gated, decide the interaction with the (currently soft) 5-pt award so the two don't double-count.
+3. [ ] **Sequencing:** land these together with, or immediately after, the 057 `visa_status` CHECK (which is already the hygiene layer both build on).
+
+**Not blocked by this:** the 057 column constraint (`supabase/migrations/057_constrain_visa_status_vocab.sql`) is safe to apply independently and does not pre-empt either decision above.
+
+---
+
+*Last updated: 2026-07-08 — PEND-02 logged (visa NULL-scoring gap + right-to-work gate decision) from the platform audit. Prior: 2026-05-18 — PEND-01 carryforward to separate session confirmed.*
