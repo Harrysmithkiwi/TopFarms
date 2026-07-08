@@ -110,7 +110,7 @@ Added: motion library for landing page animations.
 ## Constraints
 
 - **Tech stack**: React + TypeScript + Vite, Tailwind CSS, Supabase, Claude API, Stripe, Vercel — locked, no deviations
-- **Design system**: Fraunces + DM Sans fonts, specific colour palette (soil/moss/fern/meadow/hay/cream), component standards — non-negotiable
+- **Design system**: Brand v2 — Inter, single green `#16A34A`, near-white background, real farm photos, no gradients/shadows/glassmorphism (canonical: `docs/_canonical/Brand_and_Design.md`; tokens: `src/index.css` `@theme`) — non-negotiable. *(Corrected 2026-07-08: this line previously mandated the retired v1 brand — Fraunces/DM Sans, soil/moss palette — contradicting canon. See REMEDIATION-LOG.md.)*
 - **Sectors (v2.1)**: agriculture-broad — livestock (dairy, beef, sheep, goats, pigs, poultry), cropping (arable, grain, vegetable), farm management, agronomy, ag mechanics. Horticulture/viticulture/apiculture/aquaculture/forestry are future verticals (v3.0+). *(Was "Dairy cattle + sheep & beef ONLY" through v2.0.)*
 - **Auth**: Email/password + Google/Facebook OAuth with role selection
 - **Performance**: Search results <1.5s, page load <2s on 4G, match recalculation <60s
