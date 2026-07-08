@@ -9,36 +9,13 @@ interface Testimonial {
   initial: string
 }
 
+// Placeholder shape only — unrendered. Real, per-name-consented quotes replace these
+// when they exist; no invented names, farms, or metrics may go live (truth pass).
 const testimonials: Testimonial[] = [
-  {
-    name: 'Sarah M.',
-    farm: 'Greenfield Dairy, Waikato',
-    quote:
-      'Found our new herd manager within two weeks. The match scoring saved us hours of screening.',
-    initial: 'S',
-  },
-  {
-    name: 'James T.',
-    farm: 'Highview Station, Canterbury',
-    quote:
-      'Best platform for farm work in NZ. The agriculture-specific filters actually understand what matters.',
-    initial: 'J',
-  },
-  {
-    name: 'Rachel & Tom K.',
-    farm: 'Valley View Farms, Southland',
-    quote:
-      'As a couple looking for dairy work, TopFarms was the only platform that matched us together.',
-    initial: 'R',
-  },
+  { name: 'Example Name', farm: 'Example Farm, Region', quote: 'Placeholder — real consented quote only.', initial: 'E' },
 ]
 
-const stats = [
-  { value: '500+', label: 'Farms' },
-  { value: '2,000+', label: 'Workers' },
-  { value: '48hr', label: 'Avg Match Time' },
-  { value: '95%', label: 'Satisfaction' },
-]
+const stats: { value: string; label: string }[] = []
 
 function StarRating() {
   return (

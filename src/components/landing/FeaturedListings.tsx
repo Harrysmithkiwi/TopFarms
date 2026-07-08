@@ -39,14 +39,13 @@ function getTierBadge(tier: string | number): { label: string; color: string; bg
   return null
 }
 
-const MOCK_MATCH_SCORES = [94, 87, 91, 82]
-
+// Truth pass 2026-07-09: no fabricated match scores. A match score needs a logged-in
+// seeker to compute against — it is meaningless (and was invented) on the public landing.
 interface JobCardProps {
   job: FeaturedJob
-  matchScore: number
 }
 
-function JobCard({ job, matchScore }: JobCardProps) {
+function JobCard({ job }: JobCardProps) {
   const badge = getTierBadge(job.listing_tier)
   const farmName = job.employer_profiles?.farm_name ?? 'Farm'
   const region = job.employer_profiles?.region ?? job.region
@@ -60,18 +59,6 @@ function JobCard({ job, matchScore }: JobCardProps) {
         border: '1px solid var(--color-border)',
       }}
     >
-      {/* Match score circle */}
-      <div
-        className="absolute top-3 right-3 flex h-12 w-12 items-center justify-center rounded-full text-sm font-bold"
-        style={{
-          backgroundColor: 'rgba(122,175,63,0.2)',
-          color: 'var(--color-brand)',
-          border: '2px solid var(--color-brand)',
-        }}
-      >
-        {matchScore}%
-      </div>
-
       {/* Badge row */}
       <div className="mb-3 flex items-start justify-between">
         <div className="min-w-0 flex-1 pr-14">
@@ -240,12 +227,8 @@ export function FeaturedListings() {
         ) : (
           <>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {featuredJobs.map((job, index) => (
-                <JobCard
-                  key={job.id}
-                  job={job}
-                  matchScore={MOCK_MATCH_SCORES[index % MOCK_MATCH_SCORES.length]}
-                />
+              {featuredJobs.map((job) => (
+                <JobCard key={job.id} job={job} />
               ))}
             </div>
 

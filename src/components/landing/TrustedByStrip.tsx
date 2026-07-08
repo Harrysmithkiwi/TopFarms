@@ -3,13 +3,9 @@
 // Reinstate only with logos/names of real, consenting customers. See REMEDIATION-LOG.md.
 import { motion } from 'motion/react'
 
-const brands = [
-  'Fonterra Sharemilkers',
-  'Silver Fern Farms',
-  'Greenfield Agriculture',
-  'Highview Station',
-  'Valley View Dairy',
-]
+// Placeholder shape only — unrendered. Real, consenting customer names/logos replace
+// these when they exist; no real company may be implied as a customer (truth pass).
+const brands: string[] = []
 
 export function TrustedByStrip() {
   return (

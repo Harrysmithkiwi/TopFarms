@@ -187,6 +187,27 @@ describe('Landing Page', () => {
       expect(screen.queryByText('Fonterra Sharemilkers')).not.toBeInTheDocument()
       expect(screen.queryByText('Silver Fern Farms')).not.toBeInTheDocument()
     })
+
+    // 2026-07-09 second pass: the hero decorative demo + featured listings.
+    it('does not render invented hero names', () => {
+      renderHome()
+      expect(screen.queryByText(/Greenfield Dairy/)).not.toBeInTheDocument()
+      expect(screen.queryByText('Jamie D.')).not.toBeInTheDocument()
+    })
+
+    it('labels the hero demo column as an Example so its numbers cannot read as real', () => {
+      renderHome()
+      expect(screen.getByText('Example')).toBeInTheDocument()
+    })
+
+    it('does not render a fabricated match score on featured listings', () => {
+      renderHome()
+      // The MOCK_MATCH_SCORES badge (94/87/91/82 %) was removed — a match score needs a
+      // logged-in seeker. None of those percentages should appear as a match badge.
+      for (const pct of ['94%', '87%', '91%', '82%']) {
+        expect(screen.queryByText(pct)).not.toBeInTheDocument()
+      }
+    })
   })
 
   describe('LAND-09b: Final CTA section', () => {

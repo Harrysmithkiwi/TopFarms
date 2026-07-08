@@ -173,8 +173,16 @@ export function HeroSection() {
           </div>
         </div>
 
-        {/* Right column — decorative floating cards (desktop only) */}
+        {/* Right column — decorative floating cards (desktop only).
+            Illustration only: names are placeholders, percentages are not real stats.
+            The "Example" label keeps this unmistakable. Do not present as real data. */}
         <div className="relative hidden flex-col gap-4 lg:flex" aria-hidden="true">
+          <span
+            className="self-start rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wider uppercase"
+            style={{ backgroundColor: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.7)' }}
+          >
+            Example
+          </span>
           {/* Main card */}
           <div
             className="rounded-2xl p-5 shadow-2xl"
@@ -193,18 +201,8 @@ export function HeroSection() {
                   Senior Dairy Farm Manager
                 </p>
                 <p className="text-sm" style={{ color: 'rgba(255,255,255,0.6)' }}>
-                  Greenfield Dairy, Waikato
+                  Example Farm, Waikato
                 </p>
-              </div>
-              <div
-                className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold"
-                style={{
-                  backgroundColor: 'rgba(122,175,63,0.2)',
-                  color: 'var(--color-brand)',
-                  border: '2px solid var(--color-brand)',
-                }}
-              >
-                94%
               </div>
             </div>
             <div className="flex flex-wrap gap-1.5">
@@ -240,14 +238,14 @@ export function HeroSection() {
                   color: 'var(--color-brand)',
                 }}
               >
-                JD
+                EX
               </div>
               <div>
                 <p
                   className="text-sm font-semibold"
                   style={{ color: 'var(--color-text-on-brand)' }}
                 >
-                  Jamie D.
+                  Example Profile
                 </p>
                 <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
                   5 yrs dairy experience
@@ -265,7 +263,6 @@ export function HeroSection() {
                     style={{ color: 'rgba(255,255,255,0.5)' }}
                   >
                     <span>{label}</span>
-                    <span>{pct}%</span>
                   </div>
                   <div
                     className="h-1 overflow-hidden rounded-full"
