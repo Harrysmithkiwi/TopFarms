@@ -1,3 +1,6 @@
+// ⚠️ DO NOT RENDER — truth pass 2026-07-08. Names real companies (Fonterra, Silver Fern
+// Farms) falsely implied as customers, plus invented farms. Unrendered from Home.tsx.
+// Reinstate only with logos/names of real, consenting customers. See REMEDIATION-LOG.md.
 import { motion } from 'motion/react'
 
 const brands = [
