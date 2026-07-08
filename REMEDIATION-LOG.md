@@ -56,5 +56,24 @@
 | Dimension | Asset(s) built | New grade | Status |
 |---|---|---|---|
 | Vision / North Star | `.planning/NORTH-STAR.md` (decision, incl. liquidity gate N + Phases 24-26 gate resolution) | **A** | done M0 |
-| Market opportunity | `MARKET-DATA.md` seed | D→C | M1 pack pending |
-| *(remaining rows filled as milestones land)* | | | |
+| Market opportunity | `MARKET-DATA.md` seed + `docs/commercial/MARKET-SIZING.md` (bottom-up TAM/SAM/SOM per country×vertical, banded) | **A-READY** | pending FA-09/FA-10 (real NZ workforce + DEFRA verify) |
+| Monetisation & pricing | `docs/commercial/PRICING-MODEL.md` (segmented architecture, 4 models, margin/line, elasticity, B-triggers, honest §7 verdict on the 6-mo stretch) | **A-READY** | pending FA-07 lab data |
+| Strategy & marketplace design | `EXPANSION-MODEL.md` (vertical order, country trigger gates, port/localise, cold-start costing) + NORTH-STAR gates | **A-READY** | pending real liquidity data |
+| Governance | `docs/legal/` pack (Privacy, ToS, DPIA, breach runbook, sub-processor register) + live `/privacy` `/terms` routes + SignUp links wired; 25/25 landing tests green | **A-READY** | pending FA-02/FA-05/FA-11 (lawyer/entity/sign-off) |
+| Financial model | PRICING-MODEL + MARKET-SIZING + EXPANSION-MODEL §6 ($10M path by cell, [MODELLED]) | **A-READY** | pending live conversion data (FA-01/FA-07) |
+| AI capability | `docs/product/MATCH-EVALS-SPEC.md` (19-pair golden set from study rows; gate-regression rules; LLM rubric) | **A-READY** | build = M-effort follow-up; spec complete |
+| Operations | `docs/product/MARKETPLACE-METRICS-SPEC.md` (North-Star dashboard, liquidity-gate widget, `application_status_history` enabler, 5 new RPCs specced) + README front door + CONTINUITY.md | **A-READY** | pending FA-03/FA-04/FA-06 + build |
+| Product & portfolio | SEASONAL-INSIGHTS-SPEC (27-row [V]-sourced calendar, rolling-demand proof: ≥3 sectors every month) | B+→**A-READY** | build follow-up |
+| Team & automation | `docs/ops/TEAM-AUTOMATION-PLAN.md` (bootstrap cash-triggered stages; >12-FTE margin rule) | **A** | decision doc, done |
+| Founder brand | `.planning/gtm/founder-brand-plan.md` (Tuesday email, 4 pillars, signature frameworks, kill rule) | **A-READY** | pending FA-08 (first send) |
+| Marketing & GTM (channels) | `.planning/gtm/seo-plan.md` (staged, inventory-gated, JobPosting schema first) | partial | M2 assets in flight |
+| *(Sales, IP/data, Delivery rows land with M2 wave-2 agents)* | | | |
+
+### Tier-1 edit log (continued)
+
+| # | Date | File | Change | Why |
+|---|---|---|---|---|
+| E-09 | 2026-07-08 | `src/main.tsx` | +`/privacy` +`/terms` lazy public routes | dead footer links → real pages (agent-built, verified tsc+tests) |
+| E-10 | 2026-07-08 | `src/pages/auth/SignUp.tsx` | Terms/Privacy spans → real `<Link>`s (new tab) | consent was collected against nothing |
+| E-11 | 2026-07-08 | `README.md` (new) | repo front door | audit §D-17 |
+| E-12 | 2026-07-08 | `FOUNDER-ACTIONS.md` | FA-07 path corrected to `.planning/gtm/` | consistency |

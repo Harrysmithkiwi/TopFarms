@@ -66,6 +66,8 @@ const ForEmployers = lazy(() =>
   import('@/pages/ForEmployers').then((m) => ({ default: m.ForEmployers })),
 )
 const Pricing = lazy(() => import('@/pages/Pricing').then((m) => ({ default: m.Pricing })))
+const Privacy = lazy(() => import('@/pages/legal/Privacy').then((m) => ({ default: m.Privacy })))
+const Terms = lazy(() => import('@/pages/legal/Terms').then((m) => ({ default: m.Terms })))
 const JobSearch = lazy(() =>
   import('@/pages/jobs/JobSearch').then((m) => ({ default: m.JobSearch })),
 )
@@ -190,6 +192,16 @@ const router = createBrowserRouter([
   {
     path: '/pricing',
     element: s(<Pricing />),
+  },
+  {
+    // Legal pages (Stage-2 remediation). Content is an A-READY draft pending
+    // legal review — pages carry a visible draft banner until FA-02/FA-11 close.
+    path: '/privacy',
+    element: s(<Privacy />),
+  },
+  {
+    path: '/terms',
+    element: s(<Terms />),
   },
   {
     // /jobs uses JobSearchLayout — Nav header only, no dashboard sidebar.

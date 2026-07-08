@@ -28,7 +28,8 @@
   `docs/ops/CONTINUITY.md` (A-READY). Password-manager share + one named person.
   *Unlocks:* key-person risk (audit C-risk #3).
 - [ ] **FA-07 · Founding-25 pricing lab: book the first 10 conversations** — offer doc
-  + scripts in `docs/gtm-live/` (A-READY). Real employers, real Segment-A prices.
+  + scripts in `.planning/gtm/` (founding-25-offer.md, segment-a-sales-kit.md; A-READY).
+  Real employers, real Segment-A prices.
   *Unlocks:* WTP evidence; the pricing decision rule; first verified placements.
 - [ ] **FA-08 · Send Tuesday email #1** — list capture + draft ready per founder-brand
   plan. *Unlocks:* owned audience (hedge against FB single-account risk).
