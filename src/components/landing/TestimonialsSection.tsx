@@ -1,3 +1,7 @@
+// ⚠️ DO NOT RENDER — truth pass 2026-07-08. Every testimonial, stat, and "Verified"
+// badge below is fabricated (platform has no real users yet). Unrendered from Home.tsx.
+// Reinstate only with real placement data ({{PLACEMENTS_TO_DATE}}) and per-name written
+// consent per the GTM consent rule (funnel-design.md §compliance). See REMEDIATION-LOG.md.
 interface Testimonial {
   name: string
   farm: string

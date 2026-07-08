@@ -97,3 +97,19 @@ Then committed as `70a6601 docs(17): recover planning artifacts destroyed by res
 **Prevention rule (added to §4):** History-rewriting commands (`git reset --hard`, `git rebase`, `git push --force`, `git branch -D`, `git clean -f`, `git checkout --` over uncommitted work) require explicit operator instruction in the chat. Executors and any spawned agent must surface a `STOP` notice on encountering a situation that *seems* to call for a reset, rather than executing one.
 
 **Why it matters:** Per §3 (diagnose before fix), the cost of being wrong about a reset is much higher than the cost of pausing. In this case the reset destroyed ~4,300 lines of planning work that had to be regenerated — recovery from reflog was lucky; in a more aggressive scenario (gc, push --force, multi-day gap) the work would be unrecoverable.
+
+## 9. Stage-2 remediation artefacts (2026-07-08)
+
+Post-Operating-Audit remediation lives alongside the code. Before strategic or
+commercial work in this repo, read in order:
+
+1. `.planning/NORTH-STAR.md` — verified placements/month; liquidity gates; ambition. Decisions, not research.
+2. `REMEDIATION-LOG.md` (root) — dimension grades, every Tier-1 edit, locked-decision divergences from the audit.
+3. `FOUNDER-ACTIONS.md` (root) — human-only acts pending; A-READY artefacts convert to A only when these tick.
+4. `docs/commercial/` — pricing (segmented A/B), market sizing (banded), expansion (trigger-gated). Numbers are [MODELLED] until the pricing lab replaces them.
+5. Frozen audit baseline: `.planning/audits/TopFarms_Operating_Audit_2026-07-08.md` — never edit; quarterly re-runs diff against it.
+
+Evidence labels are load-bearing across all Stage-2 docs: [V]/[A]/[MODELLED]/[OPINION].
+Never promote a [MODELLED] number into copy or code without the lab/data behind it.
+The truth-pass rule stands: no fabricated metrics, testimonials, or future-dated
+content anywhere in the repo — tests guard the landing page (LAND-05/08/09).

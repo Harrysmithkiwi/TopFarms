@@ -380,19 +380,25 @@ export function SignUp() {
                 style={{ color: 'var(--color-text-muted)' }}
               >
                 I agree to the{' '}
-                <span
-                  className="cursor-pointer underline"
+                <Link
+                  to="/terms"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline"
                   style={{ color: 'var(--color-brand-900)' }}
                 >
                   Terms of Service
-                </span>{' '}
+                </Link>{' '}
                 and{' '}
-                <span
-                  className="cursor-pointer underline"
+                <Link
+                  to="/privacy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline"
                   style={{ color: 'var(--color-brand-900)' }}
                 >
                   Privacy Policy
-                </span>
+                </Link>
               </label>
             </div>
             {errors.terms && (

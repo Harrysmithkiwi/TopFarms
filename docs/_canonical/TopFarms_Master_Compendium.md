@@ -31,6 +31,7 @@ There are three tiers. Always resolve top-down:
 | [`PRD.md`](./PRD.md) | Product definition, users, scope, pricing, feature set | `.planning/REQUIREMENTS.md` + `PROJECT.md` |
 | [`Brand_and_Design.md`](./Brand_and_Design.md) | Brand (v2), design tokens, typography, voice | `src/index.css`; `.planning/v2-migration/TopFarms_Brand_Spec_v2.md` + `DESIGN.md` |
 | [`Data_Architecture.md`](./Data_Architecture.md) | Stack, schema, leads/ingestion pipeline, integrations | `supabase/migrations/`; `SPEC.md` (feature ref) |
+| [`TopFarms_Platform_Audit.md`](./TopFarms_Platform_Audit.md) | Demand-signal study vs live codebase: as-is inventory, gap analysis, enhancement roadmap, shared-enum spec | `supabase/migrations/` + `supabase/functions/` + `src/` (audited 2026-07-08) |
 
 ---
 

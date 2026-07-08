@@ -164,42 +164,28 @@ describe('Landing Page', () => {
     })
   })
 
-  describe('LAND-05: Testimonials section', () => {
-    it('renders 3 testimonial cards', () => {
+  // Truth pass 2026-07-08: LAND-05 / LAND-08 / LAND-09 previously asserted FABRICATED
+  // content (invented testimonials/stats; real brands falsely implied as customers).
+  // Sections unrendered from Home; these guards keep the fabrication from returning
+  // until real, per-name-consented content exists. See REMEDIATION-LOG.md.
+  describe('LAND-05/08/09: fabricated social proof stays removed (truth-pass guard)', () => {
+    it('does not render fabricated testimonials', () => {
       renderHome()
-      expect(screen.getByText('Sarah M.')).toBeInTheDocument()
-      expect(screen.getByText('James T.')).toBeInTheDocument()
-      expect(screen.getByText('Rachel & Tom K.')).toBeInTheDocument()
+      expect(screen.queryByText('Sarah M.')).not.toBeInTheDocument()
+      expect(screen.queryByText('James T.')).not.toBeInTheDocument()
+      expect(screen.queryByText('Rachel & Tom K.')).not.toBeInTheDocument()
     })
 
-    it('renders Sarah M. testimonial', () => {
+    it('does not render fabricated stat blocks', () => {
       renderHome()
-      expect(screen.getByText('Sarah M.')).toBeInTheDocument()
+      expect(screen.queryByText('500+')).not.toBeInTheDocument()
+      expect(screen.queryByText('Satisfaction')).not.toBeInTheDocument()
     })
 
-    it('renders James T. testimonial', () => {
+    it('does not imply real brands are customers', () => {
       renderHome()
-      expect(screen.getByText('James T.')).toBeInTheDocument()
-    })
-
-    it('renders Rachel & Tom K. testimonial', () => {
-      renderHome()
-      expect(screen.getByText('Rachel & Tom K.')).toBeInTheDocument()
-    })
-  })
-
-  describe('LAND-08: Testimonials stat blocks', () => {
-    it('TestimonialsSection renders social proof stat blocks', () => {
-      renderHome()
-      expect(screen.getByText('500+')).toBeInTheDocument()
-      expect(screen.getByText('Satisfaction')).toBeInTheDocument()
-    })
-  })
-
-  describe('LAND-09: Trusted-by strip', () => {
-    it('TrustedByStrip renders farm brand placeholders', () => {
-      renderHome()
-      expect(screen.getByText('Fonterra Sharemilkers')).toBeInTheDocument()
+      expect(screen.queryByText('Fonterra Sharemilkers')).not.toBeInTheDocument()
+      expect(screen.queryByText('Silver Fern Farms')).not.toBeInTheDocument()
     })
   })
 

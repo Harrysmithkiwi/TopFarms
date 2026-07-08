@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Applications & Messages — TopFarms</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="topfarms-v2.css" />
+<style>
+  .page-hero {
+    padding: 32px 0 16px;
+  }
+  .welcome-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 16px;
+  }
+  .page-h1 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--text);
+  }
+  .page-sub {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* Status overview strip */
+  .status-strip {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+  .status-pill {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 12px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 150ms;
+  }
+  .status-pill:hover { border-color: var(--border-strong); }
+  .status-pill.active { border-color: var(--brand); background: var(--brand-50); }
+  .status-pill-num {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 3px;
+    font-variant-numeric: tabular-nums;
+  }
+  .status-pill-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  /* Applications list */
+  .apps-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 40px;
+  }
+  .app-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 18px 20px;
+    display: grid;
+    grid-template-columns: 48px 1fr 180px auto;
+    gap: 20px;
+    align-items: center;
+    transition: all 150ms;
+    cursor: pointer;
+  }
+  .app-card:hover { border-color: var(--border-strong); box-shadow: var(--shadow-sm); }
+  .app-company-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--r);
+    background: linear-gradient(135deg, var(--brand-50), var(--brand-100));
+    color: var(--brand-900);
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .app-job-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2px;
+    letter-spacing: -0.01em;
+  }
+  .app-company {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .app-meta {
+    display: flex;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--text-muted);
+    flex-wrap: wrap;
+  }
+  .app-meta-item { display: inline-flex; align-items: center; gap: 4px; }
+  .app-meta-sep { color: var(--text-subtle); }
+
+  .app-progress {
+    padding: 6px 0;
+  }
+  .app-progress-stages {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 6px;
+  }
+  .app-progress-stage {
+    height: 4px;
+    flex: 1;
+    background: var(--surface-2);
+    border-radius: 2px;
+  }
+  .app-progress-stage.done { background: var(--brand); }
+  .app-progress-stage.current { background: var(--brand); }
+  .app-progress-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--brand);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .app-progress-label.reviewed { color: var(--info-text); }
+  .app-progress-label.interview { color: var(--ai); }
+  .app-progress-label.shortlisted { color: var(--warn-text); }
+  .app-progress-label.offered { color: var(--brand); }
+  .app-progress-label.declined { color: var(--danger); }
+
+  .app-actions { display: flex; gap: 6px; }
+
+  /* ───────── MESSAGING ───────── */
+  .messages-section {
+    margin-top: 64px;
+  }
+  .messages-shell {
+    display: grid;
+    grid-template-columns: 320px minmax(0, 1fr);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    height: 640px;
+    margin-bottom: 96px;
+  }
+
+  /* Thread list */
+  .thread-list {
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .thread-search {
+    padding: 14px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .thread-search-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
+    height: 36px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+  }
+  .thread-search-input input {
+    border: none;
+    outline: none;
+    background: transparent;
+    flex: 1;
+    font-size: 13px;
+  }
+  .thread-search-input svg { color: var(--text-subtle); }
+
+  .thread-scroller {
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .thread-item {
+    display: flex;
+    gap: 12px;
+    padding: 14px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 150ms;
+    align-items: flex-start;
+  }
+  .thread-item:hover { background: var(--surface-2); }
+  .thread-item.active { background: var(--brand-50); border-left: 3px solid var(--brand); padding-left: 11px; }
+  .thread-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--brand-50), var(--brand-100));
+    color: var(--brand-900);
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .thread-online {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--brand);
+    border: 2px solid var(--surface);
+  }
+  .thread-body { flex: 1; min-width: 0; }
+  .thread-top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .thread-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.005em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .thread-time {
+    font-size: 11px;
+    color: var(--text-subtle);
+    flex-shrink: 0;
+    margin-left: 8px;
+  }
+  .thread-preview {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+  }
+  .thread-item.unread .thread-name { color: var(--text); }
+  .thread-item.unread .thread-preview { color: var(--text); font-weight: 500; }
+  .unread-badge {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background: var(--brand);
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 18px;
+  }
+  .thread-job-tag {
+    display: inline-flex;
+    align-items: center;
+    font-size: 10px;
+    padding: 2px 6px;
+    background: var(--surface-2);
+    color: var(--text-muted);
+    border-radius: var(--r-sm);
+    font-weight: 500;
+  }
+  .thread-item.active .thread-job-tag { background: rgba(22, 163, 74, 0.15); color: var(--brand-900); }
+
+  /* Chat panel */
+  .chat-panel {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .chat-head {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .chat-head-body { flex: 1; }
+  .chat-head-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .chat-head-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .chat-head-actions { display: flex; gap: 6px; }
+
+  /* Context banner about the job */
+  .chat-context {
+    padding: 12px 20px;
+    background: var(--brand-50);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--brand-900);
+    flex-shrink: 0;
+  }
+  .chat-context-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--r-sm);
+    background: var(--brand);
+    color: white;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+  .chat-context-body { flex: 1; }
+  .chat-context-title { font-weight: 600; margin-bottom: 2px; }
+  .chat-context-sub { font-size: 12px; opacity: 0.8; }
+  .chat-context-link {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--brand-900);
+    text-decoration: underline;
+  }
+
+  /* Messages */
+  .messages-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .day-separator {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-subtle);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin: 8px 0;
+    position: relative;
+  }
+  .day-separator::before,
+  .day-separator::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: calc(50% - 48px);
+    height: 1px;
+    background: var(--border);
+  }
+  .day-separator::before { left: 0; }
+  .day-separator::after { right: 0; }
+
+  .msg {
+    display: flex;
+    gap: 10px;
+    max-width: 75%;
+    align-items: flex-end;
+  }
+  .msg-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--brand-50), var(--brand-100));
+    color: var(--brand-900);
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+  .msg-bubble {
+    padding: 10px 14px;
+    background: var(--surface-2);
+    border-radius: 16px 16px 16px 4px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--text);
+  }
+  .msg-time {
+    font-size: 10px;
+    color: var(--text-subtle);
+    margin-top: 4px;
+    margin-left: 40px;
+    letter-spacing: 0.02em;
+  }
+
+  .msg.outgoing { align-self: flex-end; flex-direction: row-reverse; }
+  .msg.outgoing .msg-bubble {
+    background: var(--brand);
+    color: white;
+    border-radius: 16px 16px 4px 16px;
+  }
+  .msg.outgoing .msg-time { margin-left: 0; margin-right: 40px; text-align: right; }
+  .msg.outgoing .msg-avatar { background: var(--brand); color: white; }
+
+  .msg-attachment {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    margin-top: 8px;
+    font-size: 13px;
+  }
+  .msg-attachment-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--r-sm);
+    background: var(--brand-50);
+    color: var(--brand);
+    display: grid;
+    place-items: center;
+  }
+
+  /* Interview slot card */
+  .interview-card {
+    padding: 14px;
+    background: var(--surface);
+    border: 2px solid var(--brand);
+    border-radius: var(--r-md);
+    margin-top: 6px;
+  }
+  .interview-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--brand);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .interview-body {
+    font-size: 14px;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+  .interview-body strong { font-weight: 600; }
+  .interview-actions { display: flex; gap: 6px; }
+
+  /* Composer */
+  .chat-composer {
+    padding: 14px 20px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .composer-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+  }
+  .composer-input {
+    flex: 1;
+    min-height: 40px;
+    max-height: 120px;
+    padding: 10px 12px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    font-size: 14px;
+    color: var(--text);
+    resize: none;
+    font-family: inherit;
+    outline: none;
+    transition: all 150ms;
+  }
+  .composer-input:focus {
+    border-color: var(--brand);
+    background: var(--surface);
+    box-shadow: 0 0 0 3px var(--brand-50);
+  }
+  .composer-actions { display: flex; gap: 4px; align-items: center; }
+
+  @media (max-width: 900px) {
+    .app-card { grid-template-columns: 40px 1fr; gap: 12px; }
+    .app-progress, .app-actions { grid-column: 1 / -1; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+    .status-strip { grid-template-columns: repeat(3, 1fr); }
+    .messages-shell { grid-template-columns: 1fr; height: auto; }
+    .thread-list { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="app-nav">
+  <div class="container-wide app-nav-inner">
+    <a href="#" class="logo">
+      <span class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19.2 2.96c.81 1.1 1.64 3.08 1.3 5.78C20.12 12.7 16.5 18.5 11 20Z"/>
+          <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+        </svg>
+      </span>
+      <span>TopFarms</span>
+    </a>
+    <div class="nav-links-app">
+      <a href="#" class="nav-link">Find work</a>
+      <a href="#" class="nav-link active">My applications</a>
+      <a href="#" class="nav-link">Profile</a>
+      <a href="#" class="nav-link">CV builder</a>
+    </div>
+    <div class="nav-actions">
+      <button class="icon-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="icon-btn-dot"></span></button>
+      <div class="avatar-sm">JT</div>
+    </div>
+  </div>
+</nav>
+
+<div class="container-wide">
+  <section class="page-hero">
+    <div class="welcome-row">
+      <div>
+        <div class="page-h1">My applications</div>
+        <div class="page-sub">Track your progress, respond to employers, manage your pipeline</div>
+      </div>
+      <button class="btn btn-primary btn-sm">+ Find more jobs</button>
+    </div>
+
+    <!-- Status strip -->
+    <div class="status-strip">
+      <button class="status-pill active">
+        <div class="status-pill-num">14</div>
+        <div class="status-pill-label">All active</div>
+      </button>
+      <button class="status-pill">
+        <div class="status-pill-num">3</div>
+        <div class="status-pill-label">New</div>
+      </button>
+      <button class="status-pill">
+        <div class="status-pill-num">6</div>
+        <div class="status-pill-label">Reviewed</div>
+      </button>
+      <button class="status-pill">
+        <div class="status-pill-num">2</div>
+        <div class="status-pill-label">Interviewed</div>
+      </button>
+      <button class="status-pill">
+        <div class="status-pill-num">2</div>
+        <div class="status-pill-label">Shortlisted</div>
+      </button>
+      <button class="status-pill">
+        <div class="status-pill-num">1</div>
+        <div class="status-pill-label">Offered</div>
+      </button>
+    </div>
+
+    <!-- Applications list -->
+    <div class="apps-list">
+
+      <!-- Shortlisted -->
+      <article class="app-card">
+        <div class="app-company-logo">GF</div>
+        <div>
+          <div class="app-job-title">Dairy Farm Assistant</div>
+          <div class="app-company"><strong>Greenfield Farms Ltd</strong> · Te Awamutu, Waikato</div>
+          <div class="app-meta">
+            <span class="app-meta-item">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              $52–62k
+            </span>
+            <span class="app-meta-sep">·</span>
+            <span>Applied 9 days ago</span>
+            <span class="app-meta-sep">·</span>
+            <span style="color: var(--brand); font-weight: 600;">94% match</span>
+          </div>
+        </div>
+        <div class="app-progress">
+          <div class="app-progress-stages">
+            <div class="app-progress-stage done"></div>
+            <div class="app-progress-stage done"></div>
+            <div class="app-progress-stage done"></div>
+            <div class="app-progress-stage current"></div>
+            <div class="app-progress-stage"></div>
+            <div class="app-progress-stage"></div>
+          </div>
+          <div class="app-progress-label shortlisted">● Shortlisted</div>
+        </div>
+        <div class="app-actions">
+          <button class="btn btn-secondary btn-sm">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Message
+          </button>
+          <button class="btn btn-primary btn-sm">View</button>
+        </div>
+      </article>
+
+      <!-- Interviewed -->
+      <article class="app-card">
+        <div class="app-company-logo">MH</div>
+        <div>
+          <div class="app-job-title">Herd Manager 2IC</div>
+          <div class="app-company"><strong>Mackenzie High Country Farms</strong> · Twizel, Canterbury</div>
+          <div class="app-meta">
+            <span>$64–72k</span>
+            <span class="app-meta-sep">·</span>
+            <span>Applied 2 weeks ago</span>
+            <span class="app-meta-sep">·</span>
+            <span style="color: var(--brand); font-weight: 600;">87% match</span>
+          </div>
+        </div>
+        <div class="app-progress">
+          <div class="app-progress-stages">
+            <div class="app-progress-stage done"></div>
+            <div class="app-progress-stage done"></div>
+            <div class="app-progress-stage current"></div>
+            <div class="app-progress-stage"></div>
+            <div class="app-progress-stage"></div>
+            <div class="app-progress-stage"></div>
+          </div>
+          <div class="app-progress-label interview">● Interview scheduled</div>
+        </div>
+        <div class="app-actions">
+          <button class="btn btn-secondary btn-sm">Message</button>
+          <button class="btn btn-primary btn-sm">View</button>
+        </div>
+      </article>
+
+      <!-- New -->
+      <article class="app-card">
+        <div class="app-company-logo">RD</div>
+        <div>
+          <div class="app-job-title">Relief Milker (weekends)</div>
+          <div class="app-company"><strong>Rangitane Dairy</strong> · Cambridge, Waikato</div>
+          <div class="app-meta">
+            <span>$32/hr casual</span>
+            <span class="app-meta-sep">·</span>
+            <span>Applied yesterday</span>
+            <span class="app-meta-sep">·</span>
+            <span style="color: var(--brand); font-weight: 600;">82% match</span>
+          </div>
+        </div>
+        <div class="app-progress">
+          <div class="app-progress-stages">
+            <div class="app-progress-stage current"></div>
+            <div class="app-progress-stage"></div>
+            <div class="app-progress-stage"></div>
+            <div class="app-progress-stage"></div>
+            <div class="app-progress-stage"></div>
+            <div class="app-progress-stage"></div>
+          </div>
+          <div class="app-progress-label">● Submitted</div>
+        </div>
+        <div class="app-actions">
+          <button class="btn btn-secondary btn-sm">View</button>
+        </div>
+      </article>
+
+      <!-- Reviewed -->
+      <article class="app-card">
+        <div class="app-company-logo">TV</div>
+        <div>
+          <div class="app-job-title">Farm Assistant — Calving Support</div>
+          <div class="app-company"><strong>Tasman Valley Dairy</strong> · Ashburton, Canterbury</div>
+          <div class="app-meta">
+            <span>$55–58k</span>
+            <span class="app-meta-sep">·</span>
+            <span>Applied 6 days ago</span>
+            <span class="app-meta-sep">·</span>
+            <span style="color: var(--brand); font-weight: 600;">76% match</span>
+          </div>
+        </div>
+        <div class="app-progress">
+          <div class="app-progress-stages">
+            <div class="app-progress-stage done"></div>
+            <div class="app-progress-stage current"></div>
+            <div class="app-progress-stage"></div>
+            <div class="app-progress-stage"></div>
+            <div class="app-progress-stage"></div>
+            <div class="app-progress-stage"></div>
+          </div>
+          <div class="app-progress-label reviewed">● Profile viewed</div>
+        </div>
+        <div class="app-actions">
+          <button class="btn btn-secondary btn-sm">View</button>
+        </div>
+      </article>
+
+      <!-- Offered -->
+      <article class="app-card" style="border-color: var(--brand); background: linear-gradient(to right, var(--brand-50) 0%, var(--surface) 30%);">
+        <div class="app-company-logo">HP</div>
+        <div>
+          <div class="app-job-title">Assistant Herd Manager</div>
+          <div class="app-company"><strong>Hauraki Plains Dairy Co.</strong> · Ngatea, Waikato</div>
+          <div class="app-meta">
+            <span>$58–65k</span>
+            <span class="app-meta-sep">·</span>
+            <span>Applied 3 weeks ago</span>
+            <span class="app-meta-sep">·</span>
+            <span style="color: var(--warn-text); font-weight: 600;">⏰ Response due in 2 days</span>
+          </div>
+        </div>
+        <div class="app-progress">
+          <div class="app-progress-stages">
+            <div class="app-progress-stage done"></div>
+            <div class="app-progress-stage done"></div>
+            <div class="app-progress-stage done"></div>
+            <div class="app-progress-stage done"></div>
+            <div class="app-progress-stage done"></div>
+            <div class="app-progress-stage current"></div>
+          </div>
+          <div class="app-progress-label offered">★ Offer received</div>
+        </div>
+        <div class="app-actions">
+          <button class="btn btn-primary btn-sm">Review offer</button>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- ═══════════ MESSAGES ═══════════ -->
+    <div class="messages-section">
+      <div class="welcome-row">
+        <div>
+          <div class="page-h1">Messages</div>
+          <div class="page-sub">Conversations with farms that have responded to your applications</div>
+        </div>
+      </div>
+
+      <div class="messages-shell">
+        <!-- Thread list -->
+        <aside class="thread-list">
+          <div class="thread-search">
+            <div class="thread-search-input">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <input placeholder="Search conversations…" />
+            </div>
+          </div>
+          <div class="thread-scroller">
+            <div class="thread-item active unread">
+              <div class="thread-avatar">DH<span class="thread-online"></span></div>
+              <div class="thread-body">
+                <div class="thread-top">
+                  <div class="thread-name">Dave Henderson</div>
+                  <div class="thread-time">2m</div>
+                </div>
+                <div class="thread-preview">Great, happy to set up a call for Thursday 10am. Does that work?</div>
+                <div class="u-row" style="justify-content: space-between;">
+                  <span class="thread-job-tag">Dairy Farm Assistant</span>
+                  <span class="unread-badge">2</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="thread-item">
+              <div class="thread-avatar">SM</div>
+              <div class="thread-body">
+                <div class="thread-top">
+                  <div class="thread-name">Sarah Mackenzie</div>
+                  <div class="thread-time">1h</div>
+                </div>
+                <div class="thread-preview">You: Thanks Sarah, I'll think about it and come back to you…</div>
+                <span class="thread-job-tag">Herd Manager 2IC</span>
+              </div>
+            </div>
+
+            <div class="thread-item unread">
+              <div class="thread-avatar">HP</div>
+              <div class="thread-body">
+                <div class="thread-top">
+                  <div class="thread-name">Hauraki Plains Dairy</div>
+                  <div class="thread-time">Yday</div>
+                </div>
+                <div class="thread-preview">We'd like to make you a formal offer — please check the details attached…</div>
+                <div class="u-row" style="justify-content: space-between;">
+                  <span class="thread-job-tag">Asst Herd Manager</span>
+                  <span class="unread-badge">1</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="thread-item">
+              <div class="thread-avatar">TV</div>
+              <div class="thread-body">
+                <div class="thread-top">
+                  <div class="thread-name">Tasman Valley Dairy</div>
+                  <div class="thread-time">3d</div>
+                </div>
+                <div class="thread-preview">Thanks for applying James — we'll review your profile this week.</div>
+                <span class="thread-job-tag">Calving Support</span>
+              </div>
+            </div>
+
+            <div class="thread-item">
+              <div class="thread-avatar">RD</div>
+              <div class="thread-body">
+                <div class="thread-top">
+                  <div class="thread-name">Rangitane Dairy</div>
+                  <div class="thread-time">5d</div>
+                </div>
+                <div class="thread-preview">You: Hi, just confirming I'm still available if you'd like to chat</div>
+                <span class="thread-job-tag">Relief Milker</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Chat panel -->
+        <div class="chat-panel">
+          <div class="chat-head">
+            <div class="thread-avatar">DH<span class="thread-online"></span></div>
+            <div class="chat-head-body">
+              <div class="chat-head-name">Dave Henderson</div>
+              <div class="chat-head-meta">Greenfield Farms Ltd · Online now</div>
+            </div>
+            <div class="chat-head-actions">
+              <button class="icon-btn" title="Call"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></button>
+              <button class="icon-btn" title="More"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+            </div>
+          </div>
+
+          <!-- Context -->
+          <div class="chat-context">
+            <div class="chat-context-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div class="chat-context-body">
+              <div class="chat-context-title">Dairy Farm Assistant</div>
+              <div class="chat-context-sub">You've been shortlisted · 94% match</div>
+            </div>
+            <a href="#" class="chat-context-link">View role →</a>
+          </div>
+
+          <!-- Messages -->
+          <div class="messages-scroll">
+            <div class="day-separator">Monday, April 20</div>
+
+            <div class="msg">
+              <div class="msg-avatar">DH</div>
+              <div>
+                <div class="msg-bubble">Hi James — thanks for applying to the farm assistant role. Your rotary experience looks exactly what we need. Do you have a few minutes to chat this week?</div>
+                <div class="msg-time">10:15 AM</div>
+              </div>
+            </div>
+
+            <div class="msg outgoing">
+              <div class="msg-avatar">JT</div>
+              <div>
+                <div class="msg-bubble">Hi Dave, thanks for reaching out. Yes, keen to chat — I'm free any afternoon this week or Thursday/Friday morning.</div>
+                <div class="msg-time">11:42 AM</div>
+              </div>
+            </div>
+
+            <div class="msg">
+              <div class="msg-avatar">DH</div>
+              <div>
+                <div class="msg-bubble">Perfect. Before we chat, could you send through any DairyNZ training records and your ATV certificate?</div>
+                <div class="msg-time">12:08 PM</div>
+              </div>
+            </div>
+
+            <div class="msg outgoing">
+              <div class="msg-avatar">JT</div>
+              <div>
+                <div class="msg-bubble">No problem — attached below.</div>
+                <div class="msg-attachment" style="background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.25); color: white;">
+                  <div class="msg-attachment-icon" style="background: rgba(255,255,255,0.2); color: white;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  </div>
+                  <div>
+                    <div style="font-weight: 600;">DairyNZ L3 Certificate.pdf</div>
+                    <div style="font-size: 11px; opacity: 0.8;">284 KB</div>
+                  </div>
+                </div>
+                <div class="msg-time">12:14 PM</div>
+              </div>
+            </div>
+
+            <div class="day-separator">Today</div>
+
+            <div class="msg">
+              <div class="msg-avatar">DH</div>
+              <div>
+                <div class="msg-bubble">Thanks, all looks good. Would you like to come down for a farm visit on Thursday? You could meet the team and see the shed.</div>
+                <div class="msg-time">9:04 AM</div>
+              </div>
+            </div>
+
+            <div class="msg">
+              <div class="msg-avatar">DH</div>
+              <div>
+                <div class="msg-bubble">Great, happy to set up a call for Thursday 10am. Does that work?</div>
+                <div class="interview-card">
+                  <div class="interview-head">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    Interview invitation
+                  </div>
+                  <div class="interview-body">
+                    <strong>Thursday, April 24 · 10:00 AM</strong><br>
+                    On-farm visit · Greenfield Farms, Te Awamutu<br>
+                    <span style="color: var(--text-muted); font-size: 13px;">~45 min · Meet Dave + walk the shed</span>
+                  </div>
+                  <div class="interview-actions">
+                    <button class="btn btn-primary btn-sm">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                      Accept
+                    </button>
+                    <button class="btn btn-secondary btn-sm">Propose another time</button>
+                  </div>
+                </div>
+                <div class="msg-time">9:05 AM · just now</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Composer -->
+          <div class="chat-composer">
+            <div class="composer-row">
+              <button class="icon-btn" title="Attach">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05 12.25 20.24a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 17.93 8.84L9.41 17.41a2 2 0 0 1-2.83-2.83L14.25 6.9"/></svg>
+              </button>
+              <textarea class="composer-input" rows="1" placeholder="Type a message…"></textarea>
+              <button class="btn btn-primary">
+                Send
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+</body>
+</html>

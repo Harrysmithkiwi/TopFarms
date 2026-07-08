@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Applicants — Dairy Farm Assistant · TopFarms</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="topfarms-v2.css" />
+<style>
+  /* Page head */
+  .page-head {
+    padding: 24px 0 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .page-head-top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .page-title-block h1 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--text);
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .page-title-meta {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .page-title-meta strong { color: var(--text); font-weight: 600; }
+  .page-head-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  /* Job tabs to switch between jobs */
+  .job-selector {
+    margin-top: 18px;
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+  .job-tab {
+    padding: 8px 14px;
+    border-radius: var(--r);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 150ms;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .job-tab:hover { background: var(--surface-2); color: var(--text); }
+  .job-tab.active { background: var(--surface-2); color: var(--text); font-weight: 600; }
+  .job-tab-count {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 1px 7px;
+    font-size: 11px;
+    font-weight: 600;
+    min-width: 22px;
+    text-align: center;
+  }
+  .job-tab.active .job-tab-count { background: var(--brand); color: white; border-color: var(--brand); }
+
+  /* Pipeline */
+  .pipeline {
+    padding: 20px 0;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+  }
+  .pipe-col {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 14px;
+    cursor: pointer;
+    transition: all 150ms;
+  }
+  .pipe-col:hover { border-color: var(--border-strong); }
+  .pipe-col.active {
+    border-color: var(--brand);
+    background: var(--brand-50);
+  }
+  .pipe-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .pipe-name {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--text);
+  }
+  .pipe-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--brand);
+  }
+  .pipe-col:nth-child(2) .pipe-dot { background: var(--info); }
+  .pipe-col:nth-child(3) .pipe-dot { background: var(--ai); }
+  .pipe-col:nth-child(4) .pipe-dot { background: var(--warn); }
+  .pipe-col:nth-child(5) .pipe-dot { background: var(--brand); }
+  .pipe-col:nth-child(6) .pipe-dot { background: var(--danger); }
+  .pipe-count {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .pipe-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+    font-weight: 500;
+  }
+
+  /* Toolbar */
+  .tools-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 0 16px;
+    flex-wrap: wrap;
+  }
+  .tools-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .tools-right { display: flex; align-items: center; gap: 8px; }
+
+  .search-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
+    height: 36px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    width: 280px;
+    transition: all 150ms;
+  }
+  .search-input:focus-within { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-50); }
+  .search-input input {
+    border: none;
+    outline: none;
+    background: transparent;
+    flex: 1;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .search-input input::placeholder { color: var(--text-subtle); }
+  .search-input svg { color: var(--text-subtle); flex-shrink: 0; }
+
+  .filter-dropdown {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 12px;
+    height: 36px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .filter-dropdown:hover { background: var(--surface-hover); }
+  .filter-dropdown svg { color: var(--text-muted); }
+
+  /* Candidates list */
+  .candidates {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-bottom: 64px;
+  }
+  .candidate {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 18px 20px;
+    display: grid;
+    grid-template-columns: 48px 1fr auto;
+    gap: 16px;
+    align-items: center;
+    transition: all 150ms;
+    cursor: pointer;
+  }
+  .candidate:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+  }
+  .candidate-main { min-width: 0; }
+  .candidate-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+  }
+  .candidate-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .candidate-meta {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+  .candidate-meta strong { color: var(--text); font-weight: 600; }
+
+  .candidate-score-block {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .candidate-score-num {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--brand);
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    min-width: 44px;
+    text-align: right;
+  }
+  .candidate-score-num.mid { color: var(--warn); }
+  .candidate-score-num.low { color: var(--danger); }
+  .candidate-stage {
+    padding: 4px 10px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    background: var(--info-bg);
+    color: var(--info-text);
+    white-space: nowrap;
+  }
+  .candidate-stage.new { background: var(--brand-50); color: var(--brand-900); }
+  .candidate-stage.reviewed { background: var(--info-bg); color: var(--info-text); }
+  .candidate-stage.interview { background: var(--ai-bg); color: var(--ai); }
+  .candidate-stage.shortlisted { background: var(--warn-bg); color: var(--warn-text); }
+  .candidate-stage.offered { background: var(--brand-50); color: var(--brand-900); }
+  .candidate-stage.declined { background: var(--danger-bg); color: var(--danger); }
+
+  /* Expanded candidate (inline AI summary) */
+  .candidate.expanded {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .candidate-inner-row {
+    display: grid;
+    grid-template-columns: 48px 1fr auto;
+    gap: 16px;
+    align-items: center;
+  }
+  .candidate-expand-body {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .cand-section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    margin-bottom: 10px;
+  }
+  .mini-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .mini-bar {
+    display: grid;
+    grid-template-columns: 110px 1fr 40px;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+  }
+  .mini-bar-name { color: var(--text-muted); }
+  .mini-bar-track {
+    height: 4px;
+    background: var(--surface-2);
+    border-radius: 2px;
+  }
+  .mini-bar-fill {
+    height: 100%;
+    background: var(--brand);
+    border-radius: 2px;
+  }
+  .mini-bar-fill.partial { background: var(--warn); }
+  .mini-bar-val {
+    font-weight: 600;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  .ai-summary-inline {
+    background: var(--ai-bg);
+    border: 1px solid #E4DEF8;
+    border-radius: var(--r-md);
+    padding: 14px;
+  }
+  .ai-summary-inline-head {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ai);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .ai-summary-inline-body {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--text);
+  }
+
+  .candidate-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Shortlist gate modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(11, 31, 16, 0.55);
+    backdrop-filter: blur(4px);
+    display: grid;
+    place-items: center;
+    z-index: 100;
+    padding: 24px;
+  }
+  .modal {
+    background: var(--surface);
+    border-radius: var(--r-lg);
+    padding: 36px;
+    max-width: 520px;
+    width: 100%;
+    box-shadow: var(--shadow-lg);
+  }
+  .modal-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--r-md);
+    background: var(--warn-bg);
+    color: var(--warn);
+    display: grid;
+    place-items: center;
+    margin-bottom: 20px;
+  }
+  .modal-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+  .modal-body {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+  }
+  .modal-body strong { color: var(--text); font-weight: 600; }
+
+  .fee-callout {
+    background: var(--warn-bg);
+    border: 1px solid #FCD34D;
+    border-radius: var(--r);
+    padding: 14px 16px;
+    margin-bottom: 20px;
+  }
+  .fee-callout-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+  }
+  .fee-label { color: var(--warn-text); font-weight: 500; }
+  .fee-amount {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--warn-text);
+    letter-spacing: -0.02em;
+  }
+  .fee-sub {
+    font-size: 12px;
+    color: var(--warn-text);
+    margin-top: 4px;
+    opacity: 0.85;
+  }
+
+  .modal-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px;
+    background: var(--surface-2);
+    border-radius: var(--r);
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text);
+    cursor: pointer;
+    margin-bottom: 24px;
+  }
+  .modal-check input { margin-top: 2px; accent-color: var(--brand); }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+
+  @media (max-width: 900px) {
+    .pipeline { grid-template-columns: repeat(3, 1fr); }
+    .candidate { grid-template-columns: 40px 1fr; gap: 12px; padding: 14px; }
+    .candidate-score-block { grid-column: 1 / -1; justify-content: space-between; margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--border); }
+    .candidate-expand-body { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV: employer -->
+<nav class="app-nav">
+  <div class="container-wide app-nav-inner">
+    <a href="#" class="logo">
+      <span class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19.2 2.96c.81 1.1 1.64 3.08 1.3 5.78C20.12 12.7 16.5 18.5 11 20Z"/>
+          <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+        </svg>
+      </span>
+      <span>TopFarms</span>
+    </a>
+    <div class="nav-links-app">
+      <a href="#" class="nav-link">Dashboard</a>
+      <a href="#" class="nav-link">Jobs</a>
+      <a href="#" class="nav-link active">Applicants</a>
+      <a href="#" class="nav-link">Messages</a>
+      <a href="#" class="nav-link">Analytics</a>
+    </div>
+    <div class="nav-actions">
+      <button class="btn btn-primary btn-sm">+ Post a job</button>
+      <button class="icon-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="icon-btn-dot"></span></button>
+      <div class="avatar-sm">GF</div>
+    </div>
+  </div>
+</nav>
+
+<!-- PAGE HEAD -->
+<section class="page-head">
+  <div class="container-wide">
+    <div class="page-head-top">
+      <div class="page-title-block">
+        <h1>Applicants</h1>
+        <div class="page-title-meta">
+          <span><strong>Dairy Farm Assistant</strong> · Te Awamutu, Waikato</span>
+          <span>·</span>
+          <span>47 applicants</span>
+          <span>·</span>
+          <span style="color: var(--brand); font-weight: 600;">12 new since yesterday</span>
+        </div>
+      </div>
+      <div class="page-head-actions">
+        <button class="btn btn-secondary btn-sm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export
+        </button>
+        <button class="btn btn-secondary btn-sm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.2.62.74 1.08 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Job settings
+        </button>
+      </div>
+    </div>
+
+    <!-- Job selector tabs -->
+    <div class="job-selector">
+      <div class="job-tab active">Dairy Farm Assistant <span class="job-tab-count">47</span></div>
+      <div class="job-tab">Herd Manager 2IC <span class="job-tab-count">18</span></div>
+      <div class="job-tab">Relief Milker <span class="job-tab-count">29</span></div>
+      <div class="job-tab">Calf Rearer (seasonal) <span class="job-tab-count">11</span></div>
+      <div class="job-tab">+ Show all 5</div>
+    </div>
+  </div>
+</section>
+
+<div class="container-wide">
+  <!-- Pipeline -->
+  <div class="pipeline">
+    <div class="pipe-col active">
+      <div class="pipe-head"><span class="pipe-name">New</span><span class="pipe-dot"></span></div>
+      <div class="pipe-count">12</div>
+      <div class="pipe-sub">Not yet reviewed</div>
+    </div>
+    <div class="pipe-col">
+      <div class="pipe-head"><span class="pipe-name">Reviewed</span><span class="pipe-dot"></span></div>
+      <div class="pipe-count">18</div>
+      <div class="pipe-sub">Seen, not actioned</div>
+    </div>
+    <div class="pipe-col">
+      <div class="pipe-head"><span class="pipe-name">Interviewed</span><span class="pipe-dot"></span></div>
+      <div class="pipe-count">7</div>
+      <div class="pipe-sub">In interview stage</div>
+    </div>
+    <div class="pipe-col">
+      <div class="pipe-head"><span class="pipe-name">Shortlisted</span><span class="pipe-dot"></span></div>
+      <div class="pipe-count">3</div>
+      <div class="pipe-sub">Final consideration</div>
+    </div>
+    <div class="pipe-col">
+      <div class="pipe-head"><span class="pipe-name">Offered</span><span class="pipe-dot"></span></div>
+      <div class="pipe-count">1</div>
+      <div class="pipe-sub">Awaiting response</div>
+    </div>
+    <div class="pipe-col">
+      <div class="pipe-head"><span class="pipe-name">Declined</span><span class="pipe-dot"></span></div>
+      <div class="pipe-count">6</div>
+      <div class="pipe-sub">Not progressing</div>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="tools-bar">
+    <div class="tools-left">
+      <div class="search-input">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input placeholder="Search candidates by name, region, skills…" />
+      </div>
+      <button class="filter-dropdown">
+        Match score: All
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <button class="filter-dropdown">
+        Source: All
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <button class="filter-dropdown">
+        Visa status: Any
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="tools-right">
+      <span style="font-size: 13px; color: var(--text-muted);">Sort:</span>
+      <button class="filter-dropdown">
+        AI match score
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Candidates -->
+  <div class="candidates">
+
+    <!-- Expanded card (top match) -->
+    <article class="candidate expanded">
+      <div class="candidate-inner-row">
+        <div class="avatar avatar-48">JT</div>
+        <div class="candidate-main">
+          <div class="candidate-head">
+            <span class="candidate-name">James Tūhoe</span>
+            <span class="pill pill-success">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Verified
+            </span>
+            <span class="pill pill-brand">NZ resident</span>
+          </div>
+          <div class="candidate-meta">
+            <strong>7 years dairy</strong> · Rotary Expert · Waikato local · DairyNZ Level 3 · Available in 2 weeks
+          </div>
+        </div>
+        <div class="candidate-score-block">
+          <span class="candidate-stage new">New</span>
+          <div class="candidate-score-num">94</div>
+        </div>
+      </div>
+
+      <div class="candidate-expand-body">
+        <div>
+          <div class="cand-section-label">Match breakdown</div>
+          <div class="mini-bars">
+            <div class="mini-bar">
+              <span class="mini-bar-name">Shed type</span>
+              <div class="mini-bar-track"><div class="mini-bar-fill" style="width: 100%;"></div></div>
+              <span class="mini-bar-val">25/25</span>
+            </div>
+            <div class="mini-bar">
+              <span class="mini-bar-name">Location</span>
+              <div class="mini-bar-track"><div class="mini-bar-fill" style="width: 100%;"></div></div>
+              <span class="mini-bar-val">20/20</span>
+            </div>
+            <div class="mini-bar">
+              <span class="mini-bar-name">Accommodation</span>
+              <div class="mini-bar-track"><div class="mini-bar-fill" style="width: 100%;"></div></div>
+              <span class="mini-bar-val">20/20</span>
+            </div>
+            <div class="mini-bar">
+              <span class="mini-bar-name">Skills</span>
+              <div class="mini-bar-track"><div class="mini-bar-fill partial" style="width: 80%;"></div></div>
+              <span class="mini-bar-val">16/20</span>
+            </div>
+            <div class="mini-bar">
+              <span class="mini-bar-name">Salary fit</span>
+              <div class="mini-bar-track"><div class="mini-bar-fill" style="width: 90%;"></div></div>
+              <span class="mini-bar-val">9/10</span>
+            </div>
+            <div class="mini-bar">
+              <span class="mini-bar-name">Visa & life</span>
+              <div class="mini-bar-track"><div class="mini-bar-fill" style="width: 80%;"></div></div>
+              <span class="mini-bar-val">4/5</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="cand-section-label">AI candidate summary</div>
+          <div class="ai-summary-inline">
+            <div class="ai-summary-inline-head">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5z"/></svg>
+              Recommended — strong rotary + location fit
+            </div>
+            <div class="ai-summary-inline-body">
+              7 years rotary dairy, well above your "required" bar. DairyNZ Level 3 verified. Lives 15km from your farm. Only gap: tractor at "Some" level (preferred "Comfortable"). Worth a call.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="candidate-actions">
+        <button class="btn btn-primary btn-sm">
+          Shortlist candidate
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </button>
+        <button class="btn btn-secondary btn-sm">View full profile</button>
+        <button class="btn btn-secondary btn-sm">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Message
+        </button>
+        <div class="u-spacer"></div>
+        <button class="btn btn-danger-ghost btn-sm">Decline</button>
+      </div>
+    </article>
+
+    <!-- Collapsed cards -->
+    <article class="candidate">
+      <div class="avatar avatar-48">SR</div>
+      <div class="candidate-main">
+        <div class="candidate-head">
+          <span class="candidate-name">Sarah R.</span>
+          <span class="pill pill-success"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Verified</span>
+          <span class="pill pill-brand">NZ citizen</span>
+          <span class="pill pill-info">Relocating</span>
+        </div>
+        <div class="candidate-meta">
+          <strong>5 years dairy</strong> · HB + Rotary · Canterbury → willing to relocate · DairyNZ L2 · Available May
+        </div>
+      </div>
+      <div class="candidate-score-block">
+        <span class="candidate-stage new">New</span>
+        <div class="candidate-score-num">87</div>
+      </div>
+    </article>
+
+    <article class="candidate">
+      <div class="avatar avatar-48">EK</div>
+      <div class="candidate-main">
+        <div class="candidate-head">
+          <span class="candidate-name">Emma Kauri-Walsh</span>
+          <span class="pill pill-success"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Verified</span>
+          <span class="pill pill-brand">NZ citizen</span>
+          <span class="pill pill-info">Couple</span>
+        </div>
+        <div class="candidate-meta">
+          <strong>6 years dairy</strong> · Rotary + AMS · Waikato local · Couple (partner seeking work too) · Available now
+        </div>
+      </div>
+      <div class="candidate-score-block">
+        <span class="candidate-stage reviewed">Reviewed</span>
+        <div class="candidate-score-num">85</div>
+      </div>
+    </article>
+
+    <article class="candidate">
+      <div class="avatar avatar-48">MP</div>
+      <div class="candidate-main">
+        <div class="candidate-head">
+          <span class="candidate-name">Michael Patel</span>
+          <span class="pill pill-warn">Work visa — RSE</span>
+        </div>
+        <div class="candidate-meta">
+          <strong>4 years dairy</strong> · Rotary · Previously Taranaki · Seeking permanent · Available June
+        </div>
+      </div>
+      <div class="candidate-score-block">
+        <span class="candidate-stage reviewed">Reviewed</span>
+        <div class="candidate-score-num">78</div>
+      </div>
+    </article>
+
+    <article class="candidate">
+      <div class="avatar avatar-48">BM</div>
+      <div class="candidate-main">
+        <div class="candidate-head">
+          <span class="candidate-name">Beau McPherson</span>
+          <span class="pill pill-success"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Verified</span>
+          <span class="pill pill-brand">NZ resident</span>
+          <span class="pill pill-info">Family</span>
+        </div>
+        <div class="candidate-meta">
+          <strong>4 years dairy</strong> · Rotary only · BOP → Waikato · Family-sized housing needed · Available 3 weeks
+        </div>
+      </div>
+      <div class="candidate-score-block">
+        <span class="candidate-stage interview">Interviewed</span>
+        <div class="candidate-score-num mid">68</div>
+      </div>
+    </article>
+
+    <article class="candidate">
+      <div class="avatar avatar-48">KT</div>
+      <div class="candidate-main">
+        <div class="candidate-head">
+          <span class="candidate-name">Kahu Thompson</span>
+          <span class="pill pill-brand">NZ citizen</span>
+        </div>
+        <div class="candidate-meta">
+          <strong>3 years dairy</strong> · HB · Waikato · No accommodation needed · Available immediately
+        </div>
+      </div>
+      <div class="candidate-score-block">
+        <span class="candidate-stage shortlisted">Shortlisted</span>
+        <div class="candidate-score-num mid">64</div>
+      </div>
+    </article>
+
+    <article class="candidate">
+      <div class="avatar avatar-48">LO</div>
+      <div class="candidate-main">
+        <div class="candidate-head">
+          <span class="candidate-name">Liam O'Connor</span>
+          <span class="pill pill-warn">Working holiday visa</span>
+        </div>
+        <div class="candidate-meta">
+          <strong>1.5 years dairy</strong> · HB · Ireland / NZ working holiday · Visa expires Aug · Seasonal
+        </div>
+      </div>
+      <div class="candidate-score-block">
+        <span class="candidate-stage reviewed">Reviewed</span>
+        <div class="candidate-score-num low">52</div>
+      </div>
+    </article>
+
+  </div>
+</div>
+
+<!-- Shortlist gate modal (appears when employer clicks Shortlist on 4th+ candidate) -->
+<div class="modal-overlay" id="shortlistModal" style="display: none;">
+  <div class="modal">
+    <div class="modal-icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+    </div>
+    <h2 class="modal-title">Shortlist James Tūhoe?</h2>
+    <p class="modal-body">
+      Shortlisting signals to the candidate you're seriously considering them — <strong>they'll be notified immediately</strong>. Placement fee applies on successful hire.
+    </p>
+
+    <div class="fee-callout">
+      <div class="fee-callout-row">
+        <div>
+          <div class="fee-label">Placement fee (on hire)</div>
+          <div class="fee-sub">Only charged if you hire this candidate. Nothing charged to shortlist.</div>
+        </div>
+        <div class="u-text-right">
+          <div class="fee-amount">$850</div>
+        </div>
+      </div>
+    </div>
+
+    <label class="modal-check">
+      <input type="checkbox" />
+      <span>I understand the placement fee is charged only if I hire this candidate, and the candidate will be notified they've been shortlisted.</span>
+    </label>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="document.getElementById('shortlistModal').style.display='none'">Cancel</button>
+      <button class="btn btn-primary">Confirm shortlist</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
