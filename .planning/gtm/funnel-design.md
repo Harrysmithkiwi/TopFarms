@@ -31,7 +31,7 @@ Verified from the Playbook Phase 5 summary:
 ≈ **10 outbound touches/week** over the quarter. First-year placements target **120+**. This is the primary use of founder time.
 
 - **Sources:** FB (Lane B posts with no contact = draft first message; Lane A = has contact), Seek, Trade Me. Seek/Trade Me outreach is longer/more formal and ToS-careful (see compliance).
-- **Founding Employer programme** (first 25): 50% off Featured for life, founder's mobile, private WhatsApp, quarterly dinner. Turns 25 signups into 25 evangelists + case studies.
+- **Founding Employer programme** (first 25): RE-CUT 2026-07-08 — the 50%-off-for-life clause is DEAD (Stage-2 LOCKED #6). Current offer = full-price Segment-A placement fee + fill guarantee + badge/founder-mobile/WhatsApp/dinner perks + case-study consent. **Authoritative: `founding-25-offer.md`** — pitch from that, not this line.
 
 ## Seeker funnel — PULL is the engine, DM is a supplement (reshaped maths)
 

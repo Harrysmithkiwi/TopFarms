@@ -84,7 +84,7 @@ More formal than FB. Seek/Trade Me: publicly-stated contact only, keep it light,
 ## E. Post-click / post-signup assets (where money lives)
 
 - **Signup page (employer):** this is where "first listing free, $100 after that" belongs (Playbook specificity: "first listing free, $100 after that" beats "competitive pricing"). Plain, concrete.
-- **Post-signup follow-up (employer):** once they have signed up, a warm message can mention the Founding Employer offer (50% off Featured for life) and the founder's mobile. Money is welcome here, never in the cold DM.
+- **Post-signup follow-up (employer):** once they have signed up, a warm message can mention the Founding Employer offer (per `founding-25-offer.md` — fill guarantee + perks; the old 50%-off-for-life clause is dead, do not offer it) and the founder's mobile. Money is welcome here, never in the cold DM.
 - **Parked (revenue decision, not comms):** whether to waive the first placement fee as an acquisition wedge. If used, it belongs in a later post-signup message, not the cold one.
 
 ## Consent log (for named testimonials)

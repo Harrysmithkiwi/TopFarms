@@ -77,3 +77,57 @@
 | E-10 | 2026-07-08 | `src/pages/auth/SignUp.tsx` | Terms/Privacy spans → real `<Link>`s (new tab) | consent was collected against nothing |
 | E-11 | 2026-07-08 | `README.md` (new) | repo front door | audit §D-17 |
 | E-12 | 2026-07-08 | `FOUNDER-ACTIONS.md` | FA-07 path corrected to `.planning/gtm/` | consistency |
+| E-13 | 2026-07-08 | `.planning/gtm/funnel-design.md:34` | Founding-Employer line rewritten: 50%-off-for-life DEAD → points at `founding-25-offer.md` | live corpus still pitched the killed offer |
+| E-14 | 2026-07-08 | `.planning/gtm/outreach-templates.md:87` | same correction in post-signup follow-up guidance | same |
+| E-15 | 2026-07-08 | `CLAUDE.md` | +§9 Stage-2 artefact pointers + standing evidence-label/truth-pass rules | future sessions must find NORTH-STAR/LOG/ACTIONS first |
+
+## Final dimension grades (Stage-2 close, 2026-07-08)
+
+Two A-READY flavours, distinguished honestly: **[founder]** = blocked only on a real-world
+human act (FOUNDER-ACTIONS); **[build]** = spec complete, engineering time remains
+(founder+AI can do it; it is scheduled work, not a blocker held by a human act).
+
+| Dimension | v1 | Final | Status |
+|---|---|---|---|
+| Vision / North Star | C− | **A** | decided + encoded |
+| Team & automation | C | **A** | decision doc complete |
+| Data/schema/architecture | A− | **A−** | already strong; 057 + PEND-02 tracked |
+| Market opportunity | D | **A-READY** [founder] | FA-09/FA-10 sharpen the bands |
+| Monetisation & pricing | D | **A-READY** [founder] | FA-07 lab converts [MODELLED]→observed |
+| Financial model | F | **A-READY** [founder] | same lab + FA-01 live rail |
+| Governance | D+ | **A-READY** [founder] | FA-02/05/11; pages live, drafts done |
+| Founder brand | D | **A-READY** [founder] | FA-08 first send |
+| Sales | C+ | **A-READY** [founder] | kit complete; FA-07 books the calls |
+| Marketing & GTM | B− | **A-READY** [founder+build] | plans complete; SEO Stage-0 + unsubscribe are builds |
+| Strategy & marketplace design | B− | **A-READY** [founder] | gates/density/expansion set; liquidity data proves it |
+| Product & portfolio | B+ | **A-READY** [build] | Seasonal/prefill/profile-edit specs → build queue |
+| IP & data | B− | **A-READY** [build] | Index + parser/raw_ingest specs → build queue |
+| AI capability | B− | **A-READY** [build] | evals harness spec → build queue |
+| Delivery system | C+ | **A-READY** [build] | retention loops + SOPs specced; unsubscribe prerequisite flagged |
+| Operations | B− | **A-READY** [founder+build] | FA-03/04/06 + metrics dashboard build |
+| Founder constraints | C | **A-READY** [founder] | by definition — the 12 FA items ARE the dimension |
+
+## Adversarial pass (self-audit before tagging — what would a fresh audit catch?)
+
+1. **Farm Source Jobs (Fonterra, free, ~360 dairy listings) was discovered during Stage 2,
+   not in the v1 audit.** The audit's "Facebook is the real incumbent" framing was
+   incomplete; funnel maths and the objection kit predate this find. Covered in
+   `docs/expansion/COMPETITIVE-DEFENCE.md`; **known S-effort gap: add a "why not Farm
+   Source Jobs — it's free?" handler to `segment-a-sales-kit.md` and ask it in every lab
+   conversation.** The differentiators (seeker profiles + matching + guarantee vs a
+   listings board) are real but must be tested against THIS incumbent, not only FB.
+2. **The $10M path still rests on Segment-B attach in AU/UK** — named identically in
+   PRICING §7, MARKET-SIZING §5.3, EXPANSION §6. Not resolvable by documents; first
+   falsifiable at the first three enterprise conversations. Not papered over.
+3. **Spec ≠ build.** Six product artefacts (metrics dashboard, evals harness, Seasonal
+   Insights, Index, parser extension, lead-prefill) are spec-complete, build-pending —
+   graded A-READY [build], not A, deliberately.
+4. **6-month $70–100k MRR:** verdict stands as written (not arithmetically supported;
+   base case $5–8k). No document in this repo claims otherwise.
+5. **Data corrections found by agents and kept:** couples = 23% seeker / 42% employer
+   (study) vs PROJECT.md's older 28%; Southland has zero rows in the n=47 sample and is
+   [A] everywhere it appears.
+6. **Loose ends, explicitly not silently absorbed:** `.planning/gtm/eng-issues-to-create.md`
+   + `phase-1-build-notes.md` remain untracked founder drafts (pre-Stage-2; founder to
+   commit or fold); `content/` carousel + `.docx` strays → FA-12; the retention
+   playbook's unsubscribe prerequisite must land before ANY automated retention email.
