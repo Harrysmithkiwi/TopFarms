@@ -71,6 +71,10 @@ The pattern every time: agree with the true part, add the one thing they have no
 **"Facebook's free."**
 > "It is, and it works for plenty of farms. The bit it does not do is the sorting. You post, you get eighty messages, and somewhere in there are the three worth calling. TopFarms does the sorting for you. And your first listing is free, so you can run both and see which one hands you better people."
 
+**"I just use Farm Source Jobs — it's free."**
+> "Good board, and being Fonterra it is right there in the shed. Here is the difference. Farm Source is a noticeboard, you put the ad up and wait to see who writes in, and you are still the one sorting the pile. TopFarms works the other way round. Workers have real profiles, what sheds they have milked in, whether they need a house and how many bedrooms, visa status, whether they come as a couple, and the matching puts the right ones in front of you instead of whoever happened to see the ad. It covers the lot too, not just dairy, so your calf rearer or your fencer is on the same system. And the guarantee: three people who meet your must-haves or you do not pay the placement fee. Run both, costs you nothing, see which one hands you someone you would actually hire."
+*(Never argue the price of a free board — compete on the sorting, the verified profiles, the accommodation/roster/visa depth, workers-never-pay supply, and cross-sector coverage. If they love Farm Source, that is fine: "run both" is the whole ask. Log every Farm Source mention in the lab notes — it is the incumbent question we most need data on.)*
+
 **"Never heard of you."**
 > "Fair enough, we are new. A few Waikato dairy farms are on it now. I am not asking you to take it on faith, the first listing is free and if it does not put good people in front of you, it has cost you nothing and I will not bother you again."
 *(Named farms only with logged written consent; until then the unnamed line above, per the consent log.)*

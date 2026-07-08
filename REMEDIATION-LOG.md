@@ -112,10 +112,10 @@ human act (FOUNDER-ACTIONS); **[build]** = spec complete, engineering time remai
 1. **Farm Source Jobs (Fonterra, free, ~360 dairy listings) was discovered during Stage 2,
    not in the v1 audit.** The audit's "Facebook is the real incumbent" framing was
    incomplete; funnel maths and the objection kit predate this find. Covered in
-   `docs/expansion/COMPETITIVE-DEFENCE.md`; **known S-effort gap: add a "why not Farm
-   Source Jobs — it's free?" handler to `segment-a-sales-kit.md` and ask it in every lab
-   conversation.** The differentiators (seeker profiles + matching + guarantee vs a
-   listings board) are real but must be tested against THIS incumbent, not only FB.
+   `docs/expansion/COMPETITIVE-DEFENCE.md`. **Gap CLOSED 2026-07-09:** the "I just use
+   Farm Source Jobs — it's free" handler now exists in `segment-a-sales-kit.md` (competes
+   on sorting/verified profiles/accommodation-roster-visa depth/workers-never-pay/
+   cross-sector, never price; every Farm Source mention logged in lab notes).
 2. **The $10M path still rests on Segment-B attach in AU/UK** — named identically in
    PRICING §7, MARKET-SIZING §5.3, EXPANSION §6. Not resolvable by documents; first
    falsifiable at the first three enterprise conversations. Not papered over.
