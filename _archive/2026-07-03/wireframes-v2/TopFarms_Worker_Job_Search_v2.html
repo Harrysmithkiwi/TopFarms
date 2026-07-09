@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TopFarms — Find farm work</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="topfarms-v2.css" />
+<style>
+  /* Search header */
+  .search-hero {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 24px 0;
+  }
+  .search-bar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 8px;
+    transition: all 150ms;
+  }
+  .search-bar:focus-within {
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px var(--brand-50);
+  }
+  .search-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 12px;
+    flex: 1;
+    min-width: 0;
+    border-right: 1px solid var(--border);
+  }
+  .search-field:last-of-type { border-right: none; }
+  .search-field-icon { color: var(--text-muted); flex-shrink: 0; }
+  .search-field-col { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+  .search-field-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+  .search-field-input {
+    border: none;
+    background: transparent;
+    padding: 0;
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    width: 100%;
+  }
+  .search-field-input::placeholder { color: var(--text-subtle); }
+
+  .search-results-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .search-count {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+  .search-count strong { color: var(--text); font-weight: 600; }
+  .search-tools { display: flex; gap: 8px; align-items: center; }
+
+  .applied-filters {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+
+  /* Body layout */
+  .search-body {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 32px;
+    padding: 32px 0 96px;
+  }
+
+  /* Filter sidebar */
+  .filters-aside {
+    position: sticky;
+    top: 76px;
+    align-self: start;
+    max-height: calc(100vh - 92px);
+    overflow-y: auto;
+  }
+  .filter-group {
+    padding: 18px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .filter-group:first-child { padding-top: 0; }
+  .filter-group:last-child { border-bottom: none; }
+  .filter-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    cursor: pointer;
+  }
+  .filter-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .filter-caret {
+    color: var(--text-subtle);
+    transition: transform 150ms;
+  }
+  .filter-group.collapsed .filter-caret { transform: rotate(-90deg); }
+  .filter-group.collapsed .filter-body { display: none; }
+
+  .filter-check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 0;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text);
+  }
+  .filter-check:hover { color: var(--brand); }
+  .check-box {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    border: 1.5px solid var(--border-strong);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    background: var(--surface);
+    transition: all 150ms;
+  }
+  .filter-check.checked .check-box { background: var(--brand); border-color: var(--brand); }
+  .filter-check.checked .check-box svg { opacity: 1; }
+  .filter-check .check-box svg { opacity: 0; color: white; }
+  .filter-label { flex: 1; font-weight: 500; }
+  .filter-count { font-size: 12px; color: var(--text-subtle); font-variant-numeric: tabular-nums; }
+  .filter-check.checked .filter-count { color: var(--brand); font-weight: 600; }
+
+  /* Salary slider */
+  .slider-display {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+  .dual-range {
+    position: relative;
+    height: 32px;
+  }
+  .dual-range-track {
+    position: absolute;
+    top: 14px;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--surface-2);
+    border-radius: 2px;
+  }
+  .dual-range-fill {
+    position: absolute;
+    top: 14px;
+    height: 4px;
+    background: var(--brand);
+    border-radius: 2px;
+    left: 22%;
+    right: 28%;
+  }
+  .dual-range-ticks {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-subtle);
+    margin-top: 12px;
+  }
+
+  /* Results area */
+  .results-col {}
+
+  .sort-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 0 16px;
+    font-size: 13px;
+  }
+  .sort-tabs {
+    display: inline-flex;
+    padding: 3px;
+    background: var(--surface-2);
+    border-radius: 99px;
+    border: 1px solid var(--border);
+  }
+  .sort-tab {
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    transition: all 150ms;
+    cursor: pointer;
+  }
+  .sort-tab.active {
+    background: var(--surface);
+    color: var(--text);
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* Job card */
+  .job-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 20px;
+    margin-bottom: 12px;
+    transition: all 150ms;
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 64px 1fr auto;
+    gap: 20px;
+    align-items: flex-start;
+  }
+  .job-card:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+  .job-card.featured {
+    border-color: var(--brand-100);
+    background: linear-gradient(to right, rgba(232,245,236,0.35), var(--surface) 20%);
+  }
+
+  /* Score circle large */
+  .score-lg {
+    position: relative;
+    width: 64px;
+    height: 64px;
+  }
+  .score-lg-num {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--brand);
+    letter-spacing: -0.02em;
+  }
+  .score-lg-sub {
+    position: absolute;
+    bottom: -16px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--text-subtle);
+    text-transform: uppercase;
+  }
+
+  .job-card-main {
+    min-width: 0;
+  }
+  .job-card-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .job-card-title {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    color: var(--text);
+    margin-bottom: 4px;
+    line-height: 1.25;
+  }
+  .job-card-company {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+  .job-card-company strong { color: var(--text); font-weight: 600; }
+  .job-card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .job-card-foot {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .job-card-salary {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+
+  .job-card-aside {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    min-width: 140px;
+  }
+  .save-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--r);
+    background: var(--surface-2);
+    color: var(--text-muted);
+    display: grid;
+    place-items: center;
+    transition: all 150ms;
+  }
+  .save-btn:hover { background: var(--brand-50); color: var(--brand); }
+  .save-btn.saved { background: var(--brand-50); color: var(--brand); }
+  .save-btn.saved svg { fill: currentColor; }
+
+  /* Match insight popover on hover (inline for demo) */
+  .match-insight {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: var(--ai-bg);
+    border: 1px solid #E4DEF8;
+    border-radius: var(--r);
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--text);
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .match-insight-icon {
+    color: var(--ai);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .match-insight strong { color: var(--ai); font-weight: 600; }
+
+  /* Empty state saved search alert */
+  .alert-banner {
+    padding: 14px 18px;
+    background: var(--brand-50);
+    border: 1px solid var(--brand-100);
+    border-radius: var(--r-md);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+  }
+  .alert-banner-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--r-sm);
+    background: white;
+    color: var(--brand);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+  .alert-banner-text { flex: 1; color: var(--brand-900); }
+
+  /* Pagination */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    padding: 32px 0;
+  }
+  .page-btn {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 10px;
+    border-radius: var(--r);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 150ms;
+  }
+  .page-btn:hover { background: var(--surface-2); color: var(--text); }
+  .page-btn.active { background: var(--brand); color: white; font-weight: 600; }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .search-body { grid-template-columns: 1fr; }
+    .filters-aside {
+      position: static;
+      max-height: none;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .job-card { grid-template-columns: 56px 1fr; }
+    .job-card-aside {
+      grid-column: 1 / -1;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+    .search-field:nth-of-type(3) { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ NAV ═══════════ -->
+<nav class="app-nav">
+  <div class="container-wide app-nav-inner">
+    <a href="#" class="logo">
+      <span class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19.2 2.96c.81 1.1 1.64 3.08 1.3 5.78C20.12 12.7 16.5 18.5 11 20Z"/>
+          <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+        </svg>
+      </span>
+      <span>TopFarms</span>
+    </a>
+    <div class="nav-links-app">
+      <a href="#" class="nav-link active">Find work</a>
+      <a href="#" class="nav-link">My applications</a>
+      <a href="#" class="nav-link">Profile</a>
+      <a href="#" class="nav-link">CV builder</a>
+    </div>
+    <div class="nav-actions">
+      <button class="icon-btn" aria-label="Notifications">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="icon-btn-dot"></span>
+      </button>
+      <div class="avatar-sm">JT</div>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════ SEARCH HEADER ═══════════ -->
+<section class="search-hero">
+  <div class="container-wide">
+    <div class="search-bar">
+      <div class="search-field">
+        <svg class="search-field-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <div class="search-field-col">
+          <label class="search-field-label">What</label>
+          <input class="search-field-input" placeholder="Role, skill, keyword…" value="Dairy farm assistant" />
+        </div>
+      </div>
+      <div class="search-field">
+        <svg class="search-field-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="3"/></svg>
+        <div class="search-field-col">
+          <label class="search-field-label">Where</label>
+          <input class="search-field-input" placeholder="Region or town" value="Waikato, Canterbury" />
+        </div>
+      </div>
+      <div class="search-field">
+        <svg class="search-field-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <div class="search-field-col">
+          <label class="search-field-label">When</label>
+          <input class="search-field-input" placeholder="Any time" value="Available in 2 weeks" />
+        </div>
+      </div>
+      <button class="btn btn-primary btn-lg">Search
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </button>
+    </div>
+
+    <div class="search-results-meta">
+      <div class="search-count">
+        <strong>115 jobs</strong> match your profile · <span style="color: var(--brand); font-weight: 600;">Avg 78% match</span>
+      </div>
+      <div class="search-tools">
+        <button class="btn btn-secondary btn-sm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          Save this search
+        </button>
+        <button class="btn btn-secondary btn-sm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          Grid view
+        </button>
+      </div>
+    </div>
+
+    <div class="applied-filters">
+      <span class="pill pill-brand">Dairy Cattle <button class="chip-remove"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6L6 18M6 6l12 12"/></svg></button></span>
+      <span class="pill pill-brand">Rotary <button class="chip-remove"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6L6 18M6 6l12 12"/></svg></button></span>
+      <span class="pill pill-brand">Waikato <button class="chip-remove"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6L6 18M6 6l12 12"/></svg></button></span>
+      <span class="pill pill-brand">Canterbury <button class="chip-remove"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6L6 18M6 6l12 12"/></svg></button></span>
+      <span class="pill pill-brand">House provided <button class="chip-remove"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6L6 18M6 6l12 12"/></svg></button></span>
+      <button style="color: var(--text-muted); font-size: 12px; font-weight: 500;">Clear all</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ BODY ═══════════ -->
+<div class="container-wide search-body">
+
+  <!-- ─── FILTERS ─── -->
+  <aside class="filters-aside">
+    <div class="filter-group">
+      <div class="filter-head">
+        <div class="filter-title">Farm type</div>
+        <svg class="filter-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+      <div class="filter-body">
+        <label class="filter-check checked"><span class="check-box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="filter-label">Dairy Cattle</span><span class="filter-count">84</span></label>
+        <label class="filter-check checked"><span class="check-box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="filter-label">Sheep & Beef</span><span class="filter-count">31</span></label>
+        <label class="filter-check"><span class="check-box"></span><span class="filter-label">Deer Farming</span><span class="filter-count">9</span></label>
+        <label class="filter-check"><span class="check-box"></span><span class="filter-label">Cropping / Arable</span><span class="filter-count">12</span></label>
+        <label class="filter-check"><span class="check-box"></span><span class="filter-label">Mixed Livestock</span><span class="filter-count">17</span></label>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-head">
+        <div class="filter-title">Role type</div>
+        <svg class="filter-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+      <div class="filter-body">
+        <label class="filter-check checked"><span class="check-box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="filter-label">Farm Assistant</span><span class="filter-count">42</span></label>
+        <label class="filter-check checked"><span class="check-box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="filter-label">Relief Milker</span><span class="filter-count">28</span></label>
+        <label class="filter-check"><span class="check-box"></span><span class="filter-label">Herd Manager</span><span class="filter-count">19</span></label>
+        <label class="filter-check"><span class="check-box"></span><span class="filter-label">2IC / Head Stockperson</span><span class="filter-count">15</span></label>
+        <label class="filter-check"><span class="check-box"></span><span class="filter-label">Farm Manager</span><span class="filter-count">11</span></label>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-head">
+        <div class="filter-title">Region</div>
+        <svg class="filter-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+      <div class="filter-body">
+        <label class="filter-check checked"><span class="check-box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="filter-label">Waikato</span><span class="filter-count">38</span></label>
+        <label class="filter-check checked"><span class="check-box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="filter-label">Canterbury</span><span class="filter-count">34</span></label>
+        <label class="filter-check"><span class="check-box"></span><span class="filter-label">Southland</span><span class="filter-count">22</span></label>
+        <label class="filter-check"><span class="check-box"></span><span class="filter-label">Taranaki</span><span class="filter-count">18</span></label>
+        <label class="filter-check"><span class="check-box"></span><span class="filter-label">Otago</span><span class="filter-count">12</span></label>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-head">
+        <div class="filter-title">Salary (NZD/year)</div>
+        <svg class="filter-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+      <div class="filter-body">
+        <div class="slider-display">
+          <span>$48,000</span>
+          <span>$72,000</span>
+        </div>
+        <div class="dual-range">
+          <div class="dual-range-track"></div>
+          <div class="dual-range-fill"></div>
+        </div>
+        <div class="dual-range-ticks">
+          <span>$35k</span>
+          <span>$60k</span>
+          <span>$85k</span>
+          <span>$120k+</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-head">
+        <div class="filter-title">Shed type</div>
+        <svg class="filter-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+      <div class="filter-body">
+        <label class="filter-check checked"><span class="check-box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="filter-label">Rotary</span><span class="filter-count">51</span></label>
+        <label class="filter-check checked"><span class="check-box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="filter-label">Herringbone</span><span class="filter-count">47</span></label>
+        <label class="filter-check"><span class="check-box"></span><span class="filter-label">Automatic (AMS)</span><span class="filter-count">14</span></label>
+        <label class="filter-check"><span class="check-box"></span><span class="filter-label">Swing-over</span><span class="filter-count">9</span></label>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-head">
+        <div class="filter-title">Accommodation</div>
+        <svg class="filter-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+      <div class="filter-body">
+        <label class="filter-check checked"><span class="check-box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="filter-label">House provided</span><span class="filter-count">62</span></label>
+        <label class="filter-check"><span class="check-box"></span><span class="filter-label">Cottage / flat</span><span class="filter-count">19</span></label>
+        <label class="filter-check"><span class="check-box"></span><span class="filter-label">Pet-friendly</span><span class="filter-count">27</span></label>
+        <label class="filter-check"><span class="check-box"></span><span class="filter-label">Couples welcome</span><span class="filter-count">34</span></label>
+        <label class="filter-check"><span class="check-box"></span><span class="filter-label">Family-friendly</span><span class="filter-count">21</span></label>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-head">
+        <div class="filter-title">Contract type</div>
+        <svg class="filter-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+      <div class="filter-body">
+        <label class="filter-check checked"><span class="check-box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="filter-label">Permanent full-time</span><span class="filter-count">71</span></label>
+        <label class="filter-check"><span class="check-box"></span><span class="filter-label">Casual / relief</span><span class="filter-count">28</span></label>
+        <label class="filter-check"><span class="check-box"></span><span class="filter-label">Fixed term (seasonal)</span><span class="filter-count">15</span></label>
+        <label class="filter-check"><span class="check-box"></span><span class="filter-label">Sharemilking (50/50)</span><span class="filter-count">6</span></label>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ─── RESULTS ─── -->
+  <div class="results-col">
+
+    <!-- Saved search CTA -->
+    <div class="alert-banner">
+      <div class="alert-banner-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </div>
+      <div class="alert-banner-text">
+        <strong>Turn on job alerts</strong> for this search — get new matches by email the moment they're posted.
+      </div>
+      <button class="btn btn-primary btn-sm">Turn on alerts</button>
+    </div>
+
+    <div class="sort-bar">
+      <span style="color: var(--text-muted); font-weight: 500;">Sort:</span>
+      <div class="sort-tabs">
+        <span class="sort-tab active">Best match</span>
+        <span class="sort-tab">Newest</span>
+        <span class="sort-tab">Salary (high)</span>
+        <span class="sort-tab">Closest</span>
+      </div>
+    </div>
+
+    <!-- Job 1 — 94% match, featured -->
+    <article class="job-card featured">
+      <div class="score-lg">
+        <svg width="64" height="64">
+          <circle cx="32" cy="32" r="26" fill="none" stroke="var(--surface-2)" stroke-width="6"/>
+          <circle cx="32" cy="32" r="26" fill="none" stroke="var(--brand)" stroke-width="6" stroke-linecap="round" stroke-dasharray="163" stroke-dashoffset="9.8" transform="rotate(-90 32 32)"/>
+        </svg>
+        <div class="score-lg-num">94</div>
+        <div class="score-lg-sub">Match</div>
+      </div>
+      <div class="job-card-main">
+        <div class="job-card-top">
+          <span class="pill pill-warn">★ Featured</span>
+          <span class="pill pill-success">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Verified employer
+          </span>
+        </div>
+        <div class="job-card-title">Dairy Farm Assistant</div>
+        <div class="job-card-company"><strong>Greenfield Farms Ltd</strong> · Te Awamutu, Waikato</div>
+        <div class="job-card-tags">
+          <span class="pill">Rotary · 520 cows</span>
+          <span class="pill">3-bed house included</span>
+          <span class="pill">Couples welcome</span>
+          <span class="pill">DairyNZ training support</span>
+        </div>
+        <div class="match-insight">
+          <svg class="match-insight-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5z"/></svg>
+          <span><strong>Why this matches:</strong> Rotary experience (Expert) · Waikato region preference · couples-welcome accommodation · salary in your target range</span>
+        </div>
+        <div class="job-card-foot" style="margin-top: 14px;">
+          <span class="job-card-salary">$52k–$62k</span>
+          <span>·</span>
+          <span>Full-time, permanent</span>
+          <span>·</span>
+          <span>Posted 2 days ago</span>
+        </div>
+      </div>
+      <div class="job-card-aside">
+        <button class="save-btn saved" title="Saved">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </button>
+        <button class="btn btn-primary">Apply
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </button>
+      </div>
+    </article>
+
+    <!-- Job 2 — 87%, featured -->
+    <article class="job-card featured">
+      <div class="score-lg">
+        <svg width="64" height="64">
+          <circle cx="32" cy="32" r="26" fill="none" stroke="var(--surface-2)" stroke-width="6"/>
+          <circle cx="32" cy="32" r="26" fill="none" stroke="var(--brand)" stroke-width="6" stroke-linecap="round" stroke-dasharray="163" stroke-dashoffset="21.2" transform="rotate(-90 32 32)"/>
+        </svg>
+        <div class="score-lg-num">87</div>
+        <div class="score-lg-sub">Match</div>
+      </div>
+      <div class="job-card-main">
+        <div class="job-card-top">
+          <span class="pill pill-warn">★ Featured</span>
+          <span class="pill pill-success">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Verified
+          </span>
+        </div>
+        <div class="job-card-title">Herd Manager 2IC</div>
+        <div class="job-card-company"><strong>Mackenzie High Country Farms</strong> · Twizel, Canterbury</div>
+        <div class="job-card-tags">
+          <span class="pill">Herringbone · 380 cows</span>
+          <span class="pill">2-bed cottage included</span>
+          <span class="pill">Senior role</span>
+          <span class="pill">Relocation support</span>
+        </div>
+        <div class="job-card-foot" style="margin-top: 14px;">
+          <span class="job-card-salary">$64k–$72k</span>
+          <span>·</span>
+          <span>Full-time, permanent</span>
+          <span>·</span>
+          <span>Posted 4 days ago</span>
+        </div>
+      </div>
+      <div class="job-card-aside">
+        <button class="save-btn" title="Save">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </button>
+        <button class="btn btn-primary">Apply
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </button>
+      </div>
+    </article>
+
+    <!-- Job 3 — 82% -->
+    <article class="job-card">
+      <div class="score-lg">
+        <svg width="64" height="64">
+          <circle cx="32" cy="32" r="26" fill="none" stroke="var(--surface-2)" stroke-width="6"/>
+          <circle cx="32" cy="32" r="26" fill="none" stroke="var(--brand)" stroke-width="6" stroke-linecap="round" stroke-dasharray="163" stroke-dashoffset="29.3" transform="rotate(-90 32 32)"/>
+        </svg>
+        <div class="score-lg-num">82</div>
+        <div class="score-lg-sub">Match</div>
+      </div>
+      <div class="job-card-main">
+        <div class="job-card-title">Relief Milker (weekends)</div>
+        <div class="job-card-company"><strong>Rangitane Dairy</strong> · Cambridge, Waikato</div>
+        <div class="job-card-tags">
+          <span class="pill">Rotary · 480 cows</span>
+          <span class="pill">No accommodation</span>
+          <span class="pill">Casual</span>
+        </div>
+        <div class="job-card-foot" style="margin-top: 14px;">
+          <span class="job-card-salary">$32/hour</span>
+          <span>·</span>
+          <span>Casual, weekends</span>
+          <span>·</span>
+          <span>Posted 1 day ago</span>
+        </div>
+      </div>
+      <div class="job-card-aside">
+        <button class="save-btn" title="Save">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </button>
+        <button class="btn btn-primary">Apply
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </button>
+      </div>
+    </article>
+
+    <!-- Job 4 — 76% -->
+    <article class="job-card">
+      <div class="score-lg">
+        <svg width="64" height="64">
+          <circle cx="32" cy="32" r="26" fill="none" stroke="var(--surface-2)" stroke-width="6"/>
+          <circle cx="32" cy="32" r="26" fill="none" stroke="var(--brand)" stroke-width="6" stroke-linecap="round" stroke-dasharray="163" stroke-dashoffset="39.1" transform="rotate(-90 32 32)"/>
+        </svg>
+        <div class="score-lg-num">76</div>
+        <div class="score-lg-sub">Match</div>
+      </div>
+      <div class="job-card-main">
+        <div class="job-card-title">Farm Assistant — Calving Support</div>
+        <div class="job-card-company"><strong>Tasman Valley Dairy</strong> · Ashburton, Canterbury</div>
+        <div class="job-card-tags">
+          <span class="pill">Rotary · 650 cows</span>
+          <span class="pill">House + utilities</span>
+          <span class="pill">Fixed term · 6mo</span>
+          <span class="pill">Pet-friendly</span>
+        </div>
+        <div class="job-card-foot" style="margin-top: 14px;">
+          <span class="job-card-salary">$55k–$58k</span>
+          <span>·</span>
+          <span>Fixed term, seasonal</span>
+          <span>·</span>
+          <span>Posted 3 days ago</span>
+        </div>
+      </div>
+      <div class="job-card-aside">
+        <button class="save-btn" title="Save">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </button>
+        <button class="btn btn-primary">Apply
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </button>
+      </div>
+    </article>
+
+    <!-- Job 5 — 71% mid -->
+    <article class="job-card">
+      <div class="score-lg">
+        <svg width="64" height="64">
+          <circle cx="32" cy="32" r="26" fill="none" stroke="var(--surface-2)" stroke-width="6"/>
+          <circle cx="32" cy="32" r="26" fill="none" stroke="var(--warn)" stroke-width="6" stroke-linecap="round" stroke-dasharray="163" stroke-dashoffset="47.3" transform="rotate(-90 32 32)"/>
+        </svg>
+        <div class="score-lg-num" style="color: var(--warn);">71</div>
+        <div class="score-lg-sub">Match</div>
+      </div>
+      <div class="job-card-main">
+        <div class="job-card-title">Station Hand</div>
+        <div class="job-card-company"><strong>Coastal Ridge Station</strong> · Dannevirke, Hawke's Bay</div>
+        <div class="job-card-tags">
+          <span class="pill">Sheep & Beef</span>
+          <span class="pill">Housing included</span>
+          <span class="pill">NZ residents preferred</span>
+        </div>
+        <div class="match-insight" style="background: var(--warn-bg); border-color: #FCD34D;">
+          <svg class="match-insight-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--warn-text)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span style="color: var(--warn-text);"><strong>Partial match:</strong> this is sheep & beef — your main experience is dairy. They may consider transferable skills.</span>
+        </div>
+        <div class="job-card-foot" style="margin-top: 14px;">
+          <span class="job-card-salary">$50k–$58k</span>
+          <span>·</span>
+          <span>Full-time, permanent</span>
+          <span>·</span>
+          <span>Posted 6 days ago</span>
+        </div>
+      </div>
+      <div class="job-card-aside">
+        <button class="save-btn" title="Save">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </button>
+        <button class="btn btn-secondary">View</button>
+      </div>
+    </article>
+
+    <!-- Job 6 — 68% -->
+    <article class="job-card">
+      <div class="score-lg">
+        <svg width="64" height="64">
+          <circle cx="32" cy="32" r="26" fill="none" stroke="var(--surface-2)" stroke-width="6"/>
+          <circle cx="32" cy="32" r="26" fill="none" stroke="var(--warn)" stroke-width="6" stroke-linecap="round" stroke-dasharray="163" stroke-dashoffset="52.2" transform="rotate(-90 32 32)"/>
+        </svg>
+        <div class="score-lg-num" style="color: var(--warn);">68</div>
+        <div class="score-lg-sub">Match</div>
+      </div>
+      <div class="job-card-main">
+        <div class="job-card-title">Assistant Herd Manager</div>
+        <div class="job-card-company"><strong>Hauraki Plains Dairy Co.</strong> · Ngatea, Waikato</div>
+        <div class="job-card-tags">
+          <span class="pill">Herringbone · 290 cows</span>
+          <span class="pill">Family home</span>
+          <span class="pill">Senior role</span>
+        </div>
+        <div class="job-card-foot" style="margin-top: 14px;">
+          <span class="job-card-salary">$58k–$65k</span>
+          <span>·</span>
+          <span>Full-time, permanent</span>
+          <span>·</span>
+          <span>Posted 5 days ago</span>
+        </div>
+      </div>
+      <div class="job-card-aside">
+        <button class="save-btn" title="Save">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </button>
+        <button class="btn btn-secondary">View</button>
+      </div>
+    </article>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <button class="page-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <button class="page-btn active">1</button>
+      <button class="page-btn">2</button>
+      <button class="page-btn">3</button>
+      <button class="page-btn">…</button>
+      <button class="page-btn">19</button>
+      <button class="page-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Toggle filter checks
+  document.querySelectorAll('.filter-check').forEach(el => {
+    el.addEventListener('click', e => {
+      e.preventDefault();
+      el.classList.toggle('checked');
+    });
+  });
+  // Collapse filter groups
+  document.querySelectorAll('.filter-head').forEach(el => {
+    el.addEventListener('click', () => el.closest('.filter-group').classList.toggle('collapsed'));
+  });
+  // Sort tabs
+  document.querySelectorAll('.sort-tab').forEach(el => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('.sort-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+    });
+  });
+  // Save button
+  document.querySelectorAll('.save-btn').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      el.classList.toggle('saved');
+    });
+  });
+</script>
+
+</body>
+</html>
