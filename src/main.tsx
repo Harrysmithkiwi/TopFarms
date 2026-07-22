@@ -119,6 +119,9 @@ const AdminLeads = lazy(() =>
 const AdminLeadsOutreach = lazy(() =>
   import('@/pages/admin/AdminLeadsOutreach').then((m) => ({ default: m.AdminLeadsOutreach })),
 )
+const Privacy = lazy(() => import('@/pages/legal/Privacy').then((m) => ({ default: m.Privacy })))
+const Terms = lazy(() => import('@/pages/legal/Terms').then((m) => ({ default: m.Terms })))
+const NotFound = lazy(() => import('@/pages/NotFound').then((m) => ({ default: m.NotFound })))
 
 // Full-page fallback shown while a route chunk loads. Mirrors the in-app
 // spinner style (brand-colored ring) so chunk loads read as ordinary loading.
@@ -141,284 +144,312 @@ function s(element: ReactNode) {
   return <Suspense fallback={<RouteFallback />}>{element}</Suspense>
 }
 
+// All routes are children of one pathless route carrying errorElement, so any
+// routing error (404s, chunk failures, render errors) shows the branded
+// NotFound page instead of React Router's developer error screen (TF-001/002).
 const router = createBrowserRouter([
-  // ─── Public routes ──────────────────────────────────────────────────────────
   {
-    path: '/',
-    element: <Home />,
-  },
-  {
-    path: '/login',
-    element: s(<Login />),
-  },
-  {
-    path: '/signup',
-    element: s(<SignUp />),
-  },
-  {
-    path: '/auth/verify',
-    element: s(<VerifyEmail />),
-  },
-  {
-    path: '/forgot-password',
-    element: s(<ForgotPassword />),
-  },
-  {
-    path: '/auth/reset',
-    element: s(<ResetPassword />),
-  },
-  {
-    path: '/auth/select-role',
-    element: s(<SelectRole />),
-  },
-  {
-    // Phase 21 Track B — gate page for suspended users (isActive=false). MUST NOT
-    // be wrapped in ProtectedRoute; user has a session but is blocked from
-    // dashboards by ProtectedRoute's isActive guard, which redirects HERE.
-    // Wrapping would cause infinite redirect.
-    path: '/suspended',
-    element: s(<Suspended />),
-  },
-
-  // ─── Jobs ───────────────────────────────────────────────────────────────────
-  // NOTE: /jobs/new MUST be declared before /jobs/:id to prevent React Router
-  // from treating "new" as a dynamic :id param.
-  {
-    path: '/for-employers',
-    element: s(<ForEmployers />),
-  },
-  {
-    path: '/pricing',
-    element: s(<Pricing />),
-  },
-  {
-    // /jobs uses JobSearchLayout — Nav header only, no dashboard sidebar.
-    // Job search has its own page-internal filter sidebar; a second left-rail
-    // (DashboardLayout's Sidebar) would conflict architecturally. Pattern
-    // matches Seek's job-search layout. Originally wrapped in DashboardLayout
-    // hideSidebar (commit eb7e2f1, 2026-05-04 morning) but that introduced
-    // max-w + p-6 layout constraints that conflicted with JobSearch's flex split.
-    path: '/jobs',
-    element: s(
-      <JobSearchLayout>
-        <JobSearch />
-      </JobSearchLayout>,
-    ),
-  },
-  {
-    path: '/jobs/new',
-    element: <ProtectedRoute requiredRole="employer">{s(<PostJob />)}</ProtectedRoute>,
-  },
-  {
-    path: '/jobs/:id/edit',
-    element: <ProtectedRoute requiredRole="employer">{s(<PostJob />)}</ProtectedRoute>,
-  },
-  {
-    // PUBLIC — no ProtectedRoute wrapper. Component handles auth-gated views internally.
-    path: '/jobs/:id',
-    element: s(<JobDetail />),
-  },
-
-  // ─── Employer dashboard & verification ──────────────────────────────────────
-  // NOTE: /dashboard/employer/jobs/:id/applicants MUST be before /dashboard/employer
-  {
-    path: '/dashboard/employer/jobs/:id/applicants',
-    element: <ProtectedRoute requiredRole="employer">{s(<ApplicantDashboard />)}</ProtectedRoute>,
-  },
-  {
-    path: '/dashboard/employer',
-    element: <ProtectedRoute requiredRole="employer">{s(<EmployerDashboard />)}</ProtectedRoute>,
-  },
-  {
-    path: '/dashboard/employer/verification',
-    element: <ProtectedRoute requiredRole="employer">{s(<EmployerVerification />)}</ProtectedRoute>,
-  },
-  {
-    path: '/dashboard/employer/verification/documents',
-    element: <ProtectedRoute requiredRole="employer">{s(<DocumentUpload />)}</ProtectedRoute>,
-  },
-  {
-    path: '/dashboard/employer/verification/photos',
-    element: <ProtectedRoute requiredRole="employer">{s(<FarmPhotoUpload />)}</ProtectedRoute>,
-  },
-
-  // ─── Seeker dashboard ───────────────────────────────────────────────────────
-  // NOTE: /dashboard/seeker/applications MUST be before /dashboard/seeker to prevent
-  // React Router from treating the sub-path as a nested match on the parent.
-  {
-    path: '/dashboard/seeker/applications',
-    element: <ProtectedRoute requiredRole="seeker">{s(<MyApplications />)}</ProtectedRoute>,
-  },
-  {
-    path: '/dashboard/seeker/saved-searches',
-    element: <ProtectedRoute requiredRole="seeker">{s(<SavedSearches />)}</ProtectedRoute>,
-  },
-  {
-    path: '/dashboard/seeker/documents',
-    element: <ProtectedRoute requiredRole="seeker">{s(<SeekerDocuments />)}</ProtectedRoute>,
-  },
-  {
-    path: '/dashboard/seeker',
-    element: <ProtectedRoute requiredRole="seeker">{s(<SeekerDashboard />)}</ProtectedRoute>,
-  },
-
-  // ─── Onboarding ─────────────────────────────────────────────────────────────
-  {
-    path: '/onboarding/employer',
-    element: <ProtectedRoute requiredRole="employer">{s(<EmployerOnboarding />)}</ProtectedRoute>,
-  },
-  {
-    path: '/onboarding/seeker',
-    element: <ProtectedRoute requiredRole="seeker">{s(<SeekerOnboarding />)}</ProtectedRoute>,
-  },
-
-  // ─── Admin (super admin dashboard, Phase 20) ────────────────────────────────
-  // /admin/* routes are gated by ProtectedRoute requiredRole="admin". The actual
-  // security boundary is the SECURITY DEFINER RPC layer (migration 023) — every
-  // admin_* RPC validates get_user_role(auth.uid()) = 'admin' server-side, so
-  // even a DevTools bypass of the frontend gate cannot exfiltrate data.
-  {
-    path: '/admin',
-    element: s(<AdminGate />),
-  },
-  {
-    path: '/admin/employers',
-    element: (
-      <ProtectedRoute requiredRole="admin">
-        {s(
-          <AdminLayout>
-            <EmployerList />
-          </AdminLayout>,
-        )}
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/admin/seekers',
-    element: (
-      <ProtectedRoute requiredRole="admin">
-        {s(
-          <AdminLayout>
-            <SeekerList />
-          </AdminLayout>,
-        )}
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/admin/jobs',
-    element: (
-      <ProtectedRoute requiredRole="admin">
-        {s(
-          <AdminLayout>
-            <JobsManagement />
-          </AdminLayout>,
-        )}
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/admin/placements',
-    element: (
-      <ProtectedRoute requiredRole="admin">
-        {s(
-          <AdminLayout>
-            <PlacementPipeline />
-          </AdminLayout>,
-        )}
-      </ProtectedRoute>
-    ),
-  },
-  {
-    // Phase 21 Track B (plan 21-07) — admin doc verification queue.
-    // ProtectedRoute requiredRole="admin" wraps AdminLayout — same pattern as
-    // sibling /admin/* routes; SECURITY DEFINER RPCs (migration 033) are the
-    // load-bearing server-side gate. Email side-effect is best-effort via
-    // supabase.functions.invoke('send-document-status-email').
-    path: '/admin/documents',
-    element: (
-      <ProtectedRoute requiredRole="admin">
-        {s(
-          <AdminLayout>
-            <AdminDocumentsQueue />
-          </AdminLayout>,
-        )}
-      </ProtectedRoute>
-    ),
-  },
-  {
-    // Phase 23 plan 23-02 — admin skill coverage analytics at /admin/skills.
-    // Renders admin_skill_coverage RPC (migration 034) via AdminTable.
-    // SECURITY DEFINER RPC is the server-side gate; ProtectedRoute is the
-    // client-side guard (requiredRole="admin").
-    path: '/admin/skills',
-    element: (
-      <ProtectedRoute requiredRole="admin">
-        {s(
-          <AdminLayout>
-            <AdminSkillCoverage />
-          </AdminLayout>,
-        )}
-      </ProtectedRoute>
-    ),
-  },
-  {
-    // Founder analytics dashboard (PHASE-ANALYTICS-DESIGN.md, 2026-06-11).
-    // Access tier: existing admin role per operator decision; server-side
-    // gate is the admin_analytics_* SECURITY DEFINER RPCs (migration 039).
-    path: '/admin/analytics',
-    element: (
-      <ProtectedRoute requiredRole="admin">
-        {s(
-          <AdminLayout>
-            <AdminAnalytics />
-          </AdminLayout>,
-        )}
-      </ProtectedRoute>
-    ),
-  },
-  {
-    // Leads pipeline L0 (PHASE-LEADS-DESIGN). NOTE: /admin/leads/staging
-    // declared BEFORE /admin/leads (React Router ordering convention used
-    // throughout this table). Server-side gate: admin_lead* SECURITY DEFINER
-    // RPCs (migration 041), corrected-037 grants.
-    path: '/admin/leads/staging',
-    element: (
-      <ProtectedRoute requiredRole="admin">
-        {s(
-          <AdminLayout>
-            <AdminLeadsStaging />
-          </AdminLayout>,
-        )}
-      </ProtectedRoute>
-    ),
-  },
-  {
-    // Lane B outreach queue (Phase 1). Sub-path declared BEFORE /admin/leads.
-    path: '/admin/leads/outreach',
-    element: (
-      <ProtectedRoute requiredRole="admin">
-        {s(
-          <AdminLayout>
-            <AdminLeadsOutreach />
-          </AdminLayout>,
-        )}
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/admin/leads',
-    element: (
-      <ProtectedRoute requiredRole="admin">
-        {s(
-          <AdminLayout>
-            <AdminLeads />
-          </AdminLayout>,
-        )}
-      </ProtectedRoute>
-    ),
+    errorElement: s(<NotFound />),
+    children: routeTable(),
   },
 ])
+
+function routeTable() {
+  return [
+    // ─── Public routes ──────────────────────────────────────────────────────────
+    {
+      path: '/',
+      element: <Home />,
+    },
+    {
+      path: '/privacy',
+      element: s(<Privacy />),
+    },
+    {
+      path: '/terms',
+      element: s(<Terms />),
+    },
+    {
+      path: '/login',
+      element: s(<Login />),
+    },
+    {
+      path: '/signup',
+      element: s(<SignUp />),
+    },
+    {
+      path: '/auth/verify',
+      element: s(<VerifyEmail />),
+    },
+    {
+      path: '/forgot-password',
+      element: s(<ForgotPassword />),
+    },
+    {
+      path: '/auth/reset',
+      element: s(<ResetPassword />),
+    },
+    {
+      path: '/auth/select-role',
+      element: s(<SelectRole />),
+    },
+    {
+      // Phase 21 Track B — gate page for suspended users (isActive=false). MUST NOT
+      // be wrapped in ProtectedRoute; user has a session but is blocked from
+      // dashboards by ProtectedRoute's isActive guard, which redirects HERE.
+      // Wrapping would cause infinite redirect.
+      path: '/suspended',
+      element: s(<Suspended />),
+    },
+
+    // ─── Jobs ───────────────────────────────────────────────────────────────────
+    // NOTE: /jobs/new MUST be declared before /jobs/:id to prevent React Router
+    // from treating "new" as a dynamic :id param.
+    {
+      path: '/for-employers',
+      element: s(<ForEmployers />),
+    },
+    {
+      path: '/pricing',
+      element: s(<Pricing />),
+    },
+    {
+      // /jobs uses JobSearchLayout — Nav header only, no dashboard sidebar.
+      // Job search has its own page-internal filter sidebar; a second left-rail
+      // (DashboardLayout's Sidebar) would conflict architecturally. Pattern
+      // matches Seek's job-search layout. Originally wrapped in DashboardLayout
+      // hideSidebar (commit eb7e2f1, 2026-05-04 morning) but that introduced
+      // max-w + p-6 layout constraints that conflicted with JobSearch's flex split.
+      path: '/jobs',
+      element: s(
+        <JobSearchLayout>
+          <JobSearch />
+        </JobSearchLayout>,
+      ),
+    },
+    {
+      path: '/jobs/new',
+      element: <ProtectedRoute requiredRole="employer">{s(<PostJob />)}</ProtectedRoute>,
+    },
+    {
+      path: '/jobs/:id/edit',
+      element: <ProtectedRoute requiredRole="employer">{s(<PostJob />)}</ProtectedRoute>,
+    },
+    {
+      // PUBLIC — no ProtectedRoute wrapper. Component handles auth-gated views internally.
+      path: '/jobs/:id',
+      element: s(<JobDetail />),
+    },
+
+    // ─── Employer dashboard & verification ──────────────────────────────────────
+    // NOTE: /dashboard/employer/jobs/:id/applicants MUST be before /dashboard/employer
+    {
+      path: '/dashboard/employer/jobs/:id/applicants',
+      element: <ProtectedRoute requiredRole="employer">{s(<ApplicantDashboard />)}</ProtectedRoute>,
+    },
+    {
+      path: '/dashboard/employer',
+      element: <ProtectedRoute requiredRole="employer">{s(<EmployerDashboard />)}</ProtectedRoute>,
+    },
+    {
+      path: '/dashboard/employer/verification',
+      element: (
+        <ProtectedRoute requiredRole="employer">{s(<EmployerVerification />)}</ProtectedRoute>
+      ),
+    },
+    {
+      path: '/dashboard/employer/verification/documents',
+      element: <ProtectedRoute requiredRole="employer">{s(<DocumentUpload />)}</ProtectedRoute>,
+    },
+    {
+      path: '/dashboard/employer/verification/photos',
+      element: <ProtectedRoute requiredRole="employer">{s(<FarmPhotoUpload />)}</ProtectedRoute>,
+    },
+
+    // ─── Seeker dashboard ───────────────────────────────────────────────────────
+    // NOTE: /dashboard/seeker/applications MUST be before /dashboard/seeker to prevent
+    // React Router from treating the sub-path as a nested match on the parent.
+    {
+      path: '/dashboard/seeker/applications',
+      element: <ProtectedRoute requiredRole="seeker">{s(<MyApplications />)}</ProtectedRoute>,
+    },
+    {
+      path: '/dashboard/seeker/saved-searches',
+      element: <ProtectedRoute requiredRole="seeker">{s(<SavedSearches />)}</ProtectedRoute>,
+    },
+    {
+      path: '/dashboard/seeker/documents',
+      element: <ProtectedRoute requiredRole="seeker">{s(<SeekerDocuments />)}</ProtectedRoute>,
+    },
+    {
+      path: '/dashboard/seeker',
+      element: <ProtectedRoute requiredRole="seeker">{s(<SeekerDashboard />)}</ProtectedRoute>,
+    },
+
+    // ─── Onboarding ─────────────────────────────────────────────────────────────
+    {
+      path: '/onboarding/employer',
+      element: <ProtectedRoute requiredRole="employer">{s(<EmployerOnboarding />)}</ProtectedRoute>,
+    },
+    {
+      path: '/onboarding/seeker',
+      element: <ProtectedRoute requiredRole="seeker">{s(<SeekerOnboarding />)}</ProtectedRoute>,
+    },
+
+    // ─── Admin (super admin dashboard, Phase 20) ────────────────────────────────
+    // /admin/* routes are gated by ProtectedRoute requiredRole="admin". The actual
+    // security boundary is the SECURITY DEFINER RPC layer (migration 023) — every
+    // admin_* RPC validates get_user_role(auth.uid()) = 'admin' server-side, so
+    // even a DevTools bypass of the frontend gate cannot exfiltrate data.
+    {
+      path: '/admin',
+      element: s(<AdminGate />),
+    },
+    {
+      path: '/admin/employers',
+      element: (
+        <ProtectedRoute requiredRole="admin">
+          {s(
+            <AdminLayout>
+              <EmployerList />
+            </AdminLayout>,
+          )}
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: '/admin/seekers',
+      element: (
+        <ProtectedRoute requiredRole="admin">
+          {s(
+            <AdminLayout>
+              <SeekerList />
+            </AdminLayout>,
+          )}
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: '/admin/jobs',
+      element: (
+        <ProtectedRoute requiredRole="admin">
+          {s(
+            <AdminLayout>
+              <JobsManagement />
+            </AdminLayout>,
+          )}
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: '/admin/placements',
+      element: (
+        <ProtectedRoute requiredRole="admin">
+          {s(
+            <AdminLayout>
+              <PlacementPipeline />
+            </AdminLayout>,
+          )}
+        </ProtectedRoute>
+      ),
+    },
+    {
+      // Phase 21 Track B (plan 21-07) — admin doc verification queue.
+      // ProtectedRoute requiredRole="admin" wraps AdminLayout — same pattern as
+      // sibling /admin/* routes; SECURITY DEFINER RPCs (migration 033) are the
+      // load-bearing server-side gate. Email side-effect is best-effort via
+      // supabase.functions.invoke('send-document-status-email').
+      path: '/admin/documents',
+      element: (
+        <ProtectedRoute requiredRole="admin">
+          {s(
+            <AdminLayout>
+              <AdminDocumentsQueue />
+            </AdminLayout>,
+          )}
+        </ProtectedRoute>
+      ),
+    },
+    {
+      // Phase 23 plan 23-02 — admin skill coverage analytics at /admin/skills.
+      // Renders admin_skill_coverage RPC (migration 034) via AdminTable.
+      // SECURITY DEFINER RPC is the server-side gate; ProtectedRoute is the
+      // client-side guard (requiredRole="admin").
+      path: '/admin/skills',
+      element: (
+        <ProtectedRoute requiredRole="admin">
+          {s(
+            <AdminLayout>
+              <AdminSkillCoverage />
+            </AdminLayout>,
+          )}
+        </ProtectedRoute>
+      ),
+    },
+    {
+      // Founder analytics dashboard (PHASE-ANALYTICS-DESIGN.md, 2026-06-11).
+      // Access tier: existing admin role per operator decision; server-side
+      // gate is the admin_analytics_* SECURITY DEFINER RPCs (migration 039).
+      path: '/admin/analytics',
+      element: (
+        <ProtectedRoute requiredRole="admin">
+          {s(
+            <AdminLayout>
+              <AdminAnalytics />
+            </AdminLayout>,
+          )}
+        </ProtectedRoute>
+      ),
+    },
+    {
+      // Leads pipeline L0 (PHASE-LEADS-DESIGN). NOTE: /admin/leads/staging
+      // declared BEFORE /admin/leads (React Router ordering convention used
+      // throughout this table). Server-side gate: admin_lead* SECURITY DEFINER
+      // RPCs (migration 041), corrected-037 grants.
+      path: '/admin/leads/staging',
+      element: (
+        <ProtectedRoute requiredRole="admin">
+          {s(
+            <AdminLayout>
+              <AdminLeadsStaging />
+            </AdminLayout>,
+          )}
+        </ProtectedRoute>
+      ),
+    },
+    {
+      // Lane B outreach queue (Phase 1). Sub-path declared BEFORE /admin/leads.
+      path: '/admin/leads/outreach',
+      element: (
+        <ProtectedRoute requiredRole="admin">
+          {s(
+            <AdminLayout>
+              <AdminLeadsOutreach />
+            </AdminLayout>,
+          )}
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: '/admin/leads',
+      element: (
+        <ProtectedRoute requiredRole="admin">
+          {s(
+            <AdminLayout>
+              <AdminLeads />
+            </AdminLayout>,
+          )}
+        </ProtectedRoute>
+      ),
+    },
+
+    // ─── Catch-all 404 (must stay last) ─────────────────────────────────────────
+    {
+      path: '*',
+      element: s(<NotFound />),
+    },
+  ]
+}
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
