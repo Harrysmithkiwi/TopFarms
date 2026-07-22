@@ -153,6 +153,9 @@ export function MyApplications() {
   }, [session?.user?.id])
 
   async function handleWithdraw(applicationId: string) {
+    // Guard against misclicks — withdrawal pulls the application from the
+    // employer's view (UAT 2026-07-23: fired instantly with no confirm).
+    if (!window.confirm('Withdraw this application? The employer will no longer see it.')) return
     const { error } = await supabase
       .from('applications')
       .update({ status: 'withdrawn' })

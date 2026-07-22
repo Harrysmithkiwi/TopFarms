@@ -147,7 +147,10 @@ export function JobStep4Compensation({ onComplete, onBack, defaultValues }: Step
 
         {/* Market rate hint */}
         <div className="mt-2">
-          <InfoBox variant="blue">Market rate for Farm Manager: $55k-$75k NZD</InfoBox>
+          <InfoBox variant="blue">
+            Not sure what to offer? The Federated Farmers / Rabobank remuneration survey is the
+            standard NZ reference for farm salaries.
+          </InfoBox>
         </div>
 
         {/* Pay frequency */}

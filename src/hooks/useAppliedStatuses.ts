@@ -43,6 +43,10 @@ export function useAppliedStatuses(
         // ordered DESC, so first = latest)
         const map = new Map<string, ApplicationStatus>()
         for (const row of data ?? []) {
+          // Withdrawn applications don't block re-applying (UAT 2026-07-23):
+          // the apply path upserts over the withdrawn row, so cards must show
+          // these jobs as open, not "Applied".
+          if (row.status === 'withdrawn') continue
           if (!map.has(row.job_id)) {
             map.set(row.job_id, row.status as ApplicationStatus)
           }

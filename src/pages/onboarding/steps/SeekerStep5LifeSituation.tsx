@@ -229,7 +229,7 @@ export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: 
           />
 
           <InfoBox variant="blue">
-            Adding your availability helps employers plan — listings with dates get 30% more views
+            Adding your availability helps employers plan around your start date
           </InfoBox>
         </div>
       </div>

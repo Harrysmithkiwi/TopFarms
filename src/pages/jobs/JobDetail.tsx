@@ -229,7 +229,9 @@ export function JobDetail() {
       // 5. Similar jobs: 3 active jobs in same region, excluding current
       const { data: similarData } = await supabase
         .from('jobs')
-        .select('id, title, salary_min, salary_max, employer_profiles:marketplace_employer_profiles(farm_name, region)')
+        .select(
+          'id, title, salary_min, salary_max, employer_profiles:marketplace_employer_profiles(farm_name, region)',
+        )
         .eq('status', 'active')
         .eq('region', loadedJob.region ?? '')
         .neq('id', jobId)
@@ -277,14 +279,15 @@ export function JobDetail() {
               .catch(() => {}) // fire-and-forget, no error handling needed
           }
 
-          // Check if already applied
+          // Check if already applied — a withdrawn application doesn't count
+          // (apply upserts over it, so the seeker can re-apply)
           const { data: existingApp } = await supabase
             .from('applications')
-            .select('id')
+            .select('id, status')
             .eq('job_id', jobId)
             .eq('seeker_id', profile.id)
             .maybeSingle()
-          if (existingApp) setHasApplied(true)
+          if (existingApp && existingApp.status !== 'withdrawn') setHasApplied(true)
         }
       }
 
@@ -398,12 +401,17 @@ export function JobDetail() {
   async function handleApply() {
     if (!seekerProfileId || !jobId) return
     setApplying(true)
-    const { error } = await supabase.from('applications').insert({
-      job_id: jobId,
-      seeker_id: seekerProfileId,
-      cover_note: coverNote || null,
-      status: 'applied',
-    })
+    // Upsert so re-applying after a withdrawal reactivates the same row
+    // (UNIQUE (job_id, seeker_id) otherwise blocks the insert forever).
+    const { error } = await supabase.from('applications').upsert(
+      {
+        job_id: jobId,
+        seeker_id: seekerProfileId,
+        cover_note: coverNote || null,
+        status: 'applied',
+      },
+      { onConflict: 'job_id,seeker_id' },
+    )
     setApplying(false)
     if (error) {
       if (error.code === '23505') {

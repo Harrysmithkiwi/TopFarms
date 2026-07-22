@@ -469,12 +469,17 @@ export function JobSearch() {
       toast.error('Complete your profile before applying')
       return
     }
-    const { error } = await supabase.from('applications').insert({
-      job_id: jobId,
-      seeker_id: profile.id,
-      cover_note: coverNote || null,
-      status: 'applied',
-    })
+    // Upsert so re-applying after a withdrawal reactivates the same row
+    // (mirrors JobDetail.handleApply; UNIQUE (job_id, seeker_id)).
+    const { error } = await supabase.from('applications').upsert(
+      {
+        job_id: jobId,
+        seeker_id: profile.id,
+        cover_note: coverNote || null,
+        status: 'applied',
+      },
+      { onConflict: 'job_id,seeker_id' },
+    )
     if (error) {
       if (error.code === '23505') toast.error('You have already applied to this job')
       else throw error

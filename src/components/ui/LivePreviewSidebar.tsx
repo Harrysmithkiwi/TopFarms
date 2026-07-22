@@ -153,7 +153,7 @@ function AITipBox() {
     <div className="p-4">
       <div className="bg-ai-bg rounded-[8px] p-3">
         <p className="text-text font-body text-[13px]">
-          Tip: Listings with accommodation details get 40% more applications
+          Tip: accommodation details are one of the first things seekers look for
         </p>
       </div>
     </div>
