@@ -482,9 +482,12 @@ export function ApplicantDashboard() {
     ? calculatePlacementFee(jobSalaryMin, jobSalaryMax, jobTitle)
     : null
 
-  // Dashboard stats for sidebar
+  // Dashboard stats for sidebar. "Applied" = every live applicant (any stage
+  // that isn't declined/withdrawn), not literally status==='applied' — otherwise
+  // an applicant moved to Under Review vanished from all three counts (UAT
+  // 2026-07-23). Shortlisted/Hired remain exact-status subsets.
   const dashboardStats = {
-    applied: applicants.filter((a) => a.status === 'applied').length,
+    applied: applicants.filter((a) => a.status !== 'declined' && a.status !== 'withdrawn').length,
     shortlisted: applicants.filter((a) => a.status === 'shortlisted').length,
     hired: applicants.filter((a) => a.status === 'hired').length,
   }
