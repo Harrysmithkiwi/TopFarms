@@ -252,3 +252,52 @@ Home page, mobile navigation-mode Lighthouse:
 - **Detail:** `robots.txt` (Lighthouse `robots-txt` fail) and `sitemap.xml` both return HTTP 200 with `index.html`. Search engines get HTML where they expect directives/URLs. Add real static `public/robots.txt` and a generated `sitemap.xml` (critical for a job marketplace whose growth depends on listing indexation).
 
 ---
+
+---
+
+# PART 2 — Launch Readiness Execution (2026-07-23)
+
+Mode switched from audit to ownership: fix → deploy → verify, with `LAUNCH.md` as the backlog. All fixes shipped via PRs #41–#45 to `main`, auto-deployed to production (Vercel), and re-verified live. Three UAT accounts were provisioned (employer/seeker/admin, email-confirmed) and driven through the full journeys.
+
+## Score: 62 → 91 / 100 — ⚠️ Ready with minor (human-owned) items
+
+The engineering-owned launch blockers are **all closed and verified on production**. What remains is not engineering work: a legal sign-off on the drafted policies, one Supabase dashboard toggle, and business decisions (cold-start seeding, test-data purge). Post-fix production Lighthouse (mobile): **SEO 100, Accessibility 96, Best Practices 100**.
+
+## What was fixed & verified (see LAUNCH.md for the ticked backlog + evidence)
+
+**Original audit blockers (Part 1):** legal pages + branded 404 + router errorElement (TF-001/002); every fabricated statistic removed sitewide (TF-003/004); SEO baseline — favicon, per-route meta, robots.txt, sitemap.xml (TF-005/021); password policy (TF-010); honest jobs empty-state + anon sort (TF-007); UUID guard (TF-008); a11y main-landmark/aria-expanded/contrast (TF-009/019/020); footer dead links (TF-006).
+
+**New bugs found only by actually using the product live (would have shipped otherwise):**
+
+| ID | Severity | What broke | Fix |
+|---|---|---|---|
+| E1 | **Critical** | Seeker onboarding **crashed on the final step** (`null.farm_name`) — RLS blocked the direct `employer_profiles` embed. Every new seeker hit this. | Embed via `marketplace_employer_profiles` view + null guard (PR #42) |
+| E2 | **Critical** | **Admin Seekers / Documents / Applicants lists were all unrunnable** (HTTP 400, `42703`) — RPCs referenced dropped columns (schema drift). Admin console half-broken. | Repaired 4 RPCs, migrations 057/058, applied to prod (PR #44) |
+| E3 | **High** | **Withdrawing an application permanently locked the seeker out** of that job (UNIQUE + insert) — could never re-apply. | Upsert + exclude `withdrawn` from applied-state (PR #43); re-apply verified live |
+| E4 | **Medium** | Applicant **QUICK STATS showed 0/0/0** once a candidate moved to Under Review — they vanished from every count. | "Applied" → all live applicants, relabelled "Active" (PR #44) |
+| E5 | Medium | "View Farm Profile" → `/farms/:id` **404'd** (no such route). | Link removed (PR #43) |
+| E6 | Medium | Wizard micro-stats fabricated (76% / 40% / 30% / 2x / "market rate $55–75k"). | Honest copy (PR #43) |
+| E7 | Low | Withdraw confirm said "cannot be undone" — untrue after E3 fix. | Copy corrected (PR #43) |
+
+**End-to-end journeys completed live (not simulated):**
+- **Employer:** 8-step farm-profile onboarding → 7-step job wizard → edit → preview → **publish (free first listing)** → pause → resume → archive (with confirm) → view applicant → move through pipeline → **shortlist with $800 placement-fee + contact-release gate**. Job went live on the public board.
+- **Seeker:** 7-step onboarding → search with match scores → save → apply with cover note → withdraw → **re-apply** → track in My Applications.
+- **Admin:** login → Daily Briefing with real counts → all people/jobs/document lists loading after the RPC repairs.
+
+## Validation edge cases confirmed working
+Empty-field validation on every wizard step; salary min>max rejected; negative salary rejected; description char-limits enforced; duplicate-application blocked; invalid/expired reset tokens handled; protected routes redirect; admin RPCs gated server-side by `_admin_gate()`.
+
+## Notable finding still open (non-blocking)
+- **Past start dates accepted** — the job wizard accepted a start date of 01/01/**2020**. Low impact (employers set their own dates) but worth a min=today guard. Logged.
+- **Lazy-chunk load can hang** — after a deploy, a stalled route chunk left an infinite spinner once (recovered on hard reload). Recommend a lazy-import retry + auto-reload on chunk error (LAUNCH.md O7).
+- **Applicant AI summary renders empty** (LAUNCH.md O8).
+
+## Remaining before public launch (human/business-owned — NOT engineering)
+1. **Legal sign-off** on the drafted Privacy Policy & Terms (engineering shipped reviewed-quality NZ drafts).
+2. **Enable Supabase leaked-password protection** — one toggle in the Auth dashboard (no API path from here).
+3. **Purge test data** incl. the 3 UAT accounts (credentials + associated farm/job/application listed in LAUNCH.md).
+4. **Seed real listings** before the marketing push (cold-start).
+5. Optional: post-launch security-hardening batch (O4), "Duplicate job" feature (O6).
+
+## Final recommendation
+**⚠️ Ready with minor fixes.** Every engineering-owned blocker from the audit — plus seven additional bugs found by live use, two of them account-breaking — is fixed, deployed, and re-verified on production. The platform is functionally sound end-to-end across all three roles with a strong server-side security model. Launch is gated only on a legal review, one dashboard toggle, and business go-to-market decisions.
