@@ -7,11 +7,18 @@ import { toast } from 'sonner'
 import { Eye, EyeOff, Building2, User } from 'lucide-react'
 import { AuthLayout } from '@/components/layout/AuthLayout'
 import { useAuth } from '@/hooks/useAuth'
+import { usePageMeta } from '@/lib/usePageMeta'
 
 const schema = z.object({
   role: z.enum(['employer', 'seeker']),
   email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+  // TF-010 — real password policy: length + letters + numbers. "password123"-class
+  // strings still get caught by Supabase leaked-password protection server-side.
+  password: z
+    .string()
+    .min(10, 'Password must be at least 10 characters')
+    .regex(/[a-zA-Z]/, 'Password must include at least one letter')
+    .regex(/[0-9]/, 'Password must include at least one number'),
   terms: z.boolean().refine((v) => v === true, { message: 'You must accept the terms' }),
 })
 
@@ -20,7 +27,7 @@ type FormValues = z.infer<typeof schema>
 function getPasswordStrength(password: string): { score: number; label: string; color: string } {
   if (!password) return { score: 0, label: '', color: '' }
   let score = 0
-  if (password.length >= 8) score++
+  if (password.length >= 10) score++
   if (/[A-Z]/.test(password)) score++
   if (/[a-z]/.test(password)) score++
   if (/[0-9]/.test(password)) score++
@@ -32,6 +39,10 @@ function getPasswordStrength(password: string): { score: number; label: string; 
 }
 
 export function SignUp() {
+  usePageMeta(
+    'Sign up — TopFarms',
+    'Create a free TopFarms account to find farm work or post agricultural jobs in New Zealand.',
+  )
   const navigate = useNavigate()
   const { signUpWithRole, signInWithOAuth } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
@@ -380,19 +391,25 @@ export function SignUp() {
                 style={{ color: 'var(--color-text-muted)' }}
               >
                 I agree to the{' '}
-                <span
-                  className="cursor-pointer underline"
+                <Link
+                  to="/terms"
+                  target="_blank"
+                  rel="noopener"
+                  className="underline"
                   style={{ color: 'var(--color-brand-900)' }}
                 >
                   Terms of Service
-                </span>{' '}
+                </Link>{' '}
                 and{' '}
-                <span
-                  className="cursor-pointer underline"
+                <Link
+                  to="/privacy"
+                  target="_blank"
+                  rel="noopener"
+                  className="underline"
                   style={{ color: 'var(--color-brand-900)' }}
                 >
                   Privacy Policy
-                </span>
+                </Link>
               </label>
             </div>
             {errors.terms && (

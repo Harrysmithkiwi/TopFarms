@@ -156,7 +156,9 @@ export function JobDetail() {
   const { isSaved, toggleSave } = useSavedJobs(session?.user?.id ?? null)
 
   useEffect(() => {
-    if (!jobId) {
+    // TF-008 — reject malformed ids before querying so garbage URLs don't
+    // fire a doomed request (Supabase returns 400 on non-UUID eq filters).
+    if (!jobId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(jobId)) {
       setNotFound(true)
       setLoading(false)
       return
