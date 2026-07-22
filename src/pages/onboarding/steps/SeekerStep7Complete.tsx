@@ -26,9 +26,11 @@ interface MatchedJob {
     region: string
     salary_min: number | null
     salary_max: number | null
+    // Nullable: embedded via marketplace_employer_profiles view; an employer
+    // with no listed jobs yields null (same edge as JobDetail).
     employer_profiles: {
       farm_name: string
-    }
+    } | null
   }
 }
 
@@ -48,6 +50,9 @@ function useMatchScoresPoll(seekerProfileId: string | null) {
       // !inner on jobs: RLS policy 'jobs: authenticated users view active' (status='active')
       // hides non-active jobs from the embed, returning the parent row with jobs=null. !inner
       // drops those rows server-side instead — prevents null-crash in render. See Phase 18 cleanup.
+      // employer_profiles embeds through the marketplace view: seekers can't read
+      // employer_profiles under RLS (a direct embed returns null and crashed this
+      // screen — UAT 2026-07-23). Same pattern as JobSearch/JobDetail (RLS-MKT-01).
       const { data } = await supabase
         .from('match_scores')
         .select(
@@ -55,7 +60,7 @@ function useMatchScoresPoll(seekerProfileId: string | null) {
           total_score,
           jobs!inner (
             id, title, region, salary_min, salary_max,
-            employer_profiles ( farm_name )
+            employer_profiles:marketplace_employer_profiles ( farm_name )
           )
         `,
         )
@@ -204,7 +209,9 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
                       className="font-body text-[12px]"
                       style={{ color: 'var(--color-text-muted)' }}
                     >
-                      {match.jobs.employer_profiles.farm_name} · {match.jobs.region}
+                      {match.jobs.employer_profiles?.farm_name
+                        ? `${match.jobs.employer_profiles.farm_name} · ${match.jobs.region}`
+                        : match.jobs.region}
                     </p>
                     {(match.jobs.salary_min || match.jobs.salary_max) && (
                       <p
