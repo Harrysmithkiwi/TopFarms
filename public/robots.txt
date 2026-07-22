@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /dashboard/
+Disallow: /onboarding/
+Disallow: /auth/
+
+Sitemap: https://www.topfarms.co.nz/sitemap.xml
