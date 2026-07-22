@@ -54,7 +54,7 @@ export function ApplicantDashboardSidebar({
         </h3>
         <div className="grid grid-cols-3 gap-2 text-center">
           {[
-            { label: 'Applied', value: stats.applied },
+            { label: 'Active', value: stats.applied },
             { label: 'Shortlisted', value: stats.shortlisted },
             { label: 'Hired', value: stats.hired },
           ].map((stat) => (

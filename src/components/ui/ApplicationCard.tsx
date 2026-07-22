@@ -74,7 +74,7 @@ export function ApplicationCard({
   function handleWithdraw() {
     if (
       window.confirm(
-        `Withdraw your application for ${job?.title ?? 'this job'}? This cannot be undone.`,
+        `Withdraw your application for ${job?.title ?? 'this job'}? The employer will no longer see it. You can re-apply later if you change your mind.`,
       )
     ) {
       onWithdraw?.(application.id)
