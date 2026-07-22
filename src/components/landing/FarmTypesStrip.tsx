@@ -1,11 +1,13 @@
 import { motion } from 'motion/react'
 
+// No listing counts here — they were hardcoded and contradicted the live
+// platform stats (TF-003 truth pass). Re-add only when driven by real data.
 const sectors = [
-  { name: 'Dairy', count: 12, icon: '🐄' },
-  { name: 'Sheep & Beef', count: 8, icon: '🐑' },
-  { name: 'Horticulture', count: 5, icon: '🌱' },
-  { name: 'Viticulture', count: 3, icon: '🍇' },
-  { name: 'Arable', count: 4, icon: '🌾' },
+  { name: 'Dairy', icon: '🐄' },
+  { name: 'Sheep & Beef', icon: '🐑' },
+  { name: 'Horticulture', icon: '🌱' },
+  { name: 'Viticulture', icon: '🍇' },
+  { name: 'Arable', icon: '🌾' },
 ]
 
 export function FarmTypesStrip() {
@@ -23,7 +25,7 @@ export function FarmTypesStrip() {
           <div className="h-px w-8" style={{ backgroundColor: 'var(--color-brand)' }} />
           <p
             className="text-xs font-bold tracking-widest uppercase"
-            style={{ color: 'var(--color-brand)' }}
+            style={{ color: 'var(--color-brand-700)' }}
           >
             Farm Sectors
           </p>
@@ -49,11 +51,8 @@ export function FarmTypesStrip() {
               }}
             >
               <div className="mb-3 text-3xl">{sector.icon}</div>
-              <p className="mb-1 text-sm font-bold" style={{ color: 'var(--color-brand-900)' }}>
+              <p className="text-sm font-bold" style={{ color: 'var(--color-brand-900)' }}>
                 {sector.name}
-              </p>
-              <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-                {sector.count} listings
               </p>
             </div>
           ))}

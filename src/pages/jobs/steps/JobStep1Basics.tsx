@@ -85,19 +85,22 @@ export function JobStep1Basics({ onComplete, defaultValues }: Step1Props) {
         className="hidden flex-col justify-center rounded-l-[16px] p-6 md:flex"
         style={{ backgroundColor: 'var(--color-brand-900)' }}
       >
+        {/* Honest value points — replaced fabricated 85%/500+/92% stats (TF-003 truth pass). */}
         <h3 className="font-display mb-4 text-lg font-semibold text-white">Why TopFarms?</h3>
         <div className="space-y-4">
           <div>
-            <p className="text-2xl font-semibold text-white">85%</p>
-            <p className="font-body text-[13px] text-white/70">of jobs filled within 30 days</p>
+            <p className="text-2xl font-semibold text-white">Free</p>
+            <p className="font-body text-[13px] text-white/70">your first listing costs nothing</p>
           </div>
           <div>
-            <p className="text-2xl font-semibold text-white">500+</p>
-            <p className="font-body text-[13px] text-white/70">active seekers nationwide</p>
+            <p className="text-2xl font-semibold text-white">Matched</p>
+            <p className="font-body text-[13px] text-white/70">
+              candidates scored against your requirements
+            </p>
           </div>
           <div>
-            <p className="text-2xl font-semibold text-white">92%</p>
-            <p className="font-body text-[13px] text-white/70">employer satisfaction rate</p>
+            <p className="text-2xl font-semibold text-white">30 days</p>
+            <p className="font-body text-[13px] text-white/70">every listing runs a full month</p>
           </div>
         </div>
       </div>

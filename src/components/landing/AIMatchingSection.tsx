@@ -23,7 +23,7 @@ export function AIMatchingSection() {
           <div className="h-px w-8" style={{ backgroundColor: 'var(--color-brand)' }} />
           <p
             className="text-xs font-bold tracking-widest uppercase"
-            style={{ color: 'var(--color-brand)' }}
+            style={{ color: 'var(--color-brand-700)' }}
           >
             AI-Powered Matching
           </p>
@@ -59,10 +59,12 @@ export function AIMatchingSection() {
             ))}
           </ul>
 
-          {/* Right: Mock browser window */}
+          {/* Right: Mock browser window. Illustration only — roles and scores are
+              placeholders, labelled Example so it can't read as real data (TF-004). */}
           <div
             className="overflow-hidden rounded-xl shadow-2xl"
             style={{ border: '1px solid var(--color-border)' }}
+            aria-hidden="true"
           >
             {/* Browser chrome */}
             <div
@@ -87,12 +89,23 @@ export function AIMatchingSection() {
 
             {/* Browser content */}
             <div className="p-5" style={{ backgroundColor: 'var(--color-surface)' }}>
-              <p
-                className="font-display mb-4 text-lg font-bold"
-                style={{ color: 'var(--color-brand-900)' }}
-              >
-                Your Top Matches
-              </p>
+              <div className="mb-4 flex items-center justify-between">
+                <p
+                  className="font-display text-lg font-bold"
+                  style={{ color: 'var(--color-brand-900)' }}
+                >
+                  Your Top Matches
+                </p>
+                <span
+                  className="rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wider uppercase"
+                  style={{
+                    backgroundColor: 'var(--color-surface-2)',
+                    color: 'var(--color-text-muted)',
+                  }}
+                >
+                  Example
+                </span>
+              </div>
 
               {/* Fake match rows */}
               {[

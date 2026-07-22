@@ -86,23 +86,16 @@ export function LandingFooter() {
                   Contact
                 </a>
               </li>
+              {/* 'Help Center' and 'About' removed (TF-006) — dead '#' links.
+                  Re-add when the pages exist. */}
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/pricing"
                   className="text-sm transition-colors hover:opacity-80"
                   style={{ color: 'rgba(255,255,255,0.65)' }}
                 >
-                  Help Center
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-sm transition-colors hover:opacity-80"
-                  style={{ color: 'rgba(255,255,255,0.65)' }}
-                >
-                  About
-                </a>
+                  Pricing
+                </Link>
               </li>
             </ul>
           </div>

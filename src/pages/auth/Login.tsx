@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import { Eye, EyeOff } from 'lucide-react'
 import { AuthLayout } from '@/components/layout/AuthLayout'
 import { useAuth } from '@/hooks/useAuth'
+import { usePageMeta } from '@/lib/usePageMeta'
 import { dashboardPathFor } from '@/lib/routing'
 
 const schema = z.object({
@@ -17,6 +18,7 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>
 
 export function Login() {
+  usePageMeta('Log in — TopFarms', 'Log in to your TopFarms account.')
   const { signIn, signInWithOAuth, session, role, loading } = useAuth()
   const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false)

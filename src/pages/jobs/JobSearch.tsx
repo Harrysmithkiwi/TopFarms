@@ -1,10 +1,11 @@
 import { useEffect, useState, useCallback } from 'react'
-import { useSearchParams } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 import * as Dialog from '@radix-ui/react-dialog'
 import { SlidersHorizontal, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/hooks/useAuth'
+import { usePageMeta } from '@/lib/usePageMeta'
 import { useSavedJobs } from '@/hooks/useSavedJobs'
 import { useSeekerProfileId } from '@/hooks/useSeekerProfileId'
 import { useAppliedStatuses } from '@/hooks/useAppliedStatuses'
@@ -105,6 +106,10 @@ function SkeletonCard() {
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export function JobSearch() {
+  usePageMeta(
+    'Browse Farm Jobs NZ — TopFarms',
+    'Search agricultural jobs across New Zealand: dairy, sheep & beef, horticulture, viticulture and arable roles.',
+  )
   const [searchParams, setSearchParams] = useSearchParams()
   const { session, role, loading: authLoading } = useAuth()
 
@@ -448,7 +453,9 @@ export function JobSearch() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, authLoading])
 
-  const sortParam = searchParams.get('sort') ?? 'match'
+  // TF-007 — "Match Score" is meaningless without a seeker profile; anonymous
+  // and employer visitors default to Most Recent instead.
+  const sortParam = searchParams.get('sort') ?? (session && role === 'seeker' ? 'match' : 'recent')
 
   // ─── Inline apply handler ───────────────────────────────────────────────────
   async function handleInlineApply(jobId: string, coverNote: string) {
@@ -739,7 +746,7 @@ function ResultsArea({
             onChange={(e) => onSortChange(e.target.value)}
             className="font-body text-text border-border bg-surface focus:border-brand cursor-pointer rounded-[6px] border px-2 py-1 text-[12px] focus:outline-none"
           >
-            <option value="match">Match Score</option>
+            {isLoggedIn && <option value="match">Match Score</option>}
             <option value="recent">Most Recent</option>
             <option value="salary_desc">Salary: High to Low</option>
             <option value="location_nearest">Location: Nearest</option>
@@ -756,20 +763,39 @@ function ResultsArea({
         </div>
       )}
 
-      {/* Empty state */}
-      {!loading && jobs.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="bg-surface-2 mb-4 flex h-[72px] w-[72px] items-center justify-center rounded-full">
-            <X className="text-text-subtle h-8 w-8" />
+      {/* Empty state — TF-007: only blame filters when filters are actually set.
+          With no filters and no jobs the marketplace is simply empty; say so. */}
+      {!loading &&
+        jobs.length === 0 &&
+        (hasActiveFilters(searchParams) ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="bg-surface-2 mb-4 flex h-[72px] w-[72px] items-center justify-center rounded-full">
+              <X className="text-text-subtle h-8 w-8" />
+            </div>
+            <h3 className="font-body text-text mb-2 text-[17px] font-semibold">
+              No jobs match your filters.
+            </h3>
+            <p className="font-body text-text-muted max-w-[280px] text-[14px]">
+              Try broadening your search or removing a filter.
+            </p>
           </div>
-          <h3 className="font-body text-text mb-2 text-[17px] font-semibold">
-            No jobs match your filters.
-          </h3>
-          <p className="font-body text-text-muted max-w-[280px] text-[14px]">
-            Try broadening your search or removing a filter.
-          </p>
-        </div>
-      )}
+        ) : (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <p className="mb-4 text-4xl" aria-hidden="true">
+              🌱
+            </p>
+            <h3 className="font-body text-text mb-2 text-[17px] font-semibold">
+              No jobs listed right now
+            </h3>
+            <p className="font-body text-text-muted max-w-[320px] text-[14px]">
+              New farm roles are posted as employers join. Check back soon — or if you're hiring,{' '}
+              <Link to="/signup?role=employer" className="text-brand underline">
+                post the first job free
+              </Link>
+              .
+            </p>
+          </div>
+        ))}
 
       {/* Job cards */}
       {jobs.length > 0 && (

@@ -6,7 +6,7 @@ const checklist = [
   'Post a job in under 5 minutes',
   'AI-matched candidates delivered to your dashboard',
   'Track applications and schedule interviews',
-  'Only pay when you find the right person',
+  'Your first job listing is free',
 ]
 
 export function EmployerCTABand() {
@@ -22,10 +22,10 @@ export function EmployerCTABand() {
         <div className="grid items-center gap-12 md:grid-cols-2">
           {/* Left: copy + CTA */}
           <div>
-            {/* Eyebrow */}
+            {/* Eyebrow — brand-300 for AA contrast on brand-900 (TF-020) */}
             <p
               className="mb-4 text-xs font-bold tracking-widest uppercase"
-              style={{ color: 'var(--color-brand)' }}
+              style={{ color: 'var(--color-brand-300)' }}
             >
               For Employers
             </p>
@@ -59,7 +59,7 @@ export function EmployerCTABand() {
 
             <div className="flex flex-wrap items-center gap-5">
               <Link
-                to="/onboarding/employer"
+                to="/signup?role=employer"
                 className="inline-block rounded-full px-8 py-3 font-semibold transition-opacity hover:opacity-90"
                 style={{
                   backgroundColor: 'var(--color-brand)',
@@ -78,18 +78,29 @@ export function EmployerCTABand() {
             </div>
           </div>
 
-          {/* Right: mini dashboard mockup */}
+          {/* Right: mini dashboard mockup. Illustration only — names and numbers
+              are placeholders, kept unmistakable via the Example badge (TF-004). */}
           <div
             className="overflow-hidden rounded-xl shadow-xl"
             style={{ backgroundColor: 'var(--color-surface)' }}
+            aria-hidden="true"
           >
-            <div className="border-b px-5 py-4" style={{ borderColor: 'var(--color-border)' }}>
+            <div
+              className="flex items-center justify-between border-b px-5 py-4"
+              style={{ borderColor: 'var(--color-border)' }}
+            >
               <p
                 className="font-display text-base font-bold"
                 style={{ color: 'var(--color-brand-900)' }}
               >
                 Your Dashboard
               </p>
+              <span
+                className="rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wider uppercase"
+                style={{ backgroundColor: 'var(--color-surface-2)', color: 'var(--color-text-muted)' }}
+              >
+                Example
+              </span>
             </div>
 
             <div className="p-5">
