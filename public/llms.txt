@@ -1,0 +1,21 @@
+# TopFarms
+
+> New Zealand's agricultural recruitment marketplace. TopFarms matches skilled farm workers with quality employers across dairy, sheep & beef, horticulture, viticulture and arable operations in all 16 NZ regions.
+
+TopFarms connects farm employers and job seekers with skills-based matching, agriculture-specific job listings (shed type, herd size, accommodation, DairyNZ qualifications), and a per-listing pricing model. The first job listing is free.
+
+## Key pages
+
+- [Browse farm jobs](https://www.topfarms.co.nz/jobs): Search agricultural jobs across New Zealand.
+- [For employers](https://www.topfarms.co.nz/for-employers): How employers post jobs and hire.
+- [Pricing](https://www.topfarms.co.nz/pricing): Per-listing pricing; first listing free, no subscriptions.
+- [Sign up](https://www.topfarms.co.nz/signup): Create a free account as an employer or job seeker.
+
+## Legal
+
+- [Privacy Policy](https://www.topfarms.co.nz/privacy)
+- [Terms of Service](https://www.topfarms.co.nz/terms)
+
+## Contact
+
+- Email: hello@topfarms.co.nz
