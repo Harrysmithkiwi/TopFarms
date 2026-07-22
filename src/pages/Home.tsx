@@ -13,17 +13,19 @@ export function Home() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--color-bg)' }}>
       <Nav />
-      <HeroSection />
-      <CountersSection />
-      <AIMatchingSection />
-      <HowItWorksSection />
-      <FarmTypesStrip />
-      <FeaturedListings />
-      <EmployerCTABand />
-      {/* TestimonialsSection + TrustedByStrip removed 2026-07-08 (truth pass):
-          fabricated testimonials/stats and real brands falsely implied as customers.
-          Re-add only with real, per-name-consented content — see REMEDIATION-LOG.md. */}
-      <FinalCTASection />
+      <main>
+        <HeroSection />
+        <CountersSection />
+        <AIMatchingSection />
+        <HowItWorksSection />
+        <FarmTypesStrip />
+        <FeaturedListings />
+        <EmployerCTABand />
+        {/* TestimonialsSection + TrustedByStrip removed 2026-07-08 (truth pass):
+            fabricated testimonials/stats and real brands falsely implied as customers.
+            Re-add only with real, per-name-consented content — see REMEDIATION-LOG.md. */}
+        <FinalCTASection />
+      </main>
       <LandingFooter />
     </div>
   )

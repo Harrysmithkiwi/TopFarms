@@ -65,7 +65,7 @@ const employerSteps: Step[] = [
     icon: '🤝',
     title: 'Hire',
     description:
-      'Confirm your hire directly on the platform. Simple, transparent placement fee on success.',
+      'Message candidates, check their verified profiles, and confirm your hire directly on the platform.',
   },
 ]
 
@@ -87,7 +87,7 @@ export function HowItWorksSection() {
           <div className="h-px w-8" style={{ backgroundColor: 'var(--color-brand)' }} />
           <p
             className="text-xs font-bold tracking-widest uppercase"
-            style={{ color: 'var(--color-brand)' }}
+            style={{ color: 'var(--color-brand-700)' }}
           >
             How It Works
           </p>
@@ -99,7 +99,7 @@ export function HowItWorksSection() {
           style={{ color: 'var(--color-brand-900)' }}
         >
           Your Path to the{' '}
-          <em style={{ color: 'var(--color-brand)', fontStyle: 'italic' }}>Perfect Match</em>
+          <em style={{ color: 'var(--color-brand-700)', fontStyle: 'italic' }}>Perfect Match</em>
         </h2>
 
         {/* Tab toggle */}
@@ -120,7 +120,7 @@ export function HowItWorksSection() {
                 activeTab === t.value
                   ? {
                       backgroundColor: 'var(--color-surface)',
-                      color: 'var(--color-brand)',
+                      color: 'var(--color-brand-700)',
                       boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
                     }
                   : {
@@ -159,10 +159,11 @@ export function HowItWorksSection() {
                   border: '1px solid var(--color-border)',
                 }}
               >
-                {/* Faded step number */}
+                {/* Faded step number — decorative watermark, hidden from a11y tree (TF-020) */}
                 <p
                   className="font-display mb-4 text-6xl leading-none font-bold select-none"
                   style={{ color: 'var(--color-border)' }}
+                  aria-hidden="true"
                 >
                   {String(step.number).padStart(2, '0')}
                 </p>

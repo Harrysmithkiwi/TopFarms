@@ -53,22 +53,12 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
           </p>
         </div>
 
+        {/* Honest value points — replaced fabricated "500+/2,000+" stats (TF-003 truth pass). */}
         <div className="relative z-10 flex gap-8">
           <div>
             <p
               className="text-3xl font-bold"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--color-brand)' }}
-            >
-              500+
-            </p>
-            <p className="text-sm" style={{ color: 'var(--color-text-on-brand)' }}>
-              Farm roles listed
-            </p>
-          </div>
-          <div>
-            <p
-              className="text-3xl font-bold"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--color-brand)' }}
+              style={{ fontFamily: 'var(--font-display)', color: 'var(--color-brand-300)' }}
             >
               16
             </p>
@@ -79,12 +69,23 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
           <div>
             <p
               className="text-3xl font-bold"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--color-brand)' }}
+              style={{ fontFamily: 'var(--font-display)', color: 'var(--color-brand-300)' }}
             >
-              2,000+
+              5
             </p>
             <p className="text-sm" style={{ color: 'var(--color-text-on-brand)' }}>
-              Skilled seekers
+              Farm sectors
+            </p>
+          </div>
+          <div>
+            <p
+              className="text-3xl font-bold"
+              style={{ fontFamily: 'var(--font-display)', color: 'var(--color-brand-300)' }}
+            >
+              Free
+            </p>
+            <p className="text-sm" style={{ color: 'var(--color-text-on-brand)' }}>
+              To join as a seeker
             </p>
           </div>
         </div>

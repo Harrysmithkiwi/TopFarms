@@ -55,12 +55,12 @@ export function HeroSection() {
               style={{
                 borderColor: 'rgba(122,175,63,0.3)',
                 backgroundColor: 'rgba(122,175,63,0.1)',
-                color: 'var(--color-brand)',
+                color: 'var(--color-brand-300)',
               }}
             >
               <span
                 className="h-1.5 w-1.5 animate-pulse rounded-full"
-                style={{ backgroundColor: 'var(--color-brand)' }}
+                style={{ backgroundColor: 'var(--color-brand-300)' }}
               />
               NZ Agriculture
             </div>
@@ -113,7 +113,7 @@ export function HeroSection() {
             >
               <p
                 className="text-[10px] font-bold tracking-widest uppercase"
-                style={{ color: 'var(--color-brand)' }}
+                style={{ color: 'var(--color-brand-300)' }}
               >
                 Farm Workers
               </p>
@@ -133,7 +133,7 @@ export function HeroSection() {
                 className="mt-1 inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
                 style={{
                   backgroundColor: 'var(--color-brand)',
-                  color: 'var(--color-text-on-brand)',
+                  color: 'var(--color-brand-900)',
                 }}
               >
                 Find Farm Work

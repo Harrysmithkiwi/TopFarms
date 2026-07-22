@@ -23,7 +23,7 @@ export function FinalCTASection() {
         </p>
         <div className="flex flex-col justify-center gap-4 sm:flex-row">
           <Link
-            to="/onboarding/seeker"
+            to="/signup?role=seeker"
             className="inline-flex items-center justify-center rounded-full px-8 py-3 font-semibold transition-opacity hover:opacity-90"
             style={{
               backgroundColor: 'var(--color-brand)',
@@ -33,7 +33,7 @@ export function FinalCTASection() {
             Find Farm Work
           </Link>
           <Link
-            to="/onboarding/employer"
+            to="/signup?role=employer"
             className="inline-flex items-center justify-center rounded-full border px-8 py-3 font-semibold transition-opacity hover:opacity-90"
             style={{
               backgroundColor: 'transparent',
