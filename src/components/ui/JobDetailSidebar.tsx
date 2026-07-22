@@ -232,13 +232,8 @@ export function JobDetailSidebar({
           {/* Star rating */}
           {farm.rating !== undefined && <StarRating value={farm.rating} size={14} />}
 
-          {/* View farm profile link */}
-          <Link
-            to={`/farms/${farm.id}`}
-            className="font-body text-brand hover:text-brand-hover block text-[13px] font-medium transition-colors"
-          >
-            View Farm Profile
-          </Link>
+          {/* 'View Farm Profile' link removed (UAT 2026-07-23): /farms/:id has no
+              route and 404'd. Re-add when a farm profile page exists. */}
         </div>
       </div>
     </div>

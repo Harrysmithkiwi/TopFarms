@@ -169,7 +169,7 @@ export function Step4Accommodation({ onComplete, onBack, defaultValues }: Step4P
 
         {/* Section B: Accommodation (EONB-06) */}
         <InfoBox variant="blue">
-          76% of seekers need accommodation — listings with it get 2x more applications
+          Many seekers relocate for farm work — accommodation is often the deciding factor
         </InfoBox>
 
         {/* Main accommodation toggle */}
@@ -308,7 +308,10 @@ export function Step4Accommodation({ onComplete, onBack, defaultValues }: Step4P
             />
           </div>
           <div className="mt-2">
-            <InfoBox variant="blue">Market rate for Farm Manager: $55k-$75k NZD</InfoBox>
+            <InfoBox variant="blue">
+              Not sure what to offer? The Federated Farmers / Rabobank remuneration survey is the
+              standard NZ reference for farm salaries.
+            </InfoBox>
           </div>
         </div>
       </div>
