@@ -15,6 +15,7 @@ export const SOURCE_LABELS: Record<string, string> = {
   trademe: 'TradeMe',
   fb_own_group: 'FB (own group)',
   fb_manual_capture: 'FB (manual capture)',
+  manual_paste: 'Manual / screenshot',
   nzfarmingjobs: 'NZ Farming Jobs',
 }
 
@@ -58,9 +59,10 @@ export function formatLeadName(displayName: string | null | undefined): string {
  * change). Until that ships, falls back to the trailing ", Locality" tail of a
  * headline-style display_name so existing rows still surface a town.
  */
-export function leadLocality(
-  structured: { locality?: string | null; display_name?: string | null },
-): string | null {
+export function leadLocality(structured: {
+  locality?: string | null
+  display_name?: string | null
+}): string | null {
   const explicit = (structured.locality ?? '').trim()
   if (explicit) return explicit
   const name = (structured.display_name ?? '').trim()
@@ -78,9 +80,11 @@ export function leadLocality(
 }
 
 /** "Waikato · Tirohanga" / "Waikato" / "" (blank) for region+locality display. */
-export function regionLocalityLabel(
-  structured: { region?: string | null; locality?: string | null; display_name?: string | null },
-): string {
+export function regionLocalityLabel(structured: {
+  region?: string | null
+  locality?: string | null
+  display_name?: string | null
+}): string {
   const region = (structured.region ?? '').trim()
   const locality = leadLocality(structured)
   if (region && locality && locality.toLowerCase() !== region.toLowerCase()) {
@@ -124,10 +128,7 @@ export function matchSnippet(
  * consumer renders match segments in <strong>. Returns a single non-match
  * segment when the term is empty/absent.
  */
-export function highlightParts(
-  text: string,
-  term: string,
-): { text: string; match: boolean }[] {
+export function highlightParts(text: string, term: string): { text: string; match: boolean }[] {
   const needle = term.trim()
   if (!text || needle.length < 2) return [{ text, match: false }]
   const parts: { text: string; match: boolean }[] = []

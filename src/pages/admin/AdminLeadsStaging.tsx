@@ -52,6 +52,9 @@ interface StagingRow extends Record<string, unknown> {
     herd_details?: string | null
     application_method?: string | null
     source_group?: string | null
+    // Leads v2 segmentation (migration 061 backfill + lead-intake forward extraction).
+    applications_close?: string | null // ISO date; drives the "Likely expired" badge.
+    geo_scope?: 'nz' | 'intl' | 'unknown'
   }
   confidence: number
   missing_fields: string[]
@@ -62,21 +65,47 @@ interface StagingRow extends Record<string, unknown> {
 const inputCls =
   'border-border bg-surface w-full rounded-[8px] border px-3 py-2 text-sm outline-none focus:border-brand'
 
-/** Paste-batch capture — the primary, most-frequent path. */
+/** Paste-batch capture — the primary, most-frequent path. Text OR screenshot. */
 function PasteCapture({ onCaptured }: { onCaptured: () => void }) {
   // Default to manual-capture: most pastes are other people's groups (NZ Dairy
   // Jobs etc.), not our own group. fb_own_group is the exception, selectable below.
   const [source, setSource] = useState('fb_manual_capture')
   const [text, setText] = useState('')
+  const [image, setImage] = useState<{ data: string; mediaType: string; name: string } | null>(null)
   const [busy, setBusy] = useState(false)
 
-  // L1 batch lane (§9.2): paste one or MANY posts; lead-intake structures them
-  // with Claude Haiku server-side.
+  // Read a dropped/selected screenshot into base64 (no data: prefix) for the
+  // Leads v2 vision lane. A screenshot is rarely from your own FB group, so it
+  // defaults the source to Manual / screenshot.
+  function onFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      const result = String(reader.result)
+      setImage({
+        data: result.slice(result.indexOf(',') + 1),
+        mediaType: file.type || 'image/png',
+        name: file.name,
+      })
+      setSource('manual_paste')
+    }
+    reader.readAsDataURL(file)
+  }
+
+  // L1 batch lane (§9.2): paste one or MANY posts, and/or a screenshot;
+  // lead-intake structures them with Claude (vision for the image) server-side.
   async function submit() {
-    if (!text.trim()) return
+    if (!text.trim() && !image) return
     setBusy(true)
+    const item: Record<string, unknown> = {}
+    if (text.trim()) item.raw_text = text
+    if (image) {
+      item.image = image.data
+      item.image_media_type = image.mediaType
+    }
     const { data, error } = await supabase.functions.invoke('lead-intake', {
-      body: { source, items: [{ raw_text: text }] },
+      body: { source, items: [item] },
     })
     setBusy(false)
     if (error) {
@@ -88,26 +117,58 @@ function PasteCapture({ onCaptured }: { onCaptured: () => void }) {
       `Staged ${r.results?.inserted ?? 0} (dupes ${r.results?.exact_duplicate ?? 0}, suppressed ${r.results?.suppressed ?? 0}) — ${r.structuring ?? ''}`,
     )
     setText('')
+    setImage(null)
     onCaptured()
   }
 
   return (
-    <DrawerSection label="Paste posts (batch)">
+    <DrawerSection label="Paste posts or drop a screenshot">
       <p className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
-        Paste one or many posts — structuring, dedupe and suppression run automatically; results land
-        in the queue for your approval.
+        Paste one or many posts, or add a screenshot of a listing — structuring, dedupe and
+        suppression run automatically; results land in the queue for your approval.
       </p>
       <select className={inputCls} value={source} onChange={(e) => setSource(e.target.value)}>
         <option value="fb_own_group">FB (own group)</option>
         <option value="fb_manual_capture">FB (manual capture)</option>
+        <option value="manual_paste">Manual / screenshot</option>
       </select>
       <textarea
         className={`${inputCls} h-40`}
-        placeholder="Paste post text here — multiple posts in one paste is fine"
+        placeholder="Paste post text here — multiple posts in one paste is fine (or just add a screenshot below)"
         value={text}
         onChange={(e) => setText(e.target.value)}
       />
-      <Button variant="primary" size="sm" disabled={busy || !text.trim()} onClick={submit}>
+      <div className="flex flex-wrap items-center gap-3">
+        <label className="border-border text-brand hover:bg-surface-2 cursor-pointer rounded-[8px] border px-3 py-2 text-[13px] font-semibold">
+          <input type="file" accept="image/*" className="hidden" onChange={onFile} />
+          {image ? 'Change screenshot' : 'Add screenshot'}
+        </label>
+        {image && (
+          <>
+            <span
+              className="max-w-[160px] truncate text-[12px]"
+              style={{ color: 'var(--color-text-muted)' }}
+              title={image.name}
+            >
+              {image.name}
+            </span>
+            <button
+              type="button"
+              className="text-[12px] underline"
+              style={{ color: 'var(--color-text-subtle)' }}
+              onClick={() => setImage(null)}
+            >
+              Remove
+            </button>
+          </>
+        )}
+      </div>
+      <Button
+        variant="primary"
+        size="sm"
+        disabled={busy || (!text.trim() && !image)}
+        onClick={submit}
+      >
         {busy ? 'Structuring…' : 'Stage batch'}
       </Button>
     </DrawerSection>
@@ -240,10 +301,25 @@ function ManualCapture({ onCaptured }: { onCaptured: () => void }) {
  * Full meaning sits in the title; the column stays narrow to honour T-3's no-wrap.
  */
 function LaneTag({ lane }: { lane?: 'a' | 'b' }) {
-  if (lane === 'a') return <Tag variant="green" title="Lane A · contactable">A</Tag>
-  if (lane === 'b') return <Tag variant="blue" title="Lane B · no contact → Outreach">B</Tag>
+  if (lane === 'a')
+    return (
+      <Tag variant="green" title="Lane A · contactable">
+        A
+      </Tag>
+    )
+  if (lane === 'b')
+    return (
+      <Tag variant="blue" title="Lane B · no contact → Outreach">
+        B
+      </Tag>
+    )
   // Unknown lane → blank, not a dash (a dash reads as a failed load).
   return null
+}
+
+/** YYYY-MM-DD string compare (timezone-proof) — the ad's close date is past. */
+function isLikelyExpired(closeDate?: string | null): boolean {
+  return !!closeDate && closeDate < new Date().toLocaleDateString('en-CA')
 }
 
 /** Detail rows: small uppercase label + value (replaces emoji-prefixed fields). */
@@ -282,7 +358,12 @@ function StagingDrawer({
       onClose={onClose}
       footer={
         <div className="flex flex-wrap items-center justify-end gap-2">
-          <Button variant="ghost" size="sm" disabled={acting} onClick={() => onAct('reject_suppress')}>
+          <Button
+            variant="ghost"
+            size="sm"
+            disabled={acting}
+            onClick={() => onAct('reject_suppress')}
+          >
             Reject + suppress
           </Button>
           <Button variant="outline" size="sm" disabled={acting} onClick={() => onAct('reject')}>
@@ -330,6 +411,12 @@ function StagingDrawer({
           {row.dedupe_status === 'suspect_duplicate' && (
             <Tag variant="warn">Possible duplicate</Tag>
           )}
+          {isLikelyExpired(s.applications_close) && (
+            <Tag variant="warn" title={`Applications closed ${s.applications_close}`}>
+              Likely expired
+            </Tag>
+          )}
+          {s.geo_scope === 'intl' && <Tag variant="grey">International</Tag>}
         </div>
       </div>
 
@@ -379,7 +466,9 @@ function StagingDrawer({
       </DrawerSection>
 
       {/* Summary / notes */}
-      {(s.summary || row.missing_fields.length > 0 || row.dedupe_status === 'suspect_duplicate') && (
+      {(s.summary ||
+        row.missing_fields.length > 0 ||
+        row.dedupe_status === 'suspect_duplicate') && (
         <DrawerSection label="Notes">
           {s.summary && (
             <p className="text-[13px] leading-5" style={{ color: 'var(--color-text-muted)' }}>
@@ -416,6 +505,9 @@ function StagingDrawer({
 }
 
 type SourceFilter = 'mine' | 'harvested' | 'all'
+// Leads v2: NZ + unknown are the actionable queue; intl is parked for future
+// expansion. 'nz_unknown' is the default so overseas listings don't clutter it.
+type GeoFilter = 'nz_unknown' | 'intl' | 'all'
 
 export function AdminLeadsStaging() {
   const [selected, setSelected] = useState<StagingRow | null>(null)
@@ -426,6 +518,9 @@ export function AdminLeadsStaging() {
   // wall. (T-2; the RPC defaults to 'all', so this front-end default is what makes
   // "Mine" the morning view.)
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>('mine')
+  // Leads v2 segmentation. Default: NZ + unknown, expired shown (badged, not hidden).
+  const [geoFilter, setGeoFilter] = useState<GeoFilter>('nz_unknown')
+  const [hideExpired, setHideExpired] = useState(false)
 
   const bumpRefresh = () => setRefreshKey((k) => k + 1)
 
@@ -481,7 +576,12 @@ export function AdminLeadsStaging() {
         title="Lead Staging"
         description="Review captured leads and approve them into the pipeline. Nothing goes live until you approve it here."
         action={
-          <Button variant="primary" size="sm" className="gap-1.5" onClick={() => setCapturing(true)}>
+          <Button
+            variant="primary"
+            size="sm"
+            className="gap-1.5"
+            onClick={() => setCapturing(true)}
+          >
             <ClipboardPaste size={15} />
             Capture / Paste post
           </Button>
@@ -494,18 +594,41 @@ export function AdminLeadsStaging() {
         inCard
         searchable
         searchPlaceholder="Search staging by name, region, locality, source…"
-        extraArgs={{ p_source: sourceFilter }}
+        extraArgs={{ p_source: sourceFilter, p_geo: geoFilter, p_hide_expired: hideExpired }}
         toolbar={
-          <SegmentedControl<SourceFilter>
-            aria-label="Filter leads by source"
-            value={sourceFilter}
-            onChange={setSourceFilter}
-            options={[
-              { value: 'mine', label: 'Mine' },
-              { value: 'harvested', label: 'Harvested' },
-              { value: 'all', label: 'All' },
-            ]}
-          />
+          <div className="flex flex-wrap items-center gap-3">
+            <SegmentedControl<SourceFilter>
+              aria-label="Filter leads by source"
+              value={sourceFilter}
+              onChange={setSourceFilter}
+              options={[
+                { value: 'mine', label: 'Mine' },
+                { value: 'harvested', label: 'Harvested' },
+                { value: 'all', label: 'All' },
+              ]}
+            />
+            <SegmentedControl<GeoFilter>
+              aria-label="Filter leads by location"
+              value={geoFilter}
+              onChange={setGeoFilter}
+              options={[
+                { value: 'nz_unknown', label: 'NZ' },
+                { value: 'intl', label: 'International' },
+                { value: 'all', label: 'All' },
+              ]}
+            />
+            <label
+              className="flex cursor-pointer items-center gap-1.5 text-[13px]"
+              style={{ color: 'var(--color-text-muted)' }}
+            >
+              <input
+                type="checkbox"
+                checked={hideExpired}
+                onChange={(e) => setHideExpired(e.target.checked)}
+              />
+              Hide expired
+            </label>
+          </div>
         }
         emptyHeading={emptyCopy.heading}
         emptyBody={emptyCopy.body}
@@ -548,6 +671,16 @@ export function AdminLeadsStaging() {
                       possible duplicate
                     </Tag>
                   )}
+                  {isLikelyExpired(row.structured.applications_close) && (
+                    <Tag variant="warn" className="shrink-0">
+                      expired
+                    </Tag>
+                  )}
+                  {row.structured.geo_scope === 'intl' && (
+                    <Tag variant="grey" className="shrink-0">
+                      intl
+                    </Tag>
+                  )}
                 </div>
                 {snippet && (
                   <div
@@ -577,10 +710,20 @@ export function AdminLeadsStaging() {
               <td className="px-4 text-[13px] whitespace-nowrap">
                 {regionLocalityLabel(row.structured)}
               </td>
-              <td className="px-4 text-[13px] whitespace-nowrap" style={{ color: 'var(--color-text-muted)' }}>
-                {new Date(row.created_at).toLocaleDateString('en-NZ', { day: '2-digit', month: 'short', year: 'numeric' })}
+              <td
+                className="px-4 text-[13px] whitespace-nowrap"
+                style={{ color: 'var(--color-text-muted)' }}
+              >
+                {new Date(row.created_at).toLocaleDateString('en-NZ', {
+                  day: '2-digit',
+                  month: 'short',
+                  year: 'numeric',
+                })}
               </td>
-              <td className="px-4 text-[13px] whitespace-nowrap" style={{ color: 'var(--color-text-muted)' }}>
+              <td
+                className="px-4 text-[13px] whitespace-nowrap"
+                style={{ color: 'var(--color-text-muted)' }}
+              >
                 {Math.round(row.confidence * 100)}%
               </td>
               <td className="px-4 text-[13px] whitespace-nowrap">{sourceLabel(row.source)}</td>
