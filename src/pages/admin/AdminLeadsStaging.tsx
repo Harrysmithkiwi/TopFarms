@@ -52,6 +52,9 @@ interface StagingRow extends Record<string, unknown> {
     herd_details?: string | null
     application_method?: string | null
     source_group?: string | null
+    // Leads v2 segmentation (migration 061 backfill + lead-intake forward extraction).
+    applications_close?: string | null // ISO date; drives the "Likely expired" badge.
+    geo_scope?: 'nz' | 'intl' | 'unknown'
   }
   confidence: number
   missing_fields: string[]
@@ -94,8 +97,8 @@ function PasteCapture({ onCaptured }: { onCaptured: () => void }) {
   return (
     <DrawerSection label="Paste posts (batch)">
       <p className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
-        Paste one or many posts — structuring, dedupe and suppression run automatically; results land
-        in the queue for your approval.
+        Paste one or many posts — structuring, dedupe and suppression run automatically; results
+        land in the queue for your approval.
       </p>
       <select className={inputCls} value={source} onChange={(e) => setSource(e.target.value)}>
         <option value="fb_own_group">FB (own group)</option>
@@ -240,10 +243,25 @@ function ManualCapture({ onCaptured }: { onCaptured: () => void }) {
  * Full meaning sits in the title; the column stays narrow to honour T-3's no-wrap.
  */
 function LaneTag({ lane }: { lane?: 'a' | 'b' }) {
-  if (lane === 'a') return <Tag variant="green" title="Lane A · contactable">A</Tag>
-  if (lane === 'b') return <Tag variant="blue" title="Lane B · no contact → Outreach">B</Tag>
+  if (lane === 'a')
+    return (
+      <Tag variant="green" title="Lane A · contactable">
+        A
+      </Tag>
+    )
+  if (lane === 'b')
+    return (
+      <Tag variant="blue" title="Lane B · no contact → Outreach">
+        B
+      </Tag>
+    )
   // Unknown lane → blank, not a dash (a dash reads as a failed load).
   return null
+}
+
+/** YYYY-MM-DD string compare (timezone-proof) — the ad's close date is past. */
+function isLikelyExpired(closeDate?: string | null): boolean {
+  return !!closeDate && closeDate < new Date().toLocaleDateString('en-CA')
 }
 
 /** Detail rows: small uppercase label + value (replaces emoji-prefixed fields). */
@@ -282,7 +300,12 @@ function StagingDrawer({
       onClose={onClose}
       footer={
         <div className="flex flex-wrap items-center justify-end gap-2">
-          <Button variant="ghost" size="sm" disabled={acting} onClick={() => onAct('reject_suppress')}>
+          <Button
+            variant="ghost"
+            size="sm"
+            disabled={acting}
+            onClick={() => onAct('reject_suppress')}
+          >
             Reject + suppress
           </Button>
           <Button variant="outline" size="sm" disabled={acting} onClick={() => onAct('reject')}>
@@ -330,6 +353,12 @@ function StagingDrawer({
           {row.dedupe_status === 'suspect_duplicate' && (
             <Tag variant="warn">Possible duplicate</Tag>
           )}
+          {isLikelyExpired(s.applications_close) && (
+            <Tag variant="warn" title={`Applications closed ${s.applications_close}`}>
+              Likely expired
+            </Tag>
+          )}
+          {s.geo_scope === 'intl' && <Tag variant="grey">International</Tag>}
         </div>
       </div>
 
@@ -379,7 +408,9 @@ function StagingDrawer({
       </DrawerSection>
 
       {/* Summary / notes */}
-      {(s.summary || row.missing_fields.length > 0 || row.dedupe_status === 'suspect_duplicate') && (
+      {(s.summary ||
+        row.missing_fields.length > 0 ||
+        row.dedupe_status === 'suspect_duplicate') && (
         <DrawerSection label="Notes">
           {s.summary && (
             <p className="text-[13px] leading-5" style={{ color: 'var(--color-text-muted)' }}>
@@ -416,6 +447,9 @@ function StagingDrawer({
 }
 
 type SourceFilter = 'mine' | 'harvested' | 'all'
+// Leads v2: NZ + unknown are the actionable queue; intl is parked for future
+// expansion. 'nz_unknown' is the default so overseas listings don't clutter it.
+type GeoFilter = 'nz_unknown' | 'intl' | 'all'
 
 export function AdminLeadsStaging() {
   const [selected, setSelected] = useState<StagingRow | null>(null)
@@ -426,6 +460,9 @@ export function AdminLeadsStaging() {
   // wall. (T-2; the RPC defaults to 'all', so this front-end default is what makes
   // "Mine" the morning view.)
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>('mine')
+  // Leads v2 segmentation. Default: NZ + unknown, expired shown (badged, not hidden).
+  const [geoFilter, setGeoFilter] = useState<GeoFilter>('nz_unknown')
+  const [hideExpired, setHideExpired] = useState(false)
 
   const bumpRefresh = () => setRefreshKey((k) => k + 1)
 
@@ -481,7 +518,12 @@ export function AdminLeadsStaging() {
         title="Lead Staging"
         description="Review captured leads and approve them into the pipeline. Nothing goes live until you approve it here."
         action={
-          <Button variant="primary" size="sm" className="gap-1.5" onClick={() => setCapturing(true)}>
+          <Button
+            variant="primary"
+            size="sm"
+            className="gap-1.5"
+            onClick={() => setCapturing(true)}
+          >
             <ClipboardPaste size={15} />
             Capture / Paste post
           </Button>
@@ -494,18 +536,41 @@ export function AdminLeadsStaging() {
         inCard
         searchable
         searchPlaceholder="Search staging by name, region, locality, source…"
-        extraArgs={{ p_source: sourceFilter }}
+        extraArgs={{ p_source: sourceFilter, p_geo: geoFilter, p_hide_expired: hideExpired }}
         toolbar={
-          <SegmentedControl<SourceFilter>
-            aria-label="Filter leads by source"
-            value={sourceFilter}
-            onChange={setSourceFilter}
-            options={[
-              { value: 'mine', label: 'Mine' },
-              { value: 'harvested', label: 'Harvested' },
-              { value: 'all', label: 'All' },
-            ]}
-          />
+          <div className="flex flex-wrap items-center gap-3">
+            <SegmentedControl<SourceFilter>
+              aria-label="Filter leads by source"
+              value={sourceFilter}
+              onChange={setSourceFilter}
+              options={[
+                { value: 'mine', label: 'Mine' },
+                { value: 'harvested', label: 'Harvested' },
+                { value: 'all', label: 'All' },
+              ]}
+            />
+            <SegmentedControl<GeoFilter>
+              aria-label="Filter leads by location"
+              value={geoFilter}
+              onChange={setGeoFilter}
+              options={[
+                { value: 'nz_unknown', label: 'NZ' },
+                { value: 'intl', label: 'International' },
+                { value: 'all', label: 'All' },
+              ]}
+            />
+            <label
+              className="flex cursor-pointer items-center gap-1.5 text-[13px]"
+              style={{ color: 'var(--color-text-muted)' }}
+            >
+              <input
+                type="checkbox"
+                checked={hideExpired}
+                onChange={(e) => setHideExpired(e.target.checked)}
+              />
+              Hide expired
+            </label>
+          </div>
         }
         emptyHeading={emptyCopy.heading}
         emptyBody={emptyCopy.body}
@@ -548,6 +613,16 @@ export function AdminLeadsStaging() {
                       possible duplicate
                     </Tag>
                   )}
+                  {isLikelyExpired(row.structured.applications_close) && (
+                    <Tag variant="warn" className="shrink-0">
+                      expired
+                    </Tag>
+                  )}
+                  {row.structured.geo_scope === 'intl' && (
+                    <Tag variant="grey" className="shrink-0">
+                      intl
+                    </Tag>
+                  )}
                 </div>
                 {snippet && (
                   <div
@@ -577,10 +652,20 @@ export function AdminLeadsStaging() {
               <td className="px-4 text-[13px] whitespace-nowrap">
                 {regionLocalityLabel(row.structured)}
               </td>
-              <td className="px-4 text-[13px] whitespace-nowrap" style={{ color: 'var(--color-text-muted)' }}>
-                {new Date(row.created_at).toLocaleDateString('en-NZ', { day: '2-digit', month: 'short', year: 'numeric' })}
+              <td
+                className="px-4 text-[13px] whitespace-nowrap"
+                style={{ color: 'var(--color-text-muted)' }}
+              >
+                {new Date(row.created_at).toLocaleDateString('en-NZ', {
+                  day: '2-digit',
+                  month: 'short',
+                  year: 'numeric',
+                })}
               </td>
-              <td className="px-4 text-[13px] whitespace-nowrap" style={{ color: 'var(--color-text-muted)' }}>
+              <td
+                className="px-4 text-[13px] whitespace-nowrap"
+                style={{ color: 'var(--color-text-muted)' }}
+              >
                 {Math.round(row.confidence * 100)}%
               </td>
               <td className="px-4 text-[13px] whitespace-nowrap">{sourceLabel(row.source)}</td>
