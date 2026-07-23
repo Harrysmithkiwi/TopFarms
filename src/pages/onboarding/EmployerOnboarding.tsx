@@ -82,9 +82,13 @@ export function EmployerOnboarding() {
         return
       }
 
+      // Explicit column list — migration 059 revokes client SELECT on
+      // stripe_customer_id, so a '*' select would 42501 for the whole row.
       const { data, error } = await supabase
         .from('employer_profiles')
-        .select('*')
+        .select(
+          'onboarding_step, farm_type, farm_name, region, herd_size, shed_type, milking_frequency, breed, property_size_ha, ownership_type, culture_description, team_size, about_farm, accommodation_available, accommodation_type, accommodation_extras, farm_types, nearest_town, distance_from_town_km, calving_system, career_development, hiring_frequency, couples_welcome, partner_role, vehicle_provided, vehicle_types, broadband_available, salary_min, salary_max, billing_period',
+        )
         .eq('user_id', session.user.id)
         .single()
 

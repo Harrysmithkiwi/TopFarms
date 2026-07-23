@@ -111,10 +111,14 @@ export function PostJob() {
         return
       }
 
-      // Load employer profile for pre-filling and onboarding check
+      // Load employer profile for pre-filling and onboarding check.
+      // Explicit column list — migration 059 revokes client SELECT on
+      // stripe_customer_id, so a '*' select would 42501 for the whole row.
       const { data: profile, error: profileError } = await supabase
         .from('employer_profiles')
-        .select('*')
+        .select(
+          'id, onboarding_complete, onboarding_step, region, farm_type, shed_type, herd_size, accommodation_available, accommodation_type',
+        )
         .eq('user_id', session.user.id)
         .single()
 
@@ -151,8 +155,8 @@ export function PostJob() {
         })
       }
 
-      // If editing existing draft, load it
-      if (urlJobId) {
+      // If editing existing draft, load it (no profile row → nothing to edit)
+      if (urlJobId && profile) {
         const { data: job, error: jobError } = await supabase
           .from('jobs')
           .select('*')

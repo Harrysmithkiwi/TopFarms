@@ -194,11 +194,7 @@ export function EmployerDashboard() {
   async function handleDuplicate(job: JobListing) {
     // Re-fetch the full row — the dashboard list already has select('*'), but a
     // fresh read avoids duplicating from stale state.
-    const { data: src, error } = await supabase
-      .from('jobs')
-      .select('*')
-      .eq('id', job.id)
-      .single()
+    const { data: src, error } = await supabase.from('jobs').select('*').eq('id', job.id).single()
 
     if (error || !src) {
       toast.error('Failed to duplicate listing')
