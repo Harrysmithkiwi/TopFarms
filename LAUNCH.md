@@ -55,8 +55,8 @@ Source of truth for launch readiness. An item is ticked ONLY when fixed **and** 
 
 ## ⚪ Human / business-owned (do not block engineering completion)
 
-- [ ] **O1. Legal review of Privacy/Terms** — engineering shipped reviewed-quality NZ drafts; sign-off is a business action.
-- [ ] **O2. Purge pre-existing test data** (TF-018) — legacy users + test jobs + the UAT thread. Destructive; operator's call. UAT accounts listed below for removal.
+- [x] **O1. Legal review of Privacy/Terms** — operator accepted the drafted NZ `/privacy` + `/terms` as-is for launch (2026-07-23). Contact address confirmed as **hello@topfarms.co.nz** — already the only contact email in Privacy, Terms, 404, and Suspended pages (verified by codebase sweep; no change needed).
+- [x] **O2. Purge UAT test data** (TF-018) — DONE 2026-07-23. `DELETE FROM auth.users` for the 3 UAT ids executed via write-capable connector; cascade removed the Karapiro farm, both seeded jobs (`b031bf38-…` + Copy `7fe47c88-…`), the application, 4 match scores, 5 seeker skills, listing/placement fees, saved job, 3 role rows. ✔ read-back: `uat_users_remaining=0, karapiro_farm=0, seeded_jobs=0, orphan_applications=0, orphan_match_scores=0`; DB 9→6 users, 5→3 jobs. **Still open:** 3 legacy test jobs on the operator's *personal* accounts (not UAT) — see note below.
 - [ ] **O3. Marketplace cold-start** — one realistic seeded thread exists for UAT; real listings/outreach before marketing push is a GTM decision.
 - [x] **O4. Post-launch security hardening batch** — DONE 2026-07-23 (migrations 059/060, PRs #48/#49): get_user_role anon revoke (H8/TF-015 ✔), marketplace view → security_invoker (H7/TF-014 ✔), pg_trgm → `extensions` schema (TF-017 ✔, `similarity()` smoke-tested via compute_match_score=77), deny-all table docs (TF-016 ✔, see "Intentionally deny-all tables" below). Post-migration advisor sweep: `security_definer_view` ERROR and `extension_in_public` WARN cleared; only intentional `get_platform_stats` anon WARN + leaked-password WARN (O5) remain.
 - [ ] **O5. Enable Supabase leaked-password protection** (B14/TF-011) — Auth → Passwords → "Leaked password protection" ON. One toggle in the Supabase dashboard.
@@ -65,15 +65,22 @@ Source of truth for launch readiness. An item is ticked ONLY when fixed **and** 
 - [x] **O9. Past start dates accepted by job wizard** (UAT Part 2 open finding) — FIXED (PR #48). Native `min=today` on the date input + zod refine (timezone-proof string compare) as depth. ✔ verified live: 01/01/2020 blocked at submit, 01/09/2026 advances.
 - [ ] **O8. Minor: applicant AI summary renders empty** — "Analyzing candidate fit…" resolves to blank; low priority.
 
-## UAT accounts (created 2026-07-23 — DELETE before/at launch, see O2)
+## UAT accounts (created 2026-07-23 — ✅ PURGED 2026-07-23, see O2)
 
 | Role | Email | Password | Status |
 |---|---|---|---|
-| Employer | uat.employer@topfarms.co.nz | UAT-Employer-2026!kea | Retained for verification — delete at launch |
-| Seeker | uat.seeker@topfarms.co.nz | UAT-Seeker-2026!tui | Retained — delete at launch |
-| Admin | uat.admin@topfarms.co.nz | UAT-Admin-2026!ruru | Retained — delete at launch |
+| Employer | uat.employer@topfarms.co.nz | UAT-Employer-2026!kea | ✅ DELETED |
+| Seeker | uat.seeker@topfarms.co.nz | UAT-Seeker-2026!tui | ✅ DELETED |
+| Admin | uat.admin@topfarms.co.nz | UAT-Admin-2026!ruru | ✅ DELETED |
 
-Associated test data to purge with the accounts: farm "Karapiro Flats Dairy Ltd", job "Herd Manager — 420 Cow Rotary" (id b031bf38-…), its 1 application, and draft job `7fe47c88-…` ("… (Copy)", created verifying the Duplicate feature 2026-07-23). All of it cascades from `DELETE FROM auth.users` for the 3 UAT ids — purge SQL + read-back drafted, awaiting operator confirmation (O2).
+All associated data cascade-deleted (Karapiro farm, both jobs, application, match scores, skills, fees). Read-back verified all-zero.
+
+### Legacy test data still present (on operator's PERSONAL accounts — NOT auto-purged)
+
+Left in place because deleting them touches the operator's own real accounts; none appear on the public **active** job board (all non-active), so the board is a clean cold-start (0 active jobs). Awaiting operator call:
+- "UAT Farm Assistant — Applied" (**filled**) + "UAT Herd Manager — Declined" (**archived**) — farm **"Test Farm (UAT)"** on `harry.symmans.smith@gmail.com`. The filled job keeps "Test Farm (UAT)" visible in the `marketplace_employer_profiles` farm view (not the job board). Recommend removing the 2 jobs + farm before marketing.
+- "TAX-04 Playwright Smoke Test Job" (**draft**) on `harryssmith11@icloud.com`.
+- Account `at-seeker-b@topfarms.test`.
 
 ## Intentionally deny-all tables (TF-016)
 
