@@ -301,3 +301,25 @@ Empty-field validation on every wizard step; salary min>max rejected; negative s
 
 ## Final recommendation
 **⚠️ Ready with minor fixes.** Every engineering-owned blocker from the audit — plus seven additional bugs found by live use, two of them account-breaking — is fixed, deployed, and re-verified on production. The platform is functionally sound end-to-end across all three roles with a strong server-side security model. Launch is gated only on a legal review, one dashboard toggle, and business go-to-market decisions.
+
+---
+
+# PART 3 — Post-launch hardening batch (2026-07-23, later same day)
+
+Score: 91 → **93/100**. PRs #48/#49, migrations 059/060 applied to prod and verified. Full evidence in `LAUNCH.md`.
+
+**Shipped & verified on production:**
+- **O4 security hardening (migration 059):** all 18 `get_user_role`-referencing RLS policies scoped to `authenticated`, then the function's EXECUTE revoked from anon/PUBLIC (TF-015); `marketplace_employer_profiles` converted to `security_invoker` backed by a marketplace SELECT policy + column grants — anon limited to the 10 view columns, `stripe_customer_id` no longer client-selectable by any role (TF-014); `pg_trgm` moved to the `extensions` schema with search_path fixes on the three `similarity()` callers (TF-017); the 8 intentionally deny-all tables documented (TF-016). Advisor sweep after: `security_definer_view` ERROR and `extension_in_public` WARN cleared.
+- **O6 Duplicate job (PR #48):** JobCard action → full copy (fields + skills) as a new draft → edit wizard. Verified live as UAT employer.
+- **O7 lazy-chunk recovery (PR #48):** one forced reload per session on chunk import failure, then router errorElement. Marker verified in prod bundle.
+- **O9 past-start-date guard (PR #48):** native `min` + zod refine. Verified live: 2020 blocked, future date advances.
+
+**Bug found & fixed during this batch (would have shipped otherwise):**
+
+| ID | Severity | What broke | Fix |
+|---|---|---|---|
+| E8 | **Critical** (10-min prod window) | Migration 059's marketplace policy on `employer_profiles` subqueried `jobs`, whose owner policy subqueries `employer_profiles` → **42P17 infinite policy recursion**: every authenticated query on jobs/employer_profiles failed (employer dashboard, seeker applications). Anon unaffected. Caught by post-migration authenticated REST probes. | Migration 060: cross-table predicate moved into a narrow SECURITY DEFINER boolean `employer_has_public_job(uuid)` — breaks the policy cycle. All 15 probes re-run green. |
+
+**Verification method:** 7 anon + 8 authenticated (UAT seeker/employer) REST probes against prod PostgREST; pg_catalog read-backs of grants/policies/extension schema/function ACLs; `compute_match_score` smoke test (returns 77 — `similarity()` resolves post-move); browser E2E of the employer dashboard, Duplicate flow, and public jobs board.
+
+**Remaining before public launch:** unchanged — the human/business-owned gate (legal sign-off O1, leaked-password toggle O5, UAT purge O2, cold-start O3) plus low-priority O8 (applicant AI summary renders empty).

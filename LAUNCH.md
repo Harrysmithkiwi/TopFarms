@@ -2,7 +2,7 @@
 
 Source of truth for launch readiness. An item is ticked ONLY when fixed **and** independently verified on production (evidence linked). Findings reference `UAT_MASTER_REPORT.md`.
 
-**Score: 62/100 → 91/100 (verified on production 2026-07-23).**
+**Score: 62/100 → 93/100 (verified on production 2026-07-23; hardening batch PRs #48–#49 + migrations 059/060).**
 
 ## 🔴 Launch blockers (engineering-owned) — ALL CLOSED
 
@@ -30,8 +30,8 @@ Source of truth for launch readiness. An item is ticked ONLY when fixed **and** 
 - [x] **H4. Color-contrast** (TF-020) — eyebrows brand-700/brand-300, tab, watermarks aria-hidden. Accessibility 95 → 96. (12 decorative/brand-chip nodes remain; above the ≥95 gate.)
 - [x] **H5. `aria-expanded` mobile menu** (TF-009). ✔
 - [x] **H6. Job-id UUID guard** (TF-008). ✔
-- [x] **H7. `marketplace_employer_profiles` review** (TF-014) — assessed; exposes only non-PII farm fields. Converting to security_invoker is **O4 hardening** (not blocking).
-- [ ] **H8. Restrict `get_user_role` from anon** (TF-015) — **O4 hardening batch** (low, requires GRANT migration + regression of anon get_platform_stats path).
+- [x] **H7. `marketplace_employer_profiles` review** (TF-014) — **CONVERTED to security_invoker** (migrations 059+060, PRs #48/#49). Backed by a real "has a publicly-visible job" SELECT policy + column grants: anon sees only the 10 marketplace columns; authenticated everything except `stripe_customer_id` (now server/admin-RPC-only). ✔ advisor `security_definer_view` ERROR gone; anon/seeker/employer REST probes green; E1 seeker path re-verified.
+- [x] **H8. Restrict `get_user_role` from anon** (TF-015) — done (migration 059). All 18 `get_user_role`-referencing policies scoped `TO authenticated` first, then EXECUTE revoked from anon/PUBLIC. ✔ anon RPC → 42501; anon jobs board + `get_platform_stats` unaffected (live probes).
 
 ## 🟢 Live E2E verification (UAT accounts) — DONE
 
@@ -58,10 +58,11 @@ Source of truth for launch readiness. An item is ticked ONLY when fixed **and** 
 - [ ] **O1. Legal review of Privacy/Terms** — engineering shipped reviewed-quality NZ drafts; sign-off is a business action.
 - [ ] **O2. Purge pre-existing test data** (TF-018) — legacy users + test jobs + the UAT thread. Destructive; operator's call. UAT accounts listed below for removal.
 - [ ] **O3. Marketplace cold-start** — one realistic seeded thread exists for UAT; real listings/outreach before marketing push is a GTM decision.
-- [ ] **O4. Post-launch security hardening batch** — get_user_role anon GRANT (H8/TF-015), marketplace view → security_invoker (H7/TF-014), pg_trgm schema (TF-017), deny-all table docs (TF-016).
+- [x] **O4. Post-launch security hardening batch** — DONE 2026-07-23 (migrations 059/060, PRs #48/#49): get_user_role anon revoke (H8/TF-015 ✔), marketplace view → security_invoker (H7/TF-014 ✔), pg_trgm → `extensions` schema (TF-017 ✔, `similarity()` smoke-tested via compute_match_score=77), deny-all table docs (TF-016 ✔, see "Intentionally deny-all tables" below). Post-migration advisor sweep: `security_definer_view` ERROR and `extension_in_public` WARN cleared; only intentional `get_platform_stats` anon WARN + leaked-password WARN (O5) remain.
 - [ ] **O5. Enable Supabase leaked-password protection** (B14/TF-011) — Auth → Passwords → "Leaked password protection" ON. One toggle in the Supabase dashboard.
-- [ ] **O6. Feature gap: "Duplicate job"** — spec asked for it; no duplicate action exists. Product decision + build.
-- [ ] **O7. Hardening: lazy-chunk load failure = infinite spinner** — after a deploy, a stalled/404'd route chunk leaves users on the spinner with no recovery. Add a lazy-import retry + one-time auto-reload on chunk error. (Observed once mid-deploy; recovered on hard reload.)
+- [x] **O6. Feature gap: "Duplicate job"** — BUILT (PR #48). JobCard "Duplicate" action copies the listing (minus server-managed fields; start_date deliberately dropped) + its job_skills into a new draft and opens the edit wizard. ✔ verified live: draft `7fe47c88-…` created with all step-2+ fields intact, toast shown, wizard opened. (Original job has 0 job_skills rows so the skills-copy path ran against an empty set — code path exercised, trivially.)
+- [x] **O7. Hardening: lazy-chunk load failure = infinite spinner** — FIXED (PR #48). `lazy()` wrapper in main.tsx: on import failure, one forced reload per session (fetches the fresh index + chunk names), then falls through to the router errorElement. ✔ marker string verified in prod bundle `index-kz5ujToH.js`.
+- [x] **O9. Past start dates accepted by job wizard** (UAT Part 2 open finding) — FIXED (PR #48). Native `min=today` on the date input + zod refine (timezone-proof string compare) as depth. ✔ verified live: 01/01/2020 blocked at submit, 01/09/2026 advances.
 - [ ] **O8. Minor: applicant AI summary renders empty** — "Analyzing candidate fit…" resolves to blank; low priority.
 
 ## UAT accounts (created 2026-07-23 — DELETE before/at launch, see O2)
@@ -72,11 +73,18 @@ Source of truth for launch readiness. An item is ticked ONLY when fixed **and** 
 | Seeker | uat.seeker@topfarms.co.nz | UAT-Seeker-2026!tui | Retained — delete at launch |
 | Admin | uat.admin@topfarms.co.nz | UAT-Admin-2026!ruru | Retained — delete at launch |
 
-Associated test data to purge with the accounts: farm "Karapiro Flats Dairy Ltd", job "Herd Manager — 420 Cow Rotary" (id b031bf38-…), and its 1 application.
+Associated test data to purge with the accounts: farm "Karapiro Flats Dairy Ltd", job "Herd Manager — 420 Cow Rotary" (id b031bf38-…), its 1 application, and draft job `7fe47c88-…` ("… (Copy)", created verifying the Duplicate feature 2026-07-23). All of it cascades from `DELETE FROM auth.users` for the 3 UAT ids — purge SQL + read-back drafted, awaiting operator confirmation (O2).
+
+## Intentionally deny-all tables (TF-016)
+
+These 8 tables have RLS enabled with **no policies by design** — they are written/read exclusively via `service_role` (Edge Functions, cron) or SECURITY DEFINER admin RPCs gated by `_admin_gate()`. The `rls_enabled_no_policy` INFO advisors on them are expected, not gaps: `admin_audit_log`, `admin_metrics_cache`, `admin_notes`, `lead_harvest_runs`, `lead_outreach_config`, `lead_staging`, `lead_suppression`, `leads`. Client roles get zero rows; that is the contract.
 
 ## Evidence log
 
 - PRs #41 (blockers/SEO/truth pass), #42 (seeker crash), #43 (apply lifecycle + wizard truth), #44 (admin RPCs + stats) — all merged to main, auto-deployed to prod.
-- Migrations 057, 058 applied to prod project inlagtgpynemhipnqvty.
+- PR #48 (hardening batch: O4 migration 059 + O6 duplicate job + O7 chunk recovery + O9 date guard), PR #49 (migration 060 recursion hotfix) — merged 2026-07-23, bundle `index-kz5ujToH.js` verified live.
+- Migrations 057, 058 applied to prod project inlagtgpynemhipnqvty; 059 (`security_hardening_o4`) + 060 (`fix_marketplace_policy_recursion`) applied 2026-07-23 via write-capable Supabase MCP connector, recorded in `schema_migrations` (versions 20260723032451 / 20260723032721) and verified via pg_catalog read-backs.
+- **Incident note (fixed same session):** 059's marketplace policy subqueried `jobs` while jobs' owner policy subqueries `employer_profiles` → 42P17 infinite policy recursion for authenticated users (~10 min window on prod). 060 moved the check into a narrow SECURITY DEFINER boolean (`employer_has_public_job`) — cycle broken, all probes re-verified green. Lesson: an RLS policy that subqueries another RLS'd table can create a cycle with that table's policies; use a definer helper for cross-table policy predicates.
+- Live post-hardening verification 2026-07-23: 7 anon REST probes (jobs board, marketplace view, get_user_role denied 42501, get_platform_stats OK, stripe column denied, safe columns OK, view embed OK) + 8 authenticated probes as UAT seeker/employer (E1 path, applications+embed, own profile, applicant list, own jobs incl. drafts, stripe denied even authed) — all green. Browser E2E: employer login → dashboard → Duplicate → prefilled wizard → past-date blocked → future date advances → public /jobs renders off invoker view.
 - Screenshots in `docs/uat/screenshots/`: 10-prod-404-fixed, 11-job-preview, 12-job-live-public.
 - Post-fix prod Lighthouse (mobile): SEO 100, Accessibility 96, Best Practices 100.
