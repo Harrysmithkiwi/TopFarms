@@ -13,7 +13,14 @@ const schema = z.object({
   contract_type: z.enum(['permanent', 'contract', 'casual'], {
     required_error: 'Select a contract type',
   }),
-  start_date: z.string().optional(),
+  start_date: z
+    .string()
+    .optional()
+    .refine(
+      // YYYY-MM-DD strings compare lexicographically; avoids UTC-vs-local drift.
+      (v) => !v || v >= new Date().toLocaleDateString('en-CA'),
+      'Start date cannot be in the past',
+    ),
   region: z.string().min(1, 'Select a region'),
 })
 
@@ -171,7 +178,13 @@ export function JobStep1Basics({ onComplete, defaultValues }: Step1Props) {
               )}
             />
 
-            <Input label="Start date" type="date" {...register('start_date')} />
+            <Input
+              label="Start date"
+              type="date"
+              min={new Date().toLocaleDateString('en-CA')}
+              error={errors.start_date?.message}
+              {...register('start_date')}
+            />
 
             <Controller
               control={control}
