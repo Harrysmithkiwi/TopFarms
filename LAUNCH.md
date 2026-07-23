@@ -75,12 +75,15 @@ Source of truth for launch readiness. An item is ticked ONLY when fixed **and** 
 
 All associated data cascade-deleted (Karapiro farm, both jobs, application, match scores, skills, fees). Read-back verified all-zero.
 
-### Legacy test data still present (on operator's PERSONAL accounts — NOT auto-purged)
+### Legacy test data — ✅ CLEARED 2026-07-23
 
-Left in place because deleting them touches the operator's own real accounts; none appear on the public **active** job board (all non-active), so the board is a clean cold-start (0 active jobs). Awaiting operator call:
-- "UAT Farm Assistant — Applied" (**filled**) + "UAT Herd Manager — Declined" (**archived**) — farm **"Test Farm (UAT)"** on `harry.symmans.smith@gmail.com`. The filled job keeps "Test Farm (UAT)" visible in the `marketplace_employer_profiles` farm view (not the job board). Recommend removing the 2 jobs + farm before marketing.
-- "TAX-04 Playwright Smoke Test Job" (**draft**) on `harryssmith11@icloud.com`.
-- Account `at-seeker-b@topfarms.test`.
+Operator approved removing the leftover test jobs + farm. Deleted (accounts left intact):
+- ✅ Farm **"Test Farm (UAT)"** employer profile + its 2 jobs ("UAT Farm Assistant — Applied" filled, "UAT Herd Manager — Declined" archived) + their 2 applications (cascaded).
+- ✅ "TAX-04 Playwright Smoke Test Job" (draft) — farm "Corebeef farms" **kept**.
+
+Read-back: `total_jobs_now=0` (fully clean cold-start, 0 active on public board), `corebeef_farm_kept=1`, `total_users=6` (no accounts deleted).
+
+**Still present (not in the jobs+farm scope, operator's call):** bare seeker account `at-seeker-b@topfarms.test` (its test applications were removed with the jobs above). Harmless — no listings, not customer-facing. Say the word to delete it too.
 
 ## Intentionally deny-all tables (TF-016)
 
