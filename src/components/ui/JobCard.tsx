@@ -1,4 +1,4 @@
-import { Eye, Pencil, Pause, Play, Archive, CheckCircle } from 'lucide-react'
+import { Eye, Pencil, Pause, Play, Archive, CheckCircle, Copy } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/Button'
 import type { JobListing, JobStatus } from '@/types/domain'
@@ -9,6 +9,7 @@ interface JobCardProps {
   onEdit?: () => void
   onArchive?: () => void
   onMarkFilled?: () => void
+  onDuplicate?: () => void
   className?: string
 }
 
@@ -51,6 +52,7 @@ export function JobCard({
   onEdit,
   onArchive,
   onMarkFilled,
+  onDuplicate,
   className,
 }: JobCardProps) {
   const statusCfg = STATUS_CONFIG[job.status]
@@ -63,6 +65,7 @@ export function JobCard({
   const canArchive = job.status !== 'archived'
   const canMarkFilled =
     job.status === 'active' || job.status === 'paused' || job.status === 'expired'
+  const canDuplicate = job.status !== 'draft'
 
   return (
     <div
@@ -146,6 +149,18 @@ export function JobCard({
           >
             <CheckCircle className="h-3.5 w-3.5" />
             Mark as Filled
+          </Button>
+        )}
+
+        {canDuplicate && onDuplicate && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onDuplicate}
+            className="flex items-center gap-1.5"
+          >
+            <Copy className="h-3.5 w-3.5" />
+            Duplicate
           </Button>
         )}
 

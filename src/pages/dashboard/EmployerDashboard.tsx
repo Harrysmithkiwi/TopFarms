@@ -191,6 +191,66 @@ export function EmployerDashboard() {
     loadJobs()
   }
 
+  async function handleDuplicate(job: JobListing) {
+    // Re-fetch the full row — the dashboard list already has select('*'), but a
+    // fresh read avoids duplicating from stale state.
+    const { data: src, error } = await supabase.from('jobs').select('*').eq('id', job.id).single()
+
+    if (error || !src) {
+      toast.error('Failed to duplicate listing')
+      console.error('handleDuplicate load error', error)
+      return
+    }
+
+    // Strip server-managed fields; the copy starts life as a fresh draft.
+    // start_date is dropped too — edit resumes past the Basics step, so a
+    // stale date from the original could otherwise publish unreviewed.
+    const {
+      id: _id,
+      created_at: _createdAt,
+      status: _status,
+      views_count: _views,
+      expires_at: _expiresAt,
+      listing_tier: _tier,
+      confidence_score: _confidence,
+      start_date: _startDate,
+      ...copy
+    } = src
+
+    const { data: dup, error: insertError } = await supabase
+      .from('jobs')
+      .insert({
+        ...copy,
+        title: `${src.title} (Copy)`.slice(0, 100),
+        status: 'draft',
+        start_date: null,
+      })
+      .select('id')
+      .single()
+
+    if (insertError || !dup) {
+      toast.error('Failed to duplicate listing')
+      console.error('handleDuplicate insert error', insertError)
+      return
+    }
+
+    // Copy required skills across so Step 3 arrives pre-filled.
+    const { data: skills } = await supabase
+      .from('job_skills')
+      .select('skill_id, requirement_level')
+      .eq('job_id', job.id)
+
+    if (skills && skills.length > 0) {
+      const { error: skillsError } = await supabase
+        .from('job_skills')
+        .insert(skills.map((s) => ({ ...s, job_id: dup.id })))
+      if (skillsError) console.error('handleDuplicate skills copy error', skillsError)
+    }
+
+    toast.success('Listing duplicated as a draft')
+    navigate(`/jobs/${dup.id}/edit`)
+  }
+
   function handleMarkFilled(jobId: string) {
     setMarkFilledJobId(jobId)
     setIsMarkFilledOpen(true)
@@ -457,6 +517,7 @@ export function EmployerDashboard() {
                             onEdit={() => navigate(`/jobs/${job.id}/edit`)}
                             onArchive={() => setConfirmArchiveId(job.id)}
                             onMarkFilled={() => handleMarkFilled(job.id)}
+                            onDuplicate={() => handleDuplicate(job)}
                           />
                           {appCount > 0 && (
                             <div className="mt-1.5 px-1">

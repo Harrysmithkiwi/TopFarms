@@ -1,4 +1,4 @@
-import { StrictMode, Suspense, lazy, type ReactNode } from 'react'
+import { StrictMode, Suspense, lazy as reactLazy, type ComponentType, type ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router'
 import { Toaster } from 'sonner'
@@ -13,6 +13,27 @@ import './index.css'
 // dashboards, wizards, admin, or Stripe code to view the landing page.
 import { Home } from '@/pages/Home'
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
+
+// Lazy-chunk recovery (LAUNCH.md O7): after a deploy, an old tab can request a
+// route chunk whose hashed filename no longer exists — the import rejects and
+// the user is stranded on the Suspense spinner. On failure, force one full
+// reload per session (fetches the new index + chunk names); if it still fails,
+// rethrow so the router errorElement shows instead of an infinite spinner.
+// Shadows React.lazy so all call sites below stay untouched.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- mirrors React.lazy's own signature
+function lazy<T extends ComponentType<any>>(factory: () => Promise<{ default: T }>) {
+  return reactLazy(() =>
+    factory().catch((err: unknown) => {
+      const key = 'chunk-reload-attempted'
+      if (!sessionStorage.getItem(key)) {
+        sessionStorage.setItem(key, '1')
+        window.location.reload()
+        return new Promise<{ default: T }>(() => {}) // never settles; page is reloading
+      }
+      throw err
+    }),
+  )
+}
 
 // Pages export named components; map them onto React.lazy's default slot.
 const Login = lazy(() => import('@/pages/auth/Login').then((m) => ({ default: m.Login })))
