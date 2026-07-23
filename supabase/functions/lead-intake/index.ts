@@ -22,7 +22,7 @@ import * as jose from 'https://esm.sh/jose@5'
 // All outcomes converge on the _lead_intake() Postgres core (service_role
 // grant), so suppression + dedupe cannot be bypassed from any lane.
 
-const ALLOWED_SOURCES = ['seek', 'trademe', 'fb_own_group', 'fb_manual_capture']
+const ALLOWED_SOURCES = ['seek', 'trademe', 'fb_own_group', 'fb_manual_capture', 'manual_paste']
 const REGIONS = [
   'Northland',
   'Auckland',
@@ -49,18 +49,18 @@ const REGIONS = [
 const REGION_ALIASES: Record<string, string> = {
   // Wairarapa is administratively part of the Wellington region; its towns rarely
   // say "Wellington" in FB posts, so fold the common ones in (else they go null).
-  'wairarapa': 'Wellington',
+  wairarapa: 'Wellington',
   'south wairarapa': 'Wellington',
-  'masterton': 'Wellington',
-  'carterton': 'Wellington',
-  'greytown': 'Wellington',
-  'featherston': 'Wellington',
-  'martinborough': 'Wellington',
+  masterton: 'Wellington',
+  carterton: 'Wellington',
+  greytown: 'Wellington',
+  featherston: 'Wellington',
+  martinborough: 'Wellington',
   'manawatu-whanganui': 'Manawatū-Whanganui',
   'manawatu-wanganui': 'Manawatū-Whanganui',
-  'manawatu': 'Manawatū-Whanganui',
-  'wanganui': 'Manawatū-Whanganui',
-  'whanganui': 'Manawatū-Whanganui',
+  manawatu: 'Manawatū-Whanganui',
+  wanganui: 'Manawatū-Whanganui',
+  whanganui: 'Manawatū-Whanganui',
   'hawkes bay': "Hawke's Bay",
   'hawke s bay': "Hawke's Bay",
 }
@@ -70,6 +70,30 @@ function canonicalRegion(r: string | null | undefined): string | null {
   const exact = REGIONS.find((x) => x.toLowerCase() === key)
   if (exact) return exact
   return REGION_ALIASES[key] ?? null
+}
+
+// geo_scope classification (Leads v2) — in CODE, mirrors migration 061's backfill
+// so harvested + pasted + screenshot leads segment identically. intl on a foreign
+// dialling prefix / ccTLD / unambiguous overseas place; nz on a real NZ region;
+// else unknown. NZ-ambiguous words are deliberately excluded from the country list.
+const INTL_PLACE_RE =
+  /ireland|saskatchewan|king island|tasmania|\baustralia\b|queensland|new south wales/i
+const FOREIGN_TLD_RE = /\.(ie|au|uk|ca|de|fr|us|za)$/i
+const FOREIGN_DIAL_RE = /\+(?!64)\d/
+function classifyGeo(
+  contact: Contact | null | undefined,
+  region: string | null,
+  hay: string,
+): 'nz' | 'intl' | 'unknown' {
+  if (
+    FOREIGN_DIAL_RE.test(contact?.phone ?? '') ||
+    FOREIGN_TLD_RE.test(contact?.email ?? '') ||
+    INTL_PLACE_RE.test(hay)
+  ) {
+    return 'intl'
+  }
+  if (region && REGIONS.includes(region)) return 'nz'
+  return 'unknown'
 }
 
 // Lane classification (Phase 1 A2) — in CODE, not the LLM. A regex backstop
@@ -110,6 +134,8 @@ interface StructuredLead {
   shed_type: string | null
   herd_details: string | null
   application_method: string | null
+  // Leads v2: ISO date (YYYY-MM-DD) applications close, if stated; else null.
+  applications_close: string | null
   confidence: number
   missing_fields: string[]
 }
@@ -124,6 +150,10 @@ interface IntakeItem {
   // URLs). post_url is passed as source_ref; these two ride into structured.
   source_group?: string
   post_timestamp?: string
+  // Leads v2 screenshot lane: base64 image (no data: prefix) + its media type.
+  // When present, Claude structures from the image (vision) instead of raw_text.
+  image?: string
+  image_media_type?: string
 }
 
 // Minimal config-read surface for draftReply (service_role bypasses RLS).
@@ -229,12 +259,21 @@ Deno.serve(async (req) => {
         },
       ]
     } else {
-      const parsed = await structureWithClaude(item.raw_text ?? '')
+      const parsed = await structureWithClaude(
+        item.raw_text ?? '',
+        item.image
+          ? { data: item.image, mediaType: item.image_media_type ?? 'image/png' }
+          : undefined,
+      )
       structuredNote.push(parsed.note)
       leads = parsed.leads.map((l) => {
         // Lane in CODE (A2) + regex backstop; FB fields + paste metadata ride in
         // structured (passed through 041's _lead_intake untouched).
         const { lane, contact } = classifyLane(l.contact, l.application_method, item.raw_text ?? '')
+        // geo_scope in CODE (Leads v2) — everything text-ish we hold about the lead.
+        const hay = [l.application_method ?? '', item.raw_text ?? '', contact?.notes ?? ''].join(
+          ' ',
+        )
         return {
           structured: {
             type: l.type,
@@ -246,6 +285,8 @@ Deno.serve(async (req) => {
             shed_type: l.shed_type ?? null,
             herd_details: l.herd_details ?? null,
             application_method: l.application_method ?? null,
+            applications_close: l.applications_close ?? null,
+            geo_scope: classifyGeo(contact, l.region, hay),
             source_group: item.source_group ?? null,
             post_timestamp: item.post_timestamp ?? null,
             lane,
@@ -352,7 +393,9 @@ async function fetchApifyDataset(
     const rows = (await res.json()) as Record<string, unknown>[]
     const urlKeys = ['url', 'link', 'jobUrl', 'listingUrl', 'positionUrl', 'adUrl']
     const items: IntakeItem[] = rows.map((row) => {
-      const ref = urlKeys.map((k) => row[k]).find((v) => typeof v === 'string') as string | undefined
+      const ref = urlKeys.map((k) => row[k]).find((v) => typeof v === 'string') as
+        | string
+        | undefined
       return { source_ref: ref, raw_text: JSON.stringify(row).slice(0, 8000) }
     })
     return { ok: true, items }
@@ -365,6 +408,7 @@ async function fetchApifyDataset(
 
 async function structureWithClaude(
   rawText: string,
+  image?: { data: string; mediaType: string },
 ): Promise<{ leads: StructuredLead[]; note: string }> {
   const fallback = (note: string) => ({
     note,
@@ -379,6 +423,7 @@ async function structureWithClaude(
         shed_type: null,
         herd_details: null,
         application_method: null,
+        applications_close: null,
         confidence: 0,
         missing_fields: [`all — ${note}`],
       } as StructuredLead,
@@ -387,7 +432,24 @@ async function structureWithClaude(
 
   const key = Deno.env.get('ANTHROPIC_API_KEY')
   if (!key) return fallback('unstructured (ANTHROPIC_API_KEY not configured)')
-  if (!rawText.trim()) return fallback('unstructured (empty raw_text)')
+  if (!rawText.trim() && !image) return fallback('unstructured (empty raw_text)')
+
+  // Screenshot lane (Leads v2): structure from the image via vision. Haiku 4.5 is
+  // multimodal, so the same model + tool schema handle text and image intake.
+  const userContent = image
+    ? [
+        {
+          type: 'image',
+          source: { type: 'base64', media_type: image.mediaType, data: image.data },
+        },
+        {
+          type: 'text',
+          text:
+            rawText.slice(0, 8000) ||
+            'Extract every distinct lead from this screenshot of a NZ farm job post or board.',
+        },
+      ]
+    : rawText.slice(0, 8000)
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -418,12 +480,15 @@ async function structureWithClaude(
           'shed_type = milking shed (rotary / herringbone / N-bail), verbatim.',
           'herd_details = herd size / calving pattern if stated (e.g. "550 cows, split calving").',
           'application_method = VERBATIM how to apply ("PM me", "email jane@x.co.nz", "call 027…").',
+          'applications_close = the date applications close AS AN ISO DATE (YYYY-MM-DD),',
+          'if a closing date is stated — convert "10/7/2026" → "2026-07-10", "1st July',
+          '2026" → "2026-07-01" (NZ day/month order). null if no closing date is stated.',
           'NEVER guess or infer absent fields — use null and list them in',
           'missing_fields. Only include contact details EXPLICITLY stated in the',
           'post (no enrichment, no inference). confidence is your 0-1 certainty',
           'the extraction is faithful.',
         ].join(' '),
-        messages: [{ role: 'user', content: rawText.slice(0, 8000) }],
+        messages: [{ role: 'user', content: userContent }],
         tools: [
           {
             name: 'emit_leads',
@@ -446,6 +511,7 @@ async function structureWithClaude(
                       'shed_type',
                       'herd_details',
                       'application_method',
+                      'applications_close',
                       'confidence',
                       'missing_fields',
                     ],
@@ -468,6 +534,7 @@ async function structureWithClaude(
                       shed_type: { type: ['string', 'null'] },
                       herd_details: { type: ['string', 'null'] },
                       application_method: { type: ['string', 'null'] },
+                      applications_close: { type: ['string', 'null'] },
                       confidence: { type: 'number' },
                       missing_fields: { type: 'array', items: { type: 'string' } },
                     },
@@ -501,6 +568,7 @@ async function structureWithClaude(
         shed_type: l.shed_type ?? null,
         herd_details: l.herd_details ?? null,
         application_method: l.application_method ?? null,
+        applications_close: l.applications_close ?? null,
         confidence: Math.max(0, Math.min(1, Number(l.confidence) || 0)),
         missing_fields: Array.isArray(l.missing_fields) ? l.missing_fields : [],
       })),
@@ -539,9 +607,7 @@ interface OutreachConfigRow {
 
 /** Assemble the system prompt from the operator's config + the resolved link. */
 function buildDraftSystemPrompt(cfg: OutreachConfigRow, link: string): string {
-  const rules = (cfg.do_not_rules ?? [])
-    .map((r) => `- ${String(r)}`)
-    .join('\n')
+  const rules = (cfg.do_not_rules ?? []).map((r) => `- ${String(r)}`).join('\n')
   return [
     'You are Harry, writing a single first-contact Facebook message to the author of a',
     'New Zealand farm job post that gave no contact details (a Lane B lead). You saw their',
@@ -619,7 +685,10 @@ async function draftReply(
   // All non-real outcomes start with '[Draft pending' so the Outreach UI keeps the
   // send button disabled (AdminLeadsOutreach isPlaceholder check) until a real draft exists.
   if (!key) {
-    return { draft: '[Draft pending — ANTHROPIC_API_KEY not configured in Edge secrets]', model: 'placeholder' }
+    return {
+      draft: '[Draft pending — ANTHROPIC_API_KEY not configured in Edge secrets]',
+      model: 'placeholder',
+    }
   }
 
   try {
@@ -640,19 +709,28 @@ async function draftReply(
     })
     if (!res.ok) {
       console.error('draftReply claude error:', res.status, (await res.text()).slice(0, 200))
-      return { draft: '[Draft pending — draft generation failed, re-stage to retry]', model: 'error' }
+      return {
+        draft: '[Draft pending — draft generation failed, re-stage to retry]',
+        model: 'error',
+      }
     }
     const msg = await res.json()
     const text = (msg.content as { type: string; text?: string }[] | undefined)
       ?.find((c) => c.type === 'text')
       ?.text?.trim()
     if (!text) {
-      return { draft: '[Draft pending — draft generation returned empty, re-stage to retry]', model: 'error' }
+      return {
+        draft: '[Draft pending — draft generation returned empty, re-stage to retry]',
+        model: 'error',
+      }
     }
     return { draft: text, model: DRAFT_MODEL }
   } catch (e) {
     console.error('draftReply call failed:', (e as Error).message)
-    return { draft: '[Draft pending — draft generation unreachable, re-stage to retry]', model: 'error' }
+    return {
+      draft: '[Draft pending — draft generation unreachable, re-stage to retry]',
+      model: 'error',
+    }
   }
 }
 

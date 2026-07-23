@@ -65,21 +65,47 @@ interface StagingRow extends Record<string, unknown> {
 const inputCls =
   'border-border bg-surface w-full rounded-[8px] border px-3 py-2 text-sm outline-none focus:border-brand'
 
-/** Paste-batch capture — the primary, most-frequent path. */
+/** Paste-batch capture — the primary, most-frequent path. Text OR screenshot. */
 function PasteCapture({ onCaptured }: { onCaptured: () => void }) {
   // Default to manual-capture: most pastes are other people's groups (NZ Dairy
   // Jobs etc.), not our own group. fb_own_group is the exception, selectable below.
   const [source, setSource] = useState('fb_manual_capture')
   const [text, setText] = useState('')
+  const [image, setImage] = useState<{ data: string; mediaType: string; name: string } | null>(null)
   const [busy, setBusy] = useState(false)
 
-  // L1 batch lane (§9.2): paste one or MANY posts; lead-intake structures them
-  // with Claude Haiku server-side.
+  // Read a dropped/selected screenshot into base64 (no data: prefix) for the
+  // Leads v2 vision lane. A screenshot is rarely from your own FB group, so it
+  // defaults the source to Manual / screenshot.
+  function onFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      const result = String(reader.result)
+      setImage({
+        data: result.slice(result.indexOf(',') + 1),
+        mediaType: file.type || 'image/png',
+        name: file.name,
+      })
+      setSource('manual_paste')
+    }
+    reader.readAsDataURL(file)
+  }
+
+  // L1 batch lane (§9.2): paste one or MANY posts, and/or a screenshot;
+  // lead-intake structures them with Claude (vision for the image) server-side.
   async function submit() {
-    if (!text.trim()) return
+    if (!text.trim() && !image) return
     setBusy(true)
+    const item: Record<string, unknown> = {}
+    if (text.trim()) item.raw_text = text
+    if (image) {
+      item.image = image.data
+      item.image_media_type = image.mediaType
+    }
     const { data, error } = await supabase.functions.invoke('lead-intake', {
-      body: { source, items: [{ raw_text: text }] },
+      body: { source, items: [item] },
     })
     setBusy(false)
     if (error) {
@@ -91,26 +117,58 @@ function PasteCapture({ onCaptured }: { onCaptured: () => void }) {
       `Staged ${r.results?.inserted ?? 0} (dupes ${r.results?.exact_duplicate ?? 0}, suppressed ${r.results?.suppressed ?? 0}) — ${r.structuring ?? ''}`,
     )
     setText('')
+    setImage(null)
     onCaptured()
   }
 
   return (
-    <DrawerSection label="Paste posts (batch)">
+    <DrawerSection label="Paste posts or drop a screenshot">
       <p className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
-        Paste one or many posts — structuring, dedupe and suppression run automatically; results
-        land in the queue for your approval.
+        Paste one or many posts, or add a screenshot of a listing — structuring, dedupe and
+        suppression run automatically; results land in the queue for your approval.
       </p>
       <select className={inputCls} value={source} onChange={(e) => setSource(e.target.value)}>
         <option value="fb_own_group">FB (own group)</option>
         <option value="fb_manual_capture">FB (manual capture)</option>
+        <option value="manual_paste">Manual / screenshot</option>
       </select>
       <textarea
         className={`${inputCls} h-40`}
-        placeholder="Paste post text here — multiple posts in one paste is fine"
+        placeholder="Paste post text here — multiple posts in one paste is fine (or just add a screenshot below)"
         value={text}
         onChange={(e) => setText(e.target.value)}
       />
-      <Button variant="primary" size="sm" disabled={busy || !text.trim()} onClick={submit}>
+      <div className="flex flex-wrap items-center gap-3">
+        <label className="border-border text-brand hover:bg-surface-2 cursor-pointer rounded-[8px] border px-3 py-2 text-[13px] font-semibold">
+          <input type="file" accept="image/*" className="hidden" onChange={onFile} />
+          {image ? 'Change screenshot' : 'Add screenshot'}
+        </label>
+        {image && (
+          <>
+            <span
+              className="max-w-[160px] truncate text-[12px]"
+              style={{ color: 'var(--color-text-muted)' }}
+              title={image.name}
+            >
+              {image.name}
+            </span>
+            <button
+              type="button"
+              className="text-[12px] underline"
+              style={{ color: 'var(--color-text-subtle)' }}
+              onClick={() => setImage(null)}
+            >
+              Remove
+            </button>
+          </>
+        )}
+      </div>
+      <Button
+        variant="primary"
+        size="sm"
+        disabled={busy || (!text.trim() && !image)}
+        onClick={submit}
+      >
         {busy ? 'Structuring…' : 'Stage batch'}
       </Button>
     </DrawerSection>
