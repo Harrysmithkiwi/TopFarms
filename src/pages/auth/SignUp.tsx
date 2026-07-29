@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useNavigate, Link, useSearchParams } from 'react-router'
+import { track } from '@vercel/analytics'
 import { toast } from 'sonner'
 import { Eye, EyeOff, Building2, User } from 'lucide-react'
 import { AuthLayout } from '@/components/layout/AuthLayout'
@@ -84,6 +85,12 @@ export function SignUp() {
     }
   }, [initialRole, setValue])
 
+  // Funnel: signup intent becomes concrete when a role is known (picked or
+  // preselected via ?role=). Fires once per role value.
+  useEffect(() => {
+    if (selectedRole) track('signup_start', { role: selectedRole })
+  }, [selectedRole])
+
   const passwordValue = watch('password', '')
   const strength = getPasswordStrength(passwordValue)
 
@@ -103,6 +110,7 @@ export function SignUp() {
           closeButton: true,
         })
       } else {
+        track('signup_complete', { role: data.role })
         navigate('/auth/verify')
       }
     } catch {

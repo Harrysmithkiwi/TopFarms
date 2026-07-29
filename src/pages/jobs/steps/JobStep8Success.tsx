@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { CheckCircle, Share2, Briefcase, LayoutDashboard } from 'lucide-react'
 import { toast } from 'sonner'
+import { track } from '@vercel/analytics'
 import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/Button'
 
@@ -18,6 +19,9 @@ export function JobStep8Success({ jobId }: JobStep8SuccessProps) {
   const [job, setJob] = useState<JobBasics | null>(null)
 
   useEffect(() => {
+    // Funnel: the success screen only renders after the publish flow completes.
+    track('job_publish', { jobId })
+
     async function loadJob() {
       const { data } = await supabase.from('jobs').select('title, region').eq('id', jobId).single()
 

@@ -1,6 +1,7 @@
 import { StrictMode, Suspense, lazy as reactLazy, type ComponentType, type ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router'
+import { Analytics } from '@vercel/analytics/react'
 import { Toaster } from 'sonner'
 import { AuthProvider } from '@/contexts/AuthContext'
 import './index.css'
@@ -478,5 +479,9 @@ createRoot(document.getElementById('root')!).render(
       <RouterProvider router={router} />
     </AuthProvider>
     <Toaster position="top-right" richColors />
+    {/* Pageviews on every route; custom funnel events via track() at the 5
+        funnel points (signup_start/complete, job_view, apply_submit,
+        job_publish). No PII in event props. */}
+    <Analytics />
   </StrictMode>,
 )
