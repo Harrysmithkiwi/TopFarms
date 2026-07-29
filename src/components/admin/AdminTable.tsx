@@ -3,8 +3,8 @@ import { Search, ArrowUp, ArrowDown, ChevronsUpDown } from 'lucide-react'
 import { Input } from '@/components/ui/Input'
 import { Pagination } from '@/components/ui/Pagination'
 import { Card } from '@/components/tremor/Card'
+import { TableSkeleton } from '@/components/admin/Skeleton'
 import { supabase } from '@/lib/supabase'
-import { toast } from 'sonner'
 
 type AdminListRpc =
   | 'admin_list_employers'
@@ -163,9 +163,10 @@ export function AdminTable<TRow extends Record<string, unknown>>({
       // AdminListRpc union upstream.
       const { data, error } = await supabase.rpc(rpc as never, args as never)
       if (error) {
+        // Single error signal: the inline error block below. (Previously also
+        // fired a toast — double-signalling the same failure. UI-SPEC: one.)
         console.error(`AdminTable: ${rpc} failed`, error)
         setErrored(true)
-        toast.error(errorCopy)
         return
       }
       const payload = data as { rows?: TRow[]; total?: number } | null
@@ -288,10 +289,24 @@ export function AdminTable<TRow extends Record<string, unknown>>({
     </table>
   )
 
+  // In a Card the Card is the surface (no table border). Inset (px-4) so header +
+  // rows + hover highlight breathe off the card walls; pt-2 gives air below the
+  // search field. Bordered otherwise. Skeleton and table share this wrapper so the
+  // load → loaded transition doesn't shift the layout.
+  const wrapTable = (inner: ReactNode) =>
+    inCard ? (
+      <div className="overflow-x-auto px-4 pt-2">{inner}</div>
+    ) : (
+      <div
+        className="overflow-x-auto rounded-lg border"
+        style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-surface)' }}
+      >
+        {inner}
+      </div>
+    )
+
   const body = loading ? (
-    <div className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-      Loading…
-    </div>
+    wrapTable(<TableSkeleton columns={columns} rows={Math.min(pageSize, 8)} />)
   ) : errored ? (
     <div className="text-sm" style={{ color: 'var(--color-danger)' }}>
       {errorCopy}
@@ -305,19 +320,8 @@ export function AdminTable<TRow extends Record<string, unknown>>({
         {emptyBody}
       </div>
     </div>
-  ) : inCard ? (
-    // In a Card the Card is the surface (no table border). Inset the table (px-4)
-    // so its header + rows + hover highlight breathe off the card walls instead of
-    // running flush to them, roughly aligning the content with the search field's
-    // text (its pl-9 icon offset). pt-2 gives air below the search field.
-    <div className="overflow-x-auto px-4 pt-2">{tableEl}</div>
   ) : (
-    <div
-      className="overflow-x-auto rounded-lg border"
-      style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-surface)' }}
-    >
-      {tableEl}
-    </div>
+    wrapTable(tableEl)
   )
 
   const pagination = totalPages > 1 && !errored && !loading && (

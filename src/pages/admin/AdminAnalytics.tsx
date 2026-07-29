@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase'
 import { Card } from '@/components/tremor/Card'
 import { BarChart } from '@/components/tremor/BarChart'
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
+import { PanelSkeleton } from '@/components/admin/Skeleton'
 
 /**
  * Founder analytics dashboard at /admin/analytics (PHASE-ANALYTICS-DESIGN.md,
@@ -189,9 +190,11 @@ export function AdminAnalytics() {
       />
 
       {loading && (
-        <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-          Loading analytics…
-        </p>
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <PanelSkeleton key={i} height={160} />
+          ))}
+        </div>
       )}
       {error && (
         <p className="text-danger text-sm">Failed to load analytics: {error}. Refresh the page.</p>

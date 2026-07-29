@@ -5,6 +5,7 @@ import { Toggle } from '@/components/ui/Toggle'
 import { Timeline } from '@/components/ui/Timeline'
 import { Button } from '@/components/ui/Button'
 import { AdminNotesField } from './AdminNotesField'
+import { DetailSkeleton } from './Skeleton'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'sonner'
 
@@ -257,11 +258,7 @@ export function ProfileDrawer({
             </div>
           )}
 
-          {loading && (
-            <div className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-              Loading…
-            </div>
-          )}
+          {loading && <DetailSkeleton />}
 
           {!loading && profile && profile.role === 'employer' && (
             <div className="space-y-2">
