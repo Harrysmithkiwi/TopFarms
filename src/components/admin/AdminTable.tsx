@@ -94,6 +94,10 @@ interface AdminTableProps<TRow> {
   onToggleRow?: (row: TRow) => void
   /** Toggle every currently-loaded row (select-all header). Receives the page's rows. */
   onToggleAll?: (rows: TRow[]) => void
+  /** Row id to visually highlight (keyboard-triage cursor). */
+  highlightedId?: string
+  /** Fires when the loaded rows change — lets a parent drive keyboard navigation. */
+  onRowsChange?: (rows: TRow[]) => void
 }
 
 /**
@@ -125,6 +129,8 @@ export function AdminTable<TRow extends Record<string, unknown>>({
   selectedIds,
   onToggleRow,
   onToggleAll,
+  highlightedId,
+  onRowsChange,
 }: AdminTableProps<TRow>) {
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
@@ -197,6 +203,13 @@ export function AdminTable<TRow extends Record<string, unknown>>({
   useEffect(() => {
     void load()
   }, [load])
+
+  // Notify the parent of the loaded rows so it can drive keyboard navigation.
+  // Depends on `rows` only; onRowsChange is a notify callback, not a trigger.
+  useEffect(() => {
+    onRowsChange?.(rows)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rows])
 
   const totalPages = useMemo(() => Math.max(1, Math.ceil(total / pageSize)), [total, pageSize])
 
@@ -307,6 +320,12 @@ export function AdminTable<TRow extends Record<string, unknown>>({
               style={{
                 borderBottom: idx === rows.length - 1 ? 'none' : '1px solid var(--color-border)',
                 height: '52px',
+                backgroundColor:
+                  highlightedId && rowKey === highlightedId ? 'var(--color-surface-2)' : undefined,
+                boxShadow:
+                  highlightedId && rowKey === highlightedId
+                    ? 'inset 3px 0 0 var(--color-brand)'
+                    : undefined,
               }}
               onClick={handleRowClick}
             >
