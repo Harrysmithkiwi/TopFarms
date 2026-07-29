@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { toast } from 'sonner'
 import {
@@ -586,6 +586,11 @@ export function AdminLeadsStaging() {
   // Bulk selection (by staging id) for one-click approve/reject of a batch.
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [bulkActing, setBulkActing] = useState(false)
+  // Keyboard triage: a cursor over the loaded rows (j/k move, e open, x select,
+  // a/r act in an open lead) so a backlog clears without the mouse.
+  const [rows, setRows] = useState<StagingRow[]>([])
+  const [cursor, setCursor] = useState(-1)
+  const highlightedId = cursor >= 0 ? rows[cursor]?.id : undefined
 
   const clearSelection = () => setSelectedIds(new Set())
   const bumpRefresh = () => {
@@ -688,6 +693,63 @@ export function AdminLeadsStaging() {
     bumpRefresh()
   }
 
+  // Keep the cursor in range as the queue shrinks (after an approve/reject the
+  // row leaves, so the same index now points at the next lead — free advance).
+  // Bounded no-op when already in range → can't cascade (lint false positive).
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCursor((c) => (c >= rows.length ? rows.length - 1 : c))
+  }, [rows])
+
+  // Keyboard triage. Ignored while typing or with the capture drawer open. With a
+  // lead drawer open: a/r/s approve/reject/suppress. Otherwise: j/k move, e open,
+  // x select the cursor row.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.metaKey || e.ctrlKey || e.altKey) return
+      const t = e.target as HTMLElement | null
+      if (
+        t &&
+        (t.tagName === 'INPUT' ||
+          t.tagName === 'TEXTAREA' ||
+          t.tagName === 'SELECT' ||
+          t.isContentEditable)
+      )
+        return
+      if (capturing) return
+      if (selected) {
+        if (e.key === 'a') {
+          e.preventDefault()
+          void act('approve')
+        } else if (e.key === 'r') {
+          e.preventDefault()
+          void act('reject')
+        } else if (e.key === 's') {
+          e.preventDefault()
+          void act('reject_suppress')
+        }
+        return
+      }
+      if (rows.length === 0) return
+      if (e.key === 'j' || e.key === 'ArrowDown') {
+        e.preventDefault()
+        setCursor((c) => Math.min(rows.length - 1, c + 1))
+      } else if (e.key === 'k' || e.key === 'ArrowUp') {
+        e.preventDefault()
+        setCursor((c) => Math.max(0, c <= 0 ? 0 : c - 1))
+      } else if ((e.key === 'e' || e.key === 'Enter') && cursor >= 0) {
+        e.preventDefault()
+        setSelected(rows[cursor])
+      } else if (e.key === 'x' && cursor >= 0) {
+        e.preventDefault()
+        toggleRow(rows[cursor])
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected, capturing, rows, cursor])
+
   return (
     <div className="space-y-6">
       <AdminPageHeader
@@ -709,6 +771,10 @@ export function AdminLeadsStaging() {
 
       <LeadsWorklist key={`worklist-${refreshKey}`} />
 
+      <p className="hidden text-[12px] md:block" style={{ color: 'var(--color-text-subtle)' }}>
+        Keyboard: j / k move · e open · x select · a approve, r reject (with a lead open)
+      </p>
+
       <AdminTable<StagingRow>
         key={refreshKey}
         rpc="admin_leads_staging_list"
@@ -718,6 +784,8 @@ export function AdminLeadsStaging() {
         selectedIds={selectedIds}
         onToggleRow={toggleRow}
         onToggleAll={toggleAll}
+        highlightedId={highlightedId}
+        onRowsChange={setRows}
         searchPlaceholder="Search staging by name, region, locality, source…"
         extraArgs={{ p_source: sourceFilter, p_geo: geoFilter, p_hide_expired: hideExpired }}
         toolbar={
