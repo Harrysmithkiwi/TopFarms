@@ -1,4 +1,5 @@
-import { NavLink } from 'react-router'
+import { useEffect, useRef, useState } from 'react'
+import { NavLink, useLocation } from 'react-router'
 import {
   ArrowLeft,
   LayoutDashboard,
@@ -13,8 +14,11 @@ import {
   Send,
   Target,
   LogOut,
+  Menu,
+  X,
 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 interface NavItem {
   to: string
@@ -61,7 +65,13 @@ const navGroups: NavGroup[] = [
   },
 ]
 
-export function AdminSidebar() {
+/**
+ * The nav body — eyebrow, back-to-app, grouped links, sign-out. Shared verbatim
+ * by the desktop rail (AdminSidebar) and the mobile drawer (AdminMobileNav) so
+ * there is one source of truth for the admin nav. `onNavigate` lets the mobile
+ * drawer close itself when a link is tapped.
+ */
+function AdminNavContent({ onNavigate }: { onNavigate?: () => void }) {
   const { role, signOut } = useAuth()
   // Back-to-app target uses primary role if known; falls back to /dashboard/seeker.
   // The admin operator may also have a non-admin row in user_roles via legacy seeker
@@ -71,13 +81,7 @@ export function AdminSidebar() {
   const backTo = role === 'employer' ? '/dashboard/employer' : '/dashboard/seeker'
 
   return (
-    <aside
-      className="hidden min-h-screen w-60 flex-shrink-0 flex-col border-r md:flex"
-      style={{
-        backgroundColor: 'var(--color-surface)',
-        borderColor: 'var(--color-border)',
-      }}
-    >
+    <>
       {/* Section eyebrow */}
       <div
         className="px-4 pt-5 pb-3 text-xs font-semibold tracking-wider uppercase"
@@ -89,6 +93,7 @@ export function AdminSidebar() {
       {/* Back to app — escape hatch, no active state */}
       <NavLink
         to={backTo}
+        onClick={onNavigate}
         className="hover:bg-surface-2/50 mx-2 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[15px] transition-all"
         style={{ color: 'var(--color-text-muted)' }}
       >
@@ -114,6 +119,7 @@ export function AdminSidebar() {
               <NavLink
                 key={item.to}
                 to={item.to}
+                onClick={onNavigate}
                 // Exact match on every item: /admin/leads/outreach must NOT also
                 // light up the /admin/leads parent (both rendered active otherwise).
                 end
@@ -149,6 +155,117 @@ export function AdminSidebar() {
           <span>Sign out</span>
         </button>
       </div>
+    </>
+  )
+}
+
+/** Desktop rail — fixed 240px, hidden below md (the mobile drawer takes over). */
+export function AdminSidebar() {
+  return (
+    <aside
+      className="hidden min-h-screen w-60 flex-shrink-0 flex-col border-r md:flex"
+      style={{
+        backgroundColor: 'var(--color-surface)',
+        borderColor: 'var(--color-border)',
+      }}
+    >
+      <AdminNavContent />
     </aside>
+  )
+}
+
+/**
+ * Mobile nav — a sticky top bar with a hamburger (md:hidden) that opens a
+ * left-anchored slide-in drawer with the same AdminNavContent. Closes on route
+ * change and on backdrop/Escape; focus is trapped inside while open (shared
+ * useFocusTrap contract). Fixes the pre-v2 dead-end where the desktop-only rail
+ * left an admin with zero navigation below 768px.
+ */
+export function AdminMobileNav() {
+  const [open, setOpen] = useState(false)
+  const { pathname } = useLocation()
+  const panelRef = useRef<HTMLDivElement>(null)
+  useFocusTrap(panelRef, open)
+
+  // Close whenever the route changes (link tap or browser nav).
+  useEffect(() => {
+    setOpen(false)
+  }, [pathname])
+
+  useEffect(() => {
+    if (!open) return
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open])
+
+  return (
+    <div className="md:hidden">
+      {/* Top bar */}
+      <div
+        className="sticky top-0 z-30 flex items-center gap-3 border-b px-4"
+        style={{
+          height: '56px',
+          backgroundColor: 'var(--color-surface)',
+          borderColor: 'var(--color-border)',
+        }}
+      >
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label="Open menu"
+          aria-expanded={open}
+          className="hover:bg-surface-hover flex h-10 w-10 items-center justify-center rounded-md"
+          style={{ color: 'var(--color-text-muted)' }}
+        >
+          <Menu size={20} />
+        </button>
+        <span
+          className="text-xs font-semibold uppercase"
+          style={{ color: 'var(--color-text-subtle)', letterSpacing: '0.04em' }}
+        >
+          Admin
+        </span>
+      </div>
+
+      {/* Drawer */}
+      {open && (
+        <>
+          <div
+            className="fixed inset-0 z-40"
+            style={{ backgroundColor: 'rgba(11, 31, 16, 0.25)' }}
+            onClick={() => setOpen(false)}
+            aria-hidden="true"
+          />
+          <div
+            ref={panelRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Admin navigation"
+            className="fixed top-0 left-0 z-50 flex h-full w-72 max-w-[85vw] flex-col border-r"
+            style={{
+              backgroundColor: 'var(--color-surface)',
+              borderColor: 'var(--color-border)',
+              boxShadow: '0 12px 32px rgba(11, 31, 16, 0.08)',
+            }}
+          >
+            <div className="flex justify-end px-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                aria-label="Close menu"
+                className="hover:bg-surface-hover flex h-10 w-10 items-center justify-center rounded-md"
+                style={{ color: 'var(--color-text-muted)' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <AdminNavContent onNavigate={() => setOpen(false)} />
+          </div>
+        </>
+      )}
+    </div>
   )
 }
