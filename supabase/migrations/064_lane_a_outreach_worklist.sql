@@ -102,3 +102,40 @@ GRANT EXECUTE ON FUNCTION public.admin_leads_worklist() TO authenticated, servic
 REVOKE EXECUTE ON FUNCTION public.admin_lead_save_draft(uuid, jsonb) FROM anon;
 REVOKE EXECUTE ON FUNCTION public.admin_lead_mark_contacted(uuid) FROM anon;
 REVOKE EXECUTE ON FUNCTION public.admin_leads_worklist() FROM anon;
+
+-- Expose the new draft/contacted columns through admin_leads_list so the
+-- /admin/leads drawer reflects saved drafts + contacted state (leads is RLS
+-- deny-all; the RPC is the only client read path). Only the SELECT list changed.
+CREATE OR REPLACE FUNCTION public.admin_leads_list(p_search text DEFAULT NULL::text, p_limit integer DEFAULT 25, p_offset integer DEFAULT 0)
+ RETURNS jsonb LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path TO 'public'
+AS $function$
+DECLARE
+  v_total int;
+  v_rows jsonb;
+BEGIN
+  PERFORM public._admin_gate();
+  SELECT count(*) INTO v_total FROM leads l
+  WHERE (p_search IS NULL OR p_search = ''
+         OR l.display_name ILIKE '%' || p_search || '%'
+         OR l.region ILIKE '%' || p_search || '%'
+         OR l.status ILIKE '%' || p_search || '%'
+         OR l.source ILIKE '%' || p_search || '%');
+  SELECT coalesce(jsonb_agg(row_to_json(sub)), '[]'::jsonb) INTO v_rows FROM (
+    SELECT l.id, l.created_at, l.approved_at, l.type, l.display_name, l.region,
+           l.role_or_category, l.skills, l.source, l.source_ref, l.contact,
+           l.notes, l.status, l.status_changed_at, l.converted_user_id,
+           l.category, l.follow_up_date,
+           l.salary_text, l.summary, l.advertiser_name, l.is_recruiter,
+           l.drafted_email, l.draft_model, l.contacted_at
+    FROM leads l
+    WHERE (p_search IS NULL OR p_search = ''
+           OR l.display_name ILIKE '%' || p_search || '%'
+           OR l.region ILIKE '%' || p_search || '%'
+           OR l.status ILIKE '%' || p_search || '%'
+           OR l.source ILIKE '%' || p_search || '%')
+    ORDER BY l.status_changed_at DESC
+    LIMIT p_limit OFFSET p_offset
+  ) sub;
+  RETURN jsonb_build_object('total', v_total, 'rows', v_rows);
+END;
+$function$;
