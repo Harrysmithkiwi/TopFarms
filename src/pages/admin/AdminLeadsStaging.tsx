@@ -1,6 +1,15 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
+import { useDropzone } from 'react-dropzone'
 import { toast } from 'sonner'
-import { ClipboardPaste, DollarSign, MapPin, ExternalLink, AlertTriangle } from 'lucide-react'
+import {
+  ClipboardPaste,
+  DollarSign,
+  MapPin,
+  ExternalLink,
+  AlertTriangle,
+  UploadCloud,
+  X,
+} from 'lucide-react'
 import { AdminTable } from '@/components/admin/AdminTable'
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
 import { DrawerShell, DrawerSection } from '@/components/admin/DrawerShell'
@@ -65,47 +74,81 @@ interface StagingRow extends Record<string, unknown> {
 const inputCls =
   'border-border bg-surface w-full rounded-[8px] border px-3 py-2 text-sm outline-none focus:border-brand'
 
-/** Paste-batch capture — the primary, most-frequent path. Text OR screenshot. */
+const MAX_IMAGES = 10 // lead-intake caps items at 50; keep vision-batch cost sane.
+
+interface CapturedImage {
+  data: string // base64, no data: prefix
+  mediaType: string
+  name: string
+}
+
+/** Read a File into a base64 CapturedImage (strips the data: URL prefix). */
+function readImage(file: File): Promise<CapturedImage> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      const result = String(reader.result)
+      resolve({
+        data: result.slice(result.indexOf(',') + 1),
+        mediaType: file.type || 'image/png',
+        name: file.name || 'pasted-image.png',
+      })
+    }
+    reader.onerror = () => reject(reader.error)
+    reader.readAsDataURL(file)
+  })
+}
+
+/** Paste-batch capture — the primary path. Text and/or MANY screenshots (drag,
+ *  click, or clipboard-paste an image straight in). Each image is its own vision
+ *  lane item; text is one more item. */
 function PasteCapture({ onCaptured }: { onCaptured: () => void }) {
   // Default to manual-capture: most pastes are other people's groups (NZ Dairy
   // Jobs etc.), not our own group. fb_own_group is the exception, selectable below.
   const [source, setSource] = useState('fb_manual_capture')
   const [text, setText] = useState('')
-  const [image, setImage] = useState<{ data: string; mediaType: string; name: string } | null>(null)
+  const [images, setImages] = useState<CapturedImage[]>([])
   const [busy, setBusy] = useState(false)
 
-  // Read a dropped/selected screenshot into base64 (no data: prefix) for the
-  // Leads v2 vision lane. A screenshot is rarely from your own FB group, so it
-  // defaults the source to Manual / screenshot.
-  function onFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-    const reader = new FileReader()
-    reader.onload = () => {
-      const result = String(reader.result)
-      setImage({
-        data: result.slice(result.indexOf(',') + 1),
-        mediaType: file.type || 'image/png',
-        name: file.name,
-      })
-      setSource('manual_paste')
-    }
-    reader.readAsDataURL(file)
+  const addFiles = useCallback(async (files: File[]) => {
+    const imgs = files.filter((f) => f.type.startsWith('image/'))
+    if (imgs.length === 0) return
+    const read = await Promise.all(imgs.map(readImage))
+    setImages((prev) => [...prev, ...read].slice(0, MAX_IMAGES))
+    // A screenshot is rarely from your own FB group → default the source label.
+    setSource((s) => (s === 'fb_own_group' ? s : 'manual_paste'))
+  }, [])
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    accept: { 'image/*': [] },
+    multiple: true,
+    maxFiles: MAX_IMAGES,
+    noKeyboard: true,
+    onDrop: (accepted) => void addFiles(accepted),
+  })
+
+  // Clipboard-paste an image directly (Cmd/Ctrl+V of a screenshot). Text paste
+  // still flows to the textarea; we only intercept image items.
+  function onPaste(e: React.ClipboardEvent) {
+    const files = Array.from(e.clipboardData.items)
+      .filter((it) => it.kind === 'file' && it.type.startsWith('image/'))
+      .map((it) => it.getAsFile())
+      .filter((f): f is File => f !== null)
+    if (files.length) void addFiles(files)
   }
 
-  // L1 batch lane (§9.2): paste one or MANY posts, and/or a screenshot;
-  // lead-intake structures them with Claude (vision for the image) server-side.
+  // L1 batch lane (§9.2): one item per screenshot (vision) + one for the text;
+  // lead-intake structures them all with Claude server-side.
   async function submit() {
-    if (!text.trim() && !image) return
+    if (!text.trim() && images.length === 0) return
     setBusy(true)
-    const item: Record<string, unknown> = {}
-    if (text.trim()) item.raw_text = text
-    if (image) {
-      item.image = image.data
-      item.image_media_type = image.mediaType
-    }
+    const items: Record<string, unknown>[] = images.map((img) => ({
+      image: img.data,
+      image_media_type: img.mediaType,
+    }))
+    if (text.trim()) items.push({ raw_text: text })
     const { data, error } = await supabase.functions.invoke('lead-intake', {
-      body: { source, items: [item] },
+      body: { source, items },
     })
     setBusy(false)
     if (error) {
@@ -117,14 +160,14 @@ function PasteCapture({ onCaptured }: { onCaptured: () => void }) {
       `Staged ${r.results?.inserted ?? 0} (dupes ${r.results?.exact_duplicate ?? 0}, suppressed ${r.results?.suppressed ?? 0}) — ${r.structuring ?? ''}`,
     )
     setText('')
-    setImage(null)
+    setImages([])
     onCaptured()
   }
 
   return (
-    <DrawerSection label="Paste posts or drop a screenshot">
+    <DrawerSection label="Paste posts or drop screenshots">
       <p className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
-        Paste one or many posts, or add a screenshot of a listing — structuring, dedupe and
+        Paste one or many posts, or drop / paste screenshots of listings — structuring, dedupe and
         suppression run automatically; results land in the queue for your approval.
       </p>
       <select className={inputCls} value={source} onChange={(e) => setSource(e.target.value)}>
@@ -134,42 +177,60 @@ function PasteCapture({ onCaptured }: { onCaptured: () => void }) {
       </select>
       <textarea
         className={`${inputCls} h-40`}
-        placeholder="Paste post text here — multiple posts in one paste is fine (or just add a screenshot below)"
+        placeholder="Paste post text here — multiple posts in one paste is fine. You can also paste a screenshot straight in (Cmd/Ctrl+V)."
         value={text}
         onChange={(e) => setText(e.target.value)}
+        onPaste={onPaste}
       />
-      <div className="flex flex-wrap items-center gap-3">
-        <label className="border-border text-brand hover:bg-surface-2 cursor-pointer rounded-[8px] border px-3 py-2 text-[13px] font-semibold">
-          <input type="file" accept="image/*" className="hidden" onChange={onFile} />
-          {image ? 'Change screenshot' : 'Add screenshot'}
-        </label>
-        {image && (
-          <>
-            <span
-              className="max-w-[160px] truncate text-[12px]"
-              style={{ color: 'var(--color-text-muted)' }}
-              title={image.name}
-            >
-              {image.name}
-            </span>
-            <button
-              type="button"
-              className="text-[12px] underline"
-              style={{ color: 'var(--color-text-subtle)' }}
-              onClick={() => setImage(null)}
-            >
-              Remove
-            </button>
-          </>
-        )}
+
+      {/* Screenshot dropzone — drag, click, or paste. Each image is its own lead. */}
+      <div
+        {...getRootProps()}
+        className="cursor-pointer rounded-[8px] border-2 border-dashed p-4 text-center text-[13px] transition-colors"
+        style={{
+          borderColor: isDragActive ? 'var(--color-brand)' : 'var(--color-border)',
+          backgroundColor: isDragActive ? 'rgba(74,124,47,0.06)' : 'var(--color-surface-2)',
+          color: 'var(--color-text-muted)',
+        }}
+      >
+        <input {...getInputProps()} />
+        <span className="inline-flex items-center gap-1.5">
+          <UploadCloud size={15} />
+          {isDragActive
+            ? 'Drop screenshots here…'
+            : `Drag, click, or paste screenshots — up to ${MAX_IMAGES}`}
+        </span>
       </div>
+      {images.length > 0 && (
+        <ul className="space-y-1.5">
+          {images.map((img, i) => (
+            <li key={`${img.name}-${i}`} className="flex items-center gap-2 text-[12px]">
+              <span className="max-w-[220px] truncate" style={{ color: 'var(--color-text-muted)' }}>
+                {img.name}
+              </span>
+              <button
+                type="button"
+                aria-label={`Remove ${img.name}`}
+                className="ml-auto"
+                style={{ color: 'var(--color-text-subtle)' }}
+                onClick={() => setImages((prev) => prev.filter((_, j) => j !== i))}
+              >
+                <X size={13} />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+
       <Button
         variant="primary"
         size="sm"
-        disabled={busy || (!text.trim() && !image)}
+        disabled={busy || (!text.trim() && images.length === 0)}
         onClick={submit}
       >
-        {busy ? 'Structuring…' : 'Stage batch'}
+        {busy
+          ? 'Structuring…'
+          : `Stage batch${images.length ? ` (${images.length} image${images.length > 1 ? 's' : ''})` : ''}`}
       </Button>
     </DrawerSection>
   )
@@ -521,8 +582,65 @@ export function AdminLeadsStaging() {
   // Leads v2 segmentation. Default: NZ + unknown, expired shown (badged, not hidden).
   const [geoFilter, setGeoFilter] = useState<GeoFilter>('nz_unknown')
   const [hideExpired, setHideExpired] = useState(false)
+  // Bulk selection (by staging id) for one-click approve/reject of a batch.
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [bulkActing, setBulkActing] = useState(false)
 
-  const bumpRefresh = () => setRefreshKey((k) => k + 1)
+  const clearSelection = () => setSelectedIds(new Set())
+  const bumpRefresh = () => {
+    clearSelection()
+    setRefreshKey((k) => k + 1)
+  }
+
+  function toggleRow(row: StagingRow) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(row.id)) next.delete(row.id)
+      else next.add(row.id)
+      return next
+    })
+  }
+  function toggleAll(rows: StagingRow[]) {
+    setSelectedIds((prev) => {
+      const allOn = rows.length > 0 && rows.every((r) => prev.has(r.id))
+      const next = new Set(prev)
+      for (const r of rows) {
+        if (allOn) next.delete(r.id)
+        else next.add(r.id)
+      }
+      return next
+    })
+  }
+
+  async function bulkAct(kind: 'approve' | 'reject' | 'reject_suppress') {
+    const ids = [...selectedIds]
+    if (ids.length === 0) return
+    setBulkActing(true)
+    const { data, error } =
+      kind === 'approve'
+        ? await supabase.rpc('admin_lead_bulk_approve', { p_ids: ids })
+        : await supabase.rpc('admin_lead_bulk_reject', {
+            p_ids: ids,
+            p_suppress: kind === 'reject_suppress',
+          })
+    setBulkActing(false)
+    if (error) {
+      toast.error(`Bulk action failed: ${error.message}`)
+      return
+    }
+    const n =
+      (data as { approved?: number; rejected?: number })?.approved ??
+      (data as { rejected?: number })?.rejected ??
+      0
+    toast.success(
+      kind === 'approve'
+        ? `Approved ${n} into the pipeline`
+        : kind === 'reject_suppress'
+          ? `Rejected + suppressed ${n}`
+          : `Rejected ${n}`,
+    )
+    bumpRefresh()
+  }
 
   // Filter-aware empty state. With Mine as the default, a quiet morning shows the
   // "mine" slice empty — which must NOT read as "the whole queue is empty" when
@@ -593,6 +711,10 @@ export function AdminLeadsStaging() {
         rpc="admin_leads_staging_list"
         inCard
         searchable
+        selectable
+        selectedIds={selectedIds}
+        onToggleRow={toggleRow}
+        onToggleAll={toggleAll}
         searchPlaceholder="Search staging by name, region, locality, source…"
         extraArgs={{ p_source: sourceFilter, p_geo: geoFilter, p_hide_expired: hideExpired }}
         toolbar={
@@ -600,7 +722,10 @@ export function AdminLeadsStaging() {
             <SegmentedControl<SourceFilter>
               aria-label="Filter leads by source"
               value={sourceFilter}
-              onChange={setSourceFilter}
+              onChange={(v) => {
+                setSourceFilter(v)
+                clearSelection()
+              }}
               options={[
                 { value: 'mine', label: 'Mine' },
                 { value: 'harvested', label: 'Harvested' },
@@ -610,7 +735,10 @@ export function AdminLeadsStaging() {
             <SegmentedControl<GeoFilter>
               aria-label="Filter leads by location"
               value={geoFilter}
-              onChange={setGeoFilter}
+              onChange={(v) => {
+                setGeoFilter(v)
+                clearSelection()
+              }}
               options={[
                 { value: 'nz_unknown', label: 'NZ' },
                 { value: 'intl', label: 'International' },
@@ -624,7 +752,10 @@ export function AdminLeadsStaging() {
               <input
                 type="checkbox"
                 checked={hideExpired}
-                onChange={(e) => setHideExpired(e.target.checked)}
+                onChange={(e) => {
+                  setHideExpired(e.target.checked)
+                  clearSelection()
+                }}
               />
               Hide expired
             </label>
@@ -731,6 +862,40 @@ export function AdminLeadsStaging() {
           )
         }}
       />
+
+      {/* Bulk action bar — sticky, appears once rows are selected. Clears on action. */}
+      {selectedIds.size > 0 && (
+        <div
+          className="sticky bottom-0 z-20 flex flex-wrap items-center gap-2 rounded-t-[10px] border-t px-4 py-3"
+          style={{
+            backgroundColor: 'var(--color-surface)',
+            borderColor: 'var(--color-border)',
+            boxShadow: '0 -8px 24px rgba(11, 31, 16, 0.06)',
+          }}
+        >
+          <span className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
+            {selectedIds.size} selected
+          </span>
+          <Button variant="ghost" size="sm" onClick={clearSelection} disabled={bulkActing}>
+            Clear
+          </Button>
+          <div className="flex-1" />
+          <Button
+            variant="ghost"
+            size="sm"
+            disabled={bulkActing}
+            onClick={() => bulkAct('reject_suppress')}
+          >
+            Reject + suppress
+          </Button>
+          <Button variant="outline" size="sm" disabled={bulkActing} onClick={() => bulkAct('reject')}>
+            Reject
+          </Button>
+          <Button variant="primary" size="sm" disabled={bulkActing} onClick={() => bulkAct('approve')}>
+            {bulkActing ? 'Working…' : `Approve ${selectedIds.size}`}
+          </Button>
+        </div>
+      )}
 
       {capturing && (
         <DrawerShell label="Capture lead" onClose={() => setCapturing(false)}>

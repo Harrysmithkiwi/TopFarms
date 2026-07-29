@@ -1,7 +1,12 @@
 import { useState } from 'react'
+import { DollarSign } from 'lucide-react'
 import { toast } from 'sonner'
 import { AdminTable } from '@/components/admin/AdminTable'
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
+import { DrawerShell, DrawerSection } from '@/components/admin/DrawerShell'
 import { ContactGlyphs, LeadContactCard, type LeadContact } from '@/components/admin/LeadContact'
+import { Tag } from '@/components/ui/Tag'
+import { Button } from '@/components/ui/Button'
 import { supabase } from '@/lib/supabase'
 
 /**
@@ -9,6 +14,10 @@ import { supabase } from '@/lib/supabase'
  * Two axes (design 2026-06-16): status = lifecycle (new/contacted/onboarded/dead
  * /follow_up); category = classification (domestic/overseas). Park-with-reason-
  * and-when via admin_lead_categorise. Conversion linking (L4) unchanged.
+ *
+ * v2: folded into the shared admin design system — DrawerShell detail (was an
+ * inline border-2 panel), Tag/Button instead of emoji + bare buttons, cells-only
+ * rows inside a carded AdminTable — so it matches Staging/Outreach.
  */
 
 interface LeadRow extends Record<string, unknown> {
@@ -80,14 +89,8 @@ function CategoriseForm({ lead, onSaved }: { lead: LeadRow; onSaved: () => void 
     'border-border bg-surface rounded-[8px] border px-2 py-1 text-sm outline-none focus:border-brand'
 
   return (
-    <div className="border-border mt-4 border-t pt-3">
-      <p
-        className="text-[11px] font-semibold tracking-wide uppercase"
-        style={{ color: 'var(--color-text-muted)' }}
-      >
-        Park / categorise
-      </p>
-      <div className="mt-2 flex flex-wrap items-center gap-3 text-sm">
+    <DrawerSection label="Park / categorise">
+      <div className="flex flex-wrap items-center gap-3 text-sm">
         <label className="flex items-center gap-1.5">
           Category
           <select
@@ -120,15 +123,146 @@ function CategoriseForm({ lead, onSaved }: { lead: LeadRow; onSaved: () => void 
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
       />
-      <button
-        type="button"
-        disabled={saving}
-        onClick={save}
-        className="bg-brand mt-2 rounded-[8px] px-3 py-1.5 text-sm font-semibold text-white disabled:opacity-50"
-      >
+      <Button size="sm" disabled={saving} onClick={save} className="mt-2">
         {saving ? 'Saving…' : 'Save categorisation'}
-      </button>
-    </div>
+      </Button>
+    </DrawerSection>
+  )
+}
+
+function LeadDrawer({
+  lead,
+  suggestions,
+  onClose,
+  onSetStatus,
+  onLoadSuggestions,
+  onLinkUser,
+  onSaved,
+}: {
+  lead: LeadRow
+  suggestions: Suggestion[] | null
+  onClose: () => void
+  onSetStatus: (s: LeadRow['status']) => void
+  onLoadSuggestions: (leadId: string) => void
+  onLinkUser: (userId: string) => void
+  onSaved: () => void
+}) {
+  return (
+    <DrawerShell label="Lead" onClose={onClose}>
+      {/* Header */}
+      <div className="space-y-2">
+        <h2
+          className="text-[20px] leading-7 font-semibold"
+          style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
+          title={lead.display_name}
+        >
+          {lead.display_name}
+        </h2>
+        <div className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
+          {lead.type} · {lead.region ?? 'no region'} · currently{' '}
+          <span className="font-semibold">{lead.status}</span>
+        </div>
+        <div className="flex flex-wrap items-center gap-2 pt-1">
+          {lead.category === 'overseas' && <Tag variant="grey">Overseas</Tag>}
+          {lead.is_recruiter && (
+            <Tag variant="grey" title={lead.advertiser_name ?? 'agency-placed'}>
+              Recruiter-placed{lead.advertiser_name ? ` · ${lead.advertiser_name}` : ''}
+            </Tag>
+          )}
+          {lead.status === 'follow_up' && lead.follow_up_date && (
+            <Tag variant="blue">Follow-up {lead.follow_up_date}</Tag>
+          )}
+        </div>
+      </div>
+
+      {/* Role + salary */}
+      {(lead.role_or_category || lead.salary_text) && (
+        <DrawerSection label="Role">
+          {lead.role_or_category && (
+            <div className="text-[14px] font-medium" style={{ color: 'var(--color-text)' }}>
+              {lead.role_or_category}
+            </div>
+          )}
+          {lead.salary_text && (
+            <div
+              className="flex items-center gap-1.5 text-[13px]"
+              style={{ color: 'var(--color-text-muted)' }}
+            >
+              <DollarSign size={14} />
+              {lead.salary_text}
+            </div>
+          )}
+        </DrawerSection>
+      )}
+
+      {/* Contact — the work-the-lead target. Shared card with staging. */}
+      <DrawerSection label="Contact">
+        <LeadContactCard contact={lead.contact} />
+      </DrawerSection>
+
+      {lead.summary && (
+        <DrawerSection label="Notes">
+          <p className="text-[13px] leading-5" style={{ color: 'var(--color-text-muted)' }}>
+            {lead.summary}
+          </p>
+        </DrawerSection>
+      )}
+
+      {/* Change status — quick lifecycle actions (were bare buttons on a panel). */}
+      <DrawerSection label="Change status">
+        <div className="flex flex-wrap gap-2">
+          {STATUSES.filter((s) => s !== lead.status).map((s) => (
+            <Button key={s} variant="outline" size="sm" onClick={() => onSetStatus(s)}>
+              {s}
+            </Button>
+          ))}
+        </div>
+      </DrawerSection>
+
+      {/* Park / categorise — keyed by lead id so local state resets per selection. */}
+      <CategoriseForm key={lead.id} lead={lead} onSaved={onSaved} />
+
+      {/* Conversion linking (L4) */}
+      <DrawerSection label="Account link">
+        {lead.converted_user_id ? (
+          <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+            Linked to account <span className="font-mono">{lead.converted_user_id}</span>.
+          </p>
+        ) : (
+          <div className="flex flex-col gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-fit"
+              onClick={() => onLoadSuggestions(lead.id)}
+            >
+              Find account matches
+            </Button>
+            {suggestions !== null &&
+              (suggestions.length === 0 ? (
+                <p className="text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
+                  No matching accounts (exact contact email or similar farm name).
+                </p>
+              ) : (
+                <div className="flex flex-col gap-1.5">
+                  {suggestions.map((sug) => (
+                    <Button
+                      key={sug.candidate_user_id}
+                      variant="outline"
+                      size="sm"
+                      className="w-fit gap-2"
+                      onClick={() => onLinkUser(sug.candidate_user_id)}
+                    >
+                      <span>{sug.candidate_email}</span>
+                      <span className="text-[11px] opacity-60">match: {sug.match}</span>
+                    </Button>
+                  ))}
+                </div>
+              ))}
+          </div>
+        )}
+      </DrawerSection>
+    </DrawerShell>
   )
 }
 
@@ -182,130 +316,34 @@ export function AdminLeads() {
 
   return (
     <div className="space-y-6">
-      <h1
-        className="text-[20px] leading-7 font-semibold"
-        style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
-      >
-        Leads Pipeline
-      </h1>
-      <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-        Approved leads only — everything here passed your staging review. Click a row to change
-        status.
-      </p>
+      <AdminPageHeader
+        eyebrow="Leads"
+        title="Leads Pipeline"
+        description="Approved leads only — everything here passed your staging review. Click a row to work it."
+      />
 
       {selected && (
-        <div className="bg-surface border-brand rounded-[12px] border-2 p-5">
-          <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0 text-sm">
-              <p className="font-semibold">{selected.display_name}</p>
-              <p style={{ color: 'var(--color-text-muted)' }}>
-                {selected.type} · {selected.region ?? 'no region'} · currently{' '}
-                <span className="font-semibold">{selected.status}</span>
-                {selected.category === 'overseas' && (
-                  <span className="border-warn text-warn ml-2 rounded border px-1.5 py-0.5 text-[11px] font-semibold">
-                    🌏 overseas
-                  </span>
-                )}
-                {selected.status === 'follow_up' && selected.follow_up_date && (
-                  <span className="ml-2 text-[12px]">↻ {selected.follow_up_date}</span>
-                )}
-              </p>
-
-              {selected.role_or_category && (
-                <p className="mt-1 text-[13px] font-medium">{selected.role_or_category}</p>
-              )}
-              {(selected.salary_text || selected.is_recruiter) && (
-                <p className="mt-1 flex flex-wrap items-center gap-2 text-[13px]">
-                  {selected.salary_text && <span>💰 {selected.salary_text}</span>}
-                  {selected.is_recruiter && (
-                    <span
-                      className="border-warn text-warn rounded border px-1.5 py-0.5 text-[11px] font-semibold"
-                      title={selected.advertiser_name ?? 'agency-placed'}
-                    >
-                      Recruiter-placed{selected.advertiser_name ? ` · ${selected.advertiser_name}` : ''}
-                    </span>
-                  )}
-                </p>
-              )}
-
-              {/* Contact — the work-the-lead target. Shared card with staging. */}
-              <LeadContactCard contact={selected.contact} />
-
-              {selected.summary && (
-                <p className="mt-2 text-[13px] leading-5" style={{ color: 'var(--color-text-muted)' }}>
-                  {selected.summary}
-                </p>
-              )}
-            </div>
-            <div className="flex shrink-0 flex-col gap-2">
-              {STATUSES.filter((s) => s !== selected.status).map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => setStatus(s)}
-                  className="border-border hover:bg-surface-2 rounded-[8px] border px-3 py-1.5 text-sm"
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Park / categorise (design 2026-06-16): keyed by lead id so the
-              form's local state resets per selection without a useEffect. */}
-          <CategoriseForm
-            key={selected.id}
-            lead={selected}
-            onSaved={() => {
-              setSelected(null)
-              setRefreshKey((k) => k + 1)
-            }}
-          />
-
-          {/* Conversion linking (L4) */}
-          <div className="border-border mt-4 border-t pt-3">
-            {selected.converted_user_id ? (
-              <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                Linked to account <span className="font-mono">{selected.converted_user_id}</span>.
-              </p>
-            ) : (
-              <div className="flex flex-col gap-2">
-                <button
-                  type="button"
-                  onClick={() => loadSuggestions(selected.id)}
-                  className="border-border hover:bg-surface-2 w-fit rounded-[8px] border px-3 py-1.5 text-sm"
-                >
-                  Find account matches
-                </button>
-                {suggestions !== null &&
-                  (suggestions.length === 0 ? (
-                    <p className="text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
-                      No matching accounts (exact contact email or similar farm name).
-                    </p>
-                  ) : (
-                    <div className="flex flex-col gap-1.5">
-                      {suggestions.map((sug) => (
-                        <button
-                          key={sug.candidate_user_id}
-                          type="button"
-                          onClick={() => linkUser(sug.candidate_user_id)}
-                          className="border-border hover:bg-surface-2 flex w-fit items-center gap-2 rounded-[8px] border px-3 py-1.5 text-sm"
-                        >
-                          <span>{sug.candidate_email}</span>
-                          <span className="text-[11px] opacity-60">match: {sug.match}</span>
-                        </button>
-                      ))}
-                    </div>
-                  ))}
-              </div>
-            )}
-          </div>
-        </div>
+        <LeadDrawer
+          lead={selected}
+          suggestions={suggestions}
+          onClose={() => {
+            setSelected(null)
+            setSuggestions(null)
+          }}
+          onSetStatus={setStatus}
+          onLoadSuggestions={loadSuggestions}
+          onLinkUser={linkUser}
+          onSaved={() => {
+            setSelected(null)
+            setRefreshKey((k) => k + 1)
+          }}
+        />
       )}
 
       <AdminTable<LeadRow>
         key={refreshKey}
         rpc="admin_leads_list"
+        inCard
         searchable
         searchPlaceholder="Search by name, region, status, source…"
         emptyHeading="No leads yet"
@@ -324,39 +362,39 @@ export function AdminLeads() {
           { key: 'source', label: 'Source' },
           { key: 'status_changed_at', label: 'Updated' },
         ]}
-        renderRow={(row, onClick) => (
-          <tr
-            key={row.id}
-            onClick={onClick}
-            className="border-border hover:bg-surface-2/50 h-[52px] cursor-pointer border-t"
-          >
-            <td className="px-3 font-medium">
+        renderRow={(row) => (
+          <>
+            <td className="px-4 font-medium">
               <div className="max-w-[220px] truncate" title={row.display_name}>
                 {row.display_name}
               </div>
             </td>
             {/* A2: contact-at-a-glance so the pipeline is workable from the list. */}
-            <td className="px-3">
+            <td className="px-4">
               <ContactGlyphs contact={row.contact} />
             </td>
-            <td className="px-3">{row.type}</td>
-            <td className="px-3">{row.region ?? '—'}</td>
-            <td className="px-3">
-              <span className="font-semibold">{row.status}</span>
-              {row.category === 'overseas' && (
-                <span className="text-warn ml-1.5 text-[11px]" title="overseas">
-                  🌏
-                </span>
-              )}
-              {row.status === 'follow_up' && row.follow_up_date && (
-                <span className="ml-1.5 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
-                  ↻ {row.follow_up_date}
-                </span>
-              )}
+            <td className="px-4">{row.type}</td>
+            <td className="px-4">{row.region ?? '—'}</td>
+            <td className="px-4">
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="font-semibold">{row.status}</span>
+                {row.category === 'overseas' && <Tag variant="grey">Overseas</Tag>}
+                {row.status === 'follow_up' && row.follow_up_date && (
+                  <span className="text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
+                    {row.follow_up_date}
+                  </span>
+                )}
+              </div>
             </td>
-            <td className="px-3">{row.source}</td>
-            <td className="px-3">{new Date(row.status_changed_at).toLocaleDateString('en-NZ', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
-          </tr>
+            <td className="px-4">{row.source}</td>
+            <td className="px-4">
+              {new Date(row.status_changed_at).toLocaleDateString('en-NZ', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+              })}
+            </td>
+          </>
         )}
       />
     </div>

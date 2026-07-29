@@ -70,7 +70,6 @@ export function EmployerList() {
           { key: 'status', label: 'Status' },
           { key: 'joined', label: 'Joined' },
           { key: 'jobs', label: 'Jobs' },
-          { key: 'active', label: 'Active' },
         ]}
         renderRow={(row, onClick) => (
           <>
@@ -113,9 +112,6 @@ export function EmployerList() {
               onClick={onClick}
             >
               {row.jobs_count}
-            </td>
-            <td className="px-4 py-3" onClick={onClick}>
-              {row.is_active ? '✓' : '—'}
             </td>
           </>
         )}

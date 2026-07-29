@@ -3,6 +3,7 @@ import { Card } from '@/components/tremor/Card'
 import { AreaChart } from '@/components/tremor/AreaChart'
 import { Tag } from '@/components/ui/Tag'
 import { KpiCard } from '@/components/admin/KpiCard'
+import { PanelSkeleton } from '@/components/admin/Skeleton'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'sonner'
 
@@ -183,7 +184,16 @@ export function DailyBriefing() {
         Daily Briefing
       </h1>
 
-      {loading && <div className="text-text-muted text-sm">Loading…</div>}
+      {loading && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <PanelSkeleton key={i} height={32} />
+            ))}
+          </div>
+          <PanelSkeleton height={200} />
+        </div>
+      )}
 
       {errored && (
         <div className="text-danger text-sm">

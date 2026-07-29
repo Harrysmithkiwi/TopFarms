@@ -10,6 +10,8 @@ interface CheckboxProps {
   disabled?: boolean
   className?: string
   id?: string
+  /** Accessible name when there's no visible `label` (e.g. a select-all in a header). */
+  'aria-label'?: string
 }
 
 export function Checkbox({
@@ -19,6 +21,7 @@ export function Checkbox({
   disabled,
   className,
   id,
+  'aria-label': ariaLabel,
 }: CheckboxProps) {
   const checkboxId =
     id || (label ? `checkbox-${label.toLowerCase().replace(/\s+/g, '-')}` : undefined)
@@ -30,6 +33,7 @@ export function Checkbox({
         checked={checked}
         onCheckedChange={(val) => onCheckedChange?.(val === true)}
         disabled={disabled}
+        aria-label={ariaLabel}
         className={cn(
           'flex h-[15px] w-[15px] items-center justify-center rounded-[3px] border-[1.5px]',
           'cursor-pointer transition-colors duration-150',

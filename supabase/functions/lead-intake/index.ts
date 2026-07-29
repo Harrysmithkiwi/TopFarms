@@ -1,5 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import * as jose from 'https://esm.sh/jose@5'
+import { NZ_REGIONS, canonicalRegion, classifyGeo } from '../_shared/leadGeo.ts'
 
 // lead-intake — the single intake door, L1 (Claude Haiku structuring).
 //
@@ -23,78 +24,11 @@ import * as jose from 'https://esm.sh/jose@5'
 // grant), so suppression + dedupe cannot be bypassed from any lane.
 
 const ALLOWED_SOURCES = ['seek', 'trademe', 'fb_own_group', 'fb_manual_capture', 'manual_paste']
-const REGIONS = [
-  'Northland',
-  'Auckland',
-  'Waikato',
-  'Bay of Plenty',
-  'Gisborne',
-  "Hawke's Bay",
-  'Taranaki',
-  'Manawatū-Whanganui',
-  'Wellington',
-  'Tasman',
-  'Nelson',
-  'Marlborough',
-  'West Coast',
-  'Canterbury',
-  'Otago',
-  'Southland',
-]
 
-// Region canonicalisation ported from lead-harvest (Phase 1 A3): exact match →
-// alias → null. Keeps lead-intake's macron spelling ('Manawatū-Whanganui') as
-// canonical; aliases fold common variants in. Previously this lane only did
-// exact-match-or-null with no aliases.
-const REGION_ALIASES: Record<string, string> = {
-  // Wairarapa is administratively part of the Wellington region; its towns rarely
-  // say "Wellington" in FB posts, so fold the common ones in (else they go null).
-  wairarapa: 'Wellington',
-  'south wairarapa': 'Wellington',
-  masterton: 'Wellington',
-  carterton: 'Wellington',
-  greytown: 'Wellington',
-  featherston: 'Wellington',
-  martinborough: 'Wellington',
-  'manawatu-whanganui': 'Manawatū-Whanganui',
-  'manawatu-wanganui': 'Manawatū-Whanganui',
-  manawatu: 'Manawatū-Whanganui',
-  wanganui: 'Manawatū-Whanganui',
-  whanganui: 'Manawatū-Whanganui',
-  'hawkes bay': "Hawke's Bay",
-  'hawke s bay': "Hawke's Bay",
-}
-function canonicalRegion(r: string | null | undefined): string | null {
-  if (!r) return null
-  const key = r.trim().toLowerCase()
-  const exact = REGIONS.find((x) => x.toLowerCase() === key)
-  if (exact) return exact
-  return REGION_ALIASES[key] ?? null
-}
-
-// geo_scope classification (Leads v2) — in CODE, mirrors migration 061's backfill
-// so harvested + pasted + screenshot leads segment identically. intl on a foreign
-// dialling prefix / ccTLD / unambiguous overseas place; nz on a real NZ region;
-// else unknown. NZ-ambiguous words are deliberately excluded from the country list.
-const INTL_PLACE_RE =
-  /ireland|saskatchewan|king island|tasmania|\baustralia\b|queensland|new south wales/i
-const FOREIGN_TLD_RE = /\.(ie|au|uk|ca|de|fr|us|za)$/i
-const FOREIGN_DIAL_RE = /\+(?!64)\d/
-function classifyGeo(
-  contact: Contact | null | undefined,
-  region: string | null,
-  hay: string,
-): 'nz' | 'intl' | 'unknown' {
-  if (
-    FOREIGN_DIAL_RE.test(contact?.phone ?? '') ||
-    FOREIGN_TLD_RE.test(contact?.email ?? '') ||
-    INTL_PLACE_RE.test(hay)
-  ) {
-    return 'intl'
-  }
-  if (region && REGIONS.includes(region)) return 'nz'
-  return 'unknown'
-}
+// Region canonicalisation + geo_scope classification now live in ../_shared/
+// leadGeo.ts (Admin Portal v2, F) — one source of truth shared with lead-harvest
+// so pasted/screenshot/harvested leads segment identically. NZ_REGIONS,
+// canonicalRegion and classifyGeo are imported above.
 
 // Lane classification (Phase 1 A2) — in CODE, not the LLM. A regex backstop
 // promotes any clear email/phone found in application_method / raw text into
@@ -471,7 +405,7 @@ async function structureWithClaude(
           'descriptive listing headline ("110ha Pivot-Irrigated Dairy Farm") as the',
           'name — if only a headline is given, use the most name-like fragment and',
           'put the town in locality, not the name.',
-          `region MUST be one of: ${REGIONS.join(', ')} — or null if not stated.`,
+          `region MUST be one of: ${NZ_REGIONS.join(', ')} — or null if not stated.`,
           'locality = the town / settlement / district named in the post (e.g.',
           '"Tirohanga", "Rotherham"), verbatim — distinct from the macro region;',
           'null if no town is stated. NEVER infer it from the region.',
