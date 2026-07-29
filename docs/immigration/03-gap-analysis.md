@@ -17,6 +17,8 @@ Legend: **BUILD** (TopFarms builds) · **INTEGRATE** (bake in a SaaS) · **PARTN
 - Pair with the **free NZBN API** (`api.business.govt.nz`) to resolve an employer to a canonical NZBN (legal name, entity type, status — *not* accreditation), then feed that NZBN to the INZ lookup.
 - **First task of the build:** inspect the live form's request mechanism (JSON endpoint vs JS-rendered) + its ToS posture; keep an OIA periodic snapshot as a compliance fallback. **Classification: BUILD.**
 
+**Slice-0 spike result (2026-07-29 — confirmed by live inspection):** the form calls a **JSON endpoint**, `POST https://www.immigration.govt.nz/list-api/getAPIResults/`, `multipart/form-data` body `query=<name or NZBN>` + `collection=2` (accredited list) + `page=1`. It returns clean JSON — per employer: **`employerName`, `tradingName`, `nzbn`, and `expiryDateOfAccreditation`** (+ `totalResults`, `totalPages`). So we get the **NZBN and the accreditation expiry date**, not just yes/no — we can show "accredited until [date]" and re-check near expiry. A server-to-server call (edge function) works; **one risk to handle: the site is behind Imperva/Incapsula bot protection** — server-side calls may be challenged, so mitigations (correct headers, low volume, or a periodic OIA snapshot fallback) belong in Slice 2. Opt-out employers still return no result → treat absence as "unverified", never "unaccredited".
+
 Sources: [INZ accredited-employer list](https://immigration.govt.nz/work/requirements-for-work-visas/approved-employers/accredited-employer-list) · [data.govt.nz request 856](https://data.govt.nz/datasetrequest/show/856) · [NZBN API](https://portal.api.business.govt.nz/api/nzbn)
 
 ---
