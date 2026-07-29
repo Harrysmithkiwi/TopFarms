@@ -481,7 +481,11 @@ createRoot(document.getElementById('root')!).render(
     <Toaster position="top-right" richColors />
     {/* Pageviews on every route; custom funnel events via track() at the 5
         funnel points (signup_start/complete, job_view, apply_submit,
-        job_publish). No PII in event props. */}
-    <Analytics />
+        job_publish). No PII in event props. Only injected on Vercel-served
+        hosts — elsewhere (localhost, CI vite preview) /_vercel/insights/
+        404s and trips the e2e no-console-errors guard. track() no-ops
+        harmlessly when the script isn't mounted. */}
+    {(window.location.hostname.endsWith('topfarms.co.nz') ||
+      window.location.hostname.endsWith('.vercel.app')) && <Analytics />}
   </StrictMode>,
 )
