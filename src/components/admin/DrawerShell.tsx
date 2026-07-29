@@ -1,5 +1,6 @@
-import { useEffect, type ReactNode } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 import { X } from 'lucide-react'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 /**
  * DrawerShell — the right-anchored slide-in drawer chrome shared by the admin
@@ -27,6 +28,10 @@ export function DrawerShell({
   children: ReactNode
   footer?: ReactNode
 }) {
+  const panelRef = useRef<HTMLDivElement>(null)
+  // Focus in on open, trap Tab, restore to the trigger on close (shared contract).
+  useFocusTrap(panelRef)
+
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') onClose()
@@ -47,6 +52,7 @@ export function DrawerShell({
 
       {/* Drawer */}
       <div
+        ref={panelRef}
         role="dialog"
         aria-label={label}
         aria-modal="true"
