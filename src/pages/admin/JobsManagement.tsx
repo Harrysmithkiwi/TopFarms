@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { AdminTable } from '@/components/admin/AdminTable'
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
 import { ProfileDrawer } from '@/components/admin/ProfileDrawer'
 import { Tag } from '@/components/ui/Tag'
 
@@ -56,12 +57,11 @@ export function JobsManagement() {
 
   return (
     <div className="space-y-6">
-      <h1
-        className="text-[20px] leading-7 font-semibold"
-        style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
-      >
-        Jobs
-      </h1>
+      <AdminPageHeader
+        eyebrow="Jobs & Revenue"
+        title="Jobs"
+        description="Every posted job across the marketplace. Click a row to open the employer."
+      />
 
       <AdminTable<JobRow>
         rpc="admin_list_jobs"

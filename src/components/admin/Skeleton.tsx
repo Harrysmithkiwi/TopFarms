@@ -78,7 +78,11 @@ export function DetailSkeleton() {
         <Shimmer className="h-3 w-1/3" />
       </div>
       {Array.from({ length: 3 }).map((_, i) => (
-        <div key={i} className="space-y-2 border-t pt-4" style={{ borderColor: 'var(--color-border)' }}>
+        <div
+          key={i}
+          className="space-y-2 border-t pt-4"
+          style={{ borderColor: 'var(--color-border)' }}
+        >
           <Shimmer className="h-3 w-24" />
           <Shimmer className="h-3.5 w-full" />
           <Shimmer className="h-3.5 w-4/5" />

@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo } from 'react'
-import { X } from 'lucide-react'
 import { Tag } from '@/components/ui/Tag'
 import { Toggle } from '@/components/ui/Toggle'
 import { Timeline } from '@/components/ui/Timeline'
 import { Button } from '@/components/ui/Button'
 import { AdminNotesField } from './AdminNotesField'
 import { DetailSkeleton } from './Skeleton'
+import { DrawerShell } from './DrawerShell'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'sonner'
 
@@ -86,11 +86,12 @@ function formatJoinDate(iso: string): string {
  *   4. Audit log Timeline (admin_audit_log entries for this user)
  *
  * Suspend/reactivate UX: clicking Toggle reveals an inline confirm row in the
- * drawer (no modal, no focus trap). Confirm fires admin_set_user_active RPC,
- * refreshes audit timeline, surfaces error inline if RPC fails.
+ * drawer. Confirm fires admin_set_user_active RPC, refreshes audit timeline,
+ * surfaces error inline if RPC fails.
  *
- * Visual contract: lg:w-[400px] desktop / full-width mobile, 250ms cubic-bezier
- * transition, prefers-reduced-motion respected. Backdrop click closes.
+ * Chrome is DrawerShell (v2 reunification): one drawer implementation across
+ * admin, so this inherits the shared 420px width, focus trap, and Escape/
+ * backdrop close instead of keeping a private copy.
  */
 export function ProfileDrawer({
   userId,
@@ -139,18 +140,6 @@ export function ProfileDrawer({
       .finally(() => setLoading(false))
   }, [userId, initialActive])
 
-  // Escape key collapses the inline confirm row (UI-SPEC §"Suspend / reactivate UX" step 8)
-  useEffect(() => {
-    if (pendingActive === null) return
-    function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        setPendingActive(null)
-      }
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [pendingActive])
-
   async function commitActiveChange(next: boolean) {
     if (!userId) return
     setCommitting(true)
@@ -192,277 +181,215 @@ export function ProfileDrawer({
   if (!userId) return null
 
   return (
-    <>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 z-40"
-        style={{ backgroundColor: 'rgba(11, 31, 16, 0.25)' }}
-        onClick={onClose}
-        aria-hidden="true"
-      />
-
-      {/* Drawer */}
-      <div
-        role="dialog"
-        aria-label="User profile"
-        aria-modal="true"
-        className="fixed top-0 right-0 z-50 flex h-full w-full flex-col transition-transform duration-[250ms] motion-reduce:transition-none lg:w-[400px]"
-        style={{
-          backgroundColor: 'var(--color-surface)',
-          boxShadow: '0 12px 32px rgba(11, 31, 16, 0.08)',
-          transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
-        }}
-      >
-        {/* Header bar — 56px */}
+    <DrawerShell label="Profile" onClose={onClose}>
+      {error && (
         <div
-          className="flex items-center justify-between border-b px-6"
+          role="alert"
+          className="rounded-md p-3 text-[14px]"
           style={{
-            height: '56px',
-            backgroundColor: 'var(--color-surface-2)',
-            borderColor: 'var(--color-border)',
+            backgroundColor: 'var(--color-danger-bg)',
+            color: 'var(--color-danger)',
+            border: '1px solid var(--color-danger)',
           }}
         >
-          <div
+          {error}
+        </div>
+      )}
+
+      {loading && <DetailSkeleton />}
+
+      {!loading && profile && profile.role === 'employer' && (
+        <div className="space-y-2">
+          <h2
+            className="text-[20px] leading-7 font-semibold"
+            style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
+          >
+            {profile.name ?? profile.email}
+          </h2>
+          <div className="text-[15px]" style={{ color: 'var(--color-text-muted)' }}>
+            {profile.email}
+          </div>
+          <div className="flex items-center gap-2 pt-1">
+            <Tag variant={TIER_LABEL[profile.verification_tier].variant}>
+              {TIER_LABEL[profile.verification_tier].label}
+            </Tag>
+          </div>
+          <div className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
+            Joined {formatJoinDate(profile.join_date)}
+          </div>
+          {profile.region && (
+            <div className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
+              {profile.region}
+            </div>
+          )}
+          <div className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
+            {profile.total_jobs_posted} jobs posted
+          </div>
+          {profile.last_sign_in && (
+            <div className="text-[13px]" style={{ color: 'var(--color-text-subtle)' }}>
+              Last sign-in {new Date(profile.last_sign_in).toLocaleDateString()}
+            </div>
+          )}
+        </div>
+      )}
+
+      {!loading && profile && profile.role === 'seeker' && (
+        <div className="space-y-2">
+          <h2
+            className="text-[20px] leading-7 font-semibold"
+            style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
+          >
+            {profile.name}
+          </h2>
+          <div className="text-[15px]" style={{ color: 'var(--color-text-muted)' }}>
+            {profile.email}
+          </div>
+          {profile.region && (
+            <div className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
+              {profile.region}
+            </div>
+          )}
+          <div className="flex items-center gap-2 pt-1">
+            {profile.onboarding_complete ? (
+              <Tag variant="green">Onboarding complete</Tag>
+            ) : (
+              <Tag variant="warn">Step {profile.onboarding_step} of 7</Tag>
+            )}
+            {profile.match_scores_computed ? (
+              <Tag variant="green">Scores ready</Tag>
+            ) : (
+              <Tag variant="grey">Scores pending</Tag>
+            )}
+          </div>
+          <div className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
+            Joined {formatJoinDate(profile.join_date)}
+          </div>
+          {profile.last_sign_in && (
+            <div className="text-[13px]" style={{ color: 'var(--color-text-subtle)' }}>
+              Last sign-in {new Date(profile.last_sign_in).toLocaleDateString()}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Account state section */}
+      {!loading && profile && (
+        <section className="space-y-3 border-t pt-4" style={{ borderColor: 'var(--color-border)' }}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              {active ? <Tag variant="green">Active</Tag> : <Tag variant="red">Suspended</Tag>}
+            </div>
+            <Toggle
+              checked={active}
+              onCheckedChange={(next) => {
+                // Don't immediately fire RPC — show confirm row
+                setPendingActive(next)
+              }}
+              label={active ? 'Active' : 'Suspended'}
+              disabled={committing}
+            />
+          </div>
+
+          {/* Inline confirm row per UI-SPEC §"Suspend / reactivate UX" */}
+          {pendingActive !== null && (
+            <div
+              className="mt-3 rounded-lg p-4"
+              style={{
+                backgroundColor: 'var(--color-surface-2)',
+                border: '1px solid var(--color-border)',
+              }}
+            >
+              <div className="text-[15px] font-semibold" style={{ color: 'var(--color-text)' }}>
+                {pendingActive ? 'Reactivate this account?' : 'Suspend this account?'}
+              </div>
+              <div
+                className="mt-1 text-[13px]"
+                style={{
+                  color: 'var(--color-text-muted)',
+                  maxWidth: '60ch',
+                }}
+              >
+                {pendingActive
+                  ? `${displayName} will regain full access immediately. This action is logged.`
+                  : `${displayName} will not be able to log in or use TopFarms until reactivated. This action is logged.`}
+              </div>
+              <div className="mt-3 flex items-center justify-end gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setPendingActive(null)}
+                  disabled={committing}
+                >
+                  Cancel
+                </Button>
+                {pendingActive ? (
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => commitActiveChange(true)}
+                    disabled={committing}
+                  >
+                    {committing ? 'Reactivating…' : 'Reactivate account'}
+                  </Button>
+                ) : (
+                  <Button
+                    variant="warn"
+                    size="sm"
+                    onClick={() => commitActiveChange(false)}
+                    disabled={committing}
+                  >
+                    {committing ? 'Suspending…' : 'Suspend account'}
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* Admin notes */}
+      {!loading && profile && (
+        <section className="space-y-3 border-t pt-4" style={{ borderColor: 'var(--color-border)' }}>
+          <h3
             className="text-xs font-semibold uppercase"
             style={{
               color: 'var(--color-text-subtle)',
               letterSpacing: '0.04em',
             }}
           >
-            Profile
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close profile"
-            className="hover:bg-surface-hover flex h-10 w-10 items-center justify-center rounded-md"
-            style={{ color: 'var(--color-text-muted)' }}
+            Notes
+          </h3>
+          <AdminNotesField targetUserId={userId} initialNotes={notes} />
+        </section>
+      )}
+
+      {/* Audit log */}
+      {!loading && profile && (
+        <section className="space-y-3 border-t pt-4" style={{ borderColor: 'var(--color-border)' }}>
+          <h3
+            className="text-xs font-semibold uppercase"
+            style={{
+              color: 'var(--color-text-subtle)',
+              letterSpacing: '0.04em',
+            }}
           >
-            <X size={18} />
-          </button>
-        </div>
-
-        {/* Body — scrollable */}
-        <div className="flex-1 space-y-6 overflow-y-auto p-6">
-          {error && (
-            <div
-              role="alert"
-              className="rounded-md p-3 text-[14px]"
-              style={{
-                backgroundColor: 'var(--color-danger-bg)',
-                color: 'var(--color-danger)',
-                border: '1px solid var(--color-danger)',
-              }}
-            >
-              {error}
+            Activity
+          </h3>
+          {audit.length === 0 ? (
+            <div className="text-[13px]" style={{ color: 'var(--color-text-subtle)' }}>
+              No activity recorded yet.
             </div>
+          ) : (
+            <Timeline
+              entries={audit.map((a) => ({
+                title: a.action.replace(/_/g, ' '),
+                date: new Date(a.created_at).toLocaleString(),
+                description: JSON.stringify(a.payload).slice(0, 100),
+              }))}
+            />
           )}
-
-          {loading && <DetailSkeleton />}
-
-          {!loading && profile && profile.role === 'employer' && (
-            <div className="space-y-2">
-              <h2
-                className="text-[20px] leading-7 font-semibold"
-                style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
-              >
-                {profile.name ?? profile.email}
-              </h2>
-              <div className="text-[15px]" style={{ color: 'var(--color-text-muted)' }}>
-                {profile.email}
-              </div>
-              <div className="flex items-center gap-2 pt-1">
-                <Tag variant={TIER_LABEL[profile.verification_tier].variant}>
-                  {TIER_LABEL[profile.verification_tier].label}
-                </Tag>
-              </div>
-              <div className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
-                Joined {formatJoinDate(profile.join_date)}
-              </div>
-              {profile.region && (
-                <div className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
-                  {profile.region}
-                </div>
-              )}
-              <div className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
-                {profile.total_jobs_posted} jobs posted
-              </div>
-              {profile.last_sign_in && (
-                <div className="text-[13px]" style={{ color: 'var(--color-text-subtle)' }}>
-                  Last sign-in {new Date(profile.last_sign_in).toLocaleDateString()}
-                </div>
-              )}
-            </div>
-          )}
-
-          {!loading && profile && profile.role === 'seeker' && (
-            <div className="space-y-2">
-              <h2
-                className="text-[20px] leading-7 font-semibold"
-                style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
-              >
-                {profile.name}
-              </h2>
-              <div className="text-[15px]" style={{ color: 'var(--color-text-muted)' }}>
-                {profile.email}
-              </div>
-              {profile.region && (
-                <div className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
-                  {profile.region}
-                </div>
-              )}
-              <div className="flex items-center gap-2 pt-1">
-                {profile.onboarding_complete ? (
-                  <Tag variant="green">Onboarding complete</Tag>
-                ) : (
-                  <Tag variant="warn">Step {profile.onboarding_step} of 7</Tag>
-                )}
-                {profile.match_scores_computed ? (
-                  <Tag variant="green">Scores ready</Tag>
-                ) : (
-                  <Tag variant="grey">Scores pending</Tag>
-                )}
-              </div>
-              <div className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
-                Joined {formatJoinDate(profile.join_date)}
-              </div>
-              {profile.last_sign_in && (
-                <div className="text-[13px]" style={{ color: 'var(--color-text-subtle)' }}>
-                  Last sign-in {new Date(profile.last_sign_in).toLocaleDateString()}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Account state section */}
-          {!loading && profile && (
-            <section
-              className="space-y-3 border-t pt-4"
-              style={{ borderColor: 'var(--color-border)' }}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  {active ? <Tag variant="green">Active</Tag> : <Tag variant="red">Suspended</Tag>}
-                </div>
-                <Toggle
-                  checked={active}
-                  onCheckedChange={(next) => {
-                    // Don't immediately fire RPC — show confirm row
-                    setPendingActive(next)
-                  }}
-                  label={active ? 'Active' : 'Suspended'}
-                  disabled={committing}
-                />
-              </div>
-
-              {/* Inline confirm row per UI-SPEC §"Suspend / reactivate UX" */}
-              {pendingActive !== null && (
-                <div
-                  className="mt-3 rounded-lg p-4"
-                  style={{
-                    backgroundColor: 'var(--color-surface-2)',
-                    border: '1px solid var(--color-border)',
-                  }}
-                >
-                  <div className="text-[15px] font-semibold" style={{ color: 'var(--color-text)' }}>
-                    {pendingActive ? 'Reactivate this account?' : 'Suspend this account?'}
-                  </div>
-                  <div
-                    className="mt-1 text-[13px]"
-                    style={{
-                      color: 'var(--color-text-muted)',
-                      maxWidth: '60ch',
-                    }}
-                  >
-                    {pendingActive
-                      ? `${displayName} will regain full access immediately. This action is logged.`
-                      : `${displayName} will not be able to log in or use TopFarms until reactivated. This action is logged.`}
-                  </div>
-                  <div className="mt-3 flex items-center justify-end gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setPendingActive(null)}
-                      disabled={committing}
-                    >
-                      Cancel
-                    </Button>
-                    {pendingActive ? (
-                      <Button
-                        variant="primary"
-                        size="sm"
-                        onClick={() => commitActiveChange(true)}
-                        disabled={committing}
-                      >
-                        {committing ? 'Reactivating…' : 'Reactivate account'}
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="warn"
-                        size="sm"
-                        onClick={() => commitActiveChange(false)}
-                        disabled={committing}
-                      >
-                        {committing ? 'Suspending…' : 'Suspend account'}
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              )}
-            </section>
-          )}
-
-          {/* Admin notes */}
-          {!loading && profile && (
-            <section
-              className="space-y-3 border-t pt-4"
-              style={{ borderColor: 'var(--color-border)' }}
-            >
-              <h3
-                className="text-xs font-semibold uppercase"
-                style={{
-                  color: 'var(--color-text-subtle)',
-                  letterSpacing: '0.04em',
-                }}
-              >
-                Notes
-              </h3>
-              <AdminNotesField targetUserId={userId} initialNotes={notes} />
-            </section>
-          )}
-
-          {/* Audit log */}
-          {!loading && profile && (
-            <section
-              className="space-y-3 border-t pt-4"
-              style={{ borderColor: 'var(--color-border)' }}
-            >
-              <h3
-                className="text-xs font-semibold uppercase"
-                style={{
-                  color: 'var(--color-text-subtle)',
-                  letterSpacing: '0.04em',
-                }}
-              >
-                Activity
-              </h3>
-              {audit.length === 0 ? (
-                <div className="text-[13px]" style={{ color: 'var(--color-text-subtle)' }}>
-                  No activity recorded yet.
-                </div>
-              ) : (
-                <Timeline
-                  entries={audit.map((a) => ({
-                    title: a.action.replace(/_/g, ' '),
-                    date: new Date(a.created_at).toLocaleString(),
-                    description: JSON.stringify(a.payload).slice(0, 100),
-                  }))}
-                />
-              )}
-            </section>
-          )}
-        </div>
-      </div>
-    </>
+        </section>
+      )}
+    </DrawerShell>
   )
 }

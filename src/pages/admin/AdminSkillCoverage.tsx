@@ -1,4 +1,5 @@
 import { AdminTable } from '@/components/admin/AdminTable'
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
 
 interface SkillCoverageRow extends Record<string, unknown> {
   skill_id: string
@@ -37,17 +38,11 @@ const CATEGORY_LABELS: Record<string, string> = {
 export function AdminSkillCoverage() {
   return (
     <div className="space-y-6">
-      <h1
-        className="text-[20px] leading-7 font-semibold"
-        style={{ color: 'var(--color-text)', letterSpacing: '-0.01em' }}
-      >
-        Skill Coverage
-      </h1>
-      <p style={{ color: 'var(--color-text-muted)' }} className="text-sm">
-        Per-competency supply and demand across the 24 ag-broad competencies. Supply counts how many
-        candidates hold each skill; demand counts how many active listings require it. Use this to
-        identify gaps between what candidates offer and what employers need.
-      </p>
+      <AdminPageHeader
+        eyebrow="Overview"
+        title="Skill Coverage"
+        description="Per-competency supply and demand across the 24 ag-broad competencies. Supply counts how many candidates hold each skill; demand counts how many active listings require it — use it to spot gaps between what candidates offer and what employers need."
+      />
 
       <AdminTable<SkillCoverageRow>
         rpc="admin_skill_coverage"

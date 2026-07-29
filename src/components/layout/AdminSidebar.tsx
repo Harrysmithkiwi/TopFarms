@@ -125,7 +125,7 @@ function AdminNavContent({ onNavigate }: { onNavigate?: () => void }) {
                 end
                 className={({ isActive }) =>
                   [
-                    'flex items-center gap-3 rounded-8 px-3 py-2.5 text-sm transition-all',
+                    'rounded-8 flex items-center gap-3 px-3 py-2.5 text-sm transition-all',
                     // Filled brand active state (tokenised); white icon + label.
                     isActive
                       ? 'bg-brand text-text-on-brand font-semibold'
@@ -187,7 +187,10 @@ export function AdminMobileNav() {
   const panelRef = useRef<HTMLDivElement>(null)
   useFocusTrap(panelRef, open)
 
-  // Close whenever the route changes (link tap or browser nav).
+  // Close whenever the route changes (link tap or browser back/forward). Setting
+  // open=false when it's already false is a React no-op (Object.is bail-out), so
+  // this can't cascade — the lint rule is a false positive for ephemeral overlays.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     setOpen(false)
   }, [pathname])
