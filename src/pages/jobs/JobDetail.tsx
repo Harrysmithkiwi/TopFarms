@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router'
+import { track } from '@vercel/analytics'
 import * as Dialog from '@radix-ui/react-dialog'
 import {
   MapPin,
@@ -163,6 +164,9 @@ export function JobDetail() {
       setLoading(false)
       return
     }
+
+    // Funnel: a valid job-detail visit, whether or not the fetch succeeds.
+    track('job_view', { jobId })
 
     async function loadJob() {
       setLoading(true)
@@ -425,6 +429,7 @@ export function JobDetail() {
     }
     setHasApplied(true)
     setApplyModalOpen(false)
+    track('apply_submit', { jobId })
     toast.success('Application submitted!')
   }
 
