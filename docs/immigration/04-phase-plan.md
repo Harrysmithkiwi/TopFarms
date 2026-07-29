@@ -9,10 +9,12 @@ in the IALA safe zone unless marked **⚠ GATED** (needs a lawyer/LIA sign-off b
 
 ## Sequenced slices
 
-### Slice 0 — Register feasibility spike *(do first; investigation only)*
-Inspect the INZ accredited-employer form's live request mechanism (JSON endpoint vs JS-rendered page) and
-its ToS posture; confirm the NZBN API. **Output:** the exact lookup approach for Slice 2 + go/no-go on
-scrape-vs-OIA-snapshot. No prod changes.
+### Slice 0 — Register feasibility spike ✅ DONE (2026-07-29)
+**Result: GO.** The form calls a JSON endpoint — `POST https://www.immigration.govt.nz/list-api/getAPIResults/`
+(`multipart/form-data`: `query`=name/NZBN, `collection`=2, `page`=1) returning `employerName`, `tradingName`,
+`nzbn`, `expiryDateOfAccreditation` per match. So the badge can show accreditation **status + expiry**, keyed by
+NZBN, from a server-side edge-function call. **One risk for Slice 2:** the site is behind Imperva/Incapsula bot
+protection — handle with correct headers / low volume, or fall back to a periodic OIA snapshot. Absence = "unverified".
 
 ### Slice 1 — Data foundation *(no-regret; needed by 2 & 3)*
 Schema (nullable, additive):
