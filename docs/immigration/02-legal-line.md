@@ -1,7 +1,32 @@
 # The legal line — Immigration Advisers Licensing Act 2007 (IALA)
 
-**This is load-bearing. Design every feature around it.** *(Not legal advice — confirm the borderline
-calls with a NZ immigration lawyer or LIA before shipping. Statute + regulator guidance below.)*
+**This is load-bearing. Design every feature around it.** *(Not legal advice — the founder is the lawyer;
+the practice-structure specifics below are his own regulatory domain.)*
+
+## ⭐ The founder is a qualified lawyer — this is the moat
+
+The founder (Harry) holds a **current NZ practising certificate** (barrister / barrister-and-solicitor) and a
+**current NSW practising certificate**. Under **IALA s 11, NZ lawyers with a current practising certificate are
+exempt from the licensing requirement** — so **no IAA licence and no partner LIA are needed to give NZ
+immigration advice.** (Note: you can't hold both an IAA licence and a practising certificate — the regimes are
+mutually exclusive; being a lawyer is the stronger position.) For Australia, Migration Act 1958 s 276–277 lets an
+Australian legal practitioner give immigration *assistance* without OMARA registration, provided it's done in
+connection with legal practice on an unsupervised/principal certificate.
+
+**What this changes for the product:**
+- The **advice layer can be in-house** (Harry, as lawyer) rather than referred out — a competitive advantage
+  almost no jobs-marketplace has. The earlier "partner LIA" default is superseded by "founder-lawyer".
+- Advice must still be delivered **as a lawyer within a properly structured legal practice** — PI insurance that
+  covers immigration work, NZLS (and NSW Law Society) conduct rules, engagement letters that disclose *lawyer, not
+  IAA-adviser/OMARA-agent*, and complaints handling. **This structuring is Harry's own legal call, not the platform's.**
+- The **software itself** still shouldn't autonomously give individualised advice: an eligibility engine or
+  personalising chatbot that advises at scale must sit **under the lawyer's supervision + ownership + PI cover**,
+  and there's a real question of whether the *software* (vs the lawyer) is "advising". So the two "gated" features
+  move from *hard-blocked* to *buildable under Harry's supervision, designed to keep him in the loop* — a build-time
+  design decision, revisited when the phase un-parks.
+
+The rest of this doc (the statute detail + SAFE/RISKY table) still governs **what the software does on its own**;
+the founder-lawyer exemption governs **who delivers the advice**.
 
 ## What "immigration advice" is (s 7)
 

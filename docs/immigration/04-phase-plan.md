@@ -1,8 +1,12 @@
 # Phase plan — Immigration & overseas-worker support
 
+> **STATUS: PARKED until post-launch (decided 2026-07-29).** Research + feasibility done; build deferred so
+> launch + cold-start come first. Slice 0 (feasibility) is complete; Slice 1 onward waits for the un-park.
+
 **Phase goal:** make TopFarms the trusted place where NZ farm employers who can hire overseas workers
-meet migrant job-seekers, with a safe clerical/admin spine around the visa process — *without* crossing
-the immigration-advice line. Off-GSD-roadmap (like the leads workstream); shipped in atomic PR slices.
+meet migrant job-seekers, with a clerical/admin spine around the visa process — the **advice delivered
+in-house by the founder as a lawyer** (IALA-exempt; see [`02-legal-line.md`](02-legal-line.md)), which is
+the moat. Off-GSD-roadmap (like the leads workstream); shipped in atomic PR slices.
 
 **Guiding principle:** rails not advice (see [`02-legal-line.md`](02-legal-line.md)). Every slice below is
 in the IALA safe zone unless marked **⚠ GATED** (needs a lawyer/LIA sign-off before build).
@@ -57,12 +61,19 @@ employment-agreement generator from MBIE's clause library.
 (accredited employers are a lead segment). **Slice 1 (data foundation)** is the first no-regret code slice and
 needs no external decision. Slices 4–6 layer the admin spine; the advice bridge (5) is where an LIA partnership plugs in.
 
-## Operator decisions needed before/at each fork
-1. **Which half first** — seeker-trust spine (0→1→2→3, recommended) or employer accreditation tooling.
-2. **The advice bridge** — directory-only referral, formal **LIA partnership**, or in-house LIA. (Revenue line + safe way to help with judgment calls.)
-3. **A lawyer/LIA reviewer** for the borderline features (eligibility/calculator/chatbot) before those ship.
-4. **Register access** — on-demand scrape (fast) vs OIA periodic snapshot (compliance-safe) vs both.
-5. **Segments** — dairy first (clear visa map + Green List hook) or pastoral/sheep-&-beef too (AEWV-only).
+## Operator decisions
+- ✅ **Advice bridge — RESOLVED: in-house.** The founder is a qualified lawyer (NZ + NSW practising certs,
+  IALA-exempt), so advice is delivered by him within his legal practice — no partner LIA, no external reviewer.
+  Slice 5 becomes "founder-lawyer advice offering + optional referral", and the two gated features (eligibility
+  engine / chatbot) are buildable under his supervision (design to keep him in the loop) rather than hard-blocked.
+- ✅ **Register access** — Slice 0 confirmed a JSON endpoint; default to on-demand NZBN lookup + an OIA-snapshot
+  fallback for the Imperva bot-protection risk.
+
+Still open when the phase un-parks:
+1. **Which half first** — seeker-trust spine (1→2→3, recommended) or employer accreditation tooling.
+2. **Segments** — dairy first (clear visa map + Green List hook) or pastoral/sheep-&-beef too (AEWV-only).
+3. **Practice structuring** — how the in-house advice offering sits legally alongside the platform (PI, engagement
+   letters, entity structure). Founder's own legal call before the advice features ship.
 
 ## Verify-live before user-facing figures
 All INZ fees; exact Green List dairy time-in-role & pay threshold; any sheep-&-beef Green List role; official

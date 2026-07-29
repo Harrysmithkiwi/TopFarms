@@ -5,17 +5,30 @@ Industry context and product knowledge for TopFarms' immigration phase: helping 
 through the visa/admin process. Compiled 2026-07-29 from current official/reputable sources
 (INZ, MBIE, IAA, DairyNZ, HRC) + tooling research. Fast-moving figures are flagged "verify live".
 
-## The one non-negotiable principle
+> **STATUS: PARKED until post-launch (decided 2026-07-29).** Knowledge gathered; build deferred so
+> launch + cold-start come first. The phase plan ([`04-phase-plan.md`](04-phase-plan.md)) is ready to
+> pick up when it's time.
 
-> **Build the rails, refer the advice.**
+## The principle — and the moat
 
-NZ's **Immigration Advisers Licensing Act 2007** makes giving *immigration advice* without a
-licence a criminal offence — **up to $100,000 / 7 years, even for free.** TopFarms is not
-licensed. Everything we build must live in the statute's safe zone — **publicly-available
-information, clerical work (form-filling with the client's own answers), settlement services,
-translation, referral, and marketplace matching** — and every judgment call ("which visa / do
-you qualify / how to present your case") is handed to a **partner Licensed Immigration Adviser
-(LIA) or lawyer.** See [`02-legal-line.md`](02-legal-line.md).
+> **The software builds the rails; the advice is delivered by the founder as a lawyer.**
+
+NZ's **Immigration Advisers Licensing Act 2007** makes giving *immigration advice* without a licence a
+criminal offence ($100k / 7yr, even free) — **but NZ lawyers holding a current practising certificate
+are EXEMPT (s 11).** The founder (Harry) is a qualified lawyer with a current **NZ** practising certificate
+(and a **NSW** one for Australia), so **the advice layer can be in-house, not a partner LIA** — a genuine
+moat almost no marketplace competitor can match.
+
+Design implications:
+- The **software** still stays in the safe zone — publicly-available information, clerical work (form-filling
+  with the client's own answers), settlement services, translation, referral, and matching. It does not
+  autonomously "advise."
+- **Individualised advice** ("which visa / do you qualify / how to present your case") is delivered **by Harry
+  as a lawyer**, within a properly structured legal practice (PI cover, conduct rules, engagement letters,
+  complaints handling) — his own regulatory domain, not the platform's.
+- **Automating advice at scale** (an eligibility engine / chatbot that personalises) is *possible* under a
+  lawyer but still needs to sit under his supervision + ownership + PI cover — a design question for build
+  time, not a hard block. See [`02-legal-line.md`](02-legal-line.md).
 
 ## Contents
 
