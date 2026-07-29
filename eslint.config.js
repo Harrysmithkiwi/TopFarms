@@ -18,7 +18,9 @@ export default tseslint.config(
       // Deno runtime (Deno.serve, URL imports) — not lintable with this
       // browser/Node config. Typecheck happens at deploy via Supabase CLI.
       'supabase/functions',
-      '.claude',
+      // Vendored skill/agent dirs at any depth (e.g. marketing/video/**/.claude
+      // fixture corpora) — not app code, not held to app lint standards.
+      '**/.claude',
     ],
   },
   {
@@ -67,6 +69,17 @@ export default tseslint.config(
     files: ['tests/**/*.{ts,tsx}'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
+  {
+    // Vendored Tremor copy-paste components + chart utils (third-party-authored,
+    // tremor.so distribution model). Same rationale as tests/: their `any`-heavy
+    // recharts typings and mixed exports are upstream's style, not our debt.
+    files: ['src/components/tremor/**', 'src/lib/chartUtils.ts'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-empty-object-type': 'off',
+      'react-refresh/only-export-components': 'off',
     },
   },
 )

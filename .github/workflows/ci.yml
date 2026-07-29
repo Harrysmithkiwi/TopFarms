@@ -46,8 +46,40 @@ jobs:
       - name: Tests
         run: npx vitest run
 
-      - name: Audit production dependencies (high+)
-        run: npm audit --omit=dev --audit-level=high
+      # Fails on any high/critical advisory EXCEPT the documented allowlist —
+      # each entry needs a reason and a removal condition. Plain
+      # `npm audit --audit-level=high` has no exception mechanism.
+      - name: Audit production dependencies (high+, allowlisted exceptions)
+        run: |
+          node --input-type=module -e "
+          import { execSync } from 'node:child_process';
+          const ALLOW = new Set([
+            // react-router RSC-mode CSRF — RSC/server-actions only; this app is
+            // a client SPA (createBrowserRouter), the code path is unreachable.
+            // Fixed upstream only in react-router 8. REMOVE on the v8 upgrade.
+            'GHSA-qwww-vcr4-c8h2',
+          ]);
+          let out;
+          try { out = execSync('npm audit --omit=dev --json', { maxBuffer: 64 * 1024 * 1024 }).toString(); }
+          catch (e) { out = e.stdout.toString(); }
+          const audit = JSON.parse(out);
+          const bad = [];
+          for (const [name, v] of Object.entries(audit.vulnerabilities ?? {})) {
+            if (!['high', 'critical'].includes(v.severity)) continue;
+            // via objects are this package's own advisories; via strings are
+            // transitive pointers to packages that get their own entry.
+            const ids = (v.via ?? [])
+              .filter((x) => typeof x === 'object')
+              .map((x) => (x.url ?? '').split('/').pop());
+            const unallowed = ids.filter((id) => !ALLOW.has(id));
+            if (unallowed.length) bad.push(name + ': ' + unallowed.join(', '));
+          }
+          if (bad.length) {
+            console.error('FAIL: high+ advisories outside the allowlist:\n' + bad.join('\n'));
+            process.exit(1);
+          }
+          console.log('OK: no high+ advisories outside the allowlist');
+          "
 
       - name: Build
         run: npm run build

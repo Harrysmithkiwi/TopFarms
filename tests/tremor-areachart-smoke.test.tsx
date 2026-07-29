@@ -27,7 +27,7 @@ beforeAll(() => {
     constructor(cb: ResizeObserverCallback) {
       this.cb = cb
     }
-    observe(el: Element) {
+    observe(_el: Element) {
       this.cb(
         [{ contentRect: { width: 600, height: 300 } } as ResizeObserverEntry],
         this as unknown as ResizeObserver,
