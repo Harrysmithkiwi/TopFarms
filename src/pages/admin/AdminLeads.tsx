@@ -3,6 +3,7 @@ import { DollarSign } from 'lucide-react'
 import { toast } from 'sonner'
 import { AdminTable } from '@/components/admin/AdminTable'
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
+import { LeadsFunnel } from '@/components/admin/LeadsFunnel'
 import { DrawerShell, DrawerSection } from '@/components/admin/DrawerShell'
 import { ContactGlyphs, LeadContactCard, type LeadContact } from '@/components/admin/LeadContact'
 import { Tag } from '@/components/ui/Tag'
@@ -435,6 +436,8 @@ export function AdminLeads() {
         title="Leads Pipeline"
         description="Approved leads only — everything here passed your staging review. Click a row to work it."
       />
+
+      <LeadsFunnel refreshKey={refreshKey} />
 
       {selected && (
         <LeadDrawer
