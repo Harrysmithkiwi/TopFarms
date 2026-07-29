@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { readFileSync, readdirSync } from 'node:fs'
 import { describe, it, expect } from 'vitest'
 
 // T-2 source filter — security + drift guards. Static-source posture suite:
@@ -13,6 +13,19 @@ const SQL = RAW.split('\n')
 const body = SQL.split(/AS \$\$/)[1]?.split(/\$\$;/)[0] ?? ''
 
 const INTAKE = readFileSync('supabase/functions/lead-intake/index.ts', 'utf8')
+
+// The drift guard must read the LATEST migration that (re)defines the RPC —
+// pinning it to 054 went stale when 061 recreated the function with
+// 'manual_paste'. Resolve dynamically so the next recreate can't repeat that.
+const LATEST_RPC_MIGRATION = readdirSync('supabase/migrations')
+  .filter((f) => f.endsWith('.sql'))
+  .sort()
+  .filter((f) => readFileSync(`supabase/migrations/${f}`, 'utf8').includes('v_manual_sources'))
+  .at(-1) as string
+const LATEST_SQL = readFileSync(`supabase/migrations/${LATEST_RPC_MIGRATION}`, 'utf8')
+  .split('\n')
+  .map((l) => l.replace(/--.*$/, ''))
+  .join('\n')
 
 // Pull a quoted-string list out of a snippet, e.g. ARRAY['a','b'] or = ['a','b'].
 function quotedList(s: string): string[] {
@@ -59,9 +72,11 @@ describe('054 admin_leads_staging_list — source filter security (T-2)', () => 
   })
 })
 
-describe('054 "mine" classification stays in sync with lead-intake (drift guard)', () => {
-  it("the RPC's v_manual_sources == lead-intake ALLOWED_SOURCES", () => {
-    const rpcArray = quotedList(SQL.split(/v_manual_sources text\[\] :=/)[1]?.split(';')[0] ?? '')
+describe('"mine" classification stays in sync with lead-intake (drift guard, latest migration)', () => {
+  it("the latest RPC's v_manual_sources == lead-intake ALLOWED_SOURCES", () => {
+    const rpcArray = quotedList(
+      LATEST_SQL.split(/v_manual_sources text\[\] :=/)[1]?.split(';')[0] ?? '',
+    )
     const intakeArray = quotedList(INTAKE.split(/ALLOWED_SOURCES\s*=/)[1]?.split(']')[0] ?? '')
     expect(rpcArray.length).toBeGreaterThan(0)
     expect(rpcArray).toEqual(intakeArray)

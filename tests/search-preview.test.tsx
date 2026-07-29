@@ -88,7 +88,9 @@ describe('LivePreviewSidebar', () => {
 
   it('renders AI tip box with ai-bg background', () => {
     render(<LivePreviewSidebar completenessPercent={50} />)
-    const tipText = screen.getByText(/40% more applications/)
+    // Truth-pass: the old copy cited "40% more applications" — a fabricated
+    // stat. Current copy is a qualitative tip; never reintroduce invented numbers.
+    const tipText = screen.getByText(/accommodation details/)
     expect(tipText).toBeInTheDocument()
     // Check that the tip box parent has ai-bg
     const tipBox = tipText.closest('[class*="bg-ai-bg"]')
