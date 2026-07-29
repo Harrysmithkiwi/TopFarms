@@ -197,7 +197,9 @@ describe('Landing Page', () => {
 
     it('labels the hero demo column as an Example so its numbers cannot read as real', () => {
       renderHome()
-      expect(screen.getByText('Example')).toBeInTheDocument()
+      // Multiple Example badges (hero + demo cards) are fine — the guard is that
+      // AT LEAST one exists so demo numbers can never read as real.
+      expect(screen.getAllByText('Example').length).toBeGreaterThan(0)
     })
 
     it('does not render a fabricated match score on featured listings', () => {

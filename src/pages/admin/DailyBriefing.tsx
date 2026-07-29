@@ -85,6 +85,7 @@ function CardHeading({
  * there's no baseline to divide by, so we render an honest "—" rather than a
  * fabricated "∞%". Exported for unit coverage of the divide-by-zero branch.
  */
+// eslint-disable-next-line react-refresh/only-export-components -- deliberate: exported for unit coverage; admin page, HMR full-reload is fine
 export function pctDelta(today: number, prior: number): number | null {
   if (!prior) return null // 0 / undefined / NaN → no baseline, render "—"
   return Math.round(((today - prior) / prior) * 100)
@@ -99,6 +100,7 @@ interface SignupsTrendRow {
 }
 
 /** Map RPC rows to the AreaChart shape: short day label + capitalised category. */
+// eslint-disable-next-line react-refresh/only-export-components -- deliberate: exported for unit coverage; admin page, HMR full-reload is fine
 export function formatTrend(rows: SignupsTrendRow[]): { date: string; Signups: number }[] {
   return rows.map((r) => ({
     // append T00:00:00 so the ISO date parses as local midnight, not UTC —
