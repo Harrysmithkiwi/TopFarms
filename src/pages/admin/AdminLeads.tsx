@@ -40,7 +40,14 @@ interface LeadRow extends Record<string, unknown> {
   summary: string | null
   advertiser_name: string | null
   is_recruiter: boolean
+  // Lane-A outreach (migration 064)
+  drafted_email: { subject: string; body: string } | null
+  draft_model: string | null
+  contacted_at: string | null
 }
+
+const inputCls =
+  'border-border bg-surface rounded-[8px] border px-2 py-1 text-sm outline-none focus:border-brand'
 
 // Quick lifecycle buttons. follow_up is set via the categorise form (it needs a
 // date), so it's not a one-click button here.
@@ -85,9 +92,6 @@ function CategoriseForm({ lead, onSaved }: { lead: LeadRow; onSaved: () => void 
     onSaved()
   }
 
-  const inputCls =
-    'border-border bg-surface rounded-[8px] border px-2 py-1 text-sm outline-none focus:border-brand'
-
   return (
     <DrawerSection label="Park / categorise">
       <div className="flex flex-wrap items-center gap-3 text-sm">
@@ -126,6 +130,113 @@ function CategoriseForm({ lead, onSaved }: { lead: LeadRow; onSaved: () => void 
       <Button size="sm" disabled={saving} onClick={save} className="mt-2">
         {saving ? 'Saving…' : 'Save categorisation'}
       </Button>
+    </DrawerSection>
+  )
+}
+
+/**
+ * Lane-A outreach loop (v2 #1): draft → edit → copy/open → mark contacted, for
+ * leads that carry a contact email. Mirrors Lane B's send loop. Keyed by lead id
+ * so state resets per selection.
+ */
+function DraftOutreach({ lead, onContacted }: { lead: LeadRow; onContacted: () => void }) {
+  const email = lead.contact?.email
+  const [draft, setDraft] = useState<{ subject: string; body: string } | null>(
+    lead.drafted_email ?? null,
+  )
+  const [busy, setBusy] = useState(false)
+  const [saving, setSaving] = useState(false)
+
+  if (!email) return null // Lane A only — no email means Lane B / the outreach queue.
+
+  async function generate() {
+    setBusy(true)
+    const { data, error } = await supabase.functions.invoke('lead-draft-email', {
+      body: { lead_id: lead.id },
+    })
+    setBusy(false)
+    if (error) {
+      toast.error(`Draft failed: ${error.message}`)
+      return
+    }
+    const d = data as { subject: string; body: string; model: string }
+    setDraft({ subject: d.subject, body: d.body })
+    toast.success(`Drafted (${d.model})`)
+  }
+
+  async function save() {
+    if (!draft) return
+    setSaving(true)
+    const { error } = await supabase.rpc('admin_lead_save_draft', {
+      p_lead_id: lead.id,
+      p_draft: draft,
+    })
+    setSaving(false)
+    if (error) {
+      toast.error(`Save failed: ${error.message}`)
+      return
+    }
+    toast.success('Draft saved')
+  }
+
+  function copyOpen() {
+    if (!draft) return
+    void navigator.clipboard?.writeText(draft.body).catch(() => {})
+    const mailto = `mailto:${email}?subject=${encodeURIComponent(draft.subject)}&body=${encodeURIComponent(draft.body)}`
+    window.open(mailto, '_blank')
+    toast.success('Body copied + email opened')
+  }
+
+  async function markContacted() {
+    const { error } = await supabase.rpc('admin_lead_mark_contacted', { p_lead_id: lead.id })
+    if (error) {
+      toast.error(`Failed: ${error.message}`)
+      return
+    }
+    toast.success('Marked contacted')
+    onContacted()
+  }
+
+  return (
+    <DrawerSection label="Outreach email">
+      {lead.contacted_at && (
+        <Tag variant="green">
+          Contacted {new Date(lead.contacted_at).toLocaleDateString('en-NZ')}
+        </Tag>
+      )}
+      {!draft ? (
+        <Button variant="outline" size="sm" disabled={busy} onClick={generate}>
+          {busy ? 'Drafting…' : 'Draft email'}
+        </Button>
+      ) : (
+        <div className="space-y-2">
+          <input
+            className={`${inputCls} w-full`}
+            value={draft.subject}
+            onChange={(e) => setDraft({ ...draft, subject: e.target.value })}
+            placeholder="Subject"
+          />
+          <textarea
+            className={`${inputCls} h-48 w-full`}
+            value={draft.body}
+            onChange={(e) => setDraft({ ...draft, body: e.target.value })}
+          />
+          <div className="flex flex-wrap gap-2">
+            <Button variant="primary" size="sm" onClick={copyOpen}>
+              Copy &amp; open email
+            </Button>
+            <Button variant="outline" size="sm" disabled={saving} onClick={save}>
+              {saving ? 'Saving…' : 'Save draft'}
+            </Button>
+            <Button variant="ghost" size="sm" disabled={busy} onClick={generate}>
+              {busy ? 'Drafting…' : 'Redraft'}
+            </Button>
+            <Button variant="ghost" size="sm" onClick={markContacted}>
+              Mark contacted
+            </Button>
+          </div>
+        </div>
+      )}
     </DrawerSection>
   )
 }
@@ -199,6 +310,9 @@ function LeadDrawer({
       <DrawerSection label="Contact">
         <LeadContactCard contact={lead.contact} />
       </DrawerSection>
+
+      {/* Lane-A outreach loop — draft/send/track for contactable leads (v2 #1). */}
+      <DraftOutreach key={lead.id} lead={lead} onContacted={onSaved} />
 
       {lead.summary && (
         <DrawerSection label="Notes">

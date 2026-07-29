@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import { AdminTable } from '@/components/admin/AdminTable'
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
+import { LeadsWorklist } from '@/components/admin/LeadsWorklist'
 import { DrawerShell, DrawerSection } from '@/components/admin/DrawerShell'
 import { ContactGlyphs, LeadContactCard, type LeadContact } from '@/components/admin/LeadContact'
 import { Button } from '@/components/ui/Button'
@@ -705,6 +706,8 @@ export function AdminLeadsStaging() {
           </Button>
         }
       />
+
+      <LeadsWorklist key={`worklist-${refreshKey}`} />
 
       <AdminTable<StagingRow>
         key={refreshKey}
