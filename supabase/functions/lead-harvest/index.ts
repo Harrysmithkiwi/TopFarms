@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { canonicalRegion, classifyGeo } from '../_shared/leadGeo.ts'
 
 // lead-harvest — PULL feed for commercial ag job boards via Firecrawl
 // (PHASE-LEADS-FEEDS-ARCHITECTURE.md). Cron-triggered (pg_cron → pg_net with
@@ -69,7 +70,8 @@ const EXTRACT_PROMPT =
   'business_name=the farm and advertiser_name=the agency and is_recruiter=true. ' +
   'Map region to one of the 16 NZ regions. Include contact email/name/phone/notes ' +
   'ONLY if explicitly printed in the ad — NEVER infer or construct them. Write ' +
-  'summary as one clean paragraph with no contact details.'
+  'summary as one clean paragraph with no contact details. Set applications_close ' +
+  'to the closing date AS AN ISO DATE (YYYY-MM-DD) if the ad states one, else null.'
 
 const SCHEMA = {
   type: 'object',
@@ -86,6 +88,7 @@ const SCHEMA = {
     contact_notes: { type: ['string', 'null'] },
     company_profile_url: { type: ['string', 'null'] },
     summary: { type: ['string', 'null'] },
+    applications_close: { type: ['string', 'null'] },
     listing_url: { type: ['string', 'null'] },
   },
   required: ['job_title', 'is_recruiter'],
@@ -104,6 +107,7 @@ interface Extracted {
   contact_notes?: string | null
   company_profile_url?: string | null
   summary?: string | null
+  applications_close?: string | null
 }
 
 // Narrow structural type: only the read surface dropKnown needs (the full
@@ -341,48 +345,37 @@ function isBoardName(name: string | null | undefined): boolean {
   return name.toLowerCase().replace(/[^a-z]/g, '').includes('nzfarmingjobs')
 }
 
-// Region canonicalisation (#2): enforce the 16-region set; do NOT trust the
-// LLM's free text. Exact match wins; known variants map via aliases; anything
-// else → null (surfaces as a missing field for manual review rather than
-// polluting region filtering with off-set values).
-const NZ_REGIONS = [
-  'Northland', 'Auckland', 'Waikato', 'Bay of Plenty', 'Gisborne', "Hawke's Bay",
-  'Taranaki', 'Manawatu-Whanganui', 'Wellington', 'Tasman', 'Nelson',
-  'Marlborough', 'West Coast', 'Canterbury', 'Otago', 'Southland',
-]
-const REGION_ALIASES: Record<string, string> = {
-  'wairarapa': 'Wellington', // Wairarapa sits within the Wellington region
-  'manawatu-wanganui': 'Manawatu-Whanganui',
-  'manawatu': 'Manawatu-Whanganui',
-  'wanganui': 'Manawatu-Whanganui',
-  'whanganui': 'Manawatu-Whanganui',
-  'hawkes bay': "Hawke's Bay",
-  'hawke s bay': "Hawke's Bay",
-}
-function canonicalRegion(r: string | null | undefined): string | null {
-  if (!r) return null
-  const key = r.trim().toLowerCase()
-  const exact = NZ_REGIONS.find((x) => x.toLowerCase() === key)
-  if (exact) return exact
-  return REGION_ALIASES[key] ?? null
-}
+// Region canonicalisation (#2) + geo_scope now come from ../_shared/leadGeo.ts —
+// one source of truth shared with lead-intake so a harvested lead canonicalises
+// to the SAME macron spelling ('Manawatū-Whanganui') and segments identically
+// (v2, F). Previously harvest used a no-macron local copy, splitting the region.
 
 function normalise(x: Extracted, url: string): Record<string, unknown> {
   // #1: if the "advertiser" is really the board, it's a direct-from-farm ad —
   // null the advertiser and clear the recruiter flag. Genuine agencies (Rural
   // Directions, etc.) pass through unchanged.
   const advertiserIsBoard = isBoardName(x.advertiser_name)
+  const region = canonicalRegion(x.region) // #2
+  const contact = contactObj(x)
+  // Haystack for geo detection: LLM summary + raw region text + contact notes
+  // (mirrors lead-intake's hay + migration 061's combined-field backfill).
+  const hay = [x.summary ?? '', x.region ?? '', x.contact_notes ?? ''].join(' ')
   return {
     type: 'employer',
     display_name: x.business_name ?? x.job_title ?? '(unnamed)',
-    region: canonicalRegion(x.region), // #2
+    region,
     role_or_category: x.job_title ?? null,
-    contact: contactObj(x),
+    contact,
     salary_text: x.salary_text ?? null,
     summary: x.summary ?? null,
     company_profile_url: x.company_profile_url ?? null,
     advertiser_name: advertiserIsBoard ? null : (x.advertiser_name ?? null),
     is_recruiter: advertiserIsBoard ? false : (x.is_recruiter ?? false),
+    // Leads v2 parity (F): set the same two segmentation signals intake sets, so
+    // harvested rows respond to the queue's geo + expired filters instead of
+    // relying on the coalesce(...,'nz') default.
+    geo_scope: classifyGeo(contact, region, hay),
+    applications_close: x.applications_close ?? null,
     source_ref: url,
   }
 }
