@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback, type ReactNode } from 'react
 import { Search, ArrowUp, ArrowDown, ChevronsUpDown } from 'lucide-react'
 import { Input } from '@/components/ui/Input'
 import { Pagination } from '@/components/ui/Pagination'
+import { Checkbox } from '@/components/ui/Checkbox'
 import { Card } from '@/components/tremor/Card'
 import { TableSkeleton } from '@/components/admin/Skeleton'
 import { supabase } from '@/lib/supabase'
@@ -82,6 +83,17 @@ interface AdminTableProps<TRow> {
    * turn; the default (false) path is byte-identical to the pre-uplift table.
    */
   inCard?: boolean
+  /**
+   * Opt-in row selection: renders a leading checkbox column with a select-all
+   * header. Off by default so every other screen is unchanged. The parent owns
+   * the selected set (by row id) and the toggle callbacks; AdminTable just draws
+   * the checkboxes and reports toggles.
+   */
+  selectable?: boolean
+  selectedIds?: Set<string>
+  onToggleRow?: (row: TRow) => void
+  /** Toggle every currently-loaded row (select-all header). Receives the page's rows. */
+  onToggleAll?: (rows: TRow[]) => void
 }
 
 /**
@@ -109,6 +121,10 @@ export function AdminTable<TRow extends Record<string, unknown>>({
   errorCopy,
   pageSize = 25,
   inCard = false,
+  selectable = false,
+  selectedIds,
+  onToggleRow,
+  onToggleAll,
 }: AdminTableProps<TRow>) {
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
@@ -220,10 +236,24 @@ export function AdminTable<TRow extends Record<string, unknown>>({
     )
   ) : null
 
+  const rowId = (row: TRow, idx: number) =>
+    (row.id as string | undefined) ?? (row.user_id as string | undefined) ?? String(idx)
+  const allSelected =
+    selectable && rows.length > 0 && rows.every((r, i) => selectedIds?.has(rowId(r, i)))
+
   const tableEl = (
     <table className="w-full" style={{ fontVariantNumeric: 'tabular-nums' }}>
       <thead>
         <tr style={{ borderBottom: '1px solid var(--color-border)' }}>
+          {selectable && (
+            <th className="w-10 px-4 py-3" onClick={(e) => e.stopPropagation()}>
+              <Checkbox
+                checked={allSelected}
+                onCheckedChange={() => onToggleAll?.(rows)}
+                aria-label={allSelected ? 'Deselect all' : 'Select all'}
+              />
+            </th>
+          )}
           {columns.map((c) => {
             const active = c.sortKey && sort?.key === c.sortKey
             const ariaSort = !c.sortKey
@@ -268,8 +298,7 @@ export function AdminTable<TRow extends Record<string, unknown>>({
       </thead>
       <tbody>
         {rows.map((row, idx) => {
-          const rowKey =
-            (row.id as string | undefined) ?? (row.user_id as string | undefined) ?? String(idx)
+          const rowKey = rowId(row, idx)
           const handleRowClick = () => onRowClick?.(row)
           return (
             <tr
@@ -281,6 +310,15 @@ export function AdminTable<TRow extends Record<string, unknown>>({
               }}
               onClick={handleRowClick}
             >
+              {selectable && (
+                <td className="w-10 px-4" onClick={(e) => e.stopPropagation()}>
+                  <Checkbox
+                    checked={selectedIds?.has(rowKey) ?? false}
+                    onCheckedChange={() => onToggleRow?.(row)}
+                    aria-label="Select row"
+                  />
+                </td>
+              )}
               {renderRow(row, handleRowClick, debouncedSearch)}
             </tr>
           )

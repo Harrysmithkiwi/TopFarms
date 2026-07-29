@@ -582,8 +582,65 @@ export function AdminLeadsStaging() {
   // Leads v2 segmentation. Default: NZ + unknown, expired shown (badged, not hidden).
   const [geoFilter, setGeoFilter] = useState<GeoFilter>('nz_unknown')
   const [hideExpired, setHideExpired] = useState(false)
+  // Bulk selection (by staging id) for one-click approve/reject of a batch.
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [bulkActing, setBulkActing] = useState(false)
 
-  const bumpRefresh = () => setRefreshKey((k) => k + 1)
+  const clearSelection = () => setSelectedIds(new Set())
+  const bumpRefresh = () => {
+    clearSelection()
+    setRefreshKey((k) => k + 1)
+  }
+
+  function toggleRow(row: StagingRow) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(row.id)) next.delete(row.id)
+      else next.add(row.id)
+      return next
+    })
+  }
+  function toggleAll(rows: StagingRow[]) {
+    setSelectedIds((prev) => {
+      const allOn = rows.length > 0 && rows.every((r) => prev.has(r.id))
+      const next = new Set(prev)
+      for (const r of rows) {
+        if (allOn) next.delete(r.id)
+        else next.add(r.id)
+      }
+      return next
+    })
+  }
+
+  async function bulkAct(kind: 'approve' | 'reject' | 'reject_suppress') {
+    const ids = [...selectedIds]
+    if (ids.length === 0) return
+    setBulkActing(true)
+    const { data, error } =
+      kind === 'approve'
+        ? await supabase.rpc('admin_lead_bulk_approve', { p_ids: ids })
+        : await supabase.rpc('admin_lead_bulk_reject', {
+            p_ids: ids,
+            p_suppress: kind === 'reject_suppress',
+          })
+    setBulkActing(false)
+    if (error) {
+      toast.error(`Bulk action failed: ${error.message}`)
+      return
+    }
+    const n =
+      (data as { approved?: number; rejected?: number })?.approved ??
+      (data as { rejected?: number })?.rejected ??
+      0
+    toast.success(
+      kind === 'approve'
+        ? `Approved ${n} into the pipeline`
+        : kind === 'reject_suppress'
+          ? `Rejected + suppressed ${n}`
+          : `Rejected ${n}`,
+    )
+    bumpRefresh()
+  }
 
   // Filter-aware empty state. With Mine as the default, a quiet morning shows the
   // "mine" slice empty — which must NOT read as "the whole queue is empty" when
@@ -654,6 +711,10 @@ export function AdminLeadsStaging() {
         rpc="admin_leads_staging_list"
         inCard
         searchable
+        selectable
+        selectedIds={selectedIds}
+        onToggleRow={toggleRow}
+        onToggleAll={toggleAll}
         searchPlaceholder="Search staging by name, region, locality, source…"
         extraArgs={{ p_source: sourceFilter, p_geo: geoFilter, p_hide_expired: hideExpired }}
         toolbar={
@@ -661,7 +722,10 @@ export function AdminLeadsStaging() {
             <SegmentedControl<SourceFilter>
               aria-label="Filter leads by source"
               value={sourceFilter}
-              onChange={setSourceFilter}
+              onChange={(v) => {
+                setSourceFilter(v)
+                clearSelection()
+              }}
               options={[
                 { value: 'mine', label: 'Mine' },
                 { value: 'harvested', label: 'Harvested' },
@@ -671,7 +735,10 @@ export function AdminLeadsStaging() {
             <SegmentedControl<GeoFilter>
               aria-label="Filter leads by location"
               value={geoFilter}
-              onChange={setGeoFilter}
+              onChange={(v) => {
+                setGeoFilter(v)
+                clearSelection()
+              }}
               options={[
                 { value: 'nz_unknown', label: 'NZ' },
                 { value: 'intl', label: 'International' },
@@ -685,7 +752,10 @@ export function AdminLeadsStaging() {
               <input
                 type="checkbox"
                 checked={hideExpired}
-                onChange={(e) => setHideExpired(e.target.checked)}
+                onChange={(e) => {
+                  setHideExpired(e.target.checked)
+                  clearSelection()
+                }}
               />
               Hide expired
             </label>
@@ -792,6 +862,40 @@ export function AdminLeadsStaging() {
           )
         }}
       />
+
+      {/* Bulk action bar — sticky, appears once rows are selected. Clears on action. */}
+      {selectedIds.size > 0 && (
+        <div
+          className="sticky bottom-0 z-20 flex flex-wrap items-center gap-2 rounded-t-[10px] border-t px-4 py-3"
+          style={{
+            backgroundColor: 'var(--color-surface)',
+            borderColor: 'var(--color-border)',
+            boxShadow: '0 -8px 24px rgba(11, 31, 16, 0.06)',
+          }}
+        >
+          <span className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
+            {selectedIds.size} selected
+          </span>
+          <Button variant="ghost" size="sm" onClick={clearSelection} disabled={bulkActing}>
+            Clear
+          </Button>
+          <div className="flex-1" />
+          <Button
+            variant="ghost"
+            size="sm"
+            disabled={bulkActing}
+            onClick={() => bulkAct('reject_suppress')}
+          >
+            Reject + suppress
+          </Button>
+          <Button variant="outline" size="sm" disabled={bulkActing} onClick={() => bulkAct('reject')}>
+            Reject
+          </Button>
+          <Button variant="primary" size="sm" disabled={bulkActing} onClick={() => bulkAct('approve')}>
+            {bulkActing ? 'Working…' : `Approve ${selectedIds.size}`}
+          </Button>
+        </div>
+      )}
 
       {capturing && (
         <DrawerShell label="Capture lead" onClose={() => setCapturing(false)}>
