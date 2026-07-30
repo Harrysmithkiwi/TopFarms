@@ -10,7 +10,7 @@ handled (`payment_intent.succeeded` `:62`, `invoice.payment_succeeded` `:142`).
 
 ---
 
-## Two traps that will cost you an hour each
+## Three traps that will cost you an hour each
 
 **1. `stripe listen` mints its own signing secret.** It is *different* from the endpoint secret in
 the Stripe dashboard. Whichever is in play must be the value of the `STRIPE_WEBHOOK_SECRET` Edge
@@ -21,7 +21,18 @@ stripe listen --print-secret        # whsec_... for the CLI session
 supabase secrets set STRIPE_WEBHOOK_SECRET=whsec_... --project-ref inlagtgpynemhipnqvty
 ```
 
-**2. Every id written here is a test-mode id.** `listing_fees.stripe_payment_id` and
+**2. A registered endpoint is not a subscribed endpoint.** Found live 2026-07-30: the test
+endpoint was enabled but carried no `invoice.*` events at all, so a correct handler still saw
+nothing. Subscriptions are per-mode — check both, and re-check LIVE in Phase 7.
+
+```bash
+stripe webhook_endpoints list   # inspect enabled_events, not just status
+```
+
+The handler needs: `payment_intent.succeeded`, `invoice.payment_succeeded`,
+`invoice.payment_failed`, `invoice.marked_uncollectible`.
+
+**3. Every id written here is a test-mode id.** `listing_fees.stripe_payment_id` and
 `placement_fees.stripe_invoice_id` rows created during this programme point at test-mode objects
 that do not exist in live mode. **Phase 7 step 2 purges them** so production never holds a mix.
 Do not skip that step.
@@ -42,6 +53,18 @@ stripe trigger invoice.payment_succeeded     # -> placement fee paid (Phase 2 ad
 stripe trigger payment_intent.payment_failed
 stripe trigger customer.created              # unhandled event type -> 200, no write
 ```
+
+**`stripe trigger` fixtures carry no `application_id` metadata**, so they can only prove the
+handler's skip path. To prove `paid_at`, pay a real invoice raised by the app:
+
+```bash
+PM=$(stripe payment_methods create --type=card -d "card[token]=tok_visa" | jq -r .id)
+stripe payment_methods attach "$PM" --customer <cus_…>
+stripe invoices pay <in_…> --payment-method "$PM"
+```
+
+A PaymentIntent confirmed from the CLI also needs `--return-url` (the account has
+redirect-capable methods enabled), or it errors before touching the card.
 
 Verify each with a read-only SELECT, never the CLI's output alone:
 
