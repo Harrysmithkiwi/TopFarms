@@ -419,7 +419,7 @@ export function JobSearch() {
         if (employerIds.length > 0) {
           const { data: verificationData } = await supabase
             .from('employer_verifications')
-            .select('*')
+            .select('id, employer_id, method, status, verified_at, created_at')
             .in('employer_id', employerIds)
 
           const newVerificationMap = new Map(employerVerifications)
