@@ -17,6 +17,7 @@ import { Home } from '@/pages/Home'
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
 import { AppErrorBoundary } from '@/components/layout/AppErrorBoundary'
 import { initObservability } from '@/lib/observability'
+import { OfflineBanner } from '@/components/layout/OfflineBanner'
 
 // Error reporting first, so anything thrown during render is captured. No-ops
 // entirely when VITE_SENTRY_DSN is unset (audit F-A2).
@@ -507,6 +508,8 @@ createRoot(document.getElementById('root')!).render(
         honour the user's setting too. Do not remove. */}
     <MotionConfig reducedMotion="user">
       <AuthProvider>
+        {/* Phase 5.7 — outside the router so it survives navigation. */}
+        <OfflineBanner />
         <RouterProvider router={router} />
       </AuthProvider>
     </MotionConfig>

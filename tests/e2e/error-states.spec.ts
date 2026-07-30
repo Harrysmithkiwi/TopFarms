@@ -77,3 +77,22 @@ test.describe('failed is not empty — employer surfaces', () => {
     await expectErrorNotEmpty(page, /No applicants yet/i, 'applicant dashboard')
   })
 })
+
+test.describe('offline (Phase 5.7)', () => {
+  test('going offline shows the banner; coming back removes it', async ({ page, context }) => {
+    await page.goto('/jobs')
+    await page.waitForLoadState('networkidle')
+    const banner = page.getByTestId('offline-banner')
+    await expect(banner, 'banner visible while online').toHaveCount(0)
+
+    await context.setOffline(true)
+    await expect(banner, 'no offline banner after losing connectivity').toBeVisible({
+      timeout: 10_000,
+    })
+    // Politeness matters: this must not steal focus mid-task on a flaky link.
+    await expect(banner).toHaveAttribute('aria-live', 'polite')
+
+    await context.setOffline(false)
+    await expect(banner, 'banner persisted after reconnecting').toHaveCount(0, { timeout: 10_000 })
+  })
+})
