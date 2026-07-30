@@ -95,3 +95,13 @@ verify_jwt = false
 # is unaffected by this local-dev setting.)
 [edge_runtime]
 policy = "per_worker"
+
+[functions.admin-purge]
+# Phase 3 Task 3.5 — storage-aware deletion. Called from the admin browser
+# (AdminDocumentsQueue / operator tooling) with a real admin JWT, so
+# verify_jwt=true and the handler uses the CLAUDE.md §5 gateway-trust decode.
+# It exists because SQL CANNOT delete storage objects: Supabase enforces
+# `protect_objects_delete BEFORE DELETE ON storage.objects`. The paired RPCs
+# (admin_delete_account, admin_mark_document_purged) refuse while any object
+# survives, so this function's purge is ordered by the database, not by trust.
+verify_jwt = true
