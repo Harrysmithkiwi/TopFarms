@@ -76,9 +76,26 @@ export function Privacy() {
       <h2>How long we keep it</h2>
       <p>
         We keep your information while your account is active. If you ask us to delete your account,
-        we will delete or anonymise your personal information within a reasonable period, except
-        where we are required to retain records (e.g. payment records for tax purposes).
+        we remove your profile, your applications and every document you uploaded — including the
+        stored files themselves, not just the database records — except where we are required to
+        retain records (e.g. payment records for tax purposes).
       </p>
+      <p>
+        Some things we delete without being asked:
+      </p>
+      <ul>
+        <li>
+          <strong>Identity documents</strong> — a passport or ID scan is deleted as soon as we have
+          made a verification decision. We keep the decision and who made it; we do not keep the
+          document.
+        </li>
+        <li>
+          <strong>Employer prospect records</strong> — business contact details we gather for
+          outreach are deleted after 90 days if we never contacted you, and after 12 months if we
+          did (we keep that record to show what we sent and when, as required for electronic
+          messaging).
+        </li>
+      </ul>
 
       <h2>Security</h2>
       <p>
