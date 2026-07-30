@@ -1,10 +1,10 @@
 # Phase 5 — inline-style migration ledger
 
-Generated Stage 1, before any migration, at commit `88e2fc7`.
+Generated Stage 1, before any migration, at commit `1516729`.
 The planning artefact for Task 5.1: what has to move, in what order, and which
 files sit on a route the Phase 4 axe gate already watches.
 
-**Totals: 112 files · 947 `style={{` · 998 `var(--color-…)` · 32 hex literals · 550 `text-[Npx]`**
+**Totals: 94 files · 765 `style={{` · 817 `var(--color-…)` · 24 hex literals · 438 `text-[Npx]`**
 
 `colour` counts `var(--color-…)` references anywhere in the file — the migration
 target. `axe` marks files rendering on one of the six Phase 4 axe routes: those
@@ -12,37 +12,16 @@ regress loudest and are migrated first inside their surface class.
 
 Order within each surface is heaviest-first by `style={{` count, per the brief.
 
-## seeker — 16 files · 173 `style={{` · 174 colour refs
-
-| # | File | `style={{` | colour | hex | `text-[Npx]` | axe route |
-|---|---|---|---|---|---|---|
-| 1 | `pages/jobs/JobDetail.tsx` | 55 | 53 | 2 | 29 | **yes** |
-| 2 | `pages/dashboard/SeekerDashboard.tsx` | 31 | 31 |  | 9 | **yes** |
-| 3 | `pages/onboarding/steps/SeekerStep7Complete.tsx` | 22 | 23 |  | 17 | **yes** |
-| 4 | `pages/dashboard/seeker/SeekerDocuments.tsx` | 10 | 11 |  | 3 |  |
-| 5 | `pages/dashboard/seeker/SavedSearches.tsx` | 7 | 8 |  | 3 |  |
-| 6 | `pages/onboarding/steps/SeekerStep3Qualifications.tsx` | 7 | 8 |  | 8 | **yes** |
-| 7 | `pages/dashboard/seeker/MyApplications.tsx` | 6 | 7 |  | 2 |  |
-| 8 | `components/saved-search/SavedSearchesDropdown.tsx` | 5 | 5 |  | 6 |  |
-| 9 | `pages/onboarding/SeekerOnboarding.tsx` | 5 | 5 |  |  | **yes** |
-| 10 | `pages/onboarding/steps/SeekerStep1FarmType.tsx` | 5 | 5 |  | 1 | **yes** |
-| 11 | `pages/onboarding/steps/SeekerStep5LifeSituation.tsx` | 5 | 5 |  | 7 | **yes** |
-| 12 | `pages/onboarding/steps/SeekerStep6Visa.tsx` | 5 | 2 |  | 1 | **yes** |
-| 13 | `components/saved-search/ReplaceOldestModal.tsx` | 3 | 3 |  | 1 |  |
-| 14 | `pages/onboarding/steps/SeekerStep4Skills.tsx` | 3 | 3 |  |  | **yes** |
-| 15 | `components/saved-search/SaveSearchModal.tsx` | 2 | 3 |  | 2 |  |
-| 16 | `pages/onboarding/steps/SeekerStep2Experience.tsx` | 2 | 2 |  | 2 | **yes** |
-
-## employer — 26 files · 182 `style={{` · 191 colour refs
+## employer — 26 files · 175 `style={{` · 185 colour refs
 
 | # | File | `style={{` | colour | hex | `text-[Npx]` | axe route |
 |---|---|---|---|---|---|---|
 | 1 | `pages/dashboard/EmployerDashboard.tsx` | 29 | 29 |  | 12 |  |
-| 2 | `pages/jobs/steps/JobStep6Preview.tsx` | 14 | 14 |  | 18 |  |
-| 3 | `pages/jobs/MarkFilledModal.tsx` | 13 | 13 |  | 3 |  |
-| 4 | `pages/jobs/steps/JobStep7Payment.tsx` | 12 | 11 |  | 3 |  |
-| 5 | `pages/onboarding/steps/Step8Complete.tsx` | 11 | 12 |  | 8 |  |
-| 6 | `pages/dashboard/employer/HireConfirmModal.tsx` | 10 | 13 |  | 5 |  |
+| 2 | `pages/jobs/MarkFilledModal.tsx` | 13 | 13 |  | 3 |  |
+| 3 | `pages/jobs/steps/JobStep6Preview.tsx` | 13 | 13 |  |  |  |
+| 4 | `pages/onboarding/steps/Step8Complete.tsx` | 11 | 12 |  | 8 |  |
+| 5 | `pages/dashboard/employer/HireConfirmModal.tsx` | 10 | 13 |  | 5 |  |
+| 6 | `pages/jobs/steps/JobStep7Payment.tsx` | 10 | 10 |  |  |  |
 | 7 | `pages/dashboard/employer/PlacementFeeModal.tsx` | 9 | 9 |  | 9 |  |
 | 8 | `pages/jobs/steps/JobStep8Success.tsx` | 8 | 7 |  | 6 |  |
 | 9 | `pages/onboarding/steps/Step7Preview.tsx` | 7 | 10 |  | 10 |  |
@@ -50,14 +29,14 @@ Order within each surface is heaviest-first by `style={{` count, per the brief.
 | 11 | `pages/jobs/steps/JobStep2FarmDetails.tsx` | 6 | 6 |  | 11 |  |
 | 12 | `pages/onboarding/steps/Step4Accommodation.tsx` | 6 | 6 |  | 11 |  |
 | 13 | `pages/onboarding/steps/Step5Verification.tsx` | 5 | 6 |  | 5 |  |
-| 14 | `pages/jobs/PostJob.tsx` | 5 | 5 |  |  |  |
-| 15 | `pages/jobs/steps/JobStep4Compensation.tsx` | 5 | 5 |  | 7 |  |
-| 16 | `pages/onboarding/EmployerOnboarding.tsx` | 5 | 5 |  |  |  |
-| 17 | `pages/onboarding/steps/Step1FarmType.tsx` | 5 | 5 |  | 3 |  |
-| 18 | `pages/onboarding/steps/Step6Pricing.tsx` | 4 | 5 |  | 2 |  |
-| 19 | `pages/jobs/steps/JobStep1Basics.tsx` | 4 | 4 |  | 3 |  |
-| 20 | `pages/onboarding/steps/Step3Culture.tsx` | 4 | 4 |  | 8 |  |
-| 21 | `pages/jobs/steps/JobStep5Description.tsx` | 3 | 4 |  | 4 |  |
+| 14 | `pages/jobs/steps/JobStep4Compensation.tsx` | 5 | 5 |  | 7 |  |
+| 15 | `pages/onboarding/steps/Step1FarmType.tsx` | 5 | 5 |  | 3 |  |
+| 16 | `pages/onboarding/steps/Step6Pricing.tsx` | 4 | 5 |  | 2 |  |
+| 17 | `pages/jobs/steps/JobStep1Basics.tsx` | 4 | 4 |  | 3 |  |
+| 18 | `pages/onboarding/steps/Step3Culture.tsx` | 4 | 4 |  | 8 |  |
+| 19 | `pages/jobs/steps/JobStep5Description.tsx` | 3 | 4 |  | 4 |  |
+| 20 | `pages/jobs/PostJob.tsx` | 3 | 3 |  |  |  |
+| 21 | `pages/onboarding/EmployerOnboarding.tsx` | 3 | 3 |  |  |  |
 | 22 | `pages/onboarding/steps/Step2FarmDetails.tsx` | 3 | 3 |  | 6 |  |
 | 23 | `pages/jobs/steps/JobStep3Skills.tsx` | 2 | 2 |  | 2 |  |
 | 24 | `pages/verification/DocumentUpload.tsx` | 2 | 2 |  | 9 |  |
@@ -129,7 +108,7 @@ Order within each surface is heaviest-first by `style={{` count, per the brief.
 | 16 | `pages/Home.tsx` | 1 | 1 |  |  | **yes** |
 | 17 | `pages/legal/Privacy.tsx` | 1 | 0 |  |  |  |
 
-## shared — 20 files · 75 `style={{` · 81 colour refs
+## shared — 18 files · 73 `style={{` · 80 colour refs
 
 | # | File | `style={{` | colour | hex | `text-[Npx]` | axe route |
 |---|---|---|---|---|---|---|
@@ -150,9 +129,7 @@ Order within each surface is heaviest-first by `style={{` count, per the brief.
 | 15 | `components/ui/MyApplicationsSidebar.tsx` | 1 | 3 |  | 11 | **yes** |
 | 16 | `components/layout/DashboardLayout.tsx` | 1 | 1 |  |  | **yes** |
 | 17 | `components/ui/FilterSidebar.tsx` | 1 | 1 |  | 5 | **yes** |
-| 18 | `main.tsx` | 1 | 1 |  |  |  |
-| 19 | `components/stripe/PaymentForm.tsx` | 1 | 0 | 6 |  |  |
-| 20 | `components/ui/ProgressBar.tsx` | 1 | 0 |  |  |  |
+| 18 | `components/ui/ProgressBar.tsx` | 1 | 0 |  |  |  |
 
 ## Batch plan
 
