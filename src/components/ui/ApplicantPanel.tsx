@@ -116,7 +116,10 @@ export function ApplicantPanel({
   const [selectedStatus, setSelectedStatus] = useState<ApplicationStatus | ''>('')
   const [transitionNote, setTransitionNote] = useState('')
   const [showNote, setShowNote] = useState(false)
-  const [activeTab, setActiveTab] = useState<'cv' | 'match' | 'interview' | 'notes'>('cv')
+  // Phase 2 Option C: default tab is the structured Profile — the CV document is
+  // paywalled until the placement fee is acknowledged, and the profile + match
+  // breakdown + AI summary are the pre-placement decision surface.
+  const [activeTab, setActiveTab] = useState<'profile' | 'match' | 'interview' | 'notes'>('profile')
   const [notes, setNotes] = useState(application.application_notes ?? '')
   const [savingNotes, setSavingNotes] = useState(false)
   // Phase 21 plan 21-08 — Track B "Documents Verified" badge predicate.
@@ -248,7 +251,7 @@ export function ApplicantPanel({
 
           {/* Tab bar */}
           <div className="border-border flex border-b">
-            {(['cv', 'match', 'interview', 'notes'] as const).map((tab) => (
+            {(['profile', 'match', 'interview', 'notes'] as const).map((tab) => (
               <button
                 key={tab}
                 type="button"
@@ -260,8 +263,8 @@ export function ApplicantPanel({
                     : 'text-text-muted hover:text-text',
                 )}
               >
-                {tab === 'cv'
-                  ? 'CV'
+                {tab === 'profile'
+                  ? 'Profile'
                   : tab === 'match'
                     ? 'Match Breakdown'
                     : tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -269,8 +272,8 @@ export function ApplicantPanel({
             ))}
           </div>
 
-          {/* CV tab — existing content */}
-          {activeTab === 'cv' && (
+          {/* Profile tab — structured profile, documents, contacts */}
+          {activeTab === 'profile' && (
             <div className="space-y-5">
               {/* Match highlights */}
               {highlights.length > 0 && (
@@ -398,12 +401,14 @@ export function ApplicantPanel({
                 </div>
               )}
 
-              {/* Documents — visible to employer for any application status.
-                  Identity exclusion enforced at three layers: Edge Function +
-                  listing query filter + bucketing loop. See ApplicantDocuments. */}
+              {/* Documents — certificates/references visible for any application
+                  status; the CV unlocks when the placement fee is acknowledged
+                  (contacts released ⇒ acknowledged — same predicate). Identity
+                  exclusion unchanged. See ApplicantDocuments. */}
               <ApplicantDocuments
                 applicationId={application.id}
                 seekerId={application.seeker_profiles.id}
+                cvUnlocked={!!contacts}
               />
 
               {/* Contact Details — only shown for shortlisted/offered/hired */}

@@ -139,7 +139,18 @@ Deno.serve(async (req) => {
     console.log('Job activated successfully:', job_id)
   }
 
-  if (event.type === 'invoice.payment_succeeded') {
+  // ─── Placement invoice lifecycle (Phase 2 Task 2.4) ─────────────────────────
+  // paid_at is what makes an aged-debtors list answerable from SQL. confirmed_at
+  // means "invoice created"; paid_at means "money arrived". The pre-Phase-2 handler
+  // compared stripe_invoice_id === invoice.id as its "duplicate" guard — but
+  // create-placement-invoice writes that id at CREATION, so the guard fired on the
+  // first real payment event and paid state was never recordable. Idempotency now
+  // keys on paid_at itself.
+  if (
+    event.type === 'invoice.payment_succeeded' ||
+    event.type === 'invoice.payment_failed' ||
+    event.type === 'invoice.marked_uncollectible'
+  ) {
     const invoice = event.data.object as Stripe.Invoice
     const { application_id } = invoice.metadata ?? {}
 
@@ -153,10 +164,9 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Idempotency: check if placement_fee already has this stripe_invoice_id recorded
     const { data: existingPf, error: checkError } = await supabaseClient
       .from('placement_fees')
-      .select('id, stripe_invoice_id')
+      .select('id, paid_at')
       .eq('application_id', application_id)
       .maybeSingle()
 
@@ -176,16 +186,44 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Already processed — invoice ID matches
-    if (existingPf.stripe_invoice_id === invoice.id) {
-      console.log('Duplicate invoice webhook for application:', application_id, '— skipping')
-      return new Response(JSON.stringify({ received: true }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      })
+    if (event.type === 'invoice.payment_succeeded') {
+      if (existingPf.paid_at) {
+        console.log('Duplicate payment webhook for application:', application_id, '— skipping')
+        return new Response(JSON.stringify({ received: true }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      }
+      const { error: paidErr } = await supabaseClient
+        .from('placement_fees')
+        .update({ paid_at: new Date().toISOString(), stripe_invoice_status: 'paid' })
+        .eq('id', existingPf.id)
+      if (paidErr) {
+        console.error('Failed to record paid_at:', paidErr)
+        return new Response(JSON.stringify({ error: 'Failed to record payment' }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      }
+      console.log('Invoice PAID for application:', application_id)
+    } else {
+      // payment_failed / marked_uncollectible: record status only. paid_at stays
+      // NULL — a failed invoice is still owed; an uncollectible one is written off
+      // by the admin, not by Stripe.
+      const status = event.type === 'invoice.payment_failed' ? 'payment_failed' : 'uncollectible'
+      const { error: statusErr } = await supabaseClient
+        .from('placement_fees')
+        .update({ stripe_invoice_status: status })
+        .eq('id', existingPf.id)
+      if (statusErr) {
+        console.error(`Failed to record invoice status ${status}:`, statusErr)
+        return new Response(JSON.stringify({ error: 'Failed to record invoice status' }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      }
+      console.log(`Invoice ${status} for application:`, application_id)
     }
-
-    console.log('Invoice payment succeeded for application:', application_id)
   }
 
   // Return 200 for all events (including unhandled ones)

@@ -9,7 +9,7 @@ connector (pooler auth is blocked — see `README.md`), and neither writes
 holding 45 rows against 64 files. This manifest is the repo-side record that CI can enforce; the
 database ledger is the runtime record.
 
-**Reconciled 2026-07-30:** 64 files · 66 ledger rows · 2 documented duplicates. Balanced.
+**Reconciled 2026-07-30 (post-Phase-2):** 68 files · 70 ledger rows · 2 documented duplicates. Balanced.
 
 | File | Ledger version | Notes |
 |---|---|---|
@@ -80,6 +80,10 @@ database ledger is the runtime record.
 | 065_revoke_staging_list_public_grant | `20260730010822` | connector-applied, timestamp version |
 | 066_phase1_rls_gaps | `20260730024306` | connector-applied, timestamp version |
 | 067_employer_verifications_column_grants | `20260730031536` | connector-applied; found by probe P10, not by review |
+| 068_phase2_revenue_schema | `20260730051318` | Phase 2 — entitlement ledger, placements, collectibility columns; connector-applied |
+| 069_phase2_cv_gate | `20260730051345` | Phase 2 — Option C contact gate + get_applicants_for_job P0-5 fix; connector-applied |
+| 070_phase2_revenue_reconciliation | `20260730051408` | Phase 2 — admin_revenue_reconciliation RPC; connector-applied |
+| 071_phase2_followup_cron | `20260730051412` | Phase 2 — wires send-followup-emails via pg_cron+pg_net; connector-applied |
 
 ## Ledger rows with no dedicated file (documented duplicates)
 

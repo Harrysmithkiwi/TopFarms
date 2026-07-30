@@ -5,6 +5,7 @@ import {
   requireEmployerOwnsApplication,
   toAuthErrorResponse,
 } from '../_shared/auth.ts'
+import { derivePlacementFeeFromJob, warnOnClientMismatch } from '../_shared/pricing.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,6 +13,17 @@ const corsHeaders = {
 }
 
 const FROM_EMAIL = Deno.env.get('RESEND_FROM_EMAIL') ?? 'TopFarms <hello@topfarms.co.nz>'
+
+/** "harry.smith@x.nz" → "Harry S." — display label only, never an identifier. */
+function friendlyNameFromEmail(email: string | null): string {
+  const local = (email ?? '').split('@')[0]
+  const parts = local.split(/[._\-+]/).filter(Boolean)
+  if (!parts.length || !/^[a-zA-Z]/.test(parts[0])) return 'your new hire'
+  const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()
+  const first = cap(parts[0])
+  const initial = parts[1] && /^[a-zA-Z]/.test(parts[1]) ? ` ${parts[1][0].toUpperCase()}.` : ''
+  return `${first}${initial}`
+}
 
 Deno.serve(async (req) => {
   // Handle OPTIONS preflight request
@@ -25,46 +37,46 @@ Deno.serve(async (req) => {
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
   )
 
-  // ─── Authorization (audit P0-3, sibling of acknowledge-placement-fee) ──────
-  // This function raises a real Stripe invoice against an employer. It previously took
-  // employer_id, amount_nzd and fee_tier from the request body with no caller check, so any
-  // authenticated user could invoice a DIFFERENT employer for an arbitrary amount.
-  //
-  // Found by tests/edge-function-authz.test.ts, not by the audit's remediation list — the
-  // Phase 1 plan named four functions and this is a fifth. That is the guard doing its job.
-  //
-  // employer_id and job_id now come from the application row; body values are ignored.
-  // amount_nzd/fee_tier are still client-supplied — server-side pricing is Phase 2 Task 2.1.
+  // ─── Authorization (audit P0-3) + server-derived pricing (Phase 2 Task 2.1) ─
+  // This function raises a real Stripe invoice against an employer. Phase 1 made the
+  // ownership check real; Phase 2 removes ALL trust in the body. Everything except
+  // application_id and rating is now derived server-side:
+  //   employer_id, job_id      ← application row (ownership-checked)
+  //   fee_tier, amount_nzd     ← acknowledged placement_fees snapshot, else the job row.
+  //                              The ACK snapshot wins so an employer cannot shortlist at
+  //                              $800, edit the salary down, then hire at $400.
+  //   employer_email           ← auth.users (the caller — invoices go to the payer)
+  //   farm_name                ← employer_profiles
+  //   job_title                ← jobs
+  //   seeker_email/name        ← seeker_contacts (congrats email)
+  // Body fee values are used only for tamper logging.
   let application_id: string
   let job_id: string
   let employer_id: string
-  let employer_email: string
-  let farm_name: string
-  let job_title: string
-  let fee_tier: string
-  let amount_nzd: number
+  let seeker_id: string
   let rating: unknown
-  let seeker_email: string
-  let seeker_name: string
+  let bodyFeeTier: unknown
+  let bodyAmount: unknown
+  let callerUserId: string
   try {
-    const callerUserId = requireCaller(req)
+    callerUserId = requireCaller(req)
     const body = await req.json().catch(() => ({}))
-    ;({ employer_email, farm_name, job_title, fee_tier, amount_nzd, rating, seeker_email, seeker_name } =
-      body)
     application_id = body.application_id
+    rating = body.rating
+    bodyFeeTier = body.fee_tier
+    bodyAmount = body.amount_nzd
 
-    if (!application_id || !employer_email || !fee_tier || !amount_nzd) {
-      return new Response(
-        JSON.stringify({
-          error: 'application_id, employer_email, fee_tier, and amount_nzd are required',
-        }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      )
+    if (!application_id) {
+      return new Response(JSON.stringify({ error: 'application_id is required' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
     }
 
     const owned = await requireEmployerOwnsApplication(supabaseClient, callerUserId, application_id)
     employer_id = owned.employerId
     job_id = owned.jobId
+    seeker_id = owned.seekerId
   } catch (e) {
     return toAuthErrorResponse(e, corsHeaders)
   }
@@ -81,7 +93,7 @@ Deno.serve(async (req) => {
     // Idempotency: check if placement_fee for this application is already confirmed
     const { data: existingFee, error: checkError } = await supabaseClient
       .from('placement_fees')
-      .select('id, confirmed_at')
+      .select('id, confirmed_at, acknowledged_at, fee_tier, amount_nzd, discount_pct, waived_reason')
       .eq('application_id', application_id)
       .maybeSingle()
 
@@ -106,26 +118,141 @@ Deno.serve(async (req) => {
       })
     }
 
-    const stripe = new Stripe(stripeSecretKey, {
-      apiVersion: '2024-06-20',
-    })
+    // ─── Server-side fee derivation (Task 2.1) ────────────────────────────────
+    // The acknowledged snapshot is the contract price. Fall back to a fresh derive
+    // only when no acknowledged row exists (hire without prior shortlist).
+    const derived = await derivePlacementFeeFromJob(supabaseClient, job_id)
+    const job_title = derived.jobTitle
+    let fee_tier: string = derived.tier
+    let base_amount: number = derived.amount
+    if (existingFee?.acknowledged_at && existingFee.fee_tier && existingFee.amount_nzd != null) {
+      fee_tier = existingFee.fee_tier
+      base_amount = existingFee.amount_nzd
+    }
+    warnOnClientMismatch(
+      'create-placement-invoice',
+      { tier: fee_tier, amount: base_amount },
+      { tier: bodyFeeTier, amount: bodyAmount },
+    )
 
-    // Stripe Customer upsert
-    // 1. Check if employer_profiles has stripe_customer_id
-    const { data: empProfile, error: empError } = await supabaseClient
-      .from('employer_profiles')
-      .select('stripe_customer_id')
-      .eq('id', employer_id)
-      .single()
+    // Admin-applied discount (locked decision: capability, not policy — no automatic rule).
+    const discountPct = Math.min(100, Math.max(0, Number(existingFee?.discount_pct ?? 0)))
+    const amount_nzd = Math.round(base_amount * (1 - discountPct / 100))
 
-    if (empError) {
-      console.error('Error loading employer profile:', empError)
+    // ─── Server-side context derivation ──────────────────────────────────────
+    const [empProfileRes, callerRes, appRes] = await Promise.all([
+      supabaseClient
+        .from('employer_profiles')
+        .select('stripe_customer_id, farm_name')
+        .eq('id', employer_id)
+        .single(),
+      supabaseClient.auth.admin.getUserById(callerUserId),
+      supabaseClient
+        .from('applications')
+        .select('seeker_id, seeker_profiles!inner ( user_id ), jobs!inner ( created_at )')
+        .eq('id', application_id)
+        .single(),
+    ])
+
+    if (empProfileRes.error) {
+      console.error('Error loading employer profile:', empProfileRes.error)
       return new Response(JSON.stringify({ error: 'Failed to load employer profile' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
+    const empProfile = empProfileRes.data
+    const farm_name: string | null = empProfile?.farm_name ?? null
 
+    const employer_email = callerRes.data?.user?.email
+    if (callerRes.error || !employer_email) {
+      console.error('Error resolving caller email:', callerRes.error)
+      return new Response(JSON.stringify({ error: 'Failed to resolve employer email' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    const seekerUserId =
+      (appRes.data?.seeker_profiles as unknown as { user_id: string } | null)?.user_id ?? null
+    const jobCreatedAt =
+      (appRes.data?.jobs as unknown as { created_at: string } | null)?.created_at ?? null
+
+    let seeker_email: string | null = null
+    if (seekerUserId) {
+      const { data: contactRow } = await supabaseClient
+        .from('seeker_contacts')
+        .select('email')
+        .eq('user_id', seekerUserId)
+        .maybeSingle()
+      seeker_email = contactRow?.email ?? null
+    }
+    const seeker_display = friendlyNameFromEmail(seeker_email)
+
+    // Invoice legibility context: candidate count + days from post to hire.
+    const { count: applicantCount } = await supabaseClient
+      .from('applications')
+      .select('id', { count: 'exact', head: true })
+      .eq('job_id', job_id)
+    const daysToHire = jobCreatedAt
+      ? Math.max(1, Math.round((Date.now() - new Date(jobCreatedAt).getTime()) / 86_400_000))
+      : null
+
+    const invoiceDescription =
+      `TopFarms placement fee — you hired ${seeker_display} for ${job_title ?? 'a position'} (${fee_tier})` +
+      (applicantCount ? ` · ${applicantCount} matched candidate${applicantCount === 1 ? '' : 's'}` : '') +
+      (daysToHire ? ` · ${daysToHire} day${daysToHire === 1 ? '' : 's'} from post to hire` : '') +
+      (discountPct > 0 ? ` · ${discountPct}% discount applied` : '')
+
+    // ─── Placement event (Task 2.4) — the hire happened, separate from the money ─
+    const { data: placementRow, error: placementErr } = await supabaseClient
+      .from('placements')
+      .upsert(
+        {
+          application_id,
+          employer_confirmed_at: new Date().toISOString(),
+        },
+        { onConflict: 'application_id', ignoreDuplicates: false },
+      )
+      .select('id')
+      .single()
+    if (placementErr) {
+      // Non-fatal: the fee flow must not be blocked by the event record.
+      console.error('Failed to upsert placements row:', placementErr)
+    }
+
+    // ─── Fully waived/discounted-to-zero: record, skip Stripe ─────────────────
+    // Upsert, not update: a hire that skipped the shortlist gate has no placement_fees
+    // row yet, and an update that matches nothing is a silently lost fee.
+    if (amount_nzd === 0) {
+      const { error: waiveErr } = await supabaseClient
+        .from('placement_fees')
+        .upsert(
+          {
+            application_id,
+            job_id,
+            employer_id,
+            seeker_id,
+            confirmed_at: new Date().toISOString(),
+            fee_tier,
+            amount_nzd: 0,
+            rating: rating ?? null,
+            placement_id: placementRow?.id ?? null,
+          },
+          { onConflict: 'application_id' },
+        )
+      if (waiveErr) console.error('Failed to record waived placement fee:', waiveErr)
+      return new Response(JSON.stringify({ success: true, waived: true }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    const stripe = new Stripe(stripeSecretKey, {
+      apiVersion: '2024-06-20',
+    })
+
+    // Stripe Customer upsert
     let customerId: string
 
     if (empProfile?.stripe_customer_id) {
@@ -172,23 +299,34 @@ Deno.serve(async (req) => {
     await stripe.invoiceItems.create({
       customer: customerId,
       invoice: invoice.id,
-      amount: amount_nzd, // Already in cents (e.g., 20000 = $200 NZD)
+      amount: amount_nzd, // NZD cents, server-derived (e.g. 40000 = $400)
       currency: 'nzd',
-      description: `TopFarms placement fee — ${job_title ?? 'position'} (${fee_tier})`,
+      description: invoiceDescription,
     })
 
     // Finalize — triggers Stripe to send hosted invoice email to the customer
     const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id)
 
-    // Update placement_fees record with confirmed_at, invoice ID, and optional rating
+    // Record confirmed_at, invoice ID, and optional rating. Upsert for the same
+    // hire-without-shortlist reason as the waived branch above.
     const { error: updateFeeError } = await supabaseClient
       .from('placement_fees')
-      .update({
-        confirmed_at: new Date().toISOString(),
-        stripe_invoice_id: invoice.id,
-        rating: rating ?? null,
-      })
-      .eq('application_id', application_id)
+      .upsert(
+        {
+          application_id,
+          job_id,
+          employer_id,
+          seeker_id,
+          confirmed_at: new Date().toISOString(),
+          stripe_invoice_id: invoice.id,
+          stripe_invoice_status: 'open',
+          fee_tier,
+          amount_nzd,
+          rating: rating ?? null,
+          placement_id: placementRow?.id ?? null,
+        },
+        { onConflict: 'application_id' },
+      )
 
     if (updateFeeError) {
       console.error('Failed to update placement_fees record:', updateFeeError)
@@ -216,7 +354,7 @@ Deno.serve(async (req) => {
                 <div style="font-family: DM Sans, -apple-system, Helvetica Neue, sans-serif; background-color: #F7F2E8; padding: 32px;">
                   <div style="max-width: 560px; margin: 0 auto; background-color: #FFFFFF; border-radius: 12px; padding: 32px;">
                     <p style="font-size: 16px; color: #2D5016; font-weight: 600; margin: 0 0 8px;">TopFarms</p>
-                    <h2 style="font-size: 20px; color: #1A1208; margin: 0 0 16px;">Great news, ${seeker_name || 'there'}!</h2>
+                    <h2 style="font-size: 20px; color: #1A1208; margin: 0 0 16px;">Great news!</h2>
                     <p style="font-size: 14px; color: #1A1208; line-height: 1.5; margin: 0 0 16px;">
                       <strong>${farm_name ?? 'The employer'}</strong> has confirmed your hire for the <strong>${job_title ?? 'position'}</strong> role.
                     </p>

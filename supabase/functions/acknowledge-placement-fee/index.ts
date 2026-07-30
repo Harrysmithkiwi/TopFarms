@@ -4,6 +4,7 @@ import {
   requireEmployerOwnsApplication,
   toAuthErrorResponse,
 } from '../_shared/auth.ts'
+import { derivePlacementFeeFromJob, warnOnClientMismatch } from '../_shared/pricing.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -34,10 +35,10 @@ Deno.serve(async (req) => {
   // any authenticated user could fabricate debt rows against a DIFFERENT employer, which
   // create-placement-invoice would then bill.
   //
-  // job_id, employer_id and seeker_id are now derived from the application row; body values
-  // are ignored. fee_tier/amount_nzd are still taken from the body — server-side pricing is
-  // Phase 2 Task 2.1. Until then this closes the tenancy hole but NOT the $0 self-pricing
-  // one; do not treat the fee as enforceable yet.
+  // Phase 2 Task 2.1: EVERY id and money value is now server-derived. job_id, employer_id
+  // and seeker_id come from the application row; fee_tier/amount_nzd are derived from the
+  // JOB row (salary + title). Body fee values are used only to detect tampering — a client
+  // that disagrees with the server is logged with both values, then ignored.
   let application_id: string
   let fee_tier: string
   let amount_nzd: number
@@ -48,20 +49,27 @@ Deno.serve(async (req) => {
     const callerUserId = requireCaller(req)
     const body = await req.json().catch(() => ({}))
     application_id = body.application_id
-    fee_tier = body.fee_tier
-    amount_nzd = body.amount_nzd
 
-    if (!application_id || !fee_tier || amount_nzd == null) {
-      return new Response(
-        JSON.stringify({ error: 'application_id, fee_tier and amount_nzd are required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      )
+    if (!application_id) {
+      return new Response(JSON.stringify({ error: 'application_id is required' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
     }
 
     const owned = await requireEmployerOwnsApplication(supabaseClient, callerUserId, application_id)
     employer_id = owned.employerId
     job_id = owned.jobId
     seeker_id = owned.seekerId
+
+    const derived = await derivePlacementFeeFromJob(supabaseClient, job_id)
+    fee_tier = derived.tier
+    amount_nzd = derived.amount
+    warnOnClientMismatch(
+      'acknowledge-placement-fee',
+      { tier: derived.tier, amount: derived.amount },
+      { tier: body.fee_tier, amount: body.amount_nzd },
+    )
   } catch (e) {
     return toAuthErrorResponse(e, corsHeaders)
   }

@@ -205,7 +205,7 @@ Deno.serve(async (req) => {
     if (!appRow) {
       return jsonResponse({ error: 'Application not found' }, 404)
     }
-    const appJobs = appRow.jobs as { id: string; employer_id: string } | null
+    const appJobs = appRow.jobs as unknown as { id: string; employer_id: string } | null
     if (appJobs?.employer_id !== callerEmployerId) {
       return jsonResponse({ error: 'Application does not belong to a job you own' }, 403)
     }
@@ -230,6 +230,31 @@ Deno.serve(async (req) => {
     // 9. Identity exclusion — explicit equality check first for clear error semantics.
     if (docRow.document_type === 'identity') {
       return jsonResponse({ error: 'Identity documents are not accessible to employers' }, 403)
+    }
+
+    // 9b. CV placement gate (Phase 2 Task 2.3, Option C) — the CV carries the seeker's
+    //     phone and email, which are paywalled in seeker_contacts. Pre-placement the
+    //     employer gets the structured profile, match breakdown and AI summary; the CV
+    //     document unlocks when the placement fee is acknowledged for THIS application.
+    //     Mirrors the RLS policy on seeker_documents (069_phase2_cv_gate) — this function
+    //     uses service-role, so the policy alone is not enough.
+    if (docRow.document_type === 'cv') {
+      const { data: feeRow, error: feeErr } = await adminClient
+        .from('placement_fees')
+        .select('id')
+        .eq('application_id', applicationId)
+        .not('acknowledged_at', 'is', null)
+        .maybeSingle()
+      if (feeErr) {
+        console.error('get-applicant-document-url: placement_fees lookup failed', feeErr)
+        return jsonResponse({ error: 'Internal error' }, 500)
+      }
+      if (!feeRow) {
+        return jsonResponse(
+          { error: 'CV unlocks when you shortlist this candidate (placement fee applies)' },
+          403,
+        )
+      }
     }
 
     // 10. Whitelist check — defence-in-depth against future enum additions.

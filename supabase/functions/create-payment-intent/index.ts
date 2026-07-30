@@ -1,16 +1,11 @@
 import Stripe from 'https://esm.sh/stripe@14'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { requireCaller, requireEmployerOwnsJob, toAuthErrorResponse } from '../_shared/auth.ts'
+import { TIER_PRICES } from '../_shared/pricing.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
-
-const TIER_PRICES: Record<number, number> = {
-  1: 10000, // $100 NZD in cents
-  2: 15000, // $150 NZD in cents
-  3: 20000, // $200 NZD in cents
 }
 
 Deno.serve(async (req) => {
@@ -63,24 +58,51 @@ Deno.serve(async (req) => {
 
   try {
 
-    // Check listing_fees count for this employer (first-listing-free logic)
-    const { count, error: countError } = await supabaseClient
-      .from('listing_fees')
-      .select('id', { count: 'exact' })
-      .eq('employer_id', employer_id)
+    // ─── Free-listing entitlement (Phase 2 Task 2.2) ──────────────────────────
+    // The old logic was count(listing_fees) === 0. Those rows CASCADE on job delete,
+    // so deleting a job reset the allowance — unlimited free listings. An entitlement
+    // is a fact about the ACCOUNT: employer_entitlements has PRIMARY KEY
+    // (employer_id, kind), so consuming twice is a constraint violation, not a count
+    // that can drift with another table's lifecycle.
 
-    if (countError) {
-      console.error('Error checking listing fees count:', countError)
+    // Idempotency: if this job already has a listing fee (double-submit, retry after
+    // payment), don't consume anything and don't charge again.
+    const { data: existingListingFee, error: existingFeeErr } = await supabaseClient
+      .from('listing_fees')
+      .select('id, amount_nzd')
+      .eq('job_id', job_id)
+      .maybeSingle()
+    if (existingFeeErr) {
+      console.error('Error checking existing listing fee:', existingFeeErr)
+      return new Response(JSON.stringify({ error: 'Failed to check listing history' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+    if (existingListingFee) {
+      return new Response(JSON.stringify({ client_secret: null, is_free: true }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    // Atomically consume the free-listing entitlement. 23505 = already consumed.
+    const { error: entitlementErr } = await supabaseClient.from('employer_entitlements').insert({
+      employer_id,
+      kind: 'free_listing',
+      job_id,
+    })
+
+    if (entitlementErr && entitlementErr.code !== '23505') {
+      console.error('Error consuming free-listing entitlement:', entitlementErr)
       return new Response(JSON.stringify({ error: 'Failed to check listing history' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
-    const listingCount = count ?? 0
-
-    if (listingCount === 0) {
-      // First listing is free — activate job immediately without payment
+    if (!entitlementErr) {
+      // Entitlement consumed — first listing is free, activate immediately.
       const expiresAt = new Date()
       expiresAt.setDate(expiresAt.getDate() + 30)
 
@@ -96,6 +118,14 @@ Deno.serve(async (req) => {
 
       if (feeError) {
         console.error('Error inserting free listing fee:', feeError)
+        // Compensate: give the entitlement back so the employer is not charged for
+        // a free listing that was never delivered.
+        await supabaseClient
+          .from('employer_entitlements')
+          .delete()
+          .eq('employer_id', employer_id)
+          .eq('kind', 'free_listing')
+          .eq('job_id', job_id)
         return new Response(JSON.stringify({ error: 'Failed to record free listing' }), {
           status: 500,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },

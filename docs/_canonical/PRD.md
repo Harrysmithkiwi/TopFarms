@@ -36,8 +36,9 @@ current product (it appears only in legacy FarmHands docs).
 
 ## 4. Monetisation (resolved — this is the single correct model)
 
-- **Listing fees:** first listing **FREE**, then **Standard $100 / Featured $150 / Premium Plus $200 NZD** (per listing).
-- **Placement fees:** flat tiers **$200 / $400 / $800**, billed via **Stripe Invoice (Net 14)**.
+- **Listing fees:** first listing **FREE** (one per employer account, tracked as an entitlement — deleting the job does not restore it), then **Standard $100 / Featured $150 / Premium Plus $200 NZD** (per listing).
+- **Placement fees:** flat tiers **$200 / $400 / $800**, derived **server-side** from the job's salary band + title (client values are display-only), billed via **Stripe Invoice (Net 14)** with day-7/14 follow-up emails. First placement is **not** free. Admin may apply a discount or waiver per fee (capability, not policy — no automatic rule).
+- **Contact gate (Option C, locked 2026-07-30):** pre-placement the employer sees the structured profile, match breakdown, AI summary and a first-name label. The seeker's phone, email and CV document unlock when the placement fee is acknowledged (shortlist).
 - **No subscriptions. No training commissions. No per-post $50.** (Those are archived/legacy models.)
 
 ## 5. Core feature set (MVP + shipped)

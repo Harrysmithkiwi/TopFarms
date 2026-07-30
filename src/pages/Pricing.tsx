@@ -60,7 +60,11 @@ const tiers = [
 const faqs = [
   {
     q: 'Is my first listing really free?',
-    a: 'Yes — your very first job listing is free regardless of which tier you choose. No credit card required until your second listing.',
+    a: 'Yes — your very first job listing is free regardless of which tier you choose. No credit card required until your second listing. The free listing is one per account (deleting a job does not restore it).',
+  },
+  {
+    q: 'Is there a fee when I hire someone?',
+    a: 'Yes — a one-off placement fee of $200, $400 or $800 NZD based on the role’s salary band and seniority. You accept it when you shortlist a candidate (which unlocks their contact details and CV), and it is invoiced on Net-14 terms when you confirm the hire. Until you shortlist, you see their full profile, match breakdown and AI summary free.',
   },
   {
     q: 'How long does a listing stay active?',

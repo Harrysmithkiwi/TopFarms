@@ -129,6 +129,9 @@ const JobsManagement = lazy(() =>
 const PlacementPipeline = lazy(() =>
   import('@/pages/admin/PlacementPipeline').then((m) => ({ default: m.PlacementPipeline })),
 )
+const AdminRevenue = lazy(() =>
+  import('@/pages/admin/AdminRevenue').then((m) => ({ default: m.AdminRevenue })),
+)
 const AdminDocumentsQueue = lazy(() =>
   import('@/pages/admin/AdminDocumentsQueue').then((m) => ({ default: m.AdminDocumentsQueue })),
 )
@@ -381,6 +384,19 @@ function routeTable() {
           {s(
             <AdminLayout>
               <PlacementPipeline />
+            </AdminLayout>,
+          )}
+        </ProtectedRoute>
+      ),
+    },
+    {
+      // Phase 2 Task 2.4 — revenue reconciliation: invoiced vs paid vs overdue.
+      path: '/admin/revenue',
+      element: (
+        <ProtectedRoute requiredRole="admin">
+          {s(
+            <AdminLayout>
+              <AdminRevenue />
             </AdminLayout>,
           )}
         </ProtectedRoute>
