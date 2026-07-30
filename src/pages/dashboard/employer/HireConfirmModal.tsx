@@ -53,7 +53,7 @@ export function HireConfirmModal({
               type="button"
               onClick={onCancel}
               aria-label="Close"
-              className="hover:bg-surface-2 flex h-8 w-8 items-center justify-center rounded-full transition-colors"
+              className="hover:bg-surface-2 -m-1.5 flex h-11 w-11 items-center justify-center rounded-full transition-colors"
               style={{ color: 'var(--color-text-muted)' }}
             >
               <X className="h-4 w-4" />
@@ -105,8 +105,10 @@ export function HireConfirmModal({
                     key={n}
                     type="button"
                     onClick={() => setRating(n === rating ? null : n)}
-                    className="p-0.5 transition-colors"
+                    // 44px hit target (Phase 4.3) — glyph stays h-4, -my keeps row height
+                    className="-my-1 flex h-11 w-11 items-center justify-center transition-colors"
                     aria-label={`Rate ${n} star${n !== 1 ? 's' : ''}`}
+                    aria-pressed={rating !== null && rating >= n}
                   >
                     <Star
                       className={cn(

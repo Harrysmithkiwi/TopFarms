@@ -115,7 +115,7 @@ export function MyApplicationsSidebar({
                 <button
                   type="button"
                   onClick={() => onRemoveSavedJob(sj.job_id)}
-                  className="text-warn hover:text-danger mt-0.5 flex-shrink-0"
+                  className="text-warn hover:text-danger -m-3 flex h-11 w-11 flex-shrink-0 items-center justify-center"
                   aria-label="Remove saved job"
                 >
                   <Bookmark className="fill-warn h-3.5 w-3.5" />
