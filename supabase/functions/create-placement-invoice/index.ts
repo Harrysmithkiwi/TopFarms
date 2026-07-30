@@ -1,5 +1,10 @@
 import Stripe from 'https://esm.sh/stripe@14'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import {
+  requireCaller,
+  requireEmployerOwnsApplication,
+  toAuthErrorResponse,
+} from '../_shared/auth.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -14,32 +19,57 @@ Deno.serve(async (req) => {
     return new Response('ok', { headers: corsHeaders })
   }
 
-  try {
-    const {
-      application_id,
-      job_id,
-      employer_id,
-      employer_email,
-      farm_name,
-      job_title,
-      fee_tier,
-      amount_nzd,
-      rating,
-      seeker_email,
-      seeker_name,
-    } = await req.json()
+  // Service role client — bypasses RLS, so the ownership check below is mandatory.
+  const supabaseClient = createClient(
+    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+  )
 
-    // Validate required fields
-    if (!application_id || !employer_id || !employer_email || !fee_tier || !amount_nzd) {
+  // ─── Authorization (audit P0-3, sibling of acknowledge-placement-fee) ──────
+  // This function raises a real Stripe invoice against an employer. It previously took
+  // employer_id, amount_nzd and fee_tier from the request body with no caller check, so any
+  // authenticated user could invoice a DIFFERENT employer for an arbitrary amount.
+  //
+  // Found by tests/edge-function-authz.test.ts, not by the audit's remediation list — the
+  // Phase 1 plan named four functions and this is a fifth. That is the guard doing its job.
+  //
+  // employer_id and job_id now come from the application row; body values are ignored.
+  // amount_nzd/fee_tier are still client-supplied — server-side pricing is Phase 2 Task 2.1.
+  let application_id: string
+  let job_id: string
+  let employer_id: string
+  let employer_email: string
+  let farm_name: string
+  let job_title: string
+  let fee_tier: string
+  let amount_nzd: number
+  let rating: unknown
+  let seeker_email: string
+  let seeker_name: string
+  try {
+    const callerUserId = requireCaller(req)
+    const body = await req.json().catch(() => ({}))
+    ;({ employer_email, farm_name, job_title, fee_tier, amount_nzd, rating, seeker_email, seeker_name } =
+      body)
+    application_id = body.application_id
+
+    if (!application_id || !employer_email || !fee_tier || !amount_nzd) {
       return new Response(
         JSON.stringify({
-          error:
-            'application_id, employer_id, employer_email, fee_tier, and amount_nzd are required',
+          error: 'application_id, employer_email, fee_tier, and amount_nzd are required',
         }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
       )
     }
 
+    const owned = await requireEmployerOwnsApplication(supabaseClient, callerUserId, application_id)
+    employer_id = owned.employerId
+    job_id = owned.jobId
+  } catch (e) {
+    return toAuthErrorResponse(e, corsHeaders)
+  }
+
+  try {
     const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY')
     if (!stripeSecretKey) {
       return new Response(JSON.stringify({ error: 'Stripe not configured' }), {
@@ -47,12 +77,6 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
-
-    // Create Supabase service role client
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-    )
 
     // Idempotency: check if placement_fee for this application is already confirmed
     const { data: existingFee, error: checkError } = await supabaseClient

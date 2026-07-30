@@ -1,5 +1,6 @@
 import Stripe from 'https://esm.sh/stripe@14'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { requireCaller, requireEmployerOwnsJob, toAuthErrorResponse } from '../_shared/auth.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -18,46 +19,49 @@ Deno.serve(async (req) => {
     return new Response('ok', { headers: corsHeaders })
   }
 
-  try {
-    const { job_id, tier, employer_id } = await req.json()
+  // Service role client — bypasses RLS, so the ownership check below is mandatory.
+  const supabaseClient = createClient(
+    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+  )
 
-    // Validate request body
-    if (!job_id || !tier || !employer_id) {
-      return new Response(JSON.stringify({ error: 'job_id, tier, and employer_id are required' }), {
+  // ─── Authorization (audit F-A4) ────────────────────────────────────────────
+  // The old check verified that the job belonged to the SUPPLIED employer_id — never that
+  // the caller was that employer. Since the free path (listingCount === 0) activates the
+  // job outright, any authenticated user holding a (job_id, employer_id) pair could publish
+  // another employer's listing free, choose its tier, and set a 30-day expiry.
+  //
+  // employer_id now comes from the caller's own profile; the body value is ignored.
+  let job_id: string
+  let tierNum: 1 | 2 | 3
+  let employer_id: string
+  try {
+    const callerUserId = requireCaller(req)
+    const body = await req.json().catch(() => ({}))
+    job_id = body.job_id
+    const tier = body.tier
+
+    if (!job_id || !tier) {
+      return new Response(JSON.stringify({ error: 'job_id and tier are required' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
-
     if (![1, 2, 3].includes(Number(tier))) {
       return new Response(JSON.stringify({ error: 'tier must be 1, 2, or 3' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
+    tierNum = Number(tier) as 1 | 2 | 3
 
-    const tierNum = Number(tier) as 1 | 2 | 3
+    const owned = await requireEmployerOwnsJob(supabaseClient, callerUserId, job_id)
+    employer_id = owned.employerId
+  } catch (e) {
+    return toAuthErrorResponse(e, corsHeaders)
+  }
 
-    // Create Supabase service role client
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-    )
-
-    // Verify the job belongs to the employer
-    const { data: job, error: jobError } = await supabaseClient
-      .from('jobs')
-      .select('id, employer_id')
-      .eq('id', job_id)
-      .eq('employer_id', employer_id)
-      .single()
-
-    if (jobError || !job) {
-      return new Response(
-        JSON.stringify({ error: 'Job not found or does not belong to this employer' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      )
-    }
+  try {
 
     // Check listing_fees count for this employer (first-listing-free logic)
     const { count, error: countError } = await supabaseClient

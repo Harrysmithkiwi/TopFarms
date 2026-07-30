@@ -53,7 +53,7 @@ export function useVerifications(employerId: string | null): UseVerificationsRet
     try {
       const { data, error } = await supabase
         .from('employer_verifications')
-        .select('*')
+        .select('id, employer_id, method, status, verified_at, created_at')
         .eq('employer_id', employerId)
 
       if (error) {

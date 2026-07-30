@@ -77,7 +77,9 @@ database ledger is the runtime record.
 | 062_manual_paste_source | `20260723062752` | |
 | 063_leads_bulk_actions | `20260729091412` | |
 | 064_lane_a_outreach_worklist | `20260729094845` | |
-| 065_revoke_staging_list_public_grant | `065` | |
+| 065_revoke_staging_list_public_grant | `20260730010822` | connector-applied, timestamp version |
+| 066_phase1_rls_gaps | `20260730024306` | connector-applied, timestamp version |
+| 067_employer_verifications_column_grants | `20260730031536` | connector-applied; found by probe P10, not by review |
 
 ## Ledger rows with no dedicated file (documented duplicates)
 

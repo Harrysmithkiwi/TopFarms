@@ -217,7 +217,7 @@ export function JobDetail() {
       if (loadedJob.employer_profiles?.id) {
         const { data: verifData } = await supabase
           .from('employer_verifications')
-          .select('*')
+          .select('id, employer_id, method, status, verified_at, created_at')
           .eq('employer_id', loadedJob.employer_profiles.id)
 
         setVerifications((verifData as EmployerVerification[]) ?? [])
