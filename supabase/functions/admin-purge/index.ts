@@ -54,9 +54,23 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
   if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405)
 
+  // TWO CLIENTS, deliberately.
+  //   `admin`      service-role — the Storage API deletion, which needs to
+  //                bypass bucket RLS.
+  //   `asCaller`   the admin's OWN JWT — every RPC call. The admin_* RPCs gate
+  //                on _admin_gate(), which reads auth.uid(); under service-role
+  //                auth.uid() is NULL, so the gate refuses and the audit row
+  //                would record a null admin_id even if it did not. Calling as
+  //                the caller keeps the gate meaningful AND makes
+  //                admin_audit_log name the human who did it.
   const admin = createClient(
     Deno.env.get('SUPABASE_URL') ?? '',
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+  )
+  const asCaller = createClient(
+    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+    { global: { headers: { Authorization: req.headers.get('Authorization') ?? '' } } },
   )
 
   let callerUserId: string
@@ -105,7 +119,7 @@ Deno.serve(async (req) => {
       }
 
       // Records the purge — and refuses if the object somehow survived.
-      const { error: markErr } = await admin.rpc('admin_mark_document_purged', {
+      const { error: markErr } = await asCaller.rpc('admin_mark_document_purged', {
         p_document_id: doc.id,
       })
       if (markErr) {
@@ -127,7 +141,7 @@ Deno.serve(async (req) => {
       // `storage` schema is NOT exposed to PostgREST — querying it over REST
       // returns "Failed to list stored files". So the listing goes through a
       // SECURITY DEFINER RPC and only the removal goes through the Storage API.
-      const { data: objects, error: objErr } = await admin.rpc(
+      const { data: objects, error: objErr } = await asCaller.rpc(
         'admin_list_user_storage_objects',
         { p_user_id: body.user_id },
       )
@@ -151,7 +165,7 @@ Deno.serve(async (req) => {
 
       // The RPC re-checks and refuses if anything survived, so a partial purge
       // cannot destroy the only record of who owned the remaining files.
-      const { data: result, error: delErr } = await admin.rpc('admin_delete_account', {
+      const { data: result, error: delErr } = await asCaller.rpc('admin_delete_account', {
         p_user_id: body.user_id,
       })
       if (delErr) {
