@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en-NZ">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TopFarms — Drafting Gate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== TopFarms canonical tokens (mirror of src/index.css) ===== */
+:root{
+  --bg:#fafbf9; --surface:#fff; --surface-2:#f3f5f0; --surface-hover:#f7f9f5;
+  --border:#e5e8e2; --border-strong:#d0d5cc;
+  --text:#0b1f10; --muted:#5b6b5f; --subtle:#8a968d; --on-brand:#fff;
+  --brand:#16a34a; --brand-hover:#15803d; --brand-900:#0f3d22; --brand-50:#e8f5ec;
+  --font-display:'Fraunces',Georgia,serif;
+  --font-body:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,system-ui,sans-serif;
+  --font-mono:'JetBrains Mono',Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);font-variant-numeric:tabular-nums;line-height:1.5}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1280px;margin:0 auto;padding:0 32px}
+@media(max-width:640px){.wrap{padding:0 20px}}
+
+/* ---- nav ---- */
+nav{position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;height:72px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:600;font-size:18px;letter-spacing:-.01em}
+.logo .mark{width:26px;height:26px;flex:none}
+.navlinks{display:flex;align-items:center;gap:28px;font-size:15px;color:var(--muted)}
+.navlinks a:hover{color:var(--text)}
+.navlinks .signin{color:var(--text);font-weight:500}
+@media(max-width:640px){.navlinks a:not(.signin){display:none}}
+
+/* ---- buttons ---- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:52px;min-width:44px;padding:0 26px;border-radius:8px;font-weight:600;font-size:16px;font-family:inherit;cursor:pointer;border:1px solid transparent;transition:background .15s,border-color .15s,transform .15s}
+.btn-solid{background:var(--brand);color:var(--on-brand)}
+.btn-solid:hover{background:var(--brand-hover)}
+.btn-outline{background:transparent;color:var(--text);border-color:var(--border-strong)}
+.btn-outline:hover{border-color:var(--text);background:var(--surface-hover)}
+.btn:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.arrow{transition:transform .15s}
+.btn:hover .arrow{transform:translateX(3px)}
+
+/* =====================================================================
+   THE GATE — asymmetric diagonal split is the compositional event.
+   Left pen (workers) 57%, warm white. Right pen (employers) 43%, tinted,
+   denser, sheared behind a diagonal fenceline. The two paths diverge in
+   weight and treatment; they are not mirrored halves.
+   ===================================================================== */
+.gate{position:relative;min-height:calc(100vh - 72px);min-height:calc(100svh - 72px);overflow:hidden}
+.pen{position:absolute;top:0;bottom:0;display:flex;align-items:center}
+/* workers pen: full width underneath, content constrained to the left */
+.pen-workers{left:0;right:0;background:var(--surface)}
+.pen-workers .pen-inner{max-width:1280px;margin:0 auto;padding:0 32px;width:100%}
+/* employers pen: the sheared right wedge, laid over the top */
+.pen-employers{left:0;right:0;
+  background:var(--surface-2);
+  clip-path:polygon(62% 0, 100% 0, 100% 100%, 50% 100%);
+  justify-content:flex-end}
+.pen-employers .pen-inner{width:38%;min-width:340px;padding:0 32px 0 0;max-width:520px}
+/* the fenceline itself — a drawn diagonal rule sitting on the shear */
+.fenceline{position:absolute;top:0;bottom:0;left:0;right:0;pointer-events:none;z-index:3}
+.fenceline svg{position:absolute;inset:0;width:100%;height:100%}
+
+.pen-workers .pen-inner{position:relative;z-index:2;max-width:1280px}
+.workers-col{max-width:560px}
+.kicker{font-size:13px;font-weight:600;letter-spacing:.02em;color:var(--brand);text-transform:none;margin-bottom:18px}
+.workers-col h1{font-family:var(--font-display);font-weight:500;font-size:68px;line-height:1.02;letter-spacing:-.02em;margin-bottom:22px}
+.workers-col p{font-size:19px;color:var(--muted);max-width:440px;margin-bottom:30px}
+.workers-col .free{display:inline-flex;align-items:center;gap:8px;margin-top:22px;font-size:14px;color:var(--subtle)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--brand);flex:none}
+
+.employers-col{position:relative;z-index:4}
+.employers-col .tag{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:14px;font-family:var(--font-mono);letter-spacing:-.01em}
+.employers-col h2{font-family:var(--font-display);font-weight:500;font-size:34px;line-height:1.08;letter-spacing:-.015em;margin-bottom:14px}
+.employers-col p{font-size:16px;color:var(--muted);margin-bottom:22px}
+.employers-col .price{font-size:14px;color:var(--text);font-weight:500;margin-top:18px}
+.employers-col .price b{font-weight:600}
+
+/* staggered load */
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.rise{opacity:0;animation:rise .6s cubic-bezier(.2,.7,.3,1) forwards}
+.d1{animation-delay:.05s}.d2{animation-delay:.15s}.d3{animation-delay:.25s}
+.d4{animation-delay:.4s}.d5{animation-delay:.5s}
+
+@media(max-width:900px){
+  .gate{min-height:0}
+  .pen{position:static}
+  .pen-employers{clip-path:none}
+  .pen-employers .pen-inner{width:100%;max-width:none;padding:0 20px}
+  .pen-inner{padding:0 20px}
+  .fenceline{display:none}
+  .pen-workers{padding:48px 0 40px}
+  .pen-employers{padding:40px 0 48px;border-top:1px solid var(--border)}
+  .workers-col h1{font-size:44px}
+  .employers-col{padding:0}
+}
+
+/* ===================== below the fold ===================== */
+section{border-top:1px solid var(--border)}
+.sec-head{max-width:640px;margin-bottom:40px}
+.sec-head h2{font-family:var(--font-display);font-weight:500;font-size:38px;line-height:1.05;letter-spacing:-.02em;margin-bottom:14px}
+.sec-head p{font-size:18px;color:var(--muted)}
+.pad{padding:88px 0}
+@media(max-width:640px){.pad{padding:56px 0}.sec-head h2{font-size:30px}}
+
+/* proof — founding scarcity, ledger treatment */
+.ledger{border:1px solid var(--border);border-radius:16px;background:var(--surface);overflow:hidden}
+.ledger-row{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;padding:28px 32px;border-bottom:1px solid var(--border)}
+.ledger-row:last-child{border-bottom:0}
+.ledger-row .label{font-size:16px;color:var(--muted)}
+.ledger-row .val{font-family:var(--font-display);font-weight:500;font-size:40px;letter-spacing:-.01em;font-variant-numeric:tabular-nums lining-nums}
+.ledger-row .val small{font-size:20px;color:var(--subtle);font-weight:400;font-family:var(--font-body)}
+.meter{grid-column:1/-1;height:8px;border-radius:99px;background:var(--surface-2);overflow:hidden;margin-top:4px}
+.meter i{display:block;height:100%;width:48%;background:var(--brand);border-radius:99px}
+
+/* how it works — 3 steps */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--border);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.step{background:var(--surface);padding:32px}
+.step .n{font-family:var(--font-mono);font-size:13px;color:var(--brand);font-weight:500;margin-bottom:16px}
+.step h3{font-family:var(--font-display);font-weight:500;font-size:22px;margin-bottom:10px;letter-spacing:-.01em}
+.step p{font-size:15px;color:var(--muted)}
+@media(max-width:760px){.steps{grid-template-columns:1fr}}
+
+/* pricing — two cards, divergent weight */
+.price-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.price-card{border:1px solid var(--border);border-radius:16px;padding:36px;background:var(--surface)}
+.price-card.employer{background:var(--surface-2)}
+.price-card .who{font-size:14px;font-weight:600;color:var(--muted);margin-bottom:8px}
+.price-card .big{font-family:var(--font-display);font-weight:500;font-size:46px;letter-spacing:-.02em;margin-bottom:6px}
+.price-card .sub{font-size:15px;color:var(--muted);margin-bottom:24px}
+.price-card ul{list-style:none;font-size:15px;color:var(--text)}
+.price-card li{padding:8px 0 8px 26px;position:relative;color:var(--muted)}
+.price-card li::before{content:"";position:absolute;left:0;top:15px;width:8px;height:8px;border-radius:50%;background:var(--brand)}
+@media(max-width:640px){.price-grid{grid-template-columns:1fr}}
+
+/* founding band */
+.founding{background:var(--brand-50);border:1px solid #cfe7d6;border-radius:20px;padding:48px;display:grid;grid-template-columns:1fr auto;gap:32px;align-items:center}
+.founding h2{font-family:var(--font-display);font-weight:500;font-size:32px;letter-spacing:-.02em;margin-bottom:10px}
+.founding p{font-size:17px;color:var(--muted);max-width:520px}
+.founding .count{font-family:var(--font-display);font-size:15px;color:var(--brand-900);font-weight:600;margin-top:14px;font-variant-numeric:tabular-nums lining-nums}
+@media(max-width:760px){.founding{grid-template-columns:1fr;padding:32px}}
+
+/* footer — dark grounding bookend */
+footer{background:var(--brand-900);color:#dbe7dd;border-top:0}
+footer .wrap{padding:64px 32px 48px}
+footer .frow{display:flex;justify-content:space-between;flex-wrap:wrap;gap:32px;align-items:flex-start}
+footer .logo{color:#fff}
+footer .fnav{display:flex;gap:48px;flex-wrap:wrap}
+footer .fcol h4{font-size:13px;color:#8fb59a;font-weight:600;margin-bottom:14px;letter-spacing:.02em}
+footer .fcol a{display:block;font-size:15px;color:#dbe7dd;padding:5px 0}
+footer .fcol a:hover{color:#fff}
+footer .base{margin-top:48px;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);font-size:13px;color:#8fb59a;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav>
+    <a class="logo" href="#">
+      <svg class="mark" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+        <rect x="1" y="1" width="24" height="24" rx="6" fill="#0f3d22"/>
+        <path d="M6 18.5 L13 7 L20 18.5" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M9.5 18.5 L13 12.5 L16.5 18.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      TopFarms
+    </a>
+    <div class="navlinks">
+      <a href="#how">How it works</a>
+      <a href="#pricing">Pricing</a>
+      <a class="signin" href="#">Sign in</a>
+    </div>
+  </nav>
+</div>
+
+<!-- THE GATE -->
+<div class="gate">
+  <!-- workers pen (base layer, wide) -->
+  <div class="pen pen-workers">
+    <div class="pen-inner">
+      <div class="workers-col">
+        <div class="kicker rise d1">New Zealand farm work</div>
+        <h1 class="rise d2">Good farm work<br>finds you here.</h1>
+        <p class="rise d3">Dairy, sheep and beef, contracting, orchard. Tell us what you are after and we put you in front of the farms hiring right now.</p>
+        <div class="rise d4"><a class="btn btn-solid" href="#">Find farm work <span class="arrow">&rarr;</span></a></div>
+        <div class="free rise d5"><span class="dot"></span> Free for workers, always.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- the diagonal fenceline drawn on the shear -->
+  <div class="fenceline" aria-hidden="true">
+    <svg viewBox="0 0 1440 900" preserveAspectRatio="none">
+      <line x1="893" y1="0" x2="720" y2="900" stroke="#d0d5cc" stroke-width="1.5"/>
+      <line x1="905" y1="0" x2="732" y2="900" stroke="#e5e8e2" stroke-width="1"/>
+    </svg>
+  </div>
+
+  <!-- employers pen (sheared wedge, over the top) -->
+  <div class="pen pen-employers">
+    <div class="pen-inner">
+      <div class="employers-col">
+        <div class="tag rise d3">// for farm owners</div>
+        <h2 class="rise d4">Need good people?</h2>
+        <p class="rise d4">List the job. We match it to workers who actually want it, not a stack of no-shows to wade through.</p>
+        <a class="btn btn-outline rise d5" href="#">List a job <span class="arrow">&rarr;</span></a>
+        <div class="price rise d5">First listing <b>free</b>, then <b>$100</b> each.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROOF: founding scarcity (this architecture's zero-inventory answer) -->
+<section id="proof" class="pad">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Where TopFarms stands today.</h2>
+      <p>The real state of the yard, updated as farms and workers join.</p>
+    </div>
+    <div class="ledger">
+      <div class="ledger-row">
+        <div class="label">Founding farms signed</div>
+        <div class="val">12 <small>of 25 spots</small></div>
+        <div class="meter"><i></i></div>
+      </div>
+      <div class="ledger-row">
+        <div class="label">Regions live</div>
+        <div class="val">Waikato <small>· Canterbury · Southland</small></div>
+      </div>
+      <div class="ledger-row">
+        <div class="label">Workers pay</div>
+        <div class="val">$0 <small>forever</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" class="pad" style="background:var(--surface-2)">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Three steps through the yard.</h2>
+    </div>
+    <div class="steps">
+      <div class="step"><h3>Tell us the work</h3><p>Type of farm, region, whether you want seasonal or permanent. Two minutes, no CV wrangling.</p></div>
+      <div class="step"><h3>We do the matching</h3><p>Our engine puts your name in front of the farms whose jobs actually fit, and theirs in front of you.</p></div>
+      <div class="step"><h3>You meet direct</h3><p>You and the farmer talk direct, sort the start date, get on with it. We take no cut of your wage.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" class="pad">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>One flat fee to list a job.</h2>
+      <p>Workers never pay. Farms pay per listing, and that is the whole model.</p>
+    </div>
+    <div class="price-grid">
+      <div class="price-card">
+        <div class="who">Looking for work</div>
+        <div class="big">$0</div>
+        <div class="sub">Every part of it, forever.</div>
+        <ul>
+          <li>Unlimited applications</li>
+          <li>Direct contact with the farmer</li>
+          <li>Alerts when roles in your region post</li>
+        </ul>
+      </div>
+      <div class="price-card employer">
+        <div class="who">Hiring for your farm</div>
+        <div class="big">$100<span style="font-size:18px;color:var(--subtle);font-weight:400"> / listing</span></div>
+        <div class="sub">First listing free. No lock-in, no seat fees.</div>
+        <ul>
+          <li>Matched to workers who want the job</li>
+          <li>Pay per listing, nothing else</li>
+          <li>Founding farms lock in early access</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOUNDING SCARCITY BAND -->
+<section class="pad" style="background:var(--surface-2)">
+  <div class="wrap">
+    <div class="founding">
+      <div>
+        <h2>Be one of the 25 founding farms.</h2>
+        <p>We are hand-picking the first farms on TopFarms so the matching starts strong. Founding farms get free listings through launch and a permanent badge.</p>
+        <div class="count">12 of 25 spots taken &middot; 13 left</div>
+      </div>
+      <a class="btn btn-solid" href="#">Claim a founding spot <span class="arrow">&rarr;</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="frow">
+      <div>
+        <a class="logo" href="#">
+          <svg class="mark" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+            <rect x="1" y="1" width="24" height="24" rx="6" fill="#16a34a"/>
+            <path d="M6 18.5 L13 7 L20 18.5" stroke="#0f3d22" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M9.5 18.5 L13 12.5 L16.5 18.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          TopFarms
+        </a>
+        <p style="margin-top:16px;font-size:14px;color:#8fb59a;max-width:280px">The yard where good farm work finds good people. Made in New Zealand.</p>
+      </div>
+      <div class="fnav">
+        <div class="fcol"><h4>Workers</h4><a href="#">Find work</a><a href="#">How it works</a><a href="#">Regions</a></div>
+        <div class="fcol"><h4>Farms</h4><a href="#">List a job</a><a href="#">Pricing</a><a href="#">Founding farms</a></div>
+        <div class="fcol"><h4>Company</h4><a href="#">About</a><a href="#">Contact</a><a href="#">Privacy</a></div>
+      </div>
+    </div>
+    <div class="base">
+      <span>&copy; 2026 TopFarms. Waikato, New Zealand.</span>
+      <span>topfarms.co.nz</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
