@@ -72,6 +72,35 @@ A requirement may have multiple gaps (e.g., deploy gap + runtime/secret gap + E2
 
 **Precedent:** Phase 15 closeout (2026-05-01). The 4 Edge Functions were deployed (deploy gap closed, MAIL-02 trigger 404 fixed) but `RESEND_API_KEY` was never set in prod secrets — emails silently skip, no E2E proof. Flipping MAIL-02 to `[x]` would have made REQUIREMENTS.md lie. Kept as `[ ]` with partial-close note; carryforward added to `.planning/v2.0-MILESTONE-AUDIT.md`.
 
+## 9. Verification discipline — assert nothing you haven't checked
+
+Codified 2026-07-30 after a session in which six errors shipped or nearly shipped. Every one
+was the same failure: **an assertion made without verification**, several compounded by
+discarding the evidence that would have exposed it (`| tail -1`, `> /dev/null`). Note what
+caught them — `tsc -b`, a grep gate, running the test. **Zero were caught by re-reading my own
+work.** Care is not a control; gates are. These rules are mechanical for that reason.
+
+1. **Never `git add -A`.** Stage explicit paths. Run `git status` after staging and read it
+   before committing. *(Precedent: `git add -A` before the `.gitignore` rules existed committed
+   ~14 MB of scratch — and `.gitignore` never untracks an already-tracked file.)*
+2. **Never discard an exit code.** If a command's output is piped or suppressed, check `$?`
+   separately. *(Precedent: `gh pr merge 68 -q` — invalid flag, silent failure, and the error
+   went to `tail -1`. Reported as merged; it was not.)*
+3. **Verify before anything destructive** — delete, revoke, drop, overwrite — even when a
+   subagent or a document says it is safe. *(Precedent: a review called a Tag variant "unused";
+   it was the live `interview` badge. `tsc -b` caught the deletion.)*
+4. **Run the exit gate before claiming done, not after.** A phase is complete when its gate
+   command produces the stated output, not when its tasks are ticked.
+5. **Label provenance.** "An agent reported X" is not "I verified X". Conflating the two
+   produced a wrong P0 in the pre-launch audit. Findings carry `file:line` or command output,
+   or they are marked unverified.
+6. **Read the real schema before writing SQL against it.** Signatures, column names and arg
+   counts are checked in `pg_catalog` first, never guessed. *(Precedent: a `REVOKE` written
+   against a guessed 6-arg signature; the function takes 8, and the revoke would have silently
+   matched nothing.)*
+7. **Correct your own findings out loud.** If an earlier claim turns out to be wrong, say so
+   plainly and downgrade it. A scary finding that is false costs more than no finding.
+
 ## 8. Git Safety Incidents
 
 Log entries here when an agent or session violates the git safety rules in §4. Each entry: date, what was destroyed, recovery path, prevention rule that was added.
