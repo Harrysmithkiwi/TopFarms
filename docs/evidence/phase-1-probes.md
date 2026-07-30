@@ -3,8 +3,9 @@
 Live probes against production (`inlagtgpynemhipnqvty`). Every claim below is a recorded
 request/response pair, not an assertion.
 
-**Status: steps 1–3 COMPLETE (pre-merge).** Steps 4–6 (merge → deploy → after-probes →
-cleanup) pending operator go-ahead.
+**Status: COMPLETE.** All six steps run. Merged at `9f0d2a1`; functions deployed; every
+attack now refused; production restored to baseline (6 users / 0 jobs) and verified by
+read-back.
 
 **Headline: every Edge Function attack SUCCEEDED against production.** These are not
 theoretical findings. Employer B — an account that owns nothing — published another
@@ -12,18 +13,10 @@ employer's job for free and forged a $0 placement fee that opened the seeker's P
 
 ---
 
-## ⚠️ CLEANUP OWED — read this first
+## ✅ CLEANUP DONE — production is clean
 
-Three throwaway accounts exist in production `auth.users` right now. If this session ends
-before step 6, **run this**:
-
-```sql
-DELETE FROM auth.users WHERE id::text LIKE 'deadbeef-0000-4000-8000-%';
--- then verify:
-SELECT (SELECT count(*) FROM auth.users)   AS users,   -- must be 6
-       (SELECT count(*) FROM jobs)          AS jobs,    -- must be 0
-       (SELECT count(*) FROM applications)  AS apps;    -- must be 0
-```
+All throwaway data deleted and verified by read-back (see Step 6). Nothing remains.
+The account table below is kept for provenance only.
 
 | Handle | UUID | Role | Purpose |
 |---|---|---|---|
@@ -131,12 +124,67 @@ because it was exploitable.
 
 ## Steps 4–6 — after merge
 
-| # | Check | Expect |
-|---|---|---|
-| P6 | **legitimate path**: A performs all five calls on A's own resources | 2xx — run FIRST |
-| P1–P5 | re-run as B | 403 |
-| — | cleanup + read-back | 6 users / 0 jobs / 0 applications |
+Merged `9f0d2a1`. `supabase-deploy.yml` reported success — **which proves nothing on its own**,
+because that workflow sets `continue-on-error: true` (audit F-A10). All 14 functions showed a
+fresh `updated_at` and incremented versions, but version numbers prove *a* deploy, not *this*
+deploy. The behavioural probes below are the actual proof.
 
-**P6 runs before the re-run of P1–P5 deliberately.** Having just added authorization checks,
-the likelier failure is over-restriction — breaking the real employer — not under-restriction.
-Confirm the legitimate path is alive before admiring the refusals.
+Attack artefacts from Step 2 were reset first (fees deleted, job back to `draft`) so the
+"after" run was not contaminated by the "before" run.
+
+### Step 5a — P6, the legitimate path (run FIRST, deliberately)
+
+Having just *added* authorization checks, the likelier failure is over-restriction — breaking
+the real employer — not under-restriction. Confirm the legitimate path is alive before
+admiring the refusals.
+
+| Probe | Caller | Result |
+|---|---|---|
+| P6.1 `create-payment-intent` on own job | employer A | ✅ **200** `{"is_free":true}` |
+| P6.2 `generate-candidate-summary` on own applicant | employer A | ✅ **200** |
+| P6.3 `acknowledge-placement-fee` on own application | employer A | ✅ **200** `placement_fee_id: 32f07d31-…` |
+| P6.4 `generate-match-explanation` on own profile | seeker | ✅ **200** — the seeker-owned check, which my plan had specified wrongly as employer-owned |
+
+**No outage.** Every legitimate call still works.
+
+### Step 5b — the same five attacks, re-run as employer B
+
+| # | Before (vulnerable) | After | Message |
+|---|---|---|---|
+| P1 | 200 | ✅ **403** | `Application does not belong to a job you own` |
+| P2 | 200 | ✅ **403** | `That profile does not belong to you` |
+| P3 | 200 + row + PII gate opened | ✅ **403** | `Application does not belong to a job you own` |
+| P4 | 200 + job published free | ✅ **403** | `Job does not belong to you` |
+| P5 | 500 (inconclusive) | ✅ **403** | `Application does not belong to a job you own` |
+
+Database read-back after the attack run — **B's five attacks produced zero writes**:
+
+```
+listing_fees   1  <- from P6.1 (A, legitimate)
+placement_fees 1  <- from P6.3 (A, legitimate), billed_to = A, amount 20000
+job status     active <- A's own activation
+```
+
+Not a single row attributable to B. That is the causation pair the before/after design exists
+to produce: identical requests, 200-with-effect → 403-with-no-effect.
+
+### Step 6 — cleanup, verified
+
+`DELETE FROM auth.users WHERE id::text LIKE 'deadbeef-0000-4000-8000-%'` plus one orphan
+sweep, then read back:
+
+| Table | Count | Baseline |
+|---|---|---|
+| auth.users | **6** | 6 ✅ |
+| jobs | **0** | 0 ✅ |
+| applications | **0** | 0 ✅ |
+| listing_fees / placement_fees | **0 / 0** | 0 / 0 ✅ |
+| employer_verifications | **0** | 0 ✅ |
+| seeker_skills | **0** | 0 ✅ |
+| message_threads | **0** | 0 ✅ |
+| rows matching `deadbeef-%` | **0** | — ✅ |
+
+**Incidental finding, worth a Phase 5 note:** the user cascade did *not* remove the probe's
+`message_threads` row — its FKs are `ON DELETE SET NULL`, so deleting the participants left an
+orphan with three null columns rather than deleting it. Harmless here (swept manually) but it
+means orphaned threads accumulate on any account deletion. Recorded rather than dropped.
