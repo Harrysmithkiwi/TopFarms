@@ -24,7 +24,7 @@ async function runAxe(page: Page, label: string) {
   )
   const moderate = results.violations.filter((v) => v.impact === 'moderate')
   for (const v of moderate) {
-    console.log(
+    console.warn(
       `[a11y moderate] ${label}: ${v.id} (${v.nodes.length} node(s)) — not failing (ratchet later)`,
     )
   }
@@ -102,7 +102,7 @@ for (const viewport of [DESKTOP, MOBILE]) {
       // No silent caps: say which surface actually got scanned.
       const finalUrl = page.url()
       if (!finalUrl.includes('/onboarding/seeker')) {
-        console.log(`[a11y] /onboarding/seeker redirected to ${finalUrl} — scanned that surface`)
+        console.warn(`[a11y] /onboarding/seeker redirected to ${finalUrl} — scanned that surface`)
       }
       await runAxe(page, `/onboarding/seeker @ ${vp}`)
       if (viewport === MOBILE) await assertNoHorizontalScroll(page, `/onboarding/seeker @ ${vp}`)
