@@ -267,27 +267,24 @@ export function ApplicantDashboard() {
 
       setScoreMap(newScoreMap)
 
-      // Sort applicants by match score descending (initial load)
-      const sorted = [...appsWithSkills].sort((a, b) => {
-        const scoreA = newScoreMap.get(a.seeker_profiles?.id ?? '')?.total_score ?? 0
-        const scoreB = newScoreMap.get(b.seeker_profiles?.id ?? '')?.total_score ?? 0
-        return scoreB - scoreA
-      })
-
-      setApplicants(sorted)
+      // Phase 4.5: no pre-sort by score. The render pipeline owns ordering
+      // (sortBy: newest default / match on request) — the old initial
+      // score-sort here was dead (always re-sorted before paint) and
+      // contradicted the "matched, not sorted" framing.
+      setApplicants(appsWithSkills)
 
       // Build employer jobs list with applicant counts
       setEmployerJobs(
         (jobsList ?? []).map((j) => ({
           id: j.id,
           title: j.title,
-          applicant_count: j.id === activeJobId ? sorted.length : 0,
+          applicant_count: j.id === activeJobId ? appsWithSkills.length : 0,
         })),
       )
 
       // Batch-fetch contacts for applicants already shortlisted/offered/hired
       // RLS ensures only acknowledged rows are returned
-      const acknowledgedSeekerUserIds = sorted
+      const acknowledgedSeekerUserIds = appsWithSkills
         .filter((a) => ['shortlisted', 'offered', 'hired'].includes(a.status))
         .map((a) => a.seeker_profiles?.user_id)
         .filter((id): id is string => !!id)
