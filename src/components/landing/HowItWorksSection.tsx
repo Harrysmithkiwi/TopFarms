@@ -1,10 +1,21 @@
 import { useState } from 'react'
+import {
+  ClipboardList,
+  Handshake,
+  type LucideIcon,
+  Megaphone,
+  Search,
+  Sprout,
+  Star,
+  Target,
+  UserRound,
+} from 'lucide-react'
 
 type Tab = 'seeker' | 'employer'
 
 interface Step {
   number: number
-  icon: string
+  icon: LucideIcon
   title: string
   description: string
 }
@@ -12,27 +23,27 @@ interface Step {
 const seekerSteps: Step[] = [
   {
     number: 1,
-    icon: '👤',
+    icon: UserRound,
     title: 'Create Profile',
     description:
       "Tell us your experience, skills, and what you're looking for in your next farm role.",
   },
   {
     number: 2,
-    icon: '🎯',
+    icon: Target,
     title: 'Get Matched',
     description:
       'Our AI scores your profile against active listings based on skills, location, and preferences.',
   },
   {
     number: 3,
-    icon: '📋',
+    icon: ClipboardList,
     title: 'Apply',
     description: 'Apply to roles that suit you with a single click. Your profile does the talking.',
   },
   {
     number: 4,
-    icon: '🌿',
+    icon: Sprout,
     title: 'Start Working',
     description: 'Get hired and start your new farm adventure. We help every step of the way.',
   },
@@ -41,31 +52,32 @@ const seekerSteps: Step[] = [
 const employerSteps: Step[] = [
   {
     number: 1,
-    icon: '📢',
+    icon: Megaphone,
     title: 'Post a Job',
     description:
       'List your role with agriculture-specific details: shed type, herd size, accommodation, and more.',
   },
   {
     number: 2,
-    icon: '🔍',
+    icon: Search,
     title: 'Review Matches',
     description:
       'We surface pre-scored candidates ranked by fit. No more wading through unsuitable CVs.',
   },
   {
     number: 3,
-    icon: '⭐',
+    icon: Star,
     title: 'Shortlist',
     description:
       'Mark your favourites, unlock contact details, and move candidates through your pipeline.',
   },
   {
     number: 4,
-    icon: '🤝',
+    icon: Handshake,
     title: 'Hire',
     description:
-      'Message candidates, check their verified profiles, and confirm your hire directly on the platform.',
+      // audit D8: no messaging UI exists — shortlisting releases contact details.
+      'Contact candidates, check their verified profiles, and confirm your hire directly on the platform.',
   },
 ]
 
@@ -169,7 +181,13 @@ export function HowItWorksSection() {
                 </p>
 
                 {/* Icon */}
-                <div className="mb-3 text-2xl">{step.icon}</div>
+                <div className="mb-3">
+                  <step.icon
+                    className="h-6 w-6"
+                    style={{ color: 'var(--color-brand-700)' }}
+                    aria-hidden="true"
+                  />
+                </div>
 
                 {/* Title */}
                 <h3

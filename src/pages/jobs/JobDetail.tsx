@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router'
 import { track } from '@vercel/analytics'
 import * as Dialog from '@radix-ui/react-dialog'
 import {
+  ClipboardList,
   MapPin,
   Calendar,
   Briefcase,
@@ -337,10 +338,14 @@ export function JobDetail() {
       >
         <div className="max-w-md px-4 text-center">
           <div
-            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl text-3xl"
+            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl"
             style={{ backgroundColor: 'var(--color-border)' }}
           >
-            📋
+            <ClipboardList
+              className="h-8 w-8"
+              style={{ color: 'var(--color-text-muted)' }}
+              aria-hidden="true"
+            />
           </div>
           <h1
             className="font-display mb-2 text-2xl font-semibold"

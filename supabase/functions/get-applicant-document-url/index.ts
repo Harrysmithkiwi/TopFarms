@@ -47,6 +47,9 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '
 const EMPLOYER_VISIBLE_DOCUMENT_TYPES = ['cv', 'certificate', 'reference'] as const
 const SIGNED_URL_TTL_SECONDS = 900
 const BUCKET_NAME = 'seeker-documents'
+// Employer verification documents live in a separate private bucket (Phase 3
+// Task 3.2 — the admin verification queue mints from here).
+const VERIFICATION_BUCKET_NAME = 'employer-documents'
 
 function jsonResponse(body: unknown, status: number) {
   return new Response(JSON.stringify(body), {
@@ -112,39 +115,91 @@ Deno.serve(async (req) => {
       return jsonResponse({ error: 'Internal error' }, 500)
     }
 
-    // ADMIN BYPASS — early-exit branch
+    // ADMIN BYPASS — early-exit branch.
+    //
+    // Phase 3 Task 3.2: serves BOTH admin queues, and logs the view either way.
+    //   { document_id }     → seeker_documents, bucket 'seeker-documents'
+    //   { verification_id } → employer_verifications, bucket 'employer-documents'
+    // Every mint writes an admin_audit_log row BEFORE the URL is returned. Prior
+    // to this, zero document views had ever been recorded — an admin opening an
+    // applicant's passport left no trace at all. The log lives here rather than
+    // in the client because this function holds the service-role key: a caller
+    // cannot decline to be audited.
     if (roleRow?.role === 'admin') {
-      // Parse body — admin path expects { document_id } only (application_id ignored).
-      let adminBody: { document_id?: string } = {}
+      let adminBody: { document_id?: string; verification_id?: string } = {}
       try {
         adminBody = await req.json()
       } catch {
         return jsonResponse({ error: 'Invalid JSON body' }, 400)
       }
       const adminDocId = adminBody.document_id
-      if (!adminDocId) {
-        return jsonResponse({ error: 'document_id is required' }, 400)
+      const adminVerificationId = adminBody.verification_id
+
+      if (!adminDocId && !adminVerificationId) {
+        return jsonResponse({ error: 'document_id or verification_id is required' }, 400)
       }
 
-      const { data: adminDocRow, error: adminDocErr } = await adminClient
-        .from('seeker_documents')
-        .select('id, storage_path')
-        .eq('id', adminDocId)
-        .maybeSingle()
-      if (adminDocErr) {
-        console.error(
-          'get-applicant-document-url: admin seeker_documents lookup failed',
-          adminDocErr,
-        )
-        return jsonResponse({ error: 'Internal error' }, 500)
+      let storagePath: string
+      let bucket: string
+      let auditTable: 'seeker_documents' | 'employer_verifications'
+      let auditId: string
+
+      if (adminVerificationId) {
+        const { data: vRow, error: vErr } = await adminClient
+          .from('employer_verifications')
+          .select('id, employer_id, document_url')
+          .eq('id', adminVerificationId)
+          .maybeSingle()
+        if (vErr) {
+          console.error('get-applicant-document-url: verification lookup failed', vErr)
+          return jsonResponse({ error: 'Internal error' }, 500)
+        }
+        if (!vRow?.document_url) {
+          return jsonResponse({ error: 'Verification document not found' }, 404)
+        }
+        // document_url is stored as '<bucket>/<path>' by DocumentUploader; strip
+        // a leading bucket segment if present so signing works either way.
+        storagePath = vRow.document_url.replace(/^employer-documents\//, '')
+        bucket = VERIFICATION_BUCKET_NAME
+        auditTable = 'employer_verifications'
+        auditId = vRow.id
+      } else {
+        const { data: adminDocRow, error: adminDocErr } = await adminClient
+          .from('seeker_documents')
+          .select('id, storage_path')
+          .eq('id', adminDocId!)
+          .maybeSingle()
+        if (adminDocErr) {
+          console.error(
+            'get-applicant-document-url: admin seeker_documents lookup failed',
+            adminDocErr,
+          )
+          return jsonResponse({ error: 'Internal error' }, 500)
+        }
+        if (!adminDocRow) {
+          return jsonResponse({ error: 'Document not found' }, 404)
+        }
+        storagePath = adminDocRow.storage_path
+        bucket = BUCKET_NAME
+        auditTable = 'seeker_documents'
+        auditId = adminDocRow.id
       }
-      if (!adminDocRow) {
-        return jsonResponse({ error: 'Document not found' }, 404)
+
+      // Audit BEFORE minting: if the log write fails we do not hand out the URL.
+      const { error: auditErr } = await adminClient.rpc('log_admin_document_view', {
+        p_admin_id: callerUserId,
+        p_target_table: auditTable,
+        p_target_id: auditId,
+        p_payload: { bucket },
+      })
+      if (auditErr) {
+        console.error('get-applicant-document-url: audit log write failed', auditErr)
+        return jsonResponse({ error: 'Internal error' }, 500)
       }
 
       const { data: adminUrlData, error: adminUrlErr } = await adminClient.storage
-        .from(BUCKET_NAME)
-        .createSignedUrl(adminDocRow.storage_path, SIGNED_URL_TTL_SECONDS)
+        .from(bucket)
+        .createSignedUrl(storagePath, SIGNED_URL_TTL_SECONDS)
       if (adminUrlErr || !adminUrlData?.signedUrl) {
         console.error('get-applicant-document-url: admin signed URL mint failed', adminUrlErr)
         return jsonResponse({ error: 'Failed to generate signed URL' }, 500)

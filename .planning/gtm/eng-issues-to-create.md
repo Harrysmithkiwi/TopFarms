@@ -7,7 +7,12 @@ operator says go. Nothing is created in Linear from this file directly.*
 Step 8 already creates the **3 quality gates** named in `first-week-checklist.md`
 (`tsc -b` errors · no frontend CI · bundle size). In addition, create:
 
-## Issue: main has no branch protection + red CI = no production merge gate
+## ~~Issue: main has no branch protection + red CI = no production merge gate~~ — CLOSED 2026-07-29
+
+> **RESOLVED, do not create.** Branch protection was enabled on `main` on 2026-07-29 (PRs #65–#67)
+> and CI is green. Verified against the GitHub API 2026-07-30: `required_status_checks.contexts =
+> ["quality","e2e"]`, `required_approving_review_count = 1`. The description below is kept for
+> provenance and is no longer true. (Audit D11 — a self-authored doc that outlived its problem.)
 
 - **Labels:** `quality-gate`
 - **Priority:** medium–high (production merge safety)

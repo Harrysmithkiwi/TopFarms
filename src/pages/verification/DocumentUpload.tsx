@@ -12,7 +12,8 @@ import { FileDropzone } from '@/components/ui/FileDropzone'
 /**
  * Document upload page for employer verification.
  * Accepts images and PDFs up to 10MB.
- * On upload complete: upserts employer_verifications with method='document', status='verified'.
+ * On upload complete: upserts employer_verifications with method='document'. Status is left to
+ * the column DEFAULT ('pending') — an admin approves via the verification queue (Phase 3 Task 3.2).
  * Shows list of previously uploaded documents.
  */
 export function DocumentUpload() {
@@ -44,13 +45,17 @@ export function DocumentUpload() {
   async function handleUploadComplete(url: string) {
     if (!employerId) return
 
+    // Phase 3 Task 3.2 (audit P0-9): the browser must NOT set status. Uploading a
+    // file is a SUBMISSION, not a verification — an admin decides via the
+    // /admin/documents verification queue. `status` DEFAULTs to 'pending', and
+    // both the RLS WITH CHECK and the column grants in migration 073 refuse an
+    // employer-supplied status, so omitting it here is the honest write rather
+    // than the only permitted one.
     const { error } = await supabase.from('employer_verifications').upsert(
       {
         employer_id: employerId,
         method: 'document',
-        status: 'verified',
         document_url: url,
-        verified_at: new Date().toISOString(),
       },
       { onConflict: 'employer_id,method' },
     )
@@ -61,7 +66,7 @@ export function DocumentUpload() {
       return
     }
 
-    toast.success('Document uploaded successfully')
+    toast.success('Document submitted — we’ll review it and update your badge')
     await refresh()
   }
 

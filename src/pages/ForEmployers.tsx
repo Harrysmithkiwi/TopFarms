@@ -27,7 +27,11 @@ const features = [
   {
     icon: BarChart3,
     title: 'Applicant Dashboard',
-    body: 'See all your applicants in one place. Shortlist, message, and move candidates through your pipeline.',
+    // "message" removed (audit D8): message_threads exists in the schema but has
+    // no UI — the PRD scopes messaging as Growth phase. Contact details are
+    // released on shortlist, so the honest promise is the phone number, not an
+    // inbox we do not have.
+    body: 'See all your applicants in one place. Shortlist to unlock their contact details, and move candidates through your pipeline.',
   },
   {
     icon: ShieldCheck,
@@ -55,7 +59,10 @@ const steps = [
   {
     num: '04',
     label: 'Hire with confidence',
-    detail: 'Message candidates directly, check their verified profile, and make the call.',
+    // "Message" removed (audit D8) — no messaging UI exists. Shortlisting
+    // releases the candidate's phone and email, so contacting them is real; the
+    // in-platform inbox is not.
+    detail: 'Contact candidates directly, check their verified profile, and make the call.',
   },
 ]
 

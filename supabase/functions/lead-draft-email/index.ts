@@ -8,9 +8,15 @@ import * as jose from 'https://esm.sh/jose@5'
 // (leads.drafted_email jsonb {subject, body}). The admin reads/edits/sends by
 // hand — this never sends anything.
 //
-// Auth mirrors lead-intake (verify_jwt=false → WE verify the JWT via JWKS +
-// require the admin role). Degrades honestly: no ANTHROPIC_API_KEY → a
-// mail-merge from the template so the loop still works offline-of-Claude.
+// Auth: this function has NO config.toml section, so it deploys with the
+// platform default verify_jwt = TRUE (confirmed live 2026-07-30). The comment
+// here previously claimed verify_jwt=false, mirroring lead-intake — wrong, and
+// corrected in the Phase 3 truth pass (audit D6). The in-function JWKS
+// verification below therefore runs on a token the gateway has ALREADY
+// validated: a harmless double gate, not the only gate. Do not remove it on the
+// strength of the gateway alone without also pinning verify_jwt in config.toml.
+// Degrades honestly: no ANTHROPIC_API_KEY → a mail-merge from the template so
+// the loop still works offline-of-Claude.
 
 const DRAFT_MODEL = 'claude-sonnet-4-6' // voice-critical, low volume — same as Lane B
 const DRAFT_TEMPERATURE = 1.0
@@ -176,8 +182,9 @@ Deno.serve(async (req) => {
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
   )
 
-  // Auth: verify the caller's JWT locally (JWKS) + require admin — same contract
-  // as lead-intake (this function is deployed verify_jwt=false; WE verify).
+  // Auth: verify the caller's JWT locally (JWKS) + require admin. NOTE the
+  // gateway already validated this token (verify_jwt defaults to true and this
+  // function pins nothing in config.toml) — see the header. Double gate, kept.
   const bearer = req.headers.get('authorization')?.replace(/^Bearer /i, '')
   if (!bearer) return json({ error: 'missing token' }, 401)
   try {

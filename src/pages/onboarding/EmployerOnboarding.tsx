@@ -5,6 +5,7 @@ import { StepIndicator } from '@/components/ui/StepIndicator'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/hooks/useAuth'
 import { useWizard } from '@/hooks/useWizard'
+import type { FarmType } from '@/types/domain'
 import { Step1FarmType } from './steps/Step1FarmType'
 import { Step2FarmDetails } from './steps/Step2FarmDetails'
 import { Step3Culture } from './steps/Step3Culture'
@@ -32,7 +33,7 @@ export interface EmployerProfileData {
   // Existing fields
   // Legacy single-select; constrained to the Step1FarmType zod enum (NOT the
   // wider FarmType union in domain.ts, which backs the farm_types array).
-  farm_type?: 'dairy' | 'sheep_beef'
+  farm_type?: FarmType
   farm_name?: string
   region?: string
   herd_size?: number

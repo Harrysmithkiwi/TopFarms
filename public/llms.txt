@@ -1,6 +1,6 @@
 # TopFarms
 
-> New Zealand's agricultural recruitment marketplace. TopFarms matches skilled farm workers with quality employers across dairy, sheep & beef, horticulture, viticulture and arable operations in all 16 NZ regions.
+> New Zealand's agricultural recruitment marketplace. TopFarms matches skilled farm workers with quality employers across dairy, sheep & beef, cropping, deer and mixed operations in all 16 NZ regions.
 
 TopFarms connects farm employers and job seekers with skills-based matching, agriculture-specific job listings (shed type, herd size, accommodation, DairyNZ qualifications), and a per-listing pricing model. The first job listing is free.
 

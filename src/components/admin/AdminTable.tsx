@@ -13,6 +13,7 @@ type AdminListRpc =
   | 'admin_list_jobs'
   | 'admin_list_placements'
   | 'admin_list_document_queue'
+  | 'admin_list_verification_queue'
   | 'admin_skill_coverage'
   | 'admin_list_analytics_events'
   | 'admin_leads_staging_list'

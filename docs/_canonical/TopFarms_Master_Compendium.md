@@ -1,6 +1,6 @@
 # TopFarms — Master Compendium
 
-> **Status:** CANONICAL INDEX · **Consolidated:** 2026-06-20 · **Product state:** v2.0 complete (through Phase 22), v2.1 active (Phase 23, ag-broad taxonomy), launched.
+> **Status:** CANONICAL INDEX · **Consolidated:** 2026-06-20 · **Product state:** v2.0 complete (through Phase 22), v2.1 active (Phase 23, ag-broad taxonomy). **PRE-LAUNCH** — domain live, cold-start open, 0 live job listings; Stripe still in test mode (live swap is Phase 7 of the uplift roadmap).
 >
 > This is the single entry point to TopFarms documentation. It indexes and summarises
 > everything and points to the authoritative source for each topic. When this document
@@ -37,7 +37,8 @@ There are three tiers. Always resolve top-down:
 ## What TopFarms is (one paragraph)
 
 TopFarms is a New Zealand **agricultural job marketplace** connecting farm **employers**
-(who pay) with farm **seekers** (free), with **Claude-powered match scoring**. Revenue is
+(who pay) with farm **seekers** (free), with **transparent seven-dimension match scoring**
+(deterministic; Claude narrates, does not score). Revenue is
 **listing fees** (first free, then $100 / $150 / $200 NZD) plus flat **placement fees**
 ($200 / $400 / $800, Stripe Invoice Net 14). As of **v2.1** the taxonomy is
 **agriculture-broad** (livestock / cropping / machinery / farm-ops / management /
@@ -56,10 +57,10 @@ These were the live contradictions across the pre-consolidation document set. Th
 |---|---|---|
 | **Product name** | "FarmHands" (2025 GDocs) | **TopFarms** (renamed) |
 | **Monetisation** | employer subscriptions; $50/post; $100-only; training commissions | **Listing tiers (free/$100/$150/$200) + placement fees $200/$400/$800.** No subscriptions, no training commissions. |
-| **Sector scope** | "dairy + sheep/beef ONLY" (v1.0–v2.0); 13-sector broad (FarmHands) | **Ag-broad (6 categories) as of v2.1.** Horticulture/viticulture/apiculture/aquaculture/forestry = future v3.0+. |
+| **Sector scope** | "dairy + sheep/beef ONLY" (v1.0–v2.0); 13-sector broad (FarmHands) | **Ag-broad (6 categories) as of v2.1**, enforced by `jobs_sector_check` (dairy · sheep_beef · cropping · deer · mixed · other). Horticulture/viticulture/apiculture/aquaculture/forestry = future v3.0+. Phase 3 removed the landing-page cards that advertised horticulture/viticulture ahead of the schema (audit D7). |
 | **Data scraping** | Apify scraping as MVP-core pillar | **Out of the marketplace MVP.** Separate admin track, Firecrawl-based. |
 | **Training marketplace** | full third side (Courses/Enrollments, provider dashboard "complete") | **Rejected.** Admin-curated content only. |
-| **AI matching** | "❌ not in MVP" (one cut list) | **Kept — core.** Claude-powered match scoring. |
+| **AI matching** | "❌ not in MVP" (one cut list) | **Kept — core.** Deterministic seven-dimension scoring; Claude generates the plain-language explanation, not the number. |
 | **Brand** | v1 soil/moss earth-tones + Fraunces/DM Sans (`docs/design-system.md`) | **v2: single green `#16A34A` + Inter.** v1 fully retired. |
 | **Schema / ingestion** | `raw_posts`/`parsed_jobs` + Apify (Data_Architecture.html, eng-spec) | **`lead_staging`/`leads`/`lead_suppression` + Firecrawl**, gated via SECURITY DEFINER RPCs (migrations 041–046). |
 | **Messaging** | core MVP epic (Sprint 4) | **Growth Phase** — tables only, no MVP UI. |

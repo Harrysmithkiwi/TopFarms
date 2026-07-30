@@ -41,6 +41,14 @@ on:
       # changes are applied via Supabase Studio SQL Editor per CLAUDE §2.
       - 'supabase/functions/**'
   workflow_dispatch:
+    inputs:
+      run_migrations:
+        description: >-
+          Attempt `supabase db push`. Leave OFF unless CLAUDE.md §6 pooler auth
+          has been resolved — it fails with SASL 28P01 and turns every manual
+          run red for a reason unrelated to what you deployed.
+        type: boolean
+        default: false
 
 concurrency:
   group: supabase-deploy
@@ -55,7 +63,13 @@ jobs:
   migrations:
     runs-on: ubuntu-latest
     # Gated until §6 pooler auth resolves — see header comment.
-    if: github.event_name == 'workflow_dispatch'
+    #
+    # Phase 3 Task 3.6: previously `github.event_name == 'workflow_dispatch'`,
+    # which meant EVERY manual function deploy also ran the known-broken
+    # migrations job and reported the whole run as failed. A workflow that is
+    # always red teaches everyone to ignore it, so a real failure stops being
+    # information. Now opt-in: a red run means something again.
+    if: github.event_name == 'workflow_dispatch' && inputs.run_migrations
     steps:
       - uses: actions/checkout@v4
 

@@ -8,14 +8,17 @@
 # Gateway JWT check disabled because legacy service_role JWT is rejected by the new gateway as
 # UNAUTHORIZED_LEGACY_JWT (discovered 2026-05-03 Phase 15-02 fire — Supabase migrated this project's
 # gateway to require non-legacy JWTs at some point between 017's deploy and now).
-# Phase 18 hardening: add X-Webhook-Secret header validation inside function code to restore
-# defence-in-depth lost by verify_jwt = false.
+# Phase 18 hardening: X-Webhook-Secret header validation inside function code restores the
+# defence-in-depth lost by verify_jwt = false. IMPLEMENTED (notify-job-filled/index.ts:118-130),
+# guarded by tests/webhook-secret-presence.test.ts. (Audit D4 — this used to read "add", which
+# described shipped work as outstanding.)
 verify_jwt = false
 
 [functions.send-followup-emails]
 # Cron-driven (placement-fee-followup-job from migration 011). Same legacy JWT issue as
 # notify-job-filled — gateway check disabled. Function does not use caller-bound logic.
-# Phase 18 hardening: add X-Webhook-Secret header validation inside function code.
+# Phase 18 hardening: X-Webhook-Secret header validation inside function code. IMPLEMENTED
+# (send-followup-emails/index.ts:177-189), guarded by tests/webhook-secret-presence.test.ts.
 verify_jwt = false
 
 [functions.acknowledge-placement-fee]
@@ -58,9 +61,13 @@ verify_jwt = false
 # upstream and the handler uses the CLAUDE.md §5 gateway-trust JWT decode
 # pattern (atob decode, NO adminClient.auth.getUser call).
 #
-# Defence-in-depth: X-Webhook-Secret header is ALSO validated inside the function
-# (Phase 18.1 SC-3 pattern) so even a non-admin user with a valid JWT cannot
-# trigger emails — the admin queue page is the only caller that holds the secret.
+# NO shared-secret gate here, deliberately. This function is called from the admin
+# BROWSER, and a secret shipped to an SPA is not a secret — see the reasoning at
+# send-document-status-email/index.ts:23-30. The load-bearing gates are the gateway
+# JWT check (verify_jwt = true) plus the user_roles.role = 'admin' check in the
+# handler. (Audit D5: this block previously claimed the secret WAS validated here.
+# It is not, and a doc asserting a control that does not exist is worse than one
+# that admits the gap — someone would have counted it as a second layer.)
 verify_jwt = true
 
 [functions.lead-intake]
@@ -88,3 +95,13 @@ verify_jwt = false
 # is unaffected by this local-dev setting.)
 [edge_runtime]
 policy = "per_worker"
+
+[functions.admin-purge]
+# Phase 3 Task 3.5 — storage-aware deletion. Called from the admin browser
+# (AdminDocumentsQueue / operator tooling) with a real admin JWT, so
+# verify_jwt=true and the handler uses the CLAUDE.md §5 gateway-trust decode.
+# It exists because SQL CANNOT delete storage objects: Supabase enforces
+# `protect_objects_delete BEFORE DELETE ON storage.objects`. The paired RPCs
+# (admin_delete_account, admin_mark_document_purged) refuse while any object
+# survives, so this function's purge is ordered by the database, not by trust.
+verify_jwt = true

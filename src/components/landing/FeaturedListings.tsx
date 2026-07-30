@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
+import { Wheat } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 
 interface FeaturedJob {
@@ -202,7 +203,11 @@ export function FeaturedListings() {
                 border: '1px solid var(--color-border)',
               }}
             >
-              <div className="mb-4 text-4xl">🌾</div>
+              <Wheat
+                className="mx-auto mb-4 h-9 w-9"
+                style={{ color: 'var(--color-brand)' }}
+                aria-hidden="true"
+              />
               <h3
                 className="font-display mb-2 text-lg font-semibold"
                 style={{ color: 'var(--color-brand-900)' }}

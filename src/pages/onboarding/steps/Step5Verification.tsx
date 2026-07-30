@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Building2, Camera, FileText, type LucideIcon, Mail, Phone } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { cn } from '@/lib/utils'
@@ -9,7 +10,7 @@ interface Step5Props {
 }
 
 interface VerificationCardProps {
-  icon: string
+  icon: LucideIcon
   title: string
   description: string
   isVerified?: boolean
@@ -17,7 +18,7 @@ interface VerificationCardProps {
 }
 
 function VerificationCard({
-  icon,
+  icon: Icon,
   title,
   description,
   isVerified,
@@ -30,7 +31,13 @@ function VerificationCard({
         isVerified ? 'border-brand bg-[rgba(74,124,47,0.04)]' : 'border-border bg-surface',
       )}
     >
-      <span className="mt-0.5 flex-shrink-0 text-2xl">{icon}</span>
+      <Icon
+        className={cn(
+          'mt-0.5 h-6 w-6 flex-shrink-0',
+          isVerified ? 'text-brand' : 'text-text-muted',
+        )}
+        aria-hidden="true"
+      />
       <div className="min-w-0 flex-1">
         <div className="mb-0.5 flex items-center gap-2">
           <p className="font-body text-text text-[13px] font-semibold">{title}</p>
@@ -81,14 +88,14 @@ export function Step5Verification({ onComplete, onBack }: Step5Props) {
 
       <div className="space-y-3">
         <VerificationCard
-          icon="✉️"
+          icon={Mail}
           title="Email"
           description="Your email address has been automatically verified at signup"
           isVerified
         />
 
         <VerificationCard
-          icon="📱"
+          icon={Phone}
           title="Phone"
           description="Add your mobile number to receive SMS notifications and increase trust"
           onStart={() => setShowPhoneInput(true)}
@@ -110,21 +117,21 @@ export function Step5Verification({ onComplete, onBack }: Step5Props) {
         )}
 
         <VerificationCard
-          icon="🏢"
+          icon={Building2}
           title="NZBN"
           description="Verify with your New Zealand Business Number for full employer verification"
           onStart={() => {}}
         />
 
         <VerificationCard
-          icon="📄"
+          icon={FileText}
           title="Documents"
           description="Upload farm ownership documents or lease agreement"
           onStart={() => {}}
         />
 
         <VerificationCard
-          icon="📷"
+          icon={Camera}
           title="Farm Photos"
           description="Upload photos of your farm to build authenticity with candidates"
           onStart={() => {}}

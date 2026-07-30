@@ -402,20 +402,33 @@ export const PREFERRED_REGION_OPTIONS: { value: string; label: string }[] = [
 ]
 
 // Match scoring types
+//
+// Scoring v2 (migration 072): a dimension that does not apply to a pairing is
+// `null`, NOT 0 — a cropping job has no shed, so "Shed Type 0/25" would be a
+// lie that drags the visible score down. total_score is normalised to 100
+// across the APPLICABLE dimensions only, so a perfect match reads 100 in every
+// sector. `_meta` makes the arithmetic reproducible from the row alone:
+// round(100 * raw_total / applicable_max) === total_score.
 export interface MatchBreakdown {
-  shed_type: number
+  shed_type: number | null
   location: number
   accommodation: number
-  skills: number
+  skills: number | null
   salary: number
   visa: number
-  couples: number
+  couples: number | null
+  _meta?: {
+    raw_total: number
+    applicable_max: number
+    algorithm_version: number
+  }
 }
 
 export interface MatchScore {
   total_score: number
   breakdown: MatchBreakdown
   explanation?: string | null
+  algorithm_version?: number
 }
 
 // Application record type

@@ -10,7 +10,12 @@
 ## 1. Product
 
 **TopFarms** — a New Zealand **agricultural job marketplace**. Tagline direction: *Match · Train · Retain.*
-Connects farm **employers** with farm **seekers**, using **Claude-powered match scoring**.
+Connects farm **employers** with farm **seekers**, using **transparent seven-dimension match
+scoring** — a deterministic engine (`compute_match_score`, migration 072) that scores shed type,
+location, accommodation, skills, salary, visa and couples fit against the dimensions applicable to
+each role, normalised to 100. **Claude narrates the result** (`generate-match-explanation`,
+`generate-candidate-summary`); it does not produce the score. That is deliberate: the score is
+explainable, reproducible and auditable when an employer asks why a candidate is a 72.
 
 > Renamed from the original **"FarmHands"** concept (2025). Any doc using "FarmHands" is legacy.
 
@@ -45,9 +50,13 @@ current product (it appears only in legacy FarmHands docs).
 
 - Employer onboarding + job-posting wizard (with Stripe payment at publish).
 - Seeker onboarding + skills profile; accommodation, couples, shed-type and other NZ-dairy-specific filters.
-- **Claude-powered match scoring** between seekers and jobs (core — not deferred).
+- **Transparent seven-dimension match scoring** between seekers and jobs, narrated in plain
+  language by Claude (core — not deferred). The score itself is deterministic PL/pgSQL.
 - Applications / shortlisting; placement-fee + shortlist-acknowledgement gating (revenue protection).
-- Document verification (admin queue, signed-URL access, verified badge).
+- Document verification — **both** seeker documents and employer verification submissions land
+  `pending` and are approved by an admin through the queue at `/admin/documents`; the badge means
+  a human checked the evidence. Signed-URL access only, and every admin document view is written
+  to `admin_audit_log`.
 - Saved searches.
 - Admin: super-admin dashboard, analytics, leads queue.
 

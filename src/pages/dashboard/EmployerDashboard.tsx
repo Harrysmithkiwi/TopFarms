@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router'
-import { Plus, AlertCircle } from 'lucide-react'
+import { Plus, AlertCircle, Wheat, Pin } from 'lucide-react'
 import { toast } from 'sonner'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { Card } from '@/components/ui/Card'
@@ -276,10 +276,14 @@ export function EmployerDashboard() {
           <Card className="p-6">
             <div className="flex flex-col gap-6 md:flex-row md:items-center">
               <div
-                className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl text-3xl"
+                className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl"
                 style={{ backgroundColor: 'var(--color-warn-bg)' }}
               >
-                🌾
+                <Wheat
+                  className="h-8 w-8"
+                  style={{ color: 'var(--color-brand-900)' }}
+                  aria-hidden="true"
+                />
               </div>
               <div className="min-w-0 flex-1">
                 <h2 className="mb-1 text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
@@ -466,10 +470,14 @@ export function EmployerDashboard() {
                 // Empty state — no jobs at all
                 <Card className="p-10 text-center">
                   <div
-                    className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl text-3xl"
+                    className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl"
                     style={{ backgroundColor: 'var(--color-warn-bg)' }}
                   >
-                    📌
+                    <Pin
+                      className="h-7 w-7"
+                      style={{ color: 'var(--color-brand-900)' }}
+                      aria-hidden="true"
+                    />
                   </div>
                   <h3
                     className="font-body mb-1 text-base font-bold"
