@@ -289,6 +289,10 @@ Deno.serve(async (req) => {
     // Create Stripe Invoice (draft — we manually finalize after adding line items)
     const invoice = await stripe.invoices.create({
       customer: customerId,
+      // Pin the currency: without this the invoice inherits the Stripe ACCOUNT default
+      // and a non-NZD account rejects the NZD line item ("cannot combine currencies").
+      // Found live 2026-07-30 against an AUD-default test sandbox.
+      currency: 'nzd',
       collection_method: 'send_invoice',
       days_until_due: 14,
       auto_advance: false, // Manually finalize after adding line items
