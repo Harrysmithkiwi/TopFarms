@@ -1,4 +1,5 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -63,6 +64,10 @@ export function SaveSearchModal({
     return () => document.removeEventListener('keydown', onKey)
   }, [isOpen, onClose])
 
+  // Phase 4.4 — trap focus while open (shared useFocusTrap contract)
+  const dialogRef = useRef<HTMLDivElement>(null)
+  useFocusTrap(dialogRef, isOpen)
+
   if (!isOpen) return null
 
   const nameValue = watch('name') ?? ''
@@ -109,6 +114,7 @@ export function SaveSearchModal({
         className={cn('fixed inset-0 z-50 flex items-center justify-center p-4')}
       >
         <div
+          ref={dialogRef}
           className="bg-surface border-border w-full max-w-md rounded-[16px] border-[1.5px] shadow-xl"
           onClick={(e) => e.stopPropagation()}
         >

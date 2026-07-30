@@ -81,6 +81,17 @@
   --font-mono: 'JetBrains Mono', 'DM Mono', Menlo, Consolas, monospace;
 }
 
+/* Phase 4.4 — global keyboard-focus ring. Lives in the base layer so Tailwind
+   utilities (outline-none, focus-visible:outline-*) can still override it where
+   a component supplies its own ring. Sites suppressing focus without a
+   replacement indicator had their outline-none removed in the same phase. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-brand-hover);
+    outline-offset: 2px;
+  }
+}
+
 body {
   font-family: var(--font-body);
   background-color: var(--color-bg);

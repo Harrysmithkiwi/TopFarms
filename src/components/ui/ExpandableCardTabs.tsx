@@ -171,7 +171,7 @@ export function ExpandableCardTabs({
               placeholder="Add a cover note (optional)..."
               rows={3}
               maxLength={500}
-              className="border-border font-body focus:border-brand w-full resize-none rounded-[8px] border p-3 text-[14px] focus:outline-none"
+              className="border-border font-body focus:border-brand w-full resize-none rounded-[8px] border p-3 text-[14px]"
             />
             <div className="flex items-center justify-between">
               <span className="font-body text-text-subtle text-[12px]">{coverNote.length}/500</span>

@@ -516,7 +516,7 @@ export function ApplicantPanel({
                         placeholder="Optional note..."
                         value={transitionNote}
                         onChange={(e) => setTransitionNote(e.target.value)}
-                        className="border-border font-body text-text bg-surface-2 focus:border-brand-hover w-full resize-none rounded-[8px] border-[1.5px] px-3 py-2 text-[13px] focus:outline-none"
+                        className="border-border font-body text-text bg-surface-2 focus:border-brand-hover w-full resize-none rounded-[8px] border-[1.5px] px-3 py-2 text-[13px]"
                       />
                     )}
 
@@ -562,7 +562,7 @@ export function ApplicantPanel({
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Add private notes about this applicant..."
                 rows={4}
-                className="border-border font-body text-text bg-surface focus:border-brand w-full resize-none rounded-[8px] border-[1.5px] px-3 py-2 text-[13px] focus:outline-none"
+                className="border-border font-body text-text bg-surface focus:border-brand w-full resize-none rounded-[8px] border-[1.5px] px-3 py-2 text-[13px]"
               />
               <button
                 type="button"

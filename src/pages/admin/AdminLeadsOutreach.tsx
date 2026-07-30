@@ -141,7 +141,7 @@ function DraftPanel({ row, onDone }: { row: OutreachRow; onDone: () => void }) {
         </p>
       )}
       <textarea
-        className="border-border bg-surface h-40 w-full rounded-[8px] border px-3 py-2 text-sm outline-none focus:border-brand"
+        className="border-border bg-surface h-40 w-full rounded-[8px] border px-3 py-2 text-sm focus:border-brand"
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
       />

@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { CheckCircle, Star, X, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/Button'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 interface HireConfirmModalProps {
   candidateName: string
@@ -18,6 +19,10 @@ export function HireConfirmModal({
 }: HireConfirmModalProps) {
   const [loading, setLoading] = useState(false)
   const [rating, setRating] = useState<number | null>(null)
+  // Phase 4.4 — dialog semantics: focus trapped while open, restored on close
+  // (useFocusTrap is the shared admin-overlay contract; do not write a second one).
+  const dialogRef = useRef<HTMLDivElement>(null)
+  useFocusTrap(dialogRef)
 
   async function handleConfirm() {
     setLoading(true)
@@ -36,7 +41,16 @@ export function HireConfirmModal({
       {/* Container */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         {/* Card */}
-        <div className="bg-surface border-border w-full max-w-md rounded-[16px] border-[1.5px] shadow-xl">
+        <div
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="hire-confirm-title"
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') onCancel()
+          }}
+          className="bg-surface border-border w-full max-w-md rounded-[16px] border-[1.5px] shadow-xl"
+        >
           {/* Header */}
           <div className="border-border flex items-center gap-2.5 border-b px-6 pt-6 pb-4">
             <CheckCircle
@@ -44,6 +58,7 @@ export function HireConfirmModal({
               style={{ color: 'var(--color-brand)' }}
             />
             <h2
+              id="hire-confirm-title"
               className="font-body flex-1 text-[16px] font-semibold"
               style={{ color: 'var(--color-text)' }}
             >

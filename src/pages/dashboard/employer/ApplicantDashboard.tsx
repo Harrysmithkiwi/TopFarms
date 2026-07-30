@@ -592,7 +592,7 @@ export function ApplicantDashboard() {
                 placeholder="Search applicants..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="border-border font-body text-text bg-surface focus:border-brand w-48 rounded-[8px] border px-3 py-1.5 text-[13px] focus:outline-none"
+                className="border-border font-body text-text bg-surface focus:border-brand w-48 rounded-[8px] border px-3 py-1.5 text-[13px]"
               />
 
               {/* Status filter chips — use STATUS_LABELS for display text */}
@@ -621,7 +621,7 @@ export function ApplicantDashboard() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as 'newest' | 'match')}
-                className="border-border font-body text-text bg-surface focus:border-brand cursor-pointer rounded-[8px] border px-2 py-1.5 text-[12px] focus:outline-none"
+                className="border-border font-body text-text bg-surface focus:border-brand cursor-pointer rounded-[8px] border px-2 py-1.5 text-[12px]"
               >
                 <option value="newest">Newest first</option>
                 <option value="match">Match score</option>

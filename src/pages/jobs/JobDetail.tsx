@@ -1044,7 +1044,7 @@ export function JobDetail() {
               placeholder="Add a cover note (optional)..."
               rows={4}
               maxLength={500}
-              className="border-border focus:border-brand w-full resize-none rounded-[8px] border p-3 text-sm focus:outline-none"
+              className="border-border focus:border-brand w-full resize-none rounded-[8px] border p-3 text-sm"
             />
             <p
               className="mt-1 text-right text-[11px]"

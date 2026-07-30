@@ -341,7 +341,7 @@ export function SignUp() {
                 type="email"
                 autoComplete="email"
                 {...register('email')}
-                className="w-full rounded-lg border px-3.5 py-2.5 text-sm transition-colors outline-none"
+                className="w-full rounded-lg border px-3.5 py-2.5 text-sm transition-colors"
                 style={{
                   borderColor: errors.email ? 'var(--color-danger)' : 'var(--color-border)',
                   backgroundColor: 'var(--color-surface)',
@@ -370,7 +370,7 @@ export function SignUp() {
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="new-password"
                   {...register('password')}
-                  className="w-full rounded-lg border px-3.5 py-2.5 pr-10 text-sm transition-colors outline-none"
+                  className="w-full rounded-lg border px-3.5 py-2.5 pr-10 text-sm transition-colors"
                   style={{
                     borderColor: errors.password ? 'var(--color-danger)' : 'var(--color-border)',
                     backgroundColor: 'var(--color-surface)',

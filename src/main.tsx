@@ -1,6 +1,7 @@
 import { StrictMode, Suspense, lazy as reactLazy, type ComponentType, type ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router'
+import { MotionConfig } from 'motion/react'
 import { Analytics } from '@vercel/analytics/react'
 import { Toaster } from 'sonner'
 import { AuthProvider } from '@/contexts/AuthContext'
@@ -502,9 +503,14 @@ function routeTable() {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
+    {/* Phase 4.4 — the CSS prefers-reduced-motion clamp in index.css only
+        reaches CSS animations; MotionConfig makes every motion/react animation
+        honour the user's setting too. Do not remove. */}
+    <MotionConfig reducedMotion="user">
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
+    </MotionConfig>
     <Toaster position="top-right" richColors />
     {/* Pageviews on every route; custom funnel events via track() at the 5
         funnel points (signup_start/complete, job_view, apply_submit,

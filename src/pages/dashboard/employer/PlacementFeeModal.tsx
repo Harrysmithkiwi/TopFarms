@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { X, Lock, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/Button'
 import type { PlacementFeeTier } from '@/types/domain'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 interface PlacementFeeModalProps {
   candidateName: string
@@ -24,6 +25,9 @@ export function PlacementFeeModal({
   onCancel,
 }: PlacementFeeModalProps) {
   const [loading, setLoading] = useState(false)
+  // Phase 4.4 — trap focus while mounted (shared useFocusTrap contract)
+  const dialogRef = useRef<HTMLDivElement>(null)
+  useFocusTrap(dialogRef)
 
   async function handleConfirm() {
     setLoading(true)
@@ -49,8 +53,12 @@ export function PlacementFeeModal({
         className="fixed inset-0 z-50 flex items-center justify-center p-4"
       >
         <div
+          ref={dialogRef}
           className="bg-surface border-border w-full max-w-md rounded-[16px] border-[1.5px] shadow-xl"
           onClick={(e) => e.stopPropagation()}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') onCancel()
+          }}
         >
           {/* Header */}
           <div className="border-border flex items-center justify-between border-b px-6 pt-5 pb-4">

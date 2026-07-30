@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { X, CheckCircle, UserCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/Button'
 import { supabase } from '@/lib/supabase'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 interface Applicant {
   id: string
@@ -29,6 +30,9 @@ interface MarkFilledModalProps {
 export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilledModalProps) {
   const [applicants, setApplicants] = useState<Applicant[]>([])
   const [loadingApplicants, setLoadingApplicants] = useState(false)
+  // Phase 4.4 — trap focus while open (shared useFocusTrap contract)
+  const dialogRef = useRef<HTMLDivElement>(null)
+  useFocusTrap(dialogRef, isOpen)
   const [selectedApplicantId, setSelectedApplicantId] = useState<string | null>(null)
   const [hireDate, setHireDate] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -102,8 +106,12 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
         className={cn('fixed inset-0 z-50 flex items-center justify-center p-4')}
       >
         <div
+          ref={dialogRef}
           className="bg-surface border-border w-full max-w-md rounded-[16px] border-[1.5px] shadow-xl"
           onClick={(e) => e.stopPropagation()}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') onClose()
+          }}
         >
           {/* Header */}
           <div className="border-border flex items-center justify-between border-b px-6 pt-5 pb-4">
@@ -238,7 +246,7 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
                 onChange={(e) => setHireDate(e.target.value)}
                 className={cn(
                   'border-border font-body w-full rounded-[8px] border-[1.5px] px-3 py-2 text-sm',
-                  'text-text bg-surface focus:border-brand transition-colors focus:outline-none',
+                  'text-text bg-surface focus:border-brand transition-colors',
                 )}
                 style={{ color: 'var(--color-text)' }}
               />

@@ -764,7 +764,7 @@ function ResultsArea({
           <select
             value={sortParam}
             onChange={(e) => onSortChange(e.target.value)}
-            className="font-body text-text border-border bg-surface focus:border-brand cursor-pointer rounded-[6px] border px-2 py-1 text-[12px] focus:outline-none"
+            className="font-body text-text border-border bg-surface focus:border-brand cursor-pointer rounded-[6px] border px-2 py-1 text-[12px]"
           >
             {isLoggedIn && <option value="match">Match Score</option>}
             <option value="recent">Most Recent</option>

@@ -40,7 +40,7 @@ export function ApplicantDashboardSidebar({
           <select
             value={selectedJobId}
             onChange={(e) => onJobSelect(e.target.value)}
-            className="font-body text-text border-border bg-surface focus:border-brand w-full cursor-pointer rounded-[6px] border px-2 py-1.5 text-[13px] focus:outline-none"
+            className="font-body text-text border-border bg-surface focus:border-brand w-full cursor-pointer rounded-[6px] border px-2 py-1.5 text-[13px]"
           >
             {jobs.map((job) => (
               <option key={job.id} value={job.id}>

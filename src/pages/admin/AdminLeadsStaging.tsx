@@ -73,7 +73,7 @@ interface StagingRow extends Record<string, unknown> {
 }
 
 const inputCls =
-  'border-border bg-surface w-full rounded-[8px] border px-3 py-2 text-sm outline-none focus:border-brand'
+  'border-border bg-surface w-full rounded-[8px] border px-3 py-2 text-sm focus:border-brand'
 
 const MAX_IMAGES = 10 // lead-intake caps items at 50; keep vision-batch cost sane.
 

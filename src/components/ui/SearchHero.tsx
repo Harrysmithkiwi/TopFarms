@@ -69,7 +69,6 @@ export function SearchHero({
             onChange={(e) => setQuery(e.target.value)}
             className={cn(
               'font-body text-text placeholder:text-text-subtle min-w-0 flex-1 border-0 bg-transparent px-3 py-2 text-[14px]',
-              'focus:outline-none',
             )}
           />
           <Select
