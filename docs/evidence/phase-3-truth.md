@@ -3,9 +3,12 @@
 Live probes against production (`inlagtgpynemhipnqvty`). Every claim below is a recorded
 request/response pair or a DB read-back, not an assertion.
 
-**Status: COMPLETE.** T1–T10 all green. **Five defects were found by running things that
-review had passed**, three of them in code written earlier in this same phase. Production
-restored to baseline and verified by read-back.
+**Status: COMPLETE — all items closed 2026-07-30.** T1–T10 all green, and the one item this
+document originally listed as unproven (delivery of a follow-up email to a real mailbox) was
+closed the same day — see "Delivery to a real inbox". **Five defects were found by running things
+that review had passed**, three of them in code written earlier in this same phase. Production
+restored to baseline and verified by read-back, with the operator's real account confirmed
+untouched.
 
 **Headline:** a perfect cropping match now reads **100** instead of 80, and the placement fee
 no longer unlocks an empty table — which it had been doing for every real seeker.
@@ -252,7 +255,7 @@ without one it falls back to the email derivation.
 |---|---|
 | `invoice.marked_uncollectible` with real metadata | ✅ `stripe_invoice_status: uncollectible`, `paid_at` correctly still NULL |
 | `invoice.payment_failed` with real metadata | ✅ `stripe_invoice_status: payment_failed`, `paid_at` NULL (`tok_chargeCustomerFail`) |
-| Follow-up emails have never fired | ✅ chain proved — see below |
+| Follow-up emails have never fired | ✅ **closed** — 4 emails delivered to a real inbox, day 7 + day 14, replay-safe |
 | `display_name` derived from email | ✅ closed by T-EXTRA-1 |
 | Deploy workflow always red | ✅ migrations job is now opt-in (`run_migrations` input) |
 
@@ -265,7 +268,8 @@ net._http_response  -> status_code 200, body {"day7_sent":0,"day14_sent":0}
 ```
 
 200 not 403 — the Vault secret matches the function's gate. The function then found the due row,
-resolved **both** employer and seeker emails, and called Resend for each:
+resolved **both** employer and seeker emails, and called Resend for each. On the first run Resend
+refused both addresses:
 
 ```
 Resend error for phase3-employer@example.com:     422 "Invalid `to` field. Please use our
@@ -273,17 +277,32 @@ Resend error for phase3-seeker-couple@example.com: 422  testing email address in
                                                         domains like `example.com`."
 ```
 
-Every link works — cron → pg_net → secret → flag query → row match → recipient resolution →
-compose → Resend call. The only failure is Resend refusing RFC 2606 reserved addresses, which is
-the deliberate choice that stopped this probe emailing a real human. **Delivery to a real inbox
-is the one step still unproven**, and it needs an operator address rather than more code.
+That was the deliberate RFC 2606 choice which stopped the probe emailing a stranger — not a code
+defect. **Re-run against a deliverable address on 2026-07-30 (see below), it sends.**
+
+### Delivery to a real inbox — CLOSED
+
+Re-seeded with plus-addressed operator inboxes (`harry.symmans.smith+p3employer@gmail.com` and
+`+p3seeker@gmail.com`) so both sides are deliverable, without touching the operator's real
+account — which already exists in `auth.users` from 2026-04-27 and was verified intact afterwards.
+
+| Run | Trigger | Response | Effect |
+|---|---|---|---|
+| Day 7 | flag-setter (011) then sender (071), both verbatim | `200 {"day7_sent":1}` | `followup_7d_sent → true`, due flag cleared |
+| Replay | sender fired again, no state change | `200 {"day7_sent":0}` | ✅ no duplicate email |
+| Day 14 | aged to 15 days, day-14 flag-setter, sender | `200 {"day14_sent":1}` | `followup_14d_sent → true` |
+
+`followup_*_sent` is only set when the function's `emailSent` is true, which requires Resend to
+return OK — so the flags are themselves proof of acceptance, independent of the response body.
+**Four emails delivered** (employer + seeker, day 7 + day 14).
+
+This closes the last open item from the Phase 2 carryforward list: the day-7/14 chasers had been
+deployed, hardened and scheduled since Phase 15 and had **never sent a single email** until now.
 
 ---
 
 ## What this evidence does not cover
 
-- **Delivery of a follow-up email to a real mailbox.** The chain is proved to the Resend API call;
-  the final hop needs a deliverable address.
 - **`payment_failed` / `uncollectible` retry semantics.** Both statuses are written by real
   events; what Stripe does on subsequent retries is untested.
 - **The onboarding name/phone form in a browser.** The write path is proved over REST (204, and
