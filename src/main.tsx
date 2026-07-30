@@ -14,6 +14,12 @@ import './index.css'
 // dashboards, wizards, admin, or Stripe code to view the landing page.
 import { Home } from '@/pages/Home'
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
+import { AppErrorBoundary } from '@/components/layout/AppErrorBoundary'
+import { initObservability } from '@/lib/observability'
+
+// Error reporting first, so anything thrown during render is captured. No-ops
+// entirely when VITE_SENTRY_DSN is unset (audit F-A2).
+initObservability()
 
 // Lazy-chunk recovery (LAUNCH.md O7): after a deploy, an old tab can request a
 // route chunk whose hashed filename no longer exists — the import rejects and
@@ -167,11 +173,16 @@ function s(element: ReactNode) {
 }
 
 // All routes are children of one pathless route carrying errorElement, so any
-// routing error (404s, chunk failures, render errors) shows the branded
-// NotFound page instead of React Router's developer error screen (TF-001/002).
+// routing error (404s, chunk failures, render errors) is caught instead of
+// showing React Router's developer error screen (TF-001/002).
+//
+// 2026-07-30 (audit F-A2): this used to render <NotFound /> for EVERY error, so a
+// crash was shown to the user as a 404 — they don't report it and, with no error
+// tracking, neither did we. AppErrorBoundary keeps NotFound for genuine 404s and
+// renders a real error surface (and reports it) for anything else.
 const router = createBrowserRouter([
   {
-    errorElement: s(<NotFound />),
+    errorElement: s(<AppErrorBoundary />),
     children: routeTable(),
   },
 ])
