@@ -50,7 +50,18 @@
 
 - **Spacing:** 4-pt grid (`4·8·12·16·20·24·32·40·48·64·80·96`).
 - **Radius:** 8 / 12 / 16; fully-rounded pills for chips/badges.
-- **Accessibility:** WCAG AA; 44×44 minimum touch targets; `--text` on `--bg` ≈ 17.8:1.
+- **Accessibility:** WCAG 2.2 **AA**. `--text` on `--bg` = **16.61:1** (17.25:1 on `--surface`;
+  computed by `scripts/contrast.mjs`, not estimated).
+  - **Touch targets: 44×44 minimum** on mobile breakpoints, and for **any icon-only control at
+    any width** (the bookmark, the star rating — guarded by `tests/tap-targets.test.tsx`).
+  - **Pointer-primary surfaces above `md:`** may go to **36px** (`Button.tsx` `md:h-9`), never
+    below WCAG 2.2 SC 2.5.8's **24×24** AA floor.
+
+  > Why the split: 44×44 is SC 2.5.5 *Target Size (Enhanced)*, which is **AAA** — this document
+  > previously stated it unconditionally under an AA heading, and the code has shipped `md:h-9`
+  > (36px) at desktop since before the uplift programme began. Canon was not describing the
+  > product. Phase 5 amended it to state what we mean and what we do: AAA-grade targets wherever
+  > a finger is the input device, AA-compliant density where a pointer is.
 
 ## Logo
 
