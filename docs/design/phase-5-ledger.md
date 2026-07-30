@@ -1,0 +1,183 @@
+# Phase 5 — inline-style migration ledger
+
+Generated Stage 1, before any migration, at commit `88e2fc7`.
+The planning artefact for Task 5.1: what has to move, in what order, and which
+files sit on a route the Phase 4 axe gate already watches.
+
+**Totals: 112 files · 947 `style={{` · 998 `var(--color-…)` · 32 hex literals · 550 `text-[Npx]`**
+
+`colour` counts `var(--color-…)` references anywhere in the file — the migration
+target. `axe` marks files rendering on one of the six Phase 4 axe routes: those
+regress loudest and are migrated first inside their surface class.
+
+Order within each surface is heaviest-first by `style={{` count, per the brief.
+
+## seeker — 16 files · 173 `style={{` · 174 colour refs
+
+| # | File | `style={{` | colour | hex | `text-[Npx]` | axe route |
+|---|---|---|---|---|---|---|
+| 1 | `pages/jobs/JobDetail.tsx` | 55 | 53 | 2 | 29 | **yes** |
+| 2 | `pages/dashboard/SeekerDashboard.tsx` | 31 | 31 |  | 9 | **yes** |
+| 3 | `pages/onboarding/steps/SeekerStep7Complete.tsx` | 22 | 23 |  | 17 | **yes** |
+| 4 | `pages/dashboard/seeker/SeekerDocuments.tsx` | 10 | 11 |  | 3 |  |
+| 5 | `pages/dashboard/seeker/SavedSearches.tsx` | 7 | 8 |  | 3 |  |
+| 6 | `pages/onboarding/steps/SeekerStep3Qualifications.tsx` | 7 | 8 |  | 8 | **yes** |
+| 7 | `pages/dashboard/seeker/MyApplications.tsx` | 6 | 7 |  | 2 |  |
+| 8 | `components/saved-search/SavedSearchesDropdown.tsx` | 5 | 5 |  | 6 |  |
+| 9 | `pages/onboarding/SeekerOnboarding.tsx` | 5 | 5 |  |  | **yes** |
+| 10 | `pages/onboarding/steps/SeekerStep1FarmType.tsx` | 5 | 5 |  | 1 | **yes** |
+| 11 | `pages/onboarding/steps/SeekerStep5LifeSituation.tsx` | 5 | 5 |  | 7 | **yes** |
+| 12 | `pages/onboarding/steps/SeekerStep6Visa.tsx` | 5 | 2 |  | 1 | **yes** |
+| 13 | `components/saved-search/ReplaceOldestModal.tsx` | 3 | 3 |  | 1 |  |
+| 14 | `pages/onboarding/steps/SeekerStep4Skills.tsx` | 3 | 3 |  |  | **yes** |
+| 15 | `components/saved-search/SaveSearchModal.tsx` | 2 | 3 |  | 2 |  |
+| 16 | `pages/onboarding/steps/SeekerStep2Experience.tsx` | 2 | 2 |  | 2 | **yes** |
+
+## employer — 26 files · 182 `style={{` · 191 colour refs
+
+| # | File | `style={{` | colour | hex | `text-[Npx]` | axe route |
+|---|---|---|---|---|---|---|
+| 1 | `pages/dashboard/EmployerDashboard.tsx` | 29 | 29 |  | 12 |  |
+| 2 | `pages/jobs/steps/JobStep6Preview.tsx` | 14 | 14 |  | 18 |  |
+| 3 | `pages/jobs/MarkFilledModal.tsx` | 13 | 13 |  | 3 |  |
+| 4 | `pages/jobs/steps/JobStep7Payment.tsx` | 12 | 11 |  | 3 |  |
+| 5 | `pages/onboarding/steps/Step8Complete.tsx` | 11 | 12 |  | 8 |  |
+| 6 | `pages/dashboard/employer/HireConfirmModal.tsx` | 10 | 13 |  | 5 |  |
+| 7 | `pages/dashboard/employer/PlacementFeeModal.tsx` | 9 | 9 |  | 9 |  |
+| 8 | `pages/jobs/steps/JobStep8Success.tsx` | 8 | 7 |  | 6 |  |
+| 9 | `pages/onboarding/steps/Step7Preview.tsx` | 7 | 10 |  | 10 |  |
+| 10 | `pages/dashboard/employer/ApplicantDashboard.tsx` | 6 | 7 |  | 7 | **yes** |
+| 11 | `pages/jobs/steps/JobStep2FarmDetails.tsx` | 6 | 6 |  | 11 |  |
+| 12 | `pages/onboarding/steps/Step4Accommodation.tsx` | 6 | 6 |  | 11 |  |
+| 13 | `pages/onboarding/steps/Step5Verification.tsx` | 5 | 6 |  | 5 |  |
+| 14 | `pages/jobs/PostJob.tsx` | 5 | 5 |  |  |  |
+| 15 | `pages/jobs/steps/JobStep4Compensation.tsx` | 5 | 5 |  | 7 |  |
+| 16 | `pages/onboarding/EmployerOnboarding.tsx` | 5 | 5 |  |  |  |
+| 17 | `pages/onboarding/steps/Step1FarmType.tsx` | 5 | 5 |  | 3 |  |
+| 18 | `pages/onboarding/steps/Step6Pricing.tsx` | 4 | 5 |  | 2 |  |
+| 19 | `pages/jobs/steps/JobStep1Basics.tsx` | 4 | 4 |  | 3 |  |
+| 20 | `pages/onboarding/steps/Step3Culture.tsx` | 4 | 4 |  | 8 |  |
+| 21 | `pages/jobs/steps/JobStep5Description.tsx` | 3 | 4 |  | 4 |  |
+| 22 | `pages/onboarding/steps/Step2FarmDetails.tsx` | 3 | 3 |  | 6 |  |
+| 23 | `pages/jobs/steps/JobStep3Skills.tsx` | 2 | 2 |  | 2 |  |
+| 24 | `pages/verification/DocumentUpload.tsx` | 2 | 2 |  | 9 |  |
+| 25 | `pages/verification/EmployerVerification.tsx` | 2 | 2 | 2 | 19 |  |
+| 26 | `pages/verification/FarmPhotoUpload.tsx` | 2 | 2 |  | 8 |  |
+
+## admin — 25 files · 191 `style={{` · 200 colour refs
+
+| # | File | `style={{` | colour | hex | `text-[Npx]` | axe route |
+|---|---|---|---|---|---|---|
+| 1 | `pages/admin/AdminLeadsStaging.tsx` | 23 | 27 |  | 23 |  |
+| 2 | `components/admin/ProfileDrawer.tsx` | 21 | 24 |  | 15 |  |
+| 3 | `components/layout/AdminSidebar.tsx` | 12 | 13 |  | 2 |  |
+| 4 | `pages/admin/AdminLoginPage.tsx` | 11 | 16 |  | 2 |  |
+| 5 | `pages/admin/AdminDocumentsQueue.tsx` | 11 | 11 |  | 13 |  |
+| 6 | `components/admin/AdminTable.tsx` | 9 | 11 |  | 1 |  |
+| 7 | `pages/admin/AdminLeads.tsx` | 9 | 9 |  | 9 |  |
+| 8 | `pages/admin/AdminLeadsOutreach.tsx` | 9 | 9 |  | 10 |  |
+| 9 | `components/admin/DrawerShell.tsx` | 8 | 9 |  |  |  |
+| 10 | `components/admin/LeadsFunnel.tsx` | 8 | 9 |  | 3 |  |
+| 11 | `pages/admin/AdminRevenue.tsx` | 8 | 8 |  | 13 |  |
+| 12 | `components/admin/Skeleton.tsx` | 8 | 7 |  |  |  |
+| 13 | `pages/admin/AdminAnalytics.tsx` | 8 | 7 |  | 16 |  |
+| 14 | `components/admin/LeadsWorklist.tsx` | 7 | 9 |  | 3 |  |
+| 15 | `pages/admin/JobsManagement.tsx` | 5 | 5 |  | 5 |  |
+| 16 | `pages/admin/PlacementPipeline.tsx` | 5 | 5 |  | 5 |  |
+| 17 | `pages/admin/DailyBriefing.tsx` | 5 | 0 |  | 12 |  |
+| 18 | `components/admin/LeadContact.tsx` | 4 | 4 |  | 6 |  |
+| 19 | `pages/admin/AdminSkillCoverage.tsx` | 4 | 4 |  | 4 |  |
+| 20 | `pages/admin/EmployerList.tsx` | 4 | 4 |  | 4 |  |
+| 21 | `pages/admin/SeekerList.tsx` | 4 | 4 |  | 4 |  |
+| 22 | `components/admin/AdminNotesField.tsx` | 3 | 4 |  | 3 |  |
+| 23 | `components/admin/AdminPageHeader.tsx` | 2 | 0 |  | 2 |  |
+| 24 | `components/admin/KpiCard.tsx` | 2 | 0 |  | 3 |  |
+| 25 | `components/layout/AdminLayout.tsx` | 1 | 1 |  |  |  |
+
+## auth — 8 files · 109 `style={{` · 157 colour refs
+
+| # | File | `style={{` | colour | hex | `text-[Npx]` | axe route |
+|---|---|---|---|---|---|---|
+| 1 | `pages/auth/SignUp.tsx` | 33 | 57 | 7 |  |  |
+| 2 | `pages/auth/Login.tsx` | 16 | 24 | 7 |  |  |
+| 3 | `pages/auth/ResetPassword.tsx` | 15 | 23 |  |  |  |
+| 4 | `components/layout/AuthLayout.tsx` | 15 | 17 |  |  |  |
+| 5 | `pages/auth/ForgotPassword.tsx` | 11 | 14 | 1 |  |  |
+| 6 | `pages/auth/SelectRole.tsx` | 10 | 12 |  |  |  |
+| 7 | `pages/auth/VerifyEmail.tsx` | 7 | 8 | 1 |  |  |
+| 8 | `pages/auth/Suspended.tsx` | 2 | 2 |  |  |  |
+
+## marketing — 17 files · 217 `style={{` · 195 colour refs
+
+| # | File | `style={{` | colour | hex | `text-[Npx]` | axe route |
+|---|---|---|---|---|---|---|
+| 1 | `components/landing/HeroSection.tsx` | 37 | 19 |  | 6 | **yes** |
+| 2 | `pages/ForEmployers.tsx` | 28 | 27 |  |  |  |
+| 3 | `pages/Pricing.tsx` | 25 | 30 |  |  |  |
+| 4 | `components/landing/FeaturedListings.tsx` | 20 | 26 |  | 3 | **yes** |
+| 5 | `components/landing/AIMatchingSection.tsx` | 20 | 19 | 3 | 1 | **yes** |
+| 6 | `components/landing/EmployerCTABand.tsx` | 19 | 19 |  | 1 | **yes** |
+| 7 | `components/landing/LandingFooter.tsx` | 16 | 2 |  |  | **yes** |
+| 8 | `components/landing/HowItWorksSection.tsx` | 12 | 17 |  |  | **yes** |
+| 9 | `components/landing/TestimonialsSection.tsx` | 12 | 9 |  | 1 | **yes** |
+| 10 | `components/landing/FarmTypesStrip.tsx` | 7 | 8 |  |  | **yes** |
+| 11 | `components/landing/FinalCTASection.tsx` | 5 | 7 |  |  | **yes** |
+| 12 | `components/landing/CountersSection.tsx` | 5 | 4 |  |  | **yes** |
+| 13 | `pages/legal/LegalLayout.tsx` | 4 | 4 |  | 1 |  |
+| 14 | `components/landing/TrustedByStrip.tsx` | 3 | 3 |  |  | **yes** |
+| 15 | `pages/legal/Terms.tsx` | 2 | 0 |  |  |  |
+| 16 | `pages/Home.tsx` | 1 | 1 |  |  | **yes** |
+| 17 | `pages/legal/Privacy.tsx` | 1 | 0 |  |  |  |
+
+## shared — 20 files · 75 `style={{` · 81 colour refs
+
+| # | File | `style={{` | colour | hex | `text-[Npx]` | axe route |
+|---|---|---|---|---|---|---|
+| 1 | `components/layout/Nav.tsx` | 15 | 18 |  | 1 | **yes** |
+| 2 | `components/ui/MatchBreakdown.tsx` | 9 | 10 |  | 10 | **yes** |
+| 3 | `components/ui/ApplicantDocuments.tsx` | 8 | 8 |  | 12 | **yes** |
+| 4 | `pages/NotFound.tsx` | 6 | 8 |  |  |  |
+| 5 | `components/layout/AppErrorBoundary.tsx` | 6 | 6 |  | 3 |  |
+| 6 | `components/ui/ApplicantPanel.tsx` | 6 | 6 |  | 46 | **yes** |
+| 7 | `components/ui/AICandidateSummary.tsx` | 6 | 3 |  | 4 | **yes** |
+| 8 | `components/layout/Sidebar.tsx` | 3 | 6 |  |  | **yes** |
+| 9 | `components/layout/ProtectedRoute.tsx` | 2 | 2 |  |  |  |
+| 10 | `components/ui/SearchHero.tsx` | 2 | 1 | 1 | 4 | **yes** |
+| 11 | `components/tremor/AreaChart.tsx` | 2 | 0 | 1 |  |  |
+| 12 | `components/tremor/BarChart.tsx` | 2 | 0 | 1 |  |  |
+| 13 | `components/ui/SearchJobCard.tsx` | 1 | 4 |  | 3 | **yes** |
+| 14 | `components/ui/ExpandableCardTabs.tsx` | 1 | 3 |  | 10 |  |
+| 15 | `components/ui/MyApplicationsSidebar.tsx` | 1 | 3 |  | 11 | **yes** |
+| 16 | `components/layout/DashboardLayout.tsx` | 1 | 1 |  |  | **yes** |
+| 17 | `components/ui/FilterSidebar.tsx` | 1 | 1 |  | 5 | **yes** |
+| 18 | `main.tsx` | 1 | 1 |  |  |  |
+| 19 | `components/stripe/PaymentForm.tsx` | 1 | 0 | 6 |  |  |
+| 20 | `components/ui/ProgressBar.tsx` | 1 | 0 |  |  |  |
+
+## Batch plan
+
+Landed first, before any page (every migration consumes them):
+
+| Order | Commit | Why first |
+|---|---|---|
+| 1 | canon amendment — `Brand_and_Design.md:53` | The 44×44 line is wrong (AA vs AAA) and the code already contradicts it. Migrating pages against a false spec bakes it in |
+| 2 | type scale tokens (Task 5.2) | Every page migration maps `text-[Npx]` onto these. Late = migrate twice |
+
+Then page commits, heaviest-first within surface, seeker/employer before admin
+(the axe gate watches them; admin has no automated visual coverage):
+
+| Order | Scope | Rationale |
+|---|---|---|
+| 3 | `JobDetail.tsx` | Heaviest file in the repo (55) and on an axe route |
+| 4 | `SeekerDashboard.tsx` + seeker dashboard children | Axe route, mobile-first surface |
+| 5 | `EmployerDashboard.tsx`, `ApplicantDashboard.tsx` | Axe route (applicants); Task 5.6's false-empty-state lives here |
+| 6 | `SignUp.tsx` + `auth/*` | Every user passes through once, usually on a phone |
+| 7 | onboarding steps (seeker, then employer) | High file count, low per-file weight — grouped commits |
+| 8 | `jobs/steps/*` (PostJob wizard) | Grouped |
+| 9 | `admin/*` + `components/admin/*` | Full cheat-sheet density applies here; desktop-only |
+| 10 | `components/*` residue (layout, ui, saved-search, tremor) | Shared shells last — they are consumed by everything above, so migrating them early would churn the pages twice |
+| 11 | marketing (`Home`, landing/*, `ForEmployers`, `Pricing`, legal) | Out of cheat-sheet scope; keeps its airier scale. Colour tokens still migrate |
+
+**Not migrated:** `components/stripe/PaymentForm.tsx` — the Stripe Elements
+`appearance` object takes hex strings through Stripe's API, not CSS classes.
+Sanctioned exception per Task 5.3; gets a comment saying why.

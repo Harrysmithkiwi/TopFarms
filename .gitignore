@@ -60,6 +60,7 @@ marketing/video/**/*.wav
 # `docs/design/` (dir form) would make the negation impossible, hence `/*`.
 docs/design/*
 !docs/design/contrast.md
+!docs/design/phase-5-ledger.md
 content/
 .claude/skills/playwright-skill/
 docs/index.docx
