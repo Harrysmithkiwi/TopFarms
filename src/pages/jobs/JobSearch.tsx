@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import * as Dialog from '@radix-ui/react-dialog'
-import { SlidersHorizontal, X } from 'lucide-react'
+import { SlidersHorizontal, Sprout, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/hooks/useAuth'
@@ -108,7 +108,7 @@ function SkeletonCard() {
 export function JobSearch() {
   usePageMeta(
     'Browse Farm Jobs NZ — TopFarms',
-    'Search agricultural jobs across New Zealand: dairy, sheep & beef, horticulture, viticulture and arable roles.',
+    'Search agricultural jobs across New Zealand: dairy, sheep & beef, cropping, deer and mixed farming roles.',
   )
   const [searchParams, setSearchParams] = useSearchParams()
   const { session, role, loading: authLoading } = useAuth()
@@ -293,6 +293,17 @@ export function JobSearch() {
           query = query.eq('contract_type', contractTypes[0])
         } else if (contractTypes.length > 1) {
           query = query.in('contract_type', contractTypes)
+        }
+
+        // Sector (Phase 3 Task 3.3). Added so the landing page's sector cards
+        // link somewhere that actually filters — a card that navigates to an
+        // unfiltered list is the same "claims what the system does not do"
+        // defect this phase exists to close, just moved into the router.
+        const sectors = searchParams.getAll('sector')
+        if (sectors.length === 1) {
+          query = query.eq('sector', sectors[0])
+        } else if (sectors.length > 1) {
+          query = query.in('sector', sectors)
         }
 
         const salaryMin = searchParams.get('salary_min')
@@ -790,9 +801,7 @@ function ResultsArea({
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <p className="mb-4 text-4xl" aria-hidden="true">
-              🌱
-            </p>
+            <Sprout className="text-brand mb-4 h-9 w-9" aria-hidden="true" />
             <h3 className="font-body text-text mb-2 text-[17px] font-semibold">
               No jobs listed right now
             </h3>

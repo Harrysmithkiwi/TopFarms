@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
+import { UserRound } from 'lucide-react'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { Card } from '@/components/ui/Card'
 import { ProgressBar } from '@/components/ui/ProgressBar'
@@ -86,7 +87,9 @@ export function SeekerDashboard() {
           // Load recent applications (last 3)
           const { data: appsData } = await supabase
             .from('applications')
-            .select('*, jobs(title, region, employer_profiles:marketplace_employer_profiles(farm_name))')
+            .select(
+              '*, jobs(title, region, employer_profiles:marketplace_employer_profiles(farm_name))',
+            )
             .eq('seeker_id', profileData.id)
             .order('created_at', { ascending: false })
             .limit(3)
@@ -165,10 +168,14 @@ export function SeekerDashboard() {
             <Card className="p-6">
               <div className="flex flex-col gap-6 md:flex-row md:items-center">
                 <div
-                  className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl text-3xl"
+                  className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl"
                   style={{ backgroundColor: 'var(--color-brand-50)' }}
                 >
-                  🧑‍🌾
+                  <UserRound
+                    className="h-8 w-8"
+                    style={{ color: 'var(--color-brand)' }}
+                    aria-hidden="true"
+                  />
                 </div>
                 <div className="min-w-0 flex-1">
                   <h2 className="mb-1 text-lg font-semibold" style={{ color: 'var(--color-text)' }}>

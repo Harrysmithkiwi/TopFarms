@@ -1,4 +1,5 @@
 import { Link, useRouteError, isRouteErrorResponse } from 'react-router'
+import { Wheat } from 'lucide-react'
 import { Nav } from '@/components/layout/Nav'
 import { usePageMeta } from '@/lib/usePageMeta'
 
@@ -21,9 +22,11 @@ export function NotFound() {
     <div className="min-h-screen" style={{ backgroundColor: 'var(--color-bg)' }}>
       <Nav />
       <main className="mx-auto flex max-w-xl flex-col items-center px-4 py-24 text-center">
-        <p className="mb-4 text-5xl" aria-hidden="true">
-          🌾
-        </p>
+        <Wheat
+          className="mb-4 h-12 w-12"
+          style={{ color: 'var(--color-brand)' }}
+          aria-hidden="true"
+        />
         <h1
           className="font-display mb-3 text-3xl font-bold"
           style={{ color: 'var(--color-brand-900)' }}

@@ -146,13 +146,33 @@ describe('Landing Page', () => {
   })
 
   describe('LAND-04c: Farm Types strip', () => {
-    it('FarmTypesStrip renders 5 sector cards', () => {
+    // Phase 3 Task 3.3 (audit D7): the strip used to advertise Horticulture,
+    // Viticulture and "Arable" — none of which jobs_sector_check accepts, so the
+    // landing page sold sectors the database refuses to store. This test asserted
+    // the defect, which is why it never caught it. It now asserts the contract:
+    // every card names a real sector AND links to a search that filters on it.
+    it('FarmTypesStrip renders only sectors the database accepts', () => {
       renderHome()
-      expect(screen.getAllByText('Dairy').length).toBeGreaterThan(0)
-      expect(screen.getAllByText('Sheep & Beef').length).toBeGreaterThan(0)
-      expect(screen.getAllByText('Horticulture').length).toBeGreaterThan(0)
-      expect(screen.getAllByText('Viticulture').length).toBeGreaterThan(0)
-      expect(screen.getAllByText('Arable').length).toBeGreaterThan(0)
+      for (const label of ['Dairy', 'Sheep & Beef', 'Cropping', 'Deer', 'Mixed']) {
+        expect(screen.getAllByText(label).length).toBeGreaterThan(0)
+      }
+      for (const gone of ['Horticulture', 'Viticulture', 'Arable']) {
+        expect(screen.queryByText(gone)).toBeNull()
+      }
+    })
+
+    it('each sector card links to a search filtered on a valid sector value', () => {
+      renderHome()
+      // jobs_sector_check: dairy | sheep_beef | cropping | deer | mixed | other
+      const valid = ['dairy', 'sheep_beef', 'cropping', 'deer', 'mixed', 'other']
+      const links = screen
+        .getAllByRole('link')
+        .map((a) => a.getAttribute('href') ?? '')
+        .filter((href) => href.includes('sector='))
+      expect(links.length).toBe(5)
+      for (const href of links) {
+        expect(valid).toContain(new URL(href, 'http://x').searchParams.get('sector'))
+      }
     })
   })
 

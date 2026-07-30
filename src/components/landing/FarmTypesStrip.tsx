@@ -1,13 +1,27 @@
 import { motion } from 'motion/react'
+import { Link } from 'react-router'
+import { Milk, Beef, Wheat, PawPrint, Layers } from 'lucide-react'
 
 // No listing counts here — they were hardcoded and contradicted the live
 // platform stats (TF-003 truth pass). Re-add only when driven by real data.
+//
+// Phase 3 Task 3.3 (audit D7): this strip advertised Horticulture and
+// Viticulture, which `jobs_sector_check` rejects — the landing page was selling
+// two sectors the database refuses to store. Both removed rather than the
+// constraint extended: those two need a competency taxonomy that does not
+// overlap pastoral ag, which the Compendium already scopes as v3.0. "Arable"
+// was likewise a label with no enum behind it; the stored value is `cropping`.
+//
+// Every `value` below MUST be a value jobs_sector_check accepts, and each card
+// links to a search that really filters on it (JobSearch reads ?sector=).
+// Emoji replaced with Lucide glyphs — emoji-as-UI was banned in the admin
+// uplift; it renders differently per platform and carries no accessible name.
 const sectors = [
-  { name: 'Dairy', icon: '🐄' },
-  { name: 'Sheep & Beef', icon: '🐑' },
-  { name: 'Horticulture', icon: '🌱' },
-  { name: 'Viticulture', icon: '🍇' },
-  { name: 'Arable', icon: '🌾' },
+  { name: 'Dairy', value: 'dairy', Icon: Milk },
+  { name: 'Sheep & Beef', value: 'sheep_beef', Icon: Beef },
+  { name: 'Cropping', value: 'cropping', Icon: Wheat },
+  { name: 'Deer', value: 'deer', Icon: PawPrint },
+  { name: 'Mixed', value: 'mixed', Icon: Layers },
 ]
 
 export function FarmTypesStrip() {
@@ -41,20 +55,25 @@ export function FarmTypesStrip() {
 
         {/* Sector cards — horizontal scroll on mobile, grid on sm+ */}
         <div className="flex snap-x gap-4 overflow-x-auto pb-2 sm:grid sm:grid-cols-3 sm:pb-0 lg:grid-cols-5">
-          {sectors.map((sector) => (
-            <div
-              key={sector.name}
-              className="min-w-[160px] cursor-default snap-center rounded-xl p-6 text-center transition-shadow hover:shadow-lg sm:min-w-0"
+          {sectors.map(({ name, value, Icon }) => (
+            <Link
+              key={value}
+              to={`/jobs?sector=${value}`}
+              className="focus-visible:outline-brand min-w-[160px] snap-center rounded-xl p-6 text-center transition-shadow hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 sm:min-w-0"
               style={{
                 backgroundColor: 'var(--color-surface)',
                 border: '1px solid var(--color-border)',
               }}
             >
-              <div className="mb-3 text-3xl">{sector.icon}</div>
+              <Icon
+                className="mx-auto mb-3 h-7 w-7"
+                style={{ color: 'var(--color-brand-700)' }}
+                aria-hidden="true"
+              />
               <p className="text-sm font-bold" style={{ color: 'var(--color-brand-900)' }}>
-                {sector.name}
+                {name}
               </p>
-            </div>
+            </Link>
           ))}
         </div>
       </motion.div>

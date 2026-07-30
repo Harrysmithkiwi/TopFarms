@@ -1,5 +1,6 @@
 import { Link } from 'react-router'
 import { motion, type Variants } from 'motion/react'
+import { Target } from 'lucide-react'
 
 const containerVariants: Variants = {
   hidden: {},
@@ -290,7 +291,11 @@ export function HeroSection() {
               backdropFilter: 'blur(8px)',
             }}
           >
-            <span className="text-lg">🎯</span>
+            <Target
+              className="h-5 w-5 flex-shrink-0"
+              style={{ color: 'var(--color-brand)' }}
+              aria-hidden="true"
+            />
             <div>
               <p className="text-xs font-semibold" style={{ color: 'var(--color-brand)' }}>
                 New match found

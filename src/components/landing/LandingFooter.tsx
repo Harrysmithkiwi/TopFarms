@@ -1,4 +1,5 @@
 import { Link } from 'react-router'
+import { Sprout } from 'lucide-react'
 
 export function LandingFooter() {
   return (
@@ -10,10 +11,11 @@ export function LandingFooter() {
           <div className="lg:col-span-1">
             <Link
               to="/"
-              className="font-display mb-3 inline-block text-xl font-semibold"
+              className="font-display mb-3 inline-flex items-center gap-2 text-xl font-semibold"
               style={{ color: 'var(--color-text-on-brand)' }}
             >
-              🌿 TopFarms
+              <Sprout className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
+              TopFarms
             </Link>
             <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>
               New Zealand's agricultural recruitment platform.

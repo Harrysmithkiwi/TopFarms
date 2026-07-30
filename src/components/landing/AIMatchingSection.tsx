@@ -2,7 +2,7 @@ import { motion } from 'motion/react'
 import { Check } from 'lucide-react'
 
 const features = [
-  'Skills-based matching across dairy, livestock & horticulture',
+  'Skills-based matching across dairy, livestock & cropping',
   'Location and accommodation preference alignment',
   'Experience level and qualification verification',
   'Real-time match scoring updated as you complete your profile',

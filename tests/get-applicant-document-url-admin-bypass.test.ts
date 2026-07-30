@@ -21,10 +21,11 @@ describe('get-applicant-document-url admin bypass + gateway-trust (Phase 21 DOC-
   })
 
   it('DOC-QUEUE-03: admin branch mints signed URL via createSignedUrl', () => {
-    // Find admin branch start; verify createSignedUrl exists within 2500 chars of the branch
+    // Window widened for Phase 3 Task 3.2: the admin branch now also resolves
+    // employer verification documents and writes an audit row before minting.
     const idx = source.indexOf("roleRow?.role === 'admin'")
     expect(idx).toBeGreaterThan(-1)
-    const adminBranchWindow = source.slice(idx, idx + 2500)
+    const adminBranchWindow = source.slice(idx, idx + 5000)
     expect(adminBranchWindow).toMatch(/createSignedUrl/)
   })
 

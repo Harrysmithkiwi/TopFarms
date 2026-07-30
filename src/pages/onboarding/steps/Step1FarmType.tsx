@@ -1,11 +1,18 @@
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Milk, Beef, Wheat, PawPrint, Layers, Tractor } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { cn } from '@/lib/utils'
 
+// Phase 3 Task 3.3. This step offered dairy and sheep_beef only — a v1.0
+// leftover. jobs_sector_check accepts six sectors, FARM_TYPE_OPTIONS in
+// domain.ts already lists exactly those six, and the landing strip now
+// advertises five of them. An employer arriving from a "Cropping" card could
+// not say they run a cropping farm. Same incoherence as D7, pointing the other
+// way, so it is closed the same way: match the database.
 const schema = z.object({
-  farm_type: z.enum(['dairy', 'sheep_beef'], {
+  farm_type: z.enum(['dairy', 'sheep_beef', 'cropping', 'deer', 'mixed', 'other'], {
     required_error: 'Please select a farm type',
   }),
 })
@@ -17,18 +24,45 @@ interface Step1Props {
   defaultValues?: Partial<FormData>
 }
 
+// Lucide glyphs, not emoji: emoji render differently on every platform and
+// carry no accessible name (banned in the admin uplift; the same rule applies
+// to the public surfaces).
 const FARM_TYPES = [
   {
     value: 'dairy' as const,
     label: 'Dairy Cattle',
-    icon: '🐄',
+    Icon: Milk,
     description: 'Dairy farming, milking operations, herd management',
   },
   {
     value: 'sheep_beef' as const,
     label: 'Sheep & Beef',
-    icon: '🐑',
+    Icon: Beef,
     description: 'Sheep and beef cattle farming, pastoral operations',
+  },
+  {
+    value: 'cropping' as const,
+    label: 'Cropping',
+    Icon: Wheat,
+    description: 'Arable and cropping operations, harvest and machinery work',
+  },
+  {
+    value: 'deer' as const,
+    label: 'Deer',
+    Icon: PawPrint,
+    description: 'Deer farming, velvet and venison operations',
+  },
+  {
+    value: 'mixed' as const,
+    label: 'Mixed',
+    Icon: Layers,
+    description: 'More than one enterprise across the same property',
+  },
+  {
+    value: 'other' as const,
+    label: 'Other',
+    Icon: Tractor,
+    description: 'Another primary-sector operation',
   },
 ]
 
@@ -72,7 +106,11 @@ export function Step1FarmType({ onComplete, defaultValues }: Step1Props) {
                 : 'border-border bg-surface hover:border-border-strong',
             )}
           >
-            <span className="text-4xl">{type.icon}</span>
+            <type.Icon
+              className="h-8 w-8"
+              style={{ color: 'var(--color-brand-700)' }}
+              aria-hidden="true"
+            />
             <div>
               <h3
                 className="font-body text-[15px] font-bold"
