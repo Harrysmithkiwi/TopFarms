@@ -1,4 +1,11 @@
 # TopFarms — Agentic Audit & Improvement Plan
+
+> **SUPERSEDED 2026-07-30 (Phase 3 truth pass, audit D3).** The three gates this document
+> reports as OPEN are all closed: `tsc -b` returns 0 errors, CI is green with branch protection
+> on `main` (required checks `quality` + `e2e`, 1 approving review), and the bundle work is
+> tracked in Phase 6 of `docs/UPLIFT-ROADMAP-2026-07-30.md`. Read this only as a record of
+> 2026-06-10; for the current position see `docs/AUDIT-PRELAUNCH-2026-07-30.md`.
+
 *2026-06-10 · Claude Fable 5 · Read-only audit (no code modified) · State persisted in `audit-state.json`*
 
 ---
