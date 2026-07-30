@@ -90,7 +90,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, className }:
             className={cn(
               pageButtonBase,
               isActive
-                ? 'border-brand bg-brand text-text-on-brand'
+                ? 'border-brand-hover bg-brand-hover text-text-on-brand'
                 : 'border-border bg-surface text-text hover:border-brand-hover',
             )}
             onClick={() => onPageChange(page)}

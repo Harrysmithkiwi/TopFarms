@@ -17,7 +17,10 @@
   /* Text */
   --color-text: #0b1f10;
   --color-text-muted: #5b6b5f;
-  --color-text-subtle: #8a968d;
+  /* text-subtle darkened #8a968d → #647268 (Phase 4.1): the old value was 3.08:1
+     on white and was carrying real prose. New value clears 4.5:1 on every surface
+     including surface-2 (scripts/contrast.mjs proves it). */
+  --color-text-subtle: #647268;
   --color-text-on-brand: #ffffff;
 
   /* Brand — one green, three shades */
@@ -32,18 +35,26 @@
   --color-brand-300: #5ece8e; /* light green — derived from brand hue (142deg) */
   --color-brand-700: var(--color-brand-hover); /* deep green — tracks the hover green */
 
-  /* Semantic */
+  /* Semantic.
+     Phase 4.1 contract: the base semantic colours (--color-warn, -info, -ai,
+     -danger, -success/-brand) are FILL AND BORDER colours only. Text sitting on
+     a tinted *-bg (or any light surface) uses the matching *-text-on-bg token —
+     each computed ≥ 4.5:1 against its partner by scripts/contrast.mjs. */
   --color-success: #16a34a;
   --color-success-bg: #e8f5ec;
+  --color-success-text-on-bg: #166534;
   --color-warn: #f59e0b;
   --color-warn-bg: #fef3c7;
   --color-warn-text-on-bg: #92400e;
   --color-danger: #dc2626;
   --color-danger-bg: #fee2e2;
+  --color-danger-text-on-bg: #991b1b;
   --color-info: #0ea5e9;
   --color-info-bg: #e0f2fe;
+  --color-info-text-on-bg: #075985;
   --color-ai: #8b5cf6;
   --color-ai-bg: #f5f3ff;
+  --color-ai-text-on-bg: #5b21b6;
 
   /* Card elevation — soft, low, tinted-neutral (brand ink at low alpha, no gloss).
      Pairs with the existing 1px --color-border; not a heavy drop shadow. */

@@ -742,7 +742,7 @@ function ResultsArea({
               <button
                 type="button"
                 onClick={onSaveClick}
-                className="text-brand cursor-pointer text-[13px] hover:underline"
+                className="text-brand-hover cursor-pointer text-[13px] hover:underline"
               >
                 Save search
               </button>
@@ -807,7 +807,7 @@ function ResultsArea({
             </h3>
             <p className="font-body text-text-muted max-w-[320px] text-[14px]">
               New farm roles are posted as employers join. Check back soon — or if you're hiring,{' '}
-              <Link to="/signup?role=employer" className="text-brand underline">
+              <Link to="/signup?role=employer" className="text-brand-hover underline">
                 post the first job free
               </Link>
               .

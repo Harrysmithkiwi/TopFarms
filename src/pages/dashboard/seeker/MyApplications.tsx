@@ -260,7 +260,7 @@ export function MyApplications() {
               </p>
               <Link
                 to="/jobs"
-                className="font-body text-brand text-sm font-semibold hover:underline"
+                className="font-body text-brand-hover text-sm font-semibold hover:underline"
               >
                 Browse jobs
               </Link>

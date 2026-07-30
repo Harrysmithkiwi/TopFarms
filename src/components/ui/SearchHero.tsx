@@ -82,7 +82,7 @@ export function SearchHero({
           <button
             type="button"
             onClick={handleSearch}
-            className="bg-brand font-body hover:bg-brand/90 rounded-[8px] px-4 py-2 text-[14px] font-semibold whitespace-nowrap text-white transition-colors"
+            className="bg-brand-hover font-body hover:bg-brand-900 rounded-[8px] px-4 py-2 text-[14px] font-semibold whitespace-nowrap text-white transition-colors"
           >
             Search Jobs
           </button>

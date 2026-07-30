@@ -120,10 +120,10 @@ export function SearchJobCard({
                   style={{
                     backgroundColor: isTerminalApplication
                       ? 'var(--color-border)'
-                      : 'var(--color-brand)',
+                      : 'var(--color-brand-hover)',
                     color: isTerminalApplication
                       ? 'var(--color-text-muted)'
-                      : 'var(--color-brand-900)',
+                      : 'var(--color-text-on-brand)',
                   }}
                 >
                   {appliedBadgeLabel}

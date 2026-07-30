@@ -88,7 +88,7 @@ export function ExpandableCardTabs({
             className={cn(
               'font-body px-4 py-2.5 text-[13px] font-semibold transition-colors',
               activeTab === tab.id
-                ? 'text-brand border-brand border-b-2'
+                ? 'text-brand-hover border-brand border-b-2'
                 : 'text-text-muted hover:text-text',
             )}
           >
@@ -154,7 +154,7 @@ export function ExpandableCardTabs({
             ))}
             <Link
               to={`/jobs/${job.id}`}
-              className="font-body text-brand inline-block text-[12px] hover:underline"
+              className="font-body text-brand-hover inline-block text-[12px] hover:underline"
               onClick={(e) => e.stopPropagation()}
             >
               See full 7-dimension breakdown &rarr;

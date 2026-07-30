@@ -58,7 +58,7 @@ export function ChipSelector({
               'font-body text-[14px]',
               'focus-visible:outline-brand outline-none focus-visible:outline-2 focus-visible:outline-offset-2',
               isSelected
-                ? 'border-brand bg-brand-50 text-brand'
+                ? 'border-brand bg-brand-50 text-success-text-on-bg'
                 : 'border-border bg-surface text-text hover:border-brand-hover',
             )}
           >

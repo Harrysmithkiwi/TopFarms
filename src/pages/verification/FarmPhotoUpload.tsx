@@ -176,7 +176,7 @@ export function FarmPhotoUpload() {
             <h3 className="font-body text-text mb-3 text-[13px] font-semibold">
               Uploaded Photos
               {farmPhotoVerification?.status === 'verified' && (
-                <span className="font-body text-brand ml-2 text-[11px] font-normal">
+                <span className="font-body text-brand-hover ml-2 text-[11px] font-normal">
                   (verified)
                 </span>
               )}

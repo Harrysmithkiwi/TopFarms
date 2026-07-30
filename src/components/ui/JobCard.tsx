@@ -14,14 +14,14 @@ interface JobCardProps {
 }
 
 const STATUS_CONFIG: Record<JobStatus, { label: string; bgClass: string; textClass: string }> = {
-  active: { label: 'Active', bgClass: 'bg-[rgba(74,124,47,0.12)]', textClass: 'text-brand' },
+  active: { label: 'Active', bgClass: 'bg-[rgba(74,124,47,0.12)]', textClass: 'text-success-text-on-bg' },
   paused: {
     label: 'Paused',
     bgClass: 'bg-[rgba(217,150,45,0.12)]',
     textClass: 'text-warn-text-on-bg',
   },
   draft: { label: 'Draft', bgClass: 'bg-surface-2', textClass: 'text-text-muted' },
-  expired: { label: 'Expired', bgClass: 'bg-[rgba(220,53,69,0.10)]', textClass: 'text-danger' },
+  expired: { label: 'Expired', bgClass: 'bg-[rgba(220,53,69,0.10)]', textClass: 'text-danger-text-on-bg' },
   filled: { label: 'Filled', bgClass: 'bg-[rgba(59,130,246,0.10)]', textClass: 'text-[#2563eb]' },
   archived: { label: 'Archived', bgClass: 'bg-surface-2', textClass: 'text-text-subtle' },
 }

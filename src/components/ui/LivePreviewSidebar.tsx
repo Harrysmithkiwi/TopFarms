@@ -32,7 +32,7 @@ function CompletenessMeter({ percent }: { percent: number }) {
         Listing Preview
       </h3>
       <div className="mt-2 flex items-center justify-between">
-        <span className="font-body text-brand text-[13px]">{percent}%</span>
+        <span className="font-body text-brand-hover text-[13px]">{percent}%</span>
       </div>
       <ProgressBar progress={percent} className="mt-2" />
     </div>

@@ -125,7 +125,7 @@ export function ApplicationCard({
           <div className="flex items-start justify-between gap-2">
             <Link
               to={`/jobs/${application.job_id}`}
-              className="font-body text-text hover:text-brand truncate text-[15px] font-semibold transition-colors"
+              className="font-body text-text hover:text-brand-hover truncate text-[15px] font-semibold transition-colors"
             >
               {job?.title ?? 'Job Listing'}
             </Link>

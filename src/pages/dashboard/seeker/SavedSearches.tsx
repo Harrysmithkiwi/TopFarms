@@ -301,7 +301,7 @@ export function SavedSearches() {
             <p className="mb-4 text-sm" style={{ color: 'var(--color-text-muted)' }}>
               Save your filters on the job search page to come back to them later.
             </p>
-            <Link to="/jobs" className="font-body text-brand text-sm font-semibold hover:underline">
+            <Link to="/jobs" className="font-body text-brand-hover text-sm font-semibold hover:underline">
               Browse jobs
             </Link>
           </div>

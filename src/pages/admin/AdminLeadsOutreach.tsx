@@ -134,7 +134,7 @@ function DraftPanel({ row, onDone }: { row: OutreachRow; onDone: () => void }) {
   return (
     <DrawerSection label="Drafted reply — you send this manually on Facebook">
       {isPlaceholder && (
-        <p className="text-warn flex items-start gap-1.5 text-[12px]">
+        <p className="text-warn-text-on-bg flex items-start gap-1.5 text-[12px]">
           <AlertTriangle size={13} className="mt-0.5 shrink-0" />
           Placeholder — reply drafting goes live once the outreach config (do-not rules + voice +
           template) is set.
@@ -226,7 +226,7 @@ function OutreachDrawer({ row, onDone, onClose }: { row: OutreachRow; onDone: ()
               href={row.source_ref}
               target="_blank"
               rel="noreferrer"
-              className="text-brand inline-flex items-center gap-1 text-[13px] underline"
+              className="text-brand-hover inline-flex items-center gap-1 text-[13px] underline"
             >
               Open post <ExternalLink size={13} />
             </a>

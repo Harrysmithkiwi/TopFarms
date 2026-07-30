@@ -25,18 +25,49 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>
 
-function getPasswordStrength(password: string): { score: number; label: string; color: string } {
-  if (!password) return { score: 0, label: '', color: '' }
+// Phase 4.1: `color` fills the meter bar (fills may use the raw semantic
+// colours); `textColor` styles the label and must clear 4.5:1 on white —
+// raw --color-warn as text is 2.15:1, so the label uses warn-text-on-bg.
+function getPasswordStrength(password: string): {
+  score: number
+  label: string
+  color: string
+  textColor: string
+} {
+  if (!password) return { score: 0, label: '', color: '', textColor: '' }
   let score = 0
   if (password.length >= 10) score++
   if (/[A-Z]/.test(password)) score++
   if (/[a-z]/.test(password)) score++
   if (/[0-9]/.test(password)) score++
 
-  if (score <= 1) return { score: 25, label: 'Weak', color: 'var(--color-danger)' }
-  if (score === 2) return { score: 50, label: 'Fair', color: 'var(--color-warn)' }
-  if (score === 3) return { score: 75, label: 'Good', color: 'var(--color-warn)' }
-  return { score: 100, label: 'Strong', color: 'var(--color-brand)' }
+  if (score <= 1)
+    return {
+      score: 25,
+      label: 'Weak',
+      color: 'var(--color-danger)',
+      textColor: 'var(--color-danger)',
+    }
+  if (score === 2)
+    return {
+      score: 50,
+      label: 'Fair',
+      color: 'var(--color-warn)',
+      textColor: 'var(--color-warn-text-on-bg)',
+    }
+  if (score === 3)
+    return {
+      score: 75,
+      label: 'Good',
+      color: 'var(--color-warn)',
+      textColor: 'var(--color-warn-text-on-bg)',
+    }
+  return {
+    score: 100,
+    label: 'Strong',
+    color: 'var(--color-brand-hover)',
+    textColor: 'var(--color-brand-hover)',
+  }
 }
 
 export function SignUp() {
@@ -377,7 +408,7 @@ export function SignUp() {
                       }}
                     />
                   </div>
-                  <p className="mt-1 text-xs" style={{ color: strength.color }}>
+                  <p className="mt-1 text-xs" style={{ color: strength.textColor }}>
                     {strength.label}
                   </p>
                 </div>

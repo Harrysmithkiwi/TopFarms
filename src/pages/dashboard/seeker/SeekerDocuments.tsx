@@ -198,7 +198,7 @@ export function SeekerDocuments() {
             </p>
             <Link
               to="/onboarding/seeker"
-              className="font-body text-brand text-sm font-semibold hover:underline"
+              className="font-body text-brand-hover text-sm font-semibold hover:underline"
             >
               Complete onboarding
             </Link>

@@ -20,9 +20,10 @@ describe('DocumentsVerifiedBadge (DOC-QUEUE-04)', () => {
     render(<DocumentsVerifiedBadge hasVerifiedDocuments={true} />)
     const badge = screen.getByText('Documents Verified').closest('span')
     expect(badge).toBeTruthy()
-    // Tag variant="green" applies bg-brand-50 text-brand classes (per Tag.tsx)
+    // Tag variant="green" applies bg-brand-50 + text-success-text-on-bg (per
+    // Tag.tsx; text token changed Phase 4.1 — raw text-brand was 2.94:1 on the tint)
     expect(badge!.className).toMatch(/bg-brand-50/)
-    expect(badge!.className).toMatch(/text-brand/)
+    expect(badge!.className).toMatch(/text-success-text-on-bg/)
   })
 
   it('DOC-QUEUE-04: renders FileCheck icon (RESEARCH §Pattern 6 — Lucide icon)', () => {

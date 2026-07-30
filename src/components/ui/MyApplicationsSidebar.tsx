@@ -72,7 +72,7 @@ export function MyApplicationsSidebar({
               className={cn(
                 'font-body rounded-full border px-3 py-1 text-[12px] font-semibold transition-colors',
                 activeFilter === tab.value
-                  ? 'bg-brand/10 border-brand text-brand'
+                  ? 'bg-brand/10 border-brand text-success-text-on-bg'
                   : 'bg-surface border-border text-text-muted hover:border-border-strong',
               )}
             >
@@ -102,7 +102,7 @@ export function MyApplicationsSidebar({
                 <div className="min-w-0">
                   <Link
                     to={`/jobs/${sj.job_id}`}
-                    className="font-body text-text hover:text-brand block truncate text-[13px] font-semibold transition-colors"
+                    className="font-body text-text hover:text-brand-hover block truncate text-[13px] font-semibold transition-colors"
                   >
                     {sj.title}
                   </Link>

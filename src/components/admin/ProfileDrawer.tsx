@@ -333,8 +333,9 @@ export function ProfileDrawer({
                   </Button>
                 ) : (
                   <Button
-                    variant="warn"
+                    variant="outline"
                     size="sm"
+                    className="border-danger text-danger"
                     onClick={() => commitActiveChange(false)}
                     disabled={committing}
                   >

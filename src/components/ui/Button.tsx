@@ -2,15 +2,18 @@ import { ButtonHTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'outline' | 'ghost' | 'warn'
+  variant?: 'primary' | 'outline' | 'ghost'
   size?: 'sm' | 'md' | 'lg'
 }
 
+// Phase 4.1: primary fills with --color-brand-hover (white-on-#16a34a was 3.30:1,
+// failing AA on every CTA); hover darkens to brand-900. --color-brand itself is
+// fill/border-only now. The unused `warn` variant (white on amber, 2.15:1) was
+// deleted rather than fixed.
 const variantClasses = {
-  primary: 'bg-brand text-text-on-brand hover:bg-brand-hover',
+  primary: 'bg-brand-hover text-text-on-brand hover:bg-brand-900',
   outline: 'bg-surface border border-border-strong text-text hover:bg-surface-hover',
   ghost: 'bg-transparent text-text hover:bg-surface-2',
-  warn: 'bg-warn text-text-on-brand hover:opacity-90',
 }
 
 const sizeClasses = {

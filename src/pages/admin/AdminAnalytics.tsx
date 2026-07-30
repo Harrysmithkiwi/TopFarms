@@ -311,7 +311,7 @@ export function AdminAnalytics() {
             caption="Do higher match scores convert to hires? Completed applications only (hired/declined)."
           >
             {match.low_n_warning && (
-              <p className="text-warn mb-3 text-[12px]">
+              <p className="text-warn-text-on-bg mb-3 text-[12px]">
                 Low volume — {match.completed_total} completed application
                 {match.completed_total === 1 ? '' : 's'}; needs ~30 for signal.
               </p>

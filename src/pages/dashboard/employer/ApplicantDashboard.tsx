@@ -566,7 +566,7 @@ export function ApplicantDashboard() {
                     className={cn(
                       'font-body rounded-full border px-3 py-1 text-[12px] font-semibold transition-colors',
                       statusFilter === status
-                        ? 'bg-brand/10 border-brand text-brand'
+                        ? 'bg-brand/10 border-brand text-success-text-on-bg'
                         : 'bg-surface border-border text-text-muted hover:border-border-strong',
                     )}
                   >
@@ -596,7 +596,7 @@ export function ApplicantDashboard() {
                   className={cn(
                     'px-2 py-1.5 text-[12px]',
                     viewMode === 'list'
-                      ? 'bg-brand/10 text-brand'
+                      ? 'bg-brand/10 text-success-text-on-bg'
                       : 'bg-surface text-text-muted hover:bg-bg',
                   )}
                   aria-label="List view"
@@ -609,7 +609,7 @@ export function ApplicantDashboard() {
                   className={cn(
                     'border-border border-l px-2 py-1.5 text-[12px]',
                     viewMode === 'grid'
-                      ? 'bg-brand/10 text-brand'
+                      ? 'bg-brand/10 text-success-text-on-bg'
                       : 'bg-surface text-text-muted hover:bg-bg',
                   )}
                   aria-label="Grid view"

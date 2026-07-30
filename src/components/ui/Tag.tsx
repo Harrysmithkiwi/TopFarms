@@ -5,17 +5,17 @@ interface TagProps extends HTMLAttributes<HTMLSpanElement> {
   variant: 'green' | 'warn' | 'blue' | 'grey' | 'purple' | 'red'
 }
 
-// `orange` (bg-warn-bg + text-warn) was removed 2026-07-30: 1.93:1 contrast, far below
-// WCAG AA, and unused. `warn` is the correct amber variant — it uses
-// --color-warn-text-on-bg (6.37:1). Do not reintroduce raw text-warn on a tinted
-// background. The `blue` variant is still 2.42:1 and is fixed in Phase 4 Task 4.1.
+// Every variant pairs a *-bg tint with its *-text-on-bg partner (all ≥4.5:1,
+// computed by scripts/contrast.mjs). Do not put a raw semantic colour
+// (text-warn/-info/-ai/-danger/-brand) on a tinted background — that is how the
+// 1.93:1 `orange` variant shipped and had to be deleted (2026-07-30).
 const variantClasses = {
-  green: 'bg-brand-50 text-brand',
+  green: 'bg-brand-50 text-success-text-on-bg',
   warn: 'bg-warn-bg text-warn-text-on-bg',
-  blue: 'bg-info-bg text-info',
+  blue: 'bg-info-bg text-info-text-on-bg',
   grey: 'bg-surface-2 text-text-muted',
-  purple: 'bg-ai-bg text-ai',
-  red: 'bg-danger-bg text-danger',
+  purple: 'bg-ai-bg text-ai-text-on-bg',
+  red: 'bg-danger-bg text-danger-text-on-bg',
 }
 
 export function Tag({ variant, className, children, ...props }: TagProps) {

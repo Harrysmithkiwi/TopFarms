@@ -9,7 +9,7 @@ interface InfoBoxProps extends HTMLAttributes<HTMLDivElement> {
 const variantClasses = {
   blue: {
     container: 'bg-info-bg border-info/20',
-    title: 'text-info',
+    title: 'text-info-text-on-bg',
   },
   warn: {
     container: 'bg-warn-bg border-warn/30',
@@ -17,15 +17,15 @@ const variantClasses = {
   },
   green: {
     container: 'bg-brand-50 border-brand/20',
-    title: 'text-brand',
+    title: 'text-success-text-on-bg',
   },
   purple: {
     container: 'bg-ai-bg border-ai/20',
-    title: 'text-ai',
+    title: 'text-ai-text-on-bg',
   },
   red: {
     container: 'bg-danger-bg border-danger/20',
-    title: 'text-danger',
+    title: 'text-danger-text-on-bg',
   },
 }
 

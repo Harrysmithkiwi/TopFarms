@@ -114,7 +114,7 @@ export function JobDetailSidebar({
             type="button"
             onClick={onShare}
             aria-label="Share this job"
-            className="font-body text-text-muted hover:text-brand ml-auto flex items-center gap-1.5 text-[13px] font-medium transition-colors"
+            className="font-body text-text-muted hover:text-brand-hover ml-auto flex items-center gap-1.5 text-[13px] font-medium transition-colors"
           >
             <Share2 className="h-4 w-4" />
             Share
@@ -144,7 +144,7 @@ export function JobDetailSidebar({
                   className="group flex items-start justify-between gap-2"
                 >
                   <div className="min-w-0">
-                    <p className="font-body text-text group-hover:text-brand truncate text-[13px] leading-snug font-semibold transition-colors">
+                    <p className="font-body text-text group-hover:text-brand-hover truncate text-[13px] leading-snug font-semibold transition-colors">
                       {sj.title}
                     </p>
                     <p className="font-body text-text-muted truncate text-[12px]">

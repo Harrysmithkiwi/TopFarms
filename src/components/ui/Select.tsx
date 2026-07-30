@@ -85,7 +85,7 @@ export function Select({
                   className={cn(
                     'font-body cursor-pointer rounded-[4px] px-3 py-2 text-[15px]',
                     'focus:bg-surface-2 outline-none',
-                    'data-[state=checked]:bg-brand-50 data-[state=checked]:text-brand',
+                    'data-[state=checked]:bg-brand-50 data-[state=checked]:text-success-text-on-bg',
                     'data-[highlighted]:bg-surface-2',
                     'select-none',
                   )}

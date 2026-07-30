@@ -219,7 +219,7 @@ export function FilterSidebar({
             <button
               type="button"
               onClick={() => setShowAllRegions((prev) => !prev)}
-              className="font-body text-brand mt-2 text-[12px] hover:underline"
+              className="font-body text-brand-hover mt-2 text-[12px] hover:underline"
             >
               {showAllRegions ? 'Show fewer' : `Show all ${NZ_REGIONS.length} regions`}
             </button>
