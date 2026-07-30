@@ -1,5 +1,6 @@
 import Anthropic from 'https://esm.sh/@anthropic-ai/sdk'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { requireCaller, requireSeekerOwnsProfile, toAuthErrorResponse } from '../_shared/auth.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -30,23 +31,43 @@ Deno.serve(async (req) => {
     return new Response('ok', { headers: corsHeaders })
   }
 
-  try {
-    const { seeker_id, job_id } = await req.json()
+  // Service-role client — bypasses RLS, so the ownership check below is mandatory and runs
+  // before any data is read.
+  const supabaseClient = createClient(
+    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+  )
 
-    // Validate required fields
+  // ─── Authorization (audit P0-2) ────────────────────────────────────────────
+  // Previously took {seeker_id, job_id} from the body with no caller check, so any
+  // authenticated user could read an arbitrary seeker's match score and OVERWRITE
+  // match_scores.explanation for any pair.
+  //
+  // Caller model: this is SEEKER-initiated — JobDetail.tsx:280 fires it when a seeker views
+  // a job whose score has no explanation yet. So the check is "you are that seeker", not
+  // employer-owns-job. (The Phase 1 plan specified requireEmployerOwnsJob here; that was
+  // wrong and would have broken the job-detail page for every seeker.)
+  //
+  // seeker_id is a seeker_profiles.id, not a user id — see LAUNCH.md O8.
+  let seeker_id: string
+  let job_id: string
+  try {
+    const callerUserId = requireCaller(req)
+    const body = await req.json().catch(() => ({}))
+    seeker_id = body.seeker_id
+    job_id = body.job_id
     if (!seeker_id || !job_id) {
       return new Response(JSON.stringify({ error: 'seeker_id and job_id are required' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
+    await requireSeekerOwnsProfile(supabaseClient, callerUserId, seeker_id)
+  } catch (e) {
+    return toAuthErrorResponse(e, corsHeaders)
+  }
 
-    // Create Supabase service role client
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-    )
-
+  try {
     // Load match score row
     const { data: scoreRow, error: scoreError } = await supabaseClient
       .from('match_scores')

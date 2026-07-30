@@ -1,5 +1,10 @@
 import Anthropic from 'https://esm.sh/@anthropic-ai/sdk'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import {
+  requireCaller,
+  requireEmployerOwnsApplication,
+  toAuthErrorResponse,
+} from '../_shared/auth.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -43,23 +48,44 @@ Deno.serve(async (req) => {
     return new Response('ok', { headers: corsHeaders })
   }
 
+  // Create Supabase service role client. NOTE: this bypasses RLS entirely, which is why
+  // the ownership check below is mandatory and must run before ANY data is read.
+  const supabaseClient = createClient(
+    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+  )
+
+  // ─── Authorization (audit P0-2) ────────────────────────────────────────────
+  // This function previously took {application_id, job_id, seeker_id} from the body and
+  // performed NO caller check, so any authenticated user could read another employer's
+  // stored AI assessment, read an arbitrary seeker's profile (including visa_status), and
+  // overwrite applications.ai_summary. verify_jwt=true proves only that SOMEONE is logged
+  // in, never which someone.
+  //
+  // job_id and seeker_id are now derived from the application row server-side; the values
+  // in the request body are ignored. That substitution — not the 403 alone — is what closes
+  // the cross-tenant read.
+  let application_id: string
+  let job_id: string
+  let seeker_id: string
   try {
-    const { application_id, job_id, seeker_id } = await req.json()
-
-    // Validate required fields
-    if (!application_id || !job_id || !seeker_id) {
-      return new Response(
-        JSON.stringify({ error: 'application_id, job_id and seeker_id are required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      )
+    const callerUserId = requireCaller(req)
+    const body = await req.json().catch(() => ({}))
+    application_id = body.application_id
+    if (!application_id) {
+      return new Response(JSON.stringify({ error: 'application_id is required' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
     }
+    const owned = await requireEmployerOwnsApplication(supabaseClient, callerUserId, application_id)
+    job_id = owned.jobId
+    seeker_id = owned.seekerId
+  } catch (e) {
+    return toAuthErrorResponse(e, corsHeaders)
+  }
 
-    // Create Supabase service role client
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-    )
-
+  try {
     // Check cache — if ai_summary already set, return it immediately
     const { data: appRow, error: appError } = await supabaseClient
       .from('applications')
@@ -88,7 +114,15 @@ Deno.serve(async (req) => {
       .select(
         'region, years_experience, sector_pref, visa_status, dairynz_level, shed_types_experienced',
       )
-      .eq('user_id', seeker_id)
+      // SCHEMA GOTCHA (CLAUDE.md): applications.seeker_id is a seeker_profiles.id, NOT a
+      // user_id. This line read `.eq('user_id', seeker_id)`, matching a profile id against
+      // the user_id column — it could never match, so seekerProfile was always null and the
+      // generated summary had no candidate facts to work from.
+      //
+      // This is the root cause of LAUNCH.md O8 ("applicant AI summary renders empty"), open
+      // and unexplained since 2026-07-23. Found while adding the Phase 1 ownership check,
+      // because that check made the id semantics explicit.
+      .eq('id', seeker_id)
       .single()
 
     // Load job data
