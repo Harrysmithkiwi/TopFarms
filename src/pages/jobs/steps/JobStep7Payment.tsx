@@ -130,7 +130,7 @@ export function JobStep7Payment({ jobId, employerId, onComplete, onBack }: JobSt
         </div>
 
         {paymentError && (
-          <div className="border-danger/30 bg-red/5 space-y-2 rounded-[10px] border p-4">
+          <div className="border-danger/30 bg-danger/5 space-y-2 rounded-[10px] border p-4">
             <p className="text-[13px] font-medium" style={{ color: 'var(--color-clay)' }}>
               Payment failed
             </p>
