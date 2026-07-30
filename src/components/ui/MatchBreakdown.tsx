@@ -65,6 +65,10 @@ export function MatchBreakdown({ score, blurred = false, className }: MatchBreak
       <div className="space-y-3">
         {DIMENSIONS.map((dim) => {
           const dimScore = score.breakdown[dim.key]
+          // Scoring v2: null means this dimension does not apply to the pairing
+          // (a cropping job has no shed; a solo seeker has no couples bonus) and
+          // it is excluded from the total. Rendering it as 0/25 would misreport.
+          const notApplicable = dimScore == null
           const lowContext = dimScore === 0 ? getLowScoreContext(dim.key) : ''
 
           return (
@@ -72,21 +76,36 @@ export function MatchBreakdown({ score, blurred = false, className }: MatchBreak
               <div className="flex items-center gap-3">
                 <span
                   className="font-body w-28 flex-shrink-0 text-[13px] font-semibold"
-                  style={{ color: 'var(--color-text)' }}
+                  style={{ color: notApplicable ? 'var(--color-text-subtle)' : 'var(--color-text)' }}
                 >
                   {dim.label}
                 </span>
                 <div className="flex-1">
-                  <ProgressBar progress={(dimScore / dim.max) * 100} />
+                  {notApplicable ? (
+                    <div
+                      className="border-border h-1.5 w-full rounded-full border border-dashed"
+                      aria-hidden="true"
+                    />
+                  ) : (
+                    <ProgressBar progress={(dimScore / dim.max) * 100} />
+                  )}
                 </div>
                 <span
                   className="font-body w-10 flex-shrink-0 text-right text-[12px] tabular-nums"
-                  style={{ color: 'var(--color-text-muted)' }}
+                  style={{ color: 'var(--color-text-subtle)' }}
                 >
-                  {dimScore}/{dim.max}
+                  {notApplicable ? '—' : `${dimScore}/${dim.max}`}
                 </span>
               </div>
-              {dimScore === 0 && lowContext && (
+              {notApplicable && (
+                <p
+                  className="mt-0.5 ml-28 pl-1 text-[11px]"
+                  style={{ color: 'var(--color-text-subtle)' }}
+                >
+                  Not applicable to this role — excluded from the score
+                </p>
+              )}
+              {!notApplicable && dimScore === 0 && lowContext && (
                 <p
                   className="mt-0.5 ml-28 pl-1 text-[11px]"
                   style={{ color: 'var(--color-text-subtle)' }}
@@ -98,6 +117,19 @@ export function MatchBreakdown({ score, blurred = false, className }: MatchBreak
           )
         })}
       </div>
+
+      {/* How the total is reached — the bars are raw points against raw maxima,
+          the headline is the normalised percentage. Stating the denominator is
+          what makes the number explainable rather than merely displayed. */}
+      {score.breakdown._meta && (
+        <p
+          className="font-body text-[11px]"
+          style={{ color: 'var(--color-text-subtle)' }}
+        >
+          {score.breakdown._meta.raw_total} of {score.breakdown._meta.applicable_max} applicable
+          points = {score.total_score}% match
+        </p>
+      )}
 
       {/* AI explanation */}
       {score.explanation && (

@@ -88,13 +88,18 @@ function getMatchHighlights(score: MatchScore, profile: SeekerProfile): string[]
   const highlights: string[] = []
   const bd = score.breakdown
 
-  if (bd.shed_type > 15) highlights.push('Rotary/herringbone shed experience')
+  // Scoring v2: shed_type and skills are null when the dimension does not apply
+  // to this pairing, so `?? 0` keeps an inapplicable dimension from claiming a
+  // highlight it did not earn.
+  if ((bd.shed_type ?? 0) > 15) highlights.push('Rotary/herringbone shed experience')
   if (bd.location >= 16)
     highlights.push(profile.region ? `Same region (${profile.region})` : 'Location match')
   else if (bd.location > 0) highlights.push('Open to relocation')
   if (bd.accommodation > 15) highlights.push('Accommodation needs match')
   if (bd.visa > 0) highlights.push('Eligible to work in NZ')
-  if (bd.skills > 20) highlights.push('Strong skill alignment')
+  // Was `> 20` against a 20-point maximum — unreachable, so this highlight had
+  // never once rendered. 16 is 80 % of the dimension.
+  if ((bd.skills ?? 0) >= 16) highlights.push('Strong skill alignment')
   if (bd.salary > 0) highlights.push('Salary expectations compatible')
 
   return highlights.slice(0, 3)

@@ -402,7 +402,11 @@ export function JobSearch() {
             })
             setScores(newScores)
 
-            // Sort with match scores: best first, then by recency
+            // Sort with match scores: best first, then by recency.
+            // This tie-break IS where freshness belongs, and it is why migration
+            // 072 could delete the 1.1x recency multiplier from the score
+            // outright rather than replace it: freshness was already counted
+            // here, so the multiplier was double-counting it into the fit number.
             fetchedJobs.sort((a, b) => {
               const scoreA = newScores.get(a.id)?.total_score ?? -1
               const scoreB = newScores.get(b.id)?.total_score ?? -1
