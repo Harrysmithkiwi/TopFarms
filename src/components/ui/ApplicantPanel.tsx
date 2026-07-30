@@ -13,12 +13,12 @@ import { supabase } from '@/lib/supabase'
 import type { ApplicationStatus, MatchScore, SeekerContact } from '@/types/domain'
 import { VALID_TRANSITIONS, APPLICATION_STATUS_LABELS } from '@/types/domain'
 
-type TagVariant = 'green' | 'warn' | 'blue' | 'grey' | 'orange' | 'purple' | 'red'
+type TagVariant = 'green' | 'warn' | 'blue' | 'grey' | 'purple' | 'red'
 
 const STATUS_TAG_VARIANT: Record<ApplicationStatus, TagVariant> = {
   applied: 'blue',
   review: 'warn',
-  interview: 'orange',
+  interview: 'warn', // was 'orange' (1.93:1, below AA) — 'warn' uses --color-warn-text-on-bg (6.37:1)
   shortlisted: 'purple',
   offered: 'green',
   hired: 'green',

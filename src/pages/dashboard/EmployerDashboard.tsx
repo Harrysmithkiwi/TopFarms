@@ -615,8 +615,7 @@ export function EmployerDashboard() {
                   variant="primary"
                   size="md"
                   onClick={() => handleArchive(confirmArchiveId)}
-                  className="bg-red hover:bg-red/90 border-danger flex-1"
-                  style={{ backgroundColor: '#dc3545' }}
+                  className="bg-danger hover:bg-danger/90 border-danger flex-1"
                 >
                   Archive
                 </Button>

@@ -16,7 +16,7 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
       <div className="bg-bg flex min-h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div
-            className="border-border border-t-moss h-10 w-10 animate-spin rounded-full border-4"
+            className="border-border border-t-brand h-10 w-10 animate-spin rounded-full border-4"
             aria-label="Loading"
           />
           <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
@@ -44,7 +44,7 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
       <div className="bg-bg flex min-h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div
-            className="border-border border-t-moss h-10 w-10 animate-spin rounded-full border-4"
+            className="border-border border-t-brand h-10 w-10 animate-spin rounded-full border-4"
             aria-label="Loading"
           />
           <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>

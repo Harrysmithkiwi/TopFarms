@@ -47,3 +47,9 @@ marketing/video/**/*.wav
 
 # canon→Drive sync scratch (gws --upload needs cwd-local temp)
 .canon-sync-tmp/
+
+# Untracked working artefacts (14 MB of audit scratch, design explorations and
+# generated marketing content — regenerable, not project state).
+.tmp-audit/
+docs/design/
+content/
