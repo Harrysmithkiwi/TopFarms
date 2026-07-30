@@ -88,7 +88,7 @@ export function ExpandableCardTabs({
             className={cn(
               'font-body px-4 py-2.5 text-[13px] font-semibold transition-colors',
               activeTab === tab.id
-                ? 'text-brand border-brand border-b-2'
+                ? 'text-brand-hover border-brand border-b-2'
                 : 'text-text-muted hover:text-text',
             )}
           >
@@ -154,7 +154,7 @@ export function ExpandableCardTabs({
             ))}
             <Link
               to={`/jobs/${job.id}`}
-              className="font-body text-brand inline-block text-[12px] hover:underline"
+              className="font-body text-brand-hover inline-block text-[12px] hover:underline"
               onClick={(e) => e.stopPropagation()}
             >
               See full 7-dimension breakdown &rarr;
@@ -171,7 +171,7 @@ export function ExpandableCardTabs({
               placeholder="Add a cover note (optional)..."
               rows={3}
               maxLength={500}
-              className="border-border font-body focus:border-brand w-full resize-none rounded-[8px] border p-3 text-[14px] focus:outline-none"
+              className="border-border font-body focus:border-brand w-full resize-none rounded-[8px] border p-3 text-[14px]"
             />
             <div className="flex items-center justify-between">
               <span className="font-body text-text-subtle text-[12px]">{coverNote.length}/500</span>

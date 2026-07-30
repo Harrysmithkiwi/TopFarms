@@ -39,7 +39,7 @@ export function Breadcrumb({ items, onSave, onShare, className, ...props }: Brea
                   href={item.href}
                   className={cn(
                     'font-body text-text-subtle hover:text-text rounded-[4px] text-[13px] hover:underline',
-                    'focus-visible:outline-brand outline-none focus-visible:outline-2 focus-visible:outline-offset-2',
+                    'focus-visible:outline-brand focus-visible:outline-2 focus-visible:outline-offset-2',
                   )}
                 >
                   {item.label}
@@ -58,7 +58,7 @@ export function Breadcrumb({ items, onSave, onShare, className, ...props }: Brea
             className={cn(
               'inline-flex h-11 w-11 items-center justify-center rounded-[6px] md:h-9 md:w-9',
               'text-text-muted hover:text-text hover:bg-surface-2 transition-colors',
-              'focus-visible:outline-brand outline-none focus-visible:outline-2 focus-visible:outline-offset-2',
+              'focus-visible:outline-brand focus-visible:outline-2 focus-visible:outline-offset-2',
             )}
             aria-label="Save job listing"
           >
@@ -72,7 +72,7 @@ export function Breadcrumb({ items, onSave, onShare, className, ...props }: Brea
             className={cn(
               'inline-flex h-11 w-11 items-center justify-center rounded-[6px] md:h-9 md:w-9',
               'text-text-muted hover:text-text hover:bg-surface-2 transition-colors',
-              'focus-visible:outline-brand outline-none focus-visible:outline-2 focus-visible:outline-offset-2',
+              'focus-visible:outline-brand focus-visible:outline-2 focus-visible:outline-offset-2',
             )}
             aria-label="Share job listing"
           >

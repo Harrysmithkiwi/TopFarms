@@ -79,7 +79,7 @@ export function NzbnVerification({
         <div className="bg-brand flex h-5 w-5 items-center justify-center rounded-full">
           <Check className="h-3 w-3 stroke-[3] text-white" />
         </div>
-        <span className="font-body text-brand text-[13px] font-semibold">Business verified</span>
+        <span className="font-body text-brand-hover text-[13px] font-semibold">Business verified</span>
         {submittedNzbn && (
           <span className="font-body text-text-subtle text-[12px]">NZBN: {submittedNzbn}</span>
         )}
@@ -110,9 +110,9 @@ export function NzbnVerification({
       <div className="space-y-3">
         <div className="flex items-center gap-2 py-1">
           <div className="flex h-5 w-5 items-center justify-center rounded-full bg-red-100">
-            <X className="text-danger-600 h-3 w-3" />
+            <X className="text-danger h-3 w-3" />
           </div>
-          <span className="font-body text-danger-600 text-[13px]">
+          <span className="font-body text-danger text-[13px]">
             Verification rejected — please resubmit
           </span>
         </div>
@@ -138,7 +138,7 @@ export function NzbnVerification({
           <p className="font-body text-text-subtle text-[11px]">
             13-digit NZBN found on your Companies Register entry
           </p>
-          {error && <p className="font-body text-danger-600 text-[12px]">{error}</p>}
+          {error && <p className="font-body text-danger text-[12px]">{error}</p>}
           <Button type="submit" size="sm" disabled={loading || nzbn.length !== 13}>
             {loading ? 'Submitting...' : 'Resubmit NZBN'}
           </Button>
@@ -171,7 +171,7 @@ export function NzbnVerification({
       <p className="font-body text-text-subtle text-[11px]">
         13-digit NZBN found on your Companies Register entry
       </p>
-      {error && <p className="font-body text-danger-600 text-[12px]">{error}</p>}
+      {error && <p className="font-body text-danger text-[12px]">{error}</p>}
       <Button type="submit" size="sm" disabled={loading || nzbn.length !== 13}>
         {loading ? 'Submitting...' : 'Submit NZBN'}
       </Button>

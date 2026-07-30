@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate, useSearchParams, Link } from 'react-router'
 import { toast } from 'sonner'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, SlidersHorizontal } from 'lucide-react'
+import * as Dialog from '@radix-ui/react-dialog'
 import { cn } from '@/lib/utils'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { ApplicantPanel } from '@/components/ui/ApplicantPanel'
@@ -108,6 +109,7 @@ export function ApplicantDashboard() {
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<'newest' | 'match'>('newest')
+  const [sidebarSheetOpen, setSidebarSheetOpen] = useState(false)
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list')
 
   // Bulk actions state
@@ -265,27 +267,24 @@ export function ApplicantDashboard() {
 
       setScoreMap(newScoreMap)
 
-      // Sort applicants by match score descending (initial load)
-      const sorted = [...appsWithSkills].sort((a, b) => {
-        const scoreA = newScoreMap.get(a.seeker_profiles?.id ?? '')?.total_score ?? 0
-        const scoreB = newScoreMap.get(b.seeker_profiles?.id ?? '')?.total_score ?? 0
-        return scoreB - scoreA
-      })
-
-      setApplicants(sorted)
+      // Phase 4.5: no pre-sort by score. The render pipeline owns ordering
+      // (sortBy: newest default / match on request) — the old initial
+      // score-sort here was dead (always re-sorted before paint) and
+      // contradicted the "matched, not sorted" framing.
+      setApplicants(appsWithSkills)
 
       // Build employer jobs list with applicant counts
       setEmployerJobs(
         (jobsList ?? []).map((j) => ({
           id: j.id,
           title: j.title,
-          applicant_count: j.id === activeJobId ? sorted.length : 0,
+          applicant_count: j.id === activeJobId ? appsWithSkills.length : 0,
         })),
       )
 
       // Batch-fetch contacts for applicants already shortlisted/offered/hired
       // RLS ensures only acknowledged rows are returned
-      const acknowledgedSeekerUserIds = sorted
+      const acknowledgedSeekerUserIds = appsWithSkills
         .filter((a) => ['shortlisted', 'offered', 'hired'].includes(a.status))
         .map((a) => a.seeker_profiles?.user_id)
         .filter((id): id is string => !!id)
@@ -532,10 +531,47 @@ export function ApplicantDashboard() {
           </div>
         </div>
 
+        {/* Mobile: listing selector + stats live in a bottom sheet (Phase 4.2,
+            same pattern as JobSearch's FilterSidebar drawer) */}
+        <div className="mb-4 md:hidden">
+          <Dialog.Root open={sidebarSheetOpen} onOpenChange={setSidebarSheetOpen}>
+            <Dialog.Trigger asChild>
+              <button
+                type="button"
+                className="border-border bg-surface font-body text-text-muted hover:border-border-strong flex min-h-11 items-center gap-2 rounded-[8px] border px-3 py-2 text-[13px] transition-colors"
+              >
+                <SlidersHorizontal className="h-4 w-4" />
+                Listing &amp; stats
+              </button>
+            </Dialog.Trigger>
+            <Dialog.Portal>
+              <Dialog.Overlay className="fixed inset-0 z-40 bg-black/40" />
+              <Dialog.Content
+                className="bg-surface fixed right-0 bottom-0 left-0 z-50 max-h-[85vh] overflow-y-auto rounded-t-[16px] p-4"
+                aria-describedby={undefined}
+              >
+                <Dialog.Title className="sr-only">Listing and stats</Dialog.Title>
+                <ApplicantDashboardSidebar
+                  className="w-full"
+                  farmName={farmName}
+                  jobs={employerJobs}
+                  selectedJobId={activeJobId}
+                  onJobSelect={(jobId) => {
+                    setSidebarSheetOpen(false)
+                    handleJobSelect(jobId)
+                  }}
+                  stats={dashboardStats}
+                />
+              </Dialog.Content>
+            </Dialog.Portal>
+          </Dialog.Root>
+        </div>
+
         {/* Main layout: sidebar + content */}
         <div className="flex gap-6">
-          {/* 260px sidebar */}
+          {/* 260px sidebar — desktop only; mobile uses the sheet above */}
           <ApplicantDashboardSidebar
+            className="hidden md:block"
             farmName={farmName}
             jobs={employerJobs}
             selectedJobId={activeJobId}
@@ -553,7 +589,7 @@ export function ApplicantDashboard() {
                 placeholder="Search applicants..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="border-border font-body text-text bg-surface focus:border-brand w-48 rounded-[8px] border px-3 py-1.5 text-[13px] focus:outline-none"
+                className="border-border font-body text-text bg-surface focus:border-brand w-48 rounded-[8px] border px-3 py-1.5 text-[13px]"
               />
 
               {/* Status filter chips — use STATUS_LABELS for display text */}
@@ -566,7 +602,7 @@ export function ApplicantDashboard() {
                     className={cn(
                       'font-body rounded-full border px-3 py-1 text-[12px] font-semibold transition-colors',
                       statusFilter === status
-                        ? 'bg-brand/10 border-brand text-brand'
+                        ? 'bg-brand/10 border-brand text-success-text-on-bg'
                         : 'bg-surface border-border text-text-muted hover:border-border-strong',
                     )}
                   >
@@ -582,7 +618,7 @@ export function ApplicantDashboard() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as 'newest' | 'match')}
-                className="border-border font-body text-text bg-surface focus:border-brand cursor-pointer rounded-[8px] border px-2 py-1.5 text-[12px] focus:outline-none"
+                className="border-border font-body text-text bg-surface focus:border-brand cursor-pointer rounded-[8px] border px-2 py-1.5 text-[12px]"
               >
                 <option value="newest">Newest first</option>
                 <option value="match">Match score</option>
@@ -596,7 +632,7 @@ export function ApplicantDashboard() {
                   className={cn(
                     'px-2 py-1.5 text-[12px]',
                     viewMode === 'list'
-                      ? 'bg-brand/10 text-brand'
+                      ? 'bg-brand/10 text-success-text-on-bg'
                       : 'bg-surface text-text-muted hover:bg-bg',
                   )}
                   aria-label="List view"
@@ -609,7 +645,7 @@ export function ApplicantDashboard() {
                   className={cn(
                     'border-border border-l px-2 py-1.5 text-[12px]',
                     viewMode === 'grid'
-                      ? 'bg-brand/10 text-brand'
+                      ? 'bg-brand/10 text-success-text-on-bg'
                       : 'bg-surface text-text-muted hover:bg-bg',
                   )}
                   aria-label="Grid view"

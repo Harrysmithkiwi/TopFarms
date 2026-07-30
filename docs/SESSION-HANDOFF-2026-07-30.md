@@ -1,5 +1,9 @@
 # Session handoff — 2026-07-30
 
+> **SUPERSEDED — this handoff was written after Phase 1 and its "next session" pointer is stale.**
+> Phases 2, 3 and 4 have since shipped. Read
+> **`docs/SESSION-HANDOFF-2026-07-30-PHASE-4.md`** instead. Kept for the audit narrative below.
+
 `main` green at **`f38cb50`**. Production clean: **6 users / 0 jobs / 0 applications / 0 fees**.
 Test suite **484 → 559**. Working tree clean, no open PRs.
 

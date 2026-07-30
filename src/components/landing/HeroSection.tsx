@@ -133,8 +133,9 @@ export function HeroSection() {
                 to="/signup?role=seeker"
                 className="mt-1 inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
                 style={{
-                  backgroundColor: 'var(--color-brand)',
-                  color: 'var(--color-brand-900)',
+                  // brand-900 on brand was 3.33:1 (axe serious, Phase 4.6)
+                  backgroundColor: 'var(--color-brand-hover)',
+                  color: 'var(--color-text-on-brand)',
                 }}
               >
                 Find Farm Work
@@ -236,7 +237,7 @@ export function HeroSection() {
                 className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold"
                 style={{
                   backgroundColor: 'rgba(74,124,47,0.3)',
-                  color: 'var(--color-brand)',
+                  color: 'var(--color-brand-300)',
                 }}
               >
                 EX
@@ -297,7 +298,7 @@ export function HeroSection() {
               aria-hidden="true"
             />
             <div>
-              <p className="text-xs font-semibold" style={{ color: 'var(--color-brand)' }}>
+              <p className="text-xs font-semibold" style={{ color: 'var(--color-brand-300)' }}>
                 New match found
               </p>
               <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.6)' }}>

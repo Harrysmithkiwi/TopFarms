@@ -63,7 +63,7 @@ function TextAreaField({
         placeholder={placeholder}
         rows={5}
         maxLength={maxLength}
-        className="border-border font-body text-text bg-surface placeholder:text-text-subtle focus:border-brand-hover w-full resize-none rounded-[10px] border-[1.5px] px-3 py-2.5 text-[13px] transition-colors duration-150 focus:outline-none"
+        className="border-border font-body text-text bg-surface placeholder:text-text-subtle focus:border-brand-hover w-full resize-none rounded-[10px] border-[1.5px] px-3 py-2.5 text-[13px] transition-colors duration-150"
       />
       {error && <p className="text-danger font-body text-[12px]">{error}</p>}
     </div>

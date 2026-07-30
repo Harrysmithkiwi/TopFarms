@@ -137,7 +137,7 @@ export function PhoneVerification({ employerId, onSuccess }: PhoneVerificationPr
           disabled={loading}
           className="text-[13px]"
         />
-        {error && <p className="font-body text-danger-600 text-[12px]">{error}</p>}
+        {error && <p className="font-body text-danger text-[12px]">{error}</p>}
         <Button type="submit" size="sm" disabled={loading || !phone.trim()}>
           {loading ? 'Sending...' : 'Send Code'}
         </Button>
@@ -165,7 +165,7 @@ export function PhoneVerification({ employerId, onSuccess }: PhoneVerificationPr
         disabled={loading}
         className="text-[13px] tracking-widest"
       />
-      {error && <p className="font-body text-danger-600 text-[12px]">{error}</p>}
+      {error && <p className="font-body text-danger text-[12px]">{error}</p>}
       <div className="flex items-center gap-3">
         <Button type="submit" size="sm" disabled={loading || otp.length !== 6}>
           {loading ? 'Verifying...' : 'Verify'}

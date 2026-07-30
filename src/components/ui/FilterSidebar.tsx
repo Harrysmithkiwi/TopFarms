@@ -219,7 +219,7 @@ export function FilterSidebar({
             <button
               type="button"
               onClick={() => setShowAllRegions((prev) => !prev)}
-              className="font-body text-brand mt-2 text-[12px] hover:underline"
+              className="font-body text-brand-hover mt-2 text-[12px] hover:underline"
             >
               {showAllRegions ? 'Show fewer' : `Show all ${NZ_REGIONS.length} regions`}
             </button>
@@ -267,11 +267,11 @@ export function FilterSidebar({
                 <Slider.Range className="bg-brand absolute h-full rounded-full" />
               </Slider.Track>
               <Slider.Thumb
-                className="bg-surface border-brand hover:bg-surface-2 focus-visible:outline-brand block h-[16px] w-[16px] cursor-pointer rounded-full border-[2px] shadow-sm outline-none focus-visible:outline-2 focus-visible:outline-offset-2"
+                className="bg-surface border-brand hover:bg-surface-2 focus-visible:outline-brand block h-[16px] w-[16px] cursor-pointer rounded-full border-[2px] shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2"
                 aria-label="Salary minimum"
               />
               <Slider.Thumb
-                className="bg-surface border-brand hover:bg-surface-2 focus-visible:outline-brand block h-[16px] w-[16px] cursor-pointer rounded-full border-[2px] shadow-sm outline-none focus-visible:outline-2 focus-visible:outline-offset-2"
+                className="bg-surface border-brand hover:bg-surface-2 focus-visible:outline-brand block h-[16px] w-[16px] cursor-pointer rounded-full border-[2px] shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2"
                 aria-label="Salary maximum"
               />
             </Slider.Root>
@@ -337,6 +337,7 @@ export function FilterSidebar({
           <p className="font-body text-text-subtle mb-2 text-[11px]">Show jobs you qualify for</p>
           <Select
             placeholder="Any level"
+            ariaLabel="DairyNZ level"
             options={[
               { value: 'all', label: 'Any level' },
               ...DAIRYNZ_LEVELS.map((l) => ({ value: l.value, label: l.label })),

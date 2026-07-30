@@ -88,18 +88,25 @@ export function SearchJobCard({
         isExpanded && 'border-brand/30',
       )}
     >
-      {/* Card header — clickable to toggle accordion */}
-      <button
-        type="button"
-        onClick={onToggle}
-        className="focus-visible:ring-brand w-full rounded-[12px] p-4 text-left focus:outline-none focus-visible:ring-2"
-      >
+      {/* Card header — the accordion toggle is the TITLE button, stretched over
+          the header via after:inset-0 (Phase 4.3). The old markup nested the
+          bookmark <button> inside a header-wide <button> — invalid HTML,
+          unpredictable for keyboard/screen readers. The bookmark now sits
+          above the stretched hit area on z-10; nothing interactive nests. */}
+      <div className="relative p-4">
         <div className="flex items-start gap-4">
           {/* Left: content */}
           <div className="min-w-0 flex-1">
-            {/* Title */}
+            {/* Title — single interactive toggle for the whole header */}
             <h3 className="font-body text-text truncate text-[15px] leading-snug font-semibold">
-              {job.title}
+              <button
+                type="button"
+                onClick={onToggle}
+                aria-expanded={isExpanded}
+                className="focus-visible:ring-brand block max-w-full truncate text-left after:absolute after:inset-0 after:rounded-[12px] after:content-[''] focus:outline-none focus-visible:ring-2"
+              >
+                {job.title}
+              </button>
             </h3>
 
             {/* Farm name + verification badge */}
@@ -120,10 +127,10 @@ export function SearchJobCard({
                   style={{
                     backgroundColor: isTerminalApplication
                       ? 'var(--color-border)'
-                      : 'var(--color-brand)',
+                      : 'var(--color-brand-hover)',
                     color: isTerminalApplication
                       ? 'var(--color-text-muted)'
-                      : 'var(--color-brand-900)',
+                      : 'var(--color-text-on-brand)',
                   }}
                 >
                   {appliedBadgeLabel}
@@ -167,18 +174,18 @@ export function SearchJobCard({
 
           {/* Right: bookmark + match score */}
           <div className="flex flex-shrink-0 flex-col items-center gap-2">
-            {/* Bookmark icon */}
+            {/* Bookmark — z-10 lifts it above the title's stretched hit area;
+                h-11/w-11 gives the 44px target (Brand_and_Design.md:53) with
+                negative margin so the glyph stays put */}
             <button
               type="button"
-              onClick={(e) => {
-                e.stopPropagation()
-                onSaveToggle?.()
-              }}
+              onClick={() => onSaveToggle?.()}
               className={cn(
-                'flex-shrink-0',
+                'relative z-10 -m-3.5 flex h-11 w-11 flex-shrink-0 items-center justify-center',
                 isSaved ? 'text-warn' : 'text-text-muted hover:text-warn',
               )}
               aria-label={isSaved ? 'Job saved' : 'Save this job'}
+              aria-pressed={isSaved}
             >
               <Bookmark className={cn('h-4 w-4', isSaved && 'fill-warn')} />
             </button>
@@ -196,7 +203,7 @@ export function SearchJobCard({
             </div>
           </div>
         </div>
-      </button>
+      </div>
 
       {/* Expandable area — always rendered for CSS transition, controlled by max-h */}
       <div

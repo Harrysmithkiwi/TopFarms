@@ -12,28 +12,31 @@ const sizeClasses = {
   lg: { container: 'w-[88px] h-[88px]', text: 'text-[22px]' },
 }
 
+// Phase 4.1/4.5: the score is attached to a person. A low match is a partial
+// fit, not an error — the bottom band is neutral, never danger-red. Text always
+// uses a *-text-on-bg token so the number is readable in every band.
 function getColourClasses(score: number) {
   if (score >= 80) {
     return {
       bg: 'bg-brand-50',
       border: 'border-brand/20',
-      text: 'text-brand',
-      label: 'text-brand',
+      text: 'text-success-text-on-bg',
+      label: 'text-success-text-on-bg',
     }
   }
   if (score >= 60) {
     return {
-      bg: 'bg-warn/10',
+      bg: 'bg-warn-bg',
       border: 'border-warn/20',
-      text: 'text-warn',
-      label: 'text-warn',
+      text: 'text-warn-text-on-bg',
+      label: 'text-warn-text-on-bg',
     }
   }
   return {
-    bg: 'bg-danger/10',
-    border: 'border-danger/20',
-    text: 'text-danger',
-    label: 'text-danger',
+    bg: 'bg-surface-2',
+    border: 'border-border-strong',
+    text: 'text-text-muted',
+    label: 'text-text-muted',
   }
 }
 

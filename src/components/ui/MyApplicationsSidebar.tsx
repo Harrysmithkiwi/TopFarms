@@ -16,6 +16,9 @@ interface MyApplicationsSidebarProps {
   savedJobs: SavedJob[]
   profileStrength: number // 0-100
   onRemoveSavedJob: (jobId: string) => void
+  // Phase 4.2: rendered twice — desktop rail (hidden md:block) and inside the
+  // mobile bottom sheet (w-full), same as FilterSidebar in JobSearch.
+  className?: string
 }
 
 const FILTER_TABS = [
@@ -33,9 +36,10 @@ export function MyApplicationsSidebar({
   savedJobs,
   profileStrength,
   onRemoveSavedJob,
+  className,
 }: MyApplicationsSidebarProps) {
   return (
-    <aside className="w-[260px] flex-shrink-0 space-y-4">
+    <aside className={cn('w-[260px] flex-shrink-0 space-y-4', className)}>
       {/* Status Summary */}
       <div className="bg-surface border-border rounded-[12px] border p-4">
         <h3 className="font-body text-text mb-3 text-[13px] font-semibold">Application Status</h3>
@@ -72,7 +76,7 @@ export function MyApplicationsSidebar({
               className={cn(
                 'font-body rounded-full border px-3 py-1 text-[12px] font-semibold transition-colors',
                 activeFilter === tab.value
-                  ? 'bg-brand/10 border-brand text-brand'
+                  ? 'bg-brand/10 border-brand text-success-text-on-bg'
                   : 'bg-surface border-border text-text-muted hover:border-border-strong',
               )}
             >
@@ -102,7 +106,7 @@ export function MyApplicationsSidebar({
                 <div className="min-w-0">
                   <Link
                     to={`/jobs/${sj.job_id}`}
-                    className="font-body text-text hover:text-brand block truncate text-[13px] font-semibold transition-colors"
+                    className="font-body text-text hover:text-brand-hover block truncate text-[13px] font-semibold transition-colors"
                   >
                     {sj.title}
                   </Link>
@@ -111,7 +115,7 @@ export function MyApplicationsSidebar({
                 <button
                   type="button"
                   onClick={() => onRemoveSavedJob(sj.job_id)}
-                  className="text-warn hover:text-danger mt-0.5 flex-shrink-0"
+                  className="text-warn hover:text-danger -m-3 flex h-11 w-11 flex-shrink-0 items-center justify-center"
                   aria-label="Remove saved job"
                 >
                   <Bookmark className="fill-warn h-3.5 w-3.5" />

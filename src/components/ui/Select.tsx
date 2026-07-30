@@ -18,6 +18,8 @@ interface SelectProps {
   disabled?: boolean
   className?: string
   id?: string
+  /** Accessible name for label-less selects (axe button-name, Phase 4.6). */
+  ariaLabel?: string
 }
 
 export function Select({
@@ -30,6 +32,7 @@ export function Select({
   disabled,
   className,
   id,
+  ariaLabel,
 }: SelectProps) {
   const selectId = id || (label ? `select-${label.toLowerCase().replace(/\s+/g, '-')}` : undefined)
 
@@ -46,10 +49,11 @@ export function Select({
       <SelectPrimitive.Root value={value} onValueChange={onValueChange} disabled={disabled}>
         <SelectPrimitive.Trigger
           id={selectId}
+          aria-label={ariaLabel}
           className={cn(
             'flex w-full items-center justify-between',
             'font-body bg-surface-2 min-h-[44px] rounded-[8px] border-[1.5px] px-3 py-2 text-[15px]',
-            'focus-visible:outline-brand outline-none focus-visible:outline-2 focus-visible:outline-offset-2',
+            'focus-visible:outline-brand focus-visible:outline-2 focus-visible:outline-offset-2',
             'cursor-pointer transition-colors duration-150',
             'disabled:cursor-not-allowed disabled:opacity-50',
             error ? 'border-danger focus:border-danger' : 'border-border focus:border-brand',
@@ -85,7 +89,7 @@ export function Select({
                   className={cn(
                     'font-body cursor-pointer rounded-[4px] px-3 py-2 text-[15px]',
                     'focus:bg-surface-2 outline-none',
-                    'data-[state=checked]:bg-brand-50 data-[state=checked]:text-brand',
+                    'data-[state=checked]:bg-brand-50 data-[state=checked]:text-success-text-on-bg',
                     'data-[highlighted]:bg-surface-2',
                     'select-none',
                   )}

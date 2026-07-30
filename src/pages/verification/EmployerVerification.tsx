@@ -61,7 +61,7 @@ function VerificationCard({
             isVerified ? 'bg-brand/10' : 'bg-surface-2',
           )}
         >
-          <span className={cn('h-4 w-4', isVerified ? 'text-brand' : 'text-text-muted')}>
+          <span className={cn('h-4 w-4', isVerified ? 'text-brand-hover' : 'text-text-muted')}>
             {icon}
           </span>
         </div>
@@ -73,7 +73,7 @@ function VerificationCard({
 
             {/* Status badge */}
             {isVerified && (
-              <span className="font-body text-brand bg-brand/10 flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold">
+              <span className="font-body text-success-text-on-bg bg-brand/10 flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold">
                 <Check className="h-3 w-3 stroke-[3]" />
                 Verified
               </span>
@@ -307,7 +307,7 @@ export function EmployerVerification() {
                   className={cn(
                     'h-4 w-4',
                     verificationMap.get('document')?.status === 'verified'
-                      ? 'text-brand'
+                      ? 'text-brand-hover'
                       : 'text-text-muted',
                   )}
                 />
@@ -318,7 +318,7 @@ export function EmployerVerification() {
                     Verification Documents
                   </h3>
                   {verificationMap.get('document')?.status === 'verified' ? (
-                    <span className="font-body text-brand bg-brand/10 flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold">
+                    <span className="font-body text-success-text-on-bg bg-brand/10 flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold">
                       <Check className="h-3 w-3 stroke-[3]" />
                       Verified
                     </span>
@@ -359,7 +359,7 @@ export function EmployerVerification() {
                   className={cn(
                     'h-4 w-4',
                     verificationMap.get('farm_photo')?.status === 'verified'
-                      ? 'text-brand'
+                      ? 'text-brand-hover'
                       : 'text-text-muted',
                   )}
                 />
@@ -368,7 +368,7 @@ export function EmployerVerification() {
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <h3 className="font-body text-text text-[14px] font-semibold">Farm Photos</h3>
                   {verificationMap.get('farm_photo')?.status === 'verified' ? (
-                    <span className="font-body text-brand bg-brand/10 flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold">
+                    <span className="font-body text-success-text-on-bg bg-brand/10 flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold">
                       <Check className="h-3 w-3 stroke-[3]" />
                       Verified
                     </span>
@@ -403,7 +403,7 @@ export function EmployerVerification() {
           <div className="space-y-1.5">
             {[
               { level: 'Basic Verified', requirement: 'Email verified', color: 'text-[#2563eb]' },
-              { level: 'Verified', requirement: 'Email + Phone verified', color: 'text-brand' },
+              { level: 'Verified', requirement: 'Email + Phone verified', color: 'text-brand-hover' },
               {
                 level: 'Fully Verified',
                 requirement: 'Email + Phone + Business/Documents + Farm Photos',

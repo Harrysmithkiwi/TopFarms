@@ -360,7 +360,7 @@ export function JobDetail() {
             to="/jobs"
             className={cn(
               'font-body inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
-              'bg-brand hover:bg-brand-hover text-white',
+              'bg-brand-hover hover:bg-brand-900 text-white',
               'px-4 py-2 text-[13px]',
             )}
           >
@@ -672,7 +672,7 @@ export function JobDetail() {
                               className={cn(
                                 'font-body inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-semibold',
                                 s.requirement_level === 'required'
-                                  ? 'text-brand bg-[rgba(74,124,47,0.12)]'
+                                  ? 'text-success-text-on-bg bg-[rgba(74,124,47,0.12)]'
                                   : 'bg-surface-2 text-text-muted',
                               )}
                             >
@@ -681,7 +681,7 @@ export function JobDetail() {
                                 className={cn(
                                   'text-[10px]',
                                   s.requirement_level === 'required'
-                                    ? 'text-brand/70'
+                                    ? 'text-success-text-on-bg'
                                     : 'text-text-subtle',
                                 )}
                               >
@@ -961,7 +961,7 @@ export function JobDetail() {
                 to="/login"
                 className={cn(
                   'font-body inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
-                  'bg-surface border-brand text-brand hover:bg-surface-2 border',
+                  'bg-surface border-brand text-brand-hover hover:bg-surface-2 border',
                   'px-3 py-2 text-[13px]',
                 )}
               >
@@ -971,7 +971,7 @@ export function JobDetail() {
                 to="/signup"
                 className={cn(
                   'font-body inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
-                  'bg-brand hover:bg-brand-hover text-white',
+                  'bg-brand-hover hover:bg-brand-900 text-white',
                   'px-4 py-2 text-[13px]',
                 )}
               >
@@ -1011,7 +1011,7 @@ export function JobDetail() {
                 'font-body ml-auto inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
                 hasApplied || !seekerProfileId
                   ? 'bg-surface-2 text-text-muted cursor-not-allowed'
-                  : 'bg-brand hover:bg-brand-hover text-white',
+                  : 'bg-brand-hover hover:bg-brand-900 text-white',
                 'px-6 py-2.5 text-[14px]',
               )}
             >
@@ -1044,7 +1044,7 @@ export function JobDetail() {
               placeholder="Add a cover note (optional)..."
               rows={4}
               maxLength={500}
-              className="border-border focus:border-brand w-full resize-none rounded-[8px] border p-3 text-sm focus:outline-none"
+              className="border-border focus:border-brand w-full resize-none rounded-[8px] border p-3 text-sm"
             />
             <p
               className="mt-1 text-right text-[11px]"
@@ -1064,7 +1064,7 @@ export function JobDetail() {
               <button
                 onClick={handleApply}
                 disabled={applying}
-                className="font-body bg-brand hover:bg-brand-hover flex-1 rounded-[8px] px-4 py-2 text-[13px] font-bold text-white transition-colors disabled:opacity-50"
+                className="font-body bg-brand-hover hover:bg-brand-900 flex-1 rounded-[8px] px-4 py-2 text-[13px] font-bold text-white transition-colors disabled:opacity-50"
               >
                 {applying ? 'Submitting...' : 'Confirm Application'}
               </button>

@@ -198,7 +198,7 @@ export function SeekerDocuments() {
             </p>
             <Link
               to="/onboarding/seeker"
-              className="font-body text-brand text-sm font-semibold hover:underline"
+              className="font-body text-brand-hover text-sm font-semibold hover:underline"
             >
               Complete onboarding
             </Link>
@@ -260,7 +260,7 @@ export function SeekerDocuments() {
                 <button
                   type="button"
                   onClick={() => handleDelete(doc)}
-                  className="text-text-subtle hover:text-danger p-1 transition-colors"
+                  className="text-text-subtle hover:text-danger -m-2.5 flex h-11 w-11 items-center justify-center transition-colors"
                   aria-label={`Delete ${doc.filename}`}
                 >
                   <Trash2 className="h-4 w-4" />

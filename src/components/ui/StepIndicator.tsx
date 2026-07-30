@@ -31,7 +31,7 @@ export function StepIndicator({ currentStep, totalSteps, labels, className }: St
                 className={cn(
                   'font-body flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full font-bold transition-colors duration-200 sm:h-8 sm:w-8',
                   'text-[10px] sm:text-[13px]',
-                  i < currentStep && 'bg-brand text-white',
+                  i < currentStep && 'bg-brand-hover text-white',
                   i === currentStep && 'bg-brand-hover text-white',
                   i > currentStep && 'bg-surface-2 text-text-subtle',
                 )}
@@ -47,7 +47,7 @@ export function StepIndicator({ currentStep, totalSteps, labels, className }: St
                 <span
                   className={cn(
                     'font-body mt-1.5 hidden max-w-[60px] text-center text-[10px] leading-tight sm:block',
-                    i < currentStep && 'text-brand font-medium',
+                    i < currentStep && 'text-brand-hover font-medium',
                     i === currentStep && 'text-brand-hover font-semibold',
                     i > currentStep && 'text-text-subtle',
                   )}

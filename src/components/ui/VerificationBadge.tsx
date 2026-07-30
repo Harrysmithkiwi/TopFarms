@@ -21,12 +21,12 @@ const TRUST_CONFIG: Record<TrustLevel, { label: string; shieldClass: string; bad
     basic: {
       label: 'Basic Verified',
       shieldClass: 'text-info',
-      badgeClass: 'bg-info-bg text-info border-info/30',
+      badgeClass: 'bg-info-bg text-info-text-on-bg border-info/30',
     },
     verified: {
       label: 'Verified',
       shieldClass: 'text-brand',
-      badgeClass: 'bg-brand-50 text-brand border-brand/30',
+      badgeClass: 'bg-brand-50 text-success-text-on-bg border-brand/30',
     },
     fully_verified: {
       label: 'Fully Verified',
@@ -75,7 +75,7 @@ export function VerificationBadge({
         onClick={toggle}
         className={cn(
           'font-body flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[12px] font-semibold transition-colors duration-150',
-          'focus-visible:outline-brand outline-none focus-visible:outline-2 focus-visible:outline-offset-2',
+          'focus-visible:outline-brand focus-visible:outline-2 focus-visible:outline-offset-2',
           config.badgeClass,
           expandable && 'cursor-pointer hover:opacity-80',
           !expandable && 'cursor-default',
@@ -140,7 +140,7 @@ export function VerificationBadge({
                   <span
                     className={cn(
                       'font-body ml-auto text-[11px]',
-                      isVerified && 'text-brand',
+                      isVerified && 'text-brand-hover',
                       isPending && 'text-warn-text-on-bg',
                       !record && 'text-text-subtle',
                     )}

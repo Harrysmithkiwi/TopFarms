@@ -41,14 +41,14 @@ export function LeadContactCard({ contact }: { contact?: LeadContact | null }) {
       {contact.name && <div className="mt-0.5 text-[15px] font-semibold">{contact.name}</div>}
       {contact.email && (
         <div className="mt-0.5">
-          <a className="text-brand text-[14px] font-medium underline" href={`mailto:${contact.email}`}>
+          <a className="text-brand-hover text-[14px] font-medium underline" href={`mailto:${contact.email}`}>
             {contact.email}
           </a>
         </div>
       )}
       {contact.phone && (
         <div className="mt-0.5">
-          <a className="text-brand text-[14px] font-medium underline" href={telHref(contact.phone)}>
+          <a className="text-brand-hover text-[14px] font-medium underline" href={telHref(contact.phone)}>
             {contact.phone}
           </a>
         </div>
@@ -56,7 +56,7 @@ export function LeadContactCard({ contact }: { contact?: LeadContact | null }) {
       {contact.url && (
         <div className="mt-0.5">
           <a
-            className="text-brand text-[13px] underline"
+            className="text-brand-hover text-[13px] underline"
             href={contact.url}
             target="_blank"
             rel="noreferrer"
@@ -93,7 +93,7 @@ export function ContactGlyphs({ contact }: { contact?: LeadContact | null }) {
           href={`mailto:${contact.email}`}
           title={contact.email}
           onClick={stop}
-          className="hover:text-brand"
+          className="hover:text-brand-hover"
         >
           <Mail size={15} aria-label="Email" />
         </a>
@@ -103,7 +103,7 @@ export function ContactGlyphs({ contact }: { contact?: LeadContact | null }) {
           href={telHref(contact.phone)}
           title={contact.phone}
           onClick={stop}
-          className="hover:text-brand"
+          className="hover:text-brand-hover"
         >
           <Phone size={15} aria-label="Phone" />
         </a>

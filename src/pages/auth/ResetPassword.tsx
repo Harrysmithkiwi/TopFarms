@@ -158,7 +158,7 @@ export function ResetPassword() {
               type={showPassword ? 'text' : 'password'}
               autoComplete="new-password"
               {...register('password')}
-              className="w-full rounded-lg border px-3.5 py-2.5 pr-10 text-sm transition-colors outline-none"
+              className="w-full rounded-lg border px-3.5 py-2.5 pr-10 text-sm transition-colors"
               style={{
                 borderColor: errors.password ? 'var(--color-danger)' : 'var(--color-border)',
                 backgroundColor: 'var(--color-surface)',
@@ -197,7 +197,7 @@ export function ResetPassword() {
               type={showConfirm ? 'text' : 'password'}
               autoComplete="new-password"
               {...register('confirmPassword')}
-              className="w-full rounded-lg border px-3.5 py-2.5 pr-10 text-sm transition-colors outline-none"
+              className="w-full rounded-lg border px-3.5 py-2.5 pr-10 text-sm transition-colors"
               style={{
                 borderColor: errors.confirmPassword ? 'var(--color-danger)' : 'var(--color-border)',
                 backgroundColor: 'var(--color-surface)',

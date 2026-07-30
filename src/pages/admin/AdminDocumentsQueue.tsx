@@ -279,7 +279,7 @@ export function AdminDocumentsQueue() {
             }}
             className={
               source === key
-                ? 'text-brand border-brand border-b-2 px-4 py-2 text-[13px] font-semibold'
+                ? 'text-brand-hover border-brand border-b-2 px-4 py-2 text-[13px] font-semibold'
                 : 'text-text-muted hover:text-text px-4 py-2 text-[13px] font-semibold'
             }
           >

@@ -72,7 +72,7 @@ export function ActiveFilterPills({ searchParams, onRemove }: ActiveFilterPillsP
           onClick={() =>
             onRemove(pill.key, SINGLE_VALUE_KEYS.has(pill.key) ? undefined : pill.value)
           }
-          className="bg-brand/10 border-brand/30 text-brand hover:bg-brand/20 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[12px] transition-colors"
+          className="bg-brand/10 border-brand/30 text-success-text-on-bg hover:bg-brand/20 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[12px] transition-colors"
           aria-label={`Remove ${pill.label} filter`}
         >
           {pill.label}

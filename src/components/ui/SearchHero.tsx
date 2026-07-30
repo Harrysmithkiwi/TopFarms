@@ -69,11 +69,11 @@ export function SearchHero({
             onChange={(e) => setQuery(e.target.value)}
             className={cn(
               'font-body text-text placeholder:text-text-subtle min-w-0 flex-1 border-0 bg-transparent px-3 py-2 text-[14px]',
-              'focus:outline-none',
             )}
           />
           <Select
             placeholder="All Regions"
+            ariaLabel="Filter by region"
             options={NZ_REGIONS}
             value={region}
             onValueChange={setRegion}
@@ -82,7 +82,7 @@ export function SearchHero({
           <button
             type="button"
             onClick={handleSearch}
-            className="bg-brand font-body hover:bg-brand/90 rounded-[8px] px-4 py-2 text-[14px] font-semibold whitespace-nowrap text-white transition-colors"
+            className="bg-brand-hover font-body hover:bg-brand-900 rounded-[8px] px-4 py-2 text-[14px] font-semibold whitespace-nowrap text-white transition-colors"
           >
             Search Jobs
           </button>

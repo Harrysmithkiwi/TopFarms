@@ -169,8 +169,8 @@ export function MatchBreakdown({ score, blurred = false, className }: MatchBreak
             to="/signup"
             className={cn(
               'font-body inline-flex items-center justify-center rounded-[8px] font-medium transition-colors duration-150',
-              'bg-brand text-text-on-brand hover:bg-brand-hover px-4 py-2 text-[13px]',
-              'focus-visible:outline-brand outline-none focus-visible:outline-2 focus-visible:outline-offset-2',
+              'bg-brand-hover text-text-on-brand hover:bg-brand-900 px-4 py-2 text-[13px]',
+              'focus-visible:outline-brand focus-visible:outline-2 focus-visible:outline-offset-2',
             )}
           >
             Sign Up Free

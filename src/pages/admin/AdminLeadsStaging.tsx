@@ -73,7 +73,7 @@ interface StagingRow extends Record<string, unknown> {
 }
 
 const inputCls =
-  'border-border bg-surface w-full rounded-[8px] border px-3 py-2 text-sm outline-none focus:border-brand'
+  'border-border bg-surface w-full rounded-[8px] border px-3 py-2 text-sm focus:border-brand'
 
 const MAX_IMAGES = 10 // lead-intake caps items at 50; keep vision-batch cost sane.
 
@@ -517,7 +517,7 @@ function StagingDrawer({
         <LeadContactCard contact={s.contact} />
         {s.company_profile_url && (
           <a
-            className="text-brand inline-flex items-center gap-1 text-[13px] underline"
+            className="text-brand-hover inline-flex items-center gap-1 text-[13px] underline"
             href={s.company_profile_url}
             target="_blank"
             rel="noreferrer"
@@ -538,7 +538,7 @@ function StagingDrawer({
             </p>
           )}
           {row.dedupe_status === 'suspect_duplicate' && (
-            <p className="text-warn flex items-start gap-1.5 text-[12px]">
+            <p className="text-warn-text-on-bg flex items-start gap-1.5 text-[12px]">
               <AlertTriangle size={13} className="mt-0.5 shrink-0" />
               Possible duplicate of an existing lead — approve only if genuinely distinct.
             </p>

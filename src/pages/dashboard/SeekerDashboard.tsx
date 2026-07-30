@@ -195,7 +195,7 @@ export function SeekerDashboard() {
                     to="/onboarding/seeker"
                     className={cn(
                       'font-body inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
-                      'bg-brand hover:bg-brand-hover text-white',
+                      'bg-brand-hover hover:bg-brand-900 text-white',
                       'px-4 py-2 text-[13px]',
                     )}
                   >
@@ -390,7 +390,7 @@ export function SeekerDashboard() {
                     to="/jobs"
                     className={cn(
                       'font-body inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
-                      'bg-brand hover:bg-brand-hover text-white',
+                      'bg-brand-hover hover:bg-brand-900 text-white',
                       'px-4 py-2 text-[13px]',
                     )}
                   >

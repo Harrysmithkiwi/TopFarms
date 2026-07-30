@@ -159,7 +159,7 @@ export function FeaturedListings() {
               <div className="h-px w-8" style={{ backgroundColor: 'var(--color-brand)' }} />
               <p
                 className="text-xs font-bold tracking-widest uppercase"
-                style={{ color: 'var(--color-brand)' }}
+                style={{ color: 'var(--color-brand-700)' }}
               >
                 Live Listings
               </p>

@@ -42,7 +42,7 @@ function VerificationCard({
         <div className="mb-0.5 flex items-center gap-2">
           <p className="font-body text-text text-[13px] font-semibold">{title}</p>
           {isVerified && (
-            <span className="font-body text-brand rounded-full bg-[rgba(74,124,47,0.1)] px-2 py-0.5 text-[11px] font-semibold">
+            <span className="font-body text-success-text-on-bg rounded-full bg-[rgba(74,124,47,0.1)] px-2 py-0.5 text-[11px] font-semibold">
               Verified
             </span>
           )}

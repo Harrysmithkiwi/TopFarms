@@ -12,6 +12,9 @@ interface ApplicantDashboardSidebarProps {
   selectedJobId: string
   onJobSelect: (jobId: string) => void
   stats: { applied: number; shortlisted: number; hired: number }
+  // Phase 4.2: the page renders this twice — desktop rail (hidden md:block)
+  // and inside the mobile bottom sheet (w-full), same as FilterSidebar.
+  className?: string
 }
 
 export function ApplicantDashboardSidebar({
@@ -20,9 +23,10 @@ export function ApplicantDashboardSidebar({
   selectedJobId,
   onJobSelect,
   stats,
+  className,
 }: ApplicantDashboardSidebarProps) {
   return (
-    <aside className={cn('w-[260px] flex-shrink-0 space-y-4')}>
+    <aside className={cn('w-[260px] flex-shrink-0 space-y-4', className)}>
       {/* Farm header */}
       <div className="overflow-hidden rounded-[12px]">
         <div className="bg-brand-900 px-4 py-3 text-white">
@@ -30,13 +34,17 @@ export function ApplicantDashboardSidebar({
         </div>
         {/* Listing selector */}
         <div className="bg-surface border-border rounded-b-[12px] border border-t-0 p-3">
-          <label className="font-body text-text-subtle mb-1.5 block text-[11px] font-semibold tracking-wide uppercase">
+          <label
+            htmlFor="applicant-dashboard-listing"
+            className="font-body text-text-subtle mb-1.5 block text-[11px] font-semibold tracking-wide uppercase"
+          >
             Listing
           </label>
           <select
+            id="applicant-dashboard-listing"
             value={selectedJobId}
             onChange={(e) => onJobSelect(e.target.value)}
-            className="font-body text-text border-border bg-surface focus:border-brand w-full cursor-pointer rounded-[6px] border px-2 py-1.5 text-[13px] focus:outline-none"
+            className="font-body text-text border-border bg-surface focus:border-brand w-full cursor-pointer rounded-[6px] border px-2 py-1.5 text-[13px]"
           >
             {jobs.map((job) => (
               <option key={job.id} value={job.id}>

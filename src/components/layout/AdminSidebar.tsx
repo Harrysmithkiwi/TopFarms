@@ -130,7 +130,7 @@ function AdminNavContent({ onNavigate }: { onNavigate?: () => void }) {
                     'rounded-8 flex items-center gap-3 px-3 py-2.5 text-sm transition-all',
                     // Filled brand active state (tokenised); white icon + label.
                     isActive
-                      ? 'bg-brand text-text-on-brand font-semibold'
+                      ? 'bg-brand-hover text-text-on-brand font-semibold'
                       : 'text-text-muted hover:bg-surface-2/50',
                   ].join(' ')
                 }

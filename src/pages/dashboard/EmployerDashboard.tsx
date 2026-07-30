@@ -303,7 +303,7 @@ export function EmployerDashboard() {
                   to="/onboarding/employer"
                   className={cn(
                     'font-body inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
-                    'bg-brand hover:bg-brand-hover text-white',
+                    'bg-brand-hover hover:bg-brand-900 text-white',
                     'px-4 py-2 text-[13px]',
                   )}
                 >
@@ -334,7 +334,7 @@ export function EmployerDashboard() {
                 to="/jobs/new"
                 className={cn(
                   'font-body inline-flex items-center justify-center gap-1.5 rounded-[8px] font-bold transition-all duration-200',
-                  'bg-brand hover:bg-brand-hover text-white',
+                  'bg-brand-hover hover:bg-brand-900 text-white',
                   'flex-shrink-0 px-4 py-2 text-[13px]',
                 )}
               >
@@ -375,7 +375,7 @@ export function EmployerDashboard() {
                     to="/dashboard/employer/verification"
                     className={cn(
                       'font-body inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
-                      'bg-surface border-brand text-brand hover:bg-surface-2 border',
+                      'bg-surface border-brand text-brand-hover hover:bg-surface-2 border',
                       'flex-shrink-0 px-4 py-2 text-[13px]',
                     )}
                   >
@@ -449,8 +449,8 @@ export function EmployerDashboard() {
                     className={cn(
                       'font-body flex-shrink-0 rounded-full px-3 py-1.5 text-[12px] font-semibold transition-all duration-150',
                       activeTab === tab.id
-                        ? 'bg-brand text-white'
-                        : 'bg-surface-2 text-text-muted hover:bg-brand/10 hover:text-brand',
+                        ? 'bg-brand-hover text-white'
+                        : 'bg-surface-2 text-text-muted hover:bg-brand/10 hover:text-success-text-on-bg',
                     )}
                   >
                     {tab.label}
@@ -492,7 +492,7 @@ export function EmployerDashboard() {
                     to="/jobs/new"
                     className={cn(
                       'font-body inline-flex items-center justify-center gap-1.5 rounded-[8px] font-bold transition-all duration-200',
-                      'bg-brand hover:bg-brand-hover text-white',
+                      'bg-brand-hover hover:bg-brand-900 text-white',
                       'px-4 py-2 text-[13px]',
                     )}
                   >
@@ -572,7 +572,7 @@ export function EmployerDashboard() {
                         to={`/jobs/${job.id}/edit`}
                         className={cn(
                           'font-body inline-flex flex-shrink-0 items-center justify-center rounded-[8px] font-bold transition-all duration-200',
-                          'bg-surface border-brand text-brand hover:bg-surface-2 border',
+                          'bg-surface border-brand text-brand-hover hover:bg-surface-2 border',
                           'px-3 py-1.5 text-[12px]',
                         )}
                       >

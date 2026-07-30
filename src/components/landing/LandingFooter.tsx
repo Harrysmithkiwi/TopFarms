@@ -17,7 +17,7 @@ export function LandingFooter() {
               <Sprout className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
               TopFarms
             </Link>
-            <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>
+            <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.7)' }}>
               New Zealand's agricultural recruitment platform.
             </p>
           </div>
@@ -26,7 +26,7 @@ export function LandingFooter() {
           <div>
             <h3
               className="mb-4 text-xs font-bold tracking-widest uppercase"
-              style={{ color: 'rgba(255,255,255,0.4)' }}
+              style={{ color: 'rgba(255,255,255,0.7)' }}
             >
               Platform
             </h3>
@@ -74,7 +74,7 @@ export function LandingFooter() {
           <div>
             <h3
               className="mb-4 text-xs font-bold tracking-widest uppercase"
-              style={{ color: 'rgba(255,255,255,0.4)' }}
+              style={{ color: 'rgba(255,255,255,0.7)' }}
             >
               Support
             </h3>
@@ -106,7 +106,7 @@ export function LandingFooter() {
           <div>
             <h3
               className="mb-4 text-xs font-bold tracking-widest uppercase"
-              style={{ color: 'rgba(255,255,255,0.4)' }}
+              style={{ color: 'rgba(255,255,255,0.7)' }}
             >
               Legal
             </h3>
@@ -135,7 +135,7 @@ export function LandingFooter() {
 
         {/* Bottom bar */}
         <div className="border-t pt-6" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
-          <p className="text-center text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+          <p className="text-center text-xs" style={{ color: 'rgba(255,255,255,0.7)' }}>
             &copy; 2026 TopFarms. All rights reserved.
           </p>
         </div>

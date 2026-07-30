@@ -80,7 +80,7 @@ export function TierCard({
           )}
         </div>
 
-        {isFree && <p className="font-body text-brand mt-0.5 text-[11px]">First listing free</p>}
+        {isFree && <p className="font-body text-brand-hover mt-0.5 text-[11px]">First listing free</p>}
       </div>
 
       {/* Features list */}

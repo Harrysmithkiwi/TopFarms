@@ -34,7 +34,7 @@ const bannerVariants: Record<
     wrapper: 'bg-danger-bg/60 border-danger-bg',
     title: "Unfortunately, this application wasn't successful.",
     body: '',
-    titleColor: 'text-danger',
+    titleColor: 'text-danger-text-on-bg',
   },
 }
 

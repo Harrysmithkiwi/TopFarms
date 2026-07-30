@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { CheckCircle, Star, X, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/Button'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 interface HireConfirmModalProps {
   candidateName: string
@@ -18,6 +19,10 @@ export function HireConfirmModal({
 }: HireConfirmModalProps) {
   const [loading, setLoading] = useState(false)
   const [rating, setRating] = useState<number | null>(null)
+  // Phase 4.4 — dialog semantics: focus trapped while open, restored on close
+  // (useFocusTrap is the shared admin-overlay contract; do not write a second one).
+  const dialogRef = useRef<HTMLDivElement>(null)
+  useFocusTrap(dialogRef)
 
   async function handleConfirm() {
     setLoading(true)
@@ -36,7 +41,16 @@ export function HireConfirmModal({
       {/* Container */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         {/* Card */}
-        <div className="bg-surface border-border w-full max-w-md rounded-[16px] border-[1.5px] shadow-xl">
+        <div
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="hire-confirm-title"
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') onCancel()
+          }}
+          className="bg-surface border-border w-full max-w-md rounded-[16px] border-[1.5px] shadow-xl"
+        >
           {/* Header */}
           <div className="border-border flex items-center gap-2.5 border-b px-6 pt-6 pb-4">
             <CheckCircle
@@ -44,6 +58,7 @@ export function HireConfirmModal({
               style={{ color: 'var(--color-brand)' }}
             />
             <h2
+              id="hire-confirm-title"
               className="font-body flex-1 text-[16px] font-semibold"
               style={{ color: 'var(--color-text)' }}
             >
@@ -53,7 +68,7 @@ export function HireConfirmModal({
               type="button"
               onClick={onCancel}
               aria-label="Close"
-              className="hover:bg-surface-2 flex h-8 w-8 items-center justify-center rounded-full transition-colors"
+              className="hover:bg-surface-2 -m-1.5 flex h-11 w-11 items-center justify-center rounded-full transition-colors"
               style={{ color: 'var(--color-text-muted)' }}
             >
               <X className="h-4 w-4" />
@@ -105,8 +120,10 @@ export function HireConfirmModal({
                     key={n}
                     type="button"
                     onClick={() => setRating(n === rating ? null : n)}
-                    className="p-0.5 transition-colors"
+                    // 44px hit target (Phase 4.3) — glyph stays h-4, -my keeps row height
+                    className="-my-1 flex h-11 w-11 items-center justify-center transition-colors"
                     aria-label={`Rate ${n} star${n !== 1 ? 's' : ''}`}
+                    aria-pressed={rating !== null && rating >= n}
                   >
                     <Star
                       className={cn(

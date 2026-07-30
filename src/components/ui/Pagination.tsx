@@ -45,7 +45,7 @@ function getPageNumbers(currentPage: number, totalPages: number): (number | '...
 
 const pageButtonBase = cn(
   'w-11 h-11 md:w-[34px] md:h-[34px] flex items-center justify-center rounded-[6px] border-[1.5px] font-body text-[13px] transition-colors',
-  'outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
+  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
 )
 
 export function Pagination({ currentPage, totalPages, onPageChange, className }: PaginationProps) {
@@ -90,7 +90,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, className }:
             className={cn(
               pageButtonBase,
               isActive
-                ? 'border-brand bg-brand text-text-on-brand'
+                ? 'border-brand-hover bg-brand-hover text-text-on-brand'
                 : 'border-border bg-surface text-text hover:border-brand-hover',
             )}
             onClick={() => onPageChange(page)}

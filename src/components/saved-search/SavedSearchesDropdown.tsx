@@ -114,7 +114,7 @@ export function SavedSearchesDropdown() {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="text-brand flex cursor-pointer items-center gap-1 text-[13px] hover:underline"
+        className="text-brand-hover flex cursor-pointer items-center gap-1 text-[13px] hover:underline"
         aria-haspopup="menu"
         aria-expanded={open}
         data-testid="saved-searches-dropdown-trigger"

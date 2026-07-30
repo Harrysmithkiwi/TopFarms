@@ -742,7 +742,7 @@ function ResultsArea({
               <button
                 type="button"
                 onClick={onSaveClick}
-                className="text-brand cursor-pointer text-[13px] hover:underline"
+                className="text-brand-hover cursor-pointer text-[13px] hover:underline"
               >
                 Save search
               </button>
@@ -763,8 +763,9 @@ function ResultsArea({
           <span className="font-body text-text-subtle text-[12px]">Sort:</span>
           <select
             value={sortParam}
+            aria-label="Sort results"
             onChange={(e) => onSortChange(e.target.value)}
-            className="font-body text-text border-border bg-surface focus:border-brand cursor-pointer rounded-[6px] border px-2 py-1 text-[12px] focus:outline-none"
+            className="font-body text-text border-border bg-surface focus:border-brand cursor-pointer rounded-[6px] border px-2 py-1 text-[12px]"
           >
             {isLoggedIn && <option value="match">Match Score</option>}
             <option value="recent">Most Recent</option>
@@ -807,7 +808,7 @@ function ResultsArea({
             </h3>
             <p className="font-body text-text-muted max-w-[320px] text-[14px]">
               New farm roles are posted as employers join. Check back soon — or if you're hiring,{' '}
-              <Link to="/signup?role=employer" className="text-brand underline">
+              <Link to="/signup?role=employer" className="text-brand-hover underline">
                 post the first job free
               </Link>
               .

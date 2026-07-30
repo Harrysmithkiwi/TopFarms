@@ -56,7 +56,10 @@ marketing/video/**/*.wav
 # an already-tracked file — if you add a rule here for something already committed,
 # you must also `git rm --cached` it.
 .tmp-audit/
-docs/design/
+# docs/design is scratch EXCEPT the committed contrast artefact (Phase 4.1) —
+# `docs/design/` (dir form) would make the negation impossible, hence `/*`.
+docs/design/*
+!docs/design/contrast.md
 content/
 .claude/skills/playwright-skill/
 docs/index.docx
