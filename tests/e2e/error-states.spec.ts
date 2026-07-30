@@ -1,0 +1,79 @@
+import { test, expect, type Page } from '@playwright/test'
+import { hasState, statePath, SKIP_NO_CREDS } from './helpers'
+
+// Phase 5.6 — the behavioural gate for "failed is not empty".
+//
+// A source grep proves nothing here. The whole finding is that these screens
+// DO handle the error — they log it and return, leaving the collection empty so
+// the render shows the EMPTY state. The only way to catch that is to abort the
+// request and look at what the user actually sees. Same discipline as Phase 4's
+// A7, where a grep would have missed that the CSS reduced-motion clamp never
+// reached JS animation.
+//
+// Anonymous routes always run. Role-gated routes skip cleanly without E2E_*
+// creds and arm automatically in CI e2e-preview.
+
+/** Fail every Supabase REST read, as a dropped rural connection would. */
+async function killRest(page: Page) {
+  await page.route('**/rest/v1/**', (route) => route.abort('connectionfailed'))
+}
+
+/**
+ * The contract: an alert with a working retry, and NO empty-state copy.
+ * Asserting the absence is the half that matters — a screen can show an error
+ * banner and still render "no results" underneath, which is the bug.
+ */
+async function expectErrorNotEmpty(page: Page, emptyCopy: RegExp, label: string) {
+  const alert = page.getByRole('alert')
+  await expect(alert.first(), `${label}: no error surfaced on a failed fetch`).toBeVisible({
+    timeout: 15_000,
+  })
+  await expect(
+    page.getByRole('button', { name: /try again|retry/i }).first(),
+    `${label}: error has no retry affordance — a dead end`,
+  ).toBeVisible()
+  await expect(
+    page.getByText(emptyCopy),
+    `${label}: rendered the EMPTY state for a FAILED fetch — this is the Phase 5.6 bug`,
+  ).toHaveCount(0)
+}
+
+test.describe('failed is not empty (Phase 5.6)', () => {
+  test('/jobs shows an error with retry, not "No jobs listed right now"', async ({ page }) => {
+    await killRest(page)
+    await page.goto('/jobs')
+    await expectErrorNotEmpty(page, /No jobs listed right now|No jobs match your filters/i, '/jobs')
+  })
+
+  test('/jobs retry re-issues the request', async ({ page }) => {
+    let attempts = 0
+    await page.route('**/rest/v1/jobs**', (route) => {
+      attempts++
+      return route.abort('connectionfailed')
+    })
+    await page.goto('/jobs')
+    await expect(page.getByRole('alert').first()).toBeVisible({ timeout: 15_000 })
+    const before = attempts
+    await page.getByRole('button', { name: /try again|retry/i }).first().click()
+    await expect
+      .poll(() => attempts, { message: 'retry did not re-issue the request' })
+      .toBeGreaterThan(before)
+  })
+})
+
+test.describe('failed is not empty — employer surfaces', () => {
+  test.skip(() => !hasState('employer'), SKIP_NO_CREDS('employer'))
+  test.use({ storageState: hasState('employer') ? statePath('employer') : undefined })
+
+  test('applicant dashboard shows an error, not "No applicants yet"', async ({ page }) => {
+    // Reach the route BEFORE killing REST — we need a real job id to land on.
+    await page.goto('/dashboard/employer')
+    await page.waitForLoadState('networkidle')
+    const link = page.locator('a[href*="/applicants"]').first()
+    test.skip((await link.count()) === 0, 'employer has no listings — route unreachable')
+    const href = (await link.getAttribute('href'))!
+    await killRest(page)
+    await page.goto(href)
+    await expectErrorNotEmpty(page, /No applicants yet/i, 'applicant dashboard')
+  })
+})

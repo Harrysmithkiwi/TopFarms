@@ -14,6 +14,7 @@ import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/hooks/useAuth'
 import { useVerifications } from '@/hooks/useVerifications'
 import type { JobListing, JobStatus } from '@/types/domain'
+import { ErrorState } from '@/components/ui/ErrorState'
 
 const TOTAL_STEPS = 8
 
@@ -58,6 +59,9 @@ export function EmployerDashboard() {
 
   const [jobs, setJobs] = useState<JobListing[]>([])
   const [loadingJobs, setLoadingJobs] = useState(false)
+  // Phase 5.6 — failed is not empty. Without this an employer whose request
+  // dropped is told they have no listings, next to a "post your first job" CTA.
+  const [jobsError, setJobsError] = useState(false)
   const [appCountMap, setAppCountMap] = useState<Map<string, number>>(new Map())
 
   const [activeTab, setActiveTab] = useState<FilterTab>('all')
@@ -110,6 +114,7 @@ export function EmployerDashboard() {
 
     setLoadingJobs(true)
     try {
+      setJobsError(false)
       const { data, error } = await supabase
         .from('jobs')
         .select('*')
@@ -118,6 +123,7 @@ export function EmployerDashboard() {
 
       if (error) {
         console.error('EmployerDashboard: failed to load jobs', error)
+        setJobsError(true)
         return
       }
 
@@ -466,6 +472,8 @@ export function EmployerDashboard() {
                 >
                   Loading listings...
                 </p>
+              ) : jobsError ? (
+                <ErrorState message="We could not load your listings" onRetry={loadJobs} />
               ) : filteredJobs.length === 0 && activeTab === 'all' ? (
                 // Empty state — no jobs at all
                 <Card className="p-10 text-center">

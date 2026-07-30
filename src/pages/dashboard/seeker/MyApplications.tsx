@@ -11,6 +11,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useSavedJobs } from '@/hooks/useSavedJobs'
 import type { Application, ApplicationStatus, MatchScore, JobListing } from '@/types/domain'
 import { ACTIVE_STATUSES, COMPLETED_STATUSES } from '@/types/domain'
+import { ErrorState } from '@/components/ui/ErrorState'
 
 type ApplicationWithJob = Application & {
   jobs: JobListing & { employer_profiles: { farm_name: string; region: string } }
@@ -38,6 +39,9 @@ export function MyApplications() {
   const [applications, setApplications] = useState<ApplicationWithJob[]>([])
   const [scoreMap, setScoreMap] = useState<Map<string, MatchScore>>(new Map())
   const [loading, setLoading] = useState(true)
+  // Phase 5.6 — failed is not empty.
+  const [loadError, setLoadError] = useState(false)
+  const [reloadNonce, setReloadNonce] = useState(0)
   const [sidebarFilter, setSidebarFilter] = useState('all')
   const [sidebarSheetOpen, setSidebarSheetOpen] = useState(false)
   const [savedJobDetails, setSavedJobDetails] = useState<
@@ -47,6 +51,7 @@ export function MyApplications() {
 
   useEffect(() => {
     async function loadData() {
+      setLoadError(false)
       if (!session?.user) {
         setLoading(false)
         return
@@ -59,7 +64,13 @@ export function MyApplications() {
         .eq('user_id', session.user.id)
         .single()
 
-      if (profileError || !profileData) {
+      if (profileError && profileError.code !== 'PGRST116') {
+        console.error('MyApplications: failed to load seeker profile', profileError)
+        setLoadError(true)
+        setLoading(false)
+        return
+      }
+      if (!profileData) {
         setLoading(false)
         return
       }
@@ -75,6 +86,7 @@ export function MyApplications() {
 
       if (error) {
         console.error('MyApplications: failed to load applications', error)
+        setLoadError(true)
         setLoading(false)
         return
       }
@@ -153,7 +165,7 @@ export function MyApplications() {
     }
 
     loadData()
-  }, [session?.user?.id])
+  }, [session?.user?.id, reloadNonce])
 
   async function handleWithdraw(applicationId: string) {
     // Confirmation is handled by ApplicationCard before this fires.
@@ -286,7 +298,14 @@ export function MyApplications() {
           )}
 
           {/* Empty state */}
-          {!loading && applications.length === 0 && (
+          {!loading && loadError && (
+            <ErrorState
+              message="We could not load your applications"
+              onRetry={() => setReloadNonce((n) => n + 1)}
+            />
+          )}
+
+          {!loading && !loadError && applications.length === 0 && (
             <div
               className="rounded-[12px] p-12 text-center bg-surface-2"
             >
@@ -324,7 +343,7 @@ export function MyApplications() {
           )}
 
           {/* Filtered empty state (when filter active but no matches) */}
-          {!loading && applications.length > 0 && filteredApplications.length === 0 && (
+          {!loading && !loadError && applications.length > 0 && filteredApplications.length === 0 && (
             <div
               className="rounded-[12px] p-8 text-center bg-surface-2"
             >

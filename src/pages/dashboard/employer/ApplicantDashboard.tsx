@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { ErrorState } from '@/components/ui/ErrorState'
 import { useParams, useNavigate, useSearchParams, Link } from 'react-router'
 import { toast } from 'sonner'
 import { ArrowLeft, SlidersHorizontal } from 'lucide-react'
@@ -99,6 +100,10 @@ export function ApplicantDashboard() {
   const [scoreMap, setScoreMap] = useState<Map<string, MatchScore>>(new Map())
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  // Phase 5.6: failed is not empty. Without this the render below cannot tell
+  // "nobody applied" from "we could not find out", and shows the former.
+  const [loadError, setLoadError] = useState(false)
+  const [reloadNonce, setReloadNonce] = useState(0)
 
   // Employer jobs for sidebar listing selector
   const [employerJobs, setEmployerJobs] = useState<
@@ -129,6 +134,7 @@ export function ApplicantDashboard() {
 
   useEffect(() => {
     async function loadData() {
+      setLoadError(false)
       if (!session?.user || !activeJobId) {
         setLoading(false)
         return
@@ -141,7 +147,16 @@ export function ApplicantDashboard() {
         .eq('user_id', session.user.id)
         .single()
 
-      if (empError || !empProfile) {
+      // A dropped request is not "this job is not yours". PGRST116 is the
+      // genuine no-row case and keeps the redirect; anything else is a failure
+      // the employer is entitled to see and retry.
+      if (empError && empError.code !== 'PGRST116') {
+        console.error('ApplicantDashboard: failed to load employer profile', empError)
+        setLoadError(true)
+        setLoading(false)
+        return
+      }
+      if (!empProfile) {
         navigate('/dashboard/employer')
         return
       }
@@ -156,7 +171,13 @@ export function ApplicantDashboard() {
         .eq('id', activeJobId)
         .single()
 
-      if (jobError || !jobData) {
+      if (jobError && jobError.code !== 'PGRST116') {
+        console.error('ApplicantDashboard: failed to load job', jobError)
+        setLoadError(true)
+        setLoading(false)
+        return
+      }
+      if (!jobData) {
         navigate('/dashboard/employer')
         return
       }
@@ -199,6 +220,7 @@ export function ApplicantDashboard() {
 
       if (appError) {
         console.error('ApplicantDashboard: failed to load applicants', appError)
+        setLoadError(true)
         setLoading(false)
         return
       }
@@ -308,7 +330,7 @@ export function ApplicantDashboard() {
     }
 
     loadData()
-  }, [session?.user?.id, activeJobId])
+  }, [session?.user?.id, activeJobId, reloadNonce])
 
   function handleJobSelect(newJobId: string) {
     setSearchParams(
@@ -664,19 +686,27 @@ export function ApplicantDashboard() {
               </div>
             )}
 
-            {/* Empty state */}
-            {!loading && applicants.length === 0 && (
-              <div
-                className="rounded-[12px] p-12 text-center"
-                style={{ backgroundColor: 'var(--color-surface-2)' }}
-              >
+            {/* Failed — must be checked BEFORE empty. This employer paid to list
+                the job; telling them nobody applied when the request failed is
+                the worst thing this screen can do. */}
+            {!loading && loadError && (
+              <ErrorState
+                message="We could not load your applicants"
+                onRetry={() => setReloadNonce((n) => n + 1)}
+                className="bg-surface-2 rounded-[12px]"
+              />
+            )}
+
+            {/* Empty — verified zero, not unknown */}
+            {!loading && !loadError && applicants.length === 0 && (
+              <div className="bg-surface-2 rounded-[12px] p-12 text-center">
                 <p className="font-body mb-1 text-base font-semibold">No applicants yet.</p>
                 <p className="text-text-muted text-sm">Share your listing to attract candidates.</p>
               </div>
             )}
 
             {/* No results after filter */}
-            {!loading && applicants.length > 0 && filteredApplicants.length === 0 && (
+            {!loading && !loadError && applicants.length > 0 && filteredApplicants.length === 0 && (
               <div
                 className="rounded-[12px] p-8 text-center"
                 style={{ backgroundColor: 'var(--color-surface-2)' }}
