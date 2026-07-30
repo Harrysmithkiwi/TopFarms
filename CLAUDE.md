@@ -72,6 +72,27 @@ A requirement may have multiple gaps (e.g., deploy gap + runtime/secret gap + E2
 
 **Precedent:** Phase 15 closeout (2026-05-01). The 4 Edge Functions were deployed (deploy gap closed, MAIL-02 trigger 404 fixed) but `RESEND_API_KEY` was never set in prod secrets — emails silently skip, no E2E proof. Flipping MAIL-02 to `[x]` would have made REQUIREMENTS.md lie. Kept as `[ ]` with partial-close note; carryforward added to `.planning/v2.0-MILESTONE-AUDIT.md`.
 
+## 9. Verification discipline
+
+Six errors in one session, 2026-07-30, all the same failure: **an assertion made without
+verification** — several compounded by piping away the evidence that would have exposed it.
+
+What caught them was `tsc -b`, a grep gate, a test run. What caught none of them was re-reading
+my own work. **Care is not a control. Gates are.** So the rules are mechanical, not attentive:
+
+1. **Stage explicit paths.** Never `git add -A`; read `git status` before you commit.
+2. **Never discard an exit code.** If output is piped or suppressed, check `$?`.
+3. **Verify before destroying.** Delete, revoke, drop, overwrite — check first, even when a
+   document or a subagent says it is safe.
+4. **Read the real schema before writing SQL against it.** Signatures and columns come from
+   `pg_catalog`, never from memory.
+5. **Label provenance.** "An agent reported X" is not "I verified X". A finding carries
+   `file:line` or command output, or it is marked unverified.
+6. **The gate defines done.** A phase is complete when its gate command produces the stated
+   output — not when its tasks are ticked.
+7. **Correct yourself out loud.** A false finding costs more than no finding; when an earlier
+   claim proves wrong, say so and downgrade it.
+
 ## 8. Git Safety Incidents
 
 Log entries here when an agent or session violates the git safety rules in §4. Each entry: date, what was destroyed, recovery path, prevention rule that was added.

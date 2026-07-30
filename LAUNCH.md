@@ -4,6 +4,38 @@ Source of truth for launch readiness. An item is ticked ONLY when fixed **and** 
 
 **Score: 62/100 → 93/100 (verified on production 2026-07-23; hardening batch PRs #48–#49 + migrations 059/060).**
 
+> ### ⚠️ SUPERSEDED 2026-07-30 — read this before trusting the 93 above
+>
+> An adversarial four-domain audit at commit `8f5b860` scored TopFarms **53/100**
+> (Security 55 · Architecture 52 · Product 47 · Design 57) — see
+> **`docs/AUDIT-PRELAUNCH-2026-07-30.md`**.
+>
+> **This is not a contradiction.** The 93 is an accurate score of *this checklist* — every
+> item below was genuinely closed and evidenced. What it never asked was whether
+> authorization and revenue enforcement hold up against a hostile user. They do not:
+>
+> - The CV releases the phone/email the placement fee exists to sell — no fee predicate on
+>   `seeker_documents`, and the CV is the **default** tab.
+> - Two Edge Functions read/write across tenants with the service-role key and **zero**
+>   caller check (incl. `visa_status`).
+> - Placement fee `amount_nzd` is computed in the browser and trusted server-side.
+> - "First listing free" resets when a job is deleted.
+> - Any user can `set_user_role('employer')` and read every open-to-work seeker.
+> - The "verified employer" badge is self-service.
+> - **Production runs Stripe TEST keys** — `listing_fees` and `placement_fees` are both 0
+>   rows; the revenue path has never executed.
+>
+> **Do not launch against the 93.** The uplift programme to ≥90 across all four domains is
+> `docs/UPLIFT-ROADMAP-2026-07-30.md` (8 phases, ~150 h). Live Stripe keys are deliberately
+> the *last* step (Phase 7), after every revenue fix is proved in test mode.
+>
+> **Phase 0 (foundations) — COMPLETE 2026-07-30**, PRs #68–#72, `main` green at `c23e205`,
+> 484 → 527 tests. Delivered: last fabricated stats removed (verified absent from the built
+> bundle); UEMA unsubscribe compliance across all three outreach surfaces; migration ledger
+> reconciled 45 → 67 rows with a CI drift guard; error boundary so crashes stop rendering as
+> 404s; Stripe test harness + first automated webhook coverage; token/hygiene fixes.
+> Carry-forward is tracked in the roadmap, not here.
+
 ## 🔴 Launch blockers (engineering-owned) — ALL CLOSED
 
 - [x] **B1. Privacy Policy page** (TF-001) — `/privacy` live, NZ Privacy Act 2020 draft content. _Flag O1: legal review._ ✔ prod title "Privacy Policy — TopFarms".
