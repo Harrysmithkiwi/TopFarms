@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { FileText } from 'lucide-react'
+import { FileText, Lock } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useApplicantDocumentUrl } from '@/hooks/useApplicantDocumentUrl'
 import { EMPLOYER_VISIBLE_DOCUMENT_TYPES, DOCUMENT_TYPE_LABELS } from '@/types/domain'
@@ -10,6 +10,8 @@ import { cn } from '@/lib/utils'
 interface ApplicantDocumentsProps {
   applicationId: string
   seekerId: string
+  /** Phase 2 Option C: CV is paywalled until the placement fee is acknowledged. */
+  cvUnlocked: boolean
 }
 
 // Inline rather than extracting to a util — formatBytes/formatDate already
@@ -49,7 +51,7 @@ const SECTIONS: Array<{ type: DocumentType; title: string }> = [
  *   - The bucketing loop ALSO checks EMPLOYER_VISIBLE_DOCUMENT_TYPES.includes
  *     in case a future code change drops the query filter.
  */
-export function ApplicantDocuments({ applicationId, seekerId }: ApplicantDocumentsProps) {
+export function ApplicantDocuments({ applicationId, seekerId, cvUnlocked }: ApplicantDocumentsProps) {
   const [docs, setDocs] = useState<SeekerDocument[]>([])
   const [loading, setLoading] = useState(true)
   const [errorState, setErrorState] = useState<string | null>(null)
@@ -146,6 +148,26 @@ export function ApplicantDocuments({ applicationId, seekerId }: ApplicantDocumen
 
   const totalVisibleDocs = SECTIONS.reduce((sum, s) => sum + buckets[s.type].length, 0)
 
+  // Phase 2 Option C: pre-acknowledgment the RLS policy hides CV rows entirely,
+  // so render a locked placeholder that names what unlocks it and when.
+  const lockedCvNote = !cvUnlocked && (
+    <div>
+      <p
+        className="font-body mb-1.5 text-[12px] font-semibold"
+        style={{ color: 'var(--color-text-muted)' }}
+      >
+        {DOCUMENT_TYPE_LABELS.cv}
+      </p>
+      <div className="border-border bg-surface-2 flex items-center gap-3 rounded-md border border-dashed p-2">
+        <Lock className="text-text-subtle h-4 w-4 flex-shrink-0" />
+        <p className="font-body text-text-subtle text-[12px]">
+          The CV unlocks when you shortlist this candidate (placement fee applies). Their
+          profile, match breakdown and AI summary are available now.
+        </p>
+      </div>
+    </div>
+  )
+
   if (totalVisibleDocs === 0) {
     return (
       <div>
@@ -155,9 +177,11 @@ export function ApplicantDocuments({ applicationId, seekerId }: ApplicantDocumen
         >
           Documents
         </p>
-        <p className="font-body text-[12px] italic" style={{ color: 'var(--color-text-muted)' }}>
-          No documents uploaded by this applicant
-        </p>
+        {lockedCvNote || (
+          <p className="font-body text-[12px] italic" style={{ color: 'var(--color-text-muted)' }}>
+            No documents uploaded by this applicant
+          </p>
+        )}
       </div>
     )
   }
@@ -171,6 +195,7 @@ export function ApplicantDocuments({ applicationId, seekerId }: ApplicantDocumen
         Documents
       </p>
       <div className="space-y-3">
+        {lockedCvNote}
         {SECTIONS.map(({ type, title }) => {
           const sectionDocs = buckets[type]
           if (sectionDocs.length === 0) return null

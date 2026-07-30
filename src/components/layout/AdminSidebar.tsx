@@ -7,6 +7,7 @@ import {
   Users,
   Briefcase,
   DollarSign,
+  Receipt,
   FileText,
   BarChart2,
   TrendingUp,
@@ -53,6 +54,7 @@ const navGroups: NavGroup[] = [
     items: [
       { to: '/admin/jobs', label: 'Jobs', icon: Briefcase },
       { to: '/admin/placements', label: 'Placement Pipeline', icon: DollarSign },
+      { to: '/admin/revenue', label: 'Revenue', icon: Receipt },
     ],
   },
   {

@@ -65,8 +65,12 @@ describe('idempotency — a replayed event must not double-write', () => {
     expect(source).toMatch(/if\s*\(existingFee\)/)
   })
 
-  it('dedupes placement fees on the natural key stripe_invoice_id', () => {
-    expect(source).toMatch(/stripe_invoice_id/)
+  it('dedupes placement-fee payment events on paid_at, not stripe_invoice_id', () => {
+    // Phase 2: create-placement-invoice writes stripe_invoice_id at CREATION, so an
+    // id-equality "duplicate" guard fires on the FIRST real payment event. paid_at
+    // is the natural key for "this payment was already processed".
+    expect(source).toMatch(/existingPf\.paid_at/)
+    expect(source).not.toMatch(/existingPf\.stripe_invoice_id === invoice\.id/)
   })
 
   it('checks for the existing row before inserting', () => {
@@ -78,9 +82,18 @@ describe('idempotency — a replayed event must not double-write', () => {
 })
 
 describe('event handling', () => {
-  it('handles the two events the revenue model depends on', () => {
+  it('handles the events the revenue model depends on', () => {
     expect(source).toMatch(/event\.type === 'payment_intent\.succeeded'/)
     expect(source).toMatch(/event\.type === 'invoice\.payment_succeeded'/)
+    // Phase 2 Task 2.4 — failure lifecycle, so an aged-debtors list can distinguish
+    // "failed" and "written off" from "still owed".
+    expect(source).toMatch(/invoice\.payment_failed/)
+    expect(source).toMatch(/invoice\.marked_uncollectible/)
+  })
+
+  it('records paid_at on invoice.payment_succeeded (Task 2.4)', () => {
+    expect(source).toMatch(/paid_at: new Date\(\)\.toISOString\(\)/)
+    expect(source).toMatch(/stripe_invoice_status: 'paid'/)
   })
 
   it('does not retry-loop on unprocessable metadata', () => {

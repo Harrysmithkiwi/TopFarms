@@ -369,15 +369,14 @@ export function ApplicantDashboard() {
   async function handlePlacementFeeConfirm() {
     if (!pendingShortlistApp || !session?.user || !empProfileId || !activeJobId) return
 
+    // Display-only calculation — the server derives the real fee from the job row
+    // (Phase 2 Task 2.1) and logs a warning if these disagree.
     const feeCalc = calculatePlacementFee(jobSalaryMin, jobSalaryMax, jobTitle)
 
     // Call Edge Function to write placement_fees row via service role
     const { error: fnError } = await supabase.functions.invoke('acknowledge-placement-fee', {
       body: {
         application_id: pendingShortlistApp.id,
-        job_id: activeJobId,
-        employer_id: empProfileId,
-        seeker_id: pendingShortlistApp.seeker_profiles.id,
         fee_tier: feeCalc.tier,
         amount_nzd: feeCalc.amount,
       },
@@ -428,26 +427,17 @@ export function ApplicantDashboard() {
   async function handleHireConfirm(rating: number | null) {
     if (!pendingHireApp || !session?.user || !empProfileId || !activeJobId) return
 
+    // Display-only calculation — the server derives the fee from the acknowledged
+    // snapshot (or the job row) and all context (emails, names) from its own tables.
     const feeCalc = calculatePlacementFee(jobSalaryMin, jobSalaryMax, jobTitle)
-
-    // Resolve seeker email — prefer contactsMap, fall back to null
-    const seekerUserIdForContact = pendingHireApp.seeker_profiles?.user_id
-    const seekerContact = seekerUserIdForContact ? contactsMap.get(seekerUserIdForContact) : null
 
     // Call Edge Function to create Stripe Invoice + send seeker hire notification email
     const { error } = await supabase.functions.invoke('create-placement-invoice', {
       body: {
         application_id: pendingHireApp.id,
-        job_id: activeJobId,
-        employer_id: empProfileId,
-        employer_email: session.user.email,
-        farm_name: farmName,
-        job_title: jobTitle,
         fee_tier: feeCalc.tier,
         amount_nzd: feeCalc.amount,
         rating,
-        seeker_email: seekerContact?.email ?? null,
-        seeker_name: null,
       },
     })
 

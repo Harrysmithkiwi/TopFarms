@@ -456,6 +456,12 @@ export interface PlacementFeeRecord {
   fee_tier: PlacementFeeTier | null
   stripe_invoice_id: string | null
   rating: number | null
+  // Phase 2 collectibility columns (migration 068)
+  paid_at: string | null
+  stripe_invoice_status: 'open' | 'paid' | 'payment_failed' | 'uncollectible' | null
+  discount_pct: number
+  waived_reason: string | null
+  placement_id: string | null
 }
 
 export interface SeekerContact {
@@ -467,6 +473,11 @@ export interface SeekerContact {
  * Calculate placement fee tier from job salary range + title keywords.
  * Salary-based primary: <$55k = entry ($200), $55k-$80k = experienced ($400), $80k+ = senior ($800).
  * Title keywords ('manager', 'head', 'senior', 'supervisor') bump UP but never down.
+ *
+ * DISPLAY ONLY (Phase 2 Task 2.1). The server derives the enforceable fee in
+ * supabase/functions/_shared/pricing.ts from the job row; values posted from the
+ * client are compared for tamper detection, then ignored. Keep the two algorithms
+ * in lockstep — tests/pricing-parity.test.ts guards the drift.
  */
 export function calculatePlacementFee(
   salaryMin: number | null,
