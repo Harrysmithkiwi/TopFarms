@@ -16,6 +16,9 @@ interface MyApplicationsSidebarProps {
   savedJobs: SavedJob[]
   profileStrength: number // 0-100
   onRemoveSavedJob: (jobId: string) => void
+  // Phase 4.2: rendered twice — desktop rail (hidden md:block) and inside the
+  // mobile bottom sheet (w-full), same as FilterSidebar in JobSearch.
+  className?: string
 }
 
 const FILTER_TABS = [
@@ -33,9 +36,10 @@ export function MyApplicationsSidebar({
   savedJobs,
   profileStrength,
   onRemoveSavedJob,
+  className,
 }: MyApplicationsSidebarProps) {
   return (
-    <aside className="w-[260px] flex-shrink-0 space-y-4">
+    <aside className={cn('w-[260px] flex-shrink-0 space-y-4', className)}>
       {/* Status Summary */}
       <div className="bg-surface border-border rounded-[12px] border p-4">
         <h3 className="font-body text-text mb-3 text-[13px] font-semibold">Application Status</h3>

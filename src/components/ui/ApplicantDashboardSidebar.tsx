@@ -12,6 +12,9 @@ interface ApplicantDashboardSidebarProps {
   selectedJobId: string
   onJobSelect: (jobId: string) => void
   stats: { applied: number; shortlisted: number; hired: number }
+  // Phase 4.2: the page renders this twice — desktop rail (hidden md:block)
+  // and inside the mobile bottom sheet (w-full), same as FilterSidebar.
+  className?: string
 }
 
 export function ApplicantDashboardSidebar({
@@ -20,9 +23,10 @@ export function ApplicantDashboardSidebar({
   selectedJobId,
   onJobSelect,
   stats,
+  className,
 }: ApplicantDashboardSidebarProps) {
   return (
-    <aside className={cn('w-[260px] flex-shrink-0 space-y-4')}>
+    <aside className={cn('w-[260px] flex-shrink-0 space-y-4', className)}>
       {/* Farm header */}
       <div className="overflow-hidden rounded-[12px]">
         <div className="bg-brand-900 px-4 py-3 text-white">

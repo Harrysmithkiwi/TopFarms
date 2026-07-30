@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate, useSearchParams, Link } from 'react-router'
 import { toast } from 'sonner'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, SlidersHorizontal } from 'lucide-react'
+import * as Dialog from '@radix-ui/react-dialog'
 import { cn } from '@/lib/utils'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { ApplicantPanel } from '@/components/ui/ApplicantPanel'
@@ -108,6 +109,7 @@ export function ApplicantDashboard() {
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<'newest' | 'match'>('newest')
+  const [sidebarSheetOpen, setSidebarSheetOpen] = useState(false)
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list')
 
   // Bulk actions state
@@ -532,10 +534,47 @@ export function ApplicantDashboard() {
           </div>
         </div>
 
+        {/* Mobile: listing selector + stats live in a bottom sheet (Phase 4.2,
+            same pattern as JobSearch's FilterSidebar drawer) */}
+        <div className="mb-4 md:hidden">
+          <Dialog.Root open={sidebarSheetOpen} onOpenChange={setSidebarSheetOpen}>
+            <Dialog.Trigger asChild>
+              <button
+                type="button"
+                className="border-border bg-surface font-body text-text-muted hover:border-border-strong flex min-h-11 items-center gap-2 rounded-[8px] border px-3 py-2 text-[13px] transition-colors"
+              >
+                <SlidersHorizontal className="h-4 w-4" />
+                Listing &amp; stats
+              </button>
+            </Dialog.Trigger>
+            <Dialog.Portal>
+              <Dialog.Overlay className="fixed inset-0 z-40 bg-black/40" />
+              <Dialog.Content
+                className="bg-surface fixed right-0 bottom-0 left-0 z-50 max-h-[85vh] overflow-y-auto rounded-t-[16px] p-4"
+                aria-describedby={undefined}
+              >
+                <Dialog.Title className="sr-only">Listing and stats</Dialog.Title>
+                <ApplicantDashboardSidebar
+                  className="w-full"
+                  farmName={farmName}
+                  jobs={employerJobs}
+                  selectedJobId={activeJobId}
+                  onJobSelect={(jobId) => {
+                    setSidebarSheetOpen(false)
+                    handleJobSelect(jobId)
+                  }}
+                  stats={dashboardStats}
+                />
+              </Dialog.Content>
+            </Dialog.Portal>
+          </Dialog.Root>
+        </div>
+
         {/* Main layout: sidebar + content */}
         <div className="flex gap-6">
-          {/* 260px sidebar */}
+          {/* 260px sidebar — desktop only; mobile uses the sheet above */}
           <ApplicantDashboardSidebar
+            className="hidden md:block"
             farmName={farmName}
             jobs={employerJobs}
             selectedJobId={activeJobId}

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { toast } from 'sonner'
+import { SlidersHorizontal } from 'lucide-react'
+import * as Dialog from '@radix-ui/react-dialog'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { ApplicationCard } from '@/components/ui/ApplicationCard'
 import { MyApplicationsSidebar } from '@/components/ui/MyApplicationsSidebar'
@@ -37,6 +39,7 @@ export function MyApplications() {
   const [scoreMap, setScoreMap] = useState<Map<string, MatchScore>>(new Map())
   const [loading, setLoading] = useState(true)
   const [sidebarFilter, setSidebarFilter] = useState('all')
+  const [sidebarSheetOpen, setSidebarSheetOpen] = useState(false)
   const [savedJobDetails, setSavedJobDetails] = useState<
     { job_id: string; title: string; farm_name: string }[]
   >([])
@@ -232,6 +235,47 @@ export function MyApplications() {
                 {applications.length}
               </span>
             )}
+
+            {/* Mobile: status filters + saved jobs live in a bottom sheet
+                (Phase 4.2, same pattern as JobSearch's filter drawer) */}
+            <div className="ml-auto md:hidden">
+              <Dialog.Root open={sidebarSheetOpen} onOpenChange={setSidebarSheetOpen}>
+                <Dialog.Trigger asChild>
+                  <button
+                    type="button"
+                    className="border-border bg-surface font-body text-text-muted hover:border-border-strong flex min-h-11 items-center gap-2 rounded-[8px] border px-3 py-2 text-[13px] transition-colors"
+                  >
+                    <SlidersHorizontal className="h-4 w-4" />
+                    Filters &amp; saved
+                  </button>
+                </Dialog.Trigger>
+                <Dialog.Portal>
+                  <Dialog.Overlay className="fixed inset-0 z-40 bg-black/40" />
+                  <Dialog.Content
+                    className="bg-surface fixed right-0 bottom-0 left-0 z-50 max-h-[85vh] overflow-y-auto rounded-t-[16px] p-4"
+                    aria-describedby={undefined}
+                  >
+                    <Dialog.Title className="sr-only">Filters and saved jobs</Dialog.Title>
+                    <MyApplicationsSidebar
+                      className="w-full"
+                      statusCounts={statusCounts}
+                      totalCount={applications.length}
+                      activeFilter={sidebarFilter}
+                      onFilterChange={(filter) => {
+                        setSidebarSheetOpen(false)
+                        setSidebarFilter(filter)
+                      }}
+                      savedJobs={savedJobDetails}
+                      profileStrength={profileStrength}
+                      onRemoveSavedJob={(jobId) => {
+                        toggleSave(jobId)
+                        setSavedJobDetails((prev) => prev.filter((sj) => sj.job_id !== jobId))
+                      }}
+                    />
+                  </Dialog.Content>
+                </Dialog.Portal>
+              </Dialog.Root>
+            </div>
           </div>
 
           {/* Loading state */}
@@ -296,8 +340,9 @@ export function MyApplications() {
           )}
         </div>
 
-        {/* Sidebar */}
+        {/* Sidebar — desktop only; mobile uses the bottom sheet (Phase 4.2) */}
         <MyApplicationsSidebar
+          className="hidden md:block"
           statusCounts={statusCounts}
           totalCount={applications.length}
           activeFilter={sidebarFilter}
