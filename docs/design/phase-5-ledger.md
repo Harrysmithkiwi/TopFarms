@@ -1,6 +1,6 @@
 # Phase 5 — inline-style migration ledger
 
-Generated Stage 1, before any migration, at commit `1516729`.
+Generated Stage 1, before any migration, at commit `80acf03`.
 The planning artefact for Task 5.1: what has to move, in what order, and which
 files sit on a route the Phase 4 axe gate already watches.
 
