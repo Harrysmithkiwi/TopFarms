@@ -68,32 +68,28 @@ export function JobStep8Success({ jobId }: JobStep8SuccessProps) {
         )}
       </div>
 
-      {/* Stats grid */}
-      <div className="grid w-full max-w-md grid-cols-3 gap-4">
-        <div className="border-border bg-surface-2 rounded-[10px] border p-4 text-center">
-          <p className="font-body text-2xl font-semibold" style={{ color: 'var(--color-brand)' }}>
-            3
-          </p>
-          <p className="font-body mt-1 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
-            avg days to first applicant
-          </p>
-        </div>
-        <div className="border-border bg-surface-2 rounded-[10px] border p-4 text-center">
-          <p className="font-body text-2xl font-semibold" style={{ color: 'var(--color-brand)' }}>
-            120+
-          </p>
-          <p className="font-body mt-1 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
-            seekers in match pool
-          </p>
-        </div>
-        <div className="border-border bg-surface-2 rounded-[10px] border p-4 text-center">
-          <p className="font-body text-2xl font-semibold" style={{ color: 'var(--color-brand)' }}>
-            85%
-          </p>
-          <p className="font-body mt-1 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
-            actively looking
-          </p>
-        </div>
+      {/* Truth pass 2026-07-30 (audit P0-10): a hardcoded stats grid lived here —
+          "3 avg days to first applicant", "120+ seekers in match pool", "85%
+          actively looking" — shown to an employer immediately after publishing
+          (and paying), against a database holding 3 seekers and 0 jobs. All three
+          were fabricated. The 2026-07-08 truth pass caught TestimonialsSection and
+          TrustedByStrip but missed this block.
+          Do NOT reintroduce numbers here unless they are read from a live source
+          (see CountersSection, which uses the real get_platform_stats RPC). */}
+
+      {/* What happens next — process, not statistics. */}
+      <div className="border-border bg-surface-2 w-full max-w-md rounded-[10px] border p-4 text-left">
+        <p className="font-body text-[13px] font-semibold" style={{ color: 'var(--color-text)' }}>
+          What happens next
+        </p>
+        <ul
+          className="font-body mt-2 space-y-1.5 text-[13px]"
+          style={{ color: 'var(--color-text-muted)' }}
+        >
+          <li>Your listing is live and searchable now.</li>
+          <li>We score every applicant against what this role actually needs.</li>
+          <li>You&rsquo;ll get an email when someone applies.</li>
+        </ul>
       </div>
 
       {/* Actions */}
