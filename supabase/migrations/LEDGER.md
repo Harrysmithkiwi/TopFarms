@@ -9,7 +9,7 @@ connector (pooler auth is blocked — see `README.md`), and neither writes
 holding 45 rows against 64 files. This manifest is the repo-side record that CI can enforce; the
 database ledger is the runtime record.
 
-**Reconciled 2026-07-30 (post-Phase-3):** 71 files · 73 ledger rows · 2 documented duplicates. Balanced.
+**Reconciled 2026-07-30 (post-Phase-3):** 75 files · 78 ledger rows · 3 documented duplicates. Balanced.
 
 | File | Ledger version | Notes |
 |---|---|---|
@@ -87,6 +87,10 @@ database ledger is the runtime record.
 | 072_match_scoring_v2 | `20260730055440` | Phase 3 — sector-aware normalisation, recency removed, CHECK + algorithm_version; connector-applied |
 | 073_verification_trust | `20260730060339` | Phase 3 — employer self-verification closed + admin queue RPCs + document-view audit; connector-applied |
 | 074_fix_verification_queue_jsonb | `20260730060952` | Phase 3 — row_to_jsonb→to_jsonb in 073's queue RPC (same defect 058 fixed in 033); connector-applied |
+| 075_privacy_retention | `20260730063159` | Phase 3 — lead retention windows, identity-doc purge, admin_delete_account; connector-applied |
+| 076_storage_purge_via_api | `20260730063416` | Phase 3 — 075's SQL storage deletes were inert (storage.protect_delete); split to Edge Fn + ordering guard. Also carries `list_user_storage_objects` (`20260730063632`) |
+| 077_seeker_contacts_truth | `20260730064300` | Phase 3 — the paywalled table was empty for 3 of 4 seekers; trigger + backfill + first/last name; connector-applied |
+| 078_audit_log_outlives_the_actor | `20260730065000` | Phase 3 — admin_id was NOT NULL + ON DELETE SET NULL, so no admin could ever be deleted; FK dropped |
 
 ## Ledger rows with no dedicated file (documented duplicates)
 
@@ -96,6 +100,7 @@ are not missing migrations. Verified 2026-07-30 by comparing the live function a
 | Ledger version | Name | Content lives in | Verification |
 |---|---|---|---|
 | `20260722232729` | `fix_get_applicants_for_job_joins` | `058_fix_admin_profile_doc_queue_applicants.sql:6-45` | live `get_applicants_for_job` carries `LEFT(a.id::text, 8)` + `v_employer_user_id`, matching 058 |
+| `20260730063632` | `list_user_storage_objects` | `076_storage_purge_via_api.sql` §4 | applied as a separate connector call while probing admin-purge, then folded into 076 on disk |
 | `20260729095445` | `leads_list_expose_draft` | `064_lane_a_outreach_worklist.sql` (`admin_leads_list`) | live function exposes `drafted_email/draft_model/contacted_at`, has `follow_up_date`, orders by `status_changed_at DESC` — matching 064 |
 
 This corrects audit finding **P0-8**, which claimed production schema existed outside version
