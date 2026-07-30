@@ -38,7 +38,8 @@ export function Nav() {
   const navLinkClass = (isActive: boolean) =>
     [
       'text-xs font-semibold px-3 py-1.5 rounded-full transition-all',
-      isActive ? 'text-white bg-surface/8' : 'text-white/50 hover:text-white/80',
+      // white/50 on brand-900 was 3.84:1 (axe serious, Phase 4.6); /70 clears 4.5
+      isActive ? 'text-white bg-surface/8' : 'text-white/70 hover:text-white',
     ].join(' ')
 
   return (
@@ -140,7 +141,8 @@ export function Nav() {
                 to="/signup"
                 className="rounded-lg px-4 py-1.5 text-sm font-semibold transition-colors"
                 style={{
-                  backgroundColor: 'var(--color-brand)',
+                  // white on brand was 3.30:1 (axe serious, Phase 4.6)
+                  backgroundColor: 'var(--color-brand-hover)',
                   color: 'var(--color-surface)',
                 }}
               >

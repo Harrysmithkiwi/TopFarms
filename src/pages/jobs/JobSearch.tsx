@@ -763,6 +763,7 @@ function ResultsArea({
           <span className="font-body text-text-subtle text-[12px]">Sort:</span>
           <select
             value={sortParam}
+            aria-label="Sort results"
             onChange={(e) => onSortChange(e.target.value)}
             className="font-body text-text border-border bg-surface focus:border-brand cursor-pointer rounded-[6px] border px-2 py-1 text-[12px]"
           >

@@ -18,6 +18,8 @@ interface SelectProps {
   disabled?: boolean
   className?: string
   id?: string
+  /** Accessible name for label-less selects (axe button-name, Phase 4.6). */
+  ariaLabel?: string
 }
 
 export function Select({
@@ -30,6 +32,7 @@ export function Select({
   disabled,
   className,
   id,
+  ariaLabel,
 }: SelectProps) {
   const selectId = id || (label ? `select-${label.toLowerCase().replace(/\s+/g, '-')}` : undefined)
 
@@ -46,6 +49,7 @@ export function Select({
       <SelectPrimitive.Root value={value} onValueChange={onValueChange} disabled={disabled}>
         <SelectPrimitive.Trigger
           id={selectId}
+          aria-label={ariaLabel}
           className={cn(
             'flex w-full items-center justify-between',
             'font-body bg-surface-2 min-h-[44px] rounded-[8px] border-[1.5px] px-3 py-2 text-[15px]',

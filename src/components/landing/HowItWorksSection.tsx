@@ -171,11 +171,14 @@ export function HowItWorksSection() {
                   border: '1px solid var(--color-border)',
                 }}
               >
-                {/* Faded step number — decorative watermark, hidden from a11y tree (TF-020) */}
+                {/* Faded step number — decorative watermark, hidden from a11y tree (TF-020).
+                    data-decorative marks it for the axe exclusion in tests/e2e/a11y.spec.ts:
+                    WCAG 1.4.3 exempts purely decorative text, which axe cannot infer. */}
                 <p
                   className="font-display mb-4 text-6xl leading-none font-bold select-none"
                   style={{ color: 'var(--color-border)' }}
                   aria-hidden="true"
+                  data-decorative="watermark"
                 >
                   {String(step.number).padStart(2, '0')}
                 </p>

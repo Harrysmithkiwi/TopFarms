@@ -26,8 +26,9 @@ export function FinalCTASection() {
             to="/signup?role=seeker"
             className="inline-flex items-center justify-center rounded-full px-8 py-3 font-semibold transition-opacity hover:opacity-90"
             style={{
-              backgroundColor: 'var(--color-brand)',
-              color: 'var(--color-brand-900)',
+              // brand-900 on brand was 3.33:1 (axe serious, Phase 4.6)
+              backgroundColor: 'var(--color-brand-hover)',
+              color: 'var(--color-text-on-brand)',
             }}
           >
             Find Farm Work

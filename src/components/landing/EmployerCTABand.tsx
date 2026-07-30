@@ -62,8 +62,9 @@ export function EmployerCTABand() {
                 to="/signup?role=employer"
                 className="inline-block rounded-full px-8 py-3 font-semibold transition-opacity hover:opacity-90"
                 style={{
-                  backgroundColor: 'var(--color-brand)',
-                  color: 'var(--color-brand-900)',
+                  // brand-900 on brand was 3.33:1 (axe serious, Phase 4.6)
+                  backgroundColor: 'var(--color-brand-hover)',
+                  color: 'var(--color-text-on-brand)',
                 }}
               >
                 Post Your First Job
@@ -71,7 +72,7 @@ export function EmployerCTABand() {
               <Link
                 to="/for-employers"
                 className="inline-block text-sm font-semibold transition-opacity hover:opacity-80"
-                style={{ color: 'var(--color-brand)' }}
+                style={{ color: 'var(--color-brand-300)' }}
               >
                 Learn more →
               </Link>
@@ -153,7 +154,7 @@ export function EmployerCTABand() {
                     className="rounded-full px-2 py-1 text-xs font-bold"
                     style={{
                       backgroundColor: 'rgba(122,175,63,0.12)',
-                      color: 'var(--color-brand)',
+                      color: 'var(--color-success-text-on-bg)',
                     }}
                   >
                     {applicant.score}%

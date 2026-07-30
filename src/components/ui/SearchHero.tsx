@@ -73,6 +73,7 @@ export function SearchHero({
           />
           <Select
             placeholder="All Regions"
+            ariaLabel="Filter by region"
             options={NZ_REGIONS}
             value={region}
             onValueChange={setRegion}

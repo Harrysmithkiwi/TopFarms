@@ -34,10 +34,14 @@ export function ApplicantDashboardSidebar({
         </div>
         {/* Listing selector */}
         <div className="bg-surface border-border rounded-b-[12px] border border-t-0 p-3">
-          <label className="font-body text-text-subtle mb-1.5 block text-[11px] font-semibold tracking-wide uppercase">
+          <label
+            htmlFor="applicant-dashboard-listing"
+            className="font-body text-text-subtle mb-1.5 block text-[11px] font-semibold tracking-wide uppercase"
+          >
             Listing
           </label>
           <select
+            id="applicant-dashboard-listing"
             value={selectedJobId}
             onChange={(e) => onJobSelect(e.target.value)}
             className="font-body text-text border-border bg-surface focus:border-brand w-full cursor-pointer rounded-[6px] border px-2 py-1.5 text-[13px]"

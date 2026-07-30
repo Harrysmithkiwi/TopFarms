@@ -123,7 +123,7 @@ export function TestimonialsSection() {
                     className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
                     style={{
                       backgroundColor: 'rgba(122,175,63,0.15)',
-                      color: 'var(--color-brand)',
+                      color: 'var(--color-success-text-on-bg)',
                     }}
                   >
                     Verified

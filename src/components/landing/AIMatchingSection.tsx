@@ -136,7 +136,7 @@ export function AIMatchingSection() {
                     className="rounded-full px-2 py-1 text-xs font-bold"
                     style={{
                       backgroundColor: 'rgba(122,175,63,0.12)',
-                      color: 'var(--color-brand)',
+                      color: 'var(--color-success-text-on-bg)',
                     }}
                   >
                     {match.score}% match

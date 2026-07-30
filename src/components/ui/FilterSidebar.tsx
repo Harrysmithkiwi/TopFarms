@@ -337,6 +337,7 @@ export function FilterSidebar({
           <p className="font-body text-text-subtle mb-2 text-[11px]">Show jobs you qualify for</p>
           <Select
             placeholder="Any level"
+            ariaLabel="DairyNZ level"
             options={[
               { value: 'all', label: 'Any level' },
               ...DAIRYNZ_LEVELS.map((l) => ({ value: l.value, label: l.label })),

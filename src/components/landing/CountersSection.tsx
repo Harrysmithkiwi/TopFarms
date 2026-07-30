@@ -70,7 +70,8 @@ export function CountersSection() {
             style={{
               borderColor: 'rgba(122,175,63,0.3)',
               backgroundColor: 'rgba(122,175,63,0.08)',
-              color: 'var(--color-brand)',
+              // brand on brand-900 was 3.33:1 — brand-300 is the on-dark green
+              color: 'var(--color-brand-300)',
             }}
           >
             <span
