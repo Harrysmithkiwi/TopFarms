@@ -107,8 +107,7 @@ export function JobStep7Payment({ jobId, employerId, onComplete, onBack }: JobSt
           Your job is being activated. Redirecting to success screen...
         </p>
         <div
-          className="h-5 w-5 animate-spin rounded-full border-[2px] border-t-transparent"
-          style={{ borderColor: 'var(--color-brand-hover)', borderTopColor: 'transparent' }}
+          className="h-5 w-5 animate-spin rounded-full border-[2px] border-brand-hover border-t-transparent"
         />
       </div>
     )
@@ -131,15 +130,15 @@ export function JobStep7Payment({ jobId, employerId, onComplete, onBack }: JobSt
 
         {paymentError && (
           <div className="border-danger/30 bg-danger/5 space-y-2 rounded-[10px] border p-4">
-            <p className="text-[13px] font-medium" style={{ color: 'var(--color-clay)' }}>
+            <p className="text-label font-medium" style={{ color: 'var(--color-clay)' }}>
               Payment failed
             </p>
-            <p className="text-[12px]" style={{ color: 'var(--color-clay)' }}>
+            <p className="text-xs" style={{ color: 'var(--color-clay)' }}>
               {paymentError}
             </p>
             <button
               type="button"
-              className="text-[12px] font-semibold underline"
+              className="text-xs font-semibold underline"
               style={{ color: 'var(--color-brand-hover)' }}
               onClick={() => setPaymentError(null)}
             >
@@ -208,8 +207,7 @@ export function JobStep7Payment({ jobId, employerId, onComplete, onBack }: JobSt
           {loading ? (
             <span className="flex items-center gap-2">
               <span
-                className="h-4 w-4 animate-spin rounded-full border-[2px] border-t-transparent"
-                style={{ borderColor: 'rgba(255,255,255,0.6)', borderTopColor: 'transparent' }}
+                className="h-4 w-4 animate-spin rounded-full border-[2px] border-white/60 border-t-transparent"
               />
               Processing...
             </span>

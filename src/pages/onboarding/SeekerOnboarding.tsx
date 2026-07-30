@@ -171,8 +171,7 @@ export function SeekerOnboarding() {
       <DashboardLayout>
         <div className="flex min-h-[400px] items-center justify-center">
           <div
-            className="h-8 w-8 animate-spin rounded-full border-[3px] border-t-transparent"
-            style={{ borderColor: 'var(--color-brand-hover)', borderTopColor: 'transparent' }}
+            className="h-8 w-8 animate-spin rounded-full border-[3px] border-brand-hover border-t-transparent"
           />
         </div>
       </DashboardLayout>
@@ -187,12 +186,11 @@ export function SeekerOnboarding() {
         {/* Header */}
         <div>
           <h1
-            className="font-display text-2xl font-semibold"
-            style={{ color: 'var(--color-brand-900)' }}
+            className="font-display text-2xl font-semibold text-brand-900"
           >
             Set up your job seeker profile
           </h1>
-          <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+          <p className="mt-1 text-sm text-text-muted">
             Complete your profile to search with match scores and apply to farm jobs
           </p>
         </div>
@@ -204,12 +202,10 @@ export function SeekerOnboarding() {
         <div className="bg-surface border-border rounded-[16px] border p-6 shadow-sm">
           {saving && (
             <div
-              className="mb-4 flex items-center gap-2 text-sm"
-              style={{ color: 'var(--color-brand)' }}
+              className="mb-4 flex items-center gap-2 text-sm text-brand"
             >
               <div
-                className="h-4 w-4 animate-spin rounded-full border-[2px] border-t-transparent"
-                style={{ borderColor: 'var(--color-brand)', borderTopColor: 'transparent' }}
+                className="h-4 w-4 animate-spin rounded-full border-[2px] border-brand border-t-transparent"
               />
               Saving...
             </div>

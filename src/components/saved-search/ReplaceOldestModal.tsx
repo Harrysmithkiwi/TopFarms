@@ -123,8 +123,7 @@ export function ReplaceOldestModal({
           <div className="border-border flex items-center justify-between border-b px-6 pt-5 pb-4">
             <h2
               id="replace-oldest-heading"
-              className="font-body text-[16px] font-bold"
-              style={{ color: 'var(--color-text)' }}
+              className="font-body text-[16px] font-bold text-text"
             >
               Replace oldest saved search?
             </h2>
@@ -139,12 +138,12 @@ export function ReplaceOldestModal({
           </div>
 
           <div className="space-y-3 px-6 py-5">
-            <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+            <p className="text-sm text-text-muted">
               You've reached 10 saved searches. Replace the oldest one
               {oldest ? (
                 <>
                   {' '}
-                  (<strong style={{ color: 'var(--color-text)' }}>"{oldest.name}"</strong>)
+                  (<strong className="text-text">"{oldest.name}"</strong>)
                 </>
               ) : null}{' '}
               or delete one first?

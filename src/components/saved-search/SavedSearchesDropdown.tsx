@@ -114,7 +114,7 @@ export function SavedSearchesDropdown() {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="text-brand-hover flex cursor-pointer items-center gap-1 text-[13px] hover:underline"
+        className="text-brand-hover flex cursor-pointer items-center gap-1 text-label hover:underline"
         aria-haspopup="menu"
         aria-expanded={open}
         data-testid="saved-searches-dropdown-trigger"
@@ -128,11 +128,11 @@ export function SavedSearchesDropdown() {
           className="bg-surface border-border absolute top-full right-0 z-30 mt-2 w-[280px] rounded-[10px] border shadow-lg"
         >
           {loading ? (
-            <p className="font-body p-3 text-[13px]" style={{ color: 'var(--color-text-subtle)' }}>
+            <p className="font-body p-3 text-label text-text-subtle">
               Loading…
             </p>
           ) : rows.length === 0 ? (
-            <p className="font-body p-3 text-[13px]" style={{ color: 'var(--color-text-subtle)' }}>
+            <p className="font-body p-3 text-label text-text-subtle">
               No saved searches yet.
             </p>
           ) : (
@@ -146,14 +146,12 @@ export function SavedSearchesDropdown() {
                     className="hover:bg-surface-2 border-border w-full cursor-pointer border-b px-3 py-2 text-left transition-colors last:border-b-0"
                   >
                     <div
-                      className="font-body truncate text-[14px] font-semibold"
-                      style={{ color: 'var(--color-text)' }}
+                      className="font-body truncate text-sm font-semibold text-text"
                     >
                       {row.name}
                     </div>
                     <div
-                      className="font-body truncate text-[12px]"
-                      style={{ color: 'var(--color-text-subtle)' }}
+                      className="font-body truncate text-xs text-text-subtle"
                     >
                       {summarizeFilters(row.search_params)}
                     </div>
@@ -165,8 +163,7 @@ export function SavedSearchesDropdown() {
           <Link
             to="/dashboard/seeker/saved-searches"
             onClick={() => setOpen(false)}
-            className="font-body border-border hover:bg-surface-2 block border-t px-3 py-2 text-center text-[13px] font-semibold"
-            style={{ color: 'var(--color-brand)' }}
+            className="font-body border-border hover:bg-surface-2 block border-t px-3 py-2 text-center text-label font-semibold text-brand"
           >
             View all
           </Link>

@@ -183,8 +183,7 @@ export function EmployerOnboarding() {
       <DashboardLayout>
         <div className="flex min-h-[400px] items-center justify-center">
           <div
-            className="h-8 w-8 animate-spin rounded-full border-[3px] border-t-transparent"
-            style={{ borderColor: 'var(--color-brand-hover)', borderTopColor: 'transparent' }}
+            className="h-8 w-8 animate-spin rounded-full border-[3px] border-brand-hover border-t-transparent"
           />
         </div>
       </DashboardLayout>
@@ -220,8 +219,7 @@ export function EmployerOnboarding() {
               style={{ color: 'var(--color-brand)' }}
             >
               <div
-                className="h-4 w-4 animate-spin rounded-full border-[2px] border-t-transparent"
-                style={{ borderColor: 'var(--color-brand)', borderTopColor: 'transparent' }}
+                className="h-4 w-4 animate-spin rounded-full border-[2px] border-brand border-t-transparent"
               />
               Saving...
             </div>

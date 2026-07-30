@@ -95,8 +95,7 @@ export function SeekerStep4Skills({ onComplete, onBack, seekerId }: SeekerStep4P
     return (
       <div className="flex items-center justify-center py-12">
         <div
-          className="h-6 w-6 animate-spin rounded-full border-[2px] border-t-transparent"
-          style={{ borderColor: 'var(--color-brand-hover)', borderTopColor: 'transparent' }}
+          className="h-6 w-6 animate-spin rounded-full border-[2px] border-brand-hover border-t-transparent"
         />
       </div>
     )
@@ -105,10 +104,10 @@ export function SeekerStep4Skills({ onComplete, onBack, seekerId }: SeekerStep4P
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
+        <h2 className="text-lg font-semibold text-text">
           Your skills
         </h2>
-        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="mt-1 text-sm text-text-muted">
           Select the skills you have and your proficiency level in each
         </p>
       </div>

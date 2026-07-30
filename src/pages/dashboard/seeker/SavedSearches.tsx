@@ -129,14 +129,13 @@ function SavedSearchRow({ row, onLoad, onDelete, onRename }: SavedSearchRowProps
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="font-body w-full truncate text-left text-[15px] font-semibold hover:underline"
-            style={{ color: 'var(--color-text)' }}
+            className="font-body w-full truncate text-left text-base font-semibold hover:underline text-text"
             aria-label={`Rename ${row.name}`}
           >
             {row.name}
           </button>
         )}
-        <p className="font-body text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="font-body text-label text-text-muted">
           {summarizeFilters(row.search_params)}
         </p>
       </div>
@@ -262,18 +261,13 @@ export function SavedSearches() {
       <div className="space-y-6">
         <div className="flex items-center gap-3">
           <h1
-            className="font-display text-3xl font-semibold"
-            style={{ color: 'var(--color-brand-900)' }}
+            className="font-display text-3xl font-semibold text-brand-900"
           >
             Saved searches
           </h1>
           {!loading && rows.length > 0 && (
             <span
-              className="font-body rounded-full px-2.5 py-1 text-[12px] font-semibold"
-              style={{
-                backgroundColor: 'var(--color-border)',
-                color: 'var(--color-text-muted)',
-              }}
+              className="font-body bg-border text-text-muted rounded-full px-2.5 py-1 text-xs font-semibold"
             >
               {rows.length}
             </span>
@@ -289,16 +283,14 @@ export function SavedSearches() {
 
         {!loading && rows.length === 0 && (
           <div
-            className="rounded-[12px] p-12 text-center"
-            style={{ backgroundColor: 'var(--color-surface-2)' }}
+            className="rounded-[12px] p-12 text-center bg-surface-2"
           >
             <p
-              className="font-body mb-2 text-base font-semibold"
-              style={{ color: 'var(--color-text)' }}
+              className="font-body mb-2 text-base font-semibold text-text"
             >
               You haven't saved any searches yet.
             </p>
-            <p className="mb-4 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+            <p className="mb-4 text-sm text-text-muted">
               Save your filters on the job search page to come back to them later.
             </p>
             <Link to="/jobs" className="font-body text-brand-hover text-sm font-semibold hover:underline">

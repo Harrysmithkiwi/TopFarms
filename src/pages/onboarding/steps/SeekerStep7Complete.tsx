@@ -109,19 +109,17 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
         {/* Success icon + heading */}
         <div className="flex items-center gap-3">
           <div
-            className="flex h-12 w-12 items-center justify-center rounded-full"
-            style={{ backgroundColor: 'var(--color-warn-bg)' }}
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-warn-bg"
           >
-            <CheckCircle className="h-6 w-6" style={{ color: 'var(--color-brand-hover)' }} />
+            <CheckCircle className="h-6 w-6 text-brand-hover" />
           </div>
           <div>
             <h2
-              className="font-display text-2xl font-semibold"
-              style={{ color: 'var(--color-brand-900)' }}
+              className="font-display text-2xl font-semibold text-brand-900"
             >
               Your profile is ready!
             </h2>
-            <p className="font-body mt-1 text-[16px]" style={{ color: 'var(--color-text-muted)' }}>
+            <p className="font-body mt-1 text-[16px] text-text-muted">
               We're finding your best matches
             </p>
           </div>
@@ -149,8 +147,7 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
                   )}
                 </div>
                 <span
-                  className="font-body text-[13px]"
-                  style={{ color: complete ? 'var(--color-text)' : 'var(--color-text-subtle)' }}
+                  className={`font-body text-label ${complete ? 'text-text' : 'text-text-subtle'}`}
                 >
                   {item.label}
                 </span>
@@ -161,30 +158,28 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
 
         {/* Your matches — polling state */}
         <div className="border-border bg-surface-2 rounded-[10px] border p-4">
-          <p className="font-body text-[16px] font-semibold" style={{ color: 'var(--color-text)' }}>
+          <p className="font-body text-[16px] font-semibold text-text">
             Your matches
           </p>
 
           {matchesLoading ? (
             <div className="mt-2 flex items-center gap-2">
               <div
-                className="h-5 w-5 animate-spin rounded-full border-[2px] border-t-transparent"
-                style={{ borderColor: 'var(--color-brand-hover)', borderTopColor: 'transparent' }}
+                className="h-5 w-5 animate-spin rounded-full border-[2px] border-brand-hover border-t-transparent"
               />
-              <p className="font-body text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
+              <p className="font-body text-label text-text-muted">
                 We're calculating your matches
               </p>
             </div>
           ) : timedOut && matches.length === 0 ? (
             <div className="mt-2">
-              <p className="font-body text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
+              <p className="font-body text-label text-text-muted">
                 We're calculating your matches — check back soon!
               </p>
               <button
                 type="button"
                 onClick={() => navigate('/jobs')}
-                className="font-body mt-2 text-[13px] font-semibold underline"
-                style={{ color: 'var(--color-brand)' }}
+                className="font-body mt-2 text-label font-semibold underline text-brand"
               >
                 Browse Jobs
               </button>
@@ -200,14 +195,12 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
                   <MatchCircle score={match.total_score} size="sm" />
                   <div className="min-w-0 flex-1">
                     <p
-                      className="font-body truncate text-[14px] font-semibold"
-                      style={{ color: 'var(--color-text)' }}
+                      className="font-body truncate text-sm font-semibold text-text"
                     >
                       {match.jobs.title}
                     </p>
                     <p
-                      className="font-body text-[12px]"
-                      style={{ color: 'var(--color-text-muted)' }}
+                      className="font-body text-xs text-text-muted"
                     >
                       {match.jobs.employer_profiles?.farm_name
                         ? `${match.jobs.employer_profiles.farm_name} · ${match.jobs.region}`
@@ -215,8 +208,7 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
                     </p>
                     {(match.jobs.salary_min || match.jobs.salary_max) && (
                       <p
-                        className="font-body text-[12px]"
-                        style={{ color: 'var(--color-text-subtle)' }}
+                        className="font-body text-xs text-text-subtle"
                       >
                         {match.jobs.salary_min && match.jobs.salary_max
                           ? `$${(match.jobs.salary_min / 1000).toFixed(0)}k - $${(match.jobs.salary_max / 1000).toFixed(0)}k`
@@ -233,8 +225,7 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
                   <button
                     type="button"
                     onClick={() => navigate('/jobs')}
-                    className="font-body text-[13px] font-semibold underline"
-                    style={{ color: 'var(--color-brand)' }}
+                    className="font-body text-label font-semibold underline text-brand"
                   >
                     Browse all jobs
                   </button>
@@ -266,24 +257,21 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
           <div className="space-y-3 p-4">
             <div className="flex items-center gap-3">
               <div
-                className="flex h-10 w-10 items-center justify-center rounded-full"
-                style={{ backgroundColor: 'var(--color-surface-2)' }}
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-surface-2"
               >
                 <span
-                  className="font-body text-[16px] font-semibold"
-                  style={{ color: 'var(--color-brand)' }}
+                  className="font-body text-[16px] font-semibold text-brand"
                 >
                   S
                 </span>
               </div>
               <div>
                 <p
-                  className="font-body text-[16px] font-semibold"
-                  style={{ color: 'var(--color-text)' }}
+                  className="font-body text-[16px] font-semibold text-text"
                 >
                   Seeker Profile
                 </p>
-                <p className="font-body text-[13px]" style={{ color: 'var(--color-text-subtle)' }}>
+                <p className="font-body text-label text-text-subtle">
                   {profileData?.region ?? 'Location not set'}
                 </p>
               </div>
@@ -295,8 +283,7 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
                 {profileData.sector_pref.map((s) => (
                   <span
                     key={s}
-                    className="border-border font-body rounded-full border px-2 py-0.5 text-[11px]"
-                    style={{ color: 'var(--color-text-muted)' }}
+                    className="border-border font-body rounded-full border px-2 py-0.5 text-micro text-text-muted"
                   >
                     {s}
                   </span>
@@ -306,7 +293,7 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
 
             {/* Experience */}
             {profileData?.years_experience !== undefined && (
-              <p className="font-body text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
+              <p className="font-body text-label text-text-muted">
                 {profileData.years_experience}+ years experience
               </p>
             )}
@@ -314,8 +301,7 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
             {/* Accommodation badge */}
             {profileData?.accommodation_needed && (
               <span
-                className="border-brand-hover font-body inline-block rounded-full border px-2 py-0.5 text-[11px]"
-                style={{ color: 'var(--color-brand-hover)' }}
+                className="border-brand-hover font-body inline-block rounded-full border px-2 py-0.5 text-micro text-brand-hover"
               >
                 Needs accommodation
               </span>
@@ -323,7 +309,7 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
 
             {/* Visa */}
             {profileData?.visa_status && (
-              <p className="font-body text-[12px]" style={{ color: 'var(--color-text-subtle)' }}>
+              <p className="font-body text-xs text-text-subtle">
                 {profileData.visa_status.replace(/_/g, ' ')}
               </p>
             )}

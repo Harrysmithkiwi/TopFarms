@@ -77,10 +77,10 @@ export function SeekerStep1FarmType({ onComplete, defaultValues }: SeekerStep1Pr
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
+        <h2 className="text-lg font-semibold text-text">
           Your details
         </h2>
-        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="mt-1 text-sm text-text-muted">
           Employers see your first name and last initial while deciding. Your full name, email and
           phone are shared only with an employer who shortlists you.
         </p>
@@ -114,10 +114,10 @@ export function SeekerStep1FarmType({ onComplete, defaultValues }: SeekerStep1Pr
       </div>
 
       <div>
-        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
+        <h2 className="text-lg font-semibold text-text">
           What type of farm work are you looking for?
         </h2>
-        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="mt-1 text-sm text-text-muted">
           Select all that apply — this helps us match you with relevant jobs
         </p>
       </div>
@@ -131,7 +131,7 @@ export function SeekerStep1FarmType({ onComplete, defaultValues }: SeekerStep1Pr
       />
 
       {selectedTypes.length === 0 && (
-        <p className="font-body text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="font-body text-xs text-text-muted">
           Please select at least one farm type to continue
         </p>
       )}

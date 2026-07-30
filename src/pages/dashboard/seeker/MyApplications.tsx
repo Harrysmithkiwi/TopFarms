@@ -222,15 +222,13 @@ export function MyApplications() {
           {/* Header */}
           <div className="flex items-center gap-3">
             <h1
-              className="font-display text-3xl font-semibold"
-              style={{ color: 'var(--color-brand-900)' }}
+              className="font-display text-3xl font-semibold text-brand-900"
             >
               My Applications
             </h1>
             {!loading && applications.length > 0 && (
               <span
-                className="font-body rounded-full px-2.5 py-1 text-[12px] font-semibold"
-                style={{ backgroundColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
+                className="font-body bg-border text-text-muted rounded-full px-2.5 py-1 text-xs font-semibold"
               >
                 {applications.length}
               </span>
@@ -243,7 +241,7 @@ export function MyApplications() {
                 <Dialog.Trigger asChild>
                   <button
                     type="button"
-                    className="border-border bg-surface font-body text-text-muted hover:border-border-strong flex min-h-11 items-center gap-2 rounded-[8px] border px-3 py-2 text-[13px] transition-colors"
+                    className="border-border bg-surface font-body text-text-muted hover:border-border-strong flex min-h-11 items-center gap-2 rounded-[8px] border px-3 py-2 text-label transition-colors"
                   >
                     <SlidersHorizontal className="h-4 w-4" />
                     Filters &amp; saved
@@ -290,16 +288,14 @@ export function MyApplications() {
           {/* Empty state */}
           {!loading && applications.length === 0 && (
             <div
-              className="rounded-[12px] p-12 text-center"
-              style={{ backgroundColor: 'var(--color-surface-2)' }}
+              className="rounded-[12px] p-12 text-center bg-surface-2"
             >
               <p
-                className="font-body mb-2 text-base font-semibold"
-                style={{ color: 'var(--color-text)' }}
+                className="font-body mb-2 text-base font-semibold text-text"
               >
                 You haven't applied to any jobs yet.
               </p>
-              <p className="mb-4 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+              <p className="mb-4 text-sm text-text-muted">
                 Browse open roles to find your next farm position.
               </p>
               <Link
@@ -330,8 +326,7 @@ export function MyApplications() {
           {/* Filtered empty state (when filter active but no matches) */}
           {!loading && applications.length > 0 && filteredApplications.length === 0 && (
             <div
-              className="rounded-[12px] p-8 text-center"
-              style={{ backgroundColor: 'var(--color-surface-2)' }}
+              className="rounded-[12px] p-8 text-center bg-surface-2"
             >
               <p className="font-body text-text-muted text-sm">
                 No applications match this filter.

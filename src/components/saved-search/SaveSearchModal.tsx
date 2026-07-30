@@ -121,8 +121,7 @@ export function SaveSearchModal({
           <div className="border-border flex items-center justify-between border-b px-6 pt-5 pb-4">
             <h2
               id="save-search-heading"
-              className="font-body text-[16px] font-bold"
-              style={{ color: 'var(--color-text)' }}
+              className="font-body text-[16px] font-bold text-text"
             >
               Save search
             </h2>
@@ -151,11 +150,7 @@ export function SaveSearchModal({
             {errors.root?.message && (
               <div
                 role="alert"
-                className="font-body rounded-[8px] px-3 py-2 text-[13px]"
-                style={{
-                  backgroundColor: 'var(--color-danger-bg)',
-                  color: 'var(--color-danger)',
-                }}
+                className="font-body bg-danger-bg text-danger-text-on-bg rounded-[8px] px-3 py-2 text-label"
               >
                 {errors.root.message}
               </div>

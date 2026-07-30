@@ -152,22 +152,20 @@ export function SeekerDocuments() {
         {/* Header */}
         <div className="flex items-center gap-3">
           <h1
-            className="font-display text-3xl font-semibold"
-            style={{ color: 'var(--color-brand-900)' }}
+            className="font-display text-3xl font-semibold text-brand-900"
           >
             My Documents
           </h1>
           {showList && (
             <span
-              className="font-body rounded-full px-2.5 py-1 text-[12px] font-semibold"
-              style={{ backgroundColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
+              className="font-body bg-border text-text-muted rounded-full px-2.5 py-1 text-xs font-semibold"
             >
               {docs!.length}
             </span>
           )}
         </div>
 
-        <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="text-sm text-text-muted">
           Manage your uploaded documents. Identity documents are kept private and are never shown to
           employers.
         </p>
@@ -184,16 +182,14 @@ export function SeekerDocuments() {
         {/* Hook-stuck-at-null fallback (no seeker_profiles row resolved in 5s) */}
         {showHookFallback && (
           <div
-            className="rounded-[12px] p-12 text-center"
-            style={{ backgroundColor: 'var(--color-surface-2)' }}
+            className="rounded-[12px] p-12 text-center bg-surface-2"
           >
             <p
-              className="font-body mb-2 text-base font-semibold"
-              style={{ color: 'var(--color-text)' }}
+              className="font-body mb-2 text-base font-semibold text-text"
             >
               Set up your seeker profile first.
             </p>
-            <p className="mb-4 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+            <p className="mb-4 text-sm text-text-muted">
               You need to complete onboarding before you can manage documents.
             </p>
             <Link
@@ -208,8 +204,7 @@ export function SeekerDocuments() {
         {/* Error */}
         {showError && (
           <div
-            className="rounded-[12px] p-8 text-center"
-            style={{ backgroundColor: 'var(--color-surface-2)' }}
+            className="rounded-[12px] p-8 text-center bg-surface-2"
           >
             <p className="font-body text-text-muted text-sm">{errorState}</p>
           </div>
@@ -218,16 +213,14 @@ export function SeekerDocuments() {
         {/* Empty */}
         {showEmpty && (
           <div
-            className="rounded-[12px] p-12 text-center"
-            style={{ backgroundColor: 'var(--color-surface-2)' }}
+            className="rounded-[12px] p-12 text-center bg-surface-2"
           >
             <p
-              className="font-body mb-2 text-base font-semibold"
-              style={{ color: 'var(--color-text)' }}
+              className="font-body mb-2 text-base font-semibold text-text"
             >
               No documents uploaded yet.
             </p>
-            <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+            <p className="text-sm text-text-muted">
               Add some during onboarding or from your profile.
             </p>
           </div>
@@ -243,10 +236,10 @@ export function SeekerDocuments() {
               >
                 <FileText className="text-brand-hover h-5 w-5 flex-shrink-0" />
                 <div className="min-w-0 flex-1">
-                  <p className="font-body text-text truncate text-[13px] font-semibold">
+                  <p className="font-body text-text truncate text-label font-semibold">
                     {doc.filename}
                   </p>
-                  <p className="font-body text-text-subtle text-[11px]">
+                  <p className="font-body text-text-subtle text-micro">
                     {formatBytes(doc.file_size_bytes)} · Uploaded {formatDate(doc.uploaded_at)}
                   </p>
                 </div>

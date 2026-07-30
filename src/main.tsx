@@ -161,8 +161,7 @@ function RouteFallback() {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div
-        className="h-8 w-8 animate-spin rounded-full border-[3px] border-t-transparent"
-        style={{ borderColor: 'var(--color-brand)', borderTopColor: 'transparent' }}
+        className="h-8 w-8 animate-spin rounded-full border-[3px] border-brand border-t-transparent"
         aria-label="Loading page"
         role="status"
       />
