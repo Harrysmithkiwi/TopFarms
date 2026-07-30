@@ -3,17 +3,17 @@
 Supersedes `docs/SESSION-HANDOFF-2026-07-30.md`, which was written after Phase 1 and still points
 at the Phase 2 brief. Phases 2, 3 and 4 have since shipped.
 
-**State:** branch **`phase-4-a11y`** at **`a86601f`**, pushed, working tree clean.
-**PR #82 open with all five checks green** (quality · e2e · e2e-preview · Vercel · Vercel Preview
-Comments) — https://github.com/Harrysmithkiwi/TopFarms/pull/82. **Not merged** — that's your call.
+**State:** **PR #82 merged 2026-07-30** as `ef77ff2` on `main`, all five checks green at merge
+(quality · e2e · e2e-preview · Vercel · Vercel Preview Comments). Admin merge was required —
+branch protection needs 1 approving review and GitHub does not permit self-approval.
 
 Test suite **609 passing** (was 601 at session start; +8 across three new files). Production
 untouched: **no migrations, no schema changes, no probe accounts seeded** — this phase needed none.
 
-**Next session:** merge #82 if it reviews clean, then read **`docs/PHASE-5-PROMPT.md`** if it
-exists, else `docs/UPLIFT-ROADMAP-2026-07-30.md` §"Phase 5 — Design system consolidation" and
-write the brief. Phase 5's headline is the 917 inline `style={{…}}` occurrences (726 of them bare
-`var(--color-…)`), which Phase 4 deliberately did not touch.
+**Next session:** read **`docs/PHASE-5-PROMPT.md`** and run it. Phase 5's headline is the inline
+`style={{…}}` migration — **947 occurrences measured at `ef77ff2`**, 673 of them bare
+`var(--color-…)` in `src/pages` alone, which Phase 4 deliberately did not touch. Those pages are
+invisible to `scripts/contrast.mjs` today; migrating them is what brings them under the gate.
 
 ---
 
