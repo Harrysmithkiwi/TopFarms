@@ -48,8 +48,16 @@ marketing/video/**/*.wav
 # canon→Drive sync scratch (gws --upload needs cwd-local temp)
 .canon-sync-tmp/
 
-# Untracked working artefacts (14 MB of audit scratch, design explorations and
-# generated marketing content — regenerable, not project state).
+# Untracked working artefacts — audit scratch, design explorations, generated
+# marketing content and binary docs. Regenerable; not project state.
+#
+# These were accidentally committed on 2026-07-30 by a `git add -A` that ran before
+# these rules existed, then untracked in the follow-up. .gitignore does NOT untrack
+# an already-tracked file — if you add a rule here for something already committed,
+# you must also `git rm --cached` it.
 .tmp-audit/
 docs/design/
 content/
+.claude/skills/playwright-skill/
+docs/index.docx
+docs/_canonical/*.docx
