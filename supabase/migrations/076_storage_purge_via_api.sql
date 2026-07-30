@@ -156,4 +156,35 @@ REVOKE ALL ON FUNCTION public.admin_mark_document_purged(uuid) FROM PUBLIC, anon
 GRANT EXECUTE ON FUNCTION public.admin_delete_account(uuid) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.admin_mark_document_purged(uuid) TO authenticated;
 
+-- ─── 4. Listing the objects (the storage schema is not on PostgREST) ────────
+-- Follow-up found by probing admin-purge: SELECT on storage.objects is allowed
+-- from SQL, but the `storage` schema is NOT exposed to PostgREST, so the Edge
+-- Function cannot read it over REST. The listing therefore goes through a
+-- definer RPC; only the DELETE goes through the Storage API.
+
+CREATE OR REPLACE FUNCTION public.admin_list_user_storage_objects(p_user_id uuid)
+RETURNS jsonb
+LANGUAGE plpgsql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_rows jsonb;
+BEGIN
+  PERFORM public._admin_gate();
+
+  SELECT COALESCE(jsonb_agg(jsonb_build_object('bucket_id', o.bucket_id, 'name', o.name)), '[]'::jsonb)
+  INTO v_rows
+  FROM storage.objects o
+  WHERE o.bucket_id IN ('seeker-documents', 'employer-documents', 'employer-photos')
+    AND (storage.foldername(o.name))[1] = p_user_id::text;
+
+  RETURN v_rows;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.admin_list_user_storage_objects(uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.admin_list_user_storage_objects(uuid) TO authenticated;
+
 COMMIT;

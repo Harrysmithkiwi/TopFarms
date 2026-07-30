@@ -123,22 +123,23 @@ Deno.serve(async (req) => {
         return json({ error: 'Refusing to delete your own account' }, 400)
       }
 
-      // SELECT on storage.objects IS permitted — only DELETE is blocked — so
-      // the object list comes from the database and the removal from the API.
-      const { data: objects, error: objErr } = await admin
-        .schema('storage')
-        .from('objects')
-        .select('bucket_id, name')
-        .in('bucket_id', USER_SCOPED_BUCKETS as unknown as string[])
-        .like('name', `${body.user_id}/%`)
+      // SELECT on storage.objects is permitted (only DELETE is blocked), but the
+      // `storage` schema is NOT exposed to PostgREST — querying it over REST
+      // returns "Failed to list stored files". So the listing goes through a
+      // SECURITY DEFINER RPC and only the removal goes through the Storage API.
+      const { data: objects, error: objErr } = await admin.rpc(
+        'admin_list_user_storage_objects',
+        { p_user_id: body.user_id },
+      )
       if (objErr) {
         console.error('admin-purge: object listing failed', objErr)
         return json({ error: 'Failed to list stored files' }, 500)
       }
+      const objectRows = (objects ?? []) as Array<{ bucket_id: string; name: string }>
 
       let removed = 0
       for (const bucket of USER_SCOPED_BUCKETS) {
-        const names = (objects ?? []).filter((o) => o.bucket_id === bucket).map((o) => o.name)
+        const names = objectRows.filter((o) => o.bucket_id === bucket).map((o) => o.name)
         if (names.length === 0) continue
         const { error: rmErr } = await admin.storage.from(bucket).remove(names)
         if (rmErr) {
