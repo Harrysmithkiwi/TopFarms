@@ -75,7 +75,7 @@ export function VerificationBadge({
         onClick={toggle}
         className={cn(
           'font-body flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[12px] font-semibold transition-colors duration-150',
-          'focus-visible:outline-brand outline-none focus-visible:outline-2 focus-visible:outline-offset-2',
+          'focus-visible:outline-brand focus-visible:outline-2 focus-visible:outline-offset-2',
           config.badgeClass,
           expandable && 'cursor-pointer hover:opacity-80',
           !expandable && 'cursor-default',

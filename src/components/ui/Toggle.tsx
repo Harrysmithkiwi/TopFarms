@@ -23,7 +23,7 @@ export function Toggle({ label, checked, onCheckedChange, disabled, className, i
         disabled={disabled}
         className={cn(
           'h-[18px] w-[34px] rounded-full transition-colors duration-150',
-          'focus-visible:outline-brand outline-none focus-visible:outline-2 focus-visible:outline-offset-2',
+          'focus-visible:outline-brand focus-visible:outline-2 focus-visible:outline-offset-2',
           'cursor-pointer disabled:cursor-not-allowed disabled:opacity-50',
           'data-[state=unchecked]:bg-border data-[state=checked]:bg-brand',
         )}

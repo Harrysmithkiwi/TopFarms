@@ -56,7 +56,7 @@ export function ChipSelector({
               'flex min-h-[44px] items-center gap-2 rounded-[8px] px-3 py-2 md:min-h-[40px]',
               'cursor-pointer border-[1.5px] transition-colors duration-150',
               'font-body text-[14px]',
-              'focus-visible:outline-brand outline-none focus-visible:outline-2 focus-visible:outline-offset-2',
+              'focus-visible:outline-brand focus-visible:outline-2 focus-visible:outline-offset-2',
               isSelected
                 ? 'border-brand bg-brand-50 text-success-text-on-bg'
                 : 'border-border bg-surface text-text hover:border-brand-hover',

@@ -53,7 +53,7 @@ export function Select({
           className={cn(
             'flex w-full items-center justify-between',
             'font-body bg-surface-2 min-h-[44px] rounded-[8px] border-[1.5px] px-3 py-2 text-[15px]',
-            'focus-visible:outline-brand outline-none focus-visible:outline-2 focus-visible:outline-offset-2',
+            'focus-visible:outline-brand focus-visible:outline-2 focus-visible:outline-offset-2',
             'cursor-pointer transition-colors duration-150',
             'disabled:cursor-not-allowed disabled:opacity-50',
             error ? 'border-danger focus:border-danger' : 'border-border focus:border-brand',
