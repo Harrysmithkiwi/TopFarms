@@ -1,10 +1,10 @@
 # Phase 5 — inline-style migration ledger
 
-Generated Stage 1, before any migration, at commit `80acf03`.
+Generated Stage 1, before any migration, at commit `e8ee5d2`.
 The planning artefact for Task 5.1: what has to move, in what order, and which
 files sit on a route the Phase 4 axe gate already watches.
 
-**Totals: 94 files · 765 `style={{` · 817 `var(--color-…)` · 24 hex literals · 438 `text-[Npx]`**
+**Totals: 93 files · 751 `style={{` · 802 `var(--color-…)` · 24 hex literals · 438 `text-[Npx]`**
 
 `colour` counts `var(--color-…)` references anywhere in the file — the migration
 target. `axe` marks files rendering on one of the six Phase 4 axe routes: those
@@ -12,22 +12,22 @@ regress loudest and are migrated first inside their surface class.
 
 Order within each surface is heaviest-first by `style={{` count, per the brief.
 
-## employer — 26 files · 175 `style={{` · 185 colour refs
+## employer — 26 files · 171 `style={{` · 181 colour refs
 
 | # | File | `style={{` | colour | hex | `text-[Npx]` | axe route |
 |---|---|---|---|---|---|---|
-| 1 | `pages/dashboard/EmployerDashboard.tsx` | 29 | 29 |  | 12 |  |
-| 2 | `pages/jobs/MarkFilledModal.tsx` | 13 | 13 |  | 3 |  |
-| 3 | `pages/jobs/steps/JobStep6Preview.tsx` | 13 | 13 |  |  |  |
+| 1 | `pages/dashboard/EmployerDashboard.tsx` | 27 | 27 |  | 12 |  |
+| 2 | `pages/jobs/steps/JobStep6Preview.tsx` | 13 | 13 |  |  |  |
+| 3 | `pages/jobs/MarkFilledModal.tsx` | 12 | 12 |  | 3 |  |
 | 4 | `pages/onboarding/steps/Step8Complete.tsx` | 11 | 12 |  | 8 |  |
 | 5 | `pages/dashboard/employer/HireConfirmModal.tsx` | 10 | 13 |  | 5 |  |
 | 6 | `pages/jobs/steps/JobStep7Payment.tsx` | 10 | 10 |  |  |  |
 | 7 | `pages/dashboard/employer/PlacementFeeModal.tsx` | 9 | 9 |  | 9 |  |
 | 8 | `pages/jobs/steps/JobStep8Success.tsx` | 8 | 7 |  | 6 |  |
 | 9 | `pages/onboarding/steps/Step7Preview.tsx` | 7 | 10 |  | 10 |  |
-| 10 | `pages/dashboard/employer/ApplicantDashboard.tsx` | 6 | 7 |  | 7 | **yes** |
-| 11 | `pages/jobs/steps/JobStep2FarmDetails.tsx` | 6 | 6 |  | 11 |  |
-| 12 | `pages/onboarding/steps/Step4Accommodation.tsx` | 6 | 6 |  | 11 |  |
+| 10 | `pages/jobs/steps/JobStep2FarmDetails.tsx` | 6 | 6 |  | 11 |  |
+| 11 | `pages/onboarding/steps/Step4Accommodation.tsx` | 6 | 6 |  | 11 |  |
+| 12 | `pages/dashboard/employer/ApplicantDashboard.tsx` | 5 | 6 |  | 7 | **yes** |
 | 13 | `pages/onboarding/steps/Step5Verification.tsx` | 5 | 6 |  | 5 |  |
 | 14 | `pages/jobs/steps/JobStep4Compensation.tsx` | 5 | 5 |  | 7 |  |
 | 15 | `pages/onboarding/steps/Step1FarmType.tsx` | 5 | 5 |  | 3 |  |
@@ -43,37 +43,36 @@ Order within each surface is heaviest-first by `style={{` count, per the brief.
 | 25 | `pages/verification/EmployerVerification.tsx` | 2 | 2 | 2 | 19 |  |
 | 26 | `pages/verification/FarmPhotoUpload.tsx` | 2 | 2 |  | 8 |  |
 
-## admin — 25 files · 191 `style={{` · 200 colour refs
+## admin — 24 files · 182 `style={{` · 192 colour refs
 
 | # | File | `style={{` | colour | hex | `text-[Npx]` | axe route |
 |---|---|---|---|---|---|---|
 | 1 | `pages/admin/AdminLeadsStaging.tsx` | 23 | 27 |  | 23 |  |
 | 2 | `components/admin/ProfileDrawer.tsx` | 21 | 24 |  | 15 |  |
 | 3 | `components/layout/AdminSidebar.tsx` | 12 | 13 |  | 2 |  |
-| 4 | `pages/admin/AdminLoginPage.tsx` | 11 | 16 |  | 2 |  |
-| 5 | `pages/admin/AdminDocumentsQueue.tsx` | 11 | 11 |  | 13 |  |
+| 4 | `pages/admin/AdminDocumentsQueue.tsx` | 11 | 11 |  | 13 |  |
+| 5 | `pages/admin/AdminLoginPage.tsx` | 10 | 15 |  | 2 |  |
 | 6 | `components/admin/AdminTable.tsx` | 9 | 11 |  | 1 |  |
 | 7 | `pages/admin/AdminLeads.tsx` | 9 | 9 |  | 9 |  |
 | 8 | `pages/admin/AdminLeadsOutreach.tsx` | 9 | 9 |  | 10 |  |
 | 9 | `components/admin/DrawerShell.tsx` | 8 | 9 |  |  |  |
 | 10 | `components/admin/LeadsFunnel.tsx` | 8 | 9 |  | 3 |  |
 | 11 | `pages/admin/AdminRevenue.tsx` | 8 | 8 |  | 13 |  |
-| 12 | `components/admin/Skeleton.tsx` | 8 | 7 |  |  |  |
-| 13 | `pages/admin/AdminAnalytics.tsx` | 8 | 7 |  | 16 |  |
-| 14 | `components/admin/LeadsWorklist.tsx` | 7 | 9 |  | 3 |  |
-| 15 | `pages/admin/JobsManagement.tsx` | 5 | 5 |  | 5 |  |
-| 16 | `pages/admin/PlacementPipeline.tsx` | 5 | 5 |  | 5 |  |
-| 17 | `pages/admin/DailyBriefing.tsx` | 5 | 0 |  | 12 |  |
-| 18 | `components/admin/LeadContact.tsx` | 4 | 4 |  | 6 |  |
-| 19 | `pages/admin/AdminSkillCoverage.tsx` | 4 | 4 |  | 4 |  |
-| 20 | `pages/admin/EmployerList.tsx` | 4 | 4 |  | 4 |  |
-| 21 | `pages/admin/SeekerList.tsx` | 4 | 4 |  | 4 |  |
-| 22 | `components/admin/AdminNotesField.tsx` | 3 | 4 |  | 3 |  |
-| 23 | `components/admin/AdminPageHeader.tsx` | 2 | 0 |  | 2 |  |
-| 24 | `components/admin/KpiCard.tsx` | 2 | 0 |  | 3 |  |
-| 25 | `components/layout/AdminLayout.tsx` | 1 | 1 |  |  |  |
+| 12 | `pages/admin/AdminAnalytics.tsx` | 8 | 7 |  | 16 |  |
+| 13 | `components/admin/LeadsWorklist.tsx` | 7 | 9 |  | 3 |  |
+| 14 | `pages/admin/JobsManagement.tsx` | 5 | 5 |  | 5 |  |
+| 15 | `pages/admin/PlacementPipeline.tsx` | 5 | 5 |  | 5 |  |
+| 16 | `pages/admin/DailyBriefing.tsx` | 5 | 0 |  | 12 |  |
+| 17 | `components/admin/LeadContact.tsx` | 4 | 4 |  | 6 |  |
+| 18 | `pages/admin/AdminSkillCoverage.tsx` | 4 | 4 |  | 4 |  |
+| 19 | `pages/admin/EmployerList.tsx` | 4 | 4 |  | 4 |  |
+| 20 | `pages/admin/SeekerList.tsx` | 4 | 4 |  | 4 |  |
+| 21 | `components/admin/AdminNotesField.tsx` | 3 | 4 |  | 3 |  |
+| 22 | `components/admin/AdminPageHeader.tsx` | 2 | 0 |  | 2 |  |
+| 23 | `components/admin/KpiCard.tsx` | 2 | 0 |  | 3 |  |
+| 24 | `components/layout/AdminLayout.tsx` | 1 | 1 |  |  |  |
 
-## auth — 8 files · 109 `style={{` · 157 colour refs
+## auth — 8 files · 108 `style={{` · 156 colour refs
 
 | # | File | `style={{` | colour | hex | `text-[Npx]` | axe route |
 |---|---|---|---|---|---|---|
@@ -82,7 +81,7 @@ Order within each surface is heaviest-first by `style={{` count, per the brief.
 | 3 | `pages/auth/ResetPassword.tsx` | 15 | 23 |  |  |  |
 | 4 | `components/layout/AuthLayout.tsx` | 15 | 17 |  |  |  |
 | 5 | `pages/auth/ForgotPassword.tsx` | 11 | 14 | 1 |  |  |
-| 6 | `pages/auth/SelectRole.tsx` | 10 | 12 |  |  |  |
+| 6 | `pages/auth/SelectRole.tsx` | 9 | 11 |  |  |  |
 | 7 | `pages/auth/VerifyEmail.tsx` | 7 | 8 | 1 |  |  |
 | 8 | `pages/auth/Suspended.tsx` | 2 | 2 |  |  |  |
 
@@ -108,7 +107,7 @@ Order within each surface is heaviest-first by `style={{` count, per the brief.
 | 16 | `pages/Home.tsx` | 1 | 1 |  |  | **yes** |
 | 17 | `pages/legal/Privacy.tsx` | 1 | 0 |  |  |  |
 
-## shared — 18 files · 73 `style={{` · 80 colour refs
+## shared — 18 files · 73 `style={{` · 78 colour refs
 
 | # | File | `style={{` | colour | hex | `text-[Npx]` | axe route |
 |---|---|---|---|---|---|---|
@@ -120,10 +119,10 @@ Order within each surface is heaviest-first by `style={{` count, per the brief.
 | 6 | `components/ui/ApplicantPanel.tsx` | 6 | 6 |  | 46 | **yes** |
 | 7 | `components/ui/AICandidateSummary.tsx` | 6 | 3 |  | 4 | **yes** |
 | 8 | `components/layout/Sidebar.tsx` | 3 | 6 |  |  | **yes** |
-| 9 | `components/layout/ProtectedRoute.tsx` | 2 | 2 |  |  |  |
-| 10 | `components/ui/SearchHero.tsx` | 2 | 1 | 1 | 4 | **yes** |
-| 11 | `components/tremor/AreaChart.tsx` | 2 | 0 | 1 |  |  |
-| 12 | `components/tremor/BarChart.tsx` | 2 | 0 | 1 |  |  |
+| 9 | `components/ui/SearchHero.tsx` | 2 | 1 | 1 | 4 | **yes** |
+| 10 | `components/tremor/AreaChart.tsx` | 2 | 0 | 1 |  |  |
+| 11 | `components/tremor/BarChart.tsx` | 2 | 0 | 1 |  |  |
+| 12 | `components/ui/Skeleton.tsx` | 2 | 0 |  |  |  |
 | 13 | `components/ui/SearchJobCard.tsx` | 1 | 4 |  | 3 | **yes** |
 | 14 | `components/ui/ExpandableCardTabs.tsx` | 1 | 3 |  | 10 |  |
 | 15 | `components/ui/MyApplicationsSidebar.tsx` | 1 | 3 |  | 11 | **yes** |
