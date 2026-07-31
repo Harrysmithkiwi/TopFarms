@@ -15,10 +15,21 @@ test.describe('saved search round-trip', () => {
 
     // Apply a filter so the inline "Save search" affordance appears (canSave
     // requires active filters + session — JobSearch.tsx SRCH-13).
-    await page.goto('/jobs?region=Waikato')
+    // Phase 5.0b: wait for the session to hydrate before interacting. Without
+    // this the click lands before auth resolves, the INSERT goes out without a
+    // session and fails into the modal's error surface, and the test then failed
+    // much later at the list assertion with a misleading message. Diagnosed by
+    // driving the same flow manually with networkidle (POST 201, row created)
+    // versus the test's bare goto (no row ever written).
+    await page.goto('/jobs?region=Waikato', { waitUntil: 'networkidle' })
     await page.getByRole('button', { name: 'Save search' }).click()
     await page.getByRole('textbox', { name: 'Name' }).fill(name)
     await page.getByRole('dialog').getByRole('button', { name: /^Save/ }).click()
+
+    // Assert the save SUCCEEDED here, not implicitly three steps later. A failed
+    // insert leaves the dialog open with an error; catching it here says what
+    // actually broke instead of "the list page is missing a row".
+    await expect(page.getByRole('dialog')).not.toBeVisible({ timeout: 10_000 })
 
     // Round-trip: the saved search shows up on the dashboard list page.
     await page.goto('/dashboard/seeker/saved-searches')

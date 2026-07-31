@@ -21,6 +21,8 @@ import { PhoneVerification } from './PhoneVerification'
 import { NzbnVerification } from './NzbnVerification'
 import type { VerificationMethod, EmployerVerification } from '@/types/domain'
 import { cn } from '@/lib/utils'
+import { ErrorState } from '@/components/ui/ErrorState'
+import { toast } from 'sonner'
 
 interface VerificationCardProps {
   method: VerificationMethod
@@ -103,7 +105,7 @@ function VerificationCard({
             <button
               type="button"
               onClick={onExpand}
-              className="font-body text-brand hover:text-brand-hover flex items-center gap-1 text-[12px] font-semibold transition-colors"
+              className="font-body text-brand-hover hover:text-brand-900 flex items-center gap-1 text-[12px] font-semibold transition-colors"
             >
               {action}
               <ChevronRight
@@ -134,6 +136,10 @@ export function EmployerVerification() {
   const { session } = useAuth()
   const [employerId, setEmployerId] = useState<string | null>(null)
   const [loadingProfile, setLoadingProfile] = useState(true)
+  // Phase 5.6 — a failed profile fetch left employerId null, which rendered
+  // the form but silently blocked every submit. A dead UI, not an error.
+  const [profileError, setProfileError] = useState(false)
+  const [reloadNonce, setReloadNonce] = useState(0)
   const [expandedMethod, setExpandedMethod] = useState<VerificationMethod | null>(null)
 
   const {
@@ -153,14 +159,15 @@ export function EmployerVerification() {
       .eq('user_id', session.user.id)
       .single()
       .then(({ data, error }) => {
-        if (error) {
+        if (error && error.code !== 'PGRST116') {
           console.error('EmployerVerification: failed to load employer profile', error)
+          setProfileError(true)
         } else {
           setEmployerId(data?.id ?? null)
         }
         setLoadingProfile(false)
       })
-  }, [session?.user?.id])
+  }, [session?.user?.id, reloadNonce])
 
   // Auto-create email verification record on mount when employerId is available
   useEffect(() => {
@@ -185,7 +192,11 @@ export function EmployerVerification() {
       )
       .then(({ error }) => {
         if (error) {
+          // Phase 5.6 (adjacent family): a failed WRITE, not a false empty state.
+          // Swallowed, the employer's email verification never registers and the
+          // badge silently never appears -- with nothing to retry.
           console.error('EmployerVerification: failed to create email verification record', error)
+          toast.error('We could not confirm your email verification. Reload to try again.')
           return
         }
         refresh()
@@ -200,6 +211,20 @@ export function EmployerVerification() {
   }
 
   const isLoading = loadingProfile || loadingVerifications
+
+  if (profileError) {
+    return (
+      <DashboardLayout>
+        <ErrorState
+          message="We could not load your farm profile"
+          onRetry={() => {
+            setProfileError(false)
+            setReloadNonce((n) => n + 1)
+          }}
+        />
+      </DashboardLayout>
+    )
+  }
 
   if (isLoading && !employerId) {
     return (
@@ -334,7 +359,7 @@ export function EmployerVerification() {
                 {verificationMap.get('document')?.status !== 'verified' && (
                   <Link
                     to="/dashboard/employer/verification/documents"
-                    className="font-body text-brand hover:text-brand-hover flex items-center gap-1 text-[12px] font-semibold transition-colors"
+                    className="font-body text-brand-hover hover:text-brand-900 flex items-center gap-1 text-[12px] font-semibold transition-colors"
                   >
                     Upload Documents
                     <ChevronRight className="h-3.5 w-3.5" />
@@ -384,7 +409,7 @@ export function EmployerVerification() {
                 {verificationMap.get('farm_photo')?.status !== 'verified' && (
                   <Link
                     to="/dashboard/employer/verification/photos"
-                    className="font-body text-brand hover:text-brand-hover flex items-center gap-1 text-[12px] font-semibold transition-colors"
+                    className="font-body text-brand-hover hover:text-brand-900 flex items-center gap-1 text-[12px] font-semibold transition-colors"
                   >
                     Upload Photos
                     <ChevronRight className="h-3.5 w-3.5" />

@@ -9,6 +9,7 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { Card } from '@/components/ui/Card'
 import { FileDropzone } from '@/components/ui/FileDropzone'
 import type { StorageError } from '@supabase/storage-js'
+import { ErrorState } from '@/components/ui/ErrorState'
 
 interface StorageObject {
   name: string
@@ -29,8 +30,13 @@ export function FarmPhotoUpload() {
   const { session } = useAuth()
   const [employerId, setEmployerId] = useState<string | null>(null)
   const [loadingProfile, setLoadingProfile] = useState(true)
+  // Phase 5.6 — a failed profile fetch left employerId null, which rendered
+  // the upload form but silently blocked every upload. A dead UI, not an error.
+  const [profileError, setProfileError] = useState(false)
+  const [reloadNonce, setReloadNonce] = useState(0)
   const [photos, setPhotos] = useState<string[]>([])
   const [loadingPhotos, setLoadingPhotos] = useState(false)
+  const [photosError, setPhotosError] = useState(false)
 
   const { verifications, refresh } = useVerifications(employerId)
 
@@ -44,14 +50,15 @@ export function FarmPhotoUpload() {
       .eq('user_id', session.user.id)
       .single()
       .then(({ data, error }) => {
-        if (error) {
+        if (error && error.code !== 'PGRST116') {
           console.error('FarmPhotoUpload: failed to load employer profile', error)
+          setProfileError(true)
         } else {
           setEmployerId(data?.id ?? null)
         }
         setLoadingProfile(false)
       })
-  }, [session?.user?.id])
+  }, [session?.user?.id, reloadNonce])
 
   // Load existing photos from storage
   useEffect(() => {
@@ -65,6 +72,8 @@ export function FarmPhotoUpload() {
       .list(`${userId}/farm`, { sortBy: { column: 'created_at', order: 'desc' } })
       .then(({ data, error }: { data: StorageObject[] | null; error: StorageError | null }) => {
         if (error || !data) {
+          console.error('FarmPhotoUpload: failed to list farm photos', error)
+          setPhotosError(true)
           setLoadingPhotos(false)
           return
         }
@@ -112,6 +121,20 @@ export function FarmPhotoUpload() {
   }
 
   const farmPhotoVerification = verifications.find((v) => v.method === 'farm_photo')
+
+  if (profileError) {
+    return (
+      <DashboardLayout>
+        <ErrorState
+          message="We could not load your farm profile"
+          onRetry={() => {
+            setProfileError(false)
+            setReloadNonce((n) => n + 1)
+          }}
+        />
+      </DashboardLayout>
+    )
+  }
 
   if (loadingProfile && !employerId) {
     return (
@@ -171,7 +194,15 @@ export function FarmPhotoUpload() {
         </Card>
 
         {/* Photo gallery */}
-        {(loadingPhotos || photos.length > 0) && (
+        {photosError && (
+          <ErrorState
+            message="Could not load your uploaded photos"
+            onRetry={() => setPhotosError(false)}
+            compact
+            className="mb-4"
+          />
+        )}
+        {!photosError && (loadingPhotos || photos.length > 0) && (
           <Card className="p-5">
             <h3 className="font-body text-text mb-3 text-[13px] font-semibold">
               Uploaded Photos

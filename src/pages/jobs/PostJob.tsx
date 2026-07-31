@@ -16,6 +16,7 @@ import { JobStep5Description } from './steps/JobStep5Description'
 import { JobStep6Preview } from './steps/JobStep6Preview'
 import { JobStep7Payment } from './steps/JobStep7Payment'
 import { JobStep8Success } from './steps/JobStep8Success'
+import { ErrorState } from '@/components/ui/ErrorState'
 
 const STEP_LABELS = [
   'Basics',
@@ -98,6 +99,10 @@ export function PostJob() {
   const [jobData, setJobData] = useState<JobPostingData>({})
   const [employerProfile, setEmployerProfile] = useState<EmployerProfileDefaults>({})
   const [loading, setLoading] = useState(true)
+  // Phase 5.6 — a failed profile fetch is not "no profile". Falling through
+  // here treats an unknown as a known and misroutes the user.
+  const [profileError, setProfileError] = useState(false)
+  const [reloadNonce, setReloadNonce] = useState(0)
   const [saving, setSaving] = useState(false)
   const [initialStep, setInitialStep] = useState(0)
 
@@ -124,6 +129,9 @@ export function PostJob() {
 
       if (profileError && profileError.code !== 'PGRST116') {
         console.error('Error loading employer profile:', profileError)
+        setProfileError(true)
+        setLoading(false)
+        return
       }
 
       if (profile) {
@@ -218,7 +226,7 @@ export function PostJob() {
 
     load()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session?.user?.id])
+  }, [session?.user?.id, reloadNonce])
 
   async function handleStep1Complete(stepData: Partial<JobPostingData>) {
     if (!session?.user) return
@@ -347,13 +355,26 @@ export function PostJob() {
     wizard.nextStep()
   }
 
+  if (profileError) {
+    return (
+      <DashboardLayout>
+        <ErrorState
+          message="We could not load your farm profile"
+          onRetry={() => {
+            setProfileError(false)
+            setReloadNonce((n) => n + 1)
+          }}
+        />
+      </DashboardLayout>
+    )
+  }
+
   if (loading) {
     return (
       <DashboardLayout>
         <div className="flex min-h-[400px] items-center justify-center">
           <div
-            className="h-8 w-8 animate-spin rounded-full border-[3px] border-t-transparent"
-            style={{ borderColor: 'var(--color-brand-hover)', borderTopColor: 'transparent' }}
+            className="h-8 w-8 animate-spin rounded-full border-[3px] border-brand-hover border-t-transparent"
           />
         </div>
       </DashboardLayout>
@@ -396,8 +417,7 @@ export function PostJob() {
                 style={{ color: 'var(--color-brand)' }}
               >
                 <div
-                  className="h-4 w-4 animate-spin rounded-full border-[2px] border-t-transparent"
-                  style={{ borderColor: 'var(--color-brand)', borderTopColor: 'transparent' }}
+                  className="h-4 w-4 animate-spin rounded-full border-[2px] border-brand border-t-transparent"
                 />
                 Saving...
               </div>

@@ -41,8 +41,14 @@ setup('admin storage state', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Email' }).fill(c!.email)
   await page.getByRole('textbox', { name: 'Password' }).fill(c!.password)
   await page.getByRole('button', { name: 'Sign in' }).click()
-  // Successful admin sign-in renders the admin shell on /admin.
-  await expect(page.getByText('Access denied')).not.toBeVisible({ timeout: 15_000 })
-  await page.waitForURL('**/admin**', { timeout: 15_000 })
+  // Wait for a control that ONLY the authenticated admin shell renders.
+  //
+  // The previous pair of assertions was vacuous: page.goto('/admin') already put
+  // us on /admin, so waitForURL('**/admin**') passed before any login happened,
+  // and 'Access denied' is absent on the sign-in form too. The setup therefore
+  // "passed" while saving a PRE-AUTH storage state, and every admin-gated spec
+  // then silently redirected to /login. Found 2026-07-31, the first time these
+  // specs ever ran with real credentials.
+  await expect(page.getByRole('button', { name: 'Sign out' })).toBeVisible({ timeout: 15_000 })
   await page.context().storageState({ path: statePath('admin') })
 })

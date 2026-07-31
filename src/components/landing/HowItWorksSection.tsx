@@ -92,14 +92,13 @@ export function HowItWorksSection() {
   const steps = activeTab === 'seeker' ? seekerSteps : employerSteps
 
   return (
-    <section className="px-4 py-20" style={{ backgroundColor: 'var(--color-bg)' }}>
+    <section className="px-4 py-20 bg-bg">
       <div className="mx-auto max-w-6xl">
         {/* Eyebrow */}
         <div className="mb-4 flex items-center gap-3">
-          <div className="h-px w-8" style={{ backgroundColor: 'var(--color-brand)' }} />
+          <div className="h-px w-8 bg-brand" />
           <p
-            className="text-xs font-bold tracking-widest uppercase"
-            style={{ color: 'var(--color-brand-700)' }}
+            className="text-xs font-bold tracking-widest uppercase text-brand-700"
           >
             How It Works
           </p>
@@ -107,19 +106,17 @@ export function HowItWorksSection() {
 
         {/* Title */}
         <h2
-          className="font-display mb-10 text-4xl font-bold md:text-5xl"
-          style={{ color: 'var(--color-brand-900)' }}
+          className="font-display mb-10 text-4xl font-bold md:text-5xl text-brand-900"
         >
           Your Path to the{' '}
-          <em style={{ color: 'var(--color-brand-700)', fontStyle: 'italic' }}>Perfect Match</em>
+          <em className="text-brand-700 italic">Perfect Match</em>
         </h2>
 
         {/* Tab toggle */}
         <div
-          className="mb-12 inline-flex rounded-full p-1"
+          className="mb-12 inline-flex rounded-full p-1 bg-border"
           role="tablist"
           aria-label="Choose your path"
-          style={{ backgroundColor: 'var(--color-border)' }}
         >
           {tabs.map((t) => (
             <button
@@ -153,30 +150,21 @@ export function HowItWorksSection() {
               {/* Connector line (desktop only, not on last card) */}
               {index < steps.length - 1 && (
                 <div
-                  className="absolute top-8 left-full z-0 hidden h-px w-full lg:block"
-                  style={{
-                    width: 'calc(100% - 64px)',
-                    left: '80%',
-                    backgroundColor: 'var(--color-border)',
-                    borderTop: '2px dashed var(--color-border)',
-                  }}
+                  className="bg-border border-border absolute top-8 left-full z-0 hidden h-px w-full border-t-2 border-dashed lg:block"
+                  // calc()/left have no utility equivalent; colour is on classes.
+                  style={{ width: 'calc(100% - 64px)', left: '80%' }}
                   aria-hidden="true"
                 />
               )}
 
               <div
-                className="relative z-10 h-full rounded-2xl p-6"
-                style={{
-                  backgroundColor: 'var(--color-surface)',
-                  border: '1px solid var(--color-border)',
-                }}
+                className="bg-surface border border-border relative z-10 h-full rounded-2xl p-6"
               >
                 {/* Faded step number — decorative watermark, hidden from a11y tree (TF-020).
                     data-decorative marks it for the axe exclusion in tests/e2e/a11y.spec.ts:
                     WCAG 1.4.3 exempts purely decorative text, which axe cannot infer. */}
                 <p
-                  className="font-display mb-4 text-6xl leading-none font-bold select-none"
-                  style={{ color: 'var(--color-border)' }}
+                  className="font-display mb-4 text-6xl leading-none font-bold select-none text-border"
                   aria-hidden="true"
                   data-decorative="watermark"
                 >
@@ -186,22 +174,20 @@ export function HowItWorksSection() {
                 {/* Icon */}
                 <div className="mb-3">
                   <step.icon
-                    className="h-6 w-6"
-                    style={{ color: 'var(--color-brand-700)' }}
+                    className="h-6 w-6 text-brand-700"
                     aria-hidden="true"
                   />
                 </div>
 
                 {/* Title */}
                 <h3
-                  className="font-display mb-2 text-lg font-bold"
-                  style={{ color: 'var(--color-brand-900)' }}
+                  className="font-display mb-2 text-lg font-bold text-brand-900"
                 >
                   {step.title}
                 </h3>
 
                 {/* Description */}
-                <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
+                <p className="text-sm leading-relaxed text-text-muted">
                   {step.description}
                 </p>
               </div>

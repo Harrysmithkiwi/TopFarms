@@ -18,6 +18,7 @@ import { hasActiveFilters, snapshotFilters, deriveAutoName } from '@/lib/savedSe
 import { SaveSearchModal } from '@/components/saved-search/SaveSearchModal'
 import { ReplaceOldestModal } from '@/components/saved-search/ReplaceOldestModal'
 import { SavedSearchesDropdown } from '@/components/saved-search/SavedSearchesDropdown'
+import { ErrorState } from '@/components/ui/ErrorState'
 import type {
   JobListing,
   MatchScore,
@@ -119,6 +120,10 @@ export function JobSearch() {
     Map<string, EmployerVerificationMap>
   >(new Map())
   const [loading, setLoading] = useState(true)
+  // Phase 5.6: a failed query must not render as "No jobs listed right now".
+  // That message is indistinguishable from the truth on an empty marketplace,
+  // which is exactly the state production is in — so the bug is invisible.
+  const [loadError, setLoadError] = useState(false)
   const [totalCount, setTotalCount] = useState(0)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [expandedId, setExpandedId] = useState<string | null>(null)
@@ -255,6 +260,7 @@ export function JobSearch() {
   const fetchJobs = useCallback(
     async () => {
       setLoading(true)
+      setLoadError(false)
       try {
         const from = (pageParam - 1) * PAGE_SIZE
         const to = from + PAGE_SIZE - 1
@@ -381,6 +387,8 @@ export function JobSearch() {
 
         if (error) {
           console.error('JobSearch: query error', error)
+          setLoadError(true)
+          setLoading(false)
           return
         }
 
@@ -581,6 +589,8 @@ export function JobSearch() {
           {/* Results */}
           <main>
             <ResultsArea
+              loadError={loadError}
+              onRetry={fetchJobs}
               jobs={jobs}
               scores={scores}
               employerVerifications={employerVerifications}
@@ -607,6 +617,8 @@ export function JobSearch() {
         {/* Mobile: full-width results */}
         <div className="md:hidden">
           <ResultsArea
+            loadError={loadError}
+            onRetry={fetchJobs}
             jobs={jobs}
             scores={scores}
             employerVerifications={employerVerifications}
@@ -666,6 +678,9 @@ export function JobSearch() {
 // ─── Results Area Sub-component ───────────────────────────────────────────────
 
 interface ResultsAreaProps {
+  /** Phase 5.6 — failed is distinct from empty. */
+  loadError: boolean
+  onRetry: () => void
   jobs: JobWithEmployer[]
   scores: Map<string, MatchScore>
   employerVerifications: Map<string, EmployerVerificationMap>
@@ -692,6 +707,8 @@ interface ResultsAreaProps {
 function ResultsArea({
   jobs,
   scores,
+  loadError,
+  onRetry,
   employerVerifications,
   appliedStatuses,
   loading,
@@ -784,9 +801,15 @@ function ResultsArea({
         </div>
       )}
 
+      {/* Failed — checked before either empty state. Phase 5.6. */}
+      {!loading && loadError && (
+        <ErrorState message="We could not load jobs" onRetry={onRetry} />
+      )}
+
       {/* Empty state — TF-007: only blame filters when filters are actually set.
           With no filters and no jobs the marketplace is simply empty; say so. */}
       {!loading &&
+        !loadError &&
         jobs.length === 0 &&
         (hasActiveFilters(searchParams) ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">

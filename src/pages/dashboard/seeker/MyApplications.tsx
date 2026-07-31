@@ -11,6 +11,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useSavedJobs } from '@/hooks/useSavedJobs'
 import type { Application, ApplicationStatus, MatchScore, JobListing } from '@/types/domain'
 import { ACTIVE_STATUSES, COMPLETED_STATUSES } from '@/types/domain'
+import { ErrorState } from '@/components/ui/ErrorState'
 
 type ApplicationWithJob = Application & {
   jobs: JobListing & { employer_profiles: { farm_name: string; region: string } }
@@ -38,6 +39,9 @@ export function MyApplications() {
   const [applications, setApplications] = useState<ApplicationWithJob[]>([])
   const [scoreMap, setScoreMap] = useState<Map<string, MatchScore>>(new Map())
   const [loading, setLoading] = useState(true)
+  // Phase 5.6 — failed is not empty.
+  const [loadError, setLoadError] = useState(false)
+  const [reloadNonce, setReloadNonce] = useState(0)
   const [sidebarFilter, setSidebarFilter] = useState('all')
   const [sidebarSheetOpen, setSidebarSheetOpen] = useState(false)
   const [savedJobDetails, setSavedJobDetails] = useState<
@@ -47,6 +51,7 @@ export function MyApplications() {
 
   useEffect(() => {
     async function loadData() {
+      setLoadError(false)
       if (!session?.user) {
         setLoading(false)
         return
@@ -59,7 +64,13 @@ export function MyApplications() {
         .eq('user_id', session.user.id)
         .single()
 
-      if (profileError || !profileData) {
+      if (profileError && profileError.code !== 'PGRST116') {
+        console.error('MyApplications: failed to load seeker profile', profileError)
+        setLoadError(true)
+        setLoading(false)
+        return
+      }
+      if (!profileData) {
         setLoading(false)
         return
       }
@@ -75,6 +86,7 @@ export function MyApplications() {
 
       if (error) {
         console.error('MyApplications: failed to load applications', error)
+        setLoadError(true)
         setLoading(false)
         return
       }
@@ -153,7 +165,7 @@ export function MyApplications() {
     }
 
     loadData()
-  }, [session?.user?.id])
+  }, [session?.user?.id, reloadNonce])
 
   async function handleWithdraw(applicationId: string) {
     // Confirmation is handled by ApplicationCard before this fires.
@@ -222,15 +234,13 @@ export function MyApplications() {
           {/* Header */}
           <div className="flex items-center gap-3">
             <h1
-              className="font-display text-3xl font-semibold"
-              style={{ color: 'var(--color-brand-900)' }}
+              className="font-display text-3xl font-semibold text-brand-900"
             >
               My Applications
             </h1>
             {!loading && applications.length > 0 && (
               <span
-                className="font-body rounded-full px-2.5 py-1 text-[12px] font-semibold"
-                style={{ backgroundColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
+                className="font-body bg-border text-text-muted rounded-full px-2.5 py-1 text-xs font-semibold"
               >
                 {applications.length}
               </span>
@@ -243,7 +253,7 @@ export function MyApplications() {
                 <Dialog.Trigger asChild>
                   <button
                     type="button"
-                    className="border-border bg-surface font-body text-text-muted hover:border-border-strong flex min-h-11 items-center gap-2 rounded-[8px] border px-3 py-2 text-[13px] transition-colors"
+                    className="border-border bg-surface font-body text-text-muted hover:border-border-strong flex min-h-11 items-center gap-2 rounded-[8px] border px-3 py-2 text-label transition-colors"
                   >
                     <SlidersHorizontal className="h-4 w-4" />
                     Filters &amp; saved
@@ -288,18 +298,23 @@ export function MyApplications() {
           )}
 
           {/* Empty state */}
-          {!loading && applications.length === 0 && (
+          {!loading && loadError && (
+            <ErrorState
+              message="We could not load your applications"
+              onRetry={() => setReloadNonce((n) => n + 1)}
+            />
+          )}
+
+          {!loading && !loadError && applications.length === 0 && (
             <div
-              className="rounded-[12px] p-12 text-center"
-              style={{ backgroundColor: 'var(--color-surface-2)' }}
+              className="rounded-[12px] p-12 text-center bg-surface-2"
             >
               <p
-                className="font-body mb-2 text-base font-semibold"
-                style={{ color: 'var(--color-text)' }}
+                className="font-body mb-2 text-base font-semibold text-text"
               >
                 You haven't applied to any jobs yet.
               </p>
-              <p className="mb-4 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+              <p className="mb-4 text-sm text-text-muted">
                 Browse open roles to find your next farm position.
               </p>
               <Link
@@ -328,10 +343,9 @@ export function MyApplications() {
           )}
 
           {/* Filtered empty state (when filter active but no matches) */}
-          {!loading && applications.length > 0 && filteredApplications.length === 0 && (
+          {!loading && !loadError && applications.length > 0 && filteredApplications.length === 0 && (
             <div
-              className="rounded-[12px] p-8 text-center"
-              style={{ backgroundColor: 'var(--color-surface-2)' }}
+              className="rounded-[12px] p-8 text-center bg-surface-2"
             >
               <p className="font-body text-text-muted text-sm">
                 No applications match this filter.

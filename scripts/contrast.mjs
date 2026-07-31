@@ -120,4 +120,58 @@ if (rawOnTint) {
   console.log(rawOnTint)
   process.exit(1)
 }
+// ── text-brand rule (Phase 5.1b) ────────────────────────────────────────────
+// Phase 4.1 demoted --color-brand to a fill-and-border colour: white-on-brand
+// and brand-on-white are both 3.30:1, which clears the 3:1 non-text bar and
+// fails the 4.5:1 text bar. The tinted-background scan above cannot see this —
+// brand-on-WHITE is the same defect in a different shape, and it survived Phase
+// 4 on every route axe did not scan.
+//
+// Icons are legitimate at 3.30 (WCAG 1.4.11 non-text). We cannot infer element
+// type reliably, so this FAILS CLOSED: an element whose tag is not a known icon
+// must carry `contrast-exempt-non-text` within the preceding 3 lines, or the
+// gate rejects it. An exemption is a claim someone signed, not a silent pass.
+import { readdirSync, readFileSync as rf } from 'node:fs'
+import { join } from 'node:path'
+
+const ROOT = new URL('..', import.meta.url).pathname
+const walk = (d) =>
+  readdirSync(d, { withFileTypes: true }).flatMap((e) => {
+    const p = join(d, e.name)
+    return e.isDirectory() ? walk(p) : /\.tsx?$/.test(e.name) ? [p] : []
+  })
+
+const SVG_TAGS = /^(svg|path|circle|rect|line|polyline|ellipse|polygon)$/
+const offenders = []
+for (const file of walk(join(ROOT, 'src'))) {
+  const src = rf(file, 'utf8')
+  if (!/text-brand(?![-a-zA-Z0-9])/.test(src)) continue
+  const icons = new Set()
+  for (const m of src.matchAll(/import\s*\{([^}]+)\}\s*from\s*['"]lucide-react['"]/g))
+    m[1].split(',').forEach((n) => icons.add(n.trim().split(' as ').pop().trim()))
+  const lines = src.split('\n')
+  lines.forEach((ln, i) => {
+    if (!/text-brand(?![-a-zA-Z0-9])/.test(ln)) return
+    // Skip comment lines: prose ABOUT the rule is not a use of it.
+    if (/^\s*(\/\/|\*|\{?\/\*)/.test(ln)) return
+    // The exemption may sit a few lines above the element it describes (JSX
+    // forbids comments between attributes), so look back a whole element.
+    if (lines.slice(Math.max(0, i - 10), i + 1).join(' ').includes('contrast-exempt-non-text')) return
+    let tag = null
+    for (let j = i; j >= 0 && j > i - 8; j--) {
+      const m = /<([A-Za-z][\w.]*)/.exec(lines[j])
+      if (m) { tag = m[1]; break }
+    }
+    if (tag && (icons.has(tag) || SVG_TAGS.test(tag) || /Icon$/.test(tag))) return
+    offenders.push(`${file.replace(ROOT, '')}:${i + 1}  <${tag ?? '?'}>  ${ln.trim().slice(0, 80)}`)
+  })
+}
+if (offenders.length) {
+  console.log()
+  console.log('`text-brand` on a non-icon element — 3.30:1, fails AA for text.')
+  console.log('Use `text-brand-hover` (5.02:1), or add `contrast-exempt-non-text` if it really is non-text:')
+  offenders.forEach((o) => console.log(`  ${o}`))
+  process.exit(1)
+}
+
 if (failed > 0) process.exit(1)

@@ -26,7 +26,7 @@ const sectors = [
 
 export function FarmTypesStrip() {
   return (
-    <section className="px-4 py-20" style={{ backgroundColor: 'var(--color-surface)' }}>
+    <section className="px-4 py-20 bg-surface">
       <motion.div
         className="mx-auto max-w-6xl"
         initial={{ opacity: 0, y: 32 }}
@@ -36,10 +36,9 @@ export function FarmTypesStrip() {
       >
         {/* Eyebrow */}
         <div className="mb-4 flex items-center gap-3">
-          <div className="h-px w-8" style={{ backgroundColor: 'var(--color-brand)' }} />
+          <div className="h-px w-8 bg-brand" />
           <p
-            className="text-xs font-bold tracking-widest uppercase"
-            style={{ color: 'var(--color-brand-700)' }}
+            className="text-xs font-bold tracking-widest uppercase text-brand-700"
           >
             Farm Sectors
           </p>
@@ -47,8 +46,7 @@ export function FarmTypesStrip() {
 
         {/* Heading */}
         <h2
-          className="font-display mb-10 text-4xl font-bold md:text-5xl"
-          style={{ color: 'var(--color-brand-900)' }}
+          className="font-display mb-10 text-4xl font-bold md:text-5xl text-brand-900"
         >
           Opportunities Across Every Sector
         </h2>
@@ -59,18 +57,13 @@ export function FarmTypesStrip() {
             <Link
               key={value}
               to={`/jobs?sector=${value}`}
-              className="focus-visible:outline-brand min-w-[160px] snap-center rounded-xl p-6 text-center transition-shadow hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 sm:min-w-0"
-              style={{
-                backgroundColor: 'var(--color-surface)',
-                border: '1px solid var(--color-border)',
-              }}
+              className="bg-surface border border-border focus-visible:outline-brand min-w-[160px] snap-center rounded-xl p-6 text-center transition-shadow hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 sm:min-w-0"
             >
               <Icon
-                className="mx-auto mb-3 h-7 w-7"
-                style={{ color: 'var(--color-brand-700)' }}
+                className="mx-auto mb-3 h-7 w-7 text-brand-700"
                 aria-hidden="true"
               />
-              <p className="text-sm font-bold" style={{ color: 'var(--color-brand-900)' }}>
+              <p className="text-sm font-bold text-brand-900">
                 {name}
               </p>
             </Link>

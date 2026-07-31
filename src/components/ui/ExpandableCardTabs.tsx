@@ -113,7 +113,7 @@ export function ExpandableCardTabs({
             )}
             <Link
               to={`/jobs/${job.id}`}
-              className="font-body text-brand hover:text-brand-hover mt-3 inline-block text-[13px] font-semibold transition-colors"
+              className="font-body text-brand-hover hover:text-brand-900 mt-3 inline-block text-[13px] font-semibold transition-colors"
               onClick={(e) => e.stopPropagation()}
             >
               View Full Listing &rarr;

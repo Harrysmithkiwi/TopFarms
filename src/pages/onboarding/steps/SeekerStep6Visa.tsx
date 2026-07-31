@@ -35,10 +35,10 @@ export function SeekerStep6Visa({ onComplete, onBack, defaultValues }: SeekerSte
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
+        <h2 className="text-lg font-semibold text-text">
           Visa status
         </h2>
-        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="mt-1 text-sm text-text-muted">
           This helps us match you with employers offering the right sponsorship
         </p>
       </div>
@@ -58,23 +58,14 @@ export function SeekerStep6Visa({ onComplete, onBack, defaultValues }: SeekerSte
       />
 
       {/* Info box */}
-      <div
-        className="flex items-start gap-3 rounded-[8px] border-[1.5px] p-4"
-        style={{
-          borderColor: 'rgba(59,130,246,0.3)',
-          backgroundColor: 'rgba(59,130,246,0.05)',
-        }}
-      >
-        <svg
-          className="mt-0.5 h-4 w-4 flex-shrink-0"
-          viewBox="0 0 16 16"
-          fill="none"
-          style={{ color: 'rgb(59,130,246)' }}
-        >
+      <div className="border-info/30 bg-info-bg flex items-start gap-3 rounded-[8px] border-[1.5px] p-4">
+        <svg className="text-info mt-0.5 h-4 w-4 flex-shrink-0" viewBox="0 0 16 16" fill="none">
           <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
           <path d="M8 7v4M8 5.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
-        <p className="font-body text-[13px]" style={{ color: 'rgb(30,64,175)' }}>
+        {/* text-on-bg, not the raw --color-info: this box sits on a tint, and the
+            Phase 4.1 contract forbids the fill colour carrying text. */}
+        <p className="font-body text-info-text-on-bg text-label">
           Your visa status helps us match you with jobs that offer the right sponsorship. This
           information is only shared with employers when you apply.
         </p>

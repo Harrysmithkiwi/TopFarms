@@ -9,6 +9,7 @@ import { AuthLayout } from '@/components/layout/AuthLayout'
 import { useAuth } from '@/hooks/useAuth'
 import { usePageMeta } from '@/lib/usePageMeta'
 import { dashboardPathFor } from '@/lib/routing'
+import { cn } from '@/lib/utils'
 
 const schema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -82,12 +83,7 @@ export function Login() {
             type="button"
             onClick={() => handleOAuth('google')}
             disabled={oauthLoading}
-            className="flex w-full items-center justify-center gap-3 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors disabled:opacity-60"
-            style={{
-              borderColor: 'var(--color-border)',
-              backgroundColor: 'var(--color-surface)',
-              color: 'var(--color-text)',
-            }}
+            className="border-border bg-surface text-text flex w-full items-center justify-center gap-3 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors disabled:opacity-60"
           >
             <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -115,6 +111,7 @@ export function Login() {
             onClick={() => handleOAuth('facebook')}
             disabled={oauthLoading}
             className="flex w-full items-center justify-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors disabled:opacity-60"
+            // Facebook brand blue — third-party brand colour, sanctioned (Task 5.3).
             style={{
               backgroundColor: '#1877F2',
               color: '#FFFFFF',
@@ -138,19 +135,18 @@ export function Login() {
 
         {/* OR divider */}
         <div className="relative flex items-center gap-3">
-          <div className="h-px flex-1" style={{ backgroundColor: 'var(--color-border)' }} />
-          <span className="text-xs" style={{ color: 'var(--color-text-subtle)' }}>
+          <div className="h-px flex-1 bg-border" />
+          <span className="text-xs text-text-subtle">
             or
           </span>
-          <div className="h-px flex-1" style={{ backgroundColor: 'var(--color-border)' }} />
+          <div className="h-px flex-1 bg-border" />
         </div>
 
         {/* Email */}
         <div>
           <label
             htmlFor="email"
-            className="mb-1.5 block text-sm font-medium"
-            style={{ color: 'var(--color-text)' }}
+            className="mb-1.5 block text-sm font-medium text-text"
           >
             Email address
           </label>
@@ -159,15 +155,13 @@ export function Login() {
             type="email"
             autoComplete="email"
             {...register('email')}
-            className="w-full rounded-lg border px-3.5 py-2.5 text-sm transition-colors"
-            style={{
-              borderColor: errors.email ? 'var(--color-danger)' : 'var(--color-border)',
-              backgroundColor: 'var(--color-surface)',
-              color: 'var(--color-text)',
-            }}
+            className={cn(
+              'bg-surface text-text w-full rounded-lg border px-3.5 py-2.5 text-sm transition-colors',
+              errors.email ? 'border-danger' : 'border-border',
+            )}
           />
           {errors.email && (
-            <p className="mt-1 text-xs" style={{ color: 'var(--color-danger)' }}>
+            <p className="mt-1 text-xs text-danger">
               {errors.email.message}
             </p>
           )}
@@ -178,15 +172,13 @@ export function Login() {
           <div className="mb-1.5 flex items-center justify-between">
             <label
               htmlFor="password"
-              className="block text-sm font-medium"
-              style={{ color: 'var(--color-text)' }}
+              className="block text-sm font-medium text-text"
             >
               Password
             </label>
             <Link
               to="/forgot-password"
-              className="text-xs underline"
-              style={{ color: 'var(--color-brand-900)' }}
+              className="text-xs underline text-brand-900"
             >
               Forgot password?
             </Link>
@@ -197,25 +189,22 @@ export function Login() {
               type={showPassword ? 'text' : 'password'}
               autoComplete="current-password"
               {...register('password')}
-              className="w-full rounded-lg border px-3.5 py-2.5 pr-10 text-sm transition-colors"
-              style={{
-                borderColor: errors.password ? 'var(--color-danger)' : 'var(--color-border)',
-                backgroundColor: 'var(--color-surface)',
-                color: 'var(--color-text)',
-              }}
+              className={cn(
+                'bg-surface text-text w-full rounded-lg border px-3.5 py-2.5 pr-10 text-sm transition-colors',
+                errors.password ? 'border-danger' : 'border-border',
+              )}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute top-1/2 right-3 -translate-y-1/2"
-              style={{ color: 'var(--color-text-subtle)' }}
+              className="absolute top-1/2 right-3 -translate-y-1/2 text-text-subtle"
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
           {errors.password && (
-            <p className="mt-1 text-xs" style={{ color: 'var(--color-danger)' }}>
+            <p className="mt-1 text-xs text-danger">
               {errors.password.message}
             </p>
           )}
@@ -225,22 +214,17 @@ export function Login() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold transition-opacity disabled:opacity-60"
-          style={{
-            backgroundColor: 'var(--color-brand-900)',
-            color: 'var(--color-text-on-brand)',
-          }}
+          className="bg-brand-900 text-text-on-brand w-full rounded-lg px-4 py-2.5 text-sm font-semibold transition-opacity disabled:opacity-60"
         >
           {isSubmitting ? 'Logging in...' : 'Log in'}
         </button>
 
         {/* Signup link */}
-        <p className="text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="text-center text-sm text-text-muted">
           Don't have an account?{' '}
           <Link
             to="/signup"
-            className="font-medium underline"
-            style={{ color: 'var(--color-brand-900)' }}
+            className="font-medium underline text-brand-900"
           >
             Sign up
           </Link>

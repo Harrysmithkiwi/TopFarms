@@ -71,6 +71,47 @@
      All consumers migrated to canonical v2 token names across Phases 1-5 + 19b.
      Final grep sweep verified zero v1 token references in src/ before this block was deleted. */
 
+  /* === Type scale (Phase 5.2) ===
+     Before this, the repo had NO documented scale and had accumulated 14 distinct
+     arbitrary `text-[Npx]` values — including text-[9px] and text-[10px], below
+     anything legible for someone reading a job card outdoors on a phone. Same class
+     of defect Phase 4.1 found in contrast: not a bug in any one component, a missing
+     token every component re-improvised.
+
+     Structure adopted from the rico cheatsheet (2026-07-29): 16px titles, 14px body,
+     13px labels. Its COLOUR values were rejected — see docs/PHASE-5-PROMPT.md for the
+     computed ratios (#777777 is 4.48:1 on white, 4.31:1 on our --color-bg).
+
+     Weight is deliberately NOT coupled to these tokens. The cheatsheet pairs Medium
+     with titles/labels and Regular with body; keep that pairing via font-medium /
+     font-normal at the call site, so a semibold title does not have to fight a token.
+
+     11px is the floor. Nothing in this product renders below it.
+
+     Only TWO tokens are added, because the built-in Tailwind scale already covers
+     most of what this product needs and duplicating it would be the same variance
+     this phase exists to remove. The two most-improvised sizes here — 13px (266 uses)
+     and 11px (116) — are precisely the two Tailwind has no step for. Everything else
+     maps onto the built-ins that 227 `text-sm` and 74 `text-xs` call sites already use.
+
+         text-micro   11px  <- ADDED   tags, badges, the floor
+         text-xs      12px  built-in   timestamps, secondary meta
+         text-label   13px  <- ADDED   form labels, table headers, dense UI
+         text-sm      14px  built-in   body — prose the user actually reads
+         text-base    16px  built-in   card and section titles
+         text-lg      18px  built-in
+         text-xl      20px  built-in   page headings
+         text-2xl     24px  built-in
+         text-3xl     30px  built-in
+
+     Migration of the 14 arbitrary values: 9,10 -> text-micro · 15 -> sm or base ·
+     17 -> base or lg · 22 -> 2xl · 28 -> 3xl. 15 and 17 are judged per site by
+     looking at the render, not by rule. */
+  --text-micro: 11px;
+  --text-micro--line-height: 14px;
+  --text-label: 13px;
+  --text-label--line-height: 16px;
+
   /* Typography — both --font-display and --font-body point at Inter
      (Migration Audit Decision 2: keep two CSS variables to avoid font find/replace
      during Phase 19; collapse to single --font-sans in post-migration cleanup) */

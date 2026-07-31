@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { Navigate } from 'react-router'
 import { useAuth } from '@/hooks/useAuth'
 import { dashboardPathFor } from '@/lib/routing'
+import { RouteSkeleton } from '@/components/ui/Skeleton'
 
 interface ProtectedRouteProps {
   children: ReactNode
@@ -13,16 +14,8 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
 
   if (loading) {
     return (
-      <div className="bg-bg flex min-h-screen items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div
-            className="border-border border-t-brand h-10 w-10 animate-spin rounded-full border-4"
-            aria-label="Loading"
-          />
-          <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-            Loading...
-          </p>
-        </div>
+      <div className="bg-bg min-h-screen">
+        <RouteSkeleton />
       </div>
     )
   }
@@ -41,16 +34,8 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
   // is manual nav. Acceptable for MVP.
   if (requiredRole && role === null) {
     return (
-      <div className="bg-bg flex min-h-screen items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div
-            className="border-border border-t-brand h-10 w-10 animate-spin rounded-full border-4"
-            aria-label="Loading"
-          />
-          <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-            Loading...
-          </p>
-        </div>
+      <div className="bg-bg min-h-screen">
+        <RouteSkeleton />
       </div>
     )
   }

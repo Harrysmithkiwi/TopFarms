@@ -47,13 +47,16 @@ export function Sidebar() {
             className={({ isActive }) =>
               [
                 'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all',
-                isActive ? 'font-semibold' : 'hover:bg-surface-2/50',
+                // Phase 5.0a — was --color-brand on an rgba(45,80,22,0.05) tint:
+                // 3.04:1, an AA failure on the primary navigation of every
+                // dashboard. Inline styles, so scripts/contrast.mjs could not see
+                // it and axe could not reach the route without credentials.
+                // Reuses AdminSidebar's filled active state (white on
+                // brand-hover, 5.02:1) rather than inventing a third answer.
+                isActive
+                  ? 'bg-brand-hover text-text-on-brand font-semibold'
+                  : 'text-text-muted hover:bg-surface-2/50',
               ].join(' ')
-            }
-            style={({ isActive }) =>
-              isActive
-                ? { color: 'var(--color-brand)', backgroundColor: 'rgba(45,80,22,0.05)' }
-                : { color: 'var(--color-text-muted)' }
             }
           >
             <item.icon size={18} />

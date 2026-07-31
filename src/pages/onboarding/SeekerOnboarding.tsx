@@ -14,6 +14,7 @@ import { SeekerStep5LifeSituation } from './steps/SeekerStep5LifeSituation'
 import { SeekerStep6Visa } from './steps/SeekerStep6Visa'
 import { SeekerStep7Complete } from './steps/SeekerStep7Complete'
 import type { SeekerProfileData } from '@/types/domain'
+import { ErrorState } from '@/components/ui/ErrorState'
 
 const STEP_LABELS = [
   'Farm Type',
@@ -32,6 +33,8 @@ export function SeekerOnboarding() {
   const navigate = useNavigate()
   const [profileData, setProfileData] = useState<Partial<SeekerProfileData>>({})
   const [loading, setLoading] = useState(true)
+  const [profileError, setProfileError] = useState(false)
+  const [reloadNonce, setReloadNonce] = useState(0)
   const [saving, setSaving] = useState(false)
   const [initialStep, setInitialStep] = useState(0)
   const [seekerProfileId, setSeekerProfileId] = useState<string | null>(null)
@@ -58,8 +61,14 @@ export function SeekerOnboarding() {
         .single()
 
       if (error && error.code !== 'PGRST116') {
-        // PGRST116 = no rows found (expected for new users)
+        // PGRST116 = no rows found (expected for new users). Anything else and we
+        // do NOT know whether this seeker has onboarded -- and Phase 5.6 says an
+        // unknown must not be rendered as a known. Falling through here restarts
+        // the wizard at step 0 for someone who already finished it.
         console.error('Error loading seeker profile:', error)
+        setProfileError(true)
+        setLoading(false)
+        return
       }
 
       if (data) {
@@ -104,7 +113,7 @@ export function SeekerOnboarding() {
 
     loadProfile()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session?.user?.id])
+  }, [session?.user?.id, reloadNonce])
 
   // BUG-03 2026-05-04: SeekerStep7Complete has no onComplete prop and no explicit
   // "finish" button — it's a "you're done" matches view. Without firing the completion
@@ -166,13 +175,26 @@ export function SeekerOnboarding() {
     }
   }
 
+  if (profileError) {
+    return (
+      <DashboardLayout>
+        <ErrorState
+          message="We could not load your profile"
+          onRetry={() => {
+            setProfileError(false)
+            setReloadNonce((n) => n + 1)
+          }}
+        />
+      </DashboardLayout>
+    )
+  }
+
   if (loading) {
     return (
       <DashboardLayout>
         <div className="flex min-h-[400px] items-center justify-center">
           <div
-            className="h-8 w-8 animate-spin rounded-full border-[3px] border-t-transparent"
-            style={{ borderColor: 'var(--color-brand-hover)', borderTopColor: 'transparent' }}
+            className="h-8 w-8 animate-spin rounded-full border-[3px] border-brand-hover border-t-transparent"
           />
         </div>
       </DashboardLayout>
@@ -187,12 +209,11 @@ export function SeekerOnboarding() {
         {/* Header */}
         <div>
           <h1
-            className="font-display text-2xl font-semibold"
-            style={{ color: 'var(--color-brand-900)' }}
+            className="font-display text-2xl font-semibold text-brand-900"
           >
             Set up your job seeker profile
           </h1>
-          <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+          <p className="mt-1 text-sm text-text-muted">
             Complete your profile to search with match scores and apply to farm jobs
           </p>
         </div>
@@ -204,12 +225,10 @@ export function SeekerOnboarding() {
         <div className="bg-surface border-border rounded-[16px] border p-6 shadow-sm">
           {saving && (
             <div
-              className="mb-4 flex items-center gap-2 text-sm"
-              style={{ color: 'var(--color-brand)' }}
+              className="mb-4 flex items-center gap-2 text-sm text-brand-hover"
             >
               <div
-                className="h-4 w-4 animate-spin rounded-full border-[2px] border-t-transparent"
-                style={{ borderColor: 'var(--color-brand)', borderTopColor: 'transparent' }}
+                className="h-4 w-4 animate-spin rounded-full border-[2px] border-brand border-t-transparent"
               />
               Saving...
             </div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ChevronRight } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { ErrorState } from '@/components/ui/ErrorState'
 
 /**
  * LeadsFunnel — pipeline visibility on /admin/leads (Admin Portal v2 #4).
@@ -25,6 +26,8 @@ const STAGES: { key: 'new' | 'contacted' | 'onboarded'; label: string }[] = [
 
 export function LeadsFunnel({ refreshKey }: { refreshKey?: number }) {
   const [data, setData] = useState<Analytics | null>(null)
+  // Phase 5.6: without this the widget renders nothing and reads as "no leads".
+  const [loadError, setLoadError] = useState(false)
 
   useEffect(() => {
     let live = true
@@ -32,6 +35,7 @@ export function LeadsFunnel({ refreshKey }: { refreshKey?: number }) {
       if (!live) return
       if (error) {
         console.error('admin_analytics_leads failed', error)
+        setLoadError(true)
         return
       }
       setData(data as unknown as Analytics)
@@ -41,6 +45,8 @@ export function LeadsFunnel({ refreshKey }: { refreshKey?: number }) {
     }
   }, [refreshKey])
 
+  if (loadError)
+    return <ErrorState message="Could not load the leads funnel" onRetry={() => setLoadError(false)} compact />
   if (!data) return null
   // Bar width is relative to the largest stage so the funnel shape reads at a glance.
   const peak = Math.max(1, data.by_status.new, data.by_status.contacted, data.by_status.onboarded)

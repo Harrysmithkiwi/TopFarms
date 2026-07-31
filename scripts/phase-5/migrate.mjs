@@ -1,0 +1,207 @@
+// Phase 5 Task 5.1 — per-file inline-colour-style -> Tailwind utility transform.
+//   node migrate.mjs <file> [--dry]
+// Handles ONLY single-property colour styles, merged into the enclosing tag's
+// className. Anything else is left alone and reported, so nothing is silently
+// dropped. Run on ONE file at a time; diff-review before committing.
+import { readFileSync, writeFileSync } from 'node:fs'
+
+const [file, ...flags] = process.argv.slice(2)
+const dry = flags.includes('--dry')
+let src = readFileSync(file, 'utf8')
+
+const PROP = { color: 'text', backgroundColor: 'bg', borderColor: 'border' }
+
+// `var(--color-x)` -> token name `x`; bare literals map to Tailwind names.
+const LITERAL = { white: 'white', transparent: 'transparent' }
+
+// Tailwind expresses alpha as `/NN`. Only colours that map to a known token are
+// converted; an unrecognised rgb() is left for a human, because picking a token
+// for an arbitrary colour is a design decision, not a transform.
+const RGB_TOKENS = { '255,255,255': 'white', '0,0,0': 'black' }
+
+/**
+ * Non-colour properties that block an otherwise-convertible object. Each returns
+ * the full utility string (possibly several classes). Anything not listed here
+ * still defers to a human.
+ */
+const SHORTHAND = (prop, value) => {
+  if (prop === 'opacity') { const m = value.match(/^__op(\d+)$/); return m ? `opacity-${m[1]}` : null }
+  if (prop === 'fontFamily') {
+    const m = value.match(/^var\(--font-(display|body|mono)\)$/)
+    return m ? `font-${m[1]}` : null
+  }
+  if (prop === 'accentColor') {
+    const m = value.match(/^var\(--color-([a-z0-9-]+)\)$/)
+    return m ? `accent-${m[1]}` : null
+  }
+  if (prop === 'fontStyle') return value === 'italic' ? 'italic' : value === 'normal' ? 'not-italic' : null
+  if (prop === 'borderRadius') return /^\d+px$/.test(value) ? `rounded-[${value}]` : null
+  if (prop === 'backdropFilter') {
+    const m = value.match(/^blur\((\d+px)\)$/)
+    return m ? `backdrop-blur-[${m[1]}]` : null
+  }
+  // `border: '1px solid var(--color-x)'` and the per-side variants.
+  const side = { border: '', borderTop: '-t', borderRight: '-r', borderBottom: '-b', borderLeft: '-l' }[prop]
+  if (side !== undefined) {
+    if (value === 'none') return `border${side}-0`
+    const m = value.match(/^(\d+)px\s+(solid|dashed|dotted)\s+var\(--color-([a-z0-9-]+)\)$/)
+    if (m) {
+      const width = m[1] === '1' ? `border${side}` : `border${side}-${m[1]}`
+      const style = m[2] === 'solid' ? '' : ` border-${m[2]}`
+      return `${width}${style} border-${m[3]}`
+    }
+    const r = value.match(/^(\d+)px\s+(solid|dashed|dotted)\s+rgba?\(\s*(\d+\s*,\s*\d+\s*,\s*\d+)\s*(?:,\s*([\d.]+))?\s*\)$/)
+    if (r) {
+      const token = RGB_TOKENS[r[3].replace(/\s/g, '')]
+      if (!token) return null
+      const a = r[4] === undefined ? 1 : parseFloat(r[4])
+      const colour = a === 1 ? `border-${token}` : `border-${token}/${Math.round(a * 100)}`
+      const width = r[1] === '1' ? `border${side}` : `border${side}-${r[1]}`
+      const style = r[2] === 'solid' ? '' : ` border-${r[2]}`
+      return `${width}${style} ${colour}`
+    }
+  }
+  return null
+}
+
+const toClass = (prop, value) => {
+  const sh = SHORTHAND(prop, value)
+  if (sh) return sh
+  const p = PROP[prop]
+  if (!p) return null
+  const v = value.match(/^var\(--color-([a-z0-9-]+)\)$/)
+  if (v) return `${p}-${v[1]}`
+  const lit = LITERAL[value]
+  if (lit) return `${p}-${lit}`
+  const rgba = value.match(/^rgba?\(\s*(\d+\s*,\s*\d+\s*,\s*\d+)\s*(?:,\s*([\d.]+)\s*)?\)$/)
+  if (rgba) {
+    const token = RGB_TOKENS[rgba[1].replace(/\s/g, '')]
+    if (!token) return null
+    const a = rgba[2] === undefined ? 1 : parseFloat(rgba[2])
+    if (a === 1) return `${p}-${token}`
+    const pct = Math.round(a * 100)
+    return `${p}-${token}/${pct}`
+  }
+  return null
+}
+
+/** Find the JSX tag containing index i: returns [tagStart, tagEnd]. */
+const enclosingTag = (s, i) => {
+  const start = s.lastIndexOf('<', i)
+  if (start < 0) return null
+  // Walk forward respecting nested {} so `className={cn(...)}` does not end the tag early.
+  let depth = 0
+  for (let j = start; j < s.length; j++) {
+    const c = s[j]
+    if (c === '{') depth++
+    else if (c === '}') depth--
+    else if (c === '>' && depth === 0) return [start, j]
+  }
+  return null
+}
+
+const skipped = []
+let applied = 0
+
+/**
+ * Multi-property objects are ~100 of the 751 remaining and are where the real
+ * bugs hide (the 3.95:1 error message was one). Convert only when EVERY property
+ * maps to a utility — a partial conversion would silently drop styling, which is
+ * worse than leaving the object alone. Returns null to defer to a human.
+ */
+const multiToClasses = (body) => {
+  // opacity: 0.8 is unquoted, so handle numerics before the string pass.
+  body = body.replace(/opacity:\s*([\d.]+)\s*,?/g, (_, v) => `opacity: '__op${Math.round(parseFloat(v) * 100)}',`)
+  const props = [...body.matchAll(/([A-Za-z]+):\s*'([^']*)'\s*,?/g)]
+  if (!props.length) return null
+  // Reject if anything in the body was not a simple quoted string prop.
+  const consumed = props.reduce((n, m) => n + m[0].length, 0)
+  if (body.replace(/\s|,/g, '').length > consumed) {
+    const stripped = body.replace(/([A-Za-z]+):\s*'([^']*)'\s*,?/g, '').replace(/[\s,]/g, '')
+    if (stripped.length) return null
+  }
+  const classes = []
+  for (const [, prop, value] of props) {
+    const c = toClass(prop, value)
+    if (!c) return null
+    classes.push(c)
+  }
+  return classes.join(' ')
+}
+
+// Repeat until no more matches — each edit shifts offsets.
+for (;;) {
+  // Multi-property first: the single-prop pattern would otherwise not match them
+  // and they would never be attempted.
+  const mm = /\s*style=\{\{([^{}]*)\}\}/.exec(src)
+  if (mm && !/^\s*[A-Za-z]+:\s*'[^']*'\s*$/.test(mm[1])) {
+    const cls = multiToClasses(mm[1])
+    if (cls) {
+      const tag = enclosingTag(src, mm.index)
+      if (tag) {
+        const [ts, te] = tag
+        let tagSrc = src.slice(ts, te + 1)
+        const rel = mm.index - ts
+        tagSrc = tagSrc.slice(0, rel) + tagSrc.slice(rel + mm[0].length)
+        const strCn = /className="([^"]*)"/.exec(tagSrc)
+        if (strCn) {
+          tagSrc = tagSrc.replace(strCn[0], `className="${cls} ${strCn[1]}"`)
+        } else {
+          const tagName = /^<([A-Za-z][\w.]*)/.exec(tagSrc)
+          if (tagName) tagSrc = tagSrc.replace(tagName[0], `${tagName[0]} className="${cls}"`)
+          else { skipped.push(`multi: unparsed tag`); src = src.replace(mm[0], mm[0].replace('style={{', 'styleXX={{')); continue }
+        }
+        src = src.slice(0, ts) + tagSrc + src.slice(te + 1)
+        applied++
+        continue
+      }
+    }
+    skipped.push(`multi-prop: ${mm[1].replace(/\s+/g, ' ').trim().slice(0, 70)}`)
+    src = src.replace(mm[0], mm[0].replace('style={{', 'styleXX={{'))
+    continue
+  }
+
+  const m = /\s*style=\{\{\s*([A-Za-z]+):\s*'([^']+)'\s*\}\}/.exec(src)
+  if (!m) break
+  const whole = m[0]
+  const cls = toClass(m[1], m[2])
+  if (!cls) {
+    skipped.push(`${m[1]}: ${m[2]}`)
+    // Neutralise so the loop advances, restored verbatim at the end.
+    src = src.replace(whole, whole.replace('style={{', 'styleXX={{'))
+    continue
+  }
+  const tag = enclosingTag(src, m.index)
+  if (!tag) { skipped.push(`no enclosing tag for ${cls}`); src = src.replace(whole, whole.replace('style={{', 'styleXX={{')); continue }
+
+  let [ts, te] = tag
+  let tagSrc = src.slice(ts, te + 1)
+  const rel = m.index - ts
+  // Remove the style attribute from the tag.
+  tagSrc = tagSrc.slice(0, rel) + tagSrc.slice(rel + whole.length)
+
+  // Merge the class into an existing className, else add one.
+  const strCn = /className="([^"]*)"/.exec(tagSrc)
+  const tplCn = /className=\{`([^`]*)`\}/.exec(tagSrc)
+  if (strCn) {
+    tagSrc = tagSrc.replace(strCn[0], `className="${strCn[1]} ${cls}".trim()`.replace('".trim()', '"'))
+  } else if (tplCn) {
+    tagSrc = tagSrc.replace(tplCn[0], `className={\`${tplCn[1]} ${cls}\`}`)
+  } else if (/className=\{/.test(tagSrc)) {
+    skipped.push(`${cls} — className is an expression (cn()/ternary), needs hand edit`)
+    src = src.slice(0, ts) + src.slice(ts).replace(whole, whole.replace('style={{', 'styleXX={{'))
+    continue
+  } else {
+    const tagName = /^<([A-Za-z][\w.]*)/.exec(tagSrc)
+    if (!tagName) { skipped.push(`${cls} — unparsed tag`); src = src.replace(whole, whole.replace('style={{', 'styleXX={{')); continue }
+    tagSrc = tagSrc.replace(tagName[0], `${tagName[0]} className="${cls}"`)
+  }
+  src = src.slice(0, ts) + tagSrc + src.slice(te + 1)
+  applied++
+}
+
+src = src.replaceAll('styleXX={{', 'style={{')
+
+console.log(`${file}: ${applied} migrated, ${skipped.length} left for hand edit`)
+for (const s of new Set(skipped)) console.log(`   SKIP  ${s}`)
+if (!dry) writeFileSync(file, src)

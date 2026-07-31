@@ -14,6 +14,8 @@ import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/hooks/useAuth'
 import { useVerifications } from '@/hooks/useVerifications'
 import type { JobListing, JobStatus } from '@/types/domain'
+import { ErrorState } from '@/components/ui/ErrorState'
+import { SectionSkeleton } from '@/components/ui/Skeleton'
 
 const TOTAL_STEPS = 8
 
@@ -55,9 +57,14 @@ export function EmployerDashboard() {
 
   const [profile, setProfile] = useState<EmployerProfile | null>(null)
   const [loadingProfile, setLoadingProfile] = useState(true)
+  const [profileError, setProfileError] = useState(false)
+  const [reloadNonce, setReloadNonce] = useState(0)
 
   const [jobs, setJobs] = useState<JobListing[]>([])
   const [loadingJobs, setLoadingJobs] = useState(false)
+  // Phase 5.6 — failed is not empty. Without this an employer whose request
+  // dropped is told they have no listings, next to a "post your first job" CTA.
+  const [jobsError, setJobsError] = useState(false)
   const [appCountMap, setAppCountMap] = useState<Map<string, number>>(new Map())
 
   const [activeTab, setActiveTab] = useState<FilterTab>('all')
@@ -84,7 +91,12 @@ export function EmployerDashboard() {
         .single()
 
       if (error && error.code !== 'PGRST116') {
+        // Phase 5.6: profile null => onboardingProgress 0 and loadJobs bails, so
+        // an onboarded employer is shown the onboarding prompt with no listings.
         console.error('EmployerDashboard: failed to load profile', error)
+        setProfileError(true)
+        setLoadingProfile(false)
+        return
       }
 
       if (data) {
@@ -102,7 +114,7 @@ export function EmployerDashboard() {
     }
 
     loadProfile()
-  }, [session?.user?.id])
+  }, [session?.user?.id, reloadNonce])
 
   // Load jobs when profile is ready and onboarding complete
   const loadJobs = useCallback(async () => {
@@ -110,6 +122,7 @@ export function EmployerDashboard() {
 
     setLoadingJobs(true)
     try {
+      setJobsError(false)
       const { data, error } = await supabase
         .from('jobs')
         .select('*')
@@ -118,6 +131,7 @@ export function EmployerDashboard() {
 
       if (error) {
         console.error('EmployerDashboard: failed to load jobs', error)
+        setJobsError(true)
         return
       }
 
@@ -256,14 +270,24 @@ export function EmployerDashboard() {
     setIsMarkFilledOpen(true)
   }
 
+  if (profileError) {
+    return (
+      <DashboardLayout>
+        <ErrorState
+          message="We could not load your profile"
+          onRetry={() => {
+            setProfileError(false)
+            setReloadNonce((n) => n + 1)
+          }}
+        />
+      </DashboardLayout>
+    )
+  }
+
   if (loadingProfile) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center py-20">
-          <p className="text-sm" style={{ color: 'var(--color-text-subtle)' }}>
-            Loading...
-          </p>
-        </div>
+        <SectionSkeleton />
       </DashboardLayout>
     )
   }
@@ -460,12 +484,9 @@ export function EmployerDashboard() {
 
               {/* Jobs grid */}
               {loadingJobs ? (
-                <p
-                  className="py-8 text-center text-sm"
-                  style={{ color: 'var(--color-text-subtle)' }}
-                >
-                  Loading listings...
-                </p>
+                <SectionSkeleton label="Loading listings" />
+              ) : jobsError ? (
+                <ErrorState message="We could not load your listings" onRetry={loadJobs} />
               ) : filteredJobs.length === 0 && activeTab === 'all' ? (
                 // Empty state — no jobs at all
                 <Card className="p-10 text-center">

@@ -6,25 +6,31 @@ import { hasState, statePath, SKIP_NO_CREDS } from './helpers'
 // in tests/admin-rpc-gate.test.ts; these cover the standalone gate page UX.
 
 test('anonymous /admin shows the standalone admin login gate', async ({ page }) => {
-  await page.goto('/admin')
+  await page.goto('/admin', { waitUntil: 'networkidle' })
   await expect(page.getByRole('heading', { name: 'Sign in to TopFarms admin' })).toBeVisible()
   await expect(page.getByRole('button', { name: 'Sign in' })).toBeVisible()
   await expect(page.getByRole('link', { name: 'Back to main site' })).toBeVisible()
 })
 
+// Phase 5.0c: every goto waits for networkidle. A bare goto races session
+// hydration -- the admin gate has not resolved the role yet, so the shell is not
+// mounted and the heading assertion fails intermittently. Diagnosed by loading
+// the same route manually with the admin storage state: the page renders
+// 'Founder Analytics' with zero console errors, so the page was never the
+// problem. Fixed the race, not the symptom -- no bare waitForTimeout.
 test.describe('admin role', () => {
   test.skip(() => !hasState('admin'), SKIP_NO_CREDS('admin'))
   test.use({ storageState: hasState('admin') ? statePath('admin') : undefined })
 
   test('admin reaches /admin/employers list', async ({ page }) => {
-    await page.goto('/admin/employers')
+    await page.goto('/admin/employers', { waitUntil: 'networkidle' })
     await expect(page.getByRole('heading', { name: 'Employers' })).toBeVisible({
       timeout: 15_000,
     })
   })
 
   test('admin opens /admin/analytics and sees all four panels', async ({ page }) => {
-    await page.goto('/admin/analytics')
+    await page.goto('/admin/analytics', { waitUntil: 'networkidle' })
     await expect(page.getByRole('heading', { name: 'Founder Analytics' })).toBeVisible({
       timeout: 15_000,
     })
@@ -39,7 +45,7 @@ test.describe('non-admin denied', () => {
   test.use({ storageState: hasState('seeker') ? statePath('seeker') : undefined })
 
   test('seeker visiting /admin gets AccessDenied, not the admin shell', async ({ page }) => {
-    await page.goto('/admin')
+    await page.goto('/admin', { waitUntil: 'networkidle' })
     await expect(page.getByText('Access denied')).toBeVisible({ timeout: 15_000 })
   })
 })

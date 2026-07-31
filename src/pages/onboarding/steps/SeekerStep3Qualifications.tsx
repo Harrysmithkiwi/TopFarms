@@ -57,10 +57,10 @@ export function SeekerStep3Qualifications({ onComplete, onBack, defaultValues }:
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
+        <h2 className="text-lg font-semibold text-text">
           DairyNZ qualification
         </h2>
-        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="mt-1 text-sm text-text-muted">
           Select your highest DairyNZ qualification level, if any
         </p>
       </div>
@@ -83,18 +83,12 @@ export function SeekerStep3Qualifications({ onComplete, onBack, defaultValues }:
         {/* Description of selected level */}
         {selectedLevelInfo && (
           <div
-            className="flex items-start gap-2 rounded-[8px] border-[1.5px] p-3 text-[13px]"
-            style={{
-              borderColor: 'var(--color-brand-hover)',
-              backgroundColor: 'rgba(74,124,47,0.04)',
-              color: 'var(--color-text)',
-            }}
+            className="border-brand-hover bg-brand-50/40 text-text flex items-start gap-2 rounded-[8px] border-[1.5px] p-3 text-label"
           >
             <svg
-              className="mt-0.5 h-4 w-4 flex-shrink-0"
+              className="mt-0.5 h-4 w-4 flex-shrink-0 text-brand-hover"
               viewBox="0 0 16 16"
               fill="none"
-              style={{ color: 'var(--color-brand-hover)' }}
             >
               <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
               <path
@@ -104,7 +98,7 @@ export function SeekerStep3Qualifications({ onComplete, onBack, defaultValues }:
                 strokeLinecap="round"
               />
             </svg>
-            <span style={{ color: 'var(--color-text-muted)' }}>
+            <span className="text-text-muted">
               {selectedLevelInfo.description}
             </span>
           </div>
@@ -113,16 +107,16 @@ export function SeekerStep3Qualifications({ onComplete, onBack, defaultValues }:
 
       {/* DairyNZ levels overview */}
       <div className="border-border space-y-2 rounded-[8px] border-[1.5px] p-4">
-        <p className="font-body text-text-muted text-[12px] font-semibold tracking-wide uppercase">
+        <p className="font-body text-text-muted text-xs font-semibold tracking-wide uppercase">
           DairyNZ Levels Overview
         </p>
         <div className="space-y-1.5">
           {DAIRYNZ_LEVELS.map((level) => (
             <div key={level.value} className="flex gap-2">
-              <span className="font-body text-brand-hover min-w-[60px] text-[12px] font-semibold">
+              <span className="font-body text-brand-hover min-w-[60px] text-xs font-semibold">
                 {level.label}
               </span>
-              <span className="font-body text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
+              <span className="font-body text-xs text-text-muted">
                 {level.description}
               </span>
             </div>
@@ -132,7 +126,7 @@ export function SeekerStep3Qualifications({ onComplete, onBack, defaultValues }:
 
       {/* NZ driver's licence */}
       <div>
-        <p className="font-body text-text mb-2 text-[13px] font-semibold">NZ driver's licence</p>
+        <p className="font-body text-text mb-2 text-label font-semibold">NZ driver's licence</p>
         <Controller
           control={control}
           name="licence_types"
@@ -150,7 +144,7 @@ export function SeekerStep3Qualifications({ onComplete, onBack, defaultValues }:
 
       {/* Certifications */}
       <div>
-        <p className="font-body text-text mb-2 text-[13px] font-semibold">Certifications</p>
+        <p className="font-body text-text mb-2 text-label font-semibold">Certifications</p>
         <Controller
           control={control}
           name="certifications"
@@ -168,8 +162,8 @@ export function SeekerStep3Qualifications({ onComplete, onBack, defaultValues }:
 
       {/* Documents */}
       <div>
-        <p className="font-body text-text mb-1 text-[13px] font-semibold">Documents</p>
-        <p className="font-body mb-3 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="font-body text-text mb-1 text-label font-semibold">Documents</p>
+        <p className="font-body mb-3 text-xs text-text-muted">
           Upload your CV, certificates, and references (PDF, DOC, DOCX, JPG, PNG — max 10MB each, up
           to 5 files)
         </p>

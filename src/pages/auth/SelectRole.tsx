@@ -6,6 +6,7 @@ import { AuthLayout } from '@/components/layout/AuthLayout'
 import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
 import { dashboardPathFor } from '@/lib/routing'
+import { RouteSkeleton } from '@/components/ui/Skeleton'
 
 export function SelectRole() {
   const { session, role, loading, refreshRole } = useAuth()
@@ -15,15 +16,7 @@ export function SelectRole() {
   if (loading) {
     return (
       <div className="bg-bg flex min-h-screen items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div
-            className="border-border border-t-brand h-10 w-10 animate-spin rounded-full border-4"
-            aria-label="Loading"
-          />
-          <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-            Loading...
-          </p>
-        </div>
+        <RouteSkeleton />
       </div>
     )
   }
@@ -54,7 +47,7 @@ export function SelectRole() {
   return (
     <AuthLayout title="Choose your role" subtitle="How will you use TopFarms?">
       <div className="space-y-6">
-        <p className="text-sm font-medium" style={{ color: 'var(--color-text)' }}>
+        <p className="text-sm font-medium text-text">
           I am joining as...
         </p>
         <div className="grid grid-cols-2 gap-3">
@@ -63,23 +56,17 @@ export function SelectRole() {
             type="button"
             onClick={() => handleRoleSelect('employer')}
             disabled={isSubmitting}
-            className="hover:border-brand hover:bg-warn-bg flex flex-col items-center gap-2 rounded-xl border-2 p-4 text-left transition-all disabled:opacity-60"
-            style={{
-              borderColor: 'var(--color-border)',
-              backgroundColor: 'var(--color-surface)',
-            }}
+            className="border-border bg-surface hover:border-brand hover:bg-warn-bg flex flex-col items-center gap-2 rounded-xl border-2 p-4 text-left transition-all disabled:opacity-60"
           >
-            <Building2 size={28} style={{ color: 'var(--color-text-subtle)' }} />
+            <Building2 className="text-text-subtle" size={28} />
             <div>
               <p
-                className="text-center text-sm font-semibold"
-                style={{ color: 'var(--color-text)' }}
+                className="text-center text-sm font-semibold text-text"
               >
                 Employer
               </p>
               <p
-                className="mt-0.5 text-center text-xs"
-                style={{ color: 'var(--color-text-muted)' }}
+                className="mt-0.5 text-center text-xs text-text-muted"
               >
                 Post farm jobs
               </p>
@@ -91,23 +78,17 @@ export function SelectRole() {
             type="button"
             onClick={() => handleRoleSelect('seeker')}
             disabled={isSubmitting}
-            className="hover:border-brand hover:bg-warn-bg flex flex-col items-center gap-2 rounded-xl border-2 p-4 text-left transition-all disabled:opacity-60"
-            style={{
-              borderColor: 'var(--color-border)',
-              backgroundColor: 'var(--color-surface)',
-            }}
+            className="border-border bg-surface hover:border-brand hover:bg-warn-bg flex flex-col items-center gap-2 rounded-xl border-2 p-4 text-left transition-all disabled:opacity-60"
           >
-            <User size={28} style={{ color: 'var(--color-text-subtle)' }} />
+            <User className="text-text-subtle" size={28} />
             <div>
               <p
-                className="text-center text-sm font-semibold"
-                style={{ color: 'var(--color-text)' }}
+                className="text-center text-sm font-semibold text-text"
               >
                 Seeker
               </p>
               <p
-                className="mt-0.5 text-center text-xs"
-                style={{ color: 'var(--color-text-muted)' }}
+                className="mt-0.5 text-center text-xs text-text-muted"
               >
                 Find farm work
               </p>

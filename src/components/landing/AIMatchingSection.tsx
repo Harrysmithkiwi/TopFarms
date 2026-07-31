@@ -10,7 +10,7 @@ const features = [
 
 export function AIMatchingSection() {
   return (
-    <section className="px-4 py-20" style={{ backgroundColor: 'var(--color-bg)' }}>
+    <section className="px-4 py-20 bg-bg">
       <motion.div
         className="mx-auto max-w-6xl"
         initial={{ opacity: 0, y: 32 }}
@@ -20,10 +20,9 @@ export function AIMatchingSection() {
       >
         {/* Eyebrow */}
         <div className="mb-4 flex items-center gap-3">
-          <div className="h-px w-8" style={{ backgroundColor: 'var(--color-brand)' }} />
+          <div className="h-px w-8 bg-brand" />
           <p
-            className="text-xs font-bold tracking-widest uppercase"
-            style={{ color: 'var(--color-brand-700)' }}
+            className="text-xs font-bold tracking-widest uppercase text-brand-700"
           >
             AI-Powered Matching
           </p>
@@ -31,8 +30,7 @@ export function AIMatchingSection() {
 
         {/* Heading */}
         <h2
-          className="font-display mb-12 text-4xl font-bold md:text-5xl"
-          style={{ color: 'var(--color-brand-900)' }}
+          className="font-display mb-12 text-4xl font-bold md:text-5xl text-brand-900"
         >
           Smart Matching That Understands Agriculture
         </h2>
@@ -44,14 +42,12 @@ export function AIMatchingSection() {
             {features.map((feature) => (
               <li key={feature} className="flex items-start gap-3">
                 <span
-                  className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full"
-                  style={{ backgroundColor: 'rgba(122,175,63,0.12)' }}
+                  className="bg-brand/12 mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full"
                 >
-                  <Check size={12} style={{ color: 'var(--color-brand)' }} strokeWidth={3} />
+                  <Check className="text-brand" size={12} strokeWidth={3} />
                 </span>
                 <span
-                  className="text-base leading-relaxed"
-                  style={{ color: 'var(--color-brand-900)' }}
+                  className="text-base leading-relaxed text-brand-900"
                 >
                   {feature}
                 </span>
@@ -62,46 +58,39 @@ export function AIMatchingSection() {
           {/* Right: Mock browser window. Illustration only — roles and scores are
               placeholders, labelled Example so it can't read as real data (TF-004). */}
           <div
-            className="overflow-hidden rounded-xl shadow-2xl"
-            style={{ border: '1px solid var(--color-border)' }}
+            className="overflow-hidden rounded-xl shadow-2xl border border-border"
             aria-hidden="true"
           >
             {/* Browser chrome */}
             <div
-              className="flex items-center gap-2 px-4 py-3"
-              style={{ backgroundColor: 'var(--color-border)' }}
+              className="flex items-center gap-2 px-4 py-3 bg-border"
             >
               {/* Traffic lights */}
+              {/* macOS window-chrome dots. These three hex values ARE the design —
+                  they mimic a real browser frame, so no brand token applies and
+                  Tailwind has no utility for them. Sanctioned exception (Task 5.3);
+                  decorative, aria-hidden by context, never text. */}
               <span className="h-3 w-3 rounded-full" style={{ backgroundColor: '#ff5f57' }} />
               <span className="h-3 w-3 rounded-full" style={{ backgroundColor: '#febc2e' }} />
               <span className="h-3 w-3 rounded-full" style={{ backgroundColor: '#28c840' }} />
               {/* Address bar */}
               <div
-                className="ml-2 flex-1 rounded-full px-3 py-1 text-xs"
-                style={{
-                  backgroundColor: 'var(--color-surface)',
-                  color: 'var(--color-text-muted)',
-                }}
+                className="bg-surface text-text-muted ml-2 flex-1 rounded-full px-3 py-1 text-xs"
               >
                 topfarms.co.nz/match
               </div>
             </div>
 
             {/* Browser content */}
-            <div className="p-5" style={{ backgroundColor: 'var(--color-surface)' }}>
+            <div className="p-5 bg-surface">
               <div className="mb-4 flex items-center justify-between">
                 <p
-                  className="font-display text-lg font-bold"
-                  style={{ color: 'var(--color-brand-900)' }}
+                  className="font-display text-lg font-bold text-brand-900"
                 >
                   Your Top Matches
                 </p>
                 <span
-                  className="rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wider uppercase"
-                  style={{
-                    backgroundColor: 'var(--color-surface-2)',
-                    color: 'var(--color-text-muted)',
-                  }}
+                  className="bg-surface-2 text-text-muted rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wider uppercase"
                 >
                   Example
                 </span>
@@ -115,29 +104,20 @@ export function AIMatchingSection() {
               ].map((match) => (
                 <div
                   key={match.name}
-                  className="mb-2 flex items-center justify-between rounded-lg px-3 py-2.5"
-                  style={{
-                    backgroundColor: 'var(--color-bg)',
-                    border: '1px solid var(--color-border)',
-                  }}
+                  className="bg-bg border border-border mb-2 flex items-center justify-between rounded-lg px-3 py-2.5"
                 >
                   <div>
                     <p
-                      className="text-sm font-semibold"
-                      style={{ color: 'var(--color-brand-900)' }}
+                      className="text-sm font-semibold text-brand-900"
                     >
                       {match.name}
                     </p>
-                    <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                    <p className="text-xs text-text-muted">
                       {match.location}
                     </p>
                   </div>
                   <span
-                    className="rounded-full px-2 py-1 text-xs font-bold"
-                    style={{
-                      backgroundColor: 'rgba(122,175,63,0.12)',
-                      color: 'var(--color-success-text-on-bg)',
-                    }}
+                    className="bg-brand/12 text-success-text-on-bg rounded-full px-2 py-1 text-xs font-bold"
                   >
                     {match.score}% match
                   </span>

@@ -61,8 +61,7 @@ function PaymentFormInner({
         {loading ? (
           <span className="flex items-center gap-2">
             <span
-              className="h-4 w-4 animate-spin rounded-full border-[2px] border-t-transparent"
-              style={{ borderColor: 'rgba(255,255,255,0.6)', borderTopColor: 'transparent' }}
+              className="h-4 w-4 animate-spin rounded-full border-[2px] border-white/60 border-t-transparent"
             />
             Processing...
           </span>

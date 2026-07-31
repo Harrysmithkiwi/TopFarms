@@ -1,6 +1,6 @@
 import { StrictMode, Suspense, lazy as reactLazy, type ComponentType, type ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { createBrowserRouter, RouterProvider } from 'react-router'
+import { createBrowserRouter, Outlet, RouterProvider } from 'react-router'
 import { MotionConfig } from 'motion/react'
 import { Analytics } from '@vercel/analytics/react'
 import { Toaster } from 'sonner'
@@ -17,6 +17,8 @@ import { Home } from '@/pages/Home'
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
 import { AppErrorBoundary } from '@/components/layout/AppErrorBoundary'
 import { initObservability } from '@/lib/observability'
+import { OfflineBanner } from '@/components/layout/OfflineBanner'
+import { RecoveryRedirect } from '@/components/layout/RecoveryRedirect'
 
 // Error reporting first, so anything thrown during render is captured. No-ops
 // entirely when VITE_SENTRY_DSN is unset (audit F-A2).
@@ -161,8 +163,7 @@ function RouteFallback() {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div
-        className="h-8 w-8 animate-spin rounded-full border-[3px] border-t-transparent"
-        style={{ borderColor: 'var(--color-brand)', borderTopColor: 'transparent' }}
+        className="h-8 w-8 animate-spin rounded-full border-[3px] border-brand border-t-transparent"
         aria-label="Loading page"
         role="status"
       />
@@ -187,6 +188,16 @@ function s(element: ReactNode) {
 const router = createBrowserRouter([
   {
     errorElement: s(<AppErrorBoundary />),
+    // Phase 5.0e — sits inside the router (it needs useNavigate/useLocation) and
+    // above every route, so a recovery link that lands anywhere still reaches
+    // /auth/reset before its single-use token is spent. <Outlet /> renders the
+    // matched route as normal.
+    element: (
+      <>
+        <RecoveryRedirect />
+        <Outlet />
+      </>
+    ),
     children: routeTable(),
   },
 ])
@@ -508,6 +519,8 @@ createRoot(document.getElementById('root')!).render(
         honour the user's setting too. Do not remove. */}
     <MotionConfig reducedMotion="user">
       <AuthProvider>
+        {/* Phase 5.7 — outside the router so it survives navigation. */}
+        <OfflineBanner />
         <RouterProvider router={router} />
       </AuthProvider>
     </MotionConfig>

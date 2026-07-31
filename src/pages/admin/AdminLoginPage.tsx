@@ -11,6 +11,7 @@ import { AdminLayout } from '@/components/layout/AdminLayout'
 import { DailyBriefing } from '@/pages/admin/DailyBriefing'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
+import { RouteSkeleton } from '@/components/ui/Skeleton'
 
 const signInSchema = z.object({
   email: z.string().email('Enter a valid email'),
@@ -23,16 +24,8 @@ type SignInForm = z.infer<typeof signInSchema>
 // so the inline duplication is intentional within the scope of Phase 20.1.
 function SpinnerBlock() {
   return (
-    <div className="bg-bg flex min-h-screen items-center justify-center">
-      <div className="flex flex-col items-center gap-4">
-        <div
-          className="border-border border-t-brand h-10 w-10 animate-spin rounded-full border-4"
-          aria-label="Loading"
-        />
-        <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-          Loading...
-        </p>
-      </div>
+    <div className="bg-bg min-h-screen">
+      <RouteSkeleton />
     </div>
   )
 }

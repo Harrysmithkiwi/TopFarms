@@ -5,6 +5,8 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/Button'
 import { supabase } from '@/lib/supabase'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
+import { ErrorState } from '@/components/ui/ErrorState'
+import { SectionSkeleton } from '@/components/ui/Skeleton'
 
 interface Applicant {
   id: string
@@ -29,6 +31,7 @@ interface MarkFilledModalProps {
  */
 export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilledModalProps) {
   const [applicants, setApplicants] = useState<Applicant[]>([])
+  const [loadError, setLoadError] = useState(false)
   const [loadingApplicants, setLoadingApplicants] = useState(false)
   // Phase 4.4 — trap focus while open (shared useFocusTrap contract)
   const dialogRef = useRef<HTMLDivElement>(null)
@@ -47,6 +50,9 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
 
         if (error) {
           console.error('MarkFilledModal: failed to load applicants', error)
+          // Phase 5.6: this modal is on the placement-fee path. "No applicants"
+          // here means the employer cannot record a hire they actually made.
+          setLoadError(true)
           setApplicants([])
           return
         }
@@ -152,9 +158,13 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
               </p>
 
               {loadingApplicants ? (
-                <p className="text-sm" style={{ color: 'var(--color-text-subtle)' }}>
-                  Loading applicants...
-                </p>
+                <SectionSkeleton rows={2} label="Loading applicants" />
+              ) : loadError ? (
+                <ErrorState
+                  message="We could not load your applicants"
+                  onRetry={() => setLoadError(false)}
+                  compact
+                />
               ) : applicants.length === 0 ? (
                 <div
                   className="rounded-[10px] p-4 text-center"

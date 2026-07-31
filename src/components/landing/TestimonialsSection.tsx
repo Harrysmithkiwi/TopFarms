@@ -34,28 +34,24 @@ function StarRating() {
 
 export function TestimonialsSection() {
   return (
-    <section className="px-4 py-20" style={{ backgroundColor: 'var(--color-brand-900)' }}>
+    <section className="px-4 py-20 bg-brand-900">
       <div className="mx-auto max-w-6xl">
         {/* Stat blocks row — above the testimonial heading/cards */}
         <div className="mb-16 grid grid-cols-2 gap-6 md:grid-cols-4">
           {stats.map((stat, i) => (
             <div
               key={stat.label}
-              className="py-6 text-center md:border-r"
-              style={{
-                borderColor: 'rgba(255,255,255,0.12)',
-                borderRight: i === stats.length - 1 ? 'none' : undefined,
-              }}
+              className="border-white/12 py-6 text-center md:border-r"
+              // last column drops its rule; colour is on the class.
+              style={{ borderRight: i === stats.length - 1 ? 'none' : undefined }}
             >
               <p
-                className="font-display mb-1 text-3xl font-bold md:text-4xl"
-                style={{ color: 'var(--color-text-on-brand)' }}
+                className="font-display mb-1 text-3xl font-bold md:text-4xl text-text-on-brand"
               >
                 {stat.value}
               </p>
               <p
-                className="text-sm tracking-wider uppercase"
-                style={{ color: 'rgba(255,255,255,0.5)' }}
+                className="text-sm tracking-wider uppercase text-white/50"
               >
                 {stat.label}
               </p>
@@ -66,11 +62,10 @@ export function TestimonialsSection() {
         {/* Title */}
         <div className="mb-12 text-center">
           <h2
-            className="font-display text-4xl font-bold md:text-5xl"
-            style={{ color: 'var(--color-text-on-brand)' }}
+            className="font-display text-4xl font-bold md:text-5xl text-text-on-brand"
           >
             Trusted by farms across{' '}
-            <em style={{ color: 'var(--color-brand-50)', fontStyle: 'italic' }}>New Zealand</em>
+            <em className="text-brand-50 italic">New Zealand</em>
           </h2>
         </div>
 
@@ -79,18 +74,13 @@ export function TestimonialsSection() {
           {testimonials.map((t) => (
             <div
               key={t.name}
-              className="flex flex-col gap-4 rounded-2xl p-6"
-              style={{
-                backgroundColor: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.08)',
-              }}
+              className="bg-white/5 border border-white/8 flex flex-col gap-4 rounded-2xl p-6"
             >
               <StarRating />
 
               {/* Quote */}
               <blockquote
-                className="flex-1 text-base leading-relaxed italic"
-                style={{ color: 'rgba(255,255,255,0.8)' }}
+                className="flex-1 text-base leading-relaxed italic text-white/80"
               >
                 "{t.quote}"
               </blockquote>
@@ -98,33 +88,24 @@ export function TestimonialsSection() {
               {/* Author */}
               <div className="flex items-center gap-3 pt-2">
                 <div
-                  className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold"
-                  style={{
-                    backgroundColor: 'var(--color-brand-hover)',
-                    color: 'var(--color-text-on-brand)',
-                  }}
+                  className="bg-brand-hover text-text-on-brand flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold"
                 >
                   {t.initial}
                 </div>
                 <div>
                   <p
-                    className="text-sm font-semibold"
-                    style={{ color: 'var(--color-text-on-brand)' }}
+                    className="text-sm font-semibold text-text-on-brand"
                   >
                     {t.name}
                   </p>
-                  <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                  <p className="text-xs text-white/50">
                     {t.farm}
                   </p>
                 </div>
                 {/* Verified badge */}
                 <div className="ml-auto flex-shrink-0">
                   <span
-                    className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
-                    style={{
-                      backgroundColor: 'rgba(122,175,63,0.15)',
-                      color: 'var(--color-success-text-on-bg)',
-                    }}
+                    className="bg-brand/15 text-success-text-on-bg text-micro rounded-full px-2 py-0.5 font-semibold"
                   >
                     Verified
                   </span>

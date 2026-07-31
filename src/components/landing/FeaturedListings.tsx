@@ -54,22 +54,17 @@ function JobCard({ job }: JobCardProps) {
   return (
     <Link
       to={`/jobs/${job.id}`}
-      className="relative block rounded-2xl p-5 transition-shadow hover:shadow-md"
-      style={{
-        backgroundColor: 'var(--color-surface)',
-        border: '1px solid var(--color-border)',
-      }}
+      className="bg-surface border border-border relative block rounded-2xl p-5 transition-shadow hover:shadow-md"
     >
       {/* Badge row */}
       <div className="mb-3 flex items-start justify-between">
         <div className="min-w-0 flex-1 pr-14">
           <h3
-            className="font-display mb-0.5 truncate text-base leading-snug font-semibold"
-            style={{ color: 'var(--color-brand-900)' }}
+            className="font-display mb-0.5 truncate text-base leading-snug font-semibold text-brand-900"
           >
             {job.title}
           </h3>
-          <p className="truncate text-sm" style={{ color: 'var(--color-text-muted)' }}>
+          <p className="truncate text-sm text-text-muted">
             {farmName}
           </p>
         </div>
@@ -86,21 +81,19 @@ function JobCard({ job }: JobCardProps) {
       {/* Tags row */}
       <div className="mb-3 flex flex-wrap gap-1.5">
         <span
-          className="rounded-full px-2 py-0.5 text-[11px] font-medium"
-          style={{ backgroundColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
+          className="bg-border text-text-muted rounded-full px-2 py-0.5 text-[11px] font-medium"
         >
           {region}
         </span>
         <span
-          className="rounded-full px-2 py-0.5 text-[11px] font-medium capitalize"
-          style={{ backgroundColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
+          className="bg-border text-text-muted rounded-full px-2 py-0.5 text-[11px] font-medium capitalize"
         >
           {job.contract_type}
         </span>
       </div>
 
       {/* Salary */}
-      <p className="text-sm font-semibold" style={{ color: 'var(--color-brand-900)' }}>
+      <p className="text-sm font-semibold text-brand-900">
         {formatSalary(job.salary_min, job.salary_max)}
       </p>
     </Link>
@@ -149,33 +142,30 @@ export function FeaturedListings() {
   }, [])
 
   return (
-    <section className="px-4 py-20" style={{ backgroundColor: 'var(--color-bg)' }}>
+    <section className="px-4 py-20 bg-bg">
       <div className="mx-auto max-w-6xl">
         {/* Header row */}
         <div className="mb-10 flex items-end justify-between">
           <div>
             {/* Eyebrow */}
             <div className="mb-3 flex items-center gap-3">
-              <div className="h-px w-8" style={{ backgroundColor: 'var(--color-brand)' }} />
+              <div className="h-px w-8 bg-brand" />
               <p
-                className="text-xs font-bold tracking-widest uppercase"
-                style={{ color: 'var(--color-brand-700)' }}
+                className="text-xs font-bold tracking-widest uppercase text-brand-700"
               >
                 Live Listings
               </p>
             </div>
             <h2
-              className="font-display text-4xl font-bold md:text-5xl"
-              style={{ color: 'var(--color-brand-900)' }}
+              className="font-display text-4xl font-bold md:text-5xl text-brand-900"
             >
               Featured{' '}
-              <em style={{ color: 'var(--color-brand)', fontStyle: 'italic' }}>Opportunities</em>
+              <em className="text-brand-hover italic">Opportunities</em>
             </h2>
           </div>
           <Link
             to="/jobs"
-            className="hidden items-center gap-1 text-sm font-semibold transition-colors hover:opacity-70 sm:inline-flex"
-            style={{ color: 'var(--color-brand-900)' }}
+            className="hidden items-center gap-1 text-sm font-semibold transition-colors hover:opacity-70 sm:inline-flex text-brand-900"
           >
             View all jobs
             <span aria-hidden="true">→</span>
@@ -188,8 +178,7 @@ export function FeaturedListings() {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="h-40 animate-pulse rounded-2xl"
-                style={{ backgroundColor: 'var(--color-border)' }}
+                className="h-40 animate-pulse rounded-2xl bg-border"
               />
             ))}
           </div>
@@ -197,33 +186,23 @@ export function FeaturedListings() {
           /* Empty state */
           <div className="flex justify-center">
             <div
-              className="max-w-sm rounded-2xl p-10 text-center"
-              style={{
-                backgroundColor: 'var(--color-surface)',
-                border: '1px solid var(--color-border)',
-              }}
+              className="bg-surface border border-border max-w-sm rounded-2xl p-10 text-center"
             >
               <Wheat
-                className="mx-auto mb-4 h-9 w-9"
-                style={{ color: 'var(--color-brand)' }}
+                className="mx-auto mb-4 h-9 w-9 text-brand"
                 aria-hidden="true"
               />
               <h3
-                className="font-display mb-2 text-lg font-semibold"
-                style={{ color: 'var(--color-brand-900)' }}
+                className="font-display mb-2 text-lg font-semibold text-brand-900"
               >
                 Be the first to post a featured job
               </h3>
-              <p className="mb-6 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+              <p className="mb-6 text-sm text-text-muted">
                 Get your farm in front of top candidates across New Zealand.
               </p>
               <Link
                 to="/signup?role=employer"
-                className="inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
-                style={{
-                  backgroundColor: 'var(--color-brand-900)',
-                  color: 'var(--color-text-on-brand)',
-                }}
+                className="bg-brand-900 text-text-on-brand inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
               >
                 Post a Job
               </Link>
@@ -241,8 +220,7 @@ export function FeaturedListings() {
             <div className="mt-8 text-center sm:hidden">
               <Link
                 to="/jobs"
-                className="inline-flex items-center gap-1 text-sm font-semibold"
-                style={{ color: 'var(--color-brand-900)' }}
+                className="inline-flex items-center gap-1 text-sm font-semibold text-brand-900"
               >
                 View all jobs →
               </Link>
