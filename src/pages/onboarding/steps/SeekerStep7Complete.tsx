@@ -179,7 +179,7 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
               <button
                 type="button"
                 onClick={() => navigate('/jobs')}
-                className="font-body mt-2 text-label font-semibold underline text-brand"
+                className="font-body mt-2 text-label font-semibold underline text-brand-hover"
               >
                 Browse Jobs
               </button>
@@ -225,7 +225,7 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
                   <button
                     type="button"
                     onClick={() => navigate('/jobs')}
-                    className="font-body text-label font-semibold underline text-brand"
+                    className="font-body text-label font-semibold underline text-brand-hover"
                   >
                     Browse all jobs
                   </button>
@@ -260,7 +260,7 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
                 className="flex h-10 w-10 items-center justify-center rounded-full bg-surface-2"
               >
                 <span
-                  className="font-body text-[16px] font-semibold text-brand"
+                  className="font-body text-[16px] font-semibold text-brand-hover"
                 >
                   S
                 </span>

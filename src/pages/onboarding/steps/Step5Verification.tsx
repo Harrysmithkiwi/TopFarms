@@ -34,6 +34,7 @@ function VerificationCard({
       <Icon
         className={cn(
           'mt-0.5 h-6 w-6 flex-shrink-0',
+          // Icon fill, not text — 3.30:1 clears the 3:1 non-text bar. contrast-exempt-non-text
           isVerified ? 'text-brand' : 'text-text-muted',
         )}
         aria-hidden="true"

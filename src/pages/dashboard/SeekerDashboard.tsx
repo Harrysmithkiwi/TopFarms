@@ -252,7 +252,7 @@ export function SeekerDashboard() {
                     </h2>
                     <Link
                       to="/onboarding/seeker"
-                      className="font-body text-sm font-semibold text-brand"
+                      className="font-body text-sm font-semibold text-brand-hover"
                     >
                       Edit Profile
                     </Link>
@@ -320,7 +320,7 @@ export function SeekerDashboard() {
                       <p className="text-xs text-text-muted">
                         Profile strength
                       </p>
-                      <p className="text-xs font-semibold text-brand">
+                      <p className="text-xs font-semibold text-brand-hover">
                         {profileStrength}%
                       </p>
                     </div>
@@ -378,7 +378,7 @@ export function SeekerDashboard() {
                 </h2>
                 <Link
                   to="/dashboard/seeker/applications"
-                  className="font-body text-sm font-semibold text-brand"
+                  className="font-body text-sm font-semibold text-brand-hover"
                 >
                   View all
                 </Link>

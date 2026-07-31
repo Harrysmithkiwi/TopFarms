@@ -225,7 +225,7 @@ export function SeekerOnboarding() {
         <div className="bg-surface border-border rounded-[16px] border p-6 shadow-sm">
           {saving && (
             <div
-              className="mb-4 flex items-center gap-2 text-sm text-brand"
+              className="mb-4 flex items-center gap-2 text-sm text-brand-hover"
             >
               <div
                 className="h-4 w-4 animate-spin rounded-full border-[2px] border-brand border-t-transparent"

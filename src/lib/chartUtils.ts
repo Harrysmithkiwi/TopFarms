@@ -11,7 +11,7 @@ export const chartColors = {
     bg: "bg-brand",
     stroke: "stroke-brand",
     fill: "fill-brand",
-    text: "text-brand",
+    text: "text-brand-hover",
   },
   brandDeep: {
     bg: "bg-brand-700",

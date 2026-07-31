@@ -25,6 +25,7 @@ const TRUST_CONFIG: Record<TrustLevel, { label: string; shieldClass: string; bad
     },
     verified: {
       label: 'Verified',
+      // shieldClass paints the shield ICON. contrast-exempt-non-text
       shieldClass: 'text-brand',
       badgeClass: 'bg-brand-50 text-success-text-on-bg border-brand/30',
     },

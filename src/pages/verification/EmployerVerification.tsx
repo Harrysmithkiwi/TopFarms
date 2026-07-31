@@ -105,7 +105,7 @@ function VerificationCard({
             <button
               type="button"
               onClick={onExpand}
-              className="font-body text-brand hover:text-brand-hover flex items-center gap-1 text-[12px] font-semibold transition-colors"
+              className="font-body text-brand-hover hover:text-brand-900 flex items-center gap-1 text-[12px] font-semibold transition-colors"
             >
               {action}
               <ChevronRight
@@ -359,7 +359,7 @@ export function EmployerVerification() {
                 {verificationMap.get('document')?.status !== 'verified' && (
                   <Link
                     to="/dashboard/employer/verification/documents"
-                    className="font-body text-brand hover:text-brand-hover flex items-center gap-1 text-[12px] font-semibold transition-colors"
+                    className="font-body text-brand-hover hover:text-brand-900 flex items-center gap-1 text-[12px] font-semibold transition-colors"
                   >
                     Upload Documents
                     <ChevronRight className="h-3.5 w-3.5" />
@@ -409,7 +409,7 @@ export function EmployerVerification() {
                 {verificationMap.get('farm_photo')?.status !== 'verified' && (
                   <Link
                     to="/dashboard/employer/verification/photos"
-                    className="font-body text-brand hover:text-brand-hover flex items-center gap-1 text-[12px] font-semibold transition-colors"
+                    className="font-body text-brand-hover hover:text-brand-900 flex items-center gap-1 text-[12px] font-semibold transition-colors"
                   >
                     Upload Photos
                     <ChevronRight className="h-3.5 w-3.5" />

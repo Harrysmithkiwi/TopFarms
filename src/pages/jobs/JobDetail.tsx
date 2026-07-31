@@ -756,7 +756,7 @@ export function JobDetail() {
                           key={i}
                           className="flex items-start gap-2 text-sm text-text-muted"
                         >
-                          <span className="text-brand mt-0.5">•</span>
+                          <span className="text-brand-hover mt-0.5">•</span>
                           {benefit}
                         </li>
                       ))}

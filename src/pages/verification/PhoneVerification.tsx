@@ -174,7 +174,7 @@ export function PhoneVerification({ employerId, onSuccess }: PhoneVerificationPr
           type="button"
           onClick={handleResend}
           disabled={cooldown > 0 || loading}
-          className="font-body text-brand hover:text-brand-hover disabled:text-text-subtle flex items-center gap-1 text-[12px] transition-colors disabled:cursor-not-allowed"
+          className="font-body text-brand-hover hover:text-brand-900 disabled:text-text-subtle flex items-center gap-1 text-[12px] transition-colors disabled:cursor-not-allowed"
         >
           <RefreshCw className="h-3 w-3" />
           {cooldown > 0 ? `Resend in ${cooldown}s` : 'Resend Code'}

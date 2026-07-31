@@ -177,7 +177,7 @@ export function DocumentUpload() {
                 href={existingDocumentUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-body text-brand hover:text-brand-hover flex-shrink-0 text-[11px] transition-colors"
+                className="font-body text-brand-hover hover:text-brand-900 flex-shrink-0 text-[11px] transition-colors"
               >
                 View
               </a>

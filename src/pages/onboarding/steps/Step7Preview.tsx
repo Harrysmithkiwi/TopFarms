@@ -25,7 +25,7 @@ function PreviewSection({ title, stepIndex, onGoToStep, children }: SectionProps
         <button
           type="button"
           onClick={() => onGoToStep(stepIndex)}
-          className="font-body text-brand-hover hover:text-brand text-[12px] transition-colors"
+          className="font-body text-brand-hover hover:text-brand-900 text-[12px] transition-colors"
         >
           Edit
         </button>

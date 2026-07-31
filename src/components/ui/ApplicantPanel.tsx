@@ -191,7 +191,9 @@ export function ApplicantPanel({
           expanded && 'border-border border-b',
         )}
       >
-        {/* Checkbox for bulk selection */}
+        {/* Checkbox for bulk selection. text-brand below paints a CHECKBOX CONTROL,
+            not text: WCAG 1.4.11 non-text contrast needs 3:1 and brand-on-white is
+            3.30. contrast-exempt-non-text */}
         {onSelect && (
           <input
             type="checkbox"

@@ -175,7 +175,7 @@ export function SavedSearchesDropdown() {
           <Link
             to="/dashboard/seeker/saved-searches"
             onClick={() => setOpen(false)}
-            className="font-body border-border hover:bg-surface-2 block border-t px-3 py-2 text-center text-label font-semibold text-brand"
+            className="font-body border-border hover:bg-surface-2 block border-t px-3 py-2 text-center text-label font-semibold text-brand-hover"
           >
             View all
           </Link>
