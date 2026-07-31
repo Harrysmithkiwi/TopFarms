@@ -110,7 +110,7 @@ export function Privacy() {
         Under the Privacy Act 2020 you may request access to, or correction of, the personal
         information we hold about you. You can edit most information directly in your profile. For
         anything else — including account deletion — email{' '}
-        <a href="mailto:hello@topfarms.co.nz" style={{ textDecoration: 'underline' }}>
+        <a href="mailto:hello@topfarms.co.nz" className="underline">
           hello@topfarms.co.nz
         </a>
         . If you are not satisfied with our response, you may complain to the Office of the Privacy

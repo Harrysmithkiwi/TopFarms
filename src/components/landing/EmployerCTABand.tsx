@@ -56,12 +56,8 @@ export function EmployerCTABand() {
             <div className="flex flex-wrap items-center gap-5">
               <Link
                 to="/signup?role=employer"
-                className="inline-block rounded-full px-8 py-3 font-semibold transition-opacity hover:opacity-90"
-                style={{
-                  // brand-900 on brand was 3.33:1 (axe serious, Phase 4.6)
-                  backgroundColor: 'var(--color-brand-hover)',
-                  color: 'var(--color-text-on-brand)',
-                }}
+                // brand-hover, not brand: white on brand was 3.33:1 (axe serious, Phase 4.6)
+                className="bg-brand-hover text-text-on-brand inline-block rounded-full px-8 py-3 font-semibold transition-opacity hover:opacity-90"
               >
                 Post Your First Job
               </Link>
@@ -124,10 +120,7 @@ export function EmployerCTABand() {
               ].map((applicant) => (
                 <div
                   key={applicant.name}
-                  className="mb-2 flex items-center justify-between rounded-lg px-3 py-2.5"
-                  style={{
-                    border: '1px solid var(--color-border)',
-                  }}
+                  className="border border-border mb-2 flex items-center justify-between rounded-lg px-3 py-2.5"
                 >
                   <div>
                     <p

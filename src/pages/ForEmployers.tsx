@@ -108,11 +108,7 @@ export function ForEmployers() {
               </Link>
               <Link
                 to="/jobs"
-                className="inline-block rounded-full px-8 py-3.5 text-base font-semibold transition-colors"
-                style={{
-                  border: '1px solid rgba(255,255,255,0.25)',
-                  color: 'var(--color-text-on-brand)',
-                }}
+                className="border border-white/25 text-text-on-brand inline-block rounded-full px-8 py-3.5 text-base font-semibold transition-colors"
               >
                 See the Job Board
               </Link>
@@ -169,11 +165,7 @@ export function ForEmployers() {
               {features.map((f, i) => (
                 <motion.div
                   key={f.title}
-                  className="rounded-xl p-6"
-                  style={{
-                    backgroundColor: 'var(--color-surface)',
-                    border: '1px solid var(--color-border)',
-                  }}
+                  className="bg-surface border border-border rounded-xl p-6"
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.2 }}

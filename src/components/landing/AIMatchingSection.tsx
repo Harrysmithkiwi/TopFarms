@@ -58,8 +58,7 @@ export function AIMatchingSection() {
           {/* Right: Mock browser window. Illustration only — roles and scores are
               placeholders, labelled Example so it can't read as real data (TF-004). */}
           <div
-            className="overflow-hidden rounded-xl shadow-2xl"
-            style={{ border: '1px solid var(--color-border)' }}
+            className="overflow-hidden rounded-xl shadow-2xl border border-border"
             aria-hidden="true"
           >
             {/* Browser chrome */}
@@ -67,6 +66,10 @@ export function AIMatchingSection() {
               className="flex items-center gap-2 px-4 py-3 bg-border"
             >
               {/* Traffic lights */}
+              {/* macOS window-chrome dots. These three hex values ARE the design —
+                  they mimic a real browser frame, so no brand token applies and
+                  Tailwind has no utility for them. Sanctioned exception (Task 5.3);
+                  decorative, aria-hidden by context, never text. */}
               <span className="h-3 w-3 rounded-full" style={{ backgroundColor: '#ff5f57' }} />
               <span className="h-3 w-3 rounded-full" style={{ backgroundColor: '#febc2e' }} />
               <span className="h-3 w-3 rounded-full" style={{ backgroundColor: '#28c840' }} />
@@ -101,11 +104,7 @@ export function AIMatchingSection() {
               ].map((match) => (
                 <div
                   key={match.name}
-                  className="mb-2 flex items-center justify-between rounded-lg px-3 py-2.5"
-                  style={{
-                    backgroundColor: 'var(--color-bg)',
-                    border: '1px solid var(--color-border)',
-                  }}
+                  className="bg-bg border border-border mb-2 flex items-center justify-between rounded-lg px-3 py-2.5"
                 >
                   <div>
                     <p

@@ -54,11 +54,7 @@ function JobCard({ job }: JobCardProps) {
   return (
     <Link
       to={`/jobs/${job.id}`}
-      className="relative block rounded-2xl p-5 transition-shadow hover:shadow-md"
-      style={{
-        backgroundColor: 'var(--color-surface)',
-        border: '1px solid var(--color-border)',
-      }}
+      className="bg-surface border border-border relative block rounded-2xl p-5 transition-shadow hover:shadow-md"
     >
       {/* Badge row */}
       <div className="mb-3 flex items-start justify-between">
@@ -164,7 +160,7 @@ export function FeaturedListings() {
               className="font-display text-4xl font-bold md:text-5xl text-brand-900"
             >
               Featured{' '}
-              <em style={{ color: 'var(--color-brand)', fontStyle: 'italic' }}>Opportunities</em>
+              <em className="text-brand-hover italic">Opportunities</em>
             </h2>
           </div>
           <Link
@@ -190,11 +186,7 @@ export function FeaturedListings() {
           /* Empty state */
           <div className="flex justify-center">
             <div
-              className="max-w-sm rounded-2xl p-10 text-center"
-              style={{
-                backgroundColor: 'var(--color-surface)',
-                border: '1px solid var(--color-border)',
-              }}
+              className="bg-surface border border-border max-w-sm rounded-2xl p-10 text-center"
             >
               <Wheat
                 className="mx-auto mb-4 h-9 w-9 text-brand"

@@ -21,11 +21,9 @@ function CounterBlock({ label, target, active, suffix = '' }: CounterBlockProps)
   return (
     <div className="flex flex-col items-center gap-2 px-6 py-10">
       <p
-        className="font-display leading-none font-bold"
-        style={{
-          fontSize: 'clamp(48px, 5vw, 72px)',
-          color: 'var(--color-text-on-brand)',
-        }}
+        className="font-display text-text-on-brand leading-none font-bold"
+        // fluid clamp() type — no utility equivalent; colour is on the class.
+        style={{ fontSize: 'clamp(48px, 5vw, 72px)' }}
       >
         {count.toLocaleString()}
         {suffix}

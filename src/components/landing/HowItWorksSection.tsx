@@ -109,7 +109,7 @@ export function HowItWorksSection() {
           className="font-display mb-10 text-4xl font-bold md:text-5xl text-brand-900"
         >
           Your Path to the{' '}
-          <em style={{ color: 'var(--color-brand-700)', fontStyle: 'italic' }}>Perfect Match</em>
+          <em className="text-brand-700 italic">Perfect Match</em>
         </h2>
 
         {/* Tab toggle */}
@@ -150,23 +150,15 @@ export function HowItWorksSection() {
               {/* Connector line (desktop only, not on last card) */}
               {index < steps.length - 1 && (
                 <div
-                  className="absolute top-8 left-full z-0 hidden h-px w-full lg:block"
-                  style={{
-                    width: 'calc(100% - 64px)',
-                    left: '80%',
-                    backgroundColor: 'var(--color-border)',
-                    borderTop: '2px dashed var(--color-border)',
-                  }}
+                  className="bg-border border-border absolute top-8 left-full z-0 hidden h-px w-full border-t-2 border-dashed lg:block"
+                  // calc()/left have no utility equivalent; colour is on classes.
+                  style={{ width: 'calc(100% - 64px)', left: '80%' }}
                   aria-hidden="true"
                 />
               )}
 
               <div
-                className="relative z-10 h-full rounded-2xl p-6"
-                style={{
-                  backgroundColor: 'var(--color-surface)',
-                  border: '1px solid var(--color-border)',
-                }}
+                className="bg-surface border border-border relative z-10 h-full rounded-2xl p-6"
               >
                 {/* Faded step number — decorative watermark, hidden from a11y tree (TF-020).
                     data-decorative marks it for the axe exclusion in tests/e2e/a11y.spec.ts:

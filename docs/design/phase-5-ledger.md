@@ -1,10 +1,10 @@
 # Phase 5 — inline-style migration ledger
 
-Generated Stage 1, before any migration, at commit `cf3f7ae`.
+Generated Stage 1, before any migration, at commit `e0aa2f8`.
 The planning artefact for Task 5.1: what has to move, in what order, and which
 files sit on a route the Phase 4 axe gate already watches.
 
-**Totals: 90 files · 573 `style={{` · 652 `var(--color-…)` · 24 hex literals · 434 `text-[Npx]`**
+**Totals: 84 files · 548 `style={{` · 618 `var(--color-…)` · 25 hex literals · 433 `text-[Npx]`**
 
 `colour` counts `var(--color-…)` references anywhere in the file — the migration
 target. `axe` marks files rendering on one of the six Phase 4 axe routes: those
@@ -85,24 +85,18 @@ Order within each surface is heaviest-first by `style={{` count, per the brief.
 | 7 | `pages/auth/VerifyEmail.tsx` | 7 | 8 | 1 |  |  |
 | 8 | `pages/auth/Suspended.tsx` | 2 | 2 |  |  |  |
 
-## marketing — 14 files · 40 `style={{` · 47 colour refs
+## marketing — 8 files · 15 `style={{` · 13 colour refs
 
 | # | File | `style={{` | colour | hex | `text-[Npx]` | axe route |
 |---|---|---|---|---|---|---|
-| 1 | `components/landing/HeroSection.tsx` | 11 | 6 |  | 6 | **yes** |
-| 2 | `components/landing/AIMatchingSection.tsx` | 5 | 3 | 3 | 1 | **yes** |
-| 3 | `components/landing/FeaturedListings.tsx` | 4 | 7 |  | 3 | **yes** |
-| 4 | `components/landing/HowItWorksSection.tsx` | 3 | 8 |  |  | **yes** |
-| 5 | `components/landing/TestimonialsSection.tsx` | 3 | 2 |  |  | **yes** |
-| 6 | `pages/Pricing.tsx` | 2 | 8 |  |  |  |
-| 7 | `components/landing/EmployerCTABand.tsx` | 2 | 3 |  | 1 | **yes** |
-| 8 | `components/landing/FinalCTASection.tsx` | 2 | 3 |  |  | **yes** |
-| 9 | `pages/ForEmployers.tsx` | 2 | 3 |  |  |  |
-| 10 | `pages/legal/Terms.tsx` | 2 | 0 |  |  |  |
-| 11 | `components/landing/FarmTypesStrip.tsx` | 1 | 2 |  |  | **yes** |
-| 12 | `components/landing/CountersSection.tsx` | 1 | 1 |  |  | **yes** |
-| 13 | `components/landing/TrustedByStrip.tsx` | 1 | 1 |  |  | **yes** |
-| 14 | `pages/legal/Privacy.tsx` | 1 | 0 |  |  |  |
+| 1 | `components/landing/HeroSection.tsx` | 4 | 0 |  | 6 | **yes** |
+| 2 | `components/landing/AIMatchingSection.tsx` | 3 | 0 | 3 | 1 | **yes** |
+| 3 | `pages/Pricing.tsx` | 2 | 7 | 1 |  |  |
+| 4 | `pages/legal/Terms.tsx` | 2 | 0 |  |  |  |
+| 5 | `components/landing/HowItWorksSection.tsx` | 1 | 3 |  |  | **yes** |
+| 6 | `components/landing/FeaturedListings.tsx` | 1 | 2 |  | 3 | **yes** |
+| 7 | `components/landing/TestimonialsSection.tsx` | 1 | 1 |  |  | **yes** |
+| 8 | `components/landing/CountersSection.tsx` | 1 | 0 |  |  | **yes** |
 
 ## shared — 18 files · 73 `style={{` · 76 colour refs
 

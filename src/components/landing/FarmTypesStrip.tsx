@@ -57,11 +57,7 @@ export function FarmTypesStrip() {
             <Link
               key={value}
               to={`/jobs?sector=${value}`}
-              className="focus-visible:outline-brand min-w-[160px] snap-center rounded-xl p-6 text-center transition-shadow hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 sm:min-w-0"
-              style={{
-                backgroundColor: 'var(--color-surface)',
-                border: '1px solid var(--color-border)',
-              }}
+              className="bg-surface border border-border focus-visible:outline-brand min-w-[160px] snap-center rounded-xl p-6 text-center transition-shadow hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 sm:min-w-0"
             >
               <Icon
                 className="mx-auto mb-3 h-7 w-7 text-brand-700"

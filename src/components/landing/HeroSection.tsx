@@ -65,19 +65,16 @@ export function HeroSection() {
             variants={containerVariants}
             initial="hidden"
             animate="show"
-            className="font-display leading-[1.05] font-bold tracking-tight"
-            style={{
-              fontSize: 'clamp(48px, 6.5vw, 82px)',
-              color: 'var(--color-text-on-brand)',
-            }}
+            className="font-display text-text-on-brand leading-[1.05] font-bold tracking-tight"
+            // fluid clamp() type — no utility equivalent; colour is on the class.
+            style={{ fontSize: 'clamp(48px, 6.5vw, 82px)' }}
           >
             <motion.span variants={lineVariants} className="block">
               Where New Zealand's
             </motion.span>
             <motion.span
               variants={lineVariants}
-              className="block"
-              style={{ color: 'var(--color-brand-50)', fontStyle: 'italic' }}
+              className="text-brand-50 italic block"
             >
               Best Farms
             </motion.span>
@@ -96,13 +93,11 @@ export function HeroSection() {
 
           {/* Dual CTA fork */}
           <div
-            className="flex flex-col overflow-hidden border sm:flex-row"
-            style={{ borderColor: 'rgba(255,255,255,0.12)', borderRadius: '14px' }}
+            className="border-white/12 rounded-[14px] flex flex-col overflow-hidden border sm:flex-row"
           >
             {/* Seeker side */}
             <div
-              className="flex flex-1 flex-col gap-3 p-6"
-              style={{ borderRight: '1px solid rgba(255,255,255,0.08)' }}
+              className="flex flex-1 flex-col gap-3 p-6 border-r border-white/8"
             >
               <p
                 className="text-[10px] font-bold tracking-widest uppercase text-brand-300"
@@ -121,12 +116,8 @@ export function HeroSection() {
               </div>
               <Link
                 to="/signup?role=seeker"
-                className="mt-1 inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
-                style={{
-                  // brand-900 on brand was 3.33:1 (axe serious, Phase 4.6)
-                  backgroundColor: 'var(--color-brand-hover)',
-                  color: 'var(--color-text-on-brand)',
-                }}
+                // brand-hover, not brand: white on brand was 3.33:1 (axe serious, Phase 4.6)
+                className="bg-brand-hover text-text-on-brand mt-1 inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
               >
                 Find Farm Work
               </Link>
@@ -170,12 +161,7 @@ export function HeroSection() {
           </span>
           {/* Main card */}
           <div
-            className="rounded-2xl p-5 shadow-2xl"
-            style={{
-              backgroundColor: 'rgba(255,255,255,0.06)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              backdropFilter: 'blur(12px)',
-            }}
+            className="bg-white/6 border border-white/10 backdrop-blur-[12px] rounded-2xl p-5 shadow-2xl"
           >
             <div className="mb-3 flex items-start justify-between">
               <div>
@@ -203,20 +189,11 @@ export function HeroSection() {
 
           {/* Candidate preview card */}
           <div
-            className="ml-8 rounded-2xl p-4 shadow-xl"
-            style={{
-              backgroundColor: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              backdropFilter: 'blur(12px)',
-            }}
+            className="bg-white/5 border border-white/8 backdrop-blur-[12px] ml-8 rounded-2xl p-4 shadow-xl"
           >
             <div className="mb-3 flex items-center gap-3">
               <div
-                className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold"
-                style={{
-                  backgroundColor: 'rgba(74,124,47,0.3)',
-                  color: 'var(--color-brand-300)',
-                }}
+                className="bg-brand/30 text-brand-300 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold"
               >
                 EX
               </div>
@@ -246,11 +223,8 @@ export function HeroSection() {
                     className="h-1 overflow-hidden rounded-full bg-white/10"
                   >
                     <div
-                      className="h-full rounded-full"
-                      style={{
-                        width: `${pct}%`,
-                        backgroundColor: 'var(--color-brand)',
-                      }}
+                      className="bg-brand h-full rounded-full"
+                      style={{ width: `${pct}%` }}
                     />
                   </div>
                 </div>

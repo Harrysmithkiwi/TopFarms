@@ -124,13 +124,14 @@ export function Pricing() {
               {tiers.map((tier, i) => (
                 <motion.div
                   key={tier.name}
-                  className="relative flex flex-col rounded-2xl"
+                  className="bg-surface relative flex flex-col rounded-2xl"
+                  // Conditional border width/colour and shadow — no static utility.
+                  // Shadow rgb was the retired v1 green #7aaf3f; now the v2 brand.
                   style={{
-                    backgroundColor: 'var(--color-surface)',
                     border: tier.isPopular
                       ? '2px solid var(--color-brand)'
                       : '1px solid var(--color-border)',
-                    boxShadow: tier.isPopular ? '0 8px 32px rgba(122,175,63,0.15)' : undefined,
+                    boxShadow: tier.isPopular ? '0 8px 32px rgba(22,163,74,0.15)' : undefined,
                   }}
                   initial={{ opacity: 0, y: 24 }}
                   whileInView={{ opacity: 1, y: 0 }}

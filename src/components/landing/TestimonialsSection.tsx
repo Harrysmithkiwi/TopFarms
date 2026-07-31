@@ -41,11 +41,9 @@ export function TestimonialsSection() {
           {stats.map((stat, i) => (
             <div
               key={stat.label}
-              className="py-6 text-center md:border-r"
-              style={{
-                borderColor: 'rgba(255,255,255,0.12)',
-                borderRight: i === stats.length - 1 ? 'none' : undefined,
-              }}
+              className="border-white/12 py-6 text-center md:border-r"
+              // last column drops its rule; colour is on the class.
+              style={{ borderRight: i === stats.length - 1 ? 'none' : undefined }}
             >
               <p
                 className="font-display mb-1 text-3xl font-bold md:text-4xl text-text-on-brand"
@@ -67,7 +65,7 @@ export function TestimonialsSection() {
             className="font-display text-4xl font-bold md:text-5xl text-text-on-brand"
           >
             Trusted by farms across{' '}
-            <em style={{ color: 'var(--color-brand-50)', fontStyle: 'italic' }}>New Zealand</em>
+            <em className="text-brand-50 italic">New Zealand</em>
           </h2>
         </div>
 
@@ -76,11 +74,7 @@ export function TestimonialsSection() {
           {testimonials.map((t) => (
             <div
               key={t.name}
-              className="flex flex-col gap-4 rounded-2xl p-6"
-              style={{
-                backgroundColor: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.08)',
-              }}
+              className="bg-white/5 border border-white/8 flex flex-col gap-4 rounded-2xl p-6"
             >
               <StarRating />
 

@@ -19,7 +19,46 @@ const LITERAL = { white: 'white', transparent: 'transparent' }
 // for an arbitrary colour is a design decision, not a transform.
 const RGB_TOKENS = { '255,255,255': 'white', '0,0,0': 'black' }
 
+/**
+ * Non-colour properties that block an otherwise-convertible object. Each returns
+ * the full utility string (possibly several classes). Anything not listed here
+ * still defers to a human.
+ */
+const SHORTHAND = (prop, value) => {
+  if (prop === 'opacity') { const m = value.match(/^__op(\d+)$/); return m ? `opacity-${m[1]}` : null }
+  if (prop === 'fontStyle') return value === 'italic' ? 'italic' : value === 'normal' ? 'not-italic' : null
+  if (prop === 'borderRadius') return /^\d+px$/.test(value) ? `rounded-[${value}]` : null
+  if (prop === 'backdropFilter') {
+    const m = value.match(/^blur\((\d+px)\)$/)
+    return m ? `backdrop-blur-[${m[1]}]` : null
+  }
+  // `border: '1px solid var(--color-x)'` and the per-side variants.
+  const side = { border: '', borderTop: '-t', borderRight: '-r', borderBottom: '-b', borderLeft: '-l' }[prop]
+  if (side !== undefined) {
+    if (value === 'none') return `border${side}-0`
+    const m = value.match(/^(\d+)px\s+(solid|dashed|dotted)\s+var\(--color-([a-z0-9-]+)\)$/)
+    if (m) {
+      const width = m[1] === '1' ? `border${side}` : `border${side}-${m[1]}`
+      const style = m[2] === 'solid' ? '' : ` border-${m[2]}`
+      return `${width}${style} border-${m[3]}`
+    }
+    const r = value.match(/^(\d+)px\s+(solid|dashed|dotted)\s+rgba?\(\s*(\d+\s*,\s*\d+\s*,\s*\d+)\s*(?:,\s*([\d.]+))?\s*\)$/)
+    if (r) {
+      const token = RGB_TOKENS[r[3].replace(/\s/g, '')]
+      if (!token) return null
+      const a = r[4] === undefined ? 1 : parseFloat(r[4])
+      const colour = a === 1 ? `border-${token}` : `border-${token}/${Math.round(a * 100)}`
+      const width = r[1] === '1' ? `border${side}` : `border${side}-${r[1]}`
+      const style = r[2] === 'solid' ? '' : ` border-${r[2]}`
+      return `${width}${style} ${colour}`
+    }
+  }
+  return null
+}
+
 const toClass = (prop, value) => {
+  const sh = SHORTHAND(prop, value)
+  if (sh) return sh
   const p = PROP[prop]
   if (!p) return null
   const v = value.match(/^var\(--color-([a-z0-9-]+)\)$/)
@@ -63,6 +102,8 @@ let applied = 0
  * worse than leaving the object alone. Returns null to defer to a human.
  */
 const multiToClasses = (body) => {
+  // opacity: 0.8 is unquoted, so handle numerics before the string pass.
+  body = body.replace(/opacity:\s*([\d.]+)\s*,?/g, (_, v) => `opacity: '__op${Math.round(parseFloat(v) * 100)}',`)
   const props = [...body.matchAll(/([A-Za-z]+):\s*'([^']*)'\s*,?/g)]
   if (!props.length) return null
   // Reject if anything in the body was not a simple quoted string prop.

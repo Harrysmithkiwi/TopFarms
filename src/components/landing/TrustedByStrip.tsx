@@ -26,8 +26,7 @@ export function TrustedByStrip() {
           {brands.map((brand) => (
             <span
               key={brand}
-              className="text-lg font-bold md:text-xl"
-              style={{ color: 'var(--color-text-muted)', opacity: 0.5 }}
+              className="text-text-muted opacity-50 text-lg font-bold md:text-xl"
             >
               {brand}
             </span>
