@@ -109,3 +109,27 @@ test.describe('offline (Phase 5.7)', () => {
     await expect(banner, 'banner persisted after reconnecting').toHaveCount(0, { timeout: 10_000 })
   })
 })
+
+test.describe('password recovery routing (Phase 5.0e)', () => {
+  // Observed in production 2026-07-31: a recovery mail sent from the Supabase
+  // dashboard carries no redirectTo, so it uses the project Site URL and lands
+  // on "/". detectSessionInUrl consumes the single-use token there, the user is
+  // silently signed in, and no password form is ever shown — each retry burns
+  // another token with no visible cause.
+  test('a recovery link landing anywhere still reaches the reset form', async ({ page }) => {
+    await page.goto('/#access_token=stub&refresh_token=stub&type=recovery')
+    await expect(page).toHaveURL(/\/auth\/reset/, { timeout: 10_000 })
+    // Either the form or the expired-link surface is acceptable — a stub token
+    // cannot establish a session. What must NOT happen is silently staying on
+    // the landing page with the token spent.
+    await expect(
+      page.getByText(/Verifying reset link|Set a new password|Link expired/i).first(),
+    ).toBeVisible({ timeout: 10_000 })
+  })
+
+  test('normal navigation is untouched', async ({ page }) => {
+    await page.goto('/')
+    await page.waitForLoadState('networkidle')
+    await expect(page).not.toHaveURL(/\/auth\/reset/)
+  })
+})

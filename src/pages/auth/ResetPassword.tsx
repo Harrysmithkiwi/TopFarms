@@ -39,6 +39,26 @@ export function ResetPassword() {
   })
 
   useEffect(() => {
+    // Two ways to arrive here, and before Phase 5.0e only the first worked.
+    //
+    // 1. Land directly on /auth/reset — supabase-js parses the token out of the
+    //    URL and fires PASSWORD_RECOVERY while this component is mounted.
+    //
+    // 2. Land on ANY other route first (a recovery link that used the project
+    //    Site URL rather than redirectTo, e.g. every mail sent from the Supabase
+    //    dashboard). detectSessionInUrl: true consumes the token THERE, the
+    //    event fires with nothing listening, and the user is silently signed in
+    //    with no way to set a password. Navigating here afterwards then showed
+    //    "Link expired", because the event had already passed.
+    //
+    // So also accept an existing session: a recovery token that has already been
+    // exchanged is still a valid authorisation to set a new password, and
+    // updateUser() accepts it. This doubles as the account-level "change my
+    // password" surface, which the product otherwise has nowhere.
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) setRecoveryReady(true)
+    })
+
     // Listen for PASSWORD_RECOVERY event from Supabase
     const {
       data: { subscription },

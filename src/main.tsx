@@ -1,6 +1,6 @@
 import { StrictMode, Suspense, lazy as reactLazy, type ComponentType, type ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { createBrowserRouter, RouterProvider } from 'react-router'
+import { createBrowserRouter, Outlet, RouterProvider } from 'react-router'
 import { MotionConfig } from 'motion/react'
 import { Analytics } from '@vercel/analytics/react'
 import { Toaster } from 'sonner'
@@ -18,6 +18,7 @@ import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
 import { AppErrorBoundary } from '@/components/layout/AppErrorBoundary'
 import { initObservability } from '@/lib/observability'
 import { OfflineBanner } from '@/components/layout/OfflineBanner'
+import { RecoveryRedirect } from '@/components/layout/RecoveryRedirect'
 
 // Error reporting first, so anything thrown during render is captured. No-ops
 // entirely when VITE_SENTRY_DSN is unset (audit F-A2).
@@ -187,6 +188,16 @@ function s(element: ReactNode) {
 const router = createBrowserRouter([
   {
     errorElement: s(<AppErrorBoundary />),
+    // Phase 5.0e — sits inside the router (it needs useNavigate/useLocation) and
+    // above every route, so a recovery link that lands anywhere still reaches
+    // /auth/reset before its single-use token is spent. <Outlet /> renders the
+    // matched route as normal.
+    element: (
+      <>
+        <RecoveryRedirect />
+        <Outlet />
+      </>
+    ),
     children: routeTable(),
   },
 ])
