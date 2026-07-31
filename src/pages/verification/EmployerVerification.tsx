@@ -21,6 +21,7 @@ import { PhoneVerification } from './PhoneVerification'
 import { NzbnVerification } from './NzbnVerification'
 import type { VerificationMethod, EmployerVerification } from '@/types/domain'
 import { cn } from '@/lib/utils'
+import { ErrorState } from '@/components/ui/ErrorState'
 
 interface VerificationCardProps {
   method: VerificationMethod
@@ -134,6 +135,10 @@ export function EmployerVerification() {
   const { session } = useAuth()
   const [employerId, setEmployerId] = useState<string | null>(null)
   const [loadingProfile, setLoadingProfile] = useState(true)
+  // Phase 5.6 — a failed profile fetch left employerId null, which rendered
+  // the form but silently blocked every submit. A dead UI, not an error.
+  const [profileError, setProfileError] = useState(false)
+  const [reloadNonce, setReloadNonce] = useState(0)
   const [expandedMethod, setExpandedMethod] = useState<VerificationMethod | null>(null)
 
   const {
@@ -153,14 +158,15 @@ export function EmployerVerification() {
       .eq('user_id', session.user.id)
       .single()
       .then(({ data, error }) => {
-        if (error) {
+        if (error && error.code !== 'PGRST116') {
           console.error('EmployerVerification: failed to load employer profile', error)
+          setProfileError(true)
         } else {
           setEmployerId(data?.id ?? null)
         }
         setLoadingProfile(false)
       })
-  }, [session?.user?.id])
+  }, [session?.user?.id, reloadNonce])
 
   // Auto-create email verification record on mount when employerId is available
   useEffect(() => {
@@ -200,6 +206,20 @@ export function EmployerVerification() {
   }
 
   const isLoading = loadingProfile || loadingVerifications
+
+  if (profileError) {
+    return (
+      <DashboardLayout>
+        <ErrorState
+          message="We could not load your farm profile"
+          onRetry={() => {
+            setProfileError(false)
+            setReloadNonce((n) => n + 1)
+          }}
+        />
+      </DashboardLayout>
+    )
+  }
 
   if (isLoading && !employerId) {
     return (

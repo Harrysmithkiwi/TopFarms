@@ -61,6 +61,19 @@ test.describe('failed is not empty (Phase 5.6)', () => {
   })
 })
 
+test.describe('failed is not a 404 (Phase 5.6)', () => {
+  test('/jobs/:id shows a retryable error, not "listing not found"', async ({ page }) => {
+    await killRest(page)
+    // Any id: the request is aborted before it can resolve either way.
+    await page.goto('/jobs/00000000-0000-4000-8000-000000000001')
+    await expectErrorNotEmpty(
+      page,
+      /no longer available|not found|been filled|been removed/i,
+      '/jobs/:id',
+    )
+  })
+})
+
 test.describe('failed is not empty — employer surfaces', () => {
   test.skip(() => !hasState('employer'), SKIP_NO_CREDS('employer'))
   test.use({ storageState: hasState('employer') ? statePath('employer') : undefined })

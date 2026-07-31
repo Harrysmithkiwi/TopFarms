@@ -4,6 +4,7 @@ import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
 import { KpiCard } from '@/components/admin/KpiCard'
 import { Tag } from '@/components/ui/Tag'
 import { supabase } from '@/lib/supabase'
+import { ErrorState } from '@/components/ui/ErrorState'
 
 interface PlacementsSummary {
   count: number
@@ -78,11 +79,13 @@ export function PlacementPipeline() {
   // Summary KPIs load independently of the table — a failure here just hides the
   // strip; the AdminTable below owns its own load/error state.
   const [summary, setSummary] = useState<PlacementsSummary | null>(null)
+  const [summaryError, setSummaryError] = useState(false)
 
   useEffect(() => {
     void supabase.rpc('admin_get_placements_summary' as never).then(({ data, error }) => {
       if (error) {
         console.error('placements summary load failed', error)
+        setSummaryError(true)
         return
       }
       setSummary(data as PlacementsSummary)
@@ -97,6 +100,14 @@ export function PlacementPipeline() {
         description="Acknowledged placements awaiting an invoice. Overdue (>14 days) is flagged; click through to Stripe to bill."
       />
 
+      {summaryError && (
+        <ErrorState
+          message="Could not load the placements summary"
+          onRetry={() => setSummaryError(false)}
+          compact
+          className="mb-4"
+        />
+      )}
       {summary && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <KpiCard label="In-flight placements" value={summary.count} />

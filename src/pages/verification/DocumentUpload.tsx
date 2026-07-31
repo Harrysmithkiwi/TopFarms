@@ -8,6 +8,7 @@ import { useVerifications } from '@/hooks/useVerifications'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { Card } from '@/components/ui/Card'
 import { FileDropzone } from '@/components/ui/FileDropzone'
+import { ErrorState } from '@/components/ui/ErrorState'
 
 /**
  * Document upload page for employer verification.
@@ -20,6 +21,10 @@ export function DocumentUpload() {
   const { session } = useAuth()
   const [employerId, setEmployerId] = useState<string | null>(null)
   const [loadingProfile, setLoadingProfile] = useState(true)
+  // Phase 5.6 — a failed profile fetch left employerId null, which rendered
+  // the form but silently blocked every submit. A dead UI, not an error.
+  const [profileError, setProfileError] = useState(false)
+  const [reloadNonce, setReloadNonce] = useState(0)
 
   const { verifications, refresh } = useVerifications(employerId)
 
@@ -33,14 +38,15 @@ export function DocumentUpload() {
       .eq('user_id', session.user.id)
       .single()
       .then(({ data, error }) => {
-        if (error) {
+        if (error && error.code !== 'PGRST116') {
           console.error('DocumentUpload: failed to load employer profile', error)
+          setProfileError(true)
         } else {
           setEmployerId(data?.id ?? null)
         }
         setLoadingProfile(false)
       })
-  }, [session?.user?.id])
+  }, [session?.user?.id, reloadNonce])
 
   async function handleUploadComplete(url: string) {
     if (!employerId) return
@@ -72,6 +78,20 @@ export function DocumentUpload() {
 
   const documentVerification = verifications.find((v) => v.method === 'document')
   const existingDocumentUrl = documentVerification?.document_url
+
+  if (profileError) {
+    return (
+      <DashboardLayout>
+        <ErrorState
+          message="We could not load your farm profile"
+          onRetry={() => {
+            setProfileError(false)
+            setReloadNonce((n) => n + 1)
+          }}
+        />
+      </DashboardLayout>
+    )
+  }
 
   if (loadingProfile && !employerId) {
     return (

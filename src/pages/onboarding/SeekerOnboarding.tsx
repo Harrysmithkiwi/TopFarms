@@ -14,6 +14,7 @@ import { SeekerStep5LifeSituation } from './steps/SeekerStep5LifeSituation'
 import { SeekerStep6Visa } from './steps/SeekerStep6Visa'
 import { SeekerStep7Complete } from './steps/SeekerStep7Complete'
 import type { SeekerProfileData } from '@/types/domain'
+import { ErrorState } from '@/components/ui/ErrorState'
 
 const STEP_LABELS = [
   'Farm Type',
@@ -32,6 +33,8 @@ export function SeekerOnboarding() {
   const navigate = useNavigate()
   const [profileData, setProfileData] = useState<Partial<SeekerProfileData>>({})
   const [loading, setLoading] = useState(true)
+  const [profileError, setProfileError] = useState(false)
+  const [reloadNonce, setReloadNonce] = useState(0)
   const [saving, setSaving] = useState(false)
   const [initialStep, setInitialStep] = useState(0)
   const [seekerProfileId, setSeekerProfileId] = useState<string | null>(null)
@@ -58,8 +61,14 @@ export function SeekerOnboarding() {
         .single()
 
       if (error && error.code !== 'PGRST116') {
-        // PGRST116 = no rows found (expected for new users)
+        // PGRST116 = no rows found (expected for new users). Anything else and we
+        // do NOT know whether this seeker has onboarded -- and Phase 5.6 says an
+        // unknown must not be rendered as a known. Falling through here restarts
+        // the wizard at step 0 for someone who already finished it.
         console.error('Error loading seeker profile:', error)
+        setProfileError(true)
+        setLoading(false)
+        return
       }
 
       if (data) {
@@ -104,7 +113,7 @@ export function SeekerOnboarding() {
 
     loadProfile()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session?.user?.id])
+  }, [session?.user?.id, reloadNonce])
 
   // BUG-03 2026-05-04: SeekerStep7Complete has no onComplete prop and no explicit
   // "finish" button — it's a "you're done" matches view. Without firing the completion
@@ -164,6 +173,20 @@ export function SeekerOnboarding() {
     if (!isLastStep) {
       wizard.nextStep()
     }
+  }
+
+  if (profileError) {
+    return (
+      <DashboardLayout>
+        <ErrorState
+          message="We could not load your profile"
+          onRetry={() => {
+            setProfileError(false)
+            setReloadNonce((n) => n + 1)
+          }}
+        />
+      </DashboardLayout>
+    )
   }
 
   if (loading) {

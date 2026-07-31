@@ -28,6 +28,7 @@ import { Timeline } from '@/components/ui/Timeline'
 import { JobDetailSidebar } from '@/components/ui/JobDetailSidebar'
 import { MapPlaceholder } from '@/components/ui/MapPlaceholder'
 import { useSavedJobs } from '@/hooks/useSavedJobs'
+import { ErrorState } from '@/components/ui/ErrorState'
 import type {
   JobListing,
   EmployerVerification,
@@ -142,6 +143,9 @@ export function JobDetail() {
   const [verifications, setVerifications] = useState<EmployerVerification[]>([])
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
+  // Phase 5.6 — distinct from notFound. A 404 has no retry; a failure needs one.
+  const [loadError, setLoadError] = useState(false)
+  const [reloadNonce, setReloadNonce] = useState(0)
 
   // Seeker-specific state
   const [matchScore, setMatchScore] = useState<MatchScore | null>(null)
@@ -170,6 +174,7 @@ export function JobDetail() {
     track('job_view', { jobId })
 
     async function loadJob() {
+      setLoadError(false)
       setLoading(true)
 
       // 1. Load job with employer profile — via the marketplace view
@@ -187,7 +192,16 @@ export function JobDetail() {
         .eq('id', jobId)
         .single()
 
-      if (jobError || !jobData) {
+      // Phase 5.6: a dropped request is not a missing job. Rendering the 404
+      // for a network failure tells the seeker the role was taken down, and
+      // there is no way back from a 404 -- it has no retry.
+      if (jobError && jobError.code !== 'PGRST116') {
+        console.error('JobDetail: failed to load job', jobError)
+        setLoadError(true)
+        setLoading(false)
+        return
+      }
+      if (!jobData) {
         setNotFound(true)
         setLoading(false)
         return
@@ -300,7 +314,7 @@ export function JobDetail() {
     }
 
     loadJob()
-  }, [jobId, session, role])
+  }, [jobId, session, role, reloadNonce])
 
   // Group skills by category
   const skillsByCategory = skills.reduce<Record<string, JobSkill[]>>((acc, skill) => {
@@ -324,6 +338,18 @@ export function JobDetail() {
         <p className="text-sm text-text-subtle">
           Loading listing...
         </p>
+      </div>
+    )
+  }
+
+  // Failed — checked BEFORE notFound, which is a dead end with no retry.
+  if (loadError) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-bg">
+        <ErrorState
+          message="We could not load this listing"
+          onRetry={() => setReloadNonce((n) => n + 1)}
+        />
       </div>
     )
   }

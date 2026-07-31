@@ -4,6 +4,7 @@ import { ChevronDown } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/hooks/useAuth'
 import type { SavedSearch } from '@/types/domain'
+import { ErrorState } from '@/components/ui/ErrorState'
 
 /**
  * Render a short human-readable summary of the most-distinctive filters in a
@@ -47,6 +48,7 @@ export function SavedSearchesDropdown() {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [rows, setRows] = useState<DropdownRow[]>([])
+  const [loadError, setLoadError] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
   // Fetch top 5 on open. Keyed only on { open, session.user.id } — does NOT
@@ -65,6 +67,8 @@ export function SavedSearchesDropdown() {
         .limit(5)
       if (cancelled) return
       if (error) {
+        console.error('SavedSearchesDropdown: failed to load saved searches', error)
+        setLoadError(true)
         setRows([])
         setLoading(false)
         return
@@ -131,6 +135,14 @@ export function SavedSearchesDropdown() {
             <p className="font-body p-3 text-label text-text-subtle">
               Loading…
             </p>
+          ) : loadError ? (
+            <div className="p-2">
+              <ErrorState
+                message="Could not load saved searches"
+                onRetry={() => setLoadError(false)}
+                compact
+              />
+            </div>
           ) : rows.length === 0 ? (
             <p className="font-body p-3 text-label text-text-subtle">
               No saved searches yet.

@@ -42,13 +42,19 @@ function CounterBlock({ label, target, active, suffix = '' }: CounterBlockProps)
 
 export function CountersSection() {
   const [stats, setStats] = useState<PlatformStats>({ jobs: 0, seekers: 0, matches: 0 })
+  const [statsUnavailable, setStatsUnavailable] = useState(false)
   const { ref, inView } = useInView(0.2)
 
   useEffect(() => {
     async function fetchStats() {
       const { data, error } = await supabase.rpc('get_platform_stats')
       if (error || !data) {
-        // Fallback: use 0 for all counters on error
+        // Phase 5.6: do NOT fall back to zeros. "0 Jobs Posted" on the landing
+        // page is not a degraded state, it is a false claim about the business --
+        // the same class of defect Phase 0.5 removed when it deleted the
+        // fabricated stats. An unknown number is not zero; show nothing.
+        console.error('CountersSection: failed to load platform stats', error)
+        setStatsUnavailable(true)
         return
       }
       setStats({
@@ -84,7 +90,10 @@ export function CountersSection() {
 
         {/* divide color via utility class — `divideColor` is not a CSS property,
             so the previous inline style was silently ignored by React. */}
-        <div className="grid grid-cols-1 divide-y divide-white/[0.08] sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+        <div
+          className="grid grid-cols-1 divide-y divide-white/[0.08] sm:grid-cols-3 sm:divide-x sm:divide-y-0"
+          hidden={statsUnavailable}
+        >
           <CounterBlock label="Jobs Posted" target={stats.jobs} active={inView} />
           <CounterBlock label="Workers Registered" target={stats.seekers} active={inView} />
           <CounterBlock label="Matches Made" target={stats.matches} active={inView} />

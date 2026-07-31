@@ -9,6 +9,7 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { Card } from '@/components/ui/Card'
 import { FileDropzone } from '@/components/ui/FileDropzone'
 import type { StorageError } from '@supabase/storage-js'
+import { ErrorState } from '@/components/ui/ErrorState'
 
 interface StorageObject {
   name: string
@@ -29,6 +30,10 @@ export function FarmPhotoUpload() {
   const { session } = useAuth()
   const [employerId, setEmployerId] = useState<string | null>(null)
   const [loadingProfile, setLoadingProfile] = useState(true)
+  // Phase 5.6 — a failed profile fetch left employerId null, which rendered
+  // the upload form but silently blocked every upload. A dead UI, not an error.
+  const [profileError, setProfileError] = useState(false)
+  const [reloadNonce, setReloadNonce] = useState(0)
   const [photos, setPhotos] = useState<string[]>([])
   const [loadingPhotos, setLoadingPhotos] = useState(false)
 
@@ -44,14 +49,15 @@ export function FarmPhotoUpload() {
       .eq('user_id', session.user.id)
       .single()
       .then(({ data, error }) => {
-        if (error) {
+        if (error && error.code !== 'PGRST116') {
           console.error('FarmPhotoUpload: failed to load employer profile', error)
+          setProfileError(true)
         } else {
           setEmployerId(data?.id ?? null)
         }
         setLoadingProfile(false)
       })
-  }, [session?.user?.id])
+  }, [session?.user?.id, reloadNonce])
 
   // Load existing photos from storage
   useEffect(() => {
@@ -112,6 +118,20 @@ export function FarmPhotoUpload() {
   }
 
   const farmPhotoVerification = verifications.find((v) => v.method === 'farm_photo')
+
+  if (profileError) {
+    return (
+      <DashboardLayout>
+        <ErrorState
+          message="We could not load your farm profile"
+          onRetry={() => {
+            setProfileError(false)
+            setReloadNonce((n) => n + 1)
+          }}
+        />
+      </DashboardLayout>
+    )
+  }
 
   if (loadingProfile && !employerId) {
     return (
