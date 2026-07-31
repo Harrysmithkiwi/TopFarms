@@ -12,6 +12,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
         {/* Gradient overlay */}
         <div
           className="absolute inset-0"
+          // Multi-stop gradient — no utility equivalent.
           style={{
             background:
               'linear-gradient(135deg, var(--color-brand-900) 0%, var(--color-brand-900) 40%, var(--color-brand) 100%)',
@@ -21,6 +22,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
         {/* Background texture pattern */}
         <div
           className="absolute inset-0 opacity-10"
+          // Layered radial-gradient dot pattern — no utility equivalent.
           style={{
             backgroundImage: `radial-gradient(circle at 25% 25%, rgba(255,255,255,0.5) 1px, transparent 1px),
                               radial-gradient(circle at 75% 75%, var(--color-brand) 1px, transparent 1px)`,
@@ -32,8 +34,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
         <div className="relative z-10">
           <div className="flex items-center gap-2">
             <span
-              className="text-2xl font-semibold"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text-on-brand)' }}
+              className="font-display text-text-on-brand text-2xl font-semibold"
             >
               TopFarms
             </span>
@@ -42,12 +43,11 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
 
         <div className="relative z-10">
           <h2
-            className="mb-6 text-4xl leading-tight font-semibold lg:text-5xl"
-            style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text-on-brand)' }}
+            className="font-display text-text-on-brand mb-6 text-4xl leading-tight font-semibold lg:text-5xl"
           >
             New Zealand's Agriculture Job Marketplace
           </h2>
-          <p className="text-lg" style={{ color: 'var(--color-text-on-brand)' }}>
+          <p className="text-lg text-text-on-brand">
             Connecting farm employers with skilled seekers across all 16 regions. DairyNZ
             qualifications, herd experience, and accommodation — all in one place.
           </p>
@@ -57,34 +57,31 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
         <div className="relative z-10 flex gap-8">
           <div>
             <p
-              className="text-3xl font-bold"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--color-brand-300)' }}
+              className="font-display text-brand-300 text-3xl font-bold"
             >
               16
             </p>
-            <p className="text-sm" style={{ color: 'var(--color-text-on-brand)' }}>
+            <p className="text-sm text-text-on-brand">
               NZ regions covered
             </p>
           </div>
           <div>
             <p
-              className="text-3xl font-bold"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--color-brand-300)' }}
+              className="font-display text-brand-300 text-3xl font-bold"
             >
               5
             </p>
-            <p className="text-sm" style={{ color: 'var(--color-text-on-brand)' }}>
+            <p className="text-sm text-text-on-brand">
               Farm sectors
             </p>
           </div>
           <div>
             <p
-              className="text-3xl font-bold"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--color-brand-300)' }}
+              className="font-display text-brand-300 text-3xl font-bold"
             >
               Free
             </p>
-            <p className="text-sm" style={{ color: 'var(--color-text-on-brand)' }}>
+            <p className="text-sm text-text-on-brand">
               To join as a seeker
             </p>
           </div>
@@ -93,15 +90,13 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
 
       {/* Right panel — cream form area */}
       <div
-        className="flex flex-1 flex-col items-center justify-center px-6 py-12"
-        style={{ backgroundColor: 'var(--color-bg)' }}
+        className="flex flex-1 flex-col items-center justify-center px-6 py-12 bg-bg"
       >
         <div className="w-full max-w-md">
           {/* Logo — shown on mobile only (left panel hidden) */}
           <div className="mb-8 text-center md:hidden">
             <span
-              className="text-3xl font-semibold"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--color-brand-900)' }}
+              className="font-display text-brand-900 text-3xl font-semibold"
             >
               TopFarms
             </span>
@@ -112,14 +107,13 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
             <div className="mb-8">
               {title && (
                 <h1
-                  className="mb-2 text-2xl font-semibold"
-                  style={{ fontFamily: 'var(--font-display)', color: 'var(--color-brand-900)' }}
+                  className="font-display text-brand-900 mb-2 text-2xl font-semibold"
                 >
                   {title}
                 </h1>
               )}
               {subtitle && (
-                <p className="text-base" style={{ color: 'var(--color-text-muted)' }}>
+                <p className="text-base text-text-muted">
                   {subtitle}
                 </p>
               )}

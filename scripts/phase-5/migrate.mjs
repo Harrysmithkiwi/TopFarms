@@ -26,6 +26,14 @@ const RGB_TOKENS = { '255,255,255': 'white', '0,0,0': 'black' }
  */
 const SHORTHAND = (prop, value) => {
   if (prop === 'opacity') { const m = value.match(/^__op(\d+)$/); return m ? `opacity-${m[1]}` : null }
+  if (prop === 'fontFamily') {
+    const m = value.match(/^var\(--font-(display|body|mono)\)$/)
+    return m ? `font-${m[1]}` : null
+  }
+  if (prop === 'accentColor') {
+    const m = value.match(/^var\(--color-([a-z0-9-]+)\)$/)
+    return m ? `accent-${m[1]}` : null
+  }
   if (prop === 'fontStyle') return value === 'italic' ? 'italic' : value === 'normal' ? 'not-italic' : null
   if (prop === 'borderRadius') return /^\d+px$/.test(value) ? `rounded-[${value}]` : null
   if (prop === 'backdropFilter') {

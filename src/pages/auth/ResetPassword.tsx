@@ -8,6 +8,7 @@ import { Eye, EyeOff, AlertCircle } from 'lucide-react'
 import { AuthLayout } from '@/components/layout/AuthLayout'
 import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
+import { cn } from '@/lib/utils'
 
 const schema = z
   .object({
@@ -116,24 +117,19 @@ export function ResetPassword() {
         <div className="space-y-6">
           <div className="flex justify-center">
             <div
-              className="flex h-16 w-16 items-center justify-center rounded-full"
-              style={{ backgroundColor: 'var(--color-danger-bg)' }}
+              className="flex h-16 w-16 items-center justify-center rounded-full bg-danger-bg"
             >
-              <AlertCircle size={32} style={{ color: 'var(--color-danger)' }} />
+              <AlertCircle className="text-danger" size={32} />
             </div>
           </div>
 
-          <p className="text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
+          <p className="text-center text-sm text-text-muted">
             This password reset link is invalid or has expired. Reset links are valid for 1 hour.
           </p>
 
           <Link
             to="/forgot-password"
-            className="block w-full rounded-lg px-4 py-2.5 text-center text-sm font-semibold"
-            style={{
-              backgroundColor: 'var(--color-brand-900)',
-              color: 'var(--color-text-on-brand)',
-            }}
+            className="bg-brand-900 text-text-on-brand block w-full rounded-lg px-4 py-2.5 text-center text-sm font-semibold"
           >
             Request a new reset link
           </Link>
@@ -148,10 +144,9 @@ export function ResetPassword() {
       <AuthLayout title="Verifying reset link...">
         <div className="flex flex-col items-center gap-4 py-8">
           <div
-            className="h-10 w-10 animate-spin rounded-full border-2 border-t-transparent"
-            style={{ borderColor: 'var(--color-brand)' }}
+            className="h-10 w-10 animate-spin rounded-full border-2 border-t-transparent border-brand"
           />
-          <p className="text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
+          <p className="text-center text-sm text-text-muted">
             Verifying your reset link...
           </p>
         </div>
@@ -167,8 +162,7 @@ export function ResetPassword() {
         <div>
           <label
             htmlFor="password"
-            className="mb-1.5 block text-sm font-medium"
-            style={{ color: 'var(--color-text)' }}
+            className="mb-1.5 block text-sm font-medium text-text"
           >
             New password
           </label>
@@ -178,25 +172,22 @@ export function ResetPassword() {
               type={showPassword ? 'text' : 'password'}
               autoComplete="new-password"
               {...register('password')}
-              className="w-full rounded-lg border px-3.5 py-2.5 pr-10 text-sm transition-colors"
-              style={{
-                borderColor: errors.password ? 'var(--color-danger)' : 'var(--color-border)',
-                backgroundColor: 'var(--color-surface)',
-                color: 'var(--color-text)',
-              }}
+              className={cn(
+                'bg-surface text-text w-full rounded-lg border px-3.5 py-2.5 pr-10 text-sm transition-colors',
+                errors.password ? 'border-danger' : 'border-border',
+              )}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute top-1/2 right-3 -translate-y-1/2"
-              style={{ color: 'var(--color-text-subtle)' }}
+              className="absolute top-1/2 right-3 -translate-y-1/2 text-text-subtle"
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
           {errors.password && (
-            <p className="mt-1 text-xs" style={{ color: 'var(--color-danger)' }}>
+            <p className="mt-1 text-xs text-danger">
               {errors.password.message}
             </p>
           )}
@@ -206,8 +197,7 @@ export function ResetPassword() {
         <div>
           <label
             htmlFor="confirmPassword"
-            className="mb-1.5 block text-sm font-medium"
-            style={{ color: 'var(--color-text)' }}
+            className="mb-1.5 block text-sm font-medium text-text"
           >
             Confirm new password
           </label>
@@ -217,25 +207,22 @@ export function ResetPassword() {
               type={showConfirm ? 'text' : 'password'}
               autoComplete="new-password"
               {...register('confirmPassword')}
-              className="w-full rounded-lg border px-3.5 py-2.5 pr-10 text-sm transition-colors"
-              style={{
-                borderColor: errors.confirmPassword ? 'var(--color-danger)' : 'var(--color-border)',
-                backgroundColor: 'var(--color-surface)',
-                color: 'var(--color-text)',
-              }}
+              className={cn(
+                'bg-surface text-text w-full rounded-lg border px-3.5 py-2.5 pr-10 text-sm transition-colors',
+                errors.confirmPassword ? 'border-danger' : 'border-border',
+              )}
             />
             <button
               type="button"
               onClick={() => setShowConfirm(!showConfirm)}
-              className="absolute top-1/2 right-3 -translate-y-1/2"
-              style={{ color: 'var(--color-text-subtle)' }}
+              className="absolute top-1/2 right-3 -translate-y-1/2 text-text-subtle"
               aria-label={showConfirm ? 'Hide password' : 'Show password'}
             >
               {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
           {errors.confirmPassword && (
-            <p className="mt-1 text-xs" style={{ color: 'var(--color-danger)' }}>
+            <p className="mt-1 text-xs text-danger">
               {errors.confirmPassword.message}
             </p>
           )}
@@ -245,11 +232,7 @@ export function ResetPassword() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold transition-opacity disabled:opacity-60"
-          style={{
-            backgroundColor: 'var(--color-brand-900)',
-            color: 'var(--color-text-on-brand)',
-          }}
+          className="bg-brand-900 text-text-on-brand w-full rounded-lg px-4 py-2.5 text-sm font-semibold transition-opacity disabled:opacity-60"
         >
           {isSubmitting ? 'Updating password...' : 'Update password'}
         </button>

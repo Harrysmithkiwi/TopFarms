@@ -37,12 +37,11 @@ export function Suspended() {
   return (
     <AuthLayout title="Account suspended">
       <div className="space-y-6">
-        <p className="text-base" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="text-base text-text-muted">
           Your account has been suspended. If you think this is an error, contact{' '}
           <a
             href="mailto:hello@topfarms.co.nz"
-            className="underline"
-            style={{ color: 'var(--color-brand-900)' }}
+            className="underline text-brand-900"
           >
             hello@topfarms.co.nz
           </a>

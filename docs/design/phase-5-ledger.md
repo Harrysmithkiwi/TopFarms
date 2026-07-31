@@ -1,10 +1,10 @@
 # Phase 5 — inline-style migration ledger
 
-Generated Stage 1, before any migration, at commit `e0aa2f8`.
+Generated Stage 1, before any migration, at commit `772ec4c`.
 The planning artefact for Task 5.1: what has to move, in what order, and which
 files sit on a route the Phase 4 axe gate already watches.
 
-**Totals: 84 files · 548 `style={{` · 618 `var(--color-…)` · 25 hex literals · 433 `text-[Npx]`**
+**Totals: 79 files · 445 `style={{` · 466 `var(--color-…)` · 23 hex literals · 433 `text-[Npx]`**
 
 `colour` counts `var(--color-…)` references anywhere in the file — the migration
 target. `axe` marks files rendering on one of the six Phase 4 axe routes: those
@@ -72,18 +72,13 @@ Order within each surface is heaviest-first by `style={{` count, per the brief.
 | 23 | `components/admin/KpiCard.tsx` | 2 | 0 |  | 3 |  |
 | 24 | `components/layout/AdminLayout.tsx` | 1 | 1 |  |  |  |
 
-## auth — 8 files · 108 `style={{` · 156 colour refs
+## auth — 3 files · 5 `style={{` · 4 colour refs
 
 | # | File | `style={{` | colour | hex | `text-[Npx]` | axe route |
 |---|---|---|---|---|---|---|
-| 1 | `pages/auth/SignUp.tsx` | 33 | 57 | 7 |  |  |
-| 2 | `pages/auth/Login.tsx` | 16 | 24 | 7 |  |  |
-| 3 | `pages/auth/ResetPassword.tsx` | 15 | 23 |  |  |  |
-| 4 | `components/layout/AuthLayout.tsx` | 15 | 17 |  |  |  |
-| 5 | `pages/auth/ForgotPassword.tsx` | 11 | 14 | 1 |  |  |
-| 6 | `pages/auth/SelectRole.tsx` | 9 | 11 |  |  |  |
-| 7 | `pages/auth/VerifyEmail.tsx` | 7 | 8 | 1 |  |  |
-| 8 | `pages/auth/Suspended.tsx` | 2 | 2 |  |  |  |
+| 1 | `components/layout/AuthLayout.tsx` | 2 | 4 |  |  |  |
+| 2 | `pages/auth/SignUp.tsx` | 2 | 0 | 7 |  |  |
+| 3 | `pages/auth/Login.tsx` | 1 | 0 | 7 |  |  |
 
 ## marketing — 8 files · 15 `style={{` · 13 colour refs
 
