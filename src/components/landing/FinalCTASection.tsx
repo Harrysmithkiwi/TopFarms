@@ -3,7 +3,7 @@ import { motion } from 'motion/react'
 
 export function FinalCTASection() {
   return (
-    <section className="px-4 py-20" style={{ backgroundColor: 'var(--color-brand-900)' }}>
+    <section className="px-4 py-20 bg-brand-900">
       <motion.div
         initial={{ opacity: 0, y: 32 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -12,8 +12,7 @@ export function FinalCTASection() {
         className="mx-auto max-w-3xl text-center"
       >
         <h2
-          className="font-display mb-4 text-4xl font-bold md:text-5xl"
-          style={{ color: 'var(--color-text-on-brand)' }}
+          className="font-display mb-4 text-4xl font-bold md:text-5xl text-text-on-brand"
         >
           Ready to Find Your Perfect Match?
         </h2>
@@ -35,12 +34,7 @@ export function FinalCTASection() {
           </Link>
           <Link
             to="/signup?role=employer"
-            className="inline-flex items-center justify-center rounded-full border px-8 py-3 font-semibold transition-opacity hover:opacity-90"
-            style={{
-              backgroundColor: 'transparent',
-              borderColor: 'var(--color-text-on-brand)',
-              color: 'var(--color-text-on-brand)',
-            }}
+            className="bg-transparent border-text-on-brand text-text-on-brand inline-flex items-center justify-center rounded-full border px-8 py-3 font-semibold transition-opacity hover:opacity-90"
           >
             Post a Job
           </Link>

@@ -31,8 +31,7 @@ function CounterBlock({ label, target, active, suffix = '' }: CounterBlockProps)
         {suffix}
       </p>
       <p
-        className="text-sm font-medium tracking-wide uppercase"
-        style={{ color: 'rgba(255,255,255,0.55)' }}
+        className="text-sm font-medium tracking-wide uppercase text-white/55"
       >
         {label}
       </p>
@@ -67,22 +66,14 @@ export function CountersSection() {
   }, [])
 
   return (
-    <section ref={ref} style={{ backgroundColor: 'var(--color-brand-900)' }}>
+    <section className="bg-brand-900" ref={ref}>
       <div className="mx-auto max-w-5xl px-4">
         {/* Live badge */}
         <div className="mb-4 flex justify-center pt-8">
-          <div
-            className="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold tracking-widest uppercase"
-            style={{
-              borderColor: 'rgba(122,175,63,0.3)',
-              backgroundColor: 'rgba(122,175,63,0.08)',
-              // brand on brand-900 was 3.33:1 — brand-300 is the on-dark green
-              color: 'var(--color-brand-300)',
-            }}
-          >
+          {/* brand on brand-900 was 3.33:1 — brand-300 is the on-dark green */}
+          <div className="border-brand/30 bg-brand/8 text-brand-300 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold tracking-widest uppercase">
             <span
-              className="h-2 w-2 animate-pulse rounded-full"
-              style={{ backgroundColor: 'var(--color-brand)' }}
+              className="h-2 w-2 animate-pulse rounded-full bg-brand"
             />
             Live
           </div>

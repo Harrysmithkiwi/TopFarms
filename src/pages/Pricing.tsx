@@ -90,11 +90,11 @@ export function Pricing() {
     'Simple per-listing pricing for NZ farm job ads. First listing free, no subscriptions, no contracts.',
   )
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'var(--color-bg)' }}>
+    <div className="min-h-screen bg-bg">
       <Nav />
       <main>
         {/* Hero */}
-        <section className="px-4 py-20" style={{ backgroundColor: 'var(--color-brand-900)' }}>
+        <section className="px-4 py-20 bg-brand-900">
           <motion.div
             className="mx-auto max-w-2xl text-center"
             initial={{ opacity: 0, y: 24 }}
@@ -102,25 +102,23 @@ export function Pricing() {
             transition={{ duration: 0.5, ease: 'easeOut' }}
           >
             <p
-              className="mb-5 text-xs font-bold tracking-widest uppercase"
-              style={{ color: 'var(--color-brand)' }}
+              className="mb-5 text-xs font-bold tracking-widest uppercase text-brand-hover"
             >
               Pricing
             </p>
             <h1
-              className="font-display mb-5 text-5xl leading-tight font-bold"
-              style={{ color: 'var(--color-text-on-brand)' }}
+              className="font-display mb-5 text-5xl leading-tight font-bold text-text-on-brand"
             >
               Simple, per-listing pricing
             </h1>
-            <p className="text-lg" style={{ color: 'rgba(255,255,255,0.7)' }}>
+            <p className="text-lg text-white/70">
               No subscriptions. No contracts. Your first listing is always free.
             </p>
           </motion.div>
         </section>
 
         {/* Tier cards */}
-        <section className="px-4 py-20" style={{ backgroundColor: 'var(--color-bg)' }}>
+        <section className="px-4 py-20 bg-bg">
           <div className="mx-auto max-w-5xl">
             <div className="grid gap-6 md:grid-cols-3">
               {tiers.map((tier, i) => (
@@ -141,33 +139,27 @@ export function Pricing() {
                 >
                   {tier.isPopular && (
                     <div
-                      className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full px-4 py-1 text-xs font-bold"
-                      style={{
-                        backgroundColor: 'var(--color-brand)',
-                        color: 'var(--color-text-on-brand)',
-                      }}
+                      className="bg-brand text-text-on-brand absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full px-4 py-1 text-xs font-bold"
                     >
                       Most Popular
                     </div>
                   )}
                   <div className="flex-1 p-7">
                     <p
-                      className="font-display mb-1 text-lg font-bold"
-                      style={{ color: 'var(--color-brand-900)' }}
+                      className="font-display mb-1 text-lg font-bold text-brand-900"
                     >
                       {tier.name}
                     </p>
-                    <p className="mb-5 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                    <p className="mb-5 text-sm text-text-muted">
                       {tier.description}
                     </p>
                     <div className="mb-6 flex items-end gap-1">
                       <span
-                        className="font-display text-4xl font-bold"
-                        style={{ color: 'var(--color-brand-900)' }}
+                        className="font-display text-4xl font-bold text-brand-900"
                       >
                         {tier.price}
                       </span>
-                      <span className="pb-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                      <span className="pb-1 text-sm text-text-muted">
                         {tier.period}
                       </span>
                     </div>
@@ -175,16 +167,14 @@ export function Pricing() {
                       {tier.features.map((f) => (
                         <li key={f} className="flex items-start gap-2.5">
                           <span
-                            className="mt-0.5 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full"
-                            style={{ backgroundColor: 'rgba(122,175,63,0.15)' }}
+                            className="bg-brand/15 mt-0.5 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full"
                           >
-                            <Check
+                            <Check className="text-brand"
                               size={10}
-                              style={{ color: 'var(--color-brand)' }}
                               strokeWidth={3}
                             />
                           </span>
-                          <span className="text-sm" style={{ color: 'var(--color-text)' }}>
+                          <span className="text-sm text-text">
                             {f}
                           </span>
                         </li>
@@ -229,11 +219,10 @@ export function Pricing() {
         </section>
 
         {/* FAQ */}
-        <section className="px-4 py-20" style={{ backgroundColor: 'var(--color-surface)' }}>
+        <section className="px-4 py-20 bg-surface">
           <div className="mx-auto max-w-2xl">
             <motion.h2
-              className="font-display mb-10 text-center text-3xl font-bold"
-              style={{ color: 'var(--color-brand-900)' }}
+              className="font-display mb-10 text-center text-3xl font-bold text-brand-900"
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
@@ -241,7 +230,7 @@ export function Pricing() {
             >
               Frequently asked questions
             </motion.h2>
-            <div className="flex flex-col divide-y" style={{ borderColor: 'var(--color-border)' }}>
+            <div className="flex flex-col divide-y border-border">
               {faqs.map((faq, i) => (
                 <motion.div
                   key={faq.q}
@@ -252,14 +241,12 @@ export function Pricing() {
                   transition={{ duration: 0.35, delay: i * 0.06 }}
                 >
                   <p
-                    className="mb-2 text-base font-semibold"
-                    style={{ color: 'var(--color-brand-900)' }}
+                    className="mb-2 text-base font-semibold text-brand-900"
                   >
                     {faq.q}
                   </p>
                   <p
-                    className="text-sm leading-relaxed"
-                    style={{ color: 'var(--color-text-muted)' }}
+                    className="text-sm leading-relaxed text-text-muted"
                   >
                     {faq.a}
                   </p>
@@ -270,7 +257,7 @@ export function Pricing() {
         </section>
 
         {/* Bottom CTA */}
-        <section className="px-4 py-20" style={{ backgroundColor: 'var(--color-brand-900)' }}>
+        <section className="px-4 py-20 bg-brand-900">
           <motion.div
             className="mx-auto max-w-xl text-center"
             initial={{ opacity: 0, y: 24 }}
@@ -279,18 +266,16 @@ export function Pricing() {
             transition={{ duration: 0.5 }}
           >
             <h2
-              className="font-display mb-5 text-4xl font-bold"
-              style={{ color: 'var(--color-text-on-brand)' }}
+              className="font-display mb-5 text-4xl font-bold text-text-on-brand"
             >
               Ready to post your first job?
             </h2>
-            <p className="mb-8 text-base" style={{ color: 'rgba(255,255,255,0.7)' }}>
+            <p className="mb-8 text-base text-white/70">
               It's free to get started. Pay only when you're ready to boost visibility.
             </p>
             <Link
               to="/signup?role=employer"
-              className="inline-block rounded-full px-10 py-4 text-base font-semibold transition-opacity hover:opacity-90"
-              style={{ backgroundColor: 'var(--color-brand)', color: 'var(--color-brand-900)' }}
+              className="bg-brand text-brand-900 inline-block rounded-full px-10 py-4 text-base font-semibold transition-opacity hover:opacity-90"
             >
               Post Your First Job Free
             </Link>

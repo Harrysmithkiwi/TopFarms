@@ -9,7 +9,7 @@ const brands: string[] = []
 
 export function TrustedByStrip() {
   return (
-    <section className="px-4 py-16" style={{ backgroundColor: 'var(--color-bg)' }}>
+    <section className="px-4 py-16 bg-bg">
       <motion.div
         initial={{ opacity: 0, y: 32 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -18,8 +18,7 @@ export function TrustedByStrip() {
         className="mx-auto max-w-5xl"
       >
         <p
-          className="mb-8 text-center text-sm font-semibold tracking-widest uppercase"
-          style={{ color: 'var(--color-text-muted)' }}
+          className="mb-8 text-center text-sm font-semibold tracking-widest uppercase text-text-muted"
         >
           Trusted by Leading New Zealand Farms
         </p>

@@ -1,10 +1,10 @@
 # Phase 5 — inline-style migration ledger
 
-Generated Stage 1, before any migration, at commit `e8ee5d2`.
+Generated Stage 1, before any migration, at commit `cf3f7ae`.
 The planning artefact for Task 5.1: what has to move, in what order, and which
 files sit on a route the Phase 4 axe gate already watches.
 
-**Totals: 93 files · 751 `style={{` · 802 `var(--color-…)` · 24 hex literals · 438 `text-[Npx]`**
+**Totals: 90 files · 573 `style={{` · 652 `var(--color-…)` · 24 hex literals · 434 `text-[Npx]`**
 
 `colour` counts `var(--color-…)` references anywhere in the file — the migration
 target. `axe` marks files rendering on one of the six Phase 4 axe routes: those
@@ -43,7 +43,7 @@ Order within each surface is heaviest-first by `style={{` count, per the brief.
 | 25 | `pages/verification/EmployerVerification.tsx` | 2 | 2 | 2 | 19 |  |
 | 26 | `pages/verification/FarmPhotoUpload.tsx` | 2 | 2 |  | 8 |  |
 
-## admin — 24 files · 182 `style={{` · 192 colour refs
+## admin — 24 files · 181 `style={{` · 192 colour refs
 
 | # | File | `style={{` | colour | hex | `text-[Npx]` | axe route |
 |---|---|---|---|---|---|---|
@@ -58,8 +58,8 @@ Order within each surface is heaviest-first by `style={{` count, per the brief.
 | 9 | `components/admin/DrawerShell.tsx` | 8 | 9 |  |  |  |
 | 10 | `components/admin/LeadsFunnel.tsx` | 8 | 9 |  | 3 |  |
 | 11 | `pages/admin/AdminRevenue.tsx` | 8 | 8 |  | 13 |  |
-| 12 | `pages/admin/AdminAnalytics.tsx` | 8 | 7 |  | 16 |  |
-| 13 | `components/admin/LeadsWorklist.tsx` | 7 | 9 |  | 3 |  |
+| 12 | `components/admin/LeadsWorklist.tsx` | 7 | 9 |  | 3 |  |
+| 13 | `pages/admin/AdminAnalytics.tsx` | 7 | 7 |  | 14 |  |
 | 14 | `pages/admin/JobsManagement.tsx` | 5 | 5 |  | 5 |  |
 | 15 | `pages/admin/PlacementPipeline.tsx` | 5 | 5 |  | 5 |  |
 | 16 | `pages/admin/DailyBriefing.tsx` | 5 | 0 |  | 12 |  |
@@ -85,29 +85,26 @@ Order within each surface is heaviest-first by `style={{` count, per the brief.
 | 7 | `pages/auth/VerifyEmail.tsx` | 7 | 8 | 1 |  |  |
 | 8 | `pages/auth/Suspended.tsx` | 2 | 2 |  |  |  |
 
-## marketing — 17 files · 217 `style={{` · 195 colour refs
+## marketing — 14 files · 40 `style={{` · 47 colour refs
 
 | # | File | `style={{` | colour | hex | `text-[Npx]` | axe route |
 |---|---|---|---|---|---|---|
-| 1 | `components/landing/HeroSection.tsx` | 37 | 19 |  | 6 | **yes** |
-| 2 | `pages/ForEmployers.tsx` | 28 | 27 |  |  |  |
-| 3 | `pages/Pricing.tsx` | 25 | 30 |  |  |  |
-| 4 | `components/landing/FeaturedListings.tsx` | 20 | 26 |  | 3 | **yes** |
-| 5 | `components/landing/AIMatchingSection.tsx` | 20 | 19 | 3 | 1 | **yes** |
-| 6 | `components/landing/EmployerCTABand.tsx` | 19 | 19 |  | 1 | **yes** |
-| 7 | `components/landing/LandingFooter.tsx` | 16 | 2 |  |  | **yes** |
-| 8 | `components/landing/HowItWorksSection.tsx` | 12 | 17 |  |  | **yes** |
-| 9 | `components/landing/TestimonialsSection.tsx` | 12 | 9 |  | 1 | **yes** |
-| 10 | `components/landing/FarmTypesStrip.tsx` | 7 | 8 |  |  | **yes** |
-| 11 | `components/landing/FinalCTASection.tsx` | 5 | 7 |  |  | **yes** |
-| 12 | `components/landing/CountersSection.tsx` | 5 | 4 |  |  | **yes** |
-| 13 | `pages/legal/LegalLayout.tsx` | 4 | 4 |  | 1 |  |
-| 14 | `components/landing/TrustedByStrip.tsx` | 3 | 3 |  |  | **yes** |
-| 15 | `pages/legal/Terms.tsx` | 2 | 0 |  |  |  |
-| 16 | `pages/Home.tsx` | 1 | 1 |  |  | **yes** |
-| 17 | `pages/legal/Privacy.tsx` | 1 | 0 |  |  |  |
+| 1 | `components/landing/HeroSection.tsx` | 11 | 6 |  | 6 | **yes** |
+| 2 | `components/landing/AIMatchingSection.tsx` | 5 | 3 | 3 | 1 | **yes** |
+| 3 | `components/landing/FeaturedListings.tsx` | 4 | 7 |  | 3 | **yes** |
+| 4 | `components/landing/HowItWorksSection.tsx` | 3 | 8 |  |  | **yes** |
+| 5 | `components/landing/TestimonialsSection.tsx` | 3 | 2 |  |  | **yes** |
+| 6 | `pages/Pricing.tsx` | 2 | 8 |  |  |  |
+| 7 | `components/landing/EmployerCTABand.tsx` | 2 | 3 |  | 1 | **yes** |
+| 8 | `components/landing/FinalCTASection.tsx` | 2 | 3 |  |  | **yes** |
+| 9 | `pages/ForEmployers.tsx` | 2 | 3 |  |  |  |
+| 10 | `pages/legal/Terms.tsx` | 2 | 0 |  |  |  |
+| 11 | `components/landing/FarmTypesStrip.tsx` | 1 | 2 |  |  | **yes** |
+| 12 | `components/landing/CountersSection.tsx` | 1 | 1 |  |  | **yes** |
+| 13 | `components/landing/TrustedByStrip.tsx` | 1 | 1 |  |  | **yes** |
+| 14 | `pages/legal/Privacy.tsx` | 1 | 0 |  |  |  |
 
-## shared — 18 files · 73 `style={{` · 78 colour refs
+## shared — 18 files · 73 `style={{` · 76 colour refs
 
 | # | File | `style={{` | colour | hex | `text-[Npx]` | axe route |
 |---|---|---|---|---|---|---|
@@ -118,7 +115,7 @@ Order within each surface is heaviest-first by `style={{` count, per the brief.
 | 5 | `components/layout/AppErrorBoundary.tsx` | 6 | 6 |  | 3 |  |
 | 6 | `components/ui/ApplicantPanel.tsx` | 6 | 6 |  | 46 | **yes** |
 | 7 | `components/ui/AICandidateSummary.tsx` | 6 | 3 |  | 4 | **yes** |
-| 8 | `components/layout/Sidebar.tsx` | 3 | 6 |  |  | **yes** |
+| 8 | `components/layout/Sidebar.tsx` | 3 | 4 |  |  | **yes** |
 | 9 | `components/ui/SearchHero.tsx` | 2 | 1 | 1 | 4 | **yes** |
 | 10 | `components/tremor/AreaChart.tsx` | 2 | 0 | 1 |  |  |
 | 11 | `components/tremor/BarChart.tsx` | 2 | 0 | 1 |  |  |

@@ -11,7 +11,7 @@ const checklist = [
 
 export function EmployerCTABand() {
   return (
-    <section className="px-4 py-20" style={{ backgroundColor: 'var(--color-brand-900)' }}>
+    <section className="px-4 py-20 bg-brand-900">
       <motion.div
         className="mx-auto max-w-6xl"
         initial={{ opacity: 0, y: 32 }}
@@ -24,15 +24,13 @@ export function EmployerCTABand() {
           <div>
             {/* Eyebrow — brand-300 for AA contrast on brand-900 (TF-020) */}
             <p
-              className="mb-4 text-xs font-bold tracking-widest uppercase"
-              style={{ color: 'var(--color-brand-300)' }}
+              className="mb-4 text-xs font-bold tracking-widest uppercase text-brand-300"
             >
               For Employers
             </p>
 
             <h2
-              className="font-display mb-8 text-4xl font-bold"
-              style={{ color: 'var(--color-text-on-brand)' }}
+              className="font-display mb-8 text-4xl font-bold text-text-on-brand"
             >
               Find Your Next Team Member
             </h2>
@@ -42,14 +40,12 @@ export function EmployerCTABand() {
               {checklist.map((item) => (
                 <li key={item} className="flex items-start gap-3">
                   <span
-                    className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full"
-                    style={{ backgroundColor: 'rgba(122,175,63,0.2)' }}
+                    className="bg-brand/20 mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full"
                   >
-                    <Check size={12} style={{ color: 'var(--color-brand)' }} strokeWidth={3} />
+                    <Check className="text-brand" size={12} strokeWidth={3} />
                   </span>
                   <span
-                    className="text-base leading-relaxed"
-                    style={{ color: 'rgba(255,255,255,0.85)' }}
+                    className="text-base leading-relaxed text-white/85"
                   >
                     {item}
                   </span>
@@ -71,8 +67,7 @@ export function EmployerCTABand() {
               </Link>
               <Link
                 to="/for-employers"
-                className="inline-block text-sm font-semibold transition-opacity hover:opacity-80"
-                style={{ color: 'var(--color-brand-300)' }}
+                className="inline-block text-sm font-semibold transition-opacity hover:opacity-80 text-brand-300"
               >
                 Learn more →
               </Link>
@@ -82,23 +77,19 @@ export function EmployerCTABand() {
           {/* Right: mini dashboard mockup. Illustration only — names and numbers
               are placeholders, kept unmistakable via the Example badge (TF-004). */}
           <div
-            className="overflow-hidden rounded-xl shadow-xl"
-            style={{ backgroundColor: 'var(--color-surface)' }}
+            className="overflow-hidden rounded-xl shadow-xl bg-surface"
             aria-hidden="true"
           >
             <div
-              className="flex items-center justify-between border-b px-5 py-4"
-              style={{ borderColor: 'var(--color-border)' }}
+              className="flex items-center justify-between border-b px-5 py-4 border-border"
             >
               <p
-                className="font-display text-base font-bold"
-                style={{ color: 'var(--color-brand-900)' }}
+                className="font-display text-base font-bold text-brand-900"
               >
                 Your Dashboard
               </p>
               <span
-                className="rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wider uppercase"
-                style={{ backgroundColor: 'var(--color-surface-2)', color: 'var(--color-text-muted)' }}
+                className="bg-surface-2 text-text-muted rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wider uppercase"
               >
                 Example
               </span>
@@ -114,13 +105,12 @@ export function EmployerCTABand() {
                 ].map((stat) => (
                   <div
                     key={stat.label}
-                    className="rounded-lg p-3 text-center"
-                    style={{ backgroundColor: 'var(--color-bg)' }}
+                    className="rounded-lg p-3 text-center bg-bg"
                   >
-                    <p className="text-xl font-bold" style={{ color: 'var(--color-brand-900)' }}>
+                    <p className="text-xl font-bold text-brand-900">
                       {stat.value}
                     </p>
-                    <p className="mt-0.5 text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                    <p className="mt-0.5 text-xs text-text-muted">
                       {stat.label}
                     </p>
                   </div>
@@ -141,21 +131,16 @@ export function EmployerCTABand() {
                 >
                   <div>
                     <p
-                      className="text-sm font-semibold"
-                      style={{ color: 'var(--color-brand-900)' }}
+                      className="text-sm font-semibold text-brand-900"
                     >
                       {applicant.name}
                     </p>
-                    <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                    <p className="text-xs text-text-muted">
                       {applicant.role}
                     </p>
                   </div>
                   <span
-                    className="rounded-full px-2 py-1 text-xs font-bold"
-                    style={{
-                      backgroundColor: 'rgba(122,175,63,0.12)',
-                      color: 'var(--color-success-text-on-bg)',
-                    }}
+                    className="bg-brand/12 text-success-text-on-bg rounded-full px-2 py-1 text-xs font-bold"
                   >
                     {applicant.score}%
                   </span>
