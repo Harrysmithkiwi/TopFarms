@@ -24,7 +24,17 @@ Nothing here is new breakage. These are defects that existed all along, in code 
 ***
 Stages, in order. Each ends green and committed.
 
-### Stage 0 — get the suite honest (do first, blocks everything)
+### Stage 0 — get the suite honest — ✅ COMPLETE (2026-07-31)
+
+`npm run e2e` = **27 passed / 0 failed / 10 skipped**, every skip carrying a stated reason.
+Closed: 0a (active-nav 3.04:1 **and** a `cn()` bug of mine that silently stripped text colours
+product-wide), 0b (marketplace guards assert-or-skip; a real save race in saved-search), 0c
+(admin bare-goto races; Panel titles were `<div>`, not headings). 0d recommended, deliberately
+deferred until the passwords are rotated. **Stage 1 (marketing, 217 styles) is ready.**
+
+Original scope below, kept for the record.
+
+#### Stage 0 — get the suite honest (do first, blocks everything)
 
 The migration's safety net is the test suite. Migrating 751 styles against a red suite means never
 knowing which red is yours.
