@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/Input'
 import { Pagination } from '@/components/ui/Pagination'
 import { Checkbox } from '@/components/ui/Checkbox'
 import { Card } from '@/components/tremor/Card'
-import { TableSkeleton } from '@/components/admin/Skeleton'
+import { TableSkeleton } from '@/components/ui/Skeleton'
 import { supabase } from '@/lib/supabase'
 
 type AdminListRpc =

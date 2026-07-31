@@ -11,6 +11,7 @@ import { useAuth } from '@/hooks/useAuth'
 import type { Application, ApplicationStatus, JobListing } from '@/types/domain'
 import { ACTIVE_STATUSES } from '@/types/domain'
 import { ErrorState } from '@/components/ui/ErrorState'
+import { SectionSkeleton } from '@/components/ui/Skeleton'
 
 const PROFILE_FIELDS = [
   'sector_pref',
@@ -150,11 +151,7 @@ export function SeekerDashboard() {
   if (loadingProfile) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center py-20">
-          <p className="text-sm text-text-subtle">
-            Loading...
-          </p>
-        </div>
+        <SectionSkeleton />
       </DashboardLayout>
     )
   }

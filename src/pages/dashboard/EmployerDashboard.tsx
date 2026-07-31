@@ -15,6 +15,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useVerifications } from '@/hooks/useVerifications'
 import type { JobListing, JobStatus } from '@/types/domain'
 import { ErrorState } from '@/components/ui/ErrorState'
+import { SectionSkeleton } from '@/components/ui/Skeleton'
 
 const TOTAL_STEPS = 8
 
@@ -286,11 +287,7 @@ export function EmployerDashboard() {
   if (loadingProfile) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center py-20">
-          <p className="text-sm" style={{ color: 'var(--color-text-subtle)' }}>
-            Loading...
-          </p>
-        </div>
+        <SectionSkeleton />
       </DashboardLayout>
     )
   }
@@ -487,12 +484,7 @@ export function EmployerDashboard() {
 
               {/* Jobs grid */}
               {loadingJobs ? (
-                <p
-                  className="py-8 text-center text-sm"
-                  style={{ color: 'var(--color-text-subtle)' }}
-                >
-                  Loading listings...
-                </p>
+                <SectionSkeleton label="Loading listings" />
               ) : jobsError ? (
                 <ErrorState message="We could not load your listings" onRetry={loadJobs} />
               ) : filteredJobs.length === 0 && activeTab === 'all' ? (

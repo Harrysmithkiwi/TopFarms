@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase'
 import { Card } from '@/components/tremor/Card'
 import { BarChart } from '@/components/tremor/BarChart'
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
-import { PanelSkeleton } from '@/components/admin/Skeleton'
+import { PanelSkeleton } from '@/components/ui/Skeleton'
 
 /**
  * Founder analytics dashboard at /admin/analytics (PHASE-ANALYTICS-DESIGN.md,

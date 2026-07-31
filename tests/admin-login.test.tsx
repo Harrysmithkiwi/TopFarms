@@ -61,7 +61,11 @@ describe('AdminGate hybrid route', () => {
         <AdminGate />
       </MemoryRouter>,
     )
-    expect(screen.getByLabelText('Loading')).toBeInTheDocument()
+    // Phase 5.5: the bare spinner became RouteSkeleton. Same contract -- a
+    // loading state exposed to assistive tech -- but announced via role=status
+    // + aria-live rather than an aria-label on a decorative div, so query the
+    // role. This asserts the behaviour, not the old markup.
+    expect(screen.getByRole('status')).toHaveTextContent(/loading/i)
   })
 
   it('renders AdminLoginPage form when unauthenticated', () => {

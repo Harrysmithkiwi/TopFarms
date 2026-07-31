@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { supabase } from '@/lib/supabase'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
 import { ErrorState } from '@/components/ui/ErrorState'
+import { SectionSkeleton } from '@/components/ui/Skeleton'
 
 interface Applicant {
   id: string
@@ -157,9 +158,7 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
               </p>
 
               {loadingApplicants ? (
-                <p className="text-sm" style={{ color: 'var(--color-text-subtle)' }}>
-                  Loading applicants...
-                </p>
+                <SectionSkeleton rows={2} label="Loading applicants" />
               ) : loadError ? (
                 <ErrorState
                   message="We could not load your applicants"

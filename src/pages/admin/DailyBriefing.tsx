@@ -3,7 +3,7 @@ import { Card } from '@/components/tremor/Card'
 import { AreaChart } from '@/components/tremor/AreaChart'
 import { Tag } from '@/components/ui/Tag'
 import { KpiCard } from '@/components/admin/KpiCard'
-import { PanelSkeleton } from '@/components/admin/Skeleton'
+import { PanelSkeleton } from '@/components/ui/Skeleton'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'sonner'
 

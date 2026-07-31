@@ -4,6 +4,7 @@ import { Checkbox } from '@/components/ui/Checkbox'
 import { Select } from '@/components/ui/Select'
 import { cn } from '@/lib/utils'
 import type { Skill, SelectedSkill, SkillProficiency } from '@/types/domain'
+import { SectionSkeleton } from '@/components/ui/Skeleton'
 
 interface SkillsPickerProps {
   selectedSkills: SelectedSkill[]
@@ -111,11 +112,10 @@ export function SkillsPicker({
     return (
       <div
         className={cn(
-          'text-text-muted font-body flex items-center justify-center py-8 text-[13px]',
           className,
         )}
       >
-        Loading skills...
+        <SectionSkeleton rows={2} label="Loading skills" />
       </div>
     )
   }

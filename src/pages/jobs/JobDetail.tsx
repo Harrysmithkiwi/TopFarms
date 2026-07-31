@@ -29,6 +29,7 @@ import { JobDetailSidebar } from '@/components/ui/JobDetailSidebar'
 import { MapPlaceholder } from '@/components/ui/MapPlaceholder'
 import { useSavedJobs } from '@/hooks/useSavedJobs'
 import { ErrorState } from '@/components/ui/ErrorState'
+import { RouteSkeleton } from '@/components/ui/Skeleton'
 import type {
   JobListing,
   EmployerVerification,
@@ -332,12 +333,8 @@ export function JobDetail() {
   // Loading state
   if (loading || authLoading) {
     return (
-      <div
-        className="flex min-h-screen items-center justify-center bg-bg"
-      >
-        <p className="text-sm text-text-subtle">
-          Loading listing...
-        </p>
+      <div className="bg-bg min-h-screen">
+        <RouteSkeleton label="Loading listing" />
       </div>
     )
   }

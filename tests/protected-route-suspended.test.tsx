@@ -119,8 +119,11 @@ describe('ProtectedRoute is_active gate (IS-ACTIVE-01)', () => {
       isActive: false,
     })
     renderRoute('/dashboard/seeker')
-    // Spinner = aria-label="Loading" (per ProtectedRoute.tsx:21)
-    expect(screen.getByLabelText('Loading')).toBeInTheDocument()
+    // Phase 5.5: RouteSkeleton replaced the bare spinner. The guard being
+    // tested is the ORDERING (role=null + isActive=false must show the wait,
+    // never /suspended) -- unchanged. Only how the wait is exposed changed:
+    // role=status + aria-live, which announces it instead of merely naming it.
+    expect(screen.getByRole('status')).toHaveTextContent(/loading/i)
     expect(screen.queryByText('suspended-page')).not.toBeInTheDocument()
   })
 
