@@ -22,6 +22,7 @@ import { NzbnVerification } from './NzbnVerification'
 import type { VerificationMethod, EmployerVerification } from '@/types/domain'
 import { cn } from '@/lib/utils'
 import { ErrorState } from '@/components/ui/ErrorState'
+import { toast } from 'sonner'
 
 interface VerificationCardProps {
   method: VerificationMethod
@@ -191,7 +192,11 @@ export function EmployerVerification() {
       )
       .then(({ error }) => {
         if (error) {
+          // Phase 5.6 (adjacent family): a failed WRITE, not a false empty state.
+          // Swallowed, the employer's email verification never registers and the
+          // badge silently never appears -- with nothing to retry.
           console.error('EmployerVerification: failed to create email verification record', error)
+          toast.error('We could not confirm your email verification. Reload to try again.')
           return
         }
         refresh()

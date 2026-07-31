@@ -14,6 +14,7 @@ import { Step5Verification } from './steps/Step5Verification'
 import { Step6Pricing } from './steps/Step6Pricing'
 import { Step7Preview } from './steps/Step7Preview'
 import { Step8Complete } from './steps/Step8Complete'
+import { ErrorState } from '@/components/ui/ErrorState'
 
 const STEP_LABELS = [
   'Farm Type',
@@ -70,6 +71,10 @@ export function EmployerOnboarding() {
   const { session } = useAuth()
   const [profileData, setProfileData] = useState<EmployerProfileData>({})
   const [loading, setLoading] = useState(true)
+  // Phase 5.6 — a failed profile fetch is not "no profile". Falling through
+  // here treats an unknown as a known and misroutes the user.
+  const [profileError, setProfileError] = useState(false)
+  const [reloadNonce, setReloadNonce] = useState(0)
   const [saving, setSaving] = useState(false)
   const [initialStep, setInitialStep] = useState(0)
 
@@ -96,6 +101,9 @@ export function EmployerOnboarding() {
       if (error && error.code !== 'PGRST116') {
         // PGRST116 = no rows found (expected for new users)
         console.error('Error loading profile:', error)
+        setProfileError(true)
+        setLoading(false)
+        return
       }
 
       if (data) {
@@ -141,7 +149,7 @@ export function EmployerOnboarding() {
 
     loadProfile()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session?.user?.id])
+  }, [session?.user?.id, reloadNonce])
 
   async function handleStepComplete(stepData: Partial<EmployerProfileData>, stepIndex: number) {
     if (!session?.user) return
@@ -176,6 +184,20 @@ export function EmployerOnboarding() {
       wizard.nextStep()
     }
     // Step 8 (isLastStep) handles its own navigation via CTAs in Step8Complete
+  }
+
+  if (profileError) {
+    return (
+      <DashboardLayout>
+        <ErrorState
+          message="We could not load your farm profile"
+          onRetry={() => {
+            setProfileError(false)
+            setReloadNonce((n) => n + 1)
+          }}
+        />
+      </DashboardLayout>
+    )
   }
 
   if (loading) {

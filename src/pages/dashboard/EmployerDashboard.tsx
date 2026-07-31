@@ -56,6 +56,8 @@ export function EmployerDashboard() {
 
   const [profile, setProfile] = useState<EmployerProfile | null>(null)
   const [loadingProfile, setLoadingProfile] = useState(true)
+  const [profileError, setProfileError] = useState(false)
+  const [reloadNonce, setReloadNonce] = useState(0)
 
   const [jobs, setJobs] = useState<JobListing[]>([])
   const [loadingJobs, setLoadingJobs] = useState(false)
@@ -88,7 +90,12 @@ export function EmployerDashboard() {
         .single()
 
       if (error && error.code !== 'PGRST116') {
+        // Phase 5.6: profile null => onboardingProgress 0 and loadJobs bails, so
+        // an onboarded employer is shown the onboarding prompt with no listings.
         console.error('EmployerDashboard: failed to load profile', error)
+        setProfileError(true)
+        setLoadingProfile(false)
+        return
       }
 
       if (data) {
@@ -106,7 +113,7 @@ export function EmployerDashboard() {
     }
 
     loadProfile()
-  }, [session?.user?.id])
+  }, [session?.user?.id, reloadNonce])
 
   // Load jobs when profile is ready and onboarding complete
   const loadJobs = useCallback(async () => {
@@ -260,6 +267,20 @@ export function EmployerDashboard() {
   function handleMarkFilled(jobId: string) {
     setMarkFilledJobId(jobId)
     setIsMarkFilledOpen(true)
+  }
+
+  if (profileError) {
+    return (
+      <DashboardLayout>
+        <ErrorState
+          message="We could not load your profile"
+          onRetry={() => {
+            setProfileError(false)
+            setReloadNonce((n) => n + 1)
+          }}
+        />
+      </DashboardLayout>
+    )
   }
 
   if (loadingProfile) {

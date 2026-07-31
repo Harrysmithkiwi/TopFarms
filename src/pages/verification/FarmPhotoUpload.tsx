@@ -36,6 +36,7 @@ export function FarmPhotoUpload() {
   const [reloadNonce, setReloadNonce] = useState(0)
   const [photos, setPhotos] = useState<string[]>([])
   const [loadingPhotos, setLoadingPhotos] = useState(false)
+  const [photosError, setPhotosError] = useState(false)
 
   const { verifications, refresh } = useVerifications(employerId)
 
@@ -71,6 +72,8 @@ export function FarmPhotoUpload() {
       .list(`${userId}/farm`, { sortBy: { column: 'created_at', order: 'desc' } })
       .then(({ data, error }: { data: StorageObject[] | null; error: StorageError | null }) => {
         if (error || !data) {
+          console.error('FarmPhotoUpload: failed to list farm photos', error)
+          setPhotosError(true)
           setLoadingPhotos(false)
           return
         }
@@ -191,7 +194,15 @@ export function FarmPhotoUpload() {
         </Card>
 
         {/* Photo gallery */}
-        {(loadingPhotos || photos.length > 0) && (
+        {photosError && (
+          <ErrorState
+            message="Could not load your uploaded photos"
+            onRetry={() => setPhotosError(false)}
+            compact
+            className="mb-4"
+          />
+        )}
+        {!photosError && (loadingPhotos || photos.length > 0) && (
           <Card className="p-5">
             <h3 className="font-body text-text mb-3 text-[13px] font-semibold">
               Uploaded Photos

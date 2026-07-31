@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase'
 import { SkillsPicker } from '@/components/ui/SkillsPicker'
 import { Button } from '@/components/ui/Button'
 import type { SelectedSkill, SeekerProfileData } from '@/types/domain'
+import { ErrorState } from '@/components/ui/ErrorState'
 
 interface SeekerStep4Props {
   onComplete: (data: Partial<SeekerProfileData>) => void
@@ -16,6 +17,8 @@ export function SeekerStep4Skills({ onComplete, onBack, seekerId }: SeekerStep4P
   const [selectedSkills, setSelectedSkills] = useState<SelectedSkill[]>([])
   const [saving, setSaving] = useState(false)
   const [loadingSkills, setLoadingSkills] = useState(false)
+  const [prefillError, setPrefillError] = useState(false)
+  const [reloadNonce, setReloadNonce] = useState(0)
 
   // Load existing seeker skills on mount if seekerId is available
   useEffect(() => {
@@ -29,7 +32,13 @@ export function SeekerStep4Skills({ onComplete, onBack, seekerId }: SeekerStep4P
       .eq('seeker_id', seekerId)
       .then(({ data, error }) => {
         if (error) {
+          // Phase 5.6 — DATA LOSS, not a display bug. handleSubmit below deletes
+          // every seeker_skills row then re-inserts selectedSkills. If this
+          // prefill failed, selectedSkills is empty, so saving wipes the skills
+          // the seeker already had -- and 20 points of their match score with
+          // them. Block the save rather than silently render "nothing selected".
           console.error('Error loading seeker skills:', error)
+          setPrefillError(true)
         } else if (data) {
           setSelectedSkills(
             data.map((row) => ({
@@ -40,7 +49,7 @@ export function SeekerStep4Skills({ onComplete, onBack, seekerId }: SeekerStep4P
         }
         setLoadingSkills(false)
       })
-  }, [seekerId])
+  }, [seekerId, reloadNonce])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -53,6 +62,13 @@ export function SeekerStep4Skills({ onComplete, onBack, seekerId }: SeekerStep4P
     setSaving(true)
 
     try {
+      // Refuse to save on an unknown starting state — see the prefill comment.
+      if (prefillError) {
+        toast.error('We could not load your saved skills. Reload before saving.')
+        setSaving(false)
+        return
+      }
+
       // Delete existing seeker_skills for this seeker
       const { error: deleteError } = await supabase
         .from('seeker_skills')
@@ -89,6 +105,18 @@ export function SeekerStep4Skills({ onComplete, onBack, seekerId }: SeekerStep4P
     } finally {
       setSaving(false)
     }
+  }
+
+  if (prefillError) {
+    return (
+      <ErrorState
+        message="We could not load your saved skills"
+        onRetry={() => {
+          setPrefillError(false)
+          setReloadNonce((n) => n + 1)
+        }}
+      />
+    )
   }
 
   if (loadingSkills) {

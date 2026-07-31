@@ -10,6 +10,7 @@ import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/hooks/useAuth'
 import type { Application, ApplicationStatus, JobListing } from '@/types/domain'
 import { ACTIVE_STATUSES } from '@/types/domain'
+import { ErrorState } from '@/components/ui/ErrorState'
 
 const PROFILE_FIELDS = [
   'sector_pref',
@@ -57,6 +58,8 @@ export function SeekerDashboard() {
 
   const [profile, setProfile] = useState<SeekerProfile | null>(null)
   const [loadingProfile, setLoadingProfile] = useState(true)
+  const [loadError, setLoadError] = useState(false)
+  const [reloadNonce, setReloadNonce] = useState(0)
 
   const [recentApplications, setRecentApplications] = useState<ApplicationWithJob[]>([])
   const [applicationCounts, setApplicationCounts] = useState<Record<ApplicationStatus, number>>(
@@ -77,7 +80,13 @@ export function SeekerDashboard() {
         .single()
 
       if (profileError && profileError.code !== 'PGRST116') {
+        // Phase 5.6: falling through leaves profile null, so onboardingProgress
+        // reads 0% and an onboarded seeker is shown the "finish your profile"
+        // prompt. An unknown must not render as a known.
         console.error('SeekerDashboard: failed to load profile', profileError)
+        setLoadError(true)
+        setLoadingProfile(false)
+        return
       }
 
       if (profileData) {
@@ -122,7 +131,21 @@ export function SeekerDashboard() {
     }
 
     loadData()
-  }, [session?.user?.id])
+  }, [session?.user?.id, reloadNonce])
+
+  if (loadError) {
+    return (
+      <DashboardLayout>
+        <ErrorState
+          message="We could not load your profile"
+          onRetry={() => {
+            setLoadError(false)
+            setReloadNonce((n) => n + 1)
+          }}
+        />
+      </DashboardLayout>
+    )
+  }
 
   if (loadingProfile) {
     return (
