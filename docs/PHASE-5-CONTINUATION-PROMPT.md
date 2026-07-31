@@ -153,7 +153,12 @@ the next migration re-introduces them.
 Skeleton.tsx` already exists and there is **no** shared `components/ui` skeleton — promote the admin
 one rather than writing a second.
 
-**5.1 remainder — 765 styles.** Order: **employer → auth → admin → shared → marketing.** Employer
+**5.1 remainder — SUPERSEDED.** Owned by `docs/PHASE-5-MIGRATION-PROMPT.md`, which reorders the
+surfaces for verifiability (marketing and auth first, employer and admin last) because 5.6 is now
+complete and the local-creds blocker has not been resolved. Read that document, not the paragraph
+below, which is kept only for the tooling notes.
+
+~~Order:~~ **employer → auth → admin → shared → marketing.** Employer
 and auth first (they carry the 5.6 fixes and every user passes through auth); marketing last
 (highest count, lowest risk, out of cheat-sheet density scope — colour tokens still migrate).
 
