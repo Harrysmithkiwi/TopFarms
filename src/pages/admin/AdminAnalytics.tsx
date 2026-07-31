@@ -101,13 +101,14 @@ function Panel({
 }) {
   return (
     <Card>
-      <div
-        className="text-text-subtle text-[11px] font-semibold uppercase"
-        style={{ letterSpacing: '0.04em' }}
-      >
+      <div className="text-text-subtle text-micro font-semibold tracking-[0.04em] uppercase">
         {eyebrow}
       </div>
-      <div className="text-text mt-0.5 text-[15px] font-semibold">{title}</div>
+      {/* Phase 5.0c — a panel title IS a heading. This was a <div>, so the four
+          analytics panels were invisible to heading navigation and the spec
+          asserting getByRole('heading') could never pass. h1 (AdminPageHeader)
+          -> h2 keeps the order valid. */}
+      <h2 className="text-text mt-0.5 text-base font-semibold">{title}</h2>
       {caption && <p className="text-text-muted mt-1 text-[12px]">{caption}</p>}
       <div className="mt-4">{children}</div>
     </Card>

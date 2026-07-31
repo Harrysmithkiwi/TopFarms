@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { hasState, statePath, SKIP_NO_CREDS } from './helpers'
+import { hasState, statePath, SKIP_NO_CREDS, findPublicJobId, SKIP_EMPTY_MARKETPLACE } from './helpers'
 
 // Flow 1 (written first, per audit follow-up session 2026-06-10): the
 // marketplace must not be empty. This is the flow that would have caught
@@ -10,13 +10,17 @@ test.describe('visitor (anonymous) marketplace', () => {
   // marketplace_employer_profiles embeds): visitors must always see a
   // non-empty marketplace while >=1 active job exists.
   test('visitor sees a non-empty marketplace on /jobs', async ({ page }) => {
-    await page.goto('/jobs')
-    // Wait for the query to settle, then require: no empty state AND at least
-    // one job-card heading that is not the empty-state heading.
-    const emptyState = page.getByRole('heading', { name: 'No jobs match your filters.' })
-    const cardTitle = page.locator('main h3', { hasNotText: 'No jobs match' }).first()
-    await expect(cardTitle).toBeVisible({ timeout: 10_000 })
-    await expect(emptyState).not.toBeVisible()
+    // Phase 5.0b: ask the DATA whether a job exists before asserting the UI shows
+    // one. Skipping on an empty marketplace is honest; asserting would fail
+    // forever on a legitimately empty product, and the previous copy-based filter
+    // silently passed instead — which is how this guard stopped guarding.
+    const jobId = await findPublicJobId(page)
+    test.skip(jobId === null, SKIP_EMPTY_MARKETPLACE)
+
+    // A job exists in the data, so the marketplace MUST render it. This is the
+    // RLS-MKT-01 assertion proper: data present + UI empty = the bug.
+    await expect(page.getByRole('heading', { name: /No jobs (match|listed)/i })).not.toBeVisible()
+    await expect(page.locator('main h3').first()).toBeVisible({ timeout: 10_000 })
   })
 
   test('visitor /jobs page renders the search UI without console errors', async ({ page }) => {
@@ -36,11 +40,12 @@ test.describe('seeker browses jobs', () => {
   test.use({ storageState: hasState('seeker') ? statePath('seeker') : undefined })
 
   test('logged-in seeker sees a non-empty marketplace and can open a job', async ({ page }) => {
-    await page.goto('/jobs')
-    const emptyState = page.getByRole('heading', { name: 'No jobs match your filters.' })
-    const firstCard = page.locator('main h3', { hasNotText: 'No jobs match' }).first()
+    const jobId = await findPublicJobId(page)
+    test.skip(jobId === null, SKIP_EMPTY_MARKETPLACE)
+
+    const firstCard = page.locator('main h3').first()
+    await expect(page.getByRole('heading', { name: /No jobs (match|listed)/i })).not.toBeVisible()
     await expect(firstCard).toBeVisible({ timeout: 10_000 })
-    await expect(emptyState).not.toBeVisible()
     // Cards expand inline on click (SearchJobCard onToggle split-pane pattern).
     await firstCard.click()
     await expect(page.getByText(/apply|applied/i).first()).toBeVisible({ timeout: 10_000 })
