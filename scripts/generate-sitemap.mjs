@@ -1,20 +1,23 @@
 // v13 (directive 1.16): build-time sitemap. Extends the static launch baseline
 // (public/sitemap.xml, TF-005/021) with one <url> per ACTIVE job, so job pages
 // are discoverable the moment inventory exists. Runs as postbuild; overwrites
-// dist/sitemap.xml only on success.
+// build/client/sitemap.xml only on success.
 //
 // FAIL-SOFT BY DESIGN: any error (missing env, network, RLS change) leaves the
-// static baseline that Vite already copied from public/ and exits 0. A missing
+// static baseline that the build already copied from public/ and exits 0. A missing
 // jobs section is degraded; a failed deploy over a sitemap is not acceptable.
 //
 // Anon read of active jobs is RLS-permitted (policy "jobs: anon users view
 // active", verified 2026-08-03). Freshness = deploy frequency; the upgrade path
-// is a server route when React Router framework mode lands (directive 1.16).
+// is a server route now that framework mode has landed (directive 1.16/1.18).
 
 import { writeFileSync, existsSync } from 'node:fs'
 
 const ORIGIN = 'https://www.topfarms.co.nz'
-const OUT = new URL('../dist/sitemap.xml', import.meta.url).pathname
+// v13 stage 3b: build/client, not dist — react-router build writes the static
+// tree there, and Vercel's builder copies it to .vercel/output/static AFTER
+// this postbuild step, so a sitemap written here still ships.
+const OUT = new URL('../build/client/sitemap.xml', import.meta.url).pathname
 
 const STATIC_ROUTES = [
   ['/', 'daily', '1.0'],
@@ -57,14 +60,14 @@ async function main() {
   ].join('\n')
 
   writeFileSync(OUT, xml)
-  console.log(`sitemap: ${STATIC_ROUTES.length} static + ${jobs.length} job urls -> dist/sitemap.xml`)
+  console.log(`sitemap: ${STATIC_ROUTES.length} static + ${jobs.length} job urls -> build/client/sitemap.xml`)
 }
 
 main().catch((err) => {
   console.warn(`sitemap: generation failed (${err.message}); static baseline kept`)
   if (!existsSync(OUT)) {
-    // dist/ missing entirely means postbuild ran without a build; still exit 0.
-    console.warn('sitemap: dist/sitemap.xml not present either; nothing written')
+    // build/ missing entirely means postbuild ran without a build; still exit 0.
+    console.warn('sitemap: build/client/sitemap.xml not present either; nothing written')
   }
   process.exit(0)
 })

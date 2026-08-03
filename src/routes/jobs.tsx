@@ -21,6 +21,8 @@ export function meta(): MetaDescriptor[] {
     { title },
     { name: 'description', content: description },
     { property: 'og:title', content: title },
+    { property: 'og:site_name', content: 'TopFarms' },
+    { name: 'twitter:card', content: 'summary' },
     { property: 'og:description', content: description },
     { property: 'og:url', content: `${ORIGIN}/jobs` },
     { tagName: 'link', rel: 'canonical', href: `${ORIGIN}/jobs` },

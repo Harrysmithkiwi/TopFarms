@@ -28,7 +28,7 @@ export function AppErrorBoundary() {
     })
   }, [error, isNotFound])
 
-  if (isNotFound) return <NotFound />
+  if (isNotFound) return <NotFound error={error} />
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-6 text-center">

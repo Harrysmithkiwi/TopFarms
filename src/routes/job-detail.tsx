@@ -1,7 +1,8 @@
 import { createClient } from '@supabase/supabase-js'
+import { useLoaderData } from 'react-router'
 import type { LoaderFunctionArgs, MetaArgs, MetaDescriptor } from 'react-router'
 import { PublicShell } from '@/components/shell/PublicShell'
-import { JobDetail } from '@/pages/jobs/JobDetail'
+import { JobDetail, type JobDetailSeed } from '@/pages/jobs/JobDetail'
 
 // /jobs/:id — the route this whole stage exists for (directive 1.16).
 //
@@ -27,42 +28,55 @@ const db = createClient(
   { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } },
 )
 
-interface JobMeta {
-  title: string
-  region: string
-  contract_type: string
-  salary_min: number | null
-  salary_max: number | null
-  created_at: string
-  expires_at: string | null
-  description_overview: string | null
-  description_daytoday: string | null
-  farm_name: string | null
-}
-
+// The loader fetches what the page shows ABOVE THE FOLD, not just what the meta
+// tags need. A JobPosting JSON-LD describing content the raw HTML doesn't show
+// is the shape Google rejects, and it would leave every non-rendering crawler
+// reading "Loading listing". Skills and verifications are here for the same
+// reason: the trust badge is computed from verifications, so omitting them would
+// server-render "unverified" and then flip it after hydration.
+//
+// Deliberately NOT fetched: application count, similar jobs, match score, and
+// applied state. The first two are below the fold; the last two are personal to
+// a signed-in seeker and correctly absent from an anonymous server render.
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const origin = new URL(request.url).origin
   const url = `${origin}/jobs/${params.id}`
+  const empty = { id: params.id ?? null, seed: null, url }
   // A malformed id is a 400 from PostgREST, not a job — don't ask.
-  if (!params.id || !UUID.test(params.id)) return { job: null, url }
+  if (!params.id || !UUID.test(params.id)) return empty
 
-  const { data } = await db
+  // Only status='active'. Drafts and archived listings are the owning
+  // employer's business and are served by the page's own client fetch, which
+  // runs with their session; they must never reach crawlable HTML.
+  const { data: job } = await db
     .from('jobs')
-    .select(
-      `title, region, contract_type, salary_min, salary_max, created_at, expires_at,
-       description_overview, description_daytoday,
-       employer_profiles:marketplace_employer_profiles(farm_name)`,
-    )
+    .select('*, employer_profiles:marketplace_employer_profiles(*)')
     .eq('id', params.id)
     .eq('status', 'active')
     .maybeSingle()
 
-  if (!data) return { job: null, url }
+  if (!job) return empty
 
-  const { employer_profiles, ...job } = data as unknown as Omit<JobMeta, 'farm_name'> & {
-    employer_profiles: { farm_name: string } | null
-  }
-  return { job: { ...job, farm_name: employer_profiles?.farm_name ?? null } as JobMeta, url }
+  const [{ data: skills }, { data: verifications }] = await Promise.all([
+    db
+      .from('job_skills')
+      .select('skill_id, requirement_level, skills(id, name, category)')
+      .eq('job_id', params.id),
+    job.employer_profiles?.id
+      ? db
+          .from('employer_verifications')
+          .select('*')
+          .eq('employer_id', job.employer_profiles.id)
+      : Promise.resolve({ data: [] }),
+  ])
+
+  const seed = {
+    job,
+    skills: skills ?? [],
+    verifications: verifications ?? [],
+  } as unknown as JobDetailSeed
+
+  return { id: params.id, seed, url }
 }
 
 // Google reads employmentType from a fixed vocabulary; our three contract types
@@ -73,22 +87,23 @@ const EMPLOYMENT_TYPE: Record<string, string> = {
   casual: 'PART_TIME',
 }
 
-function summarise(job: JobMeta): string {
+function summarise(job: JobDetailSeed['job'], where: string): string {
   const text = [job.description_overview, job.description_daytoday].filter(Boolean).join(' ').trim()
-  const where = [job.farm_name, job.region].filter(Boolean).join(', ')
   const fallback = `${job.title}${where ? ` at ${where}` : ''}. Apply on TopFarms.`
   if (!text) return fallback
   return text.length > 200 ? `${text.slice(0, 197).trimEnd()}...` : text
 }
 
 export function meta({ data }: MetaArgs<typeof loader>): MetaDescriptor[] {
-  // No job (bad id, or not active): leave index.html's site-level defaults in
+  // No job (bad id, or not active): leave the root's site-level defaults in
   // place rather than emitting a card for a listing that isn't there.
-  if (!data?.job) return []
-  const { job, url } = data
-  const where = [job.farm_name, job.region].filter(Boolean).join(', ')
+  if (!data?.seed) return []
+  const { job } = data.seed
+  const { url } = data
+  const farmName = job.employer_profiles?.farm_name ?? null
+  const where = [farmName, job.region].filter(Boolean).join(', ')
   const title = `${job.title}${where ? ` — ${where}` : ''} | TopFarms`
-  const description = summarise(job)
+  const description = summarise(job, where)
 
   const salary =
     job.salary_min || job.salary_max
@@ -108,6 +123,11 @@ export function meta({ data }: MetaArgs<typeof loader>): MetaDescriptor[] {
     { title },
     { name: 'description', content: description },
     { property: 'og:type', content: 'article' },
+    // Repeated from root.tsx on purpose: a route's meta REPLACES the parent's
+    // descriptors rather than merging with them, so site-level tags have to be
+    // restated here or the card loses them.
+    { property: 'og:site_name', content: 'TopFarms' },
+    { name: 'twitter:card', content: 'summary' },
     { property: 'og:title', content: title },
     { property: 'og:description', content: description },
     { property: 'og:url', content: url },
@@ -124,7 +144,7 @@ export function meta({ data }: MetaArgs<typeof loader>): MetaDescriptor[] {
         directApply: true,
         hiringOrganization: {
           '@type': 'Organization',
-          name: job.farm_name ?? 'TopFarms employer',
+          name: farmName ?? 'TopFarms employer',
         },
         jobLocation: {
           '@type': 'Place',
@@ -141,9 +161,13 @@ export function meta({ data }: MetaArgs<typeof loader>): MetaDescriptor[] {
 }
 
 export default function JobDetailRoute() {
+  const { id, seed } = useLoaderData<typeof loader>()
   return (
     <PublicShell>
-      <JobDetail />
+      {/* key: remount per job so the seed below is never a previous listing's.
+          Without it the state initialised from `seed` would survive a
+          job -> job navigation and show stale content until the refetch. */}
+      <JobDetail key={id ?? 'none'} seed={seed} />
     </PublicShell>
   )
 }

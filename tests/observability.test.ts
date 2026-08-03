@@ -59,17 +59,24 @@ describe('PII scrubbing', () => {
 
 describe('router error handling', () => {
   const boundary = read('src/components/layout/AppErrorBoundary.tsx')
-  const main = read('src/main.tsx')
+  // v13 stage 3b: the entry moved from main.tsx (createBrowserRouter's
+  // errorElement) to root.tsx's exported ErrorBoundary. Same contract, same
+  // component — only who mounts it changed.
+  const root = read('src/root.tsx')
 
-  it('main.tsx routes errors to AppErrorBoundary, not NotFound', () => {
+  it('root.tsx routes errors to AppErrorBoundary, not NotFound', () => {
     // The original bug: errorElement rendered <NotFound /> for every error, so a crash
     // was shown to the user as a 404 — unreported by them, untracked by us.
-    expect(main).toMatch(/errorElement:\s*s\(<AppErrorBoundary\s*\/>\)/)
+    expect(root).toMatch(/export function ErrorBoundary\(\)/)
+    expect(root).toMatch(/<AppErrorBoundary\s*\/>/)
   })
 
   it('still renders NotFound for genuine 404s', () => {
     expect(boundary).toMatch(/isRouteErrorResponse\(error\)\s*&&\s*error\.status\s*===\s*404/)
-    expect(boundary).toMatch(/if\s*\(isNotFound\)\s*return\s*<NotFound\s*\/>/)
+    // v13 stage 3b: NotFound takes the error as a prop now — useRouteError
+    // throws inside the catch-all's descendant route table, which is where every
+    // 404 on the site is rendered.
+    expect(boundary).toMatch(/if\s*\(isNotFound\)\s*return\s*<NotFound error=\{error\}\s*\/>/)
   })
 
   it('reports non-404 errors', () => {
