@@ -391,6 +391,36 @@ Decided 2026-08-03. The public routes move to React Router 7 **framework mode** 
 server rendering for `/jobs/:id`, run as its own stage between the landing port and the
 `/jobs` port.
 
+> **CORRECTION, 2026-08-04 (operator). The stated deciding case was wrong. Read this
+> before the paragraph it corrects.**
+>
+> The original rationale below is struck through in effect: **TopFarms does not post
+> into Facebook groups.** Facebook groups are where listings are *sourced* — inbound,
+> via the lead-harvest pipeline — and nothing about our rendering touches that
+> direction. Nobody is sharing `topfarms.co.nz/jobs/<id>` into a group, so "the card
+> renders generic" was a defect nobody was ever going to see.
+>
+> **What actually justifies this stage, and it is the only thing that does: Google
+> Jobs.** `JobPosting` JSON-LD on a server-rendered, indexable page is what puts a
+> listing in the jobs widget for a search like "dairy farm job waikato". That is a real
+> acquisition channel for a job board and it does not depend on social sharing at all.
+> Faster and more reliable indexing is a second, smaller benefit: Googlebot does render
+> JavaScript, but on a queue and with no guarantee for a new low-authority domain.
+>
+> **Consequence, stated plainly because it cuts against the decision:** the paragraph
+> below rejects client-side JSON-LD on the grounds that "Facebook never executes JS."
+> Google does. With Facebook out of the picture that rejection loses most of its force,
+> and the cheap alternative was more viable than this section admitted. The stage was
+> nevertheless completed and kept — it is built, preview-green, and revertible in one
+> commit, so the marginal cost from here is zero and server rendering is still the
+> better of the two for the Google Jobs path. **Anyone re-opening this decision should
+> argue it on Google Jobs, not on social sharing, and should know the cost was already
+> sunk when the premise was corrected.**
+>
+> Downstream: the `og:image` gap recorded in 1.18e is CLOSED AS NOT NEEDED. Text-only
+> link previews are sufficient for the incidental case (a worker sending a mate a link
+> on WhatsApp or Messenger), and no other case exists.
+
 **The deciding case is social sharing, not SEO.** Facebook groups are the primary
 organic channel for NZ farm hiring, and no social crawler executes JavaScript. Today the
 site serves every route as an empty SPA shell (`vercel.json` rewrites everything to
@@ -403,6 +433,9 @@ few days of work by giving up the primary organic channel.
 Secondary but real: server-rendered `/jobs/:id` carries JobPosting JSON-LD and per-job
 og tags in the initial HTML, which is what Google Jobs and every non-Google crawler
 actually read.
+
+*(The two paragraphs above are kept verbatim, not edited, so the correction above has
+something to correct. "Secondary but real" is now the whole case.)*
 
 **Why framework mode and not alternatives:** the repo is already on `react-router@7.5`
 in library mode; framework mode is the same library's designed upgrade path, with a
@@ -541,12 +574,12 @@ real `curl`, fabricated row. Confirmed in the raw HTML — `<title>`, `og:title`
 and the listing text itself, with `Loading listing` absent. Zero console errors and
 zero page errors across `/`, `/jobs` and `/jobs/:id` after hydration.
 
-**KNOWN GAP, pre-existing and NOT closed by this stage: there is no `og:image`.**
-`public/` contains no raster image and `index.html` never declared one, so a job shared
-into a Facebook group renders a small text-only card rather than a rich one. Every other
-half of the deciding case now works. This is a design asset (1200×630), not a rendering
-change, which is why the stage did not invent one — and section 4's ban on placeholder
-photography means it must be real artwork or the wordmark on cream, not a stock photo.
+**`og:image`: NOT NEEDED. Closed 2026-08-04, not deferred.** There is no `og:image`
+anywhere in the repo and there does not need to be. It was raised as a gap only because
+of the social-sharing premise that 1.16's correction retracts — TopFarms does not post
+into Facebook groups. A text-only preview is fine for the one case that survives (a
+worker sending a mate a link), and Google Jobs reads the JSON-LD, not the card. Do not
+commission a 1200×630 asset for this.
 
 **Note on route `meta` exports:** a route's `meta` REPLACES the root's descriptors
 rather than merging with them, so site-level tags (`og:site_name`, `twitter:card`) are
