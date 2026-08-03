@@ -69,25 +69,42 @@ describe('Landing Page', () => {
   })
 
   describe('LAND-02: Counter section', () => {
-    it('renders "Jobs Posted" label', () => {
+    // v13: counters render only after stats load AND clear MIN_CREDIBLE, so the
+    // labels appear asynchronously (mock returns 42/128/350, all credible).
+    it('renders "Jobs Posted" label', async () => {
       renderHome()
-      expect(screen.getByText('Jobs Posted')).toBeInTheDocument()
+      expect(await screen.findByText('Jobs Posted')).toBeInTheDocument()
     })
 
-    it('renders "Workers Registered" label', () => {
+    it('renders "Workers Registered" label', async () => {
       renderHome()
-      expect(screen.getByText('Workers Registered')).toBeInTheDocument()
+      expect(await screen.findByText('Workers Registered')).toBeInTheDocument()
     })
 
-    it('renders "Matches Made" label', () => {
+    it('renders "Matches Made" label', async () => {
       renderHome()
-      expect(screen.getByText('Matches Made')).toBeInTheDocument()
+      expect(await screen.findByText('Matches Made')).toBeInTheDocument()
     })
 
     it('calls get_platform_stats RPC on mount', async () => {
       const { supabase } = await import('@/lib/supabase')
       renderHome()
       expect(supabase.rpc).toHaveBeenCalledWith('get_platform_stats')
+    })
+
+    it('renders NOTHING when stats are real zeros (v13 zero-counter fix)', async () => {
+      const { supabase } = await import('@/lib/supabase')
+      vi.mocked(supabase.rpc).mockResolvedValueOnce({
+        data: { jobs: 0, seekers: 0, matches: 0 },
+        error: null,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- test mock shape
+      } as any)
+      renderHome()
+      // let the fetch resolve, then assert the section never appeared
+      await screen.findByText(/Best Farms/i)
+      await vi.waitFor(() => expect(supabase.rpc).toHaveBeenCalled())
+      expect(screen.queryByText('Jobs Posted')).not.toBeInTheDocument()
+      expect(screen.queryByText('Live')).not.toBeInTheDocument()
     })
   })
 
@@ -130,9 +147,9 @@ describe('Landing Page', () => {
   })
 
   describe('LAND-02: Counter section - Live badge', () => {
-    it('CountersSection renders Live badge', () => {
+    it('CountersSection renders Live badge once credible stats load', async () => {
       renderHome()
-      expect(screen.getByText('Live')).toBeInTheDocument()
+      expect(await screen.findByText('Live')).toBeInTheDocument()
       const pulseDot = document.querySelector('.animate-pulse')
       expect(pulseDot).toBeInTheDocument()
     })

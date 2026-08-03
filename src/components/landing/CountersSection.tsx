@@ -37,8 +37,16 @@ function CounterBlock({ label, target, active, suffix = '' }: CounterBlockProps)
   )
 }
 
+// v13 (2026-08-03): counters render ONLY when every stat clears this floor.
+// Phase 5.6 stopped zeros rendering when the RPC *fails*; this extends the same
+// reasoning to when it *succeeds*: "0 Jobs Posted" under a pulsing LIVE badge is
+// anti-proof, and single digits read the same way. 10 is a judgment call, not a
+// measurement — raise it if double digits still look thin next to real boards.
+// See docs/design/v11-DIRECTIVE.md section 6 (Test 3: liquidity patterns).
+const MIN_CREDIBLE = 10
+
 export function CountersSection() {
-  const [stats, setStats] = useState<PlatformStats>({ jobs: 0, seekers: 0, matches: 0 })
+  const [stats, setStats] = useState<PlatformStats | null>(null)
   const [statsUnavailable, setStatsUnavailable] = useState(false)
   const { ref, inView } = useInView(0.2)
 
@@ -63,6 +71,19 @@ export function CountersSection() {
     fetchStats()
   }, [])
 
+  // Nothing renders (no dark band, no LIVE badge) until stats are loaded AND
+  // credible. Before the fetch resolves stats is null, so first paint is empty
+  // rather than a band that pops its numbers in later.
+  if (
+    statsUnavailable ||
+    stats === null ||
+    stats.jobs < MIN_CREDIBLE ||
+    stats.seekers < MIN_CREDIBLE ||
+    stats.matches < MIN_CREDIBLE
+  ) {
+    return null
+  }
+
   return (
     <section className="bg-brand-900" ref={ref}>
       <div className="mx-auto max-w-5xl px-4">
@@ -79,10 +100,7 @@ export function CountersSection() {
 
         {/* divide color via utility class — `divideColor` is not a CSS property,
             so the previous inline style was silently ignored by React. */}
-        <div
-          className="grid grid-cols-1 divide-y divide-white/[0.08] sm:grid-cols-3 sm:divide-x sm:divide-y-0"
-          hidden={statsUnavailable}
-        >
+        <div className="grid grid-cols-1 divide-y divide-white/[0.08] sm:grid-cols-3 sm:divide-x sm:divide-y-0">
           <CounterBlock label="Jobs Posted" target={stats.jobs} active={inView} />
           <CounterBlock label="Workers Registered" target={stats.seekers} active={inView} />
           <CounterBlock label="Matches Made" target={stats.matches} active={inView} />
