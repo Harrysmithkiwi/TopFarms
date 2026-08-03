@@ -61,6 +61,8 @@ marketing/video/**/*.wav
 docs/design/*
 !docs/design/contrast.md
 !docs/design/phase-5-ledger.md
+# v13: the directive governs the port and is the decision record. Tracked, not scratch.
+!docs/design/v11-DIRECTIVE.md
 content/
 .claude/skills/playwright-skill/
 docs/index.docx
