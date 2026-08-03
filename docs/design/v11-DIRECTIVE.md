@@ -205,6 +205,12 @@ Kept outright:
 - The lazy-chunk recovery wrapper, error-boundary split (real errors are not shown as
   404s), and the route-ordering conventions documented in `main.tsx`.
 
+**Expected tooling noise, do not "fix":** the impeccable design hook flags Inter in
+`src/index.css` as an overused font. The finding is correct and is the port's thesis:
+Inter leaves public surfaces stage by stage, and product surfaces keep it until their
+own port phase. Until then the finding stands. Do not suppress it, and do not resolve it
+by removing Inter from surfaces that still render with it.
+
 **What the comps never had to consider, and the port must not lose:** role-aware nav
 (signed-in users see role links, not public links), auth states on every gated surface,
 empty states, error boundaries, loading states (skeletons and the route fallback), the
@@ -321,6 +327,63 @@ pulsing LIVE badge, which is the exact failure Test 3 records as deleted from th
 in v1. The floor is a judgment call, not a measurement; raise it if double digits still
 read as thin. The section self-restores as volume arrives. Do not remove the gate as a
 simplification.
+
+### 1.16 Rendering strategy: React Router framework mode (v13)
+
+Decided 2026-08-03. The public routes move to React Router 7 **framework mode** with
+server rendering for `/jobs/:id`, run as its own stage between the landing port and the
+`/jobs` port.
+
+**The deciding case is social sharing, not SEO.** Facebook groups are the primary
+organic channel for NZ farm hiring, and no social crawler executes JavaScript. Today the
+site serves every route as an empty SPA shell (`vercel.json` rewrites everything to
+`index.html`), so a job link shared into a Facebook group renders a generic card. The
+cheap alternative (client-side JSON-LD plus a sitemap) fixes none of that: Google
+eventually executes JS, Facebook never does. Any future proposal to "simplify" back to
+the client-only approach on cost grounds is answered by this paragraph: it buys back a
+few days of work by giving up the primary organic channel.
+
+Secondary but real: server-rendered `/jobs/:id` carries JobPosting JSON-LD and per-job
+og tags in the initial HTML, which is what Google Jobs and every non-Google crawler
+actually read.
+
+**Why framework mode and not alternatives:** the repo is already on `react-router@7.5`
+in library mode; framework mode is the same library's designed upgrade path, with a
+first-party Vercel preset. Build-time prerender cannot cover `/jobs/:id` (listings
+change after build). A hand-rolled edge SSR function for one route is the same benefit
+implemented against the framework, with a permanent bespoke render path as the price.
+
+**Precondition, verified 2026-08-03:** RLS already permits anon select on active jobs
+(policy "jobs: anon users view active", roles public, cmd SELECT, qual
+`status = 'active'`). Loaders read with the anon key; no migration, no policy change.
+Note the status value is `active`, not `published`.
+
+**Sequence:** stage 2 lands the landing page port first, then framework mode as its own
+stage, then the `/jobs` and `/jobs/:id` port on top of it. The order exists because
+framework mode changes where the `/jobs` work lands; porting `/jobs` first would build
+it twice.
+
+**Rollback plan (written before the stage starts, on purpose):**
+
+- The stage runs on its own branch cut from `v13-port`. Route modules are added as thin
+  wrappers that import the EXISTING page components; no page component moves or changes
+  during the migration. The entry-point swap (library `createBrowserRouter` to framework
+  entries) is the LAST commit of the stage, not the first.
+- Abandoning at any point before the entry swap: delete the branch. Cost to `v13-port`
+  is zero because nothing was touched outside the new wrapper files.
+- Abandoning after the entry swap: revert that one commit. Library mode resumes with
+  identical behaviour because the pages never moved.
+- Merge condition: the full Playwright suite green against a preview deploy of the
+  framework-mode branch, plus every section 8 gate. If e2e cannot be brought green
+  within the stage's budget, the branch parks unmerged and stage 3 proceeds on the SPA
+  with the sitemap as the interim discoverability answer. Parking is a recorded outcome,
+  not a failure to decide.
+
+**Shipped independently (2026-08-03, `main` commit `a5b3d7b`):** build-time sitemap.
+Postbuild script extends the static launch baseline with one url per active job via
+anon REST. Fail-soft: any error keeps the static baseline and exits 0, because a
+degraded sitemap must never fail a deploy. Needed under every rendering option; its
+freshness is deploy-frequency until framework mode gives it a proper route.
 
 ---
 
