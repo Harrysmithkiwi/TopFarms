@@ -112,7 +112,7 @@ function computeTrustLevel(verifications: EmployerVerification[]): TrustLevel {
 function formatSalary(min?: number, max?: number): string {
   if (!min && !max) return 'Salary negotiable'
   const fmt = (n: number) => `$${n.toLocaleString()}`
-  if (min && max) return `${fmt(min)} – ${fmt(max)} per year`
+  if (min && max) return `${fmt(min)} to ${fmt(max)} per year`
   if (min) return `From ${fmt(min)} per year`
   if (max) return `Up to ${fmt(max)} per year`
   return 'Salary negotiable'
@@ -333,7 +333,7 @@ export function JobDetail() {
   // Loading state
   if (loading || authLoading) {
     return (
-      <div className="bg-bg min-h-screen">
+      <div className="bg-cream">
         <RouteSkeleton label="Loading listing" />
       </div>
     )
@@ -342,7 +342,7 @@ export function JobDetail() {
   // Failed — checked BEFORE notFound, which is a dead end with no retry.
   if (loadError) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-bg">
+      <div className="flex min-h-[60vh] items-center justify-center bg-cream">
         <ErrorState
           message="We could not load this listing"
           onRetry={() => setReloadNonce((n) => n + 1)}
@@ -355,30 +355,30 @@ export function JobDetail() {
   if (notFound || !job) {
     return (
       <div
-        className="flex min-h-screen items-center justify-center bg-bg"
+        className="flex min-h-[60vh] items-center justify-center bg-cream"
       >
         <div className="max-w-md px-4 text-center">
           <div
             className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-border"
           >
             <ClipboardList
-              className="h-8 w-8 text-text-muted"
+              className="h-8 w-8 text-ink-60"
               aria-hidden="true"
             />
           </div>
           <h1
-            className="font-display mb-2 text-2xl font-semibold text-brand-900"
+            className="mb-2 text-2xl font-semibold text-green"
           >
             Listing not available
           </h1>
-          <p className="mb-6 text-sm text-text-muted">
+          <p className="mb-6 text-sm text-ink-60">
             This job listing is no longer available. It may have been filled, expired, or removed.
           </p>
           <Link
             to="/jobs"
             className={cn(
-              'font-body inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
-              'bg-brand-hover hover:bg-brand-900 text-white',
+              'inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
+              'bg-green-2 hover:bg-green text-white',
               'px-4 py-2 text-label',
             )}
           >
@@ -395,15 +395,15 @@ export function JobDetail() {
     if (!session || role !== 'employer') {
       return (
         <div
-          className="flex min-h-screen items-center justify-center bg-bg"
+          className="flex min-h-[60vh] items-center justify-center bg-cream"
         >
           <div className="max-w-md px-4 text-center">
             <h1
-              className="font-display mb-2 text-2xl font-semibold text-brand-900"
+              className="mb-2 text-2xl font-semibold text-green"
             >
               Listing not available
             </h1>
-            <p className="text-sm text-text-muted">
+            <p className="text-sm text-ink-60">
               This job listing is no longer available.
             </p>
           </div>
@@ -457,7 +457,7 @@ export function JobDetail() {
   // ─── Main render ────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen pb-24 bg-bg">
+    <div className="pb-24 bg-cream">
       {/* Breadcrumb bar — replaces old minimal nav */}
       <div className="sticky top-0 z-30">
         <Breadcrumb
@@ -482,7 +482,7 @@ export function JobDetail() {
                 <div className="mb-3">
                   <span
                     className={cn(
-                      'font-body inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-micro font-semibold',
+                      'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-micro font-semibold',
                       isPremium
                         ? 'bg-[rgba(180,83,9,0.10)] text-[#b45309]'
                         : 'bg-[rgba(59,130,246,0.10)] text-[#2563eb]',
@@ -495,7 +495,7 @@ export function JobDetail() {
               )}
 
               <h1
-                className="font-display mb-3 text-3xl leading-tight font-semibold text-brand-900"
+                className="mb-3 text-3xl leading-tight font-semibold text-green"
               >
                 {job.title}
               </h1>
@@ -503,7 +503,7 @@ export function JobDetail() {
               {/* Farm name + trust badge */}
               <div className="mb-3 flex flex-wrap items-center gap-2">
                 <span
-                  className="font-body text-base font-semibold text-text"
+                  className="text-base font-semibold text-ink"
                 >
                   {employer?.farm_name}
                 </span>
@@ -516,7 +516,7 @@ export function JobDetail() {
 
               {/* Key metadata */}
               <div
-                className="flex flex-wrap gap-3 text-sm text-text-muted"
+                className="flex flex-wrap gap-3 text-sm text-ink-60"
               >
                 {employer?.region && (
                   <span className="flex items-center gap-1.5">
@@ -557,16 +557,16 @@ export function JobDetail() {
               job.description_offer ||
               job.description_ideal) && (
               <section>
-                <div className="bg-surface border-border space-y-6 rounded-[12px] border-[1.5px] p-6">
+                <div className="bg-card border-line space-y-6 rounded-[12px] border-[1.5px] p-6">
                   {job.description_overview && (
                     <div>
                       <h2
-                        className="font-body mb-2 text-base font-bold text-text"
+                        className="mb-2 text-base font-bold text-ink"
                       >
                         Role Overview
                       </h2>
                       <p
-                        className="text-sm leading-relaxed whitespace-pre-line text-text-muted"
+                        className="text-sm leading-relaxed whitespace-pre-line text-ink-60"
                       >
                         {job.description_overview}
                       </p>
@@ -576,7 +576,7 @@ export function JobDetail() {
                   {job.description_daytoday && (
                     <div>
                       <h2
-                        className="font-body mb-2 text-base font-bold text-text"
+                        className="mb-2 text-base font-bold text-ink"
                       >
                         Day-to-Day
                       </h2>
@@ -587,10 +587,10 @@ export function JobDetail() {
                           .map((line, i) => (
                             <li
                               key={i}
-                              className="flex items-start gap-2 text-sm leading-relaxed text-text-muted"
+                              className="flex items-start gap-2 text-sm leading-relaxed text-ink-60"
                             >
                               <span
-                                className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-brand"
+                                className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-green"
                               />
                               {line.replace(/^[-*]\s*/, '')}
                             </li>
@@ -601,12 +601,12 @@ export function JobDetail() {
                   {job.description_offer && (
                     <div>
                       <h2
-                        className="font-body mb-2 text-base font-bold text-text"
+                        className="mb-2 text-base font-bold text-ink"
                       >
                         What We Offer
                       </h2>
                       <p
-                        className="text-sm leading-relaxed whitespace-pre-line text-text-muted"
+                        className="text-sm leading-relaxed whitespace-pre-line text-ink-60"
                       >
                         {job.description_offer}
                       </p>
@@ -615,12 +615,12 @@ export function JobDetail() {
                   {job.description_ideal && (
                     <div>
                       <h2
-                        className="font-body mb-2 text-base font-bold text-text"
+                        className="mb-2 text-base font-bold text-ink"
                       >
                         Ideal Candidate
                       </h2>
                       <p
-                        className="text-sm leading-relaxed whitespace-pre-line text-text-muted"
+                        className="text-sm leading-relaxed whitespace-pre-line text-ink-60"
                       >
                         {job.description_ideal}
                       </p>
@@ -634,26 +634,26 @@ export function JobDetail() {
             {skills.length > 0 && (
               <section>
                 <h2
-                  className="font-body mb-1 text-lg font-bold text-text"
+                  className="mb-1 text-lg font-bold text-ink"
                 >
                   Skills
                 </h2>
-                <p className="mb-4 text-xs text-text-subtle">
+                <p className="mb-4 text-xs text-ink-40">
                   {requiredCount > 0 && `${requiredCount} required`}
                   {requiredCount > 0 && preferredCount > 0 && ', '}
                   {preferredCount > 0 && `${preferredCount} preferred`}
                 </p>
 
-                <div className="bg-surface border-border rounded-[12px] border-[1.5px] p-6">
+                <div className="bg-card border-line rounded-[12px] border-[1.5px] p-6">
                   {/* Legend row (JDET-04) */}
-                  <div className="border-border mb-4 flex items-center gap-4 border-b pb-3">
-                    <span className="font-body inline-flex items-center gap-1.5 text-xs">
-                      <span className="bg-brand h-2 w-2 rounded-full" /> Required
+                  <div className="border-line mb-4 flex items-center gap-4 border-b pb-3">
+                    <span className="inline-flex items-center gap-1.5 text-xs">
+                      <span className="bg-green h-2 w-2 rounded-full" /> Required
                     </span>
-                    <span className="font-body inline-flex items-center gap-1.5 text-xs">
-                      <span className="bg-surface-2 h-2 w-2 rounded-full" /> Preferred
+                    <span className="inline-flex items-center gap-1.5 text-xs">
+                      <span className="bg-cream-2 h-2 w-2 rounded-full" /> Preferred
                     </span>
-                    <span className="font-body inline-flex items-center gap-1.5 text-xs">
+                    <span className="inline-flex items-center gap-1.5 text-xs">
                       <span className="bg-warn h-2 w-2 rounded-full" /> Bonus
                     </span>
                   </div>
@@ -663,7 +663,7 @@ export function JobDetail() {
                     {Object.entries(skillsByCategory).map(([category, categorySkills]) => (
                       <div key={category}>
                         <p
-                          className="font-body mb-2 text-micro font-semibold tracking-wide uppercase text-text-subtle"
+                          className="mb-2 text-micro font-semibold tracking-wide uppercase text-ink-40"
                         >
                           {category}
                         </p>
@@ -672,10 +672,10 @@ export function JobDetail() {
                             <span
                               key={s.skill_id}
                               className={cn(
-                                'font-body inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold',
+                                'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold',
                                 s.requirement_level === 'required'
                                   ? 'text-success-text-on-bg bg-[rgba(74,124,47,0.12)]'
-                                  : 'bg-surface-2 text-text-muted',
+                                  : 'bg-cream-2 text-ink-60',
                               )}
                             >
                               {s.skills?.name}
@@ -684,7 +684,7 @@ export function JobDetail() {
                                   'text-micro',
                                   s.requirement_level === 'required'
                                     ? 'text-success-text-on-bg'
-                                    : 'text-text-subtle',
+                                    : 'text-ink-40',
                                 )}
                               >
                                 {s.requirement_level === 'required' ? 'required' : 'preferred'}
@@ -702,7 +702,7 @@ export function JobDetail() {
             {/* Application Timeline (JDET-05) */}
             <section>
               <h2
-                className="font-body mb-4 text-lg font-bold text-text"
+                className="mb-4 text-lg font-bold text-ink"
               >
                 Application Timeline
               </h2>
@@ -720,7 +720,7 @@ export function JobDetail() {
             {/* Location / Map (JDET-06) */}
             <section>
               <h2
-                className="font-body mb-4 text-lg font-bold text-text"
+                className="mb-4 text-lg font-bold text-ink"
               >
                 Location
               </h2>
@@ -731,17 +731,17 @@ export function JobDetail() {
             {(job.salary_min || job.salary_max || (job.benefits && job.benefits.length > 0)) && (
               <section>
                 <h2
-                  className="font-body mb-4 text-lg font-bold text-text"
+                  className="mb-4 text-lg font-bold text-ink"
                 >
                   Compensation &amp; Benefits
                 </h2>
-                <div className="bg-surface border-border space-y-3 rounded-[12px] border-[1.5px] p-6">
+                <div className="bg-card border-line space-y-3 rounded-[12px] border-[1.5px] p-6">
                   <div className="flex items-center gap-2">
                     <DollarSign
-                      className="h-4 w-4 flex-shrink-0 text-text-muted"
+                      className="h-4 w-4 flex-shrink-0 text-ink-60"
                     />
                     <span
-                      className="font-body text-sm font-semibold text-text"
+                      className="text-sm font-semibold text-ink"
                     >
                       {formatSalary(job.salary_min, job.salary_max)}
                     </span>
@@ -751,9 +751,9 @@ export function JobDetail() {
                       {job.benefits.map((benefit, i) => (
                         <li
                           key={i}
-                          className="flex items-start gap-2 text-sm text-text-muted"
+                          className="flex items-start gap-2 text-sm text-ink-60"
                         >
-                          <span className="text-brand-hover mt-0.5">•</span>
+                          <span className="text-green-2 mt-0.5">•</span>
                           {benefit}
                         </li>
                       ))}
@@ -767,17 +767,17 @@ export function JobDetail() {
             {employer?.accommodation_available && (
               <section>
                 <h2
-                  className="font-body mb-4 text-lg font-bold text-text"
+                  className="mb-4 text-lg font-bold text-ink"
                 >
                   Accommodation
                 </h2>
-                <div className="bg-surface border-border space-y-3 rounded-[12px] border-[1.5px] p-6">
+                <div className="bg-card border-line space-y-3 rounded-[12px] border-[1.5px] p-6">
                   {employer.accommodation_type && (
                     <div className="flex items-center gap-2">
                       <Home
-                        className="h-4 w-4 flex-shrink-0 text-text-muted"
+                        className="h-4 w-4 flex-shrink-0 text-ink-60"
                       />
-                      <span className="text-sm text-text">
+                      <span className="text-sm text-ink">
                         {employer.accommodation_type}
                       </span>
                     </div>
@@ -795,7 +795,7 @@ export function JobDetail() {
                         return (
                           <span
                             key={chip}
-                            className="flex items-center gap-1.5 text-sm text-text-muted"
+                            className="flex items-center gap-1.5 text-sm text-ink-60"
                           >
                             <Icon className="h-4 w-4" />
                             {chip}
@@ -816,20 +816,20 @@ export function JobDetail() {
                 employer.culture_description) && (
                 <section>
                   <h2
-                    className="font-body mb-4 text-lg font-bold text-text"
+                    className="mb-4 text-lg font-bold text-ink"
                   >
                     Farm Details
                   </h2>
-                  <div className="bg-surface border-border space-y-4 rounded-[12px] border-[1.5px] p-6">
+                  <div className="bg-card border-line space-y-4 rounded-[12px] border-[1.5px] p-6">
                     <div className="grid grid-cols-2 gap-4">
                       {employer.farm_type && (
                         <div>
                           <p
-                            className="font-body mb-0.5 text-micro font-semibold tracking-wide uppercase text-text-subtle"
+                            className="mb-0.5 text-micro font-semibold tracking-wide uppercase text-ink-40"
                           >
                             Farm Type
                           </p>
-                          <p className="text-sm capitalize text-text">
+                          <p className="text-sm capitalize text-ink">
                             {employer.farm_type}
                           </p>
                         </div>
@@ -837,11 +837,11 @@ export function JobDetail() {
                       {employer.shed_type && (
                         <div>
                           <p
-                            className="font-body mb-0.5 text-micro font-semibold tracking-wide uppercase text-text-subtle"
+                            className="mb-0.5 text-micro font-semibold tracking-wide uppercase text-ink-40"
                           >
                             Shed Type
                           </p>
-                          <p className="text-sm text-text">
+                          <p className="text-sm text-ink">
                             {employer.shed_type}
                           </p>
                         </div>
@@ -849,11 +849,11 @@ export function JobDetail() {
                       {employer.herd_size && (
                         <div>
                           <p
-                            className="font-body mb-0.5 text-micro font-semibold tracking-wide uppercase text-text-subtle"
+                            className="mb-0.5 text-micro font-semibold tracking-wide uppercase text-ink-40"
                           >
                             Herd Size
                           </p>
-                          <p className="text-sm text-text">
+                          <p className="text-sm text-ink">
                             {employer.herd_size.toLocaleString()} head
                           </p>
                         </div>
@@ -861,11 +861,11 @@ export function JobDetail() {
                       {employer.region && (
                         <div>
                           <p
-                            className="font-body mb-0.5 text-micro font-semibold tracking-wide uppercase text-text-subtle"
+                            className="mb-0.5 text-micro font-semibold tracking-wide uppercase text-ink-40"
                           >
                             Region
                           </p>
-                          <p className="text-sm text-text">
+                          <p className="text-sm text-ink">
                             {employer.region}
                           </p>
                         </div>
@@ -874,12 +874,12 @@ export function JobDetail() {
                     {employer.culture_description && (
                       <div>
                         <p
-                          className="font-body mb-1 text-micro font-semibold tracking-wide uppercase text-text-subtle"
+                          className="mb-1 text-micro font-semibold tracking-wide uppercase text-ink-40"
                         >
                           Culture &amp; Team
                         </p>
                         <p
-                          className="text-sm leading-relaxed whitespace-pre-line text-text-muted"
+                          className="text-sm leading-relaxed whitespace-pre-line text-ink-60"
                         >
                           {employer.culture_description}
                         </p>
@@ -935,18 +935,18 @@ export function JobDetail() {
       {/* Sticky CTA bar — visitor */}
       {isVisitor && (
         <div
-          className="border-border fixed right-0 bottom-0 left-0 z-30 border-t shadow-lg bg-white"
+          className="border-line fixed right-0 bottom-0 left-0 z-30 border-t shadow-lg bg-white"
         >
           <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4">
-            <p className="font-body text-sm font-semibold text-text">
+            <p className="text-sm font-semibold text-ink">
               Sign up to see how you match and apply
             </p>
             <div className="flex flex-shrink-0 items-center gap-2">
               <Link
                 to="/login"
                 className={cn(
-                  'font-body inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
-                  'bg-surface border-brand text-brand-hover hover:bg-surface-2 border',
+                  'inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
+                  'bg-card border-green text-green-2 hover:bg-cream-2 border',
                   'px-3 py-2 text-label',
                 )}
               >
@@ -955,8 +955,8 @@ export function JobDetail() {
               <Link
                 to="/signup"
                 className={cn(
-                  'font-body inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
-                  'bg-brand-hover hover:bg-brand-900 text-white',
+                  'inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
+                  'bg-green-2 hover:bg-green text-white',
                   'px-4 py-2 text-label',
                 )}
               >
@@ -970,13 +970,13 @@ export function JobDetail() {
       {/* Sticky CTA bar — seeker */}
       {isSeeker && (
         <div
-          className="border-border fixed right-0 bottom-0 left-0 z-30 border-t shadow-lg bg-white"
+          className="border-line fixed right-0 bottom-0 left-0 z-30 border-t shadow-lg bg-white"
         >
           <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4">
             {matchScore && (
               <div className="flex items-center gap-2 lg:hidden">
                 <MatchCircle score={matchScore.total_score} size="sm" />
-                <span className="text-sm font-semibold text-text">
+                <span className="text-sm font-semibold text-ink">
                   Match
                 </span>
               </div>
@@ -992,10 +992,10 @@ export function JobDetail() {
                 setApplyModalOpen(true)
               }}
               className={cn(
-                'font-body ml-auto inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
+                'ml-auto inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
                 hasApplied || !seekerProfileId
-                  ? 'bg-surface-2 text-text-muted cursor-not-allowed'
-                  : 'bg-brand-hover hover:bg-brand-900 text-white',
+                  ? 'bg-cream-2 text-ink-60 cursor-not-allowed'
+                  : 'bg-green-2 hover:bg-green text-white',
                 'px-6 py-2.5 text-sm',
               )}
             >
@@ -1009,14 +1009,14 @@ export function JobDetail() {
       <Dialog.Root open={applyModalOpen} onOpenChange={setApplyModalOpen}>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 z-40 bg-black/40" />
-          <Dialog.Content className="bg-surface fixed top-1/2 left-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-[16px] p-6 shadow-xl">
+          <Dialog.Content className="bg-card fixed top-1/2 left-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-[16px] p-6 shadow-xl">
             <Dialog.Title
-              className="font-display mb-1 text-xl font-semibold text-brand-900"
+              className="mb-1 text-xl font-semibold text-green"
             >
               Apply to {job.title}
             </Dialog.Title>
             <Dialog.Description
-              className="mb-4 text-sm text-text-muted"
+              className="mb-4 text-sm text-ink-60"
             >
               Your profile will be shared with {employer?.farm_name}. Add an optional note below.
             </Dialog.Description>
@@ -1026,17 +1026,17 @@ export function JobDetail() {
               placeholder="Add a cover note (optional)..."
               rows={4}
               maxLength={500}
-              className="border-border focus:border-brand w-full resize-none rounded-[8px] border p-3 text-sm"
+              className="border-line focus:border-green w-full resize-none rounded-[8px] border p-3 text-sm"
             />
             <p
-              className="mt-1 text-right text-micro text-text-subtle"
+              className="mt-1 text-right text-micro text-ink-40"
             >
               {coverNote.length}/500
             </p>
             <div className="mt-4 flex gap-3">
               <Dialog.Close asChild>
                 <button
-                  className="font-body border-border hover:bg-surface-2 flex-1 rounded-[8px] border px-4 py-2 text-label font-bold transition-colors text-text-muted"
+                  className="border-line hover:bg-cream-2 flex-1 rounded-[8px] border px-4 py-2 text-label font-bold transition-colors text-ink-60"
                 >
                   Cancel
                 </button>
@@ -1044,7 +1044,7 @@ export function JobDetail() {
               <button
                 onClick={handleApply}
                 disabled={applying}
-                className="font-body bg-brand-hover hover:bg-brand-900 flex-1 rounded-[8px] px-4 py-2 text-label font-bold text-white transition-colors disabled:opacity-50"
+                className="bg-green-2 hover:bg-green flex-1 rounded-[8px] px-4 py-2 text-label font-bold text-white transition-colors disabled:opacity-50"
               >
                 {applying ? 'Submitting...' : 'Confirm Application'}
               </button>

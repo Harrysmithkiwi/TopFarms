@@ -6,6 +6,7 @@ import { Analytics } from '@vercel/analytics/react'
 import { Toaster } from 'sonner'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { AudienceProvider } from '@/contexts/AudienceContext'
+import { PublicShell } from '@/components/shell/PublicShell'
 import './index.css'
 
 // ─── Code splitting (audit task 2.1, F5) ────────────────────────────────────
@@ -289,8 +290,15 @@ function routeTable() {
     },
     {
       // PUBLIC — no ProtectedRoute wrapper. Component handles auth-gated views internally.
+      // v13 port: wrapped in PublicShell. Before this, /jobs/:id rendered with NO
+      // navigation chrome at all -- a visitor landing on a shared job link had no
+      // way into the rest of the site.
       path: '/jobs/:id',
-      element: s(<JobDetail />),
+      element: s(
+        <PublicShell>
+          <JobDetail />
+        </PublicShell>,
+      ),
     },
 
     // ─── Employer dashboard & verification ──────────────────────────────────────
