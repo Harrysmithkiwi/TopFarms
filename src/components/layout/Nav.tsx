@@ -1,3 +1,7 @@
+// v13 port: SURVIVING legacy component. Scope is now JobSearchLayout (/jobs,
+// 3c work) and DashboardLayout (product surfaces, a later phase). Public content
+// routes use ShellNav via PublicShell. Delete this file when its last consumer
+// ports; do not add new consumers. See docs/design/v11-DIRECTIVE.md 1.17.
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router'
 import { Menu, X, Leaf } from 'lucide-react'

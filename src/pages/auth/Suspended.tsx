@@ -29,7 +29,7 @@ export function Suspended() {
       navigate('/login', { replace: true })
     } catch (err) {
       console.error('[Suspended] signOut failed', err)
-      toast.error('Sign out failed — please refresh the page.')
+      toast.error('Sign out failed. Please refresh the page.')
       setSigningOut(false)
     }
   }
@@ -37,11 +37,11 @@ export function Suspended() {
   return (
     <AuthLayout title="Account suspended">
       <div className="space-y-6">
-        <p className="text-base text-text-muted">
+        <p className="text-base text-ink-60">
           Your account has been suspended. If you think this is an error, contact{' '}
           <a
             href="mailto:hello@topfarms.co.nz"
-            className="underline text-brand-900"
+            className="underline text-green"
           >
             hello@topfarms.co.nz
           </a>

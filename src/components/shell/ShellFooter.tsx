@@ -12,7 +12,15 @@ export function ShellFooter() {
         </span>
         {/* min-h-11 boxes: invisible padding that lifts each link to a 44px
             touch target without changing the visual row */}
+        {/* v13 stage 3a: /jobs added. In employer lens the board was otherwise
+            reachable only from a mid-page button, and a job board whose footer
+            omits the board is a real gap. /login and /signup stay OUT: the
+            utility bar carries both, and duplicating them re-opens the
+            action-label gate closed in directive section 3. */}
         <div className="flex flex-wrap items-center gap-x-2 gap-y-0">
+          <Link className="hover:text-ink inline-flex min-h-11 items-center px-1.5 transition-colors" to="/jobs">
+            Open roles
+          </Link>
           <Link className="hover:text-ink inline-flex min-h-11 items-center px-1.5 transition-colors" to="/pricing">
             Pricing
           </Link>

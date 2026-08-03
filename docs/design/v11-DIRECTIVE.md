@@ -328,6 +328,63 @@ in v1. The floor is a judgment call, not a measurement; raise it if double digit
 read as thin. The section self-restores as volume arrives. Do not remove the gate as a
 simplification.
 
+### 1.17 Stage 3a decisions: the destination port (v13)
+
+Five calls made 2026-08-03 under the operator's judgment clause. Recorded so none
+is re-litigated.
+
+**a. AuthLayout ports in place, and 3a widens to seven auth routes.** `AuthLayout`
+is a chrome-less split-screen (no nav, no footer) shared by `/login`, `/signup`,
+`/forgot-password`, `/auth/reset`, `/auth/verify`, `/auth/select-role` and
+`/suspended`. Wrapping auth pages in `PublicShell` would bolt a utility bar and
+nav onto a deliberately focused surface, and porting only two of the seven would
+leave a visitor who clicks "Forgot password" stepping between design eras inside
+one flow. So `AuthLayout` is restyled in place and all seven routes move
+together. **`PublicShell` is therefore the pattern for CONTENT routes, not
+literally every route; auth is the one sanctioned exception** and it exists
+because the auth flow is its own visual family. Its truth-pass value points
+("16 regions / 5 sectors / Free to join", which replaced fabricated 500+/2,000+
+stats in TF-003) survive verbatim.
+
+**b. Legal pages are exempt from the dash gate.** `/privacy` carries 18
+user-visible em dashes and the standing rule is that legal wording is never
+edited. Replacing a dash with a comma IS editing legal wording. The exemption is
+explicit rather than silent, and is limited to `src/pages/legal/`. Every other
+ported file holds zero. If legal text is ever revised by a lawyer, the revision
+should use hyphens, but that is their edit to make, not ours.
+
+**c. `/pricing` is ONE route with an audience-switched view.** Not two routes.
+Two routes would split the SEO signal for the term the business most wants to
+own, and would contradict 1.14's rejection of audience-as-URL-segment. The
+employer view carries the fee table; the seeker view states "free, always"
+plainly with what it buys. Both are in the DOM; the toggle switches them via the
+same `.emp-only` / `.seek-only` mechanism as the hero (1.11), so the page is
+correct with the employer view as the CSS default.
+
+**d. `/for-employers` survives, with a narrower job.** Killing it would break
+inbound links, the sitemap entry and the nav's employer-lens destination, and
+1.14 forbids changing IA for SEO reasons. But its old content now duplicates the
+landing page's employer lens. It is repurposed from "second landing page" to
+"what happens after you post": the pitch is cut, and it carries the posting
+sequence, what a listing includes, and the pricing link. Overlap removed without
+losing the route.
+
+**e. e2e accessible names are frozen.** `signup-flow.spec.ts` and
+`prod-smoke.spec.ts` drive `getByRole` with the names "Seeker Find farm work",
+"I agree to the Terms" and "Create account". These strings do not change during
+the reskin. No spec asserts old-system colours or classes, so the restyle is
+otherwise safe.
+
+**f. `NotFound` ports too, though it was out of scope.** It is the destination of
+every broken link and the one page a lost visitor is guaranteed to see. Leaving
+it on the old system would mean the error surface is the least coherent page on
+the site.
+
+**Retirement status after 3a:** `LandingFooter` is deleted (all three consumers
+ported). `Nav.tsx` SURVIVES, scoped to `JobSearchLayout` only, because `/jobs` is
+3c work. It retires there. A component is deleted when its last consumer ports,
+never before.
+
 ### 1.16 Rendering strategy: React Router framework mode (v13)
 
 Decided 2026-08-03. The public routes move to React Router 7 **framework mode** with

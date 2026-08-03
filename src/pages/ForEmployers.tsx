@@ -1,270 +1,142 @@
-import { motion } from 'motion/react'
 import { Link } from 'react-router'
-import { Check, Zap, Users, BarChart3, ShieldCheck } from 'lucide-react'
-import { Nav } from '@/components/layout/Nav'
+import { PublicShell } from '@/components/shell/PublicShell'
 import { usePageMeta } from '@/lib/usePageMeta'
-import { LandingFooter } from '@/components/landing/LandingFooter'
 
-const benefits = [
-  'Post a job in under 5 minutes',
-  'AI-matched candidates delivered to your dashboard',
-  'Track applications and schedule interviews in one place',
-  'Your first job listing is free — no credit card required',
-  'Worker profiles with verified documents and qualifications',
-]
+// v13 port, stage 3a (directive 1.17d). The route SURVIVES (inbound links, the
+// sitemap entry, and the nav's employer-lens destination; 1.14 forbids changing
+// IA for SEO reasons) but its job NARROWS. The old page was a second landing
+// page: "Find skilled farm workers, faster" plus a benefits list plus "Ready to
+// hire?", all of which the ported landing page's employer lens now carries.
+// This is now "what happens after you post": the posting sequence, what a
+// listing includes, and where pricing lives.
+//
+// Dropped with the old page: "AI-matched candidates delivered to your dashboard"
+// (re-advertises the mechanic, directive 1.3) and the feature-icon grid.
 
-const features = [
+const SEQUENCE = [
   {
-    icon: Zap,
-    title: 'Fast Posting',
-    body: 'Create a job listing in minutes with our guided form. We handle the formatting — you describe the role.',
+    n: '01',
+    h: 'Post the whole job',
+    p: 'Job type, roster, stock class, visa type, housing, location and pay. The things a farm hire actually turns on, not just a title and a region.',
   },
   {
-    icon: Users,
-    title: 'AI Matching',
-    body: 'Our matching engine scores every applicant against your requirements so the best candidates rise to the top.',
+    n: '02',
+    h: 'Applicants arrive scored',
+    p: 'Every applicant is scored against the job you posted, with the reason for each one written in plain language. Every applicant stays on the list.',
   },
   {
-    icon: BarChart3,
-    title: 'Applicant Dashboard',
-    // "message" removed (audit D8): message_threads exists in the schema but has
-    // no UI — the PRD scopes messaging as Growth phase. Contact details are
-    // released on shortlist, so the honest promise is the phone number, not an
-    // inbox we do not have.
-    body: 'See all your applicants in one place. Shortlist to unlock their contact details, and move candidates through your pipeline.',
-  },
-  {
-    icon: ShieldCheck,
-    title: 'Verified Workers',
-    body: 'Workers can verify their qualifications and documents on their profile — so you know who you are talking to.',
+    n: '03',
+    h: 'You decide who to ring',
+    p: 'Open the strongest fits first. Shortlist to unlock contact details and CV. Nothing is auto-rejected on your behalf.',
   },
 ]
 
-const steps = [
-  {
-    num: '01',
-    label: 'Create your farm profile',
-    detail: 'Tell candidates who you are and what makes your farm a great place to work.',
-  },
-  {
-    num: '02',
-    label: 'Post your listing',
-    detail: 'Describe the role, pay, and start date. Takes less than 5 minutes.',
-  },
-  {
-    num: '03',
-    label: 'Review matched candidates',
-    detail: 'Our AI ranks applicants by fit. You focus on the shortlist, not the stack.',
-  },
-  {
-    num: '04',
-    label: 'Hire with confidence',
-    // "Message" removed (audit D8) — no messaging UI exists. Shortlisting
-    // releases the candidate's phone and email, so contacting them is real; the
-    // in-platform inbox is not.
-    detail: 'Contact candidates directly, check their verified profile, and make the call.',
-  },
+const INCLUDED: [string, string][] = [
+  ['30 days live', 'Renew or repost at any time from your dashboard.'],
+  [
+    'Scored applicants throughout',
+    'Not a one-off ranking at close: the list stays ordered as people apply.',
+  ],
+  ['Your first listing free', 'One per account, no card required.'],
+  [
+    'Documents already verified',
+    'Where an applicant has uploaded and verified documents, you see that status.',
+  ],
 ]
 
 export function ForEmployers() {
   usePageMeta(
-    'Hire Farm Workers NZ — TopFarms for Employers',
-    'Post agricultural jobs and get AI-matched candidates across all 16 NZ regions. First listing free.',
+    'For employers | TopFarms',
+    'How posting a farm job on TopFarms works: post the whole job, applicants arrive scored with reasons, you decide who to ring. First listing free.',
   )
+
   return (
-    <div className="min-h-screen bg-bg">
-      <Nav />
-      <main>
-        {/* Hero */}
-        <section className="px-4 py-24 bg-brand-900">
-          <motion.div
-            className="mx-auto max-w-4xl text-center"
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: 'easeOut' }}
-          >
-            <p
-              className="mb-5 text-xs font-bold tracking-widest uppercase text-brand-300"
-            >
-              For Farm Employers
+    <PublicShell>
+      <section className="mx-auto max-w-[1440px] px-3 pt-3 sm:px-5">
+        <div className="v13-dark bg-green relative overflow-hidden rounded-3xl px-7 py-12 text-white md:px-11">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 opacity-50 [background:repeating-linear-gradient(96deg,rgba(255,255,255,.035)_0_1px,transparent_1px_54px)]"
+          />
+          <div className="relative">
+            <p className="text-lime font-bricolage text-xs font-semibold tracking-[.08em] uppercase">
+              For employers
             </p>
-            <h1
-              className="font-display mb-6 text-5xl leading-tight font-bold md:text-6xl text-text-on-brand"
-            >
-              Find skilled farm workers, faster.
+            <h1 className="mt-5 max-w-[18ch] text-4xl leading-[.95] font-extrabold tracking-[-.04em] md:text-6xl">
+              What happens after you post.
             </h1>
-            <p
-              className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-white/70"
-            >
-              TopFarms connects you with verified, experienced farm workers across all 16 regions of
-              New Zealand. Post a job today and get matched candidates in your dashboard.
+            <p className="mt-5 max-w-[46ch] text-[17px] text-white/82">
+              Three steps, and the list stays yours the whole way through.
             </p>
-            <div className="flex flex-col justify-center gap-3 sm:flex-row">
+            <div className="mt-7 flex flex-wrap items-center gap-2.5">
               <Link
                 to="/signup?role=employer"
-                className="bg-brand text-brand-900 inline-block rounded-full px-8 py-3.5 text-base font-semibold transition-opacity hover:opacity-90"
+                className="bg-lime text-green-2 hover:bg-lime-2 inline-flex min-h-11 items-center rounded-full px-5 text-[15px] font-semibold transition-colors"
               >
-                Post Your First Job
+                I'm hiring
               </Link>
               <Link
-                to="/jobs"
-                className="border border-white/25 text-text-on-brand inline-block rounded-full px-8 py-3.5 text-base font-semibold transition-colors"
+                to="/pricing"
+                className="hover:text-lime inline-flex min-h-11 items-center px-2.5 text-[15px] font-semibold text-white underline decoration-[1.5px] underline-offset-4 transition-colors"
               >
-                See the Job Board
+                See pricing
               </Link>
             </div>
-          </motion.div>
-        </section>
-
-        {/* Benefits checklist */}
-        <section className="px-4 py-20 bg-surface">
-          <motion.div
-            className="mx-auto max-w-2xl"
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.5, ease: 'easeOut' }}
-          >
-            <h2
-              className="font-display mb-10 text-center text-3xl font-bold text-brand-900"
-            >
-              Everything you need to hire well
-            </h2>
-            <ul className="flex flex-col gap-4">
-              {benefits.map((item) => (
-                <li key={item} className="flex items-start gap-3">
-                  <span
-                    className="bg-brand/15 mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full"
-                  >
-                    <Check className="text-brand" size={12} strokeWidth={3} />
-                  </span>
-                  <span
-                    className="text-base leading-relaxed text-text"
-                  >
-                    {item}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-        </section>
-
-        {/* Features grid */}
-        <section className="px-4 py-20 bg-bg">
-          <div className="mx-auto max-w-6xl">
-            <motion.h2
-              className="font-display mb-12 text-center text-3xl font-bold text-brand-900"
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.45 }}
-            >
-              Built for busy farm operators
-            </motion.h2>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {features.map((f, i) => (
-                <motion.div
-                  key={f.title}
-                  className="bg-surface border border-border rounded-xl p-6"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.2 }}
-                  transition={{ duration: 0.4, delay: i * 0.08 }}
-                >
-                  <div
-                    className="bg-brand/12 mb-4 flex h-10 w-10 items-center justify-center rounded-lg"
-                  >
-                    {/* dynamic Lucide icon — fill, not text. contrast-exempt-non-text */}
-                    <f.icon className="text-brand" size={20} />
-                  </div>
-                  <h3
-                    className="mb-2 text-base font-semibold text-brand-900"
-                  >
-                    {f.title}
-                  </h3>
-                  <p
-                    className="text-sm leading-relaxed text-text-muted"
-                  >
-                    {f.body}
-                  </p>
-                </motion.div>
-              ))}
-            </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* How it works */}
-        <section className="px-4 py-20 bg-surface">
-          <div className="mx-auto max-w-3xl">
-            <motion.h2
-              className="font-display mb-12 text-center text-3xl font-bold text-brand-900"
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.45 }}
-            >
-              How it works
-            </motion.h2>
-            <div className="flex flex-col gap-8">
-              {steps.map((step, i) => (
-                <motion.div
-                  key={step.num}
-                  className="flex items-start gap-6"
-                  initial={{ opacity: 0, x: -16 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.4, delay: i * 0.08 }}
-                >
-                  <span
-                    className="font-display w-12 flex-shrink-0 text-right text-3xl font-bold text-brand-hover"
-                  >
-                    {step.num}
-                  </span>
-                  <div>
-                    <p
-                      className="mb-1 text-base font-semibold text-brand-900"
-                    >
-                      {step.label}
-                    </p>
-                    <p
-                      className="text-sm leading-relaxed text-text-muted"
-                    >
-                      {step.detail}
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+      <section aria-labelledby="seq-h2" className="mx-auto max-w-[1440px] px-3 pt-14 sm:px-5">
+        <div className="bg-card border-line rounded-3xl border px-7 py-8 md:px-11 md:pb-10">
+          <h2 id="seq-h2" className="text-2xl font-extrabold tracking-[-.03em] md:text-[30px]">
+            How posting works
+          </h2>
+          <div className="mt-6 grid gap-7 md:grid-cols-3">
+            {SEQUENCE.map((s) => (
+              <div key={s.n} className="border-ink border-t-2 pt-3.5">
+                <p className="text-ochre-ink text-sm font-extrabold tracking-[.02em]">{s.n}</p>
+                <h3 className="mt-2.5 text-[17px] font-bold tracking-[-.02em]">{s.h}</h3>
+                <p className="text-ink-60 mt-1.5 max-w-[60ch] text-[13.5px]">{s.p}</p>
+              </div>
+            ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Bottom CTA */}
-        <section className="px-4 py-20 bg-brand-900">
-          <motion.div
-            className="mx-auto max-w-xl text-center"
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.5 }}
-          >
-            <h2
-              className="font-display mb-5 text-4xl font-bold text-text-on-brand"
-            >
-              Ready to hire?
+      <section aria-labelledby="incl-h2" className="mx-auto max-w-[1440px] px-3 pt-3.5 sm:px-5">
+        <div className="bg-card border-line rounded-3xl border px-7 py-9 md:px-11">
+          <h2 id="incl-h2" className="text-2xl font-extrabold tracking-[-.03em] md:text-[30px]">
+            What a listing includes
+          </h2>
+          <div className="mt-6 grid gap-x-11 gap-y-7 md:grid-cols-2">
+            {INCLUDED.map(([h, p]) => (
+              <div key={h}>
+                <h3 className="text-[16px] font-bold tracking-[-.02em]">{h}</h3>
+                <p className="text-ink-60 mt-1.5 max-w-[60ch] text-[14px]">{p}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-[1440px] px-3 pt-14 pb-4 sm:px-5">
+        <div className="bg-green-3 flex flex-wrap items-center justify-between gap-6 rounded-3xl px-7 py-9 text-white md:px-11">
+          <div>
+            <h2 className="text-[26px] font-extrabold tracking-[-.04em]">
+              First listing free. Workers never pay.
             </h2>
-            <p className="mb-8 text-base text-white/70">
-              Post your first job free and get matched with reliable, skilled workers.
+            <p className="mt-2 text-[15px] font-medium text-white/82">
+              Prices published, no calls, no quotes.
             </p>
-            <Link
-              to="/signup?role=employer"
-              className="bg-brand text-brand-900 inline-block rounded-full px-10 py-4 text-base font-semibold transition-opacity hover:opacity-90"
-            >
-              Get Started Free
-            </Link>
-          </motion.div>
-        </section>
-      </main>
-      <LandingFooter />
-    </div>
+          </div>
+          <Link
+            to="/pricing"
+            className="bg-lime text-green-2 hover:bg-lime-2 inline-flex min-h-11 items-center rounded-full px-5 text-[15px] font-semibold transition-colors"
+          >
+            See pricing
+          </Link>
+        </div>
+      </section>
+    </PublicShell>
   )
 }

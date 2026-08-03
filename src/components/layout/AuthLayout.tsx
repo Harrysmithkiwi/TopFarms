@@ -4,123 +4,74 @@ interface AuthLayoutProps {
   subtitle?: string
 }
 
+// v13 port, stage 3a (directive 1.17a). Restyled in place rather than wrapped in
+// PublicShell: auth is a deliberately chrome-less surface (no nav, no footer),
+// and this layout is shared by all seven auth routes -- porting only /login and
+// /signup would step between design eras inside one flow.
+// v13-shell gives Archivo + the ink focus ring; v13-dark flips the ring to white
+// on the green panel. The "16 / 5 / Free" value points are a TF-003 truth-pass
+// artefact (they replaced fabricated 500+/2,000+ stats) and survive verbatim.
+
 export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
   return (
-    <div className="flex min-h-screen">
-      {/* Left panel — soil-themed farm imagery, hidden on mobile */}
-      <div className="bg-brand-900 relative hidden flex-col justify-between overflow-hidden p-12 md:flex md:w-1/2 lg:w-3/5">
-        {/* Gradient overlay */}
+    <div className="v13-shell bg-cream text-ink font-archivo flex min-h-screen [font-variant-numeric:tabular-nums]">
+      {/* Left panel: brand surface, hidden on mobile */}
+      <div className="v13-dark bg-green relative hidden flex-col justify-between overflow-hidden p-12 md:flex md:w-1/2 lg:w-3/5">
         <div
-          className="absolute inset-0"
-          // Multi-stop gradient — no utility equivalent.
-          style={{
-            background:
-              'linear-gradient(135deg, var(--color-brand-900) 0%, var(--color-brand-900) 40%, var(--color-brand) 100%)',
-          }}
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 opacity-50 [background:repeating-linear-gradient(96deg,rgba(255,255,255,.035)_0_1px,transparent_1px_54px)]"
         />
-
-        {/* Background texture pattern */}
-        <div
-          className="absolute inset-0 opacity-10"
-          // Layered radial-gradient dot pattern — no utility equivalent.
-          style={{
-            backgroundImage: `radial-gradient(circle at 25% 25%, rgba(255,255,255,0.5) 1px, transparent 1px),
-                              radial-gradient(circle at 75% 75%, var(--color-brand) 1px, transparent 1px)`,
-            backgroundSize: '48px 48px',
-          }}
-        />
-
-        {/* Content */}
         <div className="relative z-10">
-          <div className="flex items-center gap-2">
-            <span
-              className="font-display text-text-on-brand text-2xl font-semibold"
-            >
-              TopFarms
-            </span>
-          </div>
+          <span className="text-2xl font-extrabold tracking-tight text-white">
+            TopFarms<span className="text-lime">.</span>
+          </span>
         </div>
 
         <div className="relative z-10">
-          <h2
-            className="font-display text-text-on-brand mb-6 text-4xl leading-tight font-semibold lg:text-5xl"
-          >
-            New Zealand's Agriculture Job Marketplace
+          <h2 className="mb-5 text-4xl leading-[1.05] font-extrabold tracking-[-.035em] text-white lg:text-5xl">
+            New Zealand's agriculture job marketplace
           </h2>
-          <p className="text-lg text-text-on-brand">
-            Connecting farm employers with skilled seekers across all 16 regions. DairyNZ
-            qualifications, herd experience, and accommodation — all in one place.
+          <p className="max-w-[52ch] text-lg text-white/80">
+            Connecting farm employers with skilled workers across all 16 regions. Job type,
+            roster, stock class, visa type and housing, all in one place.
           </p>
         </div>
 
-        {/* Honest value points — replaced fabricated "500+/2,000+" stats (TF-003 truth pass). */}
-        <div className="relative z-10 flex gap-8">
+        {/* Honest value points. Replaced fabricated stats in the TF-003 truth pass. */}
+        <div className="relative z-10 flex gap-10">
           <div>
-            <p
-              className="font-display text-brand-300 text-3xl font-bold"
-            >
-              16
-            </p>
-            <p className="text-sm text-text-on-brand">
-              NZ regions covered
-            </p>
+            <p className="text-lime text-3xl font-extrabold tracking-[-.03em]">16</p>
+            <p className="mt-1 text-sm text-white/80">NZ regions covered</p>
           </div>
           <div>
-            <p
-              className="font-display text-brand-300 text-3xl font-bold"
-            >
-              5
-            </p>
-            <p className="text-sm text-text-on-brand">
-              Farm sectors
-            </p>
+            <p className="text-lime text-3xl font-extrabold tracking-[-.03em]">5</p>
+            <p className="mt-1 text-sm text-white/80">Farm sectors</p>
           </div>
           <div>
-            <p
-              className="font-display text-brand-300 text-3xl font-bold"
-            >
-              Free
-            </p>
-            <p className="text-sm text-text-on-brand">
-              To join as a seeker
-            </p>
+            <p className="text-lime text-3xl font-extrabold tracking-[-.03em]">Free</p>
+            <p className="mt-1 text-sm text-white/80">To join as a worker</p>
           </div>
         </div>
       </div>
 
-      {/* Right panel — cream form area */}
-      <div
-        className="flex flex-1 flex-col items-center justify-center px-6 py-12 bg-bg"
-      >
+      {/* Right panel: form area */}
+      <div className="bg-cream flex flex-1 flex-col items-center justify-center px-6 py-12">
         <div className="w-full max-w-md">
-          {/* Logo — shown on mobile only (left panel hidden) */}
           <div className="mb-8 text-center md:hidden">
-            <span
-              className="font-display text-brand-900 text-3xl font-semibold"
-            >
-              TopFarms
+            <span className="text-3xl font-extrabold tracking-tight">
+              TopFarms<span className="text-ochre-ink">.</span>
             </span>
           </div>
 
-          {/* Title and subtitle */}
           {(title || subtitle) && (
-            <div className="mb-8">
+            <div className="mb-7">
               {title && (
-                <h1
-                  className="font-display text-brand-900 mb-2 text-2xl font-semibold"
-                >
-                  {title}
-                </h1>
+                <h1 className="mb-2 text-2xl font-extrabold tracking-[-.03em]">{title}</h1>
               )}
-              {subtitle && (
-                <p className="text-base text-text-muted">
-                  {subtitle}
-                </p>
-              )}
+              {subtitle && <p className="text-ink-60 text-base">{subtitle}</p>}
             </div>
           )}
 
-          {/* Form content */}
           {children}
         </div>
       </div>

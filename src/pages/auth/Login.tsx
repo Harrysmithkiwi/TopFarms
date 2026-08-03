@@ -19,7 +19,7 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>
 
 export function Login() {
-  usePageMeta('Log in — TopFarms', 'Log in to your TopFarms account.')
+  usePageMeta('Log in | TopFarms', 'Log in to your TopFarms account.')
   const { signIn, signInWithOAuth, session, role, loading } = useAuth()
   const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false)
@@ -83,7 +83,7 @@ export function Login() {
             type="button"
             onClick={() => handleOAuth('google')}
             disabled={oauthLoading}
-            className="border-border bg-surface text-text flex w-full items-center justify-center gap-3 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors disabled:opacity-60"
+            className="min-h-11 border-line bg-card text-ink flex w-full items-center justify-center gap-3 rounded-full border px-4 py-2.5 text-sm font-medium transition-colors disabled:opacity-60"
           >
             <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -110,7 +110,7 @@ export function Login() {
             type="button"
             onClick={() => handleOAuth('facebook')}
             disabled={oauthLoading}
-            className="flex w-full items-center justify-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors disabled:opacity-60"
+            className="min-h-11 flex w-full items-center justify-center gap-3 rounded-full px-4 py-2.5 text-sm font-medium transition-colors disabled:opacity-60"
             // Facebook brand blue — third-party brand colour, sanctioned (Task 5.3).
             style={{
               backgroundColor: '#1877F2',
@@ -136,7 +136,7 @@ export function Login() {
         {/* OR divider */}
         <div className="relative flex items-center gap-3">
           <div className="h-px flex-1 bg-border" />
-          <span className="text-xs text-text-subtle">
+          <span className="text-xs text-ink-40">
             or
           </span>
           <div className="h-px flex-1 bg-border" />
@@ -146,7 +146,7 @@ export function Login() {
         <div>
           <label
             htmlFor="email"
-            className="mb-1.5 block text-sm font-medium text-text"
+            className="mb-1.5 block text-sm font-medium text-ink"
           >
             Email address
           </label>
@@ -156,12 +156,12 @@ export function Login() {
             autoComplete="email"
             {...register('email')}
             className={cn(
-              'bg-surface text-text w-full rounded-lg border px-3.5 py-2.5 text-sm transition-colors',
-              errors.email ? 'border-danger' : 'border-border',
+              'bg-card text-ink w-full rounded-lg border px-3.5 py-2.5 text-sm transition-colors',
+              errors.email ? 'border-danger-ink' : 'border-line',
             )}
           />
           {errors.email && (
-            <p className="mt-1 text-xs text-danger">
+            <p className="mt-1 text-xs text-danger-ink">
               {errors.email.message}
             </p>
           )}
@@ -172,13 +172,14 @@ export function Login() {
           <div className="mb-1.5 flex items-center justify-between">
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-text"
+              className="block text-sm font-medium text-ink"
             >
               Password
             </label>
             <Link
               to="/forgot-password"
-              className="text-xs underline text-brand-900"
+              // min-h-11 + negative margin: 44px target without moving the label row
+              className="text-green -my-3 inline-flex min-h-11 items-center text-xs underline underline-offset-2"
             >
               Forgot password?
             </Link>
@@ -190,21 +191,21 @@ export function Login() {
               autoComplete="current-password"
               {...register('password')}
               className={cn(
-                'bg-surface text-text w-full rounded-lg border px-3.5 py-2.5 pr-10 text-sm transition-colors',
-                errors.password ? 'border-danger' : 'border-border',
+                'bg-card text-ink w-full rounded-lg border px-3.5 py-2.5 pr-10 text-sm transition-colors',
+                errors.password ? 'border-danger-ink' : 'border-line',
               )}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute top-1/2 right-3 -translate-y-1/2 text-text-subtle"
+              className="min-h-11 min-w-11 absolute top-1/2 right-3 -translate-y-1/2 text-ink-40"
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
           {errors.password && (
-            <p className="mt-1 text-xs text-danger">
+            <p className="mt-1 text-xs text-danger-ink">
               {errors.password.message}
             </p>
           )}
@@ -214,17 +215,17 @@ export function Login() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="bg-brand-900 text-text-on-brand w-full rounded-lg px-4 py-2.5 text-sm font-semibold transition-opacity disabled:opacity-60"
+          className="min-h-11 bg-green text-white w-full rounded-full px-4 py-2.5 text-sm font-semibold transition-opacity disabled:opacity-60"
         >
           {isSubmitting ? 'Logging in...' : 'Log in'}
         </button>
 
         {/* Signup link */}
-        <p className="text-center text-sm text-text-muted">
+        <p className="text-center text-sm text-ink-60">
           Don't have an account?{' '}
           <Link
             to="/signup"
-            className="font-medium underline text-brand-900"
+            className="font-medium underline text-green"
           >
             Sign up
           </Link>

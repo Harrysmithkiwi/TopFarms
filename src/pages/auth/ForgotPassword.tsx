@@ -60,21 +60,21 @@ export function ForgotPassword() {
           </div>
 
           <div className="space-y-2 text-center">
-            <p className="text-sm text-text-muted">
+            <p className="text-sm text-ink-60">
               We've sent a password reset link to{' '}
-              <span className="font-medium text-text">
+              <span className="font-medium text-ink">
                 {sentTo}
               </span>
               . Click the link to set a new password.
             </p>
-            <p className="text-xs text-text-subtle">
+            <p className="text-xs text-ink-40">
               The link expires after 1 hour. Check your spam folder if you don't see it.
             </p>
           </div>
 
           <Link
             to="/login"
-            className="flex items-center justify-center gap-2 text-sm font-medium underline text-brand-900"
+            className="flex items-center justify-center gap-2 text-sm font-medium underline text-green"
           >
             <ArrowLeft size={14} />
             Back to login
@@ -94,7 +94,7 @@ export function ForgotPassword() {
         <div>
           <label
             htmlFor="email"
-            className="mb-1.5 block text-sm font-medium text-text"
+            className="mb-1.5 block text-sm font-medium text-ink"
           >
             Email address
           </label>
@@ -104,12 +104,12 @@ export function ForgotPassword() {
             autoComplete="email"
             {...register('email')}
             className={cn(
-              'bg-surface text-text w-full rounded-lg border px-3.5 py-2.5 text-sm transition-colors',
-              errors.email ? 'border-danger' : 'border-border',
+              'bg-card text-ink w-full rounded-lg border px-3.5 py-2.5 text-sm transition-colors',
+              errors.email ? 'border-danger-ink' : 'border-line',
             )}
           />
           {errors.email && (
-            <p className="mt-1 text-xs text-danger">
+            <p className="mt-1 text-xs text-danger-ink">
               {errors.email.message}
             </p>
           )}
@@ -119,7 +119,7 @@ export function ForgotPassword() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="bg-brand-900 text-text-on-brand w-full rounded-lg px-4 py-2.5 text-sm font-semibold transition-opacity disabled:opacity-60"
+          className="min-h-11 bg-green text-white w-full rounded-full px-4 py-2.5 text-sm font-semibold transition-opacity disabled:opacity-60"
         >
           {isSubmitting ? 'Sending...' : 'Send reset link'}
         </button>
@@ -127,7 +127,7 @@ export function ForgotPassword() {
         {/* Back to login */}
         <Link
           to="/login"
-          className="flex items-center justify-center gap-2 text-sm font-medium underline text-brand-900"
+          className="flex items-center justify-center gap-2 text-sm font-medium underline text-green"
         >
           <ArrowLeft size={14} />
           Back to login
