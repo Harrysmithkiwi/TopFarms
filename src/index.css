@@ -1,4 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+/* v13 port fonts (directive section 2). Loaded separately so the unported
+   surfaces' Inter request is untouched; collapse to one import post-port. */
+@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,400..800;1,62..125,400..700&family=Bricolage+Grotesque:opsz,wght@12..96,400..700&display=swap');
 @import 'tailwindcss';
 
 @theme {
@@ -120,6 +123,37 @@
   --font-body:
     'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'DM Mono', Menlo, Consolas, monospace;
+
+  /* === v13 port tokens (docs/design/v11-DIRECTIVE.md section 2) ===
+     The public-surface system. Product surfaces (dashboards, onboarding,
+     verification, admin) keep the v2 tokens above until their own port phase.
+     Rules that are load-bearing, not stylistic:
+       - --color-ochre never appears on a light surface; --color-ochre-ink never
+         on a dark one (directive section 2, computed ratios in the table there).
+       - --color-danger-ink is the v13 addition the comps never needed: an error
+         red for cream/card surfaces. #B3261E measures 5.60:1 on cream, 6.21:1
+         on card, 5.20:1 on cream-2.
+     Naming: bare --color-green and --color-lime coexist with Tailwind's numbered
+     green and lime scales (bg-green is the brand deep green, bg-green-500 is
+     Tailwind's). One pre-existing bg-green-500 call site exists; do not add
+     more numbered-scale uses on v13 surfaces. */
+  --color-cream: #f2ede1;
+  --color-cream-2: #ebe5d6;
+  --color-card: #fbf9f3;
+  --color-ink: #141812;
+  --color-ink-60: #585e51;
+  --color-ink-40: #61675a;
+  --color-green: #123324;
+  --color-green-2: #0c2419;
+  --color-green-3: #164029;
+  --color-lime: #8cc63f;
+  --color-lime-2: #a6d95c;
+  --color-ochre: #d9a441;
+  --color-ochre-ink: #8a5e12;
+  --color-line: #dcd5c4;
+  --color-danger-ink: #b3261e;
+  --font-archivo: 'Archivo', system-ui, sans-serif;
+  --font-bricolage: 'Bricolage Grotesque', system-ui, sans-serif;
 }
 
 /* Phase 4.4 — global keyboard-focus ring. Lives in the base layer so Tailwind
@@ -130,6 +164,33 @@
   :focus-visible {
     outline: 2px solid var(--color-brand-hover);
     outline-offset: 2px;
+  }
+
+  /* v13 shell surfaces override the ring per surface: ink on cream (14.1:1),
+     white on the green panels. The old green ring measures 4.29:1 on cream --
+     legal for a ring (3:1) but visually thin there. NEVER pair either rule with
+     outline-none: in Tailwind v4 that combination never paints (directive 1.10). */
+  .v13-shell :focus-visible {
+    outline: 3px solid var(--color-ink);
+    outline-offset: 2px;
+  }
+  .v13-dark :focus-visible {
+    outline-color: #ffffff;
+  }
+
+  /* v13 per-audience copy swap (directive 1.11). Both strings live in the DOM;
+     the employer string is the CSS default, the seeker string appears only when
+     the shell root carries data-aud="seeker" (set from AudienceContext). The
+     !important is deliberate: these must beat display utilities so a swapped-out
+     string can never resurface through a class collision. */
+  .v13-shell .seek-only {
+    display: none !important;
+  }
+  .v13-shell[data-aud='seeker'] .seek-only {
+    display: block !important;
+  }
+  .v13-shell[data-aud='seeker'] .emp-only {
+    display: none !important;
   }
 }
 

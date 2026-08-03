@@ -1,12 +1,17 @@
 import { Link, useRouteError, isRouteErrorResponse } from 'react-router'
-import { Wheat } from 'lucide-react'
-import { Nav } from '@/components/layout/Nav'
+import { PublicShell } from '@/components/shell/PublicShell'
 import { usePageMeta } from '@/lib/usePageMeta'
 
 /**
  * Branded 404 / route-error page (TF-001/TF-002). Used both as the `*`
  * catch-all route and as the router errorElement, so React Router's
  * developer error screen can never reach users.
+ *
+ * v13 port, stage 3a (directive 1.17f). Ported although it was out of the
+ * stated scope: it is the destination of every broken link and the one page a
+ * lost visitor is guaranteed to see, so leaving it on the old system would make
+ * the error surface the least coherent page on the site. The 404-vs-error split
+ * is preserved exactly: a real error must not be shown to the user as a 404.
  */
 export function NotFound() {
   // undefined outside an error boundary (i.e. when rendered via the `*` route)
@@ -14,50 +19,36 @@ export function NotFound() {
   const is404 = error == null || (isRouteErrorResponse(error) && error.status === 404)
 
   usePageMeta(
-    is404 ? 'Page not found — TopFarms' : 'Something went wrong — TopFarms',
-    'TopFarms — New Zealand agricultural jobs.',
+    is404 ? 'Page not found | TopFarms' : 'Something went wrong | TopFarms',
+    'TopFarms, New Zealand agricultural jobs.',
   )
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'var(--color-bg)' }}>
-      <Nav />
-      <main className="mx-auto flex max-w-xl flex-col items-center px-4 py-24 text-center">
-        <Wheat
-          className="mb-4 h-12 w-12"
-          style={{ color: 'var(--color-brand)' }}
-          aria-hidden="true"
-        />
-        <h1
-          className="font-display mb-3 text-3xl font-bold"
-          style={{ color: 'var(--color-brand-900)' }}
-        >
+    <PublicShell>
+      <section className="mx-auto flex max-w-[46ch] flex-col items-center px-5 py-20 text-center">
+        <h1 className="text-4xl font-extrabold tracking-[-.04em] md:text-5xl">
           {is404 ? "This paddock's empty" : 'Something went wrong'}
         </h1>
-        <p className="mb-8 text-base" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="text-ink-60 mt-4 text-base">
           {is404
             ? "The page you're looking for doesn't exist or has moved."
-            : 'An unexpected error occurred. Please try again — if it keeps happening, contact hello@topfarms.co.nz.'}
+            : 'An unexpected error occurred. Please try again. If it keeps happening, contact hello@topfarms.co.nz.'}
         </p>
-        <div className="flex flex-wrap justify-center gap-3">
+        <div className="mt-8 flex flex-wrap justify-center gap-2.5">
           <Link
             to="/"
-            className="rounded-full px-6 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
-            style={{
-              backgroundColor: 'var(--color-brand-900)',
-              color: 'var(--color-text-on-brand)',
-            }}
+            className="bg-green hover:bg-green-2 inline-flex min-h-11 items-center rounded-full px-5 text-[15px] font-semibold text-white transition-colors"
           >
             Go home
           </Link>
           <Link
             to="/jobs"
-            className="rounded-full border px-6 py-2.5 text-sm font-semibold transition-colors"
-            style={{ borderColor: 'var(--color-border-strong)', color: 'var(--color-text)' }}
+            className="border-ink hover:bg-ink hover:text-cream inline-flex min-h-11 items-center rounded-full border-[1.5px] px-5 text-[15px] font-semibold transition-colors"
           >
-            Browse jobs
+            Open roles
           </Link>
         </div>
-      </main>
-    </div>
+      </section>
+    </PublicShell>
   )
 }

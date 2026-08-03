@@ -42,7 +42,7 @@ export function SearchHero({
     <div
       className={cn('relative overflow-hidden px-4 py-12', className)}
       style={{
-        background: 'linear-gradient(135deg, var(--color-brand-900) 0%, #1a3a10 100%)',
+        background: 'linear-gradient(135deg, var(--color-green) 0%, var(--color-green-2) 100%)',
       }}
     >
       {/* Radial glow overlay */}
@@ -56,19 +56,19 @@ export function SearchHero({
 
       {/* Content */}
       <div className="relative z-10">
-        <h1 className="font-display mb-8 text-center text-[28px] leading-[1.2] font-normal text-white">
+        <h1 className="mb-8 text-center text-[28px] leading-[1.2] font-normal text-white">
           Find your next farming opportunity
         </h1>
 
         {/* Search bar */}
-        <div className="bg-surface mx-auto flex max-w-[680px] items-center gap-2 rounded-[12px] p-2 shadow-lg">
+        <div className="bg-card mx-auto flex max-w-[680px] items-center gap-2 rounded-[12px] p-2 shadow-lg">
           <input
             type="text"
             placeholder="Search jobs, roles, farms..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className={cn(
-              'font-body text-text placeholder:text-text-subtle min-w-0 flex-1 border-0 bg-transparent px-3 py-2 text-[14px]',
+              'text-ink placeholder:text-ink-40 min-w-0 flex-1 border-0 bg-transparent px-3 py-2 text-[14px]',
             )}
           />
           <Select
@@ -82,7 +82,7 @@ export function SearchHero({
           <button
             type="button"
             onClick={handleSearch}
-            className="bg-brand-hover font-body hover:bg-brand-900 rounded-[8px] px-4 py-2 text-[14px] font-semibold whitespace-nowrap text-white transition-colors"
+            className="bg-green hover:bg-green-2 rounded-[8px] px-4 py-2 text-[14px] font-semibold whitespace-nowrap text-white transition-colors"
           >
             Search Jobs
           </button>
@@ -95,7 +95,7 @@ export function SearchHero({
               key={pill}
               type="button"
               onClick={() => onPillClick?.(pill)}
-              className="bg-surface/15 font-body hover:bg-surface/25 cursor-pointer rounded-full border border-white/30 px-3 py-1 text-[13px] text-white transition-colors"
+              className="bg-white/15 hover:bg-white/25 cursor-pointer rounded-full border border-white/30 px-3 py-1 text-[13px] text-white transition-colors"
             >
               {pill}
             </button>

@@ -80,8 +80,8 @@ export function VerifyEmail() {
     return (
       <AuthLayout title="Verifying your email...">
         <div className="flex flex-col items-center gap-4 py-8">
-          <Loader2 size={40} className="animate-spin text-brand" />
-          <p className="text-center text-sm text-text-muted">
+          <Loader2 size={40} className="animate-spin text-green" />
+          <p className="text-center text-sm text-ink-60">
             Please wait while we verify your email address and set up your account.
           </p>
         </div>
@@ -103,11 +103,11 @@ export function VerifyEmail() {
 
         {/* Instruction */}
         <div className="space-y-2 text-center">
-          <p className="text-sm text-text-muted">
+          <p className="text-sm text-ink-60">
             We've sent a verification link to your email address. Click the link in that email to
             activate your account.
           </p>
-          <p className="text-xs text-text-subtle">
+          <p className="text-xs text-ink-40">
             The link expires after 24 hours. Check your spam folder if you don't see it.
           </p>
         </div>
@@ -117,7 +117,7 @@ export function VerifyEmail() {
           type="button"
           onClick={handleResend}
           disabled={isResending}
-          className="border-border text-brand-900 bg-surface flex w-full items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-opacity disabled:opacity-60"
+          className="min-h-11 border-line text-green bg-card flex w-full items-center justify-center gap-2 rounded-full border px-4 py-2.5 text-sm font-medium transition-opacity disabled:opacity-60"
         >
           <RefreshCw size={15} className={isResending ? 'animate-spin' : ''} />
           {isResending ? 'Resending...' : 'Resend verification email'}

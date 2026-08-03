@@ -15,7 +15,7 @@ export function SelectRole() {
 
   if (loading) {
     return (
-      <div className="bg-bg flex min-h-screen items-center justify-center">
+      <div className="bg-cream flex min-h-screen items-center justify-center">
         <RouteSkeleton />
       </div>
     )
@@ -47,7 +47,7 @@ export function SelectRole() {
   return (
     <AuthLayout title="Choose your role" subtitle="How will you use TopFarms?">
       <div className="space-y-6">
-        <p className="text-sm font-medium text-text">
+        <p className="text-sm font-medium text-ink">
           I am joining as...
         </p>
         <div className="grid grid-cols-2 gap-3">
@@ -56,17 +56,17 @@ export function SelectRole() {
             type="button"
             onClick={() => handleRoleSelect('employer')}
             disabled={isSubmitting}
-            className="border-border bg-surface hover:border-brand hover:bg-warn-bg flex flex-col items-center gap-2 rounded-xl border-2 p-4 text-left transition-all disabled:opacity-60"
+            className="border-line bg-card hover:border-green hover:bg-warn-bg flex flex-col items-center gap-2 rounded-xl border-2 p-4 text-left transition-all disabled:opacity-60"
           >
-            <Building2 className="text-text-subtle" size={28} />
+            <Building2 className="text-ink-40" size={28} />
             <div>
               <p
-                className="text-center text-sm font-semibold text-text"
+                className="text-center text-sm font-semibold text-ink"
               >
                 Employer
               </p>
               <p
-                className="mt-0.5 text-center text-xs text-text-muted"
+                className="mt-0.5 text-center text-xs text-ink-60"
               >
                 Post farm jobs
               </p>
@@ -78,17 +78,17 @@ export function SelectRole() {
             type="button"
             onClick={() => handleRoleSelect('seeker')}
             disabled={isSubmitting}
-            className="border-border bg-surface hover:border-brand hover:bg-warn-bg flex flex-col items-center gap-2 rounded-xl border-2 p-4 text-left transition-all disabled:opacity-60"
+            className="border-line bg-card hover:border-green hover:bg-warn-bg flex flex-col items-center gap-2 rounded-xl border-2 p-4 text-left transition-all disabled:opacity-60"
           >
-            <User className="text-text-subtle" size={28} />
+            <User className="text-ink-40" size={28} />
             <div>
               <p
-                className="text-center text-sm font-semibold text-text"
+                className="text-center text-sm font-semibold text-ink"
               >
                 Seeker
               </p>
               <p
-                className="mt-0.5 text-center text-xs text-text-muted"
+                className="mt-0.5 text-center text-xs text-ink-60"
               >
                 Find farm work
               </p>

@@ -1,278 +1,198 @@
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router'
-import { motion, type Variants } from 'motion/react'
-import { Target } from 'lucide-react'
 
-const containerVariants: Variants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.18 } },
-}
+// v13 hero (directive 1.1, 1.11). One dark green card: type left, example match
+// panel right. The panel is EXPLANATORY, not a live system -- labelled
+// "Example", no pulse, no "updated live", no verification claims (1.1). The
+// invented candidate names are acceptable only while that label stays.
+//
+// Per-audience headline (1.11): BOTH strings are in the DOM; the employer
+// string is the CSS default and the seeker string appears via the shell's
+// data-aud attribute (.emp-only / .seek-only in index.css). The toggle is
+// load-bearing for this copy.
 
-const lineVariants: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] } },
-}
+const ROLES = [
+  {
+    t: 'Dairy 2IC',
+    l: 'Mid-Canterbury',
+    f: ['450 cows', '50-bail rotary', '5:2 roster', 'house incl.'],
+    c: [
+      ['R. McKenzie', '8 yrs dairy · rotary', 94],
+      ['T. Paterson', '5 yrs dairy, herringbone', 88],
+      ['J. Whaanga', '3 yrs mixed, relief milking', 76],
+    ],
+  },
+  {
+    t: 'Harvest Machinery Operator',
+    l: 'Ashburton · seasonal',
+    f: ['Class 5', 'arable run Oct to Apr', '11:3 over harvest', 'accom. avail.'],
+    c: [
+      ['D. Cullen', '12 yrs arable · class 5', 96],
+      ['M. Ropata', '6 yrs machinery, baling', 87],
+      ['S. Frew', '4 yrs cropping, irrigation', 79],
+    ],
+  },
+  {
+    t: 'Shepherd, General',
+    l: 'Central Otago high country',
+    f: ['6,000 SU', '2 dogs required', 'single quarters', 'vehicle'],
+    c: [
+      ['W. Tahi', '9 yrs sheep and beef · 3 dogs', 92],
+      ['A. Bourke', '5 yrs high country, musterer', 85],
+      ['L. Nikora', '2 yrs general, working dogs', 71],
+    ],
+  },
+  {
+    t: 'Assistant Farm Manager',
+    l: 'Southland',
+    f: ['cropping and lamb finishing', 'irrigation exp', 'family house', '$80-95k'],
+    c: [
+      ['K. Dalziel', '11 yrs mixed · irrigation', 93],
+      ['P. Suli', '7 yrs cropping, lamb finishing', 86],
+      ['R. Vaega', '4 yrs farm ops, fencing', 74],
+    ],
+  },
+] as const
+
+// Bars are rebased to start at 50 so real differences read (directive 1.7).
+// Driven by transform, never width (layout thrash).
+const rebase = (v: number) => Math.max(0, Math.min(100, (v - 50) * 2)) / 100
 
 export function HeroSection() {
+  const [idx, setIdx] = useState(0)
+  const [paused, setPaused] = useState(false)
+  const [out, setOut] = useState(false)
+  const reduced = useRef(
+    typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+  ).current
+  const hovering = useRef(false)
+
+  // WCAG 2.2.2: auto-updating content pauses on hover, focus, and via a real
+  // control; never starts at all under reduced motion.
+  useEffect(() => {
+    if (reduced || paused) return
+    const t = setInterval(() => {
+      if (hovering.current) return
+      setOut(true)
+      setTimeout(() => {
+        setIdx((i) => (i + 1) % ROLES.length)
+        setOut(false)
+      }, 360)
+    }, 4600)
+    return () => clearInterval(t)
+  }, [reduced, paused])
+
+  const role = ROLES[idx]
+
   return (
-    <section
-      className="relative min-h-screen overflow-hidden pt-14 bg-brand-900"
-    >
-      {/* Radial gradient blobs */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        aria-hidden="true"
-        style={{
-          background: `
-            radial-gradient(ellipse 60% 50% at 90% 10%, rgba(74,124,47,0.18) 0%, transparent 70%),
-            radial-gradient(ellipse 50% 40% at 5% 90%, rgba(212,168,67,0.08) 0%, transparent 70%)
-          `,
-        }}
-      />
-
-      {/* Topographic lines overlay */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        aria-hidden="true"
-        style={{
-          backgroundImage: `repeating-linear-gradient(
-            0deg,
-            rgba(122,175,63,0.04) 0px,
-            rgba(122,175,63,0.04) 1px,
-            transparent 1px,
-            transparent 29px
-          )`,
-        }}
-      />
-
-      {/* Content */}
-      <div className="relative z-10 mx-auto grid min-h-[calc(100vh-56px)] max-w-7xl grid-cols-1 items-center gap-12 px-4 pt-16 pb-20 md:px-6 md:pt-24 lg:grid-cols-[1fr_480px]">
-        {/* Left column */}
-        <div className="flex flex-col gap-8">
-          {/* Eyebrow badge */}
-          <div className="inline-flex w-fit items-center gap-2">
-            <div
-              className="border-brand/30 bg-brand/10 text-brand-300 flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold tracking-widest uppercase"
-            >
-              <span
-                className="h-1.5 w-1.5 animate-pulse rounded-full bg-brand-300"
-              />
-              NZ Agriculture
-            </div>
-          </div>
-
-          {/* Headline */}
-          <motion.h1
-            variants={containerVariants}
-            initial="hidden"
-            animate="show"
-            className="font-display text-text-on-brand leading-[1.05] font-bold tracking-tight"
-            // fluid clamp() type — no utility equivalent; colour is on the class.
-            style={{ fontSize: 'clamp(48px, 6.5vw, 82px)' }}
-          >
-            <motion.span variants={lineVariants} className="block">
-              Where New Zealand's
-            </motion.span>
-            <motion.span
-              variants={lineVariants}
-              className="text-brand-50 italic block"
-            >
-              Best Farms
-            </motion.span>
-            <motion.span variants={lineVariants} className="block">
-              Find Their Next Team
-            </motion.span>
-          </motion.h1>
-
-          {/* Subtext */}
-          <p
-            className="max-w-xl text-lg leading-relaxed md:text-xl text-white/65"
-          >
-            TopFarms matches skilled farm workers with quality employers across dairy, sheep &amp;
-            beef, and livestock operations.
+    <section className="px-3 pt-3 sm:px-5" aria-labelledby="hero-h1">
+      <div className="v13-dark bg-green relative mx-auto grid max-w-[1440px] items-center gap-8 overflow-hidden rounded-3xl px-6 py-9 text-white sm:px-10 md:grid-cols-[1.08fr_.92fr] md:gap-12 md:py-12">
+        {/* paddock rules texture */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 opacity-50 [background:repeating-linear-gradient(96deg,rgba(255,255,255,.035)_0_1px,transparent_1px_54px)]"
+        />
+        <div className="relative">
+          <p className="text-lime font-bricolage text-xs font-semibold tracking-[.08em] uppercase">
+            Agricultural recruitment
           </p>
-
-          {/* Dual CTA fork */}
-          <div
-            className="border-white/12 rounded-[14px] flex flex-col overflow-hidden border sm:flex-row"
+          {/* Both headline strings in the DOM; employer is the CSS default (1.11) */}
+          <h1
+            id="hero-h1"
+            className="mt-5 text-[46px] leading-[.9] font-extrabold tracking-[-.04em] uppercase sm:text-[64px] lg:text-[88px]"
           >
-            {/* Seeker side */}
-            <div
-              className="flex flex-1 flex-col gap-3 p-6 border-r border-white/8"
+            <span className="emp-only">
+              <span className="block">The right match,</span>
+              <span className="text-lime block">both ways.</span>
+            </span>
+            <span className="seek-only">
+              <span className="block">Find the farm job</span>
+              <span className="text-lime block">that fits.</span>
+            </span>
+          </h1>
+          <p className="emp-only mt-6 max-w-[42ch] text-[17px] text-white/80">
+            Applicants arrive ordered by how well they fit the job, with the reasons attached.
+          </p>
+          <p className="seek-only mt-6 max-w-[42ch] text-[17px] text-white/80">
+            See how well each job fits before you apply, with the reasons written out.
+          </p>
+          <div className="mt-7 flex flex-wrap items-center gap-2.5">
+            <Link
+              to="/signup?role=employer"
+              className="bg-lime text-green-2 hover:bg-lime-2 inline-flex min-h-11 items-center rounded-full px-5 text-[15px] font-semibold transition-colors"
             >
-              <p
-                className="text-[10px] font-bold tracking-widest uppercase text-brand-300"
-              >
-                Farm Workers
-              </p>
-              <div>
-                <p
-                  className="font-display mb-1 text-lg font-semibold text-text-on-brand"
-                >
-                  Find Your Next Role
-                </p>
-                <p className="text-sm text-white/55">
-                  Browse jobs matched to your experience
-                </p>
-              </div>
-              <Link
-                to="/signup?role=seeker"
-                // brand-hover, not brand: white on brand was 3.33:1 (axe serious, Phase 4.6)
-                className="bg-brand-hover text-text-on-brand mt-1 inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
-              >
-                Find Farm Work
-              </Link>
-            </div>
-
-            {/* Employer side */}
-            <div className="flex flex-1 flex-col gap-3 p-6">
-              <p
-                className="text-[10px] font-bold tracking-widest uppercase text-text-on-brand"
-              >
-                Farm Employers
-              </p>
-              <div>
-                <p
-                  className="font-display mb-1 text-lg font-semibold text-text-on-brand"
-                >
-                  Find Skilled Workers
-                </p>
-                <p className="text-sm text-white/55">
-                  AI-matched candidates for your farm
-                </p>
-              </div>
-              <Link
-                to="/signup?role=employer"
-                className="border-text-on-brand text-text-on-brand hover:bg-warn/10 mt-1 inline-flex items-center justify-center rounded-xl border px-5 py-2.5 text-sm font-semibold transition-colors"
-              >
-                Post a Job
-              </Link>
-            </div>
+              I'm hiring
+            </Link>
+            <Link
+              to="/signup?role=seeker"
+              className="text-green hover:bg-cream-2 inline-flex min-h-11 items-center rounded-full bg-white px-5 text-[15px] font-semibold transition-colors"
+            >
+              I'm looking for work
+            </Link>
           </div>
         </div>
 
-        {/* Right column — decorative floating cards (desktop only).
-            Illustration only: names are placeholders, percentages are not real stats.
-            The "Example" label keeps this unmistakable. Do not present as real data. */}
-        <div className="relative hidden flex-col gap-4 lg:flex" aria-hidden="true">
-          <span
-            className="bg-white/12 text-white/70 self-start rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wider uppercase"
-          >
-            Example
-          </span>
-          {/* Main card */}
+        {/* Example panel. Explanatory, not simulated (1.1). */}
+        <div className="bg-green-3 relative rounded-2xl border border-white/15 p-5">
+          <div className="font-bricolage flex items-center justify-between gap-3 border-b border-white/12 pb-3 text-xs font-semibold tracking-[.05em] text-white/72 uppercase">
+            <span id="hero-example-label">Example: how applicants arrive</span>
+            {!reduced && (
+              <button
+                type="button"
+                aria-pressed={paused}
+                onClick={() => setPaused((p) => !p)}
+                className="cursor-pointer rounded-full border border-white/28 px-2.5 py-1 text-[11px] tracking-[.04em] text-white/78 uppercase transition-colors hover:bg-white/12 hover:text-white"
+              >
+                {paused ? 'Play' : 'Pause'}
+              </button>
+            )}
+          </div>
           <div
-            className="bg-white/6 border border-white/10 backdrop-blur-[12px] rounded-2xl p-5 shadow-2xl"
+            aria-live="polite"
+            aria-atomic="true"
+            aria-describedby="hero-example-label"
+            onMouseEnter={() => (hovering.current = true)}
+            onMouseLeave={() => (hovering.current = false)}
+            onFocus={() => (hovering.current = true)}
+            onBlur={() => (hovering.current = false)}
+            className={`transition-[opacity,transform] duration-300 ${out ? 'translate-y-1.5 opacity-0' : ''}`}
           >
-            <div className="mb-3 flex items-start justify-between">
-              <div>
-                <p
-                  className="font-display mb-0.5 text-base font-semibold text-text-on-brand"
-                >
-                  Senior Dairy Farm Manager
-                </p>
-                <p className="text-sm text-white/60">
-                  Example Farm, Waikato
-                </p>
+            <div className="border-b border-white/10 py-3.5">
+              <p className="text-[17px] font-extrabold tracking-[-.03em]">{role.t}</p>
+              <p className="mt-1 text-[12.5px] font-medium text-white/66">{role.l}</p>
+              <div className="mt-2.5 flex flex-wrap gap-1.5">
+                {role.f.map((f) => (
+                  <span
+                    key={f}
+                    className="rounded-full border border-white/22 px-2 py-1 text-[11.5px] font-medium text-white/78"
+                  >
+                    {f}
+                  </span>
+                ))}
               </div>
             </div>
-            <div className="flex flex-wrap gap-1.5">
-              {['Dairy', 'Herd Manager', 'Permanent', '$90k+'].map((tag) => (
-                <span
-                  key={tag}
-                  className="bg-white/8 text-white/70 rounded-full px-2 py-0.5 text-[11px]"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Candidate preview card */}
-          <div
-            className="bg-white/5 border border-white/8 backdrop-blur-[12px] ml-8 rounded-2xl p-4 shadow-xl"
-          >
-            <div className="mb-3 flex items-center gap-3">
+            {role.c.map(([name, exp, score], i) => (
               <div
-                className="bg-brand/30 text-brand-300 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold"
+                key={String(name)}
+                className="grid grid-cols-[24px_1fr_60px_34px] items-center gap-2.5 border-b border-white/8 py-2.5 text-[13px] last:border-b-0"
               >
-                EX
+                <span className="text-xs font-semibold text-white/62">0{i + 1}</span>
+                <span>
+                  <span className="text-[13.5px] font-semibold">{name}</span>
+                  <br />
+                  <span className="text-[11.5px] text-white/66">{exp}</span>
+                </span>
+                <span className="h-[3px]">
+                  <span
+                    className="bg-ochre block h-full origin-left rounded-sm transition-transform duration-700"
+                    style={{ transform: `scaleX(${rebase(Number(score))})` }}
+                  />
+                </span>
+                <span className="text-ochre text-right text-[15px] font-extrabold">{score}</span>
               </div>
-              <div>
-                <p
-                  className="text-sm font-semibold text-text-on-brand"
-                >
-                  Example Profile
-                </p>
-                <p className="text-xs text-white/50">
-                  5 yrs dairy experience
-                </p>
-              </div>
-            </div>
-            <div className="space-y-1.5">
-              {[
-                { label: 'Herd Management', pct: 90 },
-                { label: 'Tractor Operation', pct: 75 },
-              ].map(({ label, pct }) => (
-                <div key={label}>
-                  <div
-                    className="mb-0.5 flex justify-between text-[11px] text-white/50"
-                  >
-                    <span>{label}</span>
-                  </div>
-                  <div
-                    className="h-1 overflow-hidden rounded-full bg-white/10"
-                  >
-                    <div
-                      className="bg-brand h-full rounded-full"
-                      style={{ width: `${pct}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
+            ))}
           </div>
-
-          {/* Match notification chip */}
-          <div
-            className="bg-brand/15 border-brand/30 ml-4 flex items-center gap-3 self-start rounded-xl border px-4 py-3 shadow-lg backdrop-blur-[8px]"
-          >
-            <Target
-              className="h-5 w-5 flex-shrink-0 text-brand"
-              aria-hidden="true"
-            />
-            <div>
-              <p className="text-xs font-semibold text-brand-300">
-                New match found
-              </p>
-              <p className="text-[11px] text-white/60">
-                3 candidates match your criteria
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Scroll hint */}
-      <div className="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2">
-        <p className="text-xs tracking-widest uppercase text-white/40">
-          Explore
-        </p>
-        <div className="flex animate-bounce flex-col items-center gap-0.5">
-          <div className="h-5 w-px bg-white/25" />
-          <svg className="text-white/30"
-            width="10"
-            height="6"
-            viewBox="0 0 10 6"
-            fill="none"
-          >
-            <path
-              d="M1 1l4 4 4-4"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
         </div>
       </div>
     </section>
