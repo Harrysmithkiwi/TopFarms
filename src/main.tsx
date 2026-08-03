@@ -5,6 +5,7 @@ import { MotionConfig } from 'motion/react'
 import { Analytics } from '@vercel/analytics/react'
 import { Toaster } from 'sonner'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { AudienceProvider } from '@/contexts/AudienceContext'
 import './index.css'
 
 // ─── Code splitting (audit task 2.1, F5) ────────────────────────────────────
@@ -152,6 +153,9 @@ const AdminLeads = lazy(() =>
 )
 const AdminLeadsOutreach = lazy(() =>
   import('@/pages/admin/AdminLeadsOutreach').then((m) => ({ default: m.AdminLeadsOutreach })),
+)
+const ShellPreview = lazy(() =>
+  import('@/pages/preview/ShellPreview').then((m) => ({ default: m.ShellPreview })),
 )
 const Privacy = lazy(() => import('@/pages/legal/Privacy').then((m) => ({ default: m.Privacy })))
 const Terms = lazy(() => import('@/pages/legal/Terms').then((m) => ({ default: m.Terms })))
@@ -504,6 +508,12 @@ function routeTable() {
       ),
     },
 
+    // ─── v13 port preview (dev + *.vercel.app only; 404s on prod hostname) ─────
+    {
+      path: '/preview/shell',
+      element: s(<ShellPreview />),
+    },
+
     // ─── Catch-all 404 (must stay last) ─────────────────────────────────────────
     {
       path: '*',
@@ -519,9 +529,13 @@ createRoot(document.getElementById('root')!).render(
         honour the user's setting too. Do not remove. */}
     <MotionConfig reducedMotion="user">
       <AuthProvider>
-        {/* Phase 5.7 — outside the router so it survives navigation. */}
-        <OfflineBanner />
-        <RouterProvider router={router} />
+        {/* v13 — audience lens for public surfaces; session role wins inside
+            the provider (directive 1.14). Must sit inside AuthProvider. */}
+        <AudienceProvider>
+          {/* Phase 5.7 — outside the router so it survives navigation. */}
+          <OfflineBanner />
+          <RouterProvider router={router} />
+        </AudienceProvider>
       </AuthProvider>
     </MotionConfig>
     <Toaster position="top-right" richColors />
