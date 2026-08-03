@@ -282,6 +282,16 @@ export function JobSearch() {
           .range(from, to)
 
         // Apply filters from URL params
+        // v13 stage 2: free-text q from the landing search entry (directive
+        // 1.13). Title match only for now; same reasoning as the sector param
+        // below -- a search box that submits a param nobody reads claims what
+        // the system does not do. Escape PostgREST ilike wildcards.
+        const q = searchParams.get('q')
+        if (q && q.trim()) {
+          const safe = q.trim().replace(/[%_\\]/g, (m) => `\\${m}`)
+          query = query.ilike('title', `%${safe}%`)
+        }
+
         const shedTypes = searchParams.getAll('shed_type')
         if (shedTypes.length > 0) {
           query = query.overlaps('shed_type', shedTypes)

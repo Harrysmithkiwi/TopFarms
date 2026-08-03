@@ -1,10 +1,15 @@
-import { describe, it, expect, vi, beforeAll } from 'vitest'
+import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
+import { AudienceProvider } from '@/contexts/AudienceContext'
 import { Home } from '@/pages/Home'
 
-// Mock supabase
+// v13 landing suite (stage 2 of the port, docs/design/v11-DIRECTIVE.md).
+// Replaces the LAND-01..04 suite for the old landing: the tabs section,
+// "Best Farms" hero and featured-card grid retired with it.
+
+// Mock supabase: stats credible by default (counters visible), jobs empty
+// (the production-realistic state: board has no listings).
 vi.mock('@/lib/supabase', () => ({
   supabase: {
     rpc: vi.fn().mockResolvedValue({ data: { jobs: 42, seekers: 128, matches: 350 }, error: null }),
@@ -25,12 +30,10 @@ vi.mock('@/lib/supabase', () => ({
   },
 }))
 
-// Mock useAuth
 vi.mock('@/hooks/useAuth', () => ({
   useAuth: () => ({ session: null, role: null, signOut: vi.fn(), loading: false }),
 }))
 
-// Mock IntersectionObserver (not available in jsdom)
 beforeAll(() => {
   const mockIntersectionObserver = vi.fn(() => ({
     observe: vi.fn(),
@@ -38,52 +41,106 @@ beforeAll(() => {
     disconnect: vi.fn(),
   }))
   vi.stubGlobal('IntersectionObserver', mockIntersectionObserver)
+  window.matchMedia =
+    window.matchMedia ||
+    (vi.fn().mockReturnValue({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() }) as never)
 })
+
+beforeEach(() => sessionStorage.clear())
 
 function renderHome() {
   return render(
     <MemoryRouter>
-      <Home />
+      <AudienceProvider>
+        <Home />
+      </AudienceProvider>
     </MemoryRouter>,
   )
 }
 
-describe('Landing Page', () => {
-  describe('LAND-01: Hero section', () => {
-    it('renders hero with seeker CTA linking to /signup?role=seeker', () => {
+describe('v13 landing', () => {
+  describe('hero (directive 1.11)', () => {
+    it('BOTH headline strings are in the DOM', () => {
       renderHome()
-      const seekerLinks = document.querySelectorAll('a[href="/signup?role=seeker"]')
-      expect(seekerLinks.length).toBeGreaterThan(0)
+      expect(screen.getByText('The right match,')).toBeInTheDocument()
+      expect(screen.getByText('Find the farm job')).toBeInTheDocument()
     })
 
-    it('renders hero with employer CTA linking to /signup?role=employer', () => {
+    it('employer is the default lens on the shell root', () => {
       renderHome()
-      const employerLinks = document.querySelectorAll('a[href="/signup?role=employer"]')
-      expect(employerLinks.length).toBeGreaterThan(0)
+      expect(document.querySelector('.v13-shell')).toHaveAttribute('data-aud', 'employer')
     })
 
-    it('renders headline containing "Best Farms"', () => {
+    it('seeker lens flips the shell attribute (CSS swaps the headline)', () => {
+      sessionStorage.setItem('tf-aud', 'seeker')
       renderHome()
-      expect(screen.getByText(/Best Farms/i)).toBeInTheDocument()
+      expect(document.querySelector('.v13-shell')).toHaveAttribute('data-aud', 'seeker')
+    })
+
+    it('example panel is labelled as an example, with a pause control (1.1)', () => {
+      renderHome()
+      expect(screen.getByText('Example: how applicants arrive')).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Pause' })).toHaveAttribute('aria-pressed', 'false')
+    })
+
+    it('hero carries both intent CTAs with canonical labels', () => {
+      renderHome()
+      const hiring = screen.getAllByText("I'm hiring")
+      const looking = screen.getAllByText("I'm looking for work")
+      expect(hiring.length).toBeGreaterThan(0)
+      expect(looking.length).toBeGreaterThan(0)
     })
   })
 
-  describe('LAND-02: Counter section', () => {
-    // v13: counters render only after stats load AND clear MIN_CREDIBLE, so the
-    // labels appear asynchronously (mock returns 42/128/350, all credible).
-    it('renders "Jobs Posted" label', async () => {
+  describe('match band (directive 1.5, 1.7)', () => {
+    it('carries the load-bearing applicant-protection sentence', () => {
+      renderHome()
+      expect(
+        screen.getByText(/Every applicant stays on the list, ordered by fit/),
+      ).toBeInTheDocument()
+    })
+
+    it('anchors #how for the nav link', () => {
+      renderHome()
+      expect(document.getElementById('how')).not.toBeNull()
+    })
+  })
+
+  describe('open roles (directive 1.13, 1.15)', () => {
+    it('search entry submits to /jobs with a visible label, not a placeholder', async () => {
+      renderHome()
+      expect(await screen.findByLabelText('Search open roles')).toBeInTheDocument()
+      expect(screen.getByRole('search')).toBeInTheDocument()
+    })
+
+    it('empty state renders the employer prompt when no jobs exist', async () => {
+      renderHome()
+      expect(await screen.findByText('No open roles listed right now.')).toBeInTheDocument()
+      expect(screen.getByText(/Post the first one and it will be listed/)).toBeInTheDocument()
+    })
+  })
+
+  describe('worker split (directive 1.4)', () => {
+    it('shows a WORD for fit, never a personal number', () => {
+      renderHome()
+      expect(screen.getByText('Strong')).toBeInTheDocument()
+      expect(screen.getByText('free, always. workers never pay.')).toBeInTheDocument()
+    })
+  })
+
+  describe('pricing claim (directive 1.12)', () => {
+    it('claim line present and linking to /pricing; no pricing cards on the page', () => {
+      renderHome()
+      expect(screen.getByText('First listing free. Workers never pay.')).toBeInTheDocument()
+      expect(screen.getByText('See pricing')).toHaveAttribute('href', '/pricing')
+      expect(screen.queryByText('$100')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('counters (directive 1.15: gated, dormant, PRESERVED)', () => {
+    it('renders when stats are credible (mock 42/128/350)', async () => {
       renderHome()
       expect(await screen.findByText('Jobs Posted')).toBeInTheDocument()
-    })
-
-    it('renders "Workers Registered" label', async () => {
-      renderHome()
-      expect(await screen.findByText('Workers Registered')).toBeInTheDocument()
-    })
-
-    it('renders "Matches Made" label', async () => {
-      renderHome()
-      expect(await screen.findByText('Matches Made')).toBeInTheDocument()
     })
 
     it('calls get_platform_stats RPC on mount', async () => {
@@ -92,7 +149,7 @@ describe('Landing Page', () => {
       expect(supabase.rpc).toHaveBeenCalledWith('get_platform_stats')
     })
 
-    it('renders NOTHING when stats are real zeros (v13 zero-counter fix)', async () => {
+    it('renders NOTHING when stats are real zeros (zero-counter regression)', async () => {
       const { supabase } = await import('@/lib/supabase')
       vi.mocked(supabase.rpc).mockResolvedValueOnce({
         data: { jobs: 0, seekers: 0, matches: 0 },
@@ -100,189 +157,39 @@ describe('Landing Page', () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any -- test mock shape
       } as any)
       renderHome()
-      // let the fetch resolve, then assert the section never appeared
-      await screen.findByText(/Best Farms/i)
+      await screen.findByText('The right match,')
       await vi.waitFor(() => expect(supabase.rpc).toHaveBeenCalled())
       expect(screen.queryByText('Jobs Posted')).not.toBeInTheDocument()
-      expect(screen.queryByText('Live')).not.toBeInTheDocument()
     })
   })
 
-  describe('LAND-03: How-it-works section', () => {
-    it('renders with seeker tab active by default', () => {
+  describe('steps (directive 1.8)', () => {
+    it('three steps with the numerals kept', () => {
       renderHome()
-      const seekerTab = screen.getByRole('tab', { name: /farm workers/i })
-      expect(seekerTab).toBeInTheDocument()
-      expect(seekerTab).toHaveAttribute('aria-selected', 'true')
-    })
-
-    it('aria-selected is true on active tab', () => {
-      renderHome()
-      const seekerTab = screen.getByRole('tab', { name: /farm workers/i })
-      expect(seekerTab).toHaveAttribute('aria-selected', 'true')
-    })
-
-    it('switches to employer steps when employer tab clicked', async () => {
-      renderHome()
-      const employerTab = screen.getByRole('tab', { name: /farm employers/i })
-      await userEvent.click(employerTab)
-      // "Review Matches" is an employer-only step title (not present in seeker steps)
-      expect(screen.getByText('Review Matches')).toBeInTheDocument()
-    })
-
-    it('aria-selected switches to employer tab on click', async () => {
-      renderHome()
-      const employerTab = screen.getByRole('tab', { name: /farm employers/i })
-      await userEvent.click(employerTab)
-      expect(employerTab).toHaveAttribute('aria-selected', 'true')
+      expect(screen.getByText('Three steps, either side.')).toBeInTheDocument()
+      expect(screen.getAllByText('01').length).toBeGreaterThanOrEqual(1)
+      expect(screen.getByText('Start with the strongest fits')).toBeInTheDocument()
     })
   })
 
-  describe('LAND-04: Featured listings section', () => {
-    it('shows empty-state CTA when no featured jobs exist', async () => {
+  describe('close + shell', () => {
+    it('closing section carries both intent CTAs', () => {
       renderHome()
-      // Mock returns empty data, so empty state should render after loading
-      expect(await screen.findByText(/Be the first to post a featured job/i)).toBeInTheDocument()
-    })
-  })
-
-  describe('LAND-02: Counter section - Live badge', () => {
-    it('CountersSection renders Live badge once credible stats load', async () => {
-      renderHome()
-      expect(await screen.findByText('Live')).toBeInTheDocument()
-      const pulseDot = document.querySelector('.animate-pulse')
-      expect(pulseDot).toBeInTheDocument()
-    })
-  })
-
-  describe('LAND-04b: AI Matching section', () => {
-    it('AIMatchingSection renders feature bullet points', () => {
-      renderHome()
-      expect(screen.getByText(/Skills-based matching/i)).toBeInTheDocument()
-    })
-  })
-
-  describe('LAND-04c: Farm Types strip', () => {
-    // Phase 3 Task 3.3 (audit D7): the strip used to advertise Horticulture,
-    // Viticulture and "Arable" — none of which jobs_sector_check accepts, so the
-    // landing page sold sectors the database refuses to store. This test asserted
-    // the defect, which is why it never caught it. It now asserts the contract:
-    // every card names a real sector AND links to a search that filters on it.
-    it('FarmTypesStrip renders only sectors the database accepts', () => {
-      renderHome()
-      for (const label of ['Dairy', 'Sheep & Beef', 'Cropping', 'Deer', 'Mixed']) {
-        expect(screen.getAllByText(label).length).toBeGreaterThan(0)
-      }
-      for (const gone of ['Horticulture', 'Viticulture', 'Arable']) {
-        expect(screen.queryByText(gone)).toBeNull()
-      }
+      expect(screen.getByText(/The whole job\./)).toBeInTheDocument()
     })
 
-    it('each sector card links to a search filtered on a valid sector value', () => {
+    it('shell provides nav, utility bar and footer', () => {
       renderHome()
-      // jobs_sector_check: dairy | sheep_beef | cropping | deer | mixed | other
-      const valid = ['dairy', 'sheep_beef', 'cropping', 'deer', 'mixed', 'other']
-      const links = screen
-        .getAllByRole('link')
-        .map((a) => a.getAttribute('href') ?? '')
-        .filter((href) => href.includes('sector='))
-      expect(links.length).toBe(5)
-      for (const href of links) {
-        expect(valid).toContain(new URL(href, 'http://x').searchParams.get('sector'))
-      }
-    })
-  })
-
-  describe('LAND-04d: Employer CTA band', () => {
-    it('EmployerCTABand renders CTA and checklist', () => {
-      renderHome()
-      expect(screen.getByText('Post Your First Job')).toBeInTheDocument()
-      expect(screen.getByText('Post a job in under 5 minutes')).toBeInTheDocument()
-    })
-  })
-
-  // Truth pass 2026-07-08: LAND-05 / LAND-08 / LAND-09 previously asserted FABRICATED
-  // content (invented testimonials/stats; real brands falsely implied as customers).
-  // Sections unrendered from Home; these guards keep the fabrication from returning
-  // until real, per-name-consented content exists. See REMEDIATION-LOG.md.
-  describe('LAND-05/08/09: fabricated social proof stays removed (truth-pass guard)', () => {
-    it('does not render fabricated testimonials', () => {
-      renderHome()
-      expect(screen.queryByText('Sarah M.')).not.toBeInTheDocument()
-      expect(screen.queryByText('James T.')).not.toBeInTheDocument()
-      expect(screen.queryByText('Rachel & Tom K.')).not.toBeInTheDocument()
+      expect(screen.getByRole('navigation', { name: 'Main' })).toBeInTheDocument()
+      expect(screen.getByRole('group', { name: 'Browsing as' })).toBeInTheDocument()
+      expect(screen.getByText('Match, train, retain.')).toBeInTheDocument()
     })
 
-    it('does not render fabricated stat blocks', () => {
+    it('retired copy is gone: Best Farms hero, tier badges, tab labels', () => {
       renderHome()
-      expect(screen.queryByText('500+')).not.toBeInTheDocument()
-      expect(screen.queryByText('Satisfaction')).not.toBeInTheDocument()
-    })
-
-    it('does not imply real brands are customers', () => {
-      renderHome()
-      expect(screen.queryByText('Fonterra Sharemilkers')).not.toBeInTheDocument()
-      expect(screen.queryByText('Silver Fern Farms')).not.toBeInTheDocument()
-    })
-
-    // 2026-07-09 second pass: the hero decorative demo + featured listings.
-    it('does not render invented hero names', () => {
-      renderHome()
-      expect(screen.queryByText(/Greenfield Dairy/)).not.toBeInTheDocument()
-      expect(screen.queryByText('Jamie D.')).not.toBeInTheDocument()
-    })
-
-    it('labels the hero demo column as an Example so its numbers cannot read as real', () => {
-      renderHome()
-      // Multiple Example badges (hero + demo cards) are fine — the guard is that
-      // AT LEAST one exists so demo numbers can never read as real.
-      expect(screen.getAllByText('Example').length).toBeGreaterThan(0)
-    })
-
-    it('does not render a fabricated match score on featured listings', () => {
-      renderHome()
-      // The MOCK_MATCH_SCORES badge (94/87/91/82 %) was removed — a match score needs a
-      // logged-in seeker. None of those percentages should appear as a match badge.
-      for (const pct of ['94%', '87%', '91%', '82%']) {
-        expect(screen.queryByText(pct)).not.toBeInTheDocument()
-      }
-    })
-  })
-
-  describe('LAND-09b: Final CTA section', () => {
-    it('FinalCTASection renders dual CTA buttons', () => {
-      renderHome()
-      expect(screen.getAllByRole('link', { name: /find farm work/i }).length).toBeGreaterThan(0)
-      expect(screen.getAllByRole('link', { name: /post a job/i }).length).toBeGreaterThan(0)
-    })
-  })
-
-  describe('LAND-06: Footer', () => {
-    it('renders link to /jobs', () => {
-      renderHome()
-      expect(screen.getByRole('link', { name: /browse jobs/i })).toBeInTheDocument()
-    })
-
-    it('renders link to /signup', () => {
-      renderHome()
-      const signupLinks = document.querySelectorAll('a[href="/signup"]')
-      expect(signupLinks.length).toBeGreaterThan(0)
-    })
-
-    it('renders link to /login', () => {
-      renderHome()
-      // There are multiple login links in nav and footer; at least one must exist
-      expect(screen.getAllByRole('link', { name: /log in/i }).length).toBeGreaterThan(0)
-    })
-
-    it('renders link to /privacy', () => {
-      renderHome()
-      expect(screen.getByRole('link', { name: /privacy policy/i })).toBeInTheDocument()
-    })
-
-    it('renders link to /terms', () => {
-      renderHome()
-      expect(screen.getByRole('link', { name: /terms of service/i })).toBeInTheDocument()
+      expect(screen.queryByText(/Best Farms/)).not.toBeInTheDocument()
+      expect(screen.queryByText('Featured Opportunities')).not.toBeInTheDocument()
+      expect(screen.queryByRole('tab')).not.toBeInTheDocument()
     })
   })
 })

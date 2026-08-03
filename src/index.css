@@ -177,6 +177,21 @@
   .v13-dark :focus-visible {
     outline-color: #ffffff;
   }
+
+  /* v13 per-audience copy swap (directive 1.11). Both strings live in the DOM;
+     the employer string is the CSS default, the seeker string appears only when
+     the shell root carries data-aud="seeker" (set from AudienceContext). The
+     !important is deliberate: these must beat display utilities so a swapped-out
+     string can never resurface through a class collision. */
+  .v13-shell .seek-only {
+    display: none !important;
+  }
+  .v13-shell[data-aud='seeker'] .seek-only {
+    display: block !important;
+  }
+  .v13-shell[data-aud='seeker'] .emp-only {
+    display: none !important;
+  }
 }
 
 body {

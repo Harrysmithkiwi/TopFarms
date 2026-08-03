@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { useAudience } from '@/contexts/AudienceContext'
 import { UtilityBar } from './UtilityBar'
 import { ShellNav } from './ShellNav'
 import { ShellFooter } from './ShellFooter'
@@ -15,8 +16,12 @@ import { ShellFooter } from './ShellFooter'
 // Do not import UtilityBar/ShellNav/ShellFooter individually into pages.
 
 export function PublicShell({ children }: { children: ReactNode }) {
+  const { audience } = useAudience()
   return (
-    <div className="v13-shell bg-cream text-ink font-archivo min-h-screen [font-variant-numeric:tabular-nums]">
+    <div
+      className="v13-shell bg-cream text-ink font-archivo min-h-screen [font-variant-numeric:tabular-nums]"
+      data-aud={audience}
+    >
       <UtilityBar />
       <ShellNav />
       <main>{children}</main>
