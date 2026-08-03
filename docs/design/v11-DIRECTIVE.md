@@ -442,6 +442,71 @@ anon REST. Fail-soft: any error keeps the static baseline and exits 0, because a
 degraded sitemap must never fail a deploy. Needed under every rendering option; its
 freshness is deploy-frequency until framework mode gives it a proper route.
 
+### 1.18 Stage 3b decisions: the shape of the migration (v13)
+
+Decided 2026-08-03, during stage 3b step 1. Three structural choices that 1.16 left
+open. Each narrows the migration; none changes what ships.
+
+**a. One client-only catch-all, not forty-five route modules.** `src/routes.ts`
+declares a module for `/jobs`, `/jobs/:id`, `/jobs/new` and `/jobs/:id/edit`, and sends
+every other path to `src/routes/spa.tsx`, which feeds the legacy route table to
+`useRoutes` unchanged. The alternative — a wrapper file per route — writes 45 files to
+server-render 45 surfaces that no crawler can see, and buys a hydration audit of every
+dashboard, wizard and admin table. The catch-all declares `clientLoader` +
+`HydrateFallback` with no server `loader`, which is framework mode's supported way to
+say "do not server-render this route", so those routes behave byte-for-byte as they do
+under the SPA shell today. That satisfies 1.16's "gated routes must not SSR" with a
+mechanism rather than a promise.
+
+Promoting a route later is a two-file change: add a module, delete its entry from
+`legacyRoutes`. The catch-all is a floor, not a ceiling.
+
+`/jobs/new` and `/jobs/:id/edit` need their own module despite being gated, because
+`routes.ts` must claim those paths before `/jobs/:id` does — otherwise "new" matches
+`:id` and hits the public job loader. They cannot be served by the catch-all:
+`useRoutes` matches relative to the matched route's pathname, which equals the full URL
+only under a splat. Their element is the legacy table's entry unchanged.
+
+Route ranking was verified with `matchRoutes` before `routes.ts` was written:
+`/` → `*`, `/jobs` → `jobs`, `/jobs/new` → `jobs/new`, `/jobs/<uuid>` → `jobs/:id`,
+`/dashboard/employer` → `*`. **The library table's "declare `/jobs/new` before
+`/jobs/:id`" rule does not carry over** — framework mode ranks by specificity, not by
+declaration order.
+
+**b. `appDirectory` is `src`, not `app`.** One source root. `@/` still resolves,
+`tsconfig.app.json`'s `include: ["src"]` is unchanged, no page moved, and `root.tsx` /
+`routes.ts` sit beside `main.tsx` instead of in a parallel tree that would have to be
+kept in sync with it.
+
+**c. `/jobs` server-renders without a loader — for now.** `JobSearch` builds its query
+from roughly twenty URL parameters across 190 lines. Reproducing that server-side is the
+expensive half of this stage, and it buys a board page that crawlers already reach
+through the sitemap and that nobody shares into a Facebook group. `/jobs` therefore
+server-renders its shell — nav, footer, `h1`, `title`, canonical, og tags — and the
+listings arrive client-side as they do today. `/jobs/:id`, the route the stage exists
+for, gets the full loader.
+
+This is a deviation from 1.16's "loaders for `/jobs` and `/jobs/:id`", recorded here
+rather than done quietly. The loader drops into `src/routes/jobs.tsx` later without
+touching anything else. **What is NOT deferred: og tags and JobPosting JSON-LD on
+`/jobs/:id`.** Those are the deciding case and they are in the raw HTML or the stage
+has failed.
+
+**Loader authority is anonymous, deliberately.** The `/jobs/:id` loader uses its own
+Supabase client with `persistSession: false` — not `@/lib/supabase`, whose session
+persistence and URL detection are browser behaviour with no meaning on a server that
+must stay anonymous. Anonymous is also the correct authority: RLS policy
+"jobs: anon users view active" returns active listings and nothing else, so a draft or
+archived job cannot reach crawlable HTML by construction rather than by a status check
+someone might delete.
+
+**Pre-existing, found not caused (2026-08-03):** `npm run lint` fails on `main` with one
+error — `react-refresh/only-export-components` on `src/contexts/AudienceContext.tsx:63`,
+which exports both `AudienceProvider` and `useAudience`. CI runs this gate, so `main`'s
+lint step is red independently of stage 3b. Not fixed here: the fix moves `useAudience`
+out of the context file, and stage 3b changes rendering only. Stage 3b adds no new lint
+errors.
+
 ---
 
 ## 2. Tokens

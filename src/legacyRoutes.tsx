@@ -73,7 +73,7 @@ const EmployerOnboarding = lazy(() =>
 const SeekerOnboarding = lazy(() =>
   import('@/pages/onboarding/SeekerOnboarding').then((m) => ({ default: m.SeekerOnboarding })),
 )
-const PostJob = lazy(() => import('@/pages/jobs/PostJob').then((m) => ({ default: m.PostJob })))
+export const PostJob = lazy(() => import('@/pages/jobs/PostJob').then((m) => ({ default: m.PostJob })))
 const JobDetail = lazy(() =>
   import('@/pages/jobs/JobDetail').then((m) => ({ default: m.JobDetail })),
 )
