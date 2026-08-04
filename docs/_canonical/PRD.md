@@ -39,9 +39,36 @@ current product (it appears only in legacy FarmHands docs).
 > Authoritative taxonomy detail lives in `.planning/REQUIREMENTS.md` and the skills-taxonomy
 > migration (Phase 23). This doc records scope intent, not the canonical competency list.
 
-## 4. Monetisation (resolved — this is the single correct model)
+## 4. Monetisation (v3 — decided 2026-08-04, directive 1.19)
 
-- **Listing fees:** first listing **FREE** (one per employer account, tracked as an entitlement — deleting the job does not restore it), then **Standard $100 / Featured $150 / Premium Plus $200 NZD** (per listing).
+> **The authority for pricing is `docs/design/v11-DIRECTIVE.md` §1.19**, which carries the
+> verified competitive landscape, the rejected options and the revision triggers. This
+> section is the summary.
+>
+> **Implementation status:** decision recorded, product change NOT yet built. Until
+> `create-payment-intent` stops charging for a second listing, the shipped product still
+> follows the v2 model below the fold. Do not publish "listings are free" copy before that
+> lands.
+
+- **Listing fees: NONE. Listings are free and unlimited**, no card ever required. This
+  supersedes "first listing free, then $100 / $150 / $200", which suppressed the supply
+  that creates liquidity at a stage where the incumbent competitor is $0.
+- **Featured listing $99**, dormant until the median listing takes 5+ applications or job
+  pages reach 1,000 weekly sessions. Top of search, highlighted card, and inclusion in the
+  matched-seeker alert email.
+- **Placement fees (unchanged):** flat tiers **$200 / $400 / $800**, derived **server-side**
+  from the job's salary band + title. Acknowledged at shortlist, invoiced Net 14.
+- **Replacement guarantee (new):** every placement fee buys one replacement for that role.
+  **Permanent 90 days** (matching the trial period available to all NZ employers since
+  23 Dec 2023), **fixed term 30 days**, **casual none** — a longer window would outlive a
+  7-to-11-week seasonal job. One replacement per role, ever.
+- **Seekers pay $0, absolutely.** No boost, no CV fee, no tier. The CV helper is free and
+  exists to improve profile completeness, and therefore match quality.
+
+<details><summary>Superseded v2 listing model (for provenance)</summary>
+
+- Listing fees: first listing **FREE** (one per employer account, tracked as an entitlement — deleting the job does not restore it), then **Standard $100 / Featured $150 / Premium Plus $200 NZD** (per listing).
+</details>
 - **Placement fees:** flat tiers **$200 / $400 / $800**, derived **server-side** from the job's salary band + title (client values are display-only), billed via **Stripe Invoice (Net 14)** with day-7/14 follow-up emails. First placement is **not** free. Admin may apply a discount or waiver per fee (capability, not policy — no automatic rule).
 - **Contact gate (Option C, locked 2026-07-30):** pre-placement the employer sees the structured profile, match breakdown, AI summary and a first-name label. The seeker's phone, email and CV document unlock when the placement fee is acknowledged (shortlist).
 - **No subscriptions. No training commissions. No per-post $50.** (Those are archived/legacy models.)
