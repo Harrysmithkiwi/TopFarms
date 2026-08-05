@@ -60,6 +60,7 @@ export function AudienceProvider({ children }: { children: ReactNode }) {
   return <AudienceContext.Provider value={value}>{children}</AudienceContext.Provider>
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- deliberate: the hook belongs beside its context; HMR full-reload on a context file is fine
 export function useAudience(): AudienceContextValue {
   const ctx = useContext(AudienceContext)
   if (!ctx) throw new Error('useAudience must be used inside <AudienceProvider>')

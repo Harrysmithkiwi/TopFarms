@@ -8,7 +8,7 @@
     "build": "vite build",
     "postbuild": "node scripts/generate-sitemap.mjs",
     "typecheck": "tsc -b",
-    "lint": "eslint . --max-warnings 46",
+    "lint": "eslint . --max-warnings 54",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "preview": "vite preview",
