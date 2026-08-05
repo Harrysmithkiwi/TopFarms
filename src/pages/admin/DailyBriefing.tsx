@@ -81,13 +81,21 @@ function CardHeading({
 }
 
 /**
- * Percentage change yesterday vs the prior day. Null when the prior day was 0 —
- * there's no baseline to divide by, so we render an honest "—" rather than a
- * fabricated "∞%". Exported for unit coverage of the divide-by-zero branch.
+ * Percentage change yesterday vs the prior day. Null when there's no usable
+ * baseline, so we render an honest "—" rather than a fabricated number.
+ *
+ * The floor matters as much as the divide-by-zero guard. One signup on Monday
+ * and none on Tuesday is a -100% red alarm pill, which is arithmetically true
+ * and informationally worthless. Below DELTA_MIN_BASE a percentage says more
+ * about the denominator than the trend.
+ *
+ * Exported for unit coverage of both no-baseline branches.
  */
+const DELTA_MIN_BASE = 5
+
 // eslint-disable-next-line react-refresh/only-export-components -- deliberate: exported for unit coverage; admin page, HMR full-reload is fine
 export function pctDelta(today: number, prior: number): number | null {
-  if (!prior) return null // 0 / undefined / NaN → no baseline, render "—"
+  if (!prior || prior < DELTA_MIN_BASE) return null // 0 / undefined / NaN / too small to rate
   return Math.round(((today - prior) / prior) * 100)
 }
 
@@ -240,6 +248,8 @@ export function DailyBriefing() {
               colors={['brand']}
               showLegend={false}
               startEndOnly
+              // Signups are people. Auto-ticks on a 0-2 domain render 0.5 / 1.5.
+              allowDecimals={false}
               fill="gradient"
             />
           </Card>

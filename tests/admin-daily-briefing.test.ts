@@ -113,7 +113,7 @@ describe('admin daily briefing (ADMIN-VIEW-DAILY)', () => {
 
 describe('pctDelta — yesterday vs prior-day percentage (DELTA-WIRE)', () => {
   it('returns a positive rounded percent when up', () => {
-    expect(pctDelta(8, 4)).toBe(100)
+    expect(pctDelta(10, 5)).toBe(100)
     expect(pctDelta(13, 12)).toBe(8) // round(8.33)
   })
   it('returns a negative percent when down', () => {
@@ -128,5 +128,10 @@ describe('pctDelta — yesterday vs prior-day percentage (DELTA-WIRE)', () => {
   })
   it('returns null when prior is missing/undefined (render-test safety)', () => {
     expect(pctDelta(5, undefined as unknown as number)).toBeNull()
+  })
+  it('returns null below the 5-baseline floor — no "↓100%" off a single signup', () => {
+    expect(pctDelta(0, 1)).toBeNull() // the live case: 1 signup Monday, 0 Tuesday
+    expect(pctDelta(8, 4)).toBeNull()
+    expect(pctDelta(6, 5)).toBe(20) // floor is inclusive
   })
 })
