@@ -141,6 +141,10 @@ This system explicitly rejects the craft-magazine, sepia, cream-background regis
 - Tinted-toward-green neutrals (the `#FAFBF9` bg has a deliberate green whisper)
 - Mobile-excellent for seekers (44px tap targets), desktop-primary for employers
 
+**What this system governs.** This is the canon for the three gated portals: admin, employer, seeker. It does **not** govern public marketing surfaces (`Home`, `ForEmployers`, `Pricing`, `legal/`, `src/components/landing/`), which follow `docs/design/v11-DIRECTIVE.md` — a deliberately different world of cream and Archivo/Bricolage. **The two canons are both correct and must never be crossed.** Marketing is settled work: do not audit it, restyle it, or apply these tokens to it. If an audit surfaces a finding on a marketing surface, discard it.
+
+**The gate is not only visual.** A screen that renders perfectly and leaks data fails. Authorisation, auth states, and state coverage are part of this contract, not adjacent to it. See §5 Required states.
+
 ## 2. Colors
 
 A disciplined single-accent palette: one green, three shades, tinted neutrals around it.
@@ -251,6 +255,25 @@ Shadow rgba uses `(11, 31, 16, *)` — the `Text` colour at the `Text` opacity �
 - **Internal Padding:** 20px default, 24px feature cards, 16px compact list rows
 - **Shadow Strategy:** None at rest. Hover-only `shadow-sm` for interactive cards.
 
+### Required states
+
+Every component that fetches, submits, or depends on a session ships all four. A component with only its happy path is unfinished, not unpolished — treat a missing state as a functional defect with a bug's priority, not a polish item.
+
+- **Loading** — skeleton matching the settled layout's shape, never a centred spinner. Layout must not shift on resolve.
+- **Empty** — teaches the interface and names the next action. "No system alerts in the last 24 hours" in a tall blank card reads as *failed to load*, not *all clear*. If the empty state is good news, it must look like good news.
+- **Error** — says what failed and what to do. One signal per failure; never a toast and an inline banner for the same error.
+- **Unauthorised** — the state a signed-in user hits when their role doesn't permit this surface. Resolve role before deciding: render the access-denied view, never a redirect that bounces back to where the user started, and never a flash of the protected view first.
+
+Client-side gating is presentation. **The security boundary is the data layer** (`_admin_gate()` for admin RPCs; RLS elsewhere). A component may assume the server refuses — it may never be the only thing refusing.
+
+### Breakpoints
+
+No breakpoints are declared in `@theme`, so Tailwind v4 defaults are the contract: `sm` 640px, `md` 768px, `lg` 1024px, `xl` 1280px, `2xl` 1536px. Don't add `--breakpoint-*` tokens to redeclare them.
+
+- **`md` (768px) is the structural breakpoint.** Every navigation changes shape here and nowhere else — sidebar rail ↔ drawer (`AdminSidebar.tsx:179`, `Sidebar.tsx:35`), nav links ↔ hamburger (`Nav.tsx:70,161`), auth split-panel ↔ single column (`AuthLayout.tsx:19,60`). A layout that restructures at any other breakpoint is drift.
+- **`sm` and `lg` are content reflow only** — column counts, gaps, type scale. They never change what navigation exists.
+- **`xl` and `2xl` are unused.** Two `xl:` occurrences exist in the whole codebase, both in `AdminAnalytics.tsx` (194, 205), where every other two-column grid in the product uses `md:`. Treat a new `xl:` or `2xl:` as a finding, not a choice.
+
 ### Inputs
 - **Shape:** 8px radius (`rounded-md`), 44px height (mobile tap target)
 - **Background:** `Surface 2` (subtle inset feel)
@@ -328,6 +351,7 @@ The 4 hardcoded hex values are unavoidable until Stripe Elements supports CSS va
 - **Do** respect `prefers-reduced-motion: reduce` on every animation.
 - **Do** lead with content that's specific to the NZ farm sector — "8/2 roster", "relief milking", "calf-rearing season", real job counts, real testimonials. The chrome is the chrome; the warmth is the content.
 - **Do** trust real product screenshots over marketing illustrations. A live filterable job search beats a stylised vector farm scene.
+- **Do** ship loading, empty, error and unauthorised states with the component, in the same commit. A follow-up ticket for states is a state that never ships.
 
 ### Don't:
 - **Don't** use brown. If a surface reads as brown / warm-earth instead of green, a v1 alias is leaking — track it down.
@@ -344,3 +368,5 @@ The 4 hardcoded hex values are unavoidable until Stripe Elements supports CSS va
 - **Don't** "improve" Inter by suggesting Geist, Söhne, Mona Sans, or any other-tech-startup display font. Inter is a deliberate product-register choice, anchored in the Xero/MINDA daily-tool universe — not a default to be optimised away.
 - **Don't** "improve" the hex palette by suggesting OKLCH conversions during audit. Hex is the canonical format for this project — Brand Spec §12 is authoritative. OKLCH equivalents may live in agent-internal calculations but never in the codebase.
 - **Don't** suggest replacing the single-green palette with a three-or-four-color scheme. "One green means one green" is locked.
+- **Don't** treat percentage deltas, rates, or scores as safe to display without their denominator. `100%` on n=2 and `↓100%` on a base of 1 are true and worthless. Below a meaningful base, render the raw figures or nothing.
+- **Don't** rely on a client-side role check as the security boundary. If the only thing stopping a seeker reading admin data is a React component, that screen fails this system regardless of how it looks.

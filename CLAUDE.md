@@ -93,6 +93,26 @@ my own work. **Care is not a control. Gates are.** So the rules are mechanical, 
 7. **Correct yourself out loud.** A false finding costs more than no finding; when an earlier
    claim proves wrong, say so and downgrade it.
 
+## 10. Design canon — two worlds, one is closed
+
+Two design systems ship here on purpose. Applying one to the other's surface is the failure
+mode this rule exists to prevent.
+
+- **Gated portals — admin, employer, seeker.** Canon is `docs/DESIGN.md` (one green `#16A34A`,
+  Inter, near-white `#FAFBF9`). `src/index.css` wins on any hex. This is the surface the
+  impeccable skill audits; `docs/PRODUCT.md` sits beside it and both are auto-discovered from
+  `docs/` — do not move them.
+- **Public marketing — `Home`, `ForEmployers`, `Pricing`, `legal/`, `src/components/landing/`.**
+  Canon is `docs/design/v11-DIRECTIVE.md` (cream, Archivo/Bricolage). **Settled and out of
+  scope.** Do not audit, restyle, or "improve" it. A design finding on a marketing surface is
+  discarded, not filed.
+
+**The gate is not only visual.** A screen that renders perfectly and leaks data fails. Every
+component that fetches, submits, or depends on a session ships loading, empty, error and
+unauthorised states in the same commit; a missing state is a functional defect, not a polish
+item. Client-side role checks are presentation — the security boundary is always the data
+layer (`_admin_gate()` for admin RPCs, RLS elsewhere). Full rules in `docs/DESIGN.md` §5.
+
 ## 8. Git Safety Incidents
 
 Log entries here when an agent or session violates the git safety rules in §4. Each entry: date, what was destroyed, recovery path, prevention rule that was added.
