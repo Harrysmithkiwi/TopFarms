@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react'
 import { Navigate } from 'react-router'
 import { useAuth } from '@/hooks/useAuth'
-import { dashboardPathFor } from '@/lib/routing'
 import { RouteSkeleton } from '@/components/ui/Skeleton'
+import { AccessDenied } from '@/components/layout/AccessDenied'
 
 interface ProtectedRouteProps {
   children: ReactNode
@@ -54,9 +54,13 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
     return <Navigate to="/auth/select-role" replace />
   }
 
+  // docs/DESIGN.md §5 Unauthorised: render the access-denied view, never a redirect
+  // that bounces the user back to where they started. This previously did
+  // <Navigate to={dashboardPathFor(role)} />, which told the user nothing about why
+  // they could not be where they asked to be, and made every wrong-role URL a silent
+  // no-op. One guard, 24 routes, all three portals.
   if (requiredRole && role !== requiredRole) {
-    const dest = dashboardPathFor(role)
-    return <Navigate to={dest} replace />
+    return <AccessDenied requiredRole={requiredRole} role={role} />
   }
 
   return <>{children}</>

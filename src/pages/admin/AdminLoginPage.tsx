@@ -6,12 +6,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 
 import { useAuth } from '@/hooks/useAuth'
-import { dashboardPathFor } from '@/lib/routing'
 import { AdminLayout } from '@/components/layout/AdminLayout'
 import { DailyBriefing } from '@/pages/admin/DailyBriefing'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { RouteSkeleton } from '@/components/ui/Skeleton'
+import { AccessDenied } from '@/components/layout/AccessDenied'
 
 const signInSchema = z.object({
   email: z.string().email('Enter a valid email'),
@@ -34,39 +34,6 @@ function SpinnerBlock() {
 // Uses role="alert" div with --color-danger tokens; StatusBanner has a fixed variant
 // enum with no 'error' member, so the planner-recommended pattern from Phase 20-05
 // (ProfileDrawer error-display: inline role="alert" + --color-danger tokens) is reused.
-function AccessDeniedView({ role }: { role: 'employer' | 'seeker' }) {
-  return (
-    <div className="bg-bg flex min-h-screen items-center justify-center p-6">
-      <div className="flex w-full max-w-md flex-col gap-4">
-        <div
-          role="alert"
-          className="rounded-[12px] border-[1.5px] p-4"
-          style={{
-            backgroundColor: 'var(--color-danger-bg)',
-            borderColor: 'var(--color-danger)',
-            color: 'var(--color-danger)',
-          }}
-        >
-          <p className="font-body text-[16px] font-semibold">Access denied</p>
-          <p className="font-body mt-1 text-[14px]" style={{ color: 'var(--color-text-muted)' }}>
-            Your account does not have admin privileges.
-          </p>
-        </div>
-        <Link
-          to={dashboardPathFor(role)}
-          className="font-body inline-flex items-center justify-center rounded-[8px] px-4 py-2 text-sm font-medium"
-          style={{
-            backgroundColor: 'var(--color-brand)',
-            color: 'var(--color-bg)',
-          }}
-        >
-          Back to your dashboard
-        </Link>
-      </div>
-    </div>
-  )
-}
-
 // Standalone admin login form. Email + password ONLY (CONTEXT GA-1).
 // No OAuth providers. No useNavigate (RESEARCH Pitfall 9 — let AuthContext drive
 // the post-login render via AdminGate's re-render rather than racing the role-load).
@@ -85,7 +52,7 @@ export function AdminLoginPage() {
 
   // Per RESEARCH Pitfall 9: do NOT navigate manually after signIn().
   // AdminGate re-renders via AuthContext state-change and routes to the right branch
-  // (admin -> AdminLayout, non-admin -> AccessDeniedView).
+  // (admin -> AdminLayout, non-admin -> AccessDenied).
   async function onSubmit(values: SignInForm) {
     setSubmitError(null)
     const result = await signIn(values.email, values.password)
@@ -186,7 +153,7 @@ export function AdminLoginPage() {
 //   3. role === null     -> spinner          (AUTH-FIX-02 race window;
 //                                             mirrors ProtectedRoute.tsx:41-55;
 //                                             MUST come before the role !== 'admin' check)
-//   4. role !== 'admin'  -> AccessDeniedView (inline, NOT redirect — CONTEXT Q3)
+//   4. role !== 'admin'  -> AccessDenied (inline, NOT redirect — CONTEXT Q3)
 //   5. role === 'admin'  -> AdminLayout + DailyBriefing
 export function AdminGate() {
   const { session, role, loading } = useAuth()
@@ -204,7 +171,7 @@ export function AdminGate() {
   }
 
   if (role !== 'admin') {
-    return <AccessDeniedView role={role} />
+    return <AccessDenied requiredRole="admin" role={role} />
   }
 
   return (
