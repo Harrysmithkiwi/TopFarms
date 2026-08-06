@@ -49,7 +49,8 @@ the human-only parts. It also forces the stuck match-display ruling (below).
 | Stream | Authority | State |
 |---|---|---|
 | GSD roadmap | `.planning/ROADMAP.md` | v2.2 current; Phase 28 closed; 24–26 sales-gated |
-| Admin design gate | `.planning/admin-design-gate/STATE.md` + `docs/ADMIN-DESIGN-PROMPT.md` | Phase A done, B–D open |
+| Design gate — **open decisions** | `.planning/design-gate/map.md` (wayfinder) | 8 tickets; 5 on the frontier |
+| Design gate — admin **execution** | `.planning/admin-design-gate/STATE.md` + `docs/ADMIN-DESIGN-PROMPT.md` | Gate A + B met for `AdminTable`; C–D open |
 | Gated-portal design canon | `docs/DESIGN.md` (+ `docs/PRODUCT.md`) | `src/index.css` wins on any hex |
 | Public marketing canon | `docs/design/v11-DIRECTIVE.md` | **Settled. Out of scope. Do not audit.** |
 | Pricing v3 | directive 1.19 | Built, not deployed |
