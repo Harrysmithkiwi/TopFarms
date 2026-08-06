@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback, type ReactNode } from 'react'
 import { Search, ArrowUp, ArrowDown, ChevronsUpDown } from 'lucide-react'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 import { Pagination } from '@/components/ui/Pagination'
 import { Checkbox } from '@/components/ui/Checkbox'
 import { Card } from '@/components/tremor/Card'
@@ -21,6 +22,26 @@ type AdminListRpc =
   | 'admin_outreach_list'
 
 type SortDir = 'asc' | 'desc'
+
+/** null = fine. Distinguishes "the server refused you" from "the call broke". */
+type Failure = 'error' | 'unauthorised' | null
+
+/**
+ * Is this PostgREST error the admin gate refusing us, rather than a fault?
+ *
+ * Verified against prod 2026-08-07 by calling admin_list_* with a real
+ * non-admin session, not inferred from the migration:
+ *   anonymous            -> 42501 "permission denied for function admin_list_employers"
+ *   signed-in non-admin  -> P0001 "Forbidden: admin role required"
+ *
+ * P0001 is plpgsql's generic RAISE, so the message is checked too — a future
+ * business-rule RAISE in one of these RPCs must not read as an auth failure.
+ */
+function isAuthFailure(error: { code?: string; message?: string } | null): boolean {
+  if (!error) return false
+  if (error.code === '42501') return true
+  return error.code === 'P0001' && /forbidden|not authenticated/i.test(error.message ?? '')
+}
 
 interface AdminTableProps<TRow> {
   /** Name of the SECURITY DEFINER RPC to call (e.g., 'admin_list_employers'). */
@@ -140,7 +161,7 @@ export function AdminTable<TRow extends Record<string, unknown>>({
   const [rows, setRows] = useState<TRow[]>([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
-  const [errored, setErrored] = useState(false)
+  const [failure, setFailure] = useState<Failure>(null)
 
   // 300ms debounce per UI-SPEC §"Table search"
   useEffect(() => {
@@ -163,7 +184,7 @@ export function AdminTable<TRow extends Record<string, unknown>>({
 
   const load = useCallback(async () => {
     setLoading(true)
-    setErrored(false)
+    setFailure(null)
     try {
       const args: Record<string, unknown> = {}
       if (paginated) {
@@ -186,10 +207,13 @@ export function AdminTable<TRow extends Record<string, unknown>>({
       // AdminListRpc union upstream.
       const { data, error } = await supabase.rpc(rpc as never, args as never)
       if (error) {
-        // Single error signal: the inline error block below. (Previously also
-        // fired a toast — double-signalling the same failure. UI-SPEC: one.)
+        // Single error signal: the inline block below. (Previously also fired a
+        // toast — double-signalling the same failure. UI-SPEC: one.)
         console.error(`AdminTable: ${rpc} failed`, error)
-        setErrored(true)
+        // docs/DESIGN.md §5: the server refusing on role is the Unauthorised
+        // state, not an error. Surfacing _admin_gate()'s raise as errorCopy
+        // ("Couldn't load employers") told the user a lie about what happened.
+        setFailure(isAuthFailure(error) ? 'unauthorised' : 'error')
         return
       }
       const payload = data as { rows?: TRow[]; total?: number } | null
@@ -198,8 +222,9 @@ export function AdminTable<TRow extends Record<string, unknown>>({
     } finally {
       setLoading(false)
     }
+    // errorCopy was a dep from when this fired a toast; nothing in here reads it now.
     // eslint-disable-next-line react-hooks/exhaustive-deps -- extraArgsKey is the stable serialization of extraArgs
-  }, [rpc, debouncedSearch, sort, extraArgsKey, offset, pageSize, searchable, paginated, errorCopy])
+  }, [rpc, debouncedSearch, sort, extraArgsKey, offset, pageSize, searchable, paginated])
 
   useEffect(() => {
     void load()
@@ -363,26 +388,71 @@ export function AdminTable<TRow extends Record<string, unknown>>({
       </div>
     )
 
+  // A search that matches nothing is not the same fact as a table that has
+  // nothing in it, and the caller's static copy ("No employers yet") states the
+  // second while the first is true. Nine screens passed a static string; only
+  // AdminLeadsStaging computed its own. Handled here so all nine get it.
+  const searching = debouncedSearch.length > 0
+  const heading = searching ? `No matches for “${debouncedSearch}”` : emptyHeading
+  const bodyCopy = searching
+    ? 'No rows matched your search. Try a shorter or different term.'
+    : emptyBody
+
   const body = loading ? (
     wrapTable(<TableSkeleton columns={columns} rows={Math.min(pageSize, 8)} />)
-  ) : errored ? (
-    <div className="text-sm" style={{ color: 'var(--color-danger)' }}>
-      {errorCopy}
+  ) : failure === 'unauthorised' ? (
+    // §5 Unauthorised. Reachable even behind ProtectedRoute: a role can change
+    // mid-session, and useAuth's 3s loadRole timeout can hold a stale role while
+    // the server has already moved on. §5: the component may assume the server
+    // refuses — it may never be the only thing refusing.
+    <div role="alert" className="py-12 text-center">
+      <div className="text-[17px] font-semibold" style={{ color: 'var(--color-text)' }}>
+        Access denied
+      </div>
+      <div className="mx-auto mt-2 max-w-sm text-sm" style={{ color: 'var(--color-text-muted)' }}>
+        Your account no longer has admin access to this data. If you were just signed in as an
+        admin, your session may have changed — try again, or sign in again.
+      </div>
+      <Button variant="outline" className="mt-4" onClick={() => void load()}>
+        Try again
+      </Button>
+    </div>
+  ) : failure === 'error' ? (
+    // §5 Error: say what failed AND what to do. errorCopy was the whole state —
+    // a dead-end sentence with no way forward but a browser reload.
+    <div role="alert" className="py-12 text-center">
+      <div className="text-[17px] font-semibold" style={{ color: 'var(--color-danger)' }}>
+        {errorCopy}
+      </div>
+      <div className="mt-2 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+        The data didn’t load. This is usually temporary.
+      </div>
+      <Button variant="outline" className="mt-4" onClick={() => void load()}>
+        Try again
+      </Button>
     </div>
   ) : rows.length === 0 ? (
     <div className="py-12 text-center">
       <div className="text-[20px] font-semibold" style={{ color: 'var(--color-text)' }}>
-        {emptyHeading}
+        {heading}
       </div>
       <div className="mt-2 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-        {emptyBody}
+        {bodyCopy}
       </div>
+      {searching && (
+        <Button variant="outline" className="mt-4" onClick={() => setSearch('')}>
+          Clear search
+        </Button>
+      )}
     </div>
   ) : (
     wrapTable(tableEl)
   )
 
-  const pagination = totalPages > 1 && !errored && !loading && (
+  // Kept mounted through a reload once the page count is known. Unmounting it on
+  // every page change made the control the user just clicked vanish and come
+  // back — layout shift on resolve, which §5 forbids of the loading state.
+  const pagination = totalPages > 1 && !failure && (
     <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
   )
 

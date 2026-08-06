@@ -13,14 +13,24 @@ import { cn } from '@/lib/utils'
  * long enough for that difference to matter.
  *
  * All shapes are aria-hidden and paired with a single polite live region
- * (RouteSkeleton / SectionSkeleton), so a screen reader hears "Loading" once
- * instead of reading a wall of empty boxes.
+ * (RouteSkeleton / SectionSkeleton / TableSkeleton), so a screen reader hears
+ * "Loading" once instead of reading a wall of empty boxes.
+ *
+ * DetailSkeleton and PanelSkeleton are still silent — they are aria-hidden with
+ * no announcement, so their wait is invisible to a screen reader. Give them the
+ * same treatment when their surfaces are next touched.
  *
  * Inline styles from the admin original migrated to utilities on the way over
  * (Task 5.1) — this file is now token-clean.
  */
 
-export function Shimmer({ className = '', style }: { className?: string; style?: React.CSSProperties }) {
+export function Shimmer({
+  className = '',
+  style,
+}: {
+  className?: string
+  style?: React.CSSProperties
+}) {
   return (
     <div
       className={cn('bg-surface-2 animate-pulse rounded motion-reduce:animate-none', className)}
@@ -57,7 +67,13 @@ export function RouteSkeleton({ label = 'Loading' }: { label?: string }) {
 }
 
 /** In-page section wait, inside an existing layout shell. */
-export function SectionSkeleton({ rows = 3, label = 'Loading' }: { rows?: number; label?: string }) {
+export function SectionSkeleton({
+  rows = 3,
+  label = 'Loading',
+}: {
+  rows?: number
+  label?: string
+}) {
   return (
     <div className="space-y-3 py-8">
       <LoadingAnnouncement label={label} />
@@ -75,40 +91,47 @@ export function SectionSkeleton({ rows = 3, label = 'Loading' }: { rows?: number
 export function TableSkeleton({
   columns,
   rows = 8,
+  label = 'Loading',
 }: {
   columns: { key: string; label: string }[]
   rows?: number
+  label?: string
 }) {
   return (
-    <table className="w-full" aria-hidden="true">
-      <thead>
-        <tr className="border-border border-b">
-          {columns.map((c) => (
-            <th
-              key={c.key}
-              className="text-text-subtle px-4 py-3 text-left text-xs font-semibold tracking-[0.04em] uppercase"
-            >
-              {c.label}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {Array.from({ length: rows }).map((_, r) => (
-          <tr key={r} className={cn('h-[52px]', r === rows - 1 ? '' : 'border-border border-b')}>
-            {columns.map((c, ci) => (
-              <td key={c.key} className="px-4">
-                <Shimmer
-                  className="h-3.5"
-                  // Vary width so it reads as content, not a grid. First column widest.
-                  style={{ width: ci === 0 ? '70%' : `${45 + ((r + ci) % 3) * 12}%` }}
-                />
-              </td>
+    <>
+      {/* The table below is aria-hidden, so without this the wait is silent for a
+          screen reader. RouteSkeleton and SectionSkeleton both already announce. */}
+      <LoadingAnnouncement label={label} />
+      <table className="w-full" aria-hidden="true">
+        <thead>
+          <tr className="border-border border-b">
+            {columns.map((c) => (
+              <th
+                key={c.key}
+                className="text-text-subtle px-4 py-3 text-left text-xs font-semibold tracking-[0.04em] uppercase"
+              >
+                {c.label}
+              </th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {Array.from({ length: rows }).map((_, r) => (
+            <tr key={r} className={cn('h-[52px]', r === rows - 1 ? '' : 'border-border border-b')}>
+              {columns.map((c, ci) => (
+                <td key={c.key} className="px-4">
+                  <Shimmer
+                    className="h-3.5"
+                    // Vary width so it reads as content, not a grid. First column widest.
+                    style={{ width: ci === 0 ? '70%' : `${45 + ((r + ci) % 3) * 12}%` }}
+                  />
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
   )
 }
 
