@@ -45,11 +45,29 @@ typography:
     fontWeight: 600
     lineHeight: "28px"
     letterSpacing: "-0.01em"
+  subtitle:
+    fontFamily: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif"
+    fontSize: "17px"
+    fontWeight: 600
+    lineHeight: "24px"
+    letterSpacing: "-0.005em"
+  bodyLarge:
+    fontFamily: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif"
+    fontSize: "17px"
+    fontWeight: 400
+    lineHeight: "26px"
+    letterSpacing: "0"
   body:
     fontFamily: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif"
     fontSize: "15px"
     fontWeight: 400
     lineHeight: "24px"
+    letterSpacing: "0"
+  small:
+    fontFamily: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif"
+    fontSize: "13px"
+    fontWeight: 400
+    lineHeight: "20px"
     letterSpacing: "0"
   label:
     fontFamily: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif"
