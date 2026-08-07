@@ -52,6 +52,25 @@ M6                                        post-launch: training & quals (gated)
 ---
 
 ### M1 — Merge train: everything built gets to `main` (Days 1–3) · LAUNCH-BLOCKING
+### ▶ IN PROGRESS — integration branch built, UAT prepped, awaiting the operator pass
+
+`integration/launch` = `main` + all three branches. Merged 2026-08-07 with **one conflict**
+(`v11-DIRECTIVE.md`, both branches appending a section; kept both, §1.18 then §1.19).
+Combined-tree gates: `tsc -b` 0, vitest **644 passed / 0 failed**, lint 0 errors at the 54
+pin, design-gate 17 at pin, `npm run build` succeeds. Preview live and public, 200 on
+`/`, `/jobs`, `/pricing`, `/login`.
+
+**Script: [`M1-UAT.md`](M1-UAT.md)** — ~45 min, one sitting, both roles.
+**Preview:** https://top-farms-7huocqf7d-harrysymmanssmith-gmailcoms-projects.vercel.app
+
+**Blocker found while prepping, needs an operator call:** `create-payment-intent` is
+substantially rewritten on the pricing branch (55 insertions, 118 deletions) and **is not
+deployed**. Previews share prod Supabase, so the UAT's payment step would run the new
+frontend against the old function. Deploying first is low risk today (Stripe test-mode, 0
+paid listings) and satisfies the Edge-Fn-before-frontend ordering early:
+`gh workflow run supabase-deploy.yml --ref integration/launch`. Not run unasked — it changes
+production behaviour.
+
 
 **Delivers:** the three in-flight branches merged, prod == everything built. `design/admin-gate`
 (PR #86, draft, CI green — 24 commits: the design gate, honest ProtectedRoute, a11y blocking,
