@@ -39,10 +39,14 @@ export default defineConfig({
       dependencies: ['setup'],
     },
   ],
+  // v13 stage 3b: `vite preview` served a static SPA shell and cannot serve a
+  // framework-mode build — there is no index.html and the routes now need a
+  // server. react-router-serve runs the SAME production server bundle Vercel
+  // runs, so the local hermetic path still tests what deploys.
   webServer: process.env.BASE_URL
     ? undefined
     : {
-        command: 'npm run build && npm run preview -- --port 4173 --strictPort',
+        command: 'npm run build && PORT=4173 npm start',
         url: 'http://localhost:4173',
         reuseExistingServer: !process.env.CI,
         timeout: 180_000,

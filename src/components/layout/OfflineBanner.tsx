@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useSyncExternalStore } from 'react'
 import { WifiOff } from 'lucide-react'
 
 // Phase 5.7 — offline.
@@ -19,19 +19,25 @@ import { WifiOff } from 'lucide-react'
 // and unsound for claiming it came back. Hence the banner announces the loss and
 // leaves recovery to a real request.
 
-export function OfflineBanner() {
-  const [offline, setOffline] = useState(() => typeof navigator !== 'undefined' && !navigator.onLine)
+// v13 stage 3b: read through useSyncExternalStore rather than useState +
+// useEffect. The server has no navigator, so it always renders "online"; a
+// cached page opened offline would otherwise hydrate the banner against server
+// HTML without it. getServerSnapshot makes that agreement explicit instead of
+// accidental, and the subscription replaces the effect rather than adding one.
+function subscribe(fn: () => void) {
+  window.addEventListener('offline', fn)
+  window.addEventListener('online', fn)
+  return () => {
+    window.removeEventListener('offline', fn)
+    window.removeEventListener('online', fn)
+  }
+}
 
-  useEffect(() => {
-    const goOffline = () => setOffline(true)
-    const goOnline = () => setOffline(false)
-    window.addEventListener('offline', goOffline)
-    window.addEventListener('online', goOnline)
-    return () => {
-      window.removeEventListener('offline', goOffline)
-      window.removeEventListener('online', goOnline)
-    }
-  }, [])
+const isOffline = () => !navigator.onLine
+const isOnlineOnServer = () => false
+
+export function OfflineBanner() {
+  const offline = useSyncExternalStore(subscribe, isOffline, isOnlineOnServer)
 
   if (!offline) return null
 
