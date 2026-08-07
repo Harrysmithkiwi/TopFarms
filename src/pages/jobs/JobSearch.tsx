@@ -551,7 +551,8 @@ export function JobSearch() {
       <div className="mx-auto max-w-[1200px] px-4 py-6">
         {/* Mobile: sticky header with filter icon */}
         <div className="bg-cream-2 sticky top-0 z-10 mb-4 flex items-center justify-between py-2 md:hidden">
-          <h1 className="text-ink text-[18px] font-bold">Find Farm Jobs</h1>
+          {/* h2, not h1: SearchHero above already owns the page h1. */}
+          <h2 className="text-ink text-[18px] font-bold">Find Farm Jobs</h2>
           <Dialog.Root open={drawerOpen} onOpenChange={setDrawerOpen}>
             <Dialog.Trigger asChild>
               <button
@@ -596,8 +597,9 @@ export function JobSearch() {
             />
           </aside>
 
-          {/* Results */}
-          <main>
+          {/* Results. A div, not <main>: PublicShell already renders the page's
+              only <main> landmark, and nesting a second one is invalid. */}
+          <div>
             <ResultsArea
               loadError={loadError}
               onRetry={fetchJobs}
@@ -621,7 +623,7 @@ export function JobSearch() {
               onApply={handleInlineApply}
               onSaveClick={handleSaveClick}
             />
-          </main>
+          </div>
         </div>
 
         {/* Mobile: full-width results */}
