@@ -64,6 +64,13 @@ and taking real money". Work ruled out of scope below is tagged with the map it 
   `docs/DESIGN.md` §5, along with the ruling that a11y is the one dimension **not** partitioned
   by canon. Implemented in the same pass, per the override above.
 
+- [What are the employer and seeker surfaces, by route?](issues/04-employer-seeker-surface-inventory.md) —
+  **8 employer + 5 seeker routes, 12 components, 5,033 LOC** (and the split is 11/8/5, not the
+  13/7/4 previously recorded). Headline: **no `AdminTable` equivalent exists — 0 of 12 inherit
+  states from a shared component, and unauthorised is 0 of 12.** Path is meaningless here; the
+  directory convention is inconsistent, so scope by route. `ErrorState` is the best state
+  primitive in the codebase and should be the model. Three live defects recorded on the ticket.
+
 - Pre-map, recorded here for orientation only — these were settled before charting:
   - **Gate A calibration** (`fc06ff9`) — dual-agent critique, 7/3/1 against the brief's 11,
     0 canon-contradicting false positives; the detector's own 71% FP rate fixed at source.
@@ -74,10 +81,14 @@ and taking real money". Work ruled out of scope below is tagged with the map it 
 
 ## Not yet specified
 
-- **Employer portal findings.** Cannot be ticketed until the surface inventory exists
-  (`04`) and a critique has actually run. Expect its own hand-rolled state gaps.
-- **Seeker portal findings.** Same, and additionally downstream of the match-score ruling
-  (`03`) — that component may need redesign rather than repair.
+- **Employer portal findings.** Inventory now exists (`04`) and confirmed the gaps are
+  hand-rolled per page; still needs a critique run before findings can be ticketed. First three
+  are already recorded on `04`.
+- **Seeker portal findings.** Same, and additionally downstream of `03` and `10`.
+- **Whether the 12 hand-rolled surfaces get a shared data component** the way admin got
+  `AdminTable`, or stay hand-rolled and are fixed one by one. `04` established there is nothing
+  to inherit from today; whether to build one is a real question, and an expensive one. Not
+  ticketed because it likely depends on `06`.
 - **What evidence closes the gate for a portal.** The admin brief defines Gates B and C for
   admin; nothing defines them for the other two. Narrowed by `08`: the **accessibility**
   evidence is now specified for every portal (the blocking table in `docs/DESIGN.md` §5). What
@@ -97,7 +108,10 @@ Fog gathers only toward the destination. These are ruled beyond it and never gra
 
 - **Public marketing** — `Home`, `ForEmployers`, `Pricing`, `legal/`,
   `src/components/landing/`. Settled, different canon, `CLAUDE.md` §10. A design finding
-  there is discarded, not filed.
+  there is discarded, not filed. **Under challenge at the edge:** `04` found that
+  `/jobs/:id` and `/jobs` are public routes rendering session-branching product UI, so the
+  §10 boundary does not cleanly hold. Those two specifically are **not** ruled out of scope
+  pending [10](issues/10-dual-canon-public-routes.md). The list above is unaffected.
 - **Merge order, the both-roles UAT, branch coherence** → **map 2**. The gate can be proven
   on a branch; it does not need prod to be coherent first.
 - **PEND-01 Stripe live-mode, the launch gate, legal review, purging UAT accounts** →
