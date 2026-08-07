@@ -104,3 +104,57 @@ first run.
 
 **Done when** a CI run shows the role-gated specs *executing*. A green run that still skips them
 has not closed this ticket — that is the exact false green it exists to remove.
+
+## Progress 2026-08-07 — accounts created, blocked on two clicks
+
+Operator approved creating purpose-made CI accounts. Steps 1 and 2 attempted.
+
+**Done — two accounts exist in production**, created through the real signup flow at
+`https://www.topfarms.co.nz/signup?role=<role>` (the `?role=` param preselects, which is why
+this automated cleanly):
+
+| Role | Address |
+|---|---|
+| seeker | `harry.symmans.smith+ci-seeker@gmail.com` |
+| employer | `harry.symmans.smith+ci-employer@gmail.com` |
+
+Plus-addressed onto the operator's mailbox so confirmations are receivable, with freshly
+generated 24-character passwords **unrelated to any personal login** — which was the whole
+point. Credentials are in the session scratchpad at `ci-creds.json`, mode 600, never in the
+repo.
+
+**Blocked — neither account is email-confirmed, and I cannot confirm them from here.**
+
+Supabase requires confirmation (`SignUp.tsx:133` routes to `/auth/verify`). Both emails
+arrived from `noreply@mail.app.supabase.io`. **The Gmail connector corrupts the token when it
+renders the body**: the href comes through as `?token<garbage>c9fca8…` — the `=` is destroyed
+and takes a character with it. Same damage in `htmlBody` and via `get_thread FULL_CONTENT`.
+
+Verified this is corruption, not expiry, by reading the redirect `Location` instead of
+following it:
+
+```
+location: https://topfarms.co.nz#error=access_denied&error_code=otp_expired
+          &error_description=Email+link+is+invalid+or+has+expired
+```
+
+on tokens two minutes old. Recovering the missing character means brute-forcing an auth token
+against a live endpoint — not doing that.
+
+### What closes this — about ten seconds of operator time
+
+**Open the two "Confirm Your Signup" emails in the inbox and click "Confirm your mail" in
+each.** They are unread, from `noreply@mail.app.supabase.io`, timestamped 2026-08-07 01:29 UTC.
+Nothing sensitive needs to be shared, and the links in the inbox carry the intact tokens.
+
+Then, in one commit:
+1. `gh secret set E2E_SEEKER_EMAIL / E2E_SEEKER_PASSWORD / E2E_EMPLOYER_EMAIL / E2E_EMPLOYER_PASSWORD`
+   — default repo is `Harrysmithkiwi/TopFarms`, already set, so §6's silent-no-op trap is absent.
+2. Add the skip-guard, so a missing credential **fails** CI instead of skipping.
+
+**Still not solved: admin.** A `ci-admin` account is still production admin. That decision
+stands as written above — preferably a non-production Supabase project.
+
+**Step 3 not started.** The employer account has no listing, so the employer a11y spec will skip
+on `employer has no active listings` even once credentials work. It needs the onboarding wizard
+plus a job posted — worth doing as its own pass, not bolted onto this.
