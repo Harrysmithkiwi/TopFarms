@@ -542,7 +542,10 @@ export function ApplicantPanel({
           )}
 
           {/* Match Breakdown tab */}
-          {activeTab === 'match' && matchScore && <MatchBreakdown score={matchScore} />}
+          {activeTab === 'match' && matchScore && (
+            /* Employer view: v11-DIRECTIVE §1.4 permits the number here, and only here. */
+            <MatchBreakdown score={matchScore} audience="employer" />
+          )}
           {activeTab === 'match' && !matchScore && (
             <p className="font-body text-text-subtle text-[13px] italic">
               No match score available for this applicant.

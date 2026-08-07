@@ -1,12 +1,23 @@
 import fs from 'node:fs'
 import { test as setup, expect } from '@playwright/test'
-import { AUTH_DIR, creds, statePath, SKIP_NO_CREDS } from './helpers'
+import { AUTH_DIR, creds, statePath, SKIP_NO_CREDS, requiredRoles } from './helpers'
 
 // Logs each seeded role in via the real UI once per run and saves a
 // storage-state fixture; role-gated specs reuse it via test.use({ storageState }).
 // Stale states from previous runs are removed so hasState() is trustworthy.
 
 setup.beforeAll(() => {
+  // Fail loudly rather than skip silently. A green run that never signed in is
+  // the false green this guard exists to make impossible.
+  const missing = requiredRoles().filter((r) => !creds(r))
+  if (missing.length > 0) {
+    throw new Error(
+      `E2E_REQUIRED_ROLES promises coverage for [${requiredRoles().join(', ')}] but ` +
+        `credentials are missing for [${missing.join(', ')}]. ` +
+        `Set E2E_<ROLE>_EMAIL/_PASSWORD, or remove the role from E2E_REQUIRED_ROLES ` +
+        `and say so out loud — do not let the suite pass over untested roles.`,
+    )
+  }
   fs.rmSync(AUTH_DIR, { recursive: true, force: true })
   fs.mkdirSync(AUTH_DIR, { recursive: true })
 })

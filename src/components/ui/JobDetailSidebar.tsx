@@ -2,7 +2,7 @@ import { Bookmark, Share2, Clock, MapPin, Briefcase, DollarSign } from 'lucide-r
 import { Link } from 'react-router'
 import { cn } from '@/lib/utils'
 import { StarRating } from '@/components/ui/StarRating'
-import { MatchCircle } from '@/components/ui/MatchCircle'
+import { MatchBand } from '@/components/ui/MatchBand'
 import type { JobListing } from '@/types/domain'
 
 interface SimilarJob {
@@ -160,7 +160,7 @@ export function JobDetailSidebar({
                   </div>
                   {sj.matchScore !== undefined && (
                     <div className="flex-shrink-0">
-                      <MatchCircle score={sj.matchScore} size="sm" />
+                      <MatchBand score={sj.matchScore} />
                     </div>
                   )}
                 </Link>

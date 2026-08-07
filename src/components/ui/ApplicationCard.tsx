@@ -1,7 +1,7 @@
 import { Link } from 'react-router'
 import { cn } from '@/lib/utils'
 import { Tag } from '@/components/ui/Tag'
-import { MatchCircle } from '@/components/ui/MatchCircle'
+import { MatchBand } from '@/components/ui/MatchBand'
 import { StatusBanner } from '@/components/ui/StatusBanner'
 import { FarmResponseIndicator } from '@/components/ui/FarmResponseIndicator'
 import { Button } from '@/components/ui/Button'
@@ -163,7 +163,7 @@ export function ApplicationCard({
         {/* Match circle */}
         {matchScore != null && (
           <div className="flex-shrink-0 self-start">
-            <MatchCircle score={matchScore.total_score} size="sm" />
+            <MatchBand score={matchScore.total_score} />
           </div>
         )}
       </div>

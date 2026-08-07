@@ -175,7 +175,7 @@ export function SeekerDashboard() {
           <>
             <div>
               <h1
-                className="font-display text-3xl font-semibold text-brand-900"
+                className="font-display text-[36px] leading-[44px] font-semibold text-brand-900"
               >
                 Welcome to TopFarms
               </h1>
@@ -230,7 +230,7 @@ export function SeekerDashboard() {
             {/* Header */}
             <div>
               <h1
-                className="font-display text-3xl font-semibold text-brand-900"
+                className="font-display text-[36px] leading-[44px] font-semibold text-brand-900"
               >
                 Welcome back{profile?.region ? ` — ${profile.region}` : ''}
               </h1>
@@ -336,7 +336,7 @@ export function SeekerDashboard() {
                   Active Applications
                 </p>
                 <p
-                  className="font-display text-3xl font-semibold text-brand-900"
+                  className="font-display text-[24px] leading-7 font-semibold text-brand-900"
                 >
                   {activeApplicationCount}
                 </p>
@@ -348,7 +348,7 @@ export function SeekerDashboard() {
                   Profile Views
                 </p>
                 <p
-                  className="font-display text-3xl font-semibold text-brand-900"
+                  className="font-display text-[24px] leading-7 font-semibold text-brand-900"
                 >
                   0
                 </p>
@@ -360,7 +360,7 @@ export function SeekerDashboard() {
                   Profile Strength
                 </p>
                 <p
-                  className="font-display text-3xl font-semibold text-brand-900"
+                  className="font-display text-[24px] leading-7 font-semibold text-brand-900"
                 >
                   {profileStrength}%
                 </p>

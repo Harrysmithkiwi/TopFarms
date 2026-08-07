@@ -501,6 +501,18 @@ interface AreaChartProps extends React.HTMLAttributes<HTMLDivElement> {
   fill?: "gradient" | "solid" | "none"
   tooltipCallback?: (tooltipCallbackContent: TooltipProps) => void
   customTooltip?: React.ComponentType<TooltipProps>
+  /**
+   * Accessible name for the plot, and an optional longer description.
+   *
+   * Recharts 3.x renders <title> and <desc> into the SVG unconditionally and
+   * leaves them EMPTY unless fed, while also making the surface a tab stop with
+   * role="application". The result is a focusable element that announces
+   * nothing — measured on the admin Daily Briefing, where the chart was the only
+   * content tab stop on the page. Required, not optional: a chart nobody can
+   * name is a chart nobody can read.
+   */
+  ariaLabel: string
+  ariaDescription?: string
 }
 
 const AreaChart = React.forwardRef<HTMLDivElement, AreaChartProps>(
@@ -535,6 +547,8 @@ const AreaChart = React.forwardRef<HTMLDivElement, AreaChartProps>(
       fill = "gradient",
       tooltipCallback,
       customTooltip,
+      ariaLabel,
+      ariaDescription,
       ...other
     } = props
     const CustomTooltip = customTooltip
@@ -652,6 +666,15 @@ const AreaChart = React.forwardRef<HTMLDivElement, AreaChartProps>(
       >
         <ResponsiveContainer>
           <RechartsAreaChart
+            // Recharts writes these into the SVG's <title>/<desc>. Without them
+            // the surface is a focusable role="application" element announcing
+            // nothing. role="img" is the honest role for a static plot —
+            // "application" tells assistive tech to surrender key handling to a
+            // widget that has none.
+            title={ariaLabel}
+            desc={ariaDescription}
+            role="img"
+            aria-label={ariaLabel}
             data={data}
             onClick={
               hasOnValueChange && (activeLegend || activeDot)
@@ -747,7 +770,9 @@ const AreaChart = React.forwardRef<HTMLDivElement, AreaChartProps>(
               wrapperStyle={{ outline: "none" }}
               isAnimationActive={true}
               animationDuration={100}
-              cursor={{ stroke: "#d1d5db", strokeWidth: 1 }}
+              // Was #d1d5db (Tailwind gray-300), a Tremor Raw default that
+              // predates the token pass. --color-border is its equivalent here.
+              cursor={{ stroke: "var(--color-border)", strokeWidth: 1 }}
               offset={20}
               position={{ y: 0 }}
               content={({ active, payload, label }) => {

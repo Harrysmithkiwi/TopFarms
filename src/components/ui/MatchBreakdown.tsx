@@ -1,6 +1,5 @@
-import { Link } from 'react-router'
-import { cn } from '@/lib/utils'
 import { MatchCircle } from '@/components/ui/MatchCircle'
+import { MatchBand } from '@/components/ui/MatchBand'
 import { ProgressBar } from '@/components/ui/ProgressBar'
 import type { MatchScore } from '@/types/domain'
 
@@ -41,18 +40,30 @@ function getLowScoreContext(key: DimensionKey): string {
 
 interface MatchBreakdownProps {
   score: MatchScore
-  blurred?: boolean
   className?: string
+  /**
+   * Who is reading this. v11-DIRECTIVE §1.4 permits the number for employers and
+   * forbids it for workers, so the same breakdown renders two ways.
+   *
+   * Defaults to 'worker' deliberately: a new call site that forgets to say gets
+   * the safe one. The number has to be asked for.
+   */
+  audience?: 'worker' | 'employer'
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export function MatchBreakdown({ score, blurred = false, className }: MatchBreakdownProps) {
+export function MatchBreakdown({ score, className, audience = 'worker' }: MatchBreakdownProps) {
+  const showNumbers = audience === 'employer'
   const content = (
     <div className="bg-surface border-border space-y-4 rounded-[12px] border p-6">
       {/* Total score circle */}
       <div className="mb-2 flex flex-col items-center">
-        <MatchCircle score={score.total_score} size="lg" />
+        {showNumbers ? (
+          <MatchCircle score={score.total_score} size="lg" />
+        ) : (
+          <MatchBand score={score.total_score} />
+        )}
         <p
           className="font-body mt-2 text-[12px] font-semibold"
           style={{ color: 'var(--color-text-muted)' }}
@@ -76,7 +87,9 @@ export function MatchBreakdown({ score, blurred = false, className }: MatchBreak
               <div className="flex items-center gap-3">
                 <span
                   className="font-body w-28 flex-shrink-0 text-[13px] font-semibold"
-                  style={{ color: notApplicable ? 'var(--color-text-subtle)' : 'var(--color-text)' }}
+                  style={{
+                    color: notApplicable ? 'var(--color-text-subtle)' : 'var(--color-text)',
+                  }}
                 >
                   {dim.label}
                 </span>
@@ -90,12 +103,14 @@ export function MatchBreakdown({ score, blurred = false, className }: MatchBreak
                     <ProgressBar progress={(dimScore / dim.max) * 100} />
                   )}
                 </div>
-                <span
-                  className="font-body w-10 flex-shrink-0 text-right text-[12px] tabular-nums"
-                  style={{ color: 'var(--color-text-subtle)' }}
-                >
-                  {notApplicable ? '—' : `${dimScore}/${dim.max}`}
-                </span>
+                {showNumbers && (
+                  <span
+                    className="font-body w-10 flex-shrink-0 text-right text-[12px] tabular-nums"
+                    style={{ color: 'var(--color-text-subtle)' }}
+                  >
+                    {notApplicable ? '—' : `${dimScore}/${dim.max}`}
+                  </span>
+                )}
               </div>
               {notApplicable && (
                 <p
@@ -121,11 +136,8 @@ export function MatchBreakdown({ score, blurred = false, className }: MatchBreak
       {/* How the total is reached — the bars are raw points against raw maxima,
           the headline is the normalised percentage. Stating the denominator is
           what makes the number explainable rather than merely displayed. */}
-      {score.breakdown._meta && (
-        <p
-          className="font-body text-[11px]"
-          style={{ color: 'var(--color-text-subtle)' }}
-        >
+      {showNumbers && score.breakdown._meta && (
+        <p className="font-body text-[11px]" style={{ color: 'var(--color-text-subtle)' }}>
           {score.breakdown._meta.raw_total} of {score.breakdown._meta.applicable_max} applicable
           points = {score.total_score}% match
         </p>
@@ -150,35 +162,6 @@ export function MatchBreakdown({ score, blurred = false, className }: MatchBreak
       )}
     </div>
   )
-
-  if (blurred) {
-    return (
-      <div className={cn('relative', className)}>
-        {/* Blurred content */}
-        <div className="pointer-events-none blur-sm select-none">{content}</div>
-
-        {/* Overlay */}
-        <div className="bg-surface/80 absolute inset-0 z-10 flex flex-col items-center justify-center rounded-[12px]">
-          <p
-            className="font-body mb-3 px-4 text-center text-[14px] font-semibold"
-            style={{ color: 'var(--color-text)' }}
-          >
-            Sign up to see how you match
-          </p>
-          <Link
-            to="/signup"
-            className={cn(
-              'font-body inline-flex items-center justify-center rounded-[8px] font-medium transition-colors duration-150',
-              'bg-brand-hover text-text-on-brand hover:bg-brand-900 px-4 py-2 text-[13px]',
-              'focus-visible:outline-brand focus-visible:outline-2 focus-visible:outline-offset-2',
-            )}
-          >
-            Sign Up Free
-          </Link>
-        </div>
-      </div>
-    )
-  }
 
   return <div className={className}>{content}</div>
 }

@@ -2,7 +2,7 @@
 
 > **Status:** CANONICAL · **Consolidated:** 2026-06-20
 > **Authoritative live source:** `src/index.css` (Tailwind v4 `@theme` tokens — wins on any hex/value).
-> **Consolidated from:** `.planning/v2-migration/TopFarms_Brand_Spec_v2.md` (brand bible), `.planning/v2-migration/DESIGN.md` (implementation contract), verified against `src/index.css`.
+> **Consolidated from:** `.planning/v2-migration/TopFarms_Brand_Spec_v2.md` (brand bible), `DESIGN.md` (implementation contract — moved to `docs/DESIGN.md` so the impeccable skill auto-discovers it), verified against `src/index.css`.
 > **Supersedes (archived):** `_archive/2026-06-20/docs/design-system.md` — the **retired v1 brand** (soil/moss earth-tones + Fraunces/DM Sans). Do not use it.
 
 ---

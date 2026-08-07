@@ -537,7 +537,7 @@ export function ApplicantDashboard() {
           </Link>
           <div className="flex items-center gap-3">
             <h1
-              className="font-display text-3xl font-semibold"
+              className="font-display text-[36px] leading-[44px] font-semibold"
               style={{ color: 'var(--color-brand-900)' }}
             >
               {jobTitle ? `Applicants for ${jobTitle}` : 'Applicants'}

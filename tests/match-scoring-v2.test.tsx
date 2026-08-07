@@ -127,6 +127,9 @@ function scoreFixture(overrides: Partial<MatchScore['breakdown']> = {}): MatchSc
   }
 }
 
+// These four are the EMPLOYER view. v11-DIRECTIVE §1.4 permits numbers only for
+// employers, so audience is now explicit — the component defaults to 'worker',
+// where none of these numbers exist. The worker view is guarded below.
 describe('MatchBreakdown renders "not applicable" as a different claim from zero', () => {
   it('a cropping job shows an em dash for shed type, never 0/25', () => {
     render(
@@ -135,6 +138,7 @@ describe('MatchBreakdown renders "not applicable" as a different claim from zero
           shed_type: null,
           _meta: { raw_total: 75, applicable_max: 75, algorithm_version: 2 },
         })}
+        audience="employer"
       />,
     )
     expect(screen.getByText(/Not applicable to this role/)).toBeInTheDocument()
@@ -150,6 +154,7 @@ describe('MatchBreakdown renders "not applicable" as a different claim from zero
           shed_type: 0,
           _meta: { raw_total: 80, applicable_max: 105, algorithm_version: 2 },
         })}
+        audience="employer"
       />,
     )
     expect(screen.getByText('0/25')).toBeInTheDocument()
@@ -164,14 +169,51 @@ describe('MatchBreakdown renders "not applicable" as a different claim from zero
           shed_type: null,
           _meta: { raw_total: 75, applicable_max: 75, algorithm_version: 2 },
         })}
+        audience="employer"
       />,
     )
     expect(screen.getByText(/75 of 75 applicable points = 100% match/)).toBeInTheDocument()
   })
 
   it('renders a real bar and the raw fraction for an applicable dimension', () => {
-    render(<MatchBreakdown score={scoreFixture()} />)
+    render(<MatchBreakdown score={scoreFixture()} audience="employer" />)
     expect(screen.getByText('25/25')).toBeInTheDocument()
     expect(screen.queryByText(/Not applicable/)).not.toBeInTheDocument()
+  })
+})
+
+// v11-DIRECTIVE §1.4: "Employers see numeric match scores. The worker-facing
+// profile panel shows a word, Strong... It never shows the worker a score for
+// themselves." The reason given is that a number attached to a person invites
+// them to read it as a rating of their worth, and the worker side includes
+// migrant workers who are structurally vulnerable.
+//
+// The default audience is 'worker', so a call site that forgets to say gets the
+// safe rendering. These tests exist to fail if that default ever flips.
+describe('MatchBreakdown never shows a worker a number about themselves', () => {
+  it('renders no total, no per-dimension fraction and no percentage', () => {
+    render(
+      <MatchBreakdown
+        score={scoreFixture({
+          _meta: { raw_total: 80, applicable_max: 105, algorithm_version: 2 },
+        })}
+      />,
+    )
+    expect(screen.queryByText('25/25')).not.toBeInTheDocument()
+    expect(screen.queryByText(/applicable points/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/% match/)).not.toBeInTheDocument()
+    // No bare numeral anywhere in the rendered output.
+    expect(document.body.textContent).not.toMatch(/\d+\s*\/\s*\d+/)
+  })
+
+  it('shows a word instead, and never a negative one', () => {
+    render(<MatchBreakdown score={scoreFixture()} />)
+    expect(screen.getByText(/Strong match/)).toBeInTheDocument()
+    expect(screen.queryByText(/Weak|Poor|Low match|Bad/i)).not.toBeInTheDocument()
+  })
+
+  it('keeps the explanation — the mechanic is prominent in the portal (§1.3)', () => {
+    render(<MatchBreakdown score={scoreFixture()} />)
+    expect(screen.getByText('Shed Type')).toBeInTheDocument()
   })
 })

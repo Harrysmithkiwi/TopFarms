@@ -234,7 +234,7 @@ export function MyApplications() {
           {/* Header */}
           <div className="flex items-center gap-3">
             <h1
-              className="font-display text-3xl font-semibold text-brand-900"
+              className="font-display text-[36px] leading-[44px] font-semibold text-brand-900"
             >
               My Applications
             </h1>

@@ -46,15 +46,22 @@ export function KpiCard({
     // h-full + grid stretch = equal-height cards; mt-auto pins the number row to
     // the bottom so numbers stay aligned even when a label wraps to two lines.
     <Card className="flex h-full flex-col">
-      <div
+      {/* h2 so each KPI is reachable by heading navigation. A dashboard read
+          through a screen reader is a list of headings; when these were divs the
+          list was empty. Size and weight are unchanged — this is semantics, not
+          hierarchy. */}
+      <h2
         className="text-text-subtle text-[11px] font-semibold uppercase"
         style={{ letterSpacing: '0.04em' }}
       >
         {label}
-      </div>
+      </h2>
       <div className="mt-auto flex items-end justify-between gap-2 pt-3">
         <span
-          className="text-text text-[28px] leading-none font-semibold"
+          // Was 28px, the only instance in the product; DailyBriefing's three
+          // summary figures were 24px. Two sizes for one job, neither declared.
+          // Both are now the Metric step (24/28) — see DESIGN.md §3.
+          className="text-text text-[24px] leading-7 font-semibold"
           style={{ fontVariantNumeric: 'tabular-nums' }}
         >
           {value}

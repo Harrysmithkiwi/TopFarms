@@ -73,7 +73,11 @@ function CardHeading({
         >
           {eyebrow}
         </div>
-        <div className="text-text mt-0.5 text-[15px] font-semibold">{title}</div>
+        {/* h2, not a div: this page had one h1 and zero h2-h6 across six regions
+            of content, so heading navigation — the primary way a screen-reader
+            user moves around a dashboard — did not exist. The eyebrow stays a
+            div; it labels the group, the title names the region. */}
+        <h2 className="text-text mt-0.5 text-[15px] font-semibold">{title}</h2>
       </div>
       {right}
     </div>
@@ -81,13 +85,21 @@ function CardHeading({
 }
 
 /**
- * Percentage change yesterday vs the prior day. Null when the prior day was 0 —
- * there's no baseline to divide by, so we render an honest "—" rather than a
- * fabricated "∞%". Exported for unit coverage of the divide-by-zero branch.
+ * Percentage change yesterday vs the prior day. Null when there's no usable
+ * baseline, so we render an honest "—" rather than a fabricated number.
+ *
+ * The floor matters as much as the divide-by-zero guard. One signup on Monday
+ * and none on Tuesday is a -100% red alarm pill, which is arithmetically true
+ * and informationally worthless. Below DELTA_MIN_BASE a percentage says more
+ * about the denominator than the trend.
+ *
+ * Exported for unit coverage of both no-baseline branches.
  */
+const DELTA_MIN_BASE = 5
+
 // eslint-disable-next-line react-refresh/only-export-components -- deliberate: exported for unit coverage; admin page, HMR full-reload is fine
 export function pctDelta(today: number, prior: number): number | null {
-  if (!prior) return null // 0 / undefined / NaN → no baseline, render "—"
+  if (!prior || prior < DELTA_MIN_BASE) return null // 0 / undefined / NaN / too small to rate
   return Math.round(((today - prior) / prior) * 100)
 }
 
@@ -234,12 +246,16 @@ export function DailyBriefing() {
             <CardHeading eyebrow="Growth" title={`Signups, last ${TREND_DAYS} days`} />
             <AreaChart
               className="mt-4 h-56"
+              ariaLabel={`Daily signups over the last ${TREND_DAYS} days`}
+              ariaDescription="Area chart. Values are also listed in the Signups figure above; exact daily counts are available on hover."
               data={formatTrend(trend)}
               index="date"
               categories={['Signups']}
               colors={['brand']}
               showLegend={false}
               startEndOnly
+              // Signups are people. Auto-ticks on a 0-2 domain render 0.5 / 1.5.
+              allowDecimals={false}
               fill="gradient"
             />
           </Card>

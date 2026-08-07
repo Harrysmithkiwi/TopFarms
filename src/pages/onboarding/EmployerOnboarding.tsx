@@ -220,7 +220,7 @@ export function EmployerOnboarding() {
         {/* Header */}
         <div>
           <h1
-            className="font-display text-2xl font-semibold"
+            className="font-display text-[20px] leading-7 font-semibold"
             style={{ color: 'var(--color-brand-900)' }}
           >
             Set up your farm profile

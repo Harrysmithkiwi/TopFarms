@@ -74,13 +74,22 @@ const navGroups: NavGroup[] = [
  * drawer close itself when a link is tapped.
  */
 function AdminNavContent({ onNavigate }: { onNavigate?: () => void }) {
-  const { role, signOut } = useAuth()
-  // Back-to-app target uses primary role if known; falls back to /dashboard/seeker.
-  // The admin operator may also have a non-admin row in user_roles via legacy seeker
-  // signup (handle_new_user trigger COALESCEs to seeker). The Studio-SQL bootstrap
-  // overwrites that row to 'admin', so role IS 'admin' here. The escape hatch link
-  // ships them to /dashboard/seeker by default — Harry can navigate from there.
-  const backTo = role === 'employer' ? '/dashboard/employer' : '/dashboard/seeker'
+  const { signOut } = useAuth()
+  const { pathname } = useLocation()
+
+  // Back-to-app used to target /dashboard/{role}, which is a dead link for the
+  // only people who ever see it. An admin's role IS 'admin' (the Studio-SQL
+  // bootstrap overwrites the seeker row handle_new_user COALESCEs in), so
+  // /dashboard/seeker hits ProtectedRoute's `role !== requiredRole` branch and
+  // Navigates straight back to dashboardPathFor('admin') === '/admin'. Click,
+  // bounce, same page. It reads as a broken button because it is one.
+  //
+  // '/' is public, role-free and cannot loop. It is also what "the app" means
+  // from the admin's side of the fence: the site as everyone else sees it.
+  //
+  // Hidden on the portal home — an escape hatch belongs on the pages you need
+  // escaping from, not on the one you land on.
+  const isPortalHome = pathname === '/admin'
 
   return (
     <>
@@ -92,16 +101,18 @@ function AdminNavContent({ onNavigate }: { onNavigate?: () => void }) {
         Admin
       </div>
 
-      {/* Back to app — escape hatch, no active state */}
-      <NavLink
-        to={backTo}
-        onClick={onNavigate}
-        className="hover:bg-surface-2/50 mx-2 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[15px] transition-all"
-        style={{ color: 'var(--color-text-muted)' }}
-      >
-        <ArrowLeft size={18} />
-        <span>Back to app</span>
-      </NavLink>
+      {/* Back to app — escape hatch, no active state. Absent on the portal home. */}
+      {!isPortalHome && (
+        <NavLink
+          to="/"
+          onClick={onNavigate}
+          className="hover:bg-surface mx-2 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[15px] transition-all"
+          style={{ color: 'var(--color-text-muted)' }}
+        >
+          <ArrowLeft size={18} />
+          <span>Back to app</span>
+        </NavLink>
+      )}
 
       {/* 8px divider per UI-SPEC */}
       <div className="my-2" />
@@ -131,7 +142,7 @@ function AdminNavContent({ onNavigate }: { onNavigate?: () => void }) {
                     // Filled brand active state (tokenised); white icon + label.
                     isActive
                       ? 'bg-brand-hover text-text-on-brand font-semibold'
-                      : 'text-text-muted hover:bg-surface-2/50',
+                      : 'text-text-muted hover:bg-surface',
                   ].join(' ')
                 }
               >
@@ -150,7 +161,7 @@ function AdminNavContent({ onNavigate }: { onNavigate?: () => void }) {
         <button
           type="button"
           onClick={() => signOut()}
-          className="hover:bg-surface-2/50 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all"
+          className="hover:bg-surface flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all"
           style={{ color: 'var(--color-text-muted)' }}
         >
           <LogOut size={18} />
@@ -167,7 +178,10 @@ export function AdminSidebar() {
     <aside
       className="hidden min-h-screen w-60 flex-shrink-0 flex-col border-r md:flex"
       style={{
-        backgroundColor: 'var(--color-surface)',
+        // Second neutral layer. Cards are --color-surface (#ffffff) and the page
+        // is --color-bg (#fafbf9): a 2% delta was carrying three structural
+        // layers on its own, so the rail read as a card that happened to be tall.
+        backgroundColor: 'var(--color-surface-2)',
         borderColor: 'var(--color-border)',
       }}
     >
@@ -213,7 +227,7 @@ export function AdminMobileNav() {
         className="sticky top-0 z-30 flex items-center gap-3 border-b px-4"
         style={{
           height: '56px',
-          backgroundColor: 'var(--color-surface)',
+          backgroundColor: 'var(--color-surface-2)',
           borderColor: 'var(--color-border)',
         }}
       >
@@ -251,7 +265,9 @@ export function AdminMobileNav() {
             aria-label="Admin navigation"
             className="fixed top-0 left-0 z-50 flex h-full w-72 max-w-[85vw] flex-col border-r"
             style={{
-              backgroundColor: 'var(--color-surface)',
+              // Matches the desktop rail so AdminNavContent's hover reads the
+              // same in both. On white it would be invisible.
+              backgroundColor: 'var(--color-surface-2)',
               borderColor: 'var(--color-border)',
               boxShadow: '0 12px 32px rgba(11, 31, 16, 0.08)',
             }}
