@@ -35,6 +35,11 @@ merges without deciding it can be live that minute. Directive §1.15: **producti
 seeded** — real inventory comes from the leads pipeline; the counter gate keeps an empty
 board honest meanwhile. Preview deploys share the prod database, so "seed on preview" means
 seed on prod — verification needing fake data happens on a **local** Supabase stack only.
+**Correction, 2026-08-07: that escape hatch does not currently exist.** This machine has no
+container runtime installed, so `supabase start` cannot run. Anything genuinely requiring
+seeded data is therefore blocked until either Docker is installed or a paid Supabase branch
+is authorised — so prefer checks that need no database at all, which is how the §1.4
+match-display check got closed (M1 below).
 
 ## The roadmap
 
@@ -82,17 +87,112 @@ would see the match-score violation §1.4 forbids; the CI safety net isn't on `m
 
 **Order, and it is a constraint:** ① `design/admin-gate` merges first (everything else then
 inherits the gate + guard). ② Pricing **Edge Function deploys before the pricing frontend**
-(`gh workflow run supabase-deploy.yml --ref pricing/model-v3` — the established path). ③
+— **already done 2026-08-07**, so this step is satisfied and no longer gates ③. ③
 `pricing/model-v3`. ④ `v13-stage3b-framework-mode`.
+
+#### When to merge — recommendation, 2026-08-07
+
+**Now, and specifically before the M3 outreach batch goes out.** Three reasons, in order of
+force:
+
+1. **Outreach would otherwise advertise retired pricing.** M3 emails employers off the back
+   of 62 staged leads. Prod still shows the retired `$100/$150/$200` per-listing ladder; the
+   model those employers are being sold is free listings + a `$200-800` banded placement fee.
+   Merging after outreach means the first thing a converting employer does is find a price
+   that contradicts the email. This is the one that makes the ordering non-negotiable.
+2. **The blast radius is the smallest it will ever be.** Prod measures 0 jobs, 0 match_scores,
+   1 employer, 3 seekers. A regression today lands on effectively nobody. Every day of M3
+   raises that cost, and M4's audit rerun has to score the *final* build anyway, so deferring
+   only compresses the days available to fix whatever it finds.
+3. **Nothing engineering-side is still pending.** Combined gates green (`tsc -b` 0, vitest
+   **648**, lint 0 errors at the 54 pin, design-gate 16 at the 17 pin, build OK), 15/15 on
+   the preview, §1.4 closed, and the Edge Function ordering already satisfied.
+
+**The honest risk in merging now** is that §3 employer onboarding has never been walked by
+anyone — see the UAT table below. It is the path every M3 employer takes, so it wants a pass
+before outreach regardless of when the merge happens; merging does not make it riskier,
+because prod has no employers to break yet.
+
+**Sequence, one sitting, ~30 min**, confirming prod healthy between each — `main`
+auto-deploys, so each of these IS a production release:
+
+1. ① `design/admin-gate` → check `/`, `/jobs`, `/admin` on prod, and that the a11y + landmark
+   guards pass on the prod deployment.
+2. ③ `pricing/model-v3` → check `/pricing` shows free + `$200-800` in **both** audience
+   lenses. **Merge ③ conflicts in `tests/e2e/a11y.spec.ts`; keep both blocks** — resolution
+   already done on `integration/launch`, copy it.
+3. ④ `v13-stage3b-framework-mode` → hard-reload `/jobs` and `/jobs/:id`, check back-button
+   and scroll behaviour. This is the merge most likely to misbehave in a way gates cannot see.
+4. Then, separately, `feat/training-demand-form` (PR #87) — genuinely independent, no rush.
+
+**Do not merge ④ and then immediately start outreach in the same hour.** Framework mode is
+the one change whose failure mode is perceptual rather than mechanical; give it a browse.
 
 **Verification inside this phase:** an integration branch carrying all three → one Vercel
 preview → **the one-pass, both-roles UAT** already planned (OAuth + real inbox are the
-human-only parts). Pre-merge check PR #86 still owes: the match-display browser pass against
-a scored job — prod has none and must not be seeded, so it runs on a **local Supabase stack**
-with seed data (§1.15's sanctioned place). Wizard titles and employer pages get their first
-visual pass in the same UAT (the `ci-employer` credential now exists).
+human-only parts). Wizard titles and employer pages get their first visual pass in the same
+UAT (the `ci-employer` credential now exists).
 
-**Depends on:** operator UAT participation (~1 hr). No operator credentials.
+**✅ The match-display check PR #86 owed is CLOSED — 2026-08-07, and it never needed a
+database.** It was parked behind "a local Supabase stack with seed data", which turns out to
+be unrunnable here: **there is no container runtime on this machine** (no Docker, colima,
+podman, orbstack or lima), so `supabase start` cannot run at all. That would have blocked the
+check indefinitely. But `MatchBreakdown` takes a `MatchScore` as a **prop**, so §1.4 is
+testable directly — `tests/match-breakdown-ui.test.tsx`, four assertions:
+
+- a worker sees the band **word** and **not one numeral** — not 83, not `25/25`, not
+  "88 of 105 applicable points";
+- **omitting `audience` yields the worker treatment**, which is precisely what `JobDetail`'s
+  prop-less `<MatchBreakdown score={matchScore} />` call sites depend on;
+- an employer still gets the total, the per-dimension points and the stated denominator,
+  because §1.4 permits that explicitly and "unifying" the two views is forbidden;
+- no negative band word ever reaches a worker (the ladder is positive-only by design).
+
+**Mutation-checked, not assumed green:** flipping the default to `'employer'` fails the
+defaults test; source restored clean. The file previously held **nine `it.todo` stubs that
+described the behaviour §1.4 forbids** — "renders MatchCircle with total score", "renders all
+7 dimension rows", "blurred overlay hides content for visitors". Written before the ruling,
+never implemented, pointing the wrong way. The UAT called this "the single most important
+visual check in this pass" and it had zero coverage.
+
+Also confirmed by reading rather than inference: `ProgressBar` sets **no** `role="progressbar"`
+and no `aria-valuenow`, so the per-dimension proportion a worker sees is not exposed as a
+number to assistive tech either. The bar's inline `width:` still encodes the proportion in the
+DOM — judged **not** a §1.4 breach (the rule forbids a *number*, and the bar is how the worker
+sees relative fit at all), but recorded so it is not rediscovered as one.
+
+**Depends on:** operator UAT participation. **The only funnel never walked end to end is §3
+employer onboarding**, and it is blocked purely on a credential — see below.
+
+#### What is left of the UAT, and why — 2026-08-07
+
+Everything mechanically checkable is now done and re-run against the current preview. What
+remains is one credential and a set of judgments.
+
+| UAT section | State |
+|---|---|
+| §1 public surface | ✅ scripted, 20/20, re-run on the current preview |
+| §2 seeker funnel | ✅ except *apply to a job* — **there are no jobs**, which §3 must produce first |
+| §2 match display (§1.4) | ✅ **closed above** by component test + mutation check |
+| §3 employer onboarding | ⛔ **blocked on the `+ci-employer` password only** |
+| §4 payment | ⛔ downstream of §3 |
+| §5 admin | ✅ scripted |
+| Framework-mode *feel*, "is it any good" | 👤 operator — timing and taste, not scriptable |
+
+**§3 is the whole remaining risk and it is one secret away.** The password lives in the
+operator's manager and in GitHub Actions secrets, which are write-only — it cannot be read
+back, and rotating it would break CI (`E2E_REQUIRED_ROLES` now fails rather than skips).
+Two ways to unblock, operator's choice:
+
+1. **Hand over the `+ci-employer` password.** Engineering then walks onboarding, records
+   every friction point, and stops **before publishing** — a draft listing is not public
+   inventory, so §1.15 is untouched. Covers §3's mechanics; §4 still needs a real post.
+2. **Authorise a throwaway employer account** provisioned via SQL (the documented
+   `verify_with_temp_admin` pattern), used, then deleted. Same outcome, adds one row to the
+   ticket-04 purge list, and must not be confused with the CI accounts that have to survive.
+
+Neither substitutes for the operator judging whether onboarding *feels* right — that is the
+part of §3 a bot completing the form genuinely cannot answer.
 
 ### M2 — Auth redirect allowlist (Day 1, parallel) · LAUNCH-BLOCKING · OPERATOR TOGGLE
 
