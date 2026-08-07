@@ -35,13 +35,18 @@ the human-only parts. It also forces the stuck match-display ruling (below).
 1. **PEND-01 — Stripe test→live swap.** 9-item checklist in `DECISIONS-PENDING.md`. Blocks
    `/gsd:complete-milestone v2.0`. Needs a real $0.50 charge and refund; deferred twice
    because it wants dedicated focus.
-2. **The launch gate** — legal review, a Supabase toggle, purging 3 UAT accounts, a cold-start
+2. **Possible P0 — email confirmation may be broken in prod.** Two accounts created via the
+   real signup flow on 2026-08-07 stayed unconfirmed after their links were clicked, and
+   `/auth/v1/verify` ignores `redirect_to` entirely (falls back to the apex Site URL while prod
+   serves `www`). If no real user has confirmed a signup since the 2026-07-02 domain go-live,
+   nobody can complete registration. Detail in `.planning/design-gate/issues/09-e2e-secrets-in-ci.md`.
+3. **The launch gate** — legal review, a Supabase toggle, purging 3 UAT accounts, a cold-start
    check. Rerun prompt at `docs/LAUNCH-READINESS-PROMPT.md`.
-3. **Match-score display.** `v11-DIRECTIVE.md` §1.4 says workers never see a personal number;
+4. **Match-score display.** `v11-DIRECTIVE.md` §1.4 says workers never see a personal number;
    `JobDetail.tsx` shows signed-in seekers a numeric total plus per-dimension scores, and
    visitors a fabricated blurred `78`. **Nothing arbitrates it.** A product decision, not a
    gate condition — rule before the seeker design phase or the audit reopens the argument.
-4. **`ProtectedRoute`** — one guard, 24 routes, all three portals. Decides where admin-gate
+5. **`ProtectedRoute`** — one guard, 24 routes, all three portals. Decides where admin-gate
    Phase B starts. Detail in `.planning/admin-design-gate/STATE.md` § Open rulings.
 
 ## Streams and their authorities

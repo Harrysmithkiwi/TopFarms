@@ -158,3 +158,52 @@ stands as written above — preferably a non-production Supabase project.
 **Step 3 not started.** The employer account has no listing, so the employer a11y spec will skip
 on `employer has no active listings` even once credentials work. It needs the onboarding wizard
 plus a job posted — worth doing as its own pass, not bolted onto this.
+
+## 2026-08-07, second attempt — secrets NOT set, and a possible production bug
+
+Operator clicked both confirmation links. **Both accounts are still unconfirmed.** Secrets were
+not set: credentials that cannot authenticate would only make CI fail more slowly.
+
+**The accounts are fine.** Supabase distinguishes the cases, and I checked the contrast rather
+than assuming:
+
+```
++ci-seeker@   -> "Email not confirmed"        (user exists, password correct)
++ci-employer@ -> "Email not confirmed"
+nobody+nope@  -> "Invalid login credentials"  (control: no such user)
+```
+
+So `email_confirmed_at` is null on both and nothing else is wrong.
+
+**My `www` hypothesis was wrong and I killed it.** Probing `/auth/v1/verify` with three
+different `redirect_to` values:
+
+| Sent | Landed |
+|---|---|
+| `https://topfarms.co.nz` | `https://topfarms.co.nz` |
+| `https://www.topfarms.co.nz` | `https://topfarms.co.nz` |
+| `https://evil.example.com` | `https://topfarms.co.nz` |
+
+Open-redirect protection is working. But **`redirect_to` is ignored entirely** — everything
+falls back to the Site URL, which means the allowlist still lacks `www`, exactly as
+`project_supabase_redirect_www` recorded. That is a real launch item, though it does not
+explain the failure: the redirect happens *after* verification.
+
+### The part that matters more than this ticket
+
+If clicking a valid, freshly-issued confirmation link does not set `email_confirmed_at`, then
+**email confirmation may be broken for every real signup**, not just these two. Prod is served
+at `www` while the Site URL is the apex, and the domain went live 2026-07-02 — after the last
+time anyone confirmed a new account by hand. Nobody would necessarily have noticed.
+
+**Worth answering before launch:** has any real user successfully confirmed a signup since
+2026-07-02? If not, this is a P0 that has nothing to do with the design gate.
+
+### To unblock this ticket without another email round trip
+
+Confirm both users directly: **Supabase dashboard → Authentication → Users → the two `+ci-`
+addresses → confirm email.** No tokens, no allowlist, no rate limit. Resend is currently
+rate-limited (`email rate limit exceeded`), so retrying by email is not available for now
+anyway.
+
+Once they can sign in, the four secrets and the skip-guard land in one commit as planned.
