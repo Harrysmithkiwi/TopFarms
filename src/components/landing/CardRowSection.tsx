@@ -46,7 +46,7 @@ export function CardRowSection() {
           Every application scored across seven things that <i className="font-normal">actually decide a hire</i>
         </h3>
         <div className="text-ink-40 mt-4 flex flex-wrap justify-center gap-x-3.5 gap-y-1 text-[12.5px] font-medium">
-          <span>first listing free</span>
+          <span>every listing free</span>
           <span>workers never pay</span>
         </div>
       </div>

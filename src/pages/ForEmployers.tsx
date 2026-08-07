@@ -37,7 +37,7 @@ const INCLUDED: [string, string][] = [
     'Scored applicants throughout',
     'Not a one-off ranking at close: the list stays ordered as people apply.',
   ],
-  ['Your first listing free', 'One per account, no card required.'],
+  ['Every listing free', 'Post as many roles as you like. No card required.'],
   [
     'Documents already verified',
     'Where an applicant has uploaded and verified documents, you see that status.',
@@ -47,7 +47,7 @@ const INCLUDED: [string, string][] = [
 export function ForEmployers() {
   usePageMeta(
     'For employers | TopFarms',
-    'How posting a farm job on TopFarms works: post the whole job, applicants arrive scored with reasons, you decide who to ring. First listing free.',
+    'How posting a farm job on TopFarms works: post the whole job, applicants arrive scored with reasons, you decide who to ring. Every listing free.',
   )
 
   return (
@@ -123,7 +123,7 @@ export function ForEmployers() {
         <div className="bg-green-3 flex flex-wrap items-center justify-between gap-6 rounded-3xl px-7 py-9 text-white md:px-11">
           <div>
             <h2 className="text-[26px] font-extrabold tracking-[-.04em]">
-              First listing free. Workers never pay.
+              Every listing free. Workers never pay.
             </h2>
             <p className="mt-2 text-[15px] font-medium text-white/82">
               Prices published, no calls, no quotes.

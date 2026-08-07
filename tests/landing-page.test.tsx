@@ -131,7 +131,10 @@ describe('v13 landing', () => {
   describe('pricing claim (directive 1.12)', () => {
     it('claim line present and linking to /pricing; no pricing cards on the page', () => {
       renderHome()
-      expect(screen.getByText('First listing free. Workers never pay.')).toBeInTheDocument()
+      // "First listing free" until directive 1.19 (2026-08-04) retired the listing
+      // ladder. The CLAIM stays on the landing page (1.12 + NOT THIS); only the
+      // first word of it changed, because every listing is free now.
+      expect(screen.getByText('Every listing free. Workers never pay.')).toBeInTheDocument()
       expect(screen.getByText('See pricing')).toHaveAttribute('href', '/pricing')
       expect(screen.queryByText('$100')).not.toBeInTheDocument()
     })

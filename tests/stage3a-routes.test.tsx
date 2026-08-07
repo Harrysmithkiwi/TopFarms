@@ -68,12 +68,17 @@ describe('stage 3a: /pricing is one route, two audience views (1.17c)', () => {
     expect(document.querySelector('.seek-only')).not.toBeNull()
   })
 
-  it('employer view carries the unchanged fee table', () => {
+  it('employer view carries the fee table', () => {
     renderIn(<Pricing />)
-    expect(screen.getByText('$100')).toBeInTheDocument()
-    expect(screen.getByText('$150')).toBeInTheDocument()
-    expect(screen.getByText('$200')).toBeInTheDocument()
+    // Was the three-tier listing ladder ($100 / $150 / $200) plus placement.
+    // Directive 1.19 retired the ladder: listings are free and unlimited, so the
+    // table is now the three facts that are actually true.
+    expect(screen.getByText('Free')).toBeInTheDocument()
     expect(screen.getByText('$200-800')).toBeInTheDocument()
+    expect(screen.getByText('Included')).toBeInTheDocument()
+    // The retired listing prices must not reappear anywhere on the page.
+    expect(screen.queryByText('$100')).not.toBeInTheDocument()
+    expect(screen.queryByText('$150')).not.toBeInTheDocument()
   })
 
   it('seeker view states free plainly, not an empty page', () => {

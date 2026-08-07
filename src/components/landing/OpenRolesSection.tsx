@@ -152,7 +152,7 @@ export function OpenRolesSection() {
           <div className="py-9 text-center">
             <h3 className="text-lg font-bold tracking-[-.02em]">No open roles listed right now.</h3>
             <p className="text-ink-60 mx-auto mt-1.5 max-w-[44ch] text-sm">
-              Post the first one and it will be listed and match-scored. First listing free.
+              Post the first one and it will be listed and match-scored. Listing is free.
             </p>
             <Link
               to="/signup?role=employer"

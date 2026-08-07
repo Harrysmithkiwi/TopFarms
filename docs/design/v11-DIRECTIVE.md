@@ -442,6 +442,115 @@ anon REST. Fail-soft: any error keeps the static baseline and exits 0, because a
 degraded sitemap must never fail a deploy. Needed under every rendering option; its
 freshness is deploy-frequency until framework mode gives it a proper route.
 
+### 1.19 Pricing model v3 (2026-08-04)
+
+Decided as a CFO pass with the competitive landscape fetched and verified the same day.
+Supersedes the canonical model ("first listing free, then $100 / $150 / $200 per
+listing"). Section 1.18 is reserved for the stage 3b entry on its own branch.
+
+**Verified landscape, 2026-08-04.** ZEIL $199 per 30-day job post, TalentSeeker from
+$280/month. NZ Farming Jobs $170 Standard and $200 Ultimate, both 60 days, plus a
+$800 five-pack; Ultimate's real product is sharing to their NZ Farming and NZ Farming
+Jobs Facebook pages. Trade Me Jobs $99 to $809 plus GST across five tiers, 7 to 30
+days. SEEK NZ publishes no pricing at all. findmeajob.co.nz runs free listings, $29
+one-off featured, $99/month unlimited, with all seeker AI tools free. Farm Source runs
+a live board whose posting cost is not publicly stated. The incumbent, Facebook groups
+and word of mouth, is $0.
+
+**The model.**
+
+- **Listings are free and unlimited.** Not first-free. No card is ever required to list.
+- **Featured listing $99**, dormant at launch, switched on when the median listing
+  receives 5 or more applications or the job pages reach 1,000 weekly sessions.
+  Featured means top of search, a highlighted card, and inclusion in the matched-seeker
+  alert email. It is distribution, not decoration.
+- **Placement fees unchanged: $200 under $55k, $400 for $55k to $80k, $800 for $80k
+  and above**, title keywords bump up and never down, derived server-side from the
+  advertised band. Acknowledged at shortlist through the Option C contact gate,
+  invoiced Net 14 on confirmed hire.
+- **Every placement fee buys a replacement guarantee, scoped by `contract_type`:**
+  permanent 90 days, fixed term 30 days, casual none. One replacement per role, ever.
+- **Seekers pay nothing. Absolutely nothing.**
+
+**Why free listings.** Cash costs are roughly $150/month, so "sustainable" is not the
+constraint; liquidity is. At cold start a paid listing loses to NZ Farming Jobs at $170
+with 40,000 Facebook followers on value, and to Facebook groups at $0 on price. The
+forgone listing revenue is bounded (about $1,600/month even at 40 listings/month with a
+40% pay rate) and the traffic it suppresses is not. Revenue concentrates downstream
+where the differentiation actually is.
+
+**Why the guarantee exists at all.** Collection is the whole game. A self-serve
+marketplace cannot see a hire; the employer posts, rings, hires and never marks it
+filled. The Option C contact gate already converts "declare your hire" into "pay to get
+the phone number", but names are visible and rural New Zealand is small. The guarantee
+makes the fee a purchase rather than a toll, which is what moves collection from an
+honour-system rate to something worth modelling. Collection rate is the single largest
+lever in the model: at 12 hires/month it is the difference between roughly $1,080 and
+$3,240 a month.
+
+**Why the guarantee is split by contract type, not flat.** A flat 90 days was the first
+draft and it is wrong for seasonal work. Live listings put calf rearing and calving
+relief at 7 to 11 weeks, so a 90-day guarantee outlives the job: the worker leaving when
+the season ends would trigger a waived fee on the next season's rehire. Sized at the
+month-18 base case that leak is $600 to $1,200 a month against $2,970 of placement
+revenue, a fifth to two fifths of the line. Ninety days is nevertheless right for
+permanent roles, because 90-day trial periods have been available to all New Zealand
+employers since 23 December 2023, so the number is already in the employment agreement
+the farmer signed. Casual and relief work gets no guarantee, because the window would
+outlive most of the jobs.
+
+**Rejected: percentage placement fees.** At a percentage anyone in this ICP would pay,
+0.5 to 1 percent, revenue lands at $275 to $1,200 on New Zealand agricultural salaries,
+which is the same magnitude as the flat bands already shipped. For that nil gain it
+adds a self-declared salary input nobody can audit, an incentive to under-declare
+exactly where migrant pay is already sensitive, a larger invoice that makes hiding the
+hire more rational, and a formula where the published-pricing position wants a number.
+At recruiter percentages, 15 to 20 percent of first-year salary, it is unsellable to a
+farmer who currently hires for $0. All downside between two losing endpoints.
+
+**Rejected: a flat 30-day guarantee everywhere.** It closes the seasonal leak but
+discards the trial-period alignment on precisely the band where the fee is $800 and the
+persuasion is worth the most. The split costs one extra line of published copy and no
+additional code, because `contract_type` is already required on every listing.
+
+**Rejected: $10 seeker visibility boost and $10 CV review.** "Workers never pay" is
+live on six shipped surfaces. Revenue potential is a few hundred dollars, one-off. The
+optics of charging the structurally vulnerable side of the market $10 to be seen, in a
+sector where AEWV exploitation is national news, are disqualifying on their own. And
+there is no clean line: search prominence IS employer-facing ordering, so any paid
+boost either reorders a list an employer reads, which kills "applicants ordered by fit",
+or it changes nothing and is a product that does nothing. The CV helper ships free
+instead, as an acquisition asset that improves profile completeness and therefore match
+quality. A paid seeker tier is deferred behind a real trigger, such as exportable
+verified work history for third parties, and is recorded here as considered rather than
+planned.
+
+**Rejected: the four-tier listing restructure.** Discussed in chat, never written down,
+subsumed by this entry and rejected on the same paid-listing counterfactuals.
+
+**Left deliberately unpriced.** Casual placements stay at the $200 entry band at launch
+rather than inventing a fourth number on zero data, and are reviewed against the
+trigger below. A $200 fee to unlock a phone number for three days of relief milking is
+probably a price nobody pays, and publishing a fee nobody pays corrodes the
+published-pricing position as surely as hiding one does. Casual cannot simply be free:
+if it were, every employer would list casual to bypass the contact gate.
+
+**Revision triggers.**
+
+| Metric | Threshold | Action |
+|---|---|---|
+| Hire-declaration rate | Under 30% over a rolling 8 weeks, after the first 10 closes | Fix enforcement mechanics before touching price |
+| Featured take-rate, once live | Under 5% of new listings after 12 weeks on sale | Repackage or reprice Featured; check distribution before price |
+| Free-listing subsidy | Over 100 listings/month AND under $15 placement revenue per listing | Reintroduce a paid standard tier; the liquidity argument has expired |
+| Guarantee claim rate, permanent | Over 20% of permanent placements claim inside 90 days | The matching is not holding. Fix matching, not the guarantee |
+| Casual collection rate | Under 10% collected after 20 casual listings | Drop casual placement to $50, or to $0 behind a different gate |
+
+**Publication order, which is not the order these were written.** The decision record
+lands first. The product change lands second: `create-payment-intent` must stop charging
+for a second listing before any surface says listings are free. The copy lands third,
+with or after the product change, never before. Seven surfaces carry "first listing
+free" today and all of them go stale together.
+
 ---
 
 ## 2. Tokens
@@ -609,6 +718,21 @@ Settled. Do not re-propose without new evidence.
       names win; the mapping is in 1.14.
 - [ ] **Do not remove the counter credibility gate** (`MIN_CREDIBLE` in
       `CountersSection`). See 1.15.
+
+### Pricing (added 1.19, 2026-08-04)
+
+- [ ] **Do not charge workers anything, for anything, at any price point.** Not $10,
+      not $1, not a boost, not a CV review. See 1.19.
+- [ ] **Do not price placement as a percentage of salary.** Bands are the model. The
+      reasons in 1.19 are structural and do not expire with scale.
+- [ ] **Do not sell Featured before its trigger fires.** Selling prominence on an empty
+      board is 1.15's counter-credibility failure with an invoice attached.
+- [ ] **Do not put any price behind "contact us".** If a price cannot be published, the
+      product does not ship. The model can change; the transparency cannot.
+- [ ] **Do not let any paid product reorder an employer's applicant list.** Ordering is
+      by fit, or the integrity claim comes off every surface first. See 1.19 and 1.4.
+- [ ] **Do not offer a guarantee longer than the job.** Guarantee windows are scoped by
+      `contract_type`; a seasonal role must never carry a window that outlives it.
 
 ---
 
