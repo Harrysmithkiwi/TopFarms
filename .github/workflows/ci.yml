@@ -46,6 +46,20 @@ jobs:
       - name: Tests
         run: npx vitest run
 
+      # Ratchet on hardcoded design values in GATED-PORTAL code only — public
+      # marketing answers to a different canon (CLAUDE.md §10) and is excluded by
+      # path. Pinned at the true count and only ever ratcheted DOWN, same
+      # discipline as the lint warning pin above.
+      #
+      # HONEST SCOPE, so a green run is not mistaken for more than it is: this
+      # catches arbitrary literals (text-[19px], #2563eb) against src/index.css.
+      # It does NOT see Tailwind size utilities — text-sm is 14px and off-ramp,
+      # and that ruling is still open — and it judges no design quality
+      # whatsoever. Hierarchy, states, copy and empty-state honesty are the
+      # critique's job, not this script's.
+      - name: Design gate (hardcoded values, gated portals)
+        run: npm run design-gate
+
       # Fails on any high/critical advisory EXCEPT the documented allowlist —
       # each entry needs a reason and a removal condition. Plain
       # `npm audit --audit-level=high` has no exception mechanism.

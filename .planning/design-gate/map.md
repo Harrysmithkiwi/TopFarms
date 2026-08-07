@@ -125,6 +125,14 @@ and taking real money". Work ruled out of scope below is tagged with the map it 
   changing six dashboard **KPI numbers** to 36px; they are the Metric role, so `01` reaches
   beyond admin and the product now has one numeral scale.
 
+- [What does the automated gate actually fail the build on?](issues/07-ci-enforcement-shape.md) —
+  **The briefed approach was impossible**: `detect.mjs` lives in the impeccable plugin, is not a
+  repo dependency, and its vendored copy was deleted in `5fe3de8`; CI has nothing to run.
+  Replaced by `scripts/design-gate.mjs` — repo-owned, no deps, reads `src/index.css` as the
+  source of truth (the doc has been wrong three times, and still publishes a hex that fails
+  contrast). Gated portals only, blocking, **pinned at 17 and ratcheted down only**. Tailwind
+  size utilities deliberately excluded until the `14px` ruling lands.
+
 - Pre-map, recorded here for orientation only — these were settled before charting:
   - **Gate A calibration** (`fc06ff9`) — dual-agent critique, 7/3/1 against the brief's 11,
     0 canon-contradicting false positives; the detector's own 71% FP rate fixed at source.
