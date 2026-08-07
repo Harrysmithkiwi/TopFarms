@@ -155,6 +155,10 @@ and taking real money". Work ruled out of scope below is tagged with the map it 
 - **`--text-label` 13/16 versus the prose ramp's Small 13/20.** Same size, different leading,
   two different jobs. Changing a line-height moves layout everywhere, so this wants deliberate
   reconciliation rather than a passing edit.
+- **What CI accounts should exist at all.** `09`'s investigation found the only credentials
+  that exist are a live production admin and the founder's personal email — neither belongs in
+  repo secrets. Purpose-made CI accounts are a decision with a security dimension, and the
+  admin one may argue for a non-production Supabase project. Larger than `09` as written.
 - **Whether the a11y ratchet items graduate into their own work.** 44px targets are a
   portal-wide layout change (the admin rail ships 40px); `scope`/`<caption>`, decorative-icon
   `aria-hidden` and skip links are mechanical but unscoped. Ratcheted by `08`, not scheduled.

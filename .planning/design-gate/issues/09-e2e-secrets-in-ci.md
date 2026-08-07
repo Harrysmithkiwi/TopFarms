@@ -44,3 +44,63 @@ this project three rotation cycles.
 **Done when** a CI run shows the role-gated a11y tests executing rather than skipping. A green
 run that still skips them has not closed this ticket — that is the false green the whole ticket
 exists to remove.
+
+## Investigation 2026-08-07 — not executed, and the reason got sharper
+
+Worked this ticket, gathered the facts, and **stopped before setting any secret.** What
+changed is not caution about the mechanics — it is what the credentials turned out to be.
+
+### The facts
+
+| | |
+|---|---|
+| `gh repo set-default --view` | `Harrysmithkiwi/TopFarms` — **set**, so §6's silent-no-op trap is not present |
+| Secrets on the repo | `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`. **No `E2E_*`** |
+| Credentials in `.env` | `E2E_ADMIN_*` and `E2E_SEEKER_*` only |
+| `E2E_ADMIN_EMAIL` | `admin@topfarms.co.nz` — **a live production admin account** |
+| `E2E_SEEKER_EMAIL` | `harry.symmans.smith@gmail.com` — **the founder's personal address** |
+| `E2E_EMPLOYER_*` | does not exist anywhere |
+
+### Why I did not set them
+
+**Neither credential should go into GitHub Actions as it stands.**
+
+- The seeker credential is **the operator's own personal email** — the same address that
+  receives the lead-harvest notifications. It is not a disposable UAT account. Its password in
+  repo secrets is reachable by any workflow, any collaborator with write access, and any
+  compromised third-party action in the graph.
+- The admin credential grants **production admin** — every `admin_*` RPC, every seeker and
+  employer record. A CI secret is a much softer boundary than an operator's password manager,
+  and `_admin_gate()` cannot help: the credential *is* an admin.
+
+Setting four secrets would have closed the coverage hole and opened a worse one. The original
+framing of this ticket — "mostly mechanical, needs two decisions" — was wrong, because it
+assumed the credentials were throwaway. They are not.
+
+### Recommendation
+
+1. **Create three purpose-made CI accounts** — seeker, employer, admin — that exist only for
+   this, with recognisable addresses (`ci-seeker@…`) so they are never mistaken for real users
+   and survive the UAT purge. The employer one needs **at least one active listing**, or the
+   employer a11y spec skips on `employer has no active listings` even with credentials present.
+2. **Decide the admin one deliberately.** Options, in order of preference: point CI at a
+   non-production Supabase project; or a dedicated CI admin whose role can be revoked in one
+   statement and is rotated on a schedule; or accept that admin-gated specs stay local-only and
+   never claim CI covers them.
+3. **Then set the secrets** (default repo is set, so plain `gh secret set` is safe), and in the
+   *same commit* add the guard below.
+
+### The guard, deliberately not built yet
+
+The reason this ticket exists is that green CI has been reporting success over a suite that
+skipped its role-gated half. Setting secrets fixes that today; it does not stop it recurring
+the day an account is purged or a password rotates.
+
+The fix is to make a missing credential **fail** in CI rather than skip. It is not built here
+because building it now would turn CI red immediately — there are no secrets to satisfy it —
+and a guard that has to be disabled to be merged is scaffolding, not a gate. **Whoever sets the
+secrets adds the guard in the same commit**, so the two land together and CI is honest from the
+first run.
+
+**Done when** a CI run shows the role-gated specs *executing*. A green run that still skips them
+has not closed this ticket — that is the exact false green it exists to remove.
