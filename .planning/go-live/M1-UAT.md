@@ -19,9 +19,46 @@ Merged cleanly (one docs conflict, both sections kept). On the combined tree: `t
 vitest **644 passed / 0 failed**, lint 0 errors at the 54 pin, design-gate 17 at pin, and
 `npm run build` succeeds. Preview returns 200 on `/`, `/jobs`, `/pricing`, `/login`.
 
-## ⚠ Two preconditions — read before you start
+## ✅ Automated pass already run (2026-08-07) — 20/20
 
-**1. The pricing Edge Function is NOT deployed.** `create-payment-intent` is substantially
+I ran a Playwright pass against this preview before handing it over. **Everything mechanically
+checkable is green**, so your time goes to what only a human can judge.
+
+| Checked | Result |
+|---|---|
+| `/`, `/jobs`, `/pricing`, `/for-employers` load | 200 each |
+| Counter gate hides the stats band at 0 inventory | correct |
+| Pricing v3 live: free listings, `$200-800` placement band | correct |
+| Old `$100/$150/$200` per-listing prices | gone |
+| Hard reload of `/pricing` (framework-mode risk) | 200, no error |
+| Uncaught page errors, signed out and signed in | zero |
+| Seeker signs in; page title 36px (ruling 11) | correct |
+| Demand card absent (it is on the other branch) | correct |
+| **Wrong-role: access-denied renders IN PLACE at `/dashboard/employer`** | correct, escape link `/dashboard/seeker` |
+| Admin signs in; title 20px; KPI labels `h2`; 1 h1 + 8 h2 | correct |
+| Admin table scroll region keyboard-focusable (`tabindex=0`) | correct |
+
+**The Edge Function is now deployed** (`create-payment-intent`, confirmed uploaded to
+`inlagtgpynemhipnqvty` at 04:25 UTC), so §4 is live and precondition 1 below is cleared.
+
+### What the automated pass could NOT judge — this is your UAT
+
+1. **§3 employer onboarding, first run.** Never been done on this account. Long wizard, real
+   cold-start friction. A bot completing it proves nothing about whether it *feels* right.
+2. **The match display on a real job (§2).** Prod has 0 jobs and 0 match_scores, so there is
+   nothing to render. This is the §1.4 check with the biggest blast radius and it stays
+   unverified until §3 produces a listing.
+3. **§4 payment.** Needs a real posting flow to reach it.
+4. **Framework-mode feel** — scroll restoration, flashes, back-button behaviour between
+   routes. Timing and perception; a script cannot see it.
+5. **Whether any of it is any good.** Wizard titles at 20px, employer pages generally, the
+   overall coherence of three merged branches.
+
+---
+
+## ⚠ Preconditions — read before you start
+
+**1. ✅ CLEARED 2026-08-07 — the pricing Edge Function IS now deployed.** (Original note:) `create-payment-intent` is substantially
 rewritten on the pricing branch (55 insertions, 118 deletions) and prod still runs the old
 one. Previews share the prod Supabase, so **§4 payment steps will exercise the new frontend
 against the old function.** Two options:
