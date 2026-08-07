@@ -167,3 +167,25 @@ test.describe('reduced motion honoured by JS animation (Phase 4.4 / A7)', () => 
     expect(second, 'transforms still changing under reduced motion').toEqual(first)
   })
 })
+
+test.describe('public routes carry exactly one h1 and one main', () => {
+  // axe rates landmark-no-duplicate-main and the heading rules MODERATE, and
+  // runAxe above only logs moderate — so the sweep watched these four routes
+  // for weeks while /jobs served a <main> nested inside PublicShell's plus a
+  // second h1, and /pricing served one h1 per audience view. Both are invalid
+  // for a crawler and both split the document outline for a screen reader.
+  // Asserted explicitly, for the same reason the admin heading test above is.
+  for (const path of ['/', '/jobs', '/pricing', '/for-employers']) {
+    test(`${path} has one h1 and one main`, async ({ page }) => {
+      await page.goto(path)
+      await page.waitForLoadState('networkidle')
+      await page.locator('main').first().waitFor({ timeout: 20_000 })
+      const counts = await page.evaluate(() => ({
+        h1: document.querySelectorAll('h1').length,
+        main: document.querySelectorAll('main').length,
+      }))
+      expect(counts.h1, `${path}: h1 elements`).toBe(1)
+      expect(counts.main, `${path}: main landmarks`).toBe(1)
+    })
+  }
+})
