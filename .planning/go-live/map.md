@@ -153,22 +153,45 @@ is needed and the UAT preview covers the final tree.
 | `/jobs` two `h1` — `SearchHero` plus `JobSearch`'s mobile sticky bar | mobile bar → `h2` | `design/admin-gate` ① |
 | `/jobs` nested `<main>` — one in `PublicShell`, one round the desktop results column | results column → `div` | `design/admin-gate` ① |
 | `/jobs` desktop headings jump `h1 → h3` (the only `h2` is `md:hidden`) | `sr-only` `h2` naming the results region | `design/admin-gate` ① |
-| `/pricing` two `h1`, one per audience view, both in the served DOM | one shared hero, strings swapped by `emp-only`/`seek-only` spans inside a single `h1` — the pattern `HeroSection` already uses | `pricing/model-v3` ③ |
+| `/pricing` two `h1`, one per audience view, both in the client DOM | one shared hero, strings swapped by `emp-only`/`seek-only` spans inside a single `h1` — the pattern `HeroSection` already uses | `pricing/model-v3` ③ |
+| `/jobs/:id` nested `<main>` — the same defect, on the sibling route, **and this one is server-rendered** | `JobDetail`'s wrapper → `div` | `design/admin-gate` ① |
+| `/login` and `/signup` had **no `<main>` at all** — `AuthLayout` has no shell around it | inner wrapper → `main` | `design/admin-gate` ① |
 
 **Why a `<span>` swap and not a JS branch:** directive 1.11 requires both audience strings in
 the DOM so the page is correct without JavaScript. A conditional render would break that.
 
 **Regression guard**, in `tests/e2e/a11y.spec.ts`: `/`, `/jobs`, `/pricing`, `/for-employers`
-each assert exactly one `h1` and one `main`. It lands on `pricing/model-v3` deliberately —
-`/pricing` only satisfies it from merge ③ onward, while `/jobs` is fixed by ①. **The existing
-axe sweep already visited all four routes and stayed green through every one of these**,
-because `landmark-no-duplicate-main` and the heading rules are *moderate* impact and `runAxe`
-only logs moderate. Same blind spot the admin heading-navigation test was written for.
+each assert exactly one `h1`, one `main`, **and which `h1` they got**; `/` and `/pricing` run
+through **both audience lenses**; `/login` and `/signup` assert their landmark separately.
+**The existing axe sweep already visited these routes and stayed green through every one of
+these defects**, because `landmark-no-duplicate-main` and the heading rules are *moderate*
+impact and `runAxe` only logs moderate. Same blind spot the admin heading-navigation test was
+written for.
+
+The guard is split across two branches on purpose, and each half sits with its fix so neither
+branch's own preview CI goes red before the train runs: the route block on `pricing/model-v3`
+(③, since `/pricing` only satisfies it then), the `/login` block on `design/admin-gate` (①).
+**Both append to the end of `a11y.spec.ts`, so merge ③ conflicts there — keep both blocks.**
+Already resolved that way on `integration/launch`, so the resolution can be copied.
+
+**A verifier briefed to refute is what produced the last three rows above and the guard's own
+two holes.** It also corrected a claim: the commit message for `efbe2f1` justifies the
+`/pricing` fix with "both sit in the served HTML, so a crawler reads two competing h1s" —
+that premise is **false**, and finding 2 below says why. The fix is still right for
+JS-rendering crawlers and for the document outline; the stated reasoning was not.
+Two further corrections, made out loud rather than quietly: the fixes are not *purely*
+semantic — the employer `h1`'s `max-w` moved `18ch → 20ch`, inert for a 13-character string
+but it shifts the wrap boundary for any longer headline later. And my first run of the
+strengthened guard **failed on my own regex**, not on the product: the landing `h1` is
+CSS-uppercased so `innerText` returns `"THE RIGHT MATCH,"`. Patterns are case-insensitive now.
+That failure only surfaced because the guard was run against a live preview instead of
+assumed green.
 
 Evidence: gates on the merged tree — `tsc -b` 0, vitest 644/0, lint 0 errors at the 54 pin,
 design-gate **16** at the 17 pin (one literal below; ratchet the pin to 16 once all four
 branches are on `main`), `npm run build` OK. Live preview
-`top-farms-9htj6k15e`: guard 4/4 and the anonymous axe sweep 12/12; `/jobs`'s
+`top-farms-7zjk4eotu`: **15/15** — guard 6/6 across both lenses, `/login`+`/signup` landmark,
+and the anonymous axe sweep; `/jobs`'s
 `heading-order` moderate is gone; both audience views of `/pricing` screenshot-checked, and
 the seeker CTA pill measured 135.9px, not stretched — `.seek-only` forces `display:block`, so
 the class sits on a wrapper `div` rather than the `Link`.
