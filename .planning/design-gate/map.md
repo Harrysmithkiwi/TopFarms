@@ -71,6 +71,20 @@ and taking real money". Work ruled out of scope below is tagged with the map it 
   directory convention is inconsistent, so scope by route. `ErrorState` is the best state
   primitive in the codebase and should be the model. Three live defects recorded on the ticket.
 
+- [Admin page titles contradict the declared type ramp](issues/02-admin-page-title-exception.md) —
+  **Admin's 20px declared correct as Title 20/28 for dense internal tooling.** The
+  "admin exception" framing was wrong: measuring found *three* page-title sizes across the
+  gated portals (admin 20, dashboards 30, onboarding 24) and two colour treatments, none of
+  them the declared Headline. Employer/seeker recorded as a finding and split to `11` rather
+  than restyled inside a typography pass.
+
+- [Admin KPI numeric scale is declared nowhere](issues/01-kpi-numeric-scale.md) —
+  **Added a `Metric` step (600, 24/28, tabular-nums) and unified the two numeral sizes onto
+  it**; one code line. Bigger find: `--text-micro` (11/14) and `--text-label` (13/16) have been
+  declared in `src/index.css` since Phase 5.2 and were missing from the doc — so 11px was never
+  drift, and the ramp is now documented as following the theme, which already wins on hex.
+  Detector on the admin tree **27 → 14**; the remainder is almost entirely `14px`.
+
 - Pre-map, recorded here for orientation only — these were settled before charting:
   - **Gate A calibration** (`fc06ff9`) — dual-agent critique, 7/3/1 against the brief's 11,
     0 canon-contradicting false positives; the detector's own 71% FP rate fixed at source.
@@ -95,6 +109,12 @@ and taking real money". Work ruled out of scope below is tagged with the map it 
   remains unspecified is the visual and states evidence. May be answered by `05`/`06`.
 - **Whether the four hand-rolled admin pages have counterparts** in employer/seeker — pages
   carrying their own state handling rather than routing through a shared component.
+- **The `14px` group.** 12 of the 14 remaining admin detector findings, and the largest source
+  of noise left. `text-sm` sits between the ramp's Small 13 and Body 15. A ruling of the same
+  shape as `01`, not yet ticketed because its blast radius across all three portals is unmeasured.
+- **`--text-label` 13/16 versus the prose ramp's Small 13/20.** Same size, different leading,
+  two different jobs. Changing a line-height moves layout everywhere, so this wants deliberate
+  reconciliation rather than a passing edit.
 - **Whether the a11y ratchet items graduate into their own work.** 44px targets are a
   portal-wide layout change (the admin rail ships 40px); `scope`/`<caption>`, decorative-icon
   `aria-hidden` and skip links are mechanical but unscoped. Ratcheted by `08`, not scheduled.

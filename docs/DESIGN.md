@@ -63,6 +63,12 @@ typography:
     fontWeight: 400
     lineHeight: "24px"
     letterSpacing: "0"
+  metric:
+    fontFamily: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif"
+    fontSize: "24px"
+    fontWeight: 600
+    lineHeight: "28px"
+    letterSpacing: "0"
   small:
     fontFamily: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif"
     fontSize: "13px"
@@ -74,6 +80,12 @@ typography:
     fontSize: "12px"
     fontWeight: 600
     lineHeight: "16px"
+    letterSpacing: "0.04em"
+  micro:
+    fontFamily: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif"
+    fontSize: "11px"
+    fontWeight: 600
+    lineHeight: "14px"
     letterSpacing: "0.04em"
 rounded:
   sm: "6px"
@@ -220,8 +232,34 @@ A disciplined single-accent palette: one green, three shades, tinted neutrals ar
 - **Subtitle** (600, 17/24, -0.005em): Subsection headers, applicant card headers.
 - **Body Large** (400, 17/26): Long-form reading copy on landing and detail pages.
 - **Body** (400, 15/24): Default UI text. The workhorse.
+- **Metric** (600, 24/28, `tabular-nums`): The one big number in a KPI or summary card. Not a
+  heading — a figure. Always tabular so a column of them aligns.
 - **Small** (400, 13/20): Metadata, timestamps, tertiary info.
 - **Label** (600, 12/16, 0.04em, UPPERCASE): Eyebrow labels, badge text, table headers.
+- **Micro** (600, 11/14, 0.04em): Tags, badges, dense metadata — the floor. Shipped as the
+  `text-micro` token since Phase 5.2. **Scope it to fragments**: an uppercase sentence at 11px
+  is outside this step, not an instance of it.
+
+**Page titles by surface class.** Headline (36/44) is the ramp's page-title step, and no gated
+portal uses it. Admin ships 20px across all 11 screens via `AdminPageHeader`, which is correct
+for dense internal tooling and is hereby the declared value there:
+
+| Surface | Page title |
+|---|---|
+| Admin — dense internal tooling | **Title, 20/28** |
+| Employer / seeker portals | **Headline, 36/44** — *not yet true; see below* |
+
+Employer and seeker currently ship `text-3xl` (30px) on dashboards and `text-2xl` (24px) on
+onboarding, in `font-display` and `text-brand-900` — three different page-title sizes across
+the gated portals and two colour treatments, none matching this ramp. Recorded as a finding,
+not silently blessed; the tier is being ruled separately rather than by restyling twelve
+customer-facing pages in a typography pass.
+
+**The theme is the authority on what a step *is*.** `src/index.css` wins on any token, the
+same way it wins on any hex. `--text-micro` (11/14) and `--text-label` (13/16) are declared
+there; this ramp documents them rather than competing with them. Known open discrepancy:
+`--text-label` sets 13/16 while Small above is 13/20 — same size, different leading, two
+different jobs. Reconcile deliberately, not by editing one of them in passing.
 
 ### Named Rules
 

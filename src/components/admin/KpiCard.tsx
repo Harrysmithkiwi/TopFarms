@@ -58,7 +58,10 @@ export function KpiCard({
       </h2>
       <div className="mt-auto flex items-end justify-between gap-2 pt-3">
         <span
-          className="text-text text-[28px] leading-none font-semibold"
+          // Was 28px, the only instance in the product; DailyBriefing's three
+          // summary figures were 24px. Two sizes for one job, neither declared.
+          // Both are now the Metric step (24/28) — see DESIGN.md §3.
+          className="text-text text-[24px] leading-7 font-semibold"
           style={{ fontVariantNumeric: 'tabular-nums' }}
         >
           {value}
