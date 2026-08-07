@@ -234,3 +234,19 @@ test.describe('public routes carry exactly one h1 and one main', () => {
     })
   }
 })
+
+test('/login and /signup have a main landmark', async ({ page }) => {
+  // AuthLayout has no shell around it and had no <main> of its own, so these
+  // two routes shipped ZERO landmarks — nothing for a screen-reader user to
+  // skip to — while DashboardLayout and AdminLayout both provide one. Found by
+  // a verifier sweeping for siblings of the /jobs nested-landmark defect.
+  //
+  // NOTE for the merge train: pricing/model-v3 appends its own block to the end
+  // of this file, so merge ③ will conflict here. Both blocks are wanted; keep
+  // them both.
+  for (const path of ['/login', '/signup']) {
+    await page.goto(path)
+    await page.waitForLoadState('networkidle')
+    await expect(page.locator('main'), `${path}: main landmarks`).toHaveCount(1)
+  }
+})

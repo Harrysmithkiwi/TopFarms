@@ -512,8 +512,11 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
         />
       </div>
 
-      {/* Main content */}
-      <main className="mx-auto max-w-5xl px-4 py-8">
+      {/* Main content. A div, not <main>: every route that renders JobDetail
+          wraps it in PublicShell, which already provides the page's only <main>
+          landmark. Unlike /pricing this route IS server-rendered, so the nested
+          landmark went into the raw HTML a job-seeking crawler indexes. */}
+      <div className="mx-auto max-w-5xl px-4 py-8">
         <div className="gap-8 lg:grid lg:grid-cols-[1fr_320px]">
           {/* Left column — all content sections */}
           <div className="space-y-8">
@@ -972,7 +975,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
             </div>
           </div>
         </div>
-      </main>
+      </div>
 
       {/* Sticky CTA bar — visitor */}
       {isVisitor && (

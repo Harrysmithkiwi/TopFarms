@@ -56,7 +56,10 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
 
       {/* Right panel: form area */}
       <div className="bg-cream flex flex-1 flex-col items-center justify-center px-6 py-12">
-        <div className="w-full max-w-md">
+        {/* <main>, not a div: this layout has no shell around it, so /login and
+            /signup had no main landmark at all — nothing for a screen-reader
+            user to skip to. DashboardLayout and AdminLayout both provide one. */}
+        <main className="w-full max-w-md">
           <div className="mb-8 text-center md:hidden">
             <span className="text-3xl font-extrabold tracking-tight">
               TopFarms<span className="text-ochre-ink">.</span>
@@ -73,7 +76,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
           )}
 
           {children}
-        </div>
+        </main>
       </div>
     </div>
   )
