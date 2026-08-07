@@ -94,6 +94,14 @@ and taking real money". Work ruled out of scope below is tagged with the map it 
   employer-facing surfaces, and §1.4 permits the number for one and forbids it for the other —
   no route rule can express that.
 
+- [Do seekers see a personal match score?](issues/03-match-score-display.md) — **No, and it was
+  never open.** `v11-DIRECTIVE` §1.4 has forbidden it since v11; the code was violating a
+  standing decision across **six** worker-facing surfaces, not one. New `MatchBand` renders a
+  positive-only word (Strong/Good/Possible); `MatchCircle` stays as the employer component;
+  `MatchBreakdown` takes an `audience` defaulting to `worker`. The fabricated blurred 78%
+  visitor teaser is deleted. **Needs one browser pass against a scored job before merge** —
+  prod currently has 0 jobs and 0 match_scores, so it could not be verified live.
+
 - Pre-map, recorded here for orientation only — these were settled before charting:
   - **Gate A calibration** (`fc06ff9`) — dual-agent critique, 7/3/1 against the brief's 11,
     0 canon-contradicting false positives; the detector's own 71% FP rate fixed at source.
@@ -127,6 +135,8 @@ and taking real money". Work ruled out of scope below is tagged with the map it 
 - **Whether the a11y ratchet items graduate into their own work.** 44px targets are a
   portal-wide layout change (the admin rail ships 40px); `scope`/`<caption>`, decorative-icon
   `aria-hidden` and skip links are mechanical but unscoped. Ratcheted by `08`, not scheduled.
+- **`/jobs` renders two `<main>` landmarks** (`JobSearch.tsx:600` inside a layout that already
+  provides one). In scope per `10`. Part of a `/jobs` accessibility pass that does not exist yet.
 - **Whether the gate needs a motion/interaction dimension.** Gate A only measured static
   states. 254 elements compute `transition-property: all`; nobody has ruled on whether that
   is in the gate's remit.

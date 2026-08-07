@@ -21,7 +21,7 @@ import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/hooks/useAuth'
 import { VerificationBadge } from '@/components/ui/VerificationBadge'
 import { MatchBreakdown } from '@/components/ui/MatchBreakdown'
-import { MatchCircle } from '@/components/ui/MatchCircle'
+import { MatchBand } from '@/components/ui/MatchBand'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 import { StatsStrip } from '@/components/ui/StatsStrip'
 import { Timeline } from '@/components/ui/Timeline'
@@ -77,18 +77,37 @@ interface JobDetailData extends JobListing {
   employer_profiles: EmployerProfile
 }
 
-// Blurred visitor teaser — realistic-looking placeholder match
-const VISITOR_TEASER_SCORE: MatchScore = {
-  total_score: 78,
-  breakdown: {
-    shed_type: 20,
-    location: 16,
-    accommodation: 15,
-    skills: 14,
-    salary: 8,
-    visa: 5,
-    couples: 0,
-  },
+/**
+ * Visitor prompt. Replaces a blurred, fabricated 78% "teaser match" that was
+ * shipped to every signed-out visitor.
+ *
+ * Two things were wrong with it. It was invented data presented as a preview of
+ * the reader's own fit — nobody had been scored, because nobody was signed in.
+ * And blur is not concealment: the numbers sat in the DOM and the bundle, so the
+ * fabrication was readable by anyone who looked. The call to action works
+ * without pretending to know something about a stranger.
+ */
+function MatchTeaser() {
+  return (
+    <div className="bg-surface border-border flex flex-col items-center rounded-[12px] border p-6 text-center">
+      <p className="font-body text-[15px] font-semibold" style={{ color: 'var(--color-text)' }}>
+        See how you match
+      </p>
+      <p
+        className="font-body mt-1 max-w-xs text-[13px]"
+        style={{ color: 'var(--color-text-muted)' }}
+      >
+        Sign up and we&rsquo;ll show you how this job lines up with your experience, region and
+        the kind of work you&rsquo;re after.
+      </p>
+      <Link
+        to="/signup"
+        className="font-body bg-brand-hover text-text-on-brand hover:bg-brand-900 focus-visible:outline-brand mt-4 inline-flex items-center justify-center rounded-[8px] px-4 py-2 text-[13px] font-medium transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2"
+      >
+        Sign up free
+      </Link>
+    </div>
+  )
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -128,7 +147,8 @@ function formatDate(dateStr?: string): string | null {
 
 /**
  * Public job detail page.
- * - Visitors (not logged in): see full listing + sticky signup CTA bar + blurred match teaser
+ * - Visitors (not logged in): see full listing + sticky signup CTA bar + a sign-up prompt
+ *   (no fabricated match — see MatchTeaser)
  * - Seekers: see full listing + match score breakdown + "Apply Now" modal
  * - Employer (own listing): see full listing + "Edit Listing" button
  * - Employer (not own): see full listing, no CTA
@@ -897,7 +917,7 @@ export function JobDetail() {
             )}
             {isVisitor && (
               <div className="lg:hidden">
-                <MatchBreakdown score={VISITOR_TEASER_SCORE} blurred={true} />
+                <MatchTeaser />
               </div>
             )}
           </div>
@@ -907,7 +927,7 @@ export function JobDetail() {
             <div className="sticky top-20 space-y-4">
               {/* Match breakdown for seekers */}
               {isSeeker && matchScore && <MatchBreakdown score={matchScore} />}
-              {isVisitor && <MatchBreakdown score={VISITOR_TEASER_SCORE} blurred={true} />}
+              {isVisitor && <MatchTeaser />}
 
               {/* Sidebar: quick facts, similar jobs, farm profile */}
               <JobDetailSidebar
@@ -975,7 +995,7 @@ export function JobDetail() {
           <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4">
             {matchScore && (
               <div className="flex items-center gap-2 lg:hidden">
-                <MatchCircle score={matchScore.total_score} size="sm" />
+                <MatchBand score={matchScore.total_score} />
                 <span className="text-sm font-semibold text-ink">
                   Match
                 </span>

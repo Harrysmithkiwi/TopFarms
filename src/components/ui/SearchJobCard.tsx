@@ -1,6 +1,6 @@
 import { MapPin, Bookmark } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { MatchCircle } from '@/components/ui/MatchCircle'
+import { MatchBand } from '@/components/ui/MatchBand'
 import { VerificationBadge } from '@/components/ui/VerificationBadge'
 import { Tag } from '@/components/ui/Tag'
 import { ExpandableCardTabs } from '@/components/ui/ExpandableCardTabs'
@@ -193,7 +193,7 @@ export function SearchJobCard({
             {/* Match circle */}
             <div className="flex w-[52px] flex-col items-center justify-center">
               {matchScore !== null && matchScore !== undefined ? (
-                <MatchCircle score={matchScore.total_score} size="md" />
+                <MatchBand score={matchScore.total_score} />
               ) : (
                 /* Subtle placeholder for visitors */
                 <div className="border-border bg-surface-2 flex h-[50px] w-[50px] items-center justify-center rounded-full border-[1.5px]">

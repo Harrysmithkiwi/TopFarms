@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
-import { MatchCircle } from '@/components/ui/MatchCircle'
+import { MatchBand } from '@/components/ui/MatchBand'
 import { Button } from '@/components/ui/Button'
 import type { MatchScore, JobListing, ApplicationStatus } from '@/types/domain'
 import { ACTIVE_STATUSES } from '@/types/domain'
@@ -125,7 +125,7 @@ export function ExpandableCardTabs({
         {activeTab === 'match' && totalScore !== null && (
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <MatchCircle score={totalScore} size="md" />
+              <MatchBand score={totalScore} />
               <span className="font-body text-text text-[14px] font-semibold">Overall Match</span>
             </div>
             {dimensionEntries.slice(0, 3).map(([dim, score]) => (

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { CheckCircle } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
-import { MatchCircle } from '@/components/ui/MatchCircle'
+import { MatchBand } from '@/components/ui/MatchBand'
 import { supabase } from '@/lib/supabase'
 import type { SeekerProfileData } from '@/types/domain'
 
@@ -192,7 +192,7 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
                   className="bg-surface border-border hover:border-brand flex cursor-pointer items-center gap-3 rounded-[10px] border p-3 transition-colors"
                   onClick={() => navigate(`/jobs/${match.jobs.id}`)}
                 >
-                  <MatchCircle score={match.total_score} size="sm" />
+                  <MatchBand score={match.total_score} />
                   <div className="min-w-0 flex-1">
                     <p
                       className="font-body truncate text-sm font-semibold text-text"
