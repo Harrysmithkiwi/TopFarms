@@ -220,17 +220,44 @@ test.describe('public routes carry exactly one h1 and one main', () => {
   // second h1, and /pricing served one h1 per audience view. Both are invalid
   // for a crawler and both split the document outline for a screen reader.
   // Asserted explicitly, for the same reason the admin heading test above is.
-  for (const path of ['/', '/jobs', '/pricing', '/for-employers']) {
-    test(`${path} has one h1 and one main`, async ({ page }) => {
+  //
+  // Each route also asserts WHICH h1 it got. Counting alone cannot tell a
+  // correct page from the 404: NotFound renders inside PublicShell, so it too
+  // has exactly one h1 and one main, and a route that broke and fell through to
+  // it would keep this green.
+  //
+  // `aud` runs the audience-swapped routes through BOTH lenses. The employer
+  // string is the CSS default (directive 1.11), so a seek-only regression —
+  // which is exactly half of the /pricing bug this guards — is invisible unless
+  // the lens is set. sessionStorage must be written against the origin, hence
+  // the goto-then-set-then-reload.
+  const ROUTES = [
+    { path: '/', h1: /The right match|Find the farm job/ },
+    { path: '/', h1: /Find the farm job/, aud: 'seeker' },
+    { path: '/jobs', h1: /Find your next farming opportunity/ },
+    { path: '/pricing', h1: /What it costs/ },
+    { path: '/pricing', h1: /Workers never pay/, aud: 'seeker' },
+    { path: '/for-employers', h1: /What happens after you post/ },
+  ]
+  for (const { path, h1, aud } of ROUTES) {
+    const label = `${path}${aud ? ` (${aud} lens)` : ''}`
+    test(`${label} has one h1 and one main`, async ({ page }) => {
       await page.goto(path)
+      if (aud) {
+        await page.evaluate((a) => sessionStorage.setItem('tf-aud', a), aud)
+        await page.reload()
+      }
       await page.waitForLoadState('networkidle')
       await page.locator('main').first().waitFor({ timeout: 20_000 })
-      const counts = await page.evaluate(() => ({
+      const found = await page.evaluate(() => ({
         h1: document.querySelectorAll('h1').length,
         main: document.querySelectorAll('main').length,
+        // innerText, not textContent: the hidden audience string must not count.
+        text: (document.querySelector('h1') as HTMLElement | null)?.innerText ?? '',
       }))
-      expect(counts.h1, `${path}: h1 elements`).toBe(1)
-      expect(counts.main, `${path}: main landmarks`).toBe(1)
+      expect(found.h1, `${label}: h1 elements`).toBe(1)
+      expect(found.main, `${label}: main landmarks`).toBe(1)
+      expect(found.text, `${label}: h1 text — is this the right page, or the 404?`).toMatch(h1)
     })
   }
 })
