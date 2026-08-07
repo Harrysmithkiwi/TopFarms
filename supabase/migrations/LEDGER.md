@@ -91,6 +91,7 @@ database ledger is the runtime record.
 | 076_storage_purge_via_api | `20260730063416` | Phase 3 — 075's SQL storage deletes were inert (storage.protect_delete); split to Edge Fn + ordering guard. Also carries `list_user_storage_objects` (`20260730063632`) |
 | 077_seeker_contacts_truth | `20260730064300` | Phase 3 — the paywalled table was empty for 3 of 4 seekers; trigger + backfill + first/last name; connector-applied |
 | 078_audit_log_outlives_the_actor | `20260730065000` | Phase 3 — admin_id was NOT NULL + ON DELETE SET NULL, so no admin could ever be deleted; FK dropped |
+| 079_training_demand | `20260807032652` | Go-live S1 — training demand capture keyed to the skills taxonomy; own-row RLS + `admin_training_demand_summary` behind `_admin_gate()`; connector-applied, verified via pg_catalog |
 
 ## Ledger rows with no dedicated file (documented duplicates)
 

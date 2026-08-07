@@ -22,7 +22,8 @@ nzfarmingjobs harvest cron with its watchdog. v13 design port stages 1–3c are 
 |---|---|---|---|
 | `pricing/model-v3` | 2 | Free unlimited listings, banded placement, contract_type-scoped guarantee | **Edge Function deploys BEFORE the frontend.** Directive 1.19 is the authority. |
 | `v13-stage3b-framework-mode` | 5 | Framework mode, built and preview-green | Merge drags to prod immediately — needs the UAT pass |
-| `design/admin-gate` | 6 | Admin design gate. **Gate A met** | One operator ruling open, see below |
+| `design/admin-gate` | 24 | Design gate complete; PR #86 draft, CI green | Merges FIRST — go-live M1 order ①. Owes the local-stack match-display pass |
+| `feat/training-demand-form` | — | S1 demand-validation form (separable) | Placement sign-off (go-live ticket 05); cannot block launch |
 
 `main` auto-deploys, so **nothing merges without deciding it can be in prod that minute.**
 
@@ -49,7 +50,8 @@ the human-only parts. It also forces the stuck match-display ruling (below).
 | Stream | Authority | State |
 |---|---|---|
 | GSD roadmap | `.planning/ROADMAP.md` | v2.2 current; Phase 28 closed; 24–26 sales-gated |
-| Design gate — **open decisions** | `.planning/design-gate/map.md` (wayfinder) | 11 tickets, **all closed** |
+| **Go-live (launch 2026-08-14)** | `.planning/go-live/map.md` (wayfinder) | **THE current map** — M1 merge train → M4 launch gate |
+| Design gate — decisions | `.planning/design-gate/map.md` (wayfinder) | 11 tickets, all closed — feeds go-live M5 |
 | Design gate — admin **execution** | `.planning/admin-design-gate/STATE.md` + `docs/ADMIN-DESIGN-PROMPT.md` | Gate A + B met for `AdminTable`; C–D open |
 | Gated-portal design canon | `docs/DESIGN.md` (+ `docs/PRODUCT.md`) | `src/index.css` wins on any hex |
 | Public marketing canon | `docs/design/v11-DIRECTIVE.md` | **Settled. Out of scope. Do not audit.** |
