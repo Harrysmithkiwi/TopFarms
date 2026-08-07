@@ -1,8 +1,21 @@
 # M1 integration UAT — one pass, both roles, one preview
 
-**Preview:** https://top-farms-7huocqf7d-harrysymmanssmith-gmailcoms-projects.vercel.app
+**Preview:** https://top-farms-9htj6k15e-harrysymmanssmith-gmailcoms-projects.vercel.app
 **Branch:** `integration/launch` (`main` + design gate + pricing v3 + framework mode)
 **Prepared:** 2026-08-07 · **Time:** ~45 min · **Run it in one sitting, in order.**
+
+> **The preview URL moved on 2026-08-07** (was `top-farms-7huocqf7d`). Four M4 landmark and
+> heading fixes landed on `design/admin-gate` and `pricing/model-v3` afterwards — one `h1`
+> and one `<main>` on `/jobs`, one `h1` on `/pricing`, and a named results region so desktop
+> headings stop skipping `h1 → h3` — so the UAT now covers the tree that will actually merge.
+> Details and the filed-not-fixed list in [`map.md`](map.md) § M4 *Landmark/heading closure*.
+>
+> **The 20/20 table below was re-run item by item against this new preview and is still
+> 20/20** (2026-08-07, scripted; the one apparent failure was my own regex matching `"$0"`
+> and `"Workers"` across a line break, not a stats band). Both `/pricing` audience views were
+> screenshot-checked, and the new landmark guard plus the anonymous axe sweep are green
+> against the preview: 4/4 and 12/12. Gates on the merged tree unchanged: `tsc -b` 0,
+> vitest 644/0, lint 0 errors at the 54 pin, design-gate 16 at the 17 pin, build OK.
 
 ## What this is
 

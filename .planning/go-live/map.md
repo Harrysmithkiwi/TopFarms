@@ -133,7 +133,7 @@ v2.1 gate's own words).
 | Stripe test→live swap — 9-step checklist, $0.50 smoke charge + refund ([PEND-01](issues/03-stripe-live-swap.md)) | **Operator** (flagged, not this map's work) |
 | Legal pages review | **Operator** |
 | UAT-account purge, reconciled so `+ci-seeker`/`+ci-employer` survive ([ticket](issues/04-uat-purge-vs-ci-accounts.md)) | **Operator + engineering** |
-| Double-`h1` on `/jobs` and `/pricing`, double-`<main>` on `/jobs` (SEO/a11y, pre-existing on `main`) | Engineering |
+| ✅ Double-`h1` on `/jobs` and `/pricing`, double-`<main>` on `/jobs` — **done 2026-08-07**, see below | Engineering |
 | Re-run `docs/LAUNCH-READINESS-PROMPT.md` against live prod; score ≥ 90 held or raised | Engineering |
 | Cold-start check: real signup → browse → apply on the live site, fresh account | Engineering + operator inbox |
 
@@ -142,6 +142,60 @@ the difference between deployed and launched.
 
 **Depends on:** M1 merged (auditing prod means auditing the final build), Stripe keys
 (operator), M3 far enough that the funnel test isn't against an empty board.
+
+#### Landmark/heading closure — done 2026-08-07, riding the merge train
+
+Fixed on the owning branches rather than straight to `main`, so no extra production release
+is needed and the UAT preview covers the final tree.
+
+| Defect | Fix | Branch (merge slot) |
+|---|---|---|
+| `/jobs` two `h1` — `SearchHero` plus `JobSearch`'s mobile sticky bar | mobile bar → `h2` | `design/admin-gate` ① |
+| `/jobs` nested `<main>` — one in `PublicShell`, one round the desktop results column | results column → `div` | `design/admin-gate` ① |
+| `/jobs` desktop headings jump `h1 → h3` (the only `h2` is `md:hidden`) | `sr-only` `h2` naming the results region | `design/admin-gate` ① |
+| `/pricing` two `h1`, one per audience view, both in the served DOM | one shared hero, strings swapped by `emp-only`/`seek-only` spans inside a single `h1` — the pattern `HeroSection` already uses | `pricing/model-v3` ③ |
+
+**Why a `<span>` swap and not a JS branch:** directive 1.11 requires both audience strings in
+the DOM so the page is correct without JavaScript. A conditional render would break that.
+
+**Regression guard**, in `tests/e2e/a11y.spec.ts`: `/`, `/jobs`, `/pricing`, `/for-employers`
+each assert exactly one `h1` and one `main`. It lands on `pricing/model-v3` deliberately —
+`/pricing` only satisfies it from merge ③ onward, while `/jobs` is fixed by ①. **The existing
+axe sweep already visited all four routes and stayed green through every one of these**,
+because `landmark-no-duplicate-main` and the heading rules are *moderate* impact and `runAxe`
+only logs moderate. Same blind spot the admin heading-navigation test was written for.
+
+Evidence: gates on the merged tree — `tsc -b` 0, vitest 644/0, lint 0 errors at the 54 pin,
+design-gate **16** at the 17 pin (one literal below; ratchet the pin to 16 once all four
+branches are on `main`), `npm run build` OK. Live preview
+`top-farms-9htj6k15e`: guard 4/4 and the anonymous axe sweep 12/12; `/jobs`'s
+`heading-order` moderate is gone; both audience views of `/pricing` screenshot-checked, and
+the seeker CTA pill measured 135.9px, not stretched — `.seek-only` forces `display:block`, so
+the class sits on a wrapper `div` rather than the `Link`.
+
+#### Filed, not fixed — found while closing the above
+
+1. **`/` has the same `heading-order` skip**, `h1` then three `h3`s with no `h2`, at both
+   widths. Confirmed **pre-existing**: identical heading list on the pre-fix preview
+   `top-farms-7huocqf7d`. One `sr-only` `h2` fixes it, same shape as the `/jobs` fix. Not
+   done unasked — `/` is the settled marketing canon and CLAUDE.md §10 puts only the *filing*
+   of a11y findings in scope there, not unrequested edits. Operator's call.
+2. **`/`, `/pricing` and `/for-employers` serve no HTML content** — a 6KB shell and the
+   generic site `<title>`, versus 60KB of real markup on `/jobs`. Deliberate and documented
+   (`src/routes.ts`, directive 1.16: only routes that must appear in raw HTML get a module),
+   and identical to prod today, so **not a regression**. But the reasoning in that comment is
+   about *gated* routes — "a crawler cannot see a dashboard" — and these three are the public
+   marketing surfaces a crawler most wants. Promoting a route is a two-file change plus a
+   hydration audit. Post-launch SEO item, not a blocker: Google renders JS.
+3. **A `vite preview` from 1 August was still holding port 4173** on this machine, serving a
+   six-day-old `dist/`, and the first local verification run silently tested against it.
+   Killed. `playwright.config.ts` sets `reuseExistingServer: !process.env.CI`, so any local
+   `npx playwright test` will attach to whatever is on 4173 — a standing false-green risk
+   locally. CI is unaffected (`reuseExistingServer` false there).
+4. **`E2E_EMPLOYER_EMAIL`/`_PASSWORD` are absent from the local `.env`**, so the employer
+   storage-state setup skips every local e2e run. CI has them; a local run is quietly
+   thinner than CI. Also: the preview's first sign-in **cold** exceeded the 30s setup timeout
+   twice, then passed in 4.6s warm — worth remembering when the M4 cold-start check runs.
 
 ### M5 — Polish (continuous, strictly non-blocking)
 
