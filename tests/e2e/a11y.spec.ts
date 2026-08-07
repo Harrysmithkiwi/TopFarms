@@ -186,13 +186,16 @@ test.describe('public routes carry exactly one h1 and one main', () => {
   // which is exactly half of the /pricing bug this guards — is invisible unless
   // the lens is set. sessionStorage must be written against the origin, hence
   // the goto-then-set-then-reload.
+  // Patterns are case-INSENSITIVE on purpose: the landing h1 is CSS-uppercased,
+  // and innerText returns rendered casing ("THE RIGHT MATCH,"). Matching the
+  // source casing here fails against a page that is perfectly correct.
   const ROUTES = [
-    { path: '/', h1: /The right match|Find the farm job/ },
-    { path: '/', h1: /Find the farm job/, aud: 'seeker' },
-    { path: '/jobs', h1: /Find your next farming opportunity/ },
-    { path: '/pricing', h1: /What it costs/ },
-    { path: '/pricing', h1: /Workers never pay/, aud: 'seeker' },
-    { path: '/for-employers', h1: /What happens after you post/ },
+    { path: '/', h1: /the right match/i },
+    { path: '/', h1: /find the farm job/i, aud: 'seeker' },
+    { path: '/jobs', h1: /find your next farming opportunity/i },
+    { path: '/pricing', h1: /what it costs/i },
+    { path: '/pricing', h1: /workers never pay/i, aud: 'seeker' },
+    { path: '/for-employers', h1: /what happens after you post/i },
   ]
   for (const { path, h1, aud } of ROUTES) {
     const label = `${path}${aud ? ` (${aud} lens)` : ''}`
