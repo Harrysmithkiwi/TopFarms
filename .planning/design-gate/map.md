@@ -102,6 +102,21 @@ and taking real money". Work ruled out of scope below is tagged with the map it 
   visitor teaser is deleted. **Needs one browser pass against a scored job before merge** —
   prod currently has 0 jobs and 0 match_scores, so it could not be verified live.
 
+- [One shared-component gate pass, or one per portal?](issues/06-shared-component-pass-scope.md) —
+  **One portal-agnostic shared pass, run once; admin Phase B is NOT re-scoped.** Verified every
+  remaining Phase B component (`KpiCard`, `AdminPageHeader`, `DrawerShell`, `tremor/*`) is
+  admin-only. Order: finish admin Phase B → shared pass → per-portal screen passes. Screen work
+  cannot be shared because it never was (0 of 12 inherit); primitive work must not be repeated
+  three times. Surfaced that **two `Card` components exist**, one per world.
+
+- [Does admin's Gate A calibration carry to the other two portals?](issues/05-calibration-per-portal.md) —
+  **It carries, and re-running it is impossible rather than merely expensive.** What was
+  calibrated is the tooling: every FP class found was portal-independent and is recorded in
+  `ignore.md`. Gate A's hit rate was measurable only against a pre-existing list of 11 known
+  findings, which neither other portal has — without ground truth there is no hit rate.
+  Replaced by a "first run per portal is provisional" rule. Also set: both portals are
+  **Operate**, and `/jobs`/`/jobs/:id` run with the visual lens **off** per `10`.
+
 - Pre-map, recorded here for orientation only — these were settled before charting:
   - **Gate A calibration** (`fc06ff9`) — dual-agent critique, 7/3/1 against the brief's 11,
     0 canon-contradicting false positives; the detector's own 71% FP rate fixed at source.
