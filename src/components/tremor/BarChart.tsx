@@ -572,6 +572,14 @@ interface BarChartProps extends React.HTMLAttributes<HTMLDivElement> {
   layout?: "vertical" | "horizontal"
   type?: "default" | "stacked" | "percent"
   legendPosition?: "left" | "center" | "right"
+  /**
+   * Accessible name for the plot, and an optional longer description. Required
+   * for the same reason as AreaChart's: Recharts 3.x makes the SVG surface a
+   * focusable role="application" element with empty <title>/<desc>, so an
+   * unnamed chart is a tab stop that announces nothing.
+   */
+  ariaLabel: string
+  ariaDescription?: string
 }
 
 const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
@@ -604,6 +612,8 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
       layout = "horizontal",
       type = "default",
       legendPosition = "right",
+      ariaLabel,
+      ariaDescription,
       ...other
     } = props
     const paddingValue = !showXAxis && !showYAxis ? 0 : 20
@@ -665,6 +675,12 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
       >
         <ResponsiveContainer>
           <RechartsBarChart
+            // See AreaChart: Recharts writes these into <title>/<desc>, and
+            // role="img" replaces the misapplied role="application".
+            title={ariaLabel}
+            desc={ariaDescription}
+            role="img"
+            aria-label={ariaLabel}
             data={data}
             onClick={
               hasOnValueChange && (activeLegend || activeBar)
@@ -792,7 +808,9 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
               wrapperStyle={{ outline: "none" }}
               isAnimationActive={true}
               animationDuration={100}
-              cursor={{ fill: "#d1d5db", opacity: "0.15" }}
+              // Was #d1d5db (Tailwind gray-300), a Tremor Raw default predating
+              // the token pass. Matches AreaChart's cursor.
+              cursor={{ fill: "var(--color-border)", opacity: "0.15" }}
               offset={20}
               position={{
                 y: layout === "horizontal" ? 0 : undefined,

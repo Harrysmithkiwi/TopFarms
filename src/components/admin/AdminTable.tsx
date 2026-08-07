@@ -376,12 +376,24 @@ export function AdminTable<TRow extends Record<string, unknown>>({
   // rows + hover highlight breathe off the card walls; pt-2 gives air below the
   // search field. Bordered otherwise. Skeleton and table share this wrapper so the
   // load → loaded transition doesn't shift the layout.
-  const wrapTable = (inner: ReactNode) =>
+  //
+  // tabIndex on the scroll container: a region that scrolls must be reachable by
+  // keyboard, or a keyboard-only user cannot pan the table sideways at all. Caught
+  // by axe (`scrollable-region-focusable`, serious) at 360px the first time the
+  // admin portal was ever included in the a11y sweep.
+  //
+  // Only when settled — the skeleton is aria-hidden, and a tab stop wrapping
+  // aria-hidden content announces nothing, which is the defect this pass removed
+  // from the chart.
+  const wrapTable = (inner: ReactNode, focusable = true) =>
     inCard ? (
-      <div className="overflow-x-auto px-4 pt-2">{inner}</div>
+      <div className="overflow-x-auto px-4 pt-2" tabIndex={focusable ? 0 : undefined}>
+        {inner}
+      </div>
     ) : (
       <div
         className="overflow-x-auto rounded-lg border"
+        tabIndex={focusable ? 0 : undefined}
         style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-surface)' }}
       >
         {inner}
@@ -399,7 +411,7 @@ export function AdminTable<TRow extends Record<string, unknown>>({
     : emptyBody
 
   const body = loading ? (
-    wrapTable(<TableSkeleton columns={columns} rows={Math.min(pageSize, 8)} />)
+    wrapTable(<TableSkeleton columns={columns} rows={Math.min(pageSize, 8)} />, false)
   ) : failure === 'unauthorised' ? (
     // §5 Unauthorised. Reachable even behind ProtectedRoute: a role can change
     // mid-session, and useAuth's 3s loadRole timeout can hold a stale role while

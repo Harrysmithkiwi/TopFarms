@@ -284,6 +284,49 @@ Every component that fetches, submits, or depends on a session ships all four. A
 
 Client-side gating is presentation. **The security boundary is the data layer** (`_admin_gate()` for admin RPCs; RLS elsewhere). A component may assume the server refuses — it may never be the only thing refusing.
 
+### Accessibility
+
+Accessibility is **part of the gate, and it blocks** — not a parallel concern that runs
+alongside it. §1 already says a screen that renders perfectly and leaks data fails; the same
+logic applies to a screen a keyboard cannot reach. A surface with an accessibility defect in
+the blocking set below is not signed off.
+
+**Accessibility is the one dimension NOT partitioned by canon.** Everywhere else, a design
+finding on a public marketing surface is discarded — that world is settled and answers to
+`docs/design/v11-DIRECTIVE.md` (`CLAUDE.md` §10). An *accessibility* finding is filed
+wherever it is found. A screen reader does not know which design system a page belongs to.
+
+Two gates, deliberately split by what a machine can see:
+
+- **Mechanical** — `tests/e2e/a11y.spec.ts` runs axe-core over routes × 2 widths. Serious and
+  critical violations fail the build; moderate is logged for the ratchet.
+- **Judgement** — the design critique owns what axe is blind to. This is not redundant: axe
+  checks that an `h1` exists and that present headings are ordered, but **not** that content
+  regions have headings at all. The admin landing screen passed every mechanical check while
+  carrying one `h1` and zero `h2`–`h6` across six regions.
+
+**Blocking.** A surface does not pass with any of these outstanding:
+
+| | |
+|---|---|
+| Contrast | WCAG AA — 4.5:1 body, 3:1 at ≥24px or ≥19px bold |
+| Focus | Every focusable element takes a visible indicator, ≥3:1 against its own background |
+| Accessible name | Every interactive element and every chart surface has one |
+| Heading structure | One `h1`, and a heading for each region of content |
+| Overflow | No horizontal scroll at 360px |
+| Loading | Every skeleton pairs with one polite live region — `aria-hidden` shapes alone are silent |
+
+**Ratchet, not blocking yet.** Real, tracked, fixed as surfaces are touched — never widened:
+44×44px tap targets (the admin rail ships 40px portal-wide, so this is a layout change, not a
+patch); `scope` and `<caption>` on data tables; `aria-hidden` on decorative icons; skip links.
+
+**Measure it properly or don't file it.** A contrast walker that reads colour strings resolves
+this repo's `oklch()` and `color-mix()` tokens to `#000000` and fabricates failures — normalise
+through a canvas and composite ancestor backgrounds. A focus ring sampled immediately after
+`Tab` catches the rail's 150ms `transition-all` mid-animation and reads ~1.77:1 against a
+settled 4.57:1. Both traps have burned a run already; both are recorded in
+`.impeccable/critique/ignore.md`.
+
 ### Breakpoints
 
 No breakpoints are declared in `@theme`, so Tailwind v4 defaults are the contract: `sm` 640px, `md` 768px, `lg` 1024px, `xl` 1280px, `2xl` 1536px. Don't add `--breakpoint-*` tokens to redeclare them.

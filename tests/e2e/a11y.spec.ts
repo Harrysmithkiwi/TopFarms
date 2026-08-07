@@ -109,6 +109,51 @@ for (const viewport of [DESKTOP, MOBILE]) {
     })
   })
 
+  // Admin had ZERO a11y coverage until 2026-08-07 — the six original routes are
+  // three marketing surfaces plus seeker/employer, and the whole admin portal was
+  // outside the sweep. Gate A found real defects there (an unnamed chart tab stop,
+  // no heading structure) that this spec would have caught had it been looking.
+  test.describe(`a11y sweep @ ${vp} (admin)`, () => {
+    test.skip(() => !hasState('admin'), SKIP_NO_CREDS('admin'))
+    test.use({ storageState: hasState('admin') ? statePath('admin') : undefined, viewport })
+
+    // The landing screen (hand-rolled states, the chart) and one AdminTable screen,
+    // which stands in for the nine that route through it.
+    for (const [label, path] of [
+      ['daily briefing', '/admin'],
+      ['employers list', '/admin/employers'],
+    ] as const) {
+      test(`${label} passes axe @ ${vp}`, async ({ page }) => {
+        await page.goto(path)
+        await page.waitForLoadState('networkidle')
+        // Role resolution gates the admin shell and can take seconds; without this
+        // the sweep can scan a skeleton and call it clean.
+        await page.getByRole('heading', { level: 1 }).first().waitFor({ timeout: 20_000 })
+        await runAxe(page, `${label} @ ${vp}`)
+        if (viewport === MOBILE) await assertNoHorizontalScroll(page, `${label} @ ${vp}`)
+      })
+    }
+
+    test(`admin regions are reachable by heading navigation @ ${vp}`, async ({ page }) => {
+      // Not an axe rule — axe checks that an h1 exists and that present headings
+      // are ordered, never that content regions HAVE headings. This is the defect
+      // Gate A found and the mechanical gate could not see, so it is asserted here.
+      await page.goto('/admin')
+      await page.waitForLoadState('networkidle')
+      await page.getByRole('heading', { level: 1 }).first().waitFor({ timeout: 20_000 })
+      const levels = await page.evaluate(() =>
+        Array.from(document.querySelectorAll('main h1, main h2, main h3')).map(
+          (h) => h.tagName,
+        ),
+      )
+      expect(levels.filter((l) => l === 'H1'), 'exactly one h1').toHaveLength(1)
+      expect(
+        levels.filter((l) => l !== 'H1').length,
+        'content regions with no heading — screen-reader navigation is a list of one',
+      ).toBeGreaterThanOrEqual(4)
+    })
+  })
+
   test.describe(`a11y sweep @ ${vp} (employer)`, () => {
     test.skip(() => !hasState('employer'), SKIP_NO_CREDS('employer'))
     test.use({ storageState: hasState('employer') ? statePath('employer') : undefined, viewport })

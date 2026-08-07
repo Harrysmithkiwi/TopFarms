@@ -320,6 +320,8 @@ export function AdminAnalytics() {
             {match.bands.length > 0 && (
               <BarChart
                 className="mb-4 h-48"
+                ariaLabel="Applications and hires by match-score band"
+                ariaDescription="Grouped bar chart comparing application volume against hires within each match-score band."
                 data={match.bands.map((b) => ({
                   band: b.band,
                   Applications: b.applications,

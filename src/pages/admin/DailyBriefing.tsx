@@ -73,7 +73,11 @@ function CardHeading({
         >
           {eyebrow}
         </div>
-        <div className="text-text mt-0.5 text-[15px] font-semibold">{title}</div>
+        {/* h2, not a div: this page had one h1 and zero h2-h6 across six regions
+            of content, so heading navigation — the primary way a screen-reader
+            user moves around a dashboard — did not exist. The eyebrow stays a
+            div; it labels the group, the title names the region. */}
+        <h2 className="text-text mt-0.5 text-[15px] font-semibold">{title}</h2>
       </div>
       {right}
     </div>
@@ -242,6 +246,8 @@ export function DailyBriefing() {
             <CardHeading eyebrow="Growth" title={`Signups, last ${TREND_DAYS} days`} />
             <AreaChart
               className="mt-4 h-56"
+              ariaLabel={`Daily signups over the last ${TREND_DAYS} days`}
+              ariaDescription="Area chart. Values are also listed in the Signups figure above; exact daily counts are available on hover."
               data={formatTrend(trend)}
               index="date"
               categories={['Signups']}
