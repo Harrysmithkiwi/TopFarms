@@ -104,8 +104,26 @@ mode this rule exists to prevent.
   `docs/` — do not move them.
 - **Public marketing — `Home`, `ForEmployers`, `Pricing`, `legal/`, `src/components/landing/`.**
   Canon is `docs/design/v11-DIRECTIVE.md` (cream, Archivo/Bricolage). **Settled and out of
-  scope.** Do not audit, restyle, or "improve" it. A design finding on a marketing surface is
-  discarded, not filed.
+  scope.** Do not audit, restyle, or "improve" it. A **visual** finding on a marketing surface
+  is discarded, not filed.
+
+**The split is by dimension, not only by route** (ruled 2026-08-07, design-gate ticket 10).
+Three kinds of finding are filed wherever they are found, on any surface, in either canon:
+
+- **Accessibility** — a screen reader does not know which design system a page belongs to.
+  See `docs/DESIGN.md` §5 Accessibility.
+- **States and authorisation** — the four required states apply to anything that fetches,
+  submits, or depends on a session, whatever route it sits on.
+- **The product principles in `v11-DIRECTIVE` §1.3, §1.4 and §1.5.** These are not
+  marketing-page layout rules. §1.4 — *"Employers see numeric match scores… It never shows the
+  worker a score for themselves"* — describes the worker-facing profile panel and the employer
+  view, so it binds the portals, not the landing page. §1.3 says the mechanic is deliberately
+  underplayed in marketing and **prominent in the portal**.
+
+Why this exists: `/jobs` and `/jobs/:id` are public routes that branch on session and role and
+render per-seeker data. Scoping by route alone put them out of scope for states, authorisation
+and product-principle findings, which is wrong; their *visual* treatment is still settled under
+the marketing canon and stays out of scope.
 
 **The gate is not only visual.** A screen that renders perfectly and leaks data fails. Every
 component that fetches, submits, or depends on a session ships loading, empty, error and

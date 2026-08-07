@@ -85,6 +85,15 @@ and taking real money". Work ruled out of scope below is tagged with the map it 
   drift, and the ramp is now documented as following the theme, which already wins on hex.
   Detector on the admin tree **27 → 14**; the remainder is almost entirely `14px`.
 
+- [Which canon governs the session-branching public routes?](issues/10-dual-canon-public-routes.md) —
+  **Canon splits by dimension, not only by route.** `v11-DIRECTIVE` §1.3/1.4/1.5 are product
+  principles describing the portals, not marketing-page rules, so they bind everywhere — as do
+  accessibility, states and authorisation. `/jobs` and `/jobs/:id` are in the gate for those;
+  their visual treatment stays settled under the marketing canon. `CLAUDE.md` §10 amended to
+  say **visual** finding. Clinching evidence: `MatchCircle` is shared between worker- and
+  employer-facing surfaces, and §1.4 permits the number for one and forbids it for the other —
+  no route rule can express that.
+
 - Pre-map, recorded here for orientation only — these were settled before charting:
   - **Gate A calibration** (`fc06ff9`) — dual-agent critique, 7/3/1 against the brief's 11,
     0 canon-contradicting false positives; the detector's own 71% FP rate fixed at source.
