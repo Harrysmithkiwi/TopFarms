@@ -97,7 +97,7 @@ export function JobStep1Basics({ onComplete, defaultValues }: Step1Props) {
         <div className="space-y-4">
           <div>
             <p className="text-2xl font-semibold text-white">Free</p>
-            <p className="font-body text-[13px] text-white/70">your first listing costs nothing</p>
+            <p className="font-body text-[13px] text-white/70">listing this job costs nothing</p>
           </div>
           <div>
             <p className="text-2xl font-semibold text-white">Matched</p>

@@ -14,7 +14,7 @@ import { JobStep3Skills } from './steps/JobStep3Skills'
 import { JobStep4Compensation } from './steps/JobStep4Compensation'
 import { JobStep5Description } from './steps/JobStep5Description'
 import { JobStep6Preview } from './steps/JobStep6Preview'
-import { JobStep7Payment } from './steps/JobStep7Payment'
+import { JobStep7Confirm } from './steps/JobStep7Confirm'
 import { JobStep8Success } from './steps/JobStep8Success'
 import { ErrorState } from '@/components/ui/ErrorState'
 
@@ -25,7 +25,7 @@ const STEP_LABELS = [
   'Compensation',
   'Description',
   'Preview',
-  'Payment',
+  'Publish',
   'Done',
 ]
 
@@ -521,10 +521,9 @@ export function PostJob() {
               />
             )}
 
-            {currentStep === 6 && jobId && employerProfile.id && (
-              <JobStep7Payment
+            {currentStep === 6 && jobId && (
+              <JobStep7Confirm
                 jobId={jobId}
-                employerId={employerProfile.id}
                 onComplete={() => wizard.nextStep()}
                 onBack={() => wizard.prevStep()}
               />

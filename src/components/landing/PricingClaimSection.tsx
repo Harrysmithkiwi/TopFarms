@@ -12,7 +12,7 @@ export function PricingClaimSection() {
       <div className="bg-green-3 flex flex-wrap items-center justify-between gap-6 rounded-3xl px-7 py-9 text-white md:px-11">
         <div>
           <h2 id="price-h2" className="text-[26px] font-extrabold tracking-[-.04em]">
-            First listing free. Workers never pay.
+            Every listing free. Workers never pay.
           </h2>
           <p className="mt-2 text-[15px] font-medium text-white/82">
             Prices published, no calls, no quotes.

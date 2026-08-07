@@ -56,7 +56,7 @@ These were the live contradictions across the pre-consolidation document set. Th
 | Topic | Superseded claims (archived) | Resolved / current truth |
 |---|---|---|
 | **Product name** | "FarmHands" (2025 GDocs) | **TopFarms** (renamed) |
-| **Monetisation** | employer subscriptions; $50/post; $100-only; training commissions | **Listing tiers (free/$100/$150/$200) + placement fees $200/$400/$800.** No subscriptions, no training commissions. |
+| **Monetisation** | employer subscriptions; $50/post; $100-only; training commissions; listing tiers free/$100/$150/$200 (v2, superseded 2026-08-04) | **v3 (directive 1.19): listings FREE and unlimited + Featured $99 (dormant until trigger) + placement fees $200/$400/$800 with a replacement guarantee (permanent 90d / fixed term 30d / casual none). Seekers pay $0.** No subscriptions, no training commissions, no percentage placement, no seeker fees. **Decision recorded; product change not yet built.** |
 | **Sector scope** | "dairy + sheep/beef ONLY" (v1.0–v2.0); 13-sector broad (FarmHands) | **Ag-broad (6 categories) as of v2.1**, enforced by `jobs_sector_check` (dairy · sheep_beef · cropping · deer · mixed · other). Horticulture/viticulture/apiculture/aquaculture/forestry = future v3.0+. Phase 3 removed the landing-page cards that advertised horticulture/viticulture ahead of the schema (audit D7). |
 | **Data scraping** | Apify scraping as MVP-core pillar | **Out of the marketplace MVP.** Separate admin track, Firecrawl-based. |
 | **Training marketplace** | full third side (Courses/Enrollments, provider dashboard "complete") | **Rejected.** Admin-curated content only. |

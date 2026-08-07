@@ -213,6 +213,58 @@ test.describe('reduced motion honoured by JS animation (Phase 4.4 / A7)', () => 
   })
 })
 
+test.describe('public routes carry exactly one h1 and one main', () => {
+  // axe rates landmark-no-duplicate-main and the heading rules MODERATE, and
+  // runAxe above only logs moderate — so the sweep watched these four routes
+  // for weeks while /jobs served a <main> nested inside PublicShell's plus a
+  // second h1, and /pricing served one h1 per audience view. Both are invalid
+  // for a crawler and both split the document outline for a screen reader.
+  // Asserted explicitly, for the same reason the admin heading test above is.
+  //
+  // Each route also asserts WHICH h1 it got. Counting alone cannot tell a
+  // correct page from the 404: NotFound renders inside PublicShell, so it too
+  // has exactly one h1 and one main, and a route that broke and fell through to
+  // it would keep this green.
+  //
+  // `aud` runs the audience-swapped routes through BOTH lenses. The employer
+  // string is the CSS default (directive 1.11), so a seek-only regression —
+  // which is exactly half of the /pricing bug this guards — is invisible unless
+  // the lens is set. sessionStorage must be written against the origin, hence
+  // the goto-then-set-then-reload.
+  // Patterns are case-INSENSITIVE on purpose: the landing h1 is CSS-uppercased,
+  // and innerText returns rendered casing ("THE RIGHT MATCH,"). Matching the
+  // source casing here fails against a page that is perfectly correct.
+  const ROUTES = [
+    { path: '/', h1: /the right match/i },
+    { path: '/', h1: /find the farm job/i, aud: 'seeker' },
+    { path: '/jobs', h1: /find your next farming opportunity/i },
+    { path: '/pricing', h1: /what it costs/i },
+    { path: '/pricing', h1: /workers never pay/i, aud: 'seeker' },
+    { path: '/for-employers', h1: /what happens after you post/i },
+  ]
+  for (const { path, h1, aud } of ROUTES) {
+    const label = `${path}${aud ? ` (${aud} lens)` : ''}`
+    test(`${label} has one h1 and one main`, async ({ page }) => {
+      await page.goto(path)
+      if (aud) {
+        await page.evaluate((a) => sessionStorage.setItem('tf-aud', a), aud)
+        await page.reload()
+      }
+      await page.waitForLoadState('networkidle')
+      await page.locator('main').first().waitFor({ timeout: 20_000 })
+      const found = await page.evaluate(() => ({
+        h1: document.querySelectorAll('h1').length,
+        main: document.querySelectorAll('main').length,
+        // innerText, not textContent: the hidden audience string must not count.
+        text: (document.querySelector('h1') as HTMLElement | null)?.innerText ?? '',
+      }))
+      expect(found.h1, `${label}: h1 elements`).toBe(1)
+      expect(found.main, `${label}: main landmarks`).toBe(1)
+      expect(found.text, `${label}: h1 text — is this the right page, or the 404?`).toMatch(h1)
+    })
+  }
+})
+
 test('/login and /signup have a main landmark', async ({ page }) => {
   // AuthLayout has no shell around it and had no <main> of its own, so these
   // two routes shipped ZERO landmarks — nothing for a screen-reader user to

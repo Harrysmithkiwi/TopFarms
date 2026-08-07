@@ -7,127 +7,143 @@ import { usePageMeta } from '@/lib/usePageMeta'
 // own, and contradict 1.14's rejection of audience-as-URL-segment. Employer view
 // is the CSS default so the page is correct without JS; the seeker view uses the
 // same .emp-only / .seek-only mechanism as the hero.
-// Numbers and mechanics are UNCHANGED from the live page: 100 / 150 / 200,
-// placement 200 to 800, first listing free, one free listing per account.
+// Pricing model v3 (directive 1.19, 2026-08-04). The three-tier listing ladder
+// (100 / 150 / 200) and "first listing free" are RETIRED: listings are free and
+// unlimited, and the placement fee carries the whole model. Featured ($99) is
+// deliberately absent, not forgotten. NOT THIS forbids selling prominence before
+// its traffic trigger fires, and an empty board is exactly when it would be a lie.
+//
+// Three cards, not five, because there are three facts: listing costs nothing,
+// hiring costs one published fee, and that fee buys a guarantee.
 
 const tiers = [
   {
-    name: 'First listing',
+    name: 'Listing',
     price: 'Free',
-    period: 'one per account',
-    description: 'Your first job, listed and match-scored. No card required.',
-    highlight: false,
-    features: ['Listed in search results', '30-day listing', 'Scored applicants', 'Email applications'],
-  },
-  {
-    name: 'Standard',
-    price: '$100',
-    period: 'per listing',
-    description: 'Everything you need to attract quality candidates.',
-    highlight: false,
-    features: ['Listed in search results', '30-day listing', 'Up to 5 photos', 'Basic analytics'],
-  },
-  {
-    name: 'Featured',
-    price: '$150',
-    period: 'per listing',
-    description: 'Priority placement in search and sector pages.',
-    highlight: true,
-    features: [
-      'Everything in Standard',
-      'Highlighted in search results',
-      'Featured badge on listing',
-      'Detailed analytics',
-    ],
-  },
-  {
-    name: 'Premium',
-    price: '$200',
-    period: 'per listing',
-    description: 'Maximum visibility for roles you need to fill fast.',
+    period: 'every listing, always',
+    description: 'Post every role you have. No card, no catch, no limit.',
     highlight: false,
     features: [
-      'Everything in Featured',
-      'Top of search results',
-      'Longer run, refreshed listing date',
-      'Dedicated support',
+      'Unlimited listings',
+      '30-day listing',
+      'Scored applicants, ordered by fit',
+      'Applications to your inbox',
     ],
   },
   {
     name: 'Placement',
     price: '$200-800',
-    period: 'per hire, by role',
-    description: 'We shortlist and check, you interview. Priced up front.',
+    period: 'once, only if you hire',
+    description: 'Set by the salary band on your listing. You know it before anyone applies.',
+    highlight: true,
+    features: [
+      'Under $55k: $200',
+      '$55k to $80k: $400',
+      '$80k and above, and managers: $800',
+      'Invoiced Net-14 on confirmed hire',
+    ],
+  },
+  {
+    name: 'Guarantee',
+    price: 'Included',
+    period: 'with every placement fee',
+    description: 'If the hire does not last, you do not pay twice for the same seat.',
     highlight: false,
     features: [
-      'Shortlisting and reference checks',
-      'Priced by salary band',
-      'Invoiced Net-14 on confirmed hire',
-      'Free until you shortlist',
+      'Permanent roles: 90 days',
+      'Fixed term roles: 30 days',
+      'We rematch and relist free',
+      'No placement fee on the replacement',
     ],
   },
 ]
 
 const faqs = [
   {
-    q: 'Is my first listing really free?',
-    a: 'Yes. Your very first job listing is free regardless of which tier you choose. No credit card required until your second listing. The free listing is one per account (deleting a job does not restore it).',
+    q: 'Is listing really free?',
+    a: 'Yes, and there is no limit. Post one role or ten. No card is required to list a job, and there is no listing fee at any tier. We only earn if you actually hire someone.',
   },
   {
     q: 'Is there a fee when I hire someone?',
-    a: 'Yes. A one-off placement fee of $200, $400 or $800 NZD based on the role’s salary band and seniority. You accept it when you shortlist a candidate (which unlocks their contact details and CV), and it is invoiced on Net-14 terms when you confirm the hire. Until you shortlist, you see their full profile, match breakdown and summary free.',
+    a: 'Yes, one. A one-off placement fee of $200, $400 or $800 NZD, set by the salary band on your listing. You accept it when you shortlist a candidate, which is what unlocks their phone, email and CV, and it is invoiced on Net-14 terms when you confirm the hire. Until you shortlist, you see their full profile, match breakdown and summary free.',
+  },
+  {
+    q: 'What happens if the person does not work out?',
+    a: 'Every placement fee includes a replacement guarantee. On permanent roles it runs 90 days, the same window as the trial period in your employment agreement. On fixed term roles it runs 30 days. If they leave inside that window we rematch the role and relist it free, and you pay no placement fee for the replacement. Casual and relief work carries no guarantee, because the window would outlive most of those jobs.',
   },
   {
     q: 'How long does a listing stay active?',
-    a: 'All listings are active for 30 days. You can renew or repost at any time from your dashboard.',
+    a: 'All listings are active for 30 days. You can renew or repost at any time from your dashboard, free.',
   },
   {
-    q: 'Can I upgrade my listing tier after posting?',
-    a: 'Yes. You can upgrade a live listing to a higher tier at any time and pay only the difference.',
+    q: 'How does this compare to a recruiter?',
+    a: 'A recruitment agency in New Zealand typically charges 15 to 20 percent of first-year salary. On a $70,000 herd manager that is over $10,000. Ours is $400, published on this page, with a guarantee attached.',
   },
   {
     q: 'What payment methods do you accept?',
-    a: 'All major credit and debit cards via Stripe. All prices are in NZD.',
+    a: 'Placement fees are invoiced through Stripe on Net-14 terms, payable by card or bank transfer. All prices are in NZD. There is nothing to pay to post a job, so no card is needed to get started.',
   },
   {
     q: 'Is there a subscription or contract?',
-    a: 'No subscriptions, no contracts. You pay per listing, only when you post.',
+    a: 'No subscriptions, no contracts, no minimum. Listing is free and the placement fee is a one-off, only when you hire.',
   },
 ]
 
 export function Pricing() {
   usePageMeta(
     'Pricing | TopFarms',
-    'Simple per-listing pricing for NZ farm job ads. First listing free, no subscriptions, no contracts. Workers never pay.',
+    'Published pricing for NZ farm job ads. Every listing free and unlimited, one placement fee only if you hire, with a replacement guarantee. Workers never pay.',
   )
 
   return (
     <PublicShell>
-      {/* Employer view: the fee table. CSS default. */}
-      <div className="emp-only">
-        <section className="mx-auto max-w-[1440px] px-3 pt-3 sm:px-5">
-          <div className="v13-dark bg-green relative overflow-hidden rounded-3xl px-7 py-12 text-white md:px-11">
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 opacity-50 [background:repeating-linear-gradient(96deg,rgba(255,255,255,.035)_0_1px,transparent_1px_54px)]"
-            />
-            <div className="relative">
-              <h1 className="max-w-[18ch] text-4xl leading-[.95] font-extrabold tracking-[-.04em] md:text-6xl">
-                What it costs
-              </h1>
-              <p className="mt-5 max-w-[46ch] text-[17px] text-white/82">
-                Published in the open. No calls, no quotes. Your first listing is always free, and
-                workers never pay.
-              </p>
+      {/* One hero, one h1. Both audience strings live in the DOM and the CSS
+          swaps them (1.11, same pattern as HeroSection) — but the h1 element
+          itself is shared, so the page has exactly one no matter which
+          audience is active. Two h1s here split the outline for crawlers even
+          though display:none keeps one out of the a11y tree. */}
+      <section className="mx-auto max-w-[1440px] px-3 pt-3 sm:px-5">
+        <div className="v13-dark bg-green relative overflow-hidden rounded-3xl px-7 py-12 text-white md:px-11">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 opacity-50 [background:repeating-linear-gradient(96deg,rgba(255,255,255,.035)_0_1px,transparent_1px_54px)]"
+          />
+          <div className="relative">
+            <h1 className="max-w-[20ch] text-4xl leading-[.95] font-extrabold tracking-[-.04em] md:text-6xl">
+              <span className="emp-only">What it costs</span>
+              <span className="seek-only">
+                Free, always. <span className="text-lime">Workers never pay.</span>
+              </span>
+            </h1>
+            <p className="emp-only mt-5 max-w-[46ch] text-[17px] text-white/82">
+              Published in the open. No calls, no quotes. Every listing is free, you pay once only
+              if you hire, and workers never pay.
+            </p>
+            <p className="seek-only mt-5 max-w-[46ch] text-[17px] text-white/82">
+              Not to apply, not to match, not ever. Employers pay to list a job. You do not pay to
+              find one.
+            </p>
+            {/* Wrapper carries seek-only: the toggle forces display:block, which
+                would stretch the pill if it sat on the Link itself. */}
+            <div className="seek-only mt-7">
+              <Link
+                to="/signup?role=seeker"
+                className="bg-lime text-green-2 hover:bg-lime-2 inline-flex min-h-11 items-center rounded-full px-5 text-[15px] font-semibold transition-colors"
+              >
+                I'm looking for work
+              </Link>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
+      {/* Employer view: the fee table. CSS default. */}
+      <div className="emp-only">
         <section aria-labelledby="tiers-h2" className="mx-auto max-w-[1440px] px-3 pt-14 sm:px-5">
           <h2 id="tiers-h2" className="sr-only">
-            Listing tiers
+            What it costs
           </h2>
-          <div className="grid gap-3.5 md:grid-cols-2 xl:grid-cols-5">
+          <div className="grid gap-3.5 md:grid-cols-3">
             {tiers.map((tier) => (
               <div
                 key={tier.name}
@@ -194,30 +210,6 @@ export function Pricing() {
 
       {/* Seeker view: stated plainly, never an empty page (directive 1.17c). */}
       <div className="seek-only">
-        <section className="mx-auto max-w-[1440px] px-3 pt-3 sm:px-5">
-          <div className="v13-dark bg-green relative overflow-hidden rounded-3xl px-7 py-12 text-white md:px-11">
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 opacity-50 [background:repeating-linear-gradient(96deg,rgba(255,255,255,.035)_0_1px,transparent_1px_54px)]"
-            />
-            <div className="relative">
-              <h1 className="max-w-[20ch] text-4xl leading-[.95] font-extrabold tracking-[-.04em] md:text-6xl">
-                Free, always. <span className="text-lime">Workers never pay.</span>
-              </h1>
-              <p className="mt-5 max-w-[46ch] text-[17px] text-white/82">
-                Not to apply, not to match, not ever. Employers pay to list a job. You do not pay to
-                find one.
-              </p>
-              <Link
-                to="/signup?role=seeker"
-                className="bg-lime text-green-2 hover:bg-lime-2 mt-7 inline-flex min-h-11 items-center rounded-full px-5 text-[15px] font-semibold transition-colors"
-              >
-                I'm looking for work
-              </Link>
-            </div>
-          </div>
-        </section>
-
         <section aria-labelledby="free-h2" className="mx-auto max-w-[1440px] px-3 pt-14 sm:px-5">
           <div className="bg-card border-line rounded-3xl border px-7 py-9 md:px-11">
             <h2 id="free-h2" className="text-2xl font-extrabold tracking-[-.03em] md:text-[30px]">
