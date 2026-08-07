@@ -173,6 +173,20 @@ branches are on `main`), `npm run build` OK. Live preview
 the seeker CTA pill measured 135.9px, not stretched — `.seek-only` forces `display:block`, so
 the class sits on a wrapper `div` rather than the `Link`.
 
+#### Advisor sweep — prod, read-only, 2026-08-07
+
+Run early because the score inputs it measures are prod-state facts the merge train cannot
+change. **0 ERROR, 73 WARN, 10 INFO.** The 67 headline WARNs are
+`authenticated_security_definer_function_executable` on `admin_*` RPCs — expected by design
+(CLAUDE.md §10: the boundary is `_admin_gate()`, not the grant), and **verified rather than
+assumed**: a `pg_proc` sweep for `admin_*` definer functions whose body omits `_admin_gate`
+returns **zero rows**. `set_user_role` also survives inspection — it requires `auth.uid()`,
+whitelists `('employer','seeker')` so **admin is not settable**, writes only for the caller,
+and refuses any later change with `42501`. One WARN is operator-owned:
+`auth_leaked_password_protection` is off (Supabase dashboard, Auth → Passwords). The 10 INFOs
+are `rls_enabled_no_policy` on deny-by-default tables such as `admin_audit_log`, which is the
+intended posture. One WARN did not survive — see item 4 below.
+
 #### Filed, not fixed — found while closing the above
 
 1. **`/` has the same `heading-order` skip**, `h1` then three `h3`s with no `h2`, at both
@@ -192,7 +206,23 @@ the class sits on a wrapper `div` rather than the `Link`.
    Killed. `playwright.config.ts` sets `reuseExistingServer: !process.env.CI`, so any local
    `npx playwright test` will attach to whatever is on 4173 — a standing false-green risk
    locally. CI is unaffected (`reuseExistingServer` false there).
-4. **`E2E_EMPLOYER_EMAIL`/`_PASSWORD` are absent from the local `.env`**, so the employer
+4. **`compute_match_score(seeker_id, job_id)` and `compute_match_scores_batch` are
+   `SECURITY DEFINER`, take an arbitrary `seeker_id`, and carry `GRANT EXECUTE … TO
+   authenticated` with no `auth.uid()` check** (`pg_proc`, verified live). Any signed-in user
+   holding a `seeker_profiles.id` can recompute that seeker's full per-dimension breakdown —
+   shed, location, accommodation, skills, salary, visa, couples — against any job, which is
+   exactly the data directive §1.4 keeps from workers and which routes around
+   `employer_may_view_seeker`. **Nothing in `src/` calls either RPC** (`grep -rn '\.rpc('`),
+   so the grant is vestigial: migration `037_definer_function_hardening.sql:105-106` re-granted
+   them as part of a blanket list after revoking from `PUBLIC, anon`, not as a considered
+   decision about these two. Remediation is one line each —
+   `REVOKE EXECUTE ON FUNCTION public.compute_match_score(uuid,uuid) FROM authenticated;` —
+   and safe, because the trigger and precompute paths call it inside owner-context definer
+   functions. **Deliberately not applied:** a prod grant change with three branches queued to
+   merge is the wrong moment, and mis-scoping it would break match precompute silently.
+   Needs a confirming read that no Edge Function calls it either. Exploitation needs a known
+   uuid, so this is moderate, not a blocker.
+5. **`E2E_EMPLOYER_EMAIL`/`_PASSWORD` are absent from the local `.env`**, so the employer
    storage-state setup skips every local e2e run. CI has them; a local run is quietly
    thinner than CI. Also: the preview's first sign-in **cold** exceeded the 30s setup timeout
    twice, then passed in 4.6s warm — worth remembering when the M4 cold-start check runs.
