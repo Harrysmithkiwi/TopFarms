@@ -600,6 +600,11 @@ export function JobSearch() {
           {/* Results. A div, not <main>: PublicShell already renders the page's
               only <main> landmark, and nesting a second one is invalid. */}
           <div>
+            {/* The visible "Find Farm Jobs" heading is md:hidden, so at desktop
+                width the page went h1 -> h3 with no h2 between them. Named here
+                rather than made visible: the hero above already says it, and a
+                second visible copy would be noise. */}
+            <h2 className="sr-only">Job results</h2>
             <ResultsArea
               loadError={loadError}
               onRetry={fetchJobs}
