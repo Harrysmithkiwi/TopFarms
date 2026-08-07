@@ -97,26 +97,48 @@ export function Pricing() {
 
   return (
     <PublicShell>
-      {/* Employer view: the fee table. CSS default. */}
-      <div className="emp-only">
-        <section className="mx-auto max-w-[1440px] px-3 pt-3 sm:px-5">
-          <div className="v13-dark bg-green relative overflow-hidden rounded-3xl px-7 py-12 text-white md:px-11">
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 opacity-50 [background:repeating-linear-gradient(96deg,rgba(255,255,255,.035)_0_1px,transparent_1px_54px)]"
-            />
-            <div className="relative">
-              <h1 className="max-w-[18ch] text-4xl leading-[.95] font-extrabold tracking-[-.04em] md:text-6xl">
-                What it costs
-              </h1>
-              <p className="mt-5 max-w-[46ch] text-[17px] text-white/82">
-                Published in the open. No calls, no quotes. Every listing is free, you pay once
-                only if you hire, and workers never pay.
-              </p>
+      {/* One hero, one h1. Both audience strings live in the DOM and the CSS
+          swaps them (1.11, same pattern as HeroSection) — but the h1 element
+          itself is shared, so the page has exactly one no matter which
+          audience is active. Two h1s here split the outline for crawlers even
+          though display:none keeps one out of the a11y tree. */}
+      <section className="mx-auto max-w-[1440px] px-3 pt-3 sm:px-5">
+        <div className="v13-dark bg-green relative overflow-hidden rounded-3xl px-7 py-12 text-white md:px-11">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 opacity-50 [background:repeating-linear-gradient(96deg,rgba(255,255,255,.035)_0_1px,transparent_1px_54px)]"
+          />
+          <div className="relative">
+            <h1 className="max-w-[20ch] text-4xl leading-[.95] font-extrabold tracking-[-.04em] md:text-6xl">
+              <span className="emp-only">What it costs</span>
+              <span className="seek-only">
+                Free, always. <span className="text-lime">Workers never pay.</span>
+              </span>
+            </h1>
+            <p className="emp-only mt-5 max-w-[46ch] text-[17px] text-white/82">
+              Published in the open. No calls, no quotes. Every listing is free, you pay once only
+              if you hire, and workers never pay.
+            </p>
+            <p className="seek-only mt-5 max-w-[46ch] text-[17px] text-white/82">
+              Not to apply, not to match, not ever. Employers pay to list a job. You do not pay to
+              find one.
+            </p>
+            {/* Wrapper carries seek-only: the toggle forces display:block, which
+                would stretch the pill if it sat on the Link itself. */}
+            <div className="seek-only mt-7">
+              <Link
+                to="/signup?role=seeker"
+                className="bg-lime text-green-2 hover:bg-lime-2 inline-flex min-h-11 items-center rounded-full px-5 text-[15px] font-semibold transition-colors"
+              >
+                I'm looking for work
+              </Link>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
+      {/* Employer view: the fee table. CSS default. */}
+      <div className="emp-only">
         <section aria-labelledby="tiers-h2" className="mx-auto max-w-[1440px] px-3 pt-14 sm:px-5">
           <h2 id="tiers-h2" className="sr-only">
             What it costs
@@ -188,30 +210,6 @@ export function Pricing() {
 
       {/* Seeker view: stated plainly, never an empty page (directive 1.17c). */}
       <div className="seek-only">
-        <section className="mx-auto max-w-[1440px] px-3 pt-3 sm:px-5">
-          <div className="v13-dark bg-green relative overflow-hidden rounded-3xl px-7 py-12 text-white md:px-11">
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 opacity-50 [background:repeating-linear-gradient(96deg,rgba(255,255,255,.035)_0_1px,transparent_1px_54px)]"
-            />
-            <div className="relative">
-              <h1 className="max-w-[20ch] text-4xl leading-[.95] font-extrabold tracking-[-.04em] md:text-6xl">
-                Free, always. <span className="text-lime">Workers never pay.</span>
-              </h1>
-              <p className="mt-5 max-w-[46ch] text-[17px] text-white/82">
-                Not to apply, not to match, not ever. Employers pay to list a job. You do not pay to
-                find one.
-              </p>
-              <Link
-                to="/signup?role=seeker"
-                className="bg-lime text-green-2 hover:bg-lime-2 mt-7 inline-flex min-h-11 items-center rounded-full px-5 text-[15px] font-semibold transition-colors"
-              >
-                I'm looking for work
-              </Link>
-            </div>
-          </div>
-        </section>
-
         <section aria-labelledby="free-h2" className="mx-auto max-w-[1440px] px-3 pt-14 sm:px-5">
           <div className="bg-card border-line rounded-3xl border px-7 py-9 md:px-11">
             <h2 id="free-h2" className="text-2xl font-extrabold tracking-[-.03em] md:text-[30px]">
