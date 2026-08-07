@@ -1,7 +1,7 @@
 # Put the a11y gate's credentials in CI
 
 Type: task
-Status: open
+Status: resolved
 
 ## Question
 
@@ -207,3 +207,67 @@ rate-limited (`email rate limit exceeded`), so retrying by email is not availabl
 anyway.
 
 Once they can sign in, the four secrets and the skip-guard land in one commit as planned.
+
+## Answer — resolved 2026-08-07
+
+**Secrets set, guard shipped, ticket closed. And the P0 I raised was wrong — retracted below.**
+
+### The actual bug was in my tooling, not the product
+
+The operator asked why I was handing them a dashboard task when I have a Supabase MCP write
+path. Fair, and the answer was that I had not reached for it. Reading `auth.users` directly
+settled everything in one query:
+
+- Both users existed, `email_confirmed_at` null, **`confirmation_token` still populated** — so
+  no valid verify had ever reached the endpoint.
+- The real tokens are **56 characters**. The Gmail connector gave me 54.
+
+That is a **quoted-printable double-decode** in the mail rendering: `=54` became `T`, `=89`
+became a replacement character. Each token lost its first two hex digits, which is why every
+link I built returned `otp_expired` on a token minutes old.
+
+Replaying the genuine `/auth/v1/verify` flow with the tokens read from the database confirmed
+**both accounts first try**, returning valid sessions with `email_verified: true` and the right
+role in `user_metadata`. No direct write to `auth.users` was needed.
+
+### Retraction
+
+I raised "email confirmation may be broken for every real signup" as a possible P0 and put it
+in `NOW.md` above the launch gate. **It is false. Signup confirmation works.** The evidence
+that looked alarming — two accounts unconfirmed after clicking — was entirely explained by the
+corrupted link. Withdrawn from `NOW.md`, with the episode recorded rather than deleted.
+
+Still true and unfixed, but far smaller than it looked: `/auth/v1/verify` ignores `redirect_to`
+and falls back to the apex Site URL while prod serves `www`. Open redirects are correctly
+refused (`evil.example.com` does not pass). That is `project_supabase_redirect_www`, a launch
+item, not a blocker.
+
+### Delivered
+
+**Four secrets set** on `Harrysmithkiwi/TopFarms` — `E2E_SEEKER_EMAIL/_PASSWORD`,
+`E2E_EMPLOYER_EMAIL/_PASSWORD`. Both accounts verified to sign in and resolve the correct role
+before anything was set.
+
+**The guard, in the same commit as promised.** `E2E_REQUIRED_ROLES` declares what a run
+promises to cover; a listed role with no credential **throws in `auth.setup.ts`** rather than
+skipping. Both workflows set `seeker,employer`. Unset locally, so local skipping is unchanged.
+
+Proven in all three states rather than assumed:
+
+| | Result |
+|---|---|
+| required roles present | setup passes, exit 0 |
+| required role, credentials removed | **exit 1**, naming the missing role |
+| variable unset (local) | skips as before, exit 0 |
+
+**`admin` is deliberately absent from the CI list.** Its credential is a live production admin,
+and that decision stands open — preferably a non-production Supabase project. The guard makes
+that gap explicit instead of silent, which was the point.
+
+### Left for a separate pass
+
+The employer account has no listing, so the employer a11y spec will still skip on
+`employer has no active listings`. Closing that needs the onboarding wizard plus a posted job —
+its own piece of work, and now the only thing standing between CI and full role coverage.
+
+Gates: `tsc -b` 0, vitest 640, lint 0 errors / 54, design-gate 17.

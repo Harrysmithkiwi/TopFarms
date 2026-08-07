@@ -35,18 +35,13 @@ the human-only parts. It also forces the stuck match-display ruling (below).
 1. **PEND-01 — Stripe test→live swap.** 9-item checklist in `DECISIONS-PENDING.md`. Blocks
    `/gsd:complete-milestone v2.0`. Needs a real $0.50 charge and refund; deferred twice
    because it wants dedicated focus.
-2. **Possible P0 — email confirmation may be broken in prod.** Two accounts created via the
-   real signup flow on 2026-08-07 stayed unconfirmed after their links were clicked, and
-   `/auth/v1/verify` ignores `redirect_to` entirely (falls back to the apex Site URL while prod
-   serves `www`). If no real user has confirmed a signup since the 2026-07-02 domain go-live,
-   nobody can complete registration. Detail in `.planning/design-gate/issues/09-e2e-secrets-in-ci.md`.
-3. **The launch gate** — legal review, a Supabase toggle, purging 3 UAT accounts, a cold-start
+2. **The launch gate** — legal review, a Supabase toggle, purging 3 UAT accounts, a cold-start
    check. Rerun prompt at `docs/LAUNCH-READINESS-PROMPT.md`.
-4. **Match-score display.** `v11-DIRECTIVE.md` §1.4 says workers never see a personal number;
+3. **Match-score display.** `v11-DIRECTIVE.md` §1.4 says workers never see a personal number;
    `JobDetail.tsx` shows signed-in seekers a numeric total plus per-dimension scores, and
    visitors a fabricated blurred `78`. **Nothing arbitrates it.** A product decision, not a
    gate condition — rule before the seeker design phase or the audit reopens the argument.
-5. **`ProtectedRoute`** — one guard, 24 routes, all three portals. Decides where admin-gate
+4. **`ProtectedRoute`** — one guard, 24 routes, all three portals. Decides where admin-gate
    Phase B starts. Detail in `.planning/admin-design-gate/STATE.md` § Open rulings.
 
 ## Streams and their authorities
@@ -54,7 +49,7 @@ the human-only parts. It also forces the stuck match-display ruling (below).
 | Stream | Authority | State |
 |---|---|---|
 | GSD roadmap | `.planning/ROADMAP.md` | v2.2 current; Phase 28 closed; 24–26 sales-gated |
-| Design gate — **open decisions** | `.planning/design-gate/map.md` (wayfinder) | 8 tickets; 5 on the frontier |
+| Design gate — **open decisions** | `.planning/design-gate/map.md` (wayfinder) | 11 tickets, **all closed** |
 | Design gate — admin **execution** | `.planning/admin-design-gate/STATE.md` + `docs/ADMIN-DESIGN-PROMPT.md` | Gate A + B met for `AdminTable`; C–D open |
 | Gated-portal design canon | `docs/DESIGN.md` (+ `docs/PRODUCT.md`) | `src/index.css` wins on any hex |
 | Public marketing canon | `docs/design/v11-DIRECTIVE.md` | **Settled. Out of scope. Do not audit.** |
@@ -87,3 +82,17 @@ deleting** — an "ahead" count means commits that exist nowhere else.
 
 Not deleted. `git branch -D` needs explicit operator instruction in chat (`CLAUDE.md` §4, and
 §8 records what happened the last time a reset ran unasked).
+
+## Retracted
+
+**"Email confirmation is broken in prod" (raised and withdrawn 2026-08-07).** Replaying the
+real confirmation tokens read straight from `auth.users` confirmed both accounts first try and
+issued valid sessions. **Signup confirmation works.** The failure was entirely in how the
+Gmail connector rendered the link: quoted-printable was double-decoded, so `=54` became `T` and
+`=89` became a replacement character, eating the first two hex digits of a 56-character token.
+Recorded here rather than deleted, because "we thought signup was broken" is worth being able
+to trace.
+
+Still true and still unfixed, though smaller than it looked: `/auth/v1/verify` ignores
+`redirect_to` and falls back to the apex Site URL while prod serves `www`
+([[project_supabase_redirect_www]]). Open redirects are correctly refused.

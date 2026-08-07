@@ -22,6 +22,26 @@ export function hasState(role: Role): boolean {
   return fs.existsSync(statePath(role))
 }
 
+/**
+ * Roles this environment PROMISES to cover, as a comma-separated list.
+ *
+ * Without this, a missing credential makes every role-gated spec `test.skip` and
+ * the run reports green over work it never exercised. That is exactly what
+ * happened here: both workflows wired six E2E_* secrets, none of them existed,
+ * and the suite passed for months without once signing in.
+ *
+ * CI sets E2E_REQUIRED_ROLES and a missing credential becomes a hard failure.
+ * Locally it is unset, so skipping stays convenient. `admin` is deliberately NOT
+ * in CI's list — its credential is a live production admin, and that decision is
+ * open (see .planning/design-gate/issues/09-e2e-secrets-in-ci.md).
+ */
+export function requiredRoles(): Role[] {
+  return (process.env.E2E_REQUIRED_ROLES ?? '')
+    .split(',')
+    .map((r) => r.trim())
+    .filter(Boolean) as Role[]
+}
+
 export const SKIP_NO_CREDS = (role: Role) =>
   `${role} credentials not provided (E2E_${role.toUpperCase()}_EMAIL/_PASSWORD) — see playwright.config.ts header`
 

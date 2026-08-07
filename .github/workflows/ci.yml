@@ -140,6 +140,10 @@ jobs:
       - name: Run E2E suite (local preview server)
         run: npx playwright test
         env:
+          # Declares what this run PROMISES to cover. A missing credential for a
+          # listed role fails the setup instead of skipping it. admin is absent on
+          # purpose — its credential is a live production admin (design-gate #09).
+          E2E_REQUIRED_ROLES: seeker,employer
           E2E_SEEKER_EMAIL: ${{ secrets.E2E_SEEKER_EMAIL }}
           E2E_SEEKER_PASSWORD: ${{ secrets.E2E_SEEKER_PASSWORD }}
           E2E_EMPLOYER_EMAIL: ${{ secrets.E2E_EMPLOYER_EMAIL }}

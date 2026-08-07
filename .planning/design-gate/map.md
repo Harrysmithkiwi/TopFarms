@@ -133,6 +133,14 @@ and taking real money". Work ruled out of scope below is tagged with the map it 
   contrast). Gated portals only, blocking, **pinned at 17 and ratcheted down only**. Tailwind
   size utilities deliberately excluded until the `14px` ruling lands.
 
+- [Put the a11y gate's credentials in CI](issues/09-e2e-secrets-in-ci.md) — **Four secrets set,
+  guard shipped.** Two purpose-made CI accounts created via the real signup flow and confirmed
+  by replaying the genuine verify flow with tokens read from `auth.users`. The blocker was a
+  quoted-printable double-decode in the Gmail connector eating two hex digits of a 56-char
+  token — **not** a product bug; the "signup confirmation is broken" P0 I raised is retracted.
+  `E2E_REQUIRED_ROLES` now makes a missing credential fail rather than skip, proven in all
+  three states. `admin` deliberately excluded — still a live production admin.
+
 - Pre-map, recorded here for orientation only — these were settled before charting:
   - **Gate A calibration** (`fc06ff9`) — dual-agent critique, 7/3/1 against the brief's 11,
     0 canon-contradicting false positives; the detector's own 71% FP rate fixed at source.
