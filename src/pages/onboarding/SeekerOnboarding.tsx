@@ -209,7 +209,7 @@ export function SeekerOnboarding() {
         {/* Header */}
         <div>
           <h1
-            className="font-display text-2xl font-semibold text-brand-900"
+            className="font-display text-[20px] leading-7 font-semibold text-brand-900"
           >
             Set up your job seeker profile
           </h1>

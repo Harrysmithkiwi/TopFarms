@@ -117,6 +117,14 @@ and taking real money". Work ruled out of scope below is tagged with the map it 
   Replaced by a "first run per portal is provisional" rule. Also set: both portals are
   **Operate**, and `/jobs`/`/jobs/:id` run with the visual lens **off** per `10`.
 
+- [What size are employer and seeker page titles?](issues/11-portal-page-title-tier.md) —
+  **Dashboards → Headline 36/44, wizards → Title 20/28, colour recorded not changed.** Two
+  corrections to `02`: there is no second typeface (`font-display` computes to Inter), and this
+  was an *undocumented system*, not drift — size by page kind (10/10, 3/3), colour by audience
+  (6/6, 7/7). Wizards had to move anyway: 24px is now Metric. A first pass caught itself
+  changing six dashboard **KPI numbers** to 36px; they are the Metric role, so `01` reaches
+  beyond admin and the product now has one numeral scale.
+
 - Pre-map, recorded here for orientation only — these were settled before charting:
   - **Gate A calibration** (`fc06ff9`) — dual-agent critique, 7/3/1 against the brief's 11,
     0 canon-contradicting false positives; the detector's own 71% FP rate fixed at source.

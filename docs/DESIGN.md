@@ -244,16 +244,25 @@ A disciplined single-accent palette: one green, three shades, tinted neutrals ar
 portal uses it. Admin ships 20px across all 11 screens via `AdminPageHeader`, which is correct
 for dense internal tooling and is hereby the declared value there:
 
-| Surface | Page title |
-|---|---|
-| Admin — dense internal tooling | **Title, 20/28** |
-| Employer / seeker portals | **Headline, 36/44** — *not yet true; see below* |
+| Surface | Page title | Colour |
+|---|---|---|
+| Admin — dense internal tooling | **Title, 20/28** | `--color-text` |
+| Employer / seeker — dashboards, lists, detail | **Headline, 36/44** | see below |
+| Any portal — wizards and multi-step flows | **Title, 20/28** | see below |
 
-Employer and seeker currently ship `text-3xl` (30px) on dashboards and `text-2xl` (24px) on
-onboarding, in `font-display` and `text-brand-900` — three different page-title sizes across
-the gated portals and two colour treatments, none matching this ramp. Recorded as a finding,
-not silently blessed; the tier is being ruled separately rather than by restyling twelve
-customer-facing pages in a typography pass.
+Two tiers, because a wizard already carries a step indicator and its own progress chrome; the
+title does not have to shout over them. A dashboard's title is the only orienting element on
+the page.
+
+**Page-title colour is set by audience, not by surface.** Seeker-facing titles are
+`--color-brand-900`; employer- and admin-facing titles inherit `--color-text`. This was
+undocumented but shipped **6 of 6** seeker pages and **7 of 7** employer pages, which is
+consistency, not drift — it is the same warm-to-workers instinct the product voice carries
+elsewhere. Recorded rather than changed.
+
+*History, so this is not re-litigated:* before 2026-08-07 the portals shipped `text-3xl` (30px)
+on dashboards and `text-2xl` (24px) on wizards — neither on this ramp, and 24px now collides
+with **Metric**. Both were snapped to declared steps rather than adding two more.
 
 **The theme is the authority on what a step *is*.** `src/index.css` wins on any token, the
 same way it wins on any hex. `--text-micro` (11/14) and `--text-label` (13/16) are declared
