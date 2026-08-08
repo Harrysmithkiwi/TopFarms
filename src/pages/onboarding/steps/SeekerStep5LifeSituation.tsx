@@ -105,7 +105,7 @@ export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: 
               control={control}
               name="couples_seeking"
               render={({ field }) => (
-                <Toggle checked={field.value} onCheckedChange={field.onChange} />
+                <Toggle ariaLabel="Looking for a couples role" checked={field.value} onCheckedChange={field.onChange} />
               )}
             />
           </div>
@@ -134,7 +134,7 @@ export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: 
               control={control}
               name="accommodation_needed"
               render={({ field }) => (
-                <Toggle checked={field.value} onCheckedChange={field.onChange} />
+                <Toggle ariaLabel="Accommodation needed" checked={field.value} onCheckedChange={field.onChange} />
               )}
             />
           </div>

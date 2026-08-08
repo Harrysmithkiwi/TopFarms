@@ -2,8 +2,7 @@ import * as Switch from '@radix-ui/react-switch'
 import * as Label from '@radix-ui/react-label'
 import { cn } from '@/lib/utils'
 
-interface ToggleProps {
-  label?: string
+interface ToggleBase {
   checked?: boolean
   onCheckedChange?: (checked: boolean) => void
   disabled?: boolean
@@ -11,13 +10,34 @@ interface ToggleProps {
   id?: string
 }
 
-export function Toggle({ label, checked, onCheckedChange, disabled, className, id }: ToggleProps) {
+/**
+ * A switch must have a name. Callers give it either a visible `label` or, when
+ * the surrounding row already reads as the label, an `ariaLabel` — the union
+ * makes a nameless toggle a type error rather than a silent axe violation.
+ *
+ * It was silent for a long time: five of these shipped unnamed on the employer
+ * wizard (axe `button-name`, critical) and nothing caught it, because the a11y
+ * sweep never visited /onboarding/employer.
+ */
+type ToggleProps = ToggleBase &
+  ({ label: string; ariaLabel?: never } | { label?: never; ariaLabel: string })
+
+export function Toggle({
+  label,
+  ariaLabel,
+  checked,
+  onCheckedChange,
+  disabled,
+  className,
+  id,
+}: ToggleProps) {
   const switchId = id || (label ? `toggle-${label.toLowerCase().replace(/\s+/g, '-')}` : undefined)
 
   return (
     <div className={cn('flex items-center gap-2', className)}>
       <Switch.Root
         id={switchId}
+        aria-label={ariaLabel}
         checked={checked}
         onCheckedChange={onCheckedChange}
         disabled={disabled}

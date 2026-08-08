@@ -233,7 +233,7 @@ export function JobStep2FarmDetails({ onComplete, onBack, defaultValues }: Step2
             control={control}
             name="visa_sponsorship"
             render={({ field }) => (
-              <Toggle checked={field.value} onCheckedChange={field.onChange} />
+              <Toggle ariaLabel="Visa sponsorship available" checked={field.value} onCheckedChange={field.onChange} />
             )}
           />
         </div>
@@ -250,7 +250,7 @@ export function JobStep2FarmDetails({ onComplete, onBack, defaultValues }: Step2
             control={control}
             name="couples_welcome"
             render={({ field }) => (
-              <Toggle checked={field.value} onCheckedChange={field.onChange} />
+              <Toggle ariaLabel="Couples welcome" checked={field.value} onCheckedChange={field.onChange} />
             )}
           />
         </div>
@@ -270,7 +270,7 @@ export function JobStep2FarmDetails({ onComplete, onBack, defaultValues }: Step2
               control={control}
               name="accommodation.available"
               render={({ field }) => (
-                <Toggle checked={field.value ?? false} onCheckedChange={field.onChange} />
+                <Toggle ariaLabel="Accommodation available" checked={field.value ?? false} onCheckedChange={field.onChange} />
               )}
             />
           </div>
