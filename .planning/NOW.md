@@ -8,54 +8,116 @@ stream doc disagree, the stream doc wins and this file is out of date — fix it
 
 ---
 
+## ▶ Next session, start here — updated 2026-08-08
+
+**Launch is 2026-08-14. Six days. M1 is done and prod is coherent; M3 real inventory is now
+the long pole and it is blocked on two operator decisions (tickets 01 and 02, below).**
+
+Engineering work that is unblocked and ready to pick up, in order:
+
+1. **Re-run `docs/LAUNCH-READINESS-PROMPT.md` against live prod.** This has been waiting on M1
+   all along and is now genuinely unblocked — prod finally *is* everything built. Biggest
+   remaining engineering deliverable; wants a dedicated session at high effort. Hold or raise
+   the standing 91/100.
+2. **The `compute_match_score` REVOKE** (Open rulings below). One line, safe now.
+3. **The employer-onboarding leftovers** — one pass over `ChipSelector` / `Select` closes three
+   filed a11y findings at once.
+
+Do **not** start M4's cold-start check or §4 payment verification yet: both need a real
+listing to exist, which only M3 produces.
+
+Working tree was clean and everything pushed at session end (`main` = `8351acf`).
+
+---
+
 ## Shipped and live
 
-`main` = `c4fd592`, auto-deploys to prod at **www.topfarms.co.nz** (apex 308s to www; DNS at
+`main` = `8351acf`, auto-deploys to prod at **www.topfarms.co.nz** (apex 308s to www; DNS at
 Cloudflare, proxy OFF on the Vercel CNAMEs or SSL breaks).
 
 Through GSD Phase 28 + 28b: the marketplace, admin portal, lead triage, and the
-nzfarmingjobs harvest cron with its watchdog. v13 design port stages 1–3c are in prod.
+nzfarmingjobs harvest cron with its watchdog.
 
-## In flight — 3 branches, and the order matters
+## ✅ M1 merge train COMPLETE — 2026-08-07/08. There are no in-flight branches.
 
-| Branch | Ahead | What it is | Gate before merge |
-|---|---|---|---|
-| `pricing/model-v3` | 2 | Free unlimited listings, banded placement, contract_type-scoped guarantee | **Edge Function deploys BEFORE the frontend.** Directive 1.19 is the authority. |
-| `v13-stage3b-framework-mode` | 5 | Framework mode, built and preview-green | Merge drags to prod immediately — needs the UAT pass |
-| `design/admin-gate` | 24 | Design gate complete; PR #86 draft, CI green | Merges FIRST — go-live M1 order ①. Owes the local-stack match-display pass |
-| `feat/training-demand-form` | — | S1 demand-validation form (separable) | Placement sign-off (go-live ticket 05); cannot block launch |
+All three merged in the mandated order, each gated and verified live before the next:
+① `design/admin-gate` `888b175` → ③ `pricing/model-v3` `96eee62` →
+④ `v13-stage3b-framework-mode` `f054b67` → docs `c2fdbcf`. **Prod now IS everything built.**
+
+Framework mode confirmed live by the honest signal: `/jobs` serves **60KB of server-rendered
+HTML**, not the old 1.4KB SPA shell. Pricing v3 correct in both audience lenses.
+
+Then shipped on 2026-08-08 (`4db1cb9`, `f8ff9b4`, `b110f2f`, `8351acf`):
+the §3 employer-onboarding gap analysis, the No-Subtitle Rule across all three portals, and
+the three onboarding fixes that gated outreach.
+
+Only `feat/training-demand-form` (PR #87, S1) remains unmerged — separable, cannot block
+launch, needs go-live ticket 05 placement sign-off.
 
 `main` auto-deploys, so **nothing merges without deciding it can be in prod that minute.**
 
-**The next UAT is one pass, both roles, against a single preview carrying both the framework
-and pricing branches.** Not an auth-nav test — the full journey. OAuth and a real inbox are
-the human-only parts. It also forces the stuck match-display ruling (below).
+### Two habits this week earned the hard way
 
-## Blocked on a human, not on code
+1. **Poll a CONTENT signal after a deploy, never `vercel ls` status.** A status-based wait
+   returned early and produced a false "pricing is broken on prod" alarm that was purely a
+   stale deploy mid-propagation. Use something only the new build serves.
+2. **A fresh-context verifier briefed to REFUTE pays for itself.** One found the same nested
+   `<main>` defect on `/jobs/:id` that the `/jobs` fix had missed, plus two holes in a guard
+   I had just written. It also disproved two of my own findings.
 
-1. **PEND-01 — Stripe test→live swap.** 9-item checklist in `DECISIONS-PENDING.md`. Blocks
-   `/gsd:complete-milestone v2.0`. Needs a real $0.50 charge and refund; deferred twice
-   because it wants dedicated focus.
-2. **The launch gate** — legal review, a Supabase toggle, purging 3 UAT accounts, a cold-start
-   check. Rerun prompt at `docs/LAUNCH-READINESS-PROMPT.md`.
-3. **Match-score display.** `v11-DIRECTIVE.md` §1.4 says workers never see a personal number;
-   `JobDetail.tsx` shows signed-in seekers a numeric total plus per-dimension scores, and
-   visitors a fabricated blurred `78`. **Nothing arbitrates it.** A product decision, not a
-   gate condition — rule before the seeker design phase or the audit reopens the argument.
-4. **`ProtectedRoute`** — one guard, 24 routes, all three portals. Decides where admin-gate
-   Phase B starts. Detail in `.planning/admin-design-gate/STATE.md` § Open rulings.
+## Blocked on a human, not on code — **launch 2026-08-14, 6 days out**
+
+**These two gate M3, and M3 is now the long pole.** Outreach → signups → listings takes days
+that cannot be compressed, and nothing downstream starts without them:
+
+1. **Go-live ticket 01 — the inventory ruling.** How many listings by launch day, and which of
+   the 62 staged leads to push. **Outreach cannot start without this.** Highest-leverage
+   decision on the board.
+2. **Go-live ticket 02 — the Supabase redirect allowlist.** A dashboard toggle, ~5 minutes.
+   Until it flips, the first real employer who fumbles a password hits a dead reset link.
+
+Then:
+
+3. **PEND-01 — Stripe test→live swap.** 9-item checklist in `DECISIONS-PENDING.md`. Blocks
+   `/gsd:complete-milestone v2.0`. Needs a real $0.50 charge and refund.
+4. **Legal review**, and **ticket 04** UAT-account purge — the `+ci-seeker`/`+ci-employer`
+   accounts must SURVIVE or CI goes red (`E2E_REQUIRED_ROLES` fails rather than skips).
+5. **The 16px ramp decision** (below, under Open rulings).
+
+**Resolved, do not reopen:** the match-score display argument. §1.4 is implemented and now
+covered by `tests/match-breakdown-ui.test.tsx` — `MatchBreakdown`'s `audience` prop defaults
+to `'worker'` so a forgetful call site gets the safe one, and workers see a band **word**, never
+a numeral. Mutation-checked. The fabricated blurred `78` teaser is gone.
+
+## Open rulings
+
+- **16px is not on the DESIGN.md ramp but 18 gated-portal components use it** (modal titles,
+  stat values, banner titles, sidebar headings), almost all `font-semibold`. The doc is wrong,
+  not the code. Either add 16px/600 to the ramp (zero visual change, recommended) or normalise
+  all 18 to the existing 17px step (18 files of visual churn for 1px). Not launch-blocking —
+  M5 polish. No impeccable waiver has been run.
+- **`ProtectedRoute`** — one guard, 24 routes, all three portals. Decides where admin-gate
+  Phase B starts. Detail in `.planning/admin-design-gate/STATE.md` § Open rulings.
+- **Employer-onboarding leftovers**, from `M1-EMPLOYER-ONBOARDING-GAP-ANALYSIS.md`: the
+  `ChipSelector` has zero aria on required fields; `Select` errors carry no `aria-invalid` /
+  `aria-describedby`; a `406` fires on every brand-new employer's first screen; `color-contrast`
+  serious on wizard step 8. All filed, none launch-blocking. One pass over the shared form
+  primitives fixes the first two together.
+- **`compute_match_score` grant** — `SECURITY DEFINER`, takes an arbitrary `seeker_id`, granted
+  to `authenticated`, no `auth.uid()` check, and nothing in `src/` calls it. One-line `REVOKE`.
+  Deliberately not applied mid-merge-train; safe to do now. Detail in go-live map § M4.
 
 ## Streams and their authorities
 
 | Stream | Authority | State |
 |---|---|---|
 | GSD roadmap | `.planning/ROADMAP.md` | v2.2 current; Phase 28 closed; 24–26 sales-gated |
-| **Go-live (launch 2026-08-14)** | `.planning/go-live/map.md` (wayfinder) | **THE current map** — M1 merge train → M4 launch gate |
+| **Go-live (launch 2026-08-14)** | `.planning/go-live/map.md` (wayfinder) | **THE current map** — M1 ✅ done; M3 inventory is the long pole |
 | Design gate — decisions | `.planning/design-gate/map.md` (wayfinder) | 11 tickets, all closed — feeds go-live M5 |
 | Design gate — admin **execution** | `.planning/admin-design-gate/STATE.md` + `docs/ADMIN-DESIGN-PROMPT.md` | Gate A + B met for `AdminTable`; C–D open |
-| Gated-portal design canon | `docs/DESIGN.md` (+ `docs/PRODUCT.md`) | `src/index.css` wins on any hex |
+| Gated-portal design canon | `docs/DESIGN.md` (+ `docs/PRODUCT.md`) | `src/index.css` wins on any hex. **`impeccable` is THE frontend design skill** (CLAUDE.md §10) |
 | Public marketing canon | `docs/design/v11-DIRECTIVE.md` | **Settled. Out of scope. Do not audit.** |
-| Pricing v3 | directive 1.19 | Built, not deployed |
+| Pricing v3 | directive 1.19 | **Live in prod**, verified both audience lenses |
 | Leads | `.planning/leads-triage/` | Phase 1 + Leads v2 in prod; A4 draft step pending operator config |
 | Immigration | `docs/immigration/` | **Parked until post-launch** |
 
