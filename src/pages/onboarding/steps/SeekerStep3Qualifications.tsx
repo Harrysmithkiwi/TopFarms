@@ -61,7 +61,7 @@ export function SeekerStep3Qualifications({ onComplete, onBack, defaultValues }:
           DairyNZ qualification
         </h2>
         <p className="mt-1 text-sm text-text-muted">
-          Select your highest DairyNZ qualification level, if any
+          Select your highest level, if any.
         </p>
       </div>
 

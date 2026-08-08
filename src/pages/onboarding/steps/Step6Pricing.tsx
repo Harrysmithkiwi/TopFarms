@@ -32,9 +32,6 @@ export function Step6Pricing({ onComplete, onBack }: Step6Props) {
         <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           What it costs
         </h2>
-        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-          Published in the open, so there are no surprises later.
-        </p>
       </div>
 
       <div

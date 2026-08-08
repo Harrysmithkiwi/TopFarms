@@ -158,6 +158,21 @@ for (const viewport of [DESKTOP, MOBILE]) {
     test.skip(() => !hasState('employer'), SKIP_NO_CREDS('employer'))
     test.use({ storageState: hasState('employer') ? statePath('employer') : undefined, viewport })
 
+    // The employer wizard was outside this sweep entirely until 2026-08-08 —
+    // /onboarding/seeker was covered and /onboarding/employer never was. Five
+    // unnamed switches (axe button-name, CRITICAL) sat on the employer
+    // cold-start path unseen the whole time. That is the gap, not the switches.
+    test(`/onboarding/employer passes axe @ ${vp}`, async ({ page }) => {
+      await page.goto('/onboarding/employer')
+      await page.waitForLoadState('networkidle')
+      // A completed employer bounces to the dashboard. Say what got scanned.
+      if (!page.url().includes('/onboarding/employer')) {
+        console.warn(`[a11y] /onboarding/employer redirected to ${page.url()} — scanned that`)
+      }
+      await runAxe(page, `/onboarding/employer @ ${vp}`)
+      if (viewport === MOBILE) await assertNoHorizontalScroll(page, `/onboarding/employer @ ${vp}`)
+    })
+
     test(`applicant dashboard passes axe @ ${vp}`, async ({ page }) => {
       // Route needs a job id owned by this employer — take the first
       // "view applicants" link from the employer dashboard.

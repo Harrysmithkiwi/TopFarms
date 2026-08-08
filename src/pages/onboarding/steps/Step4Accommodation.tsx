@@ -89,9 +89,6 @@ export function Step4Accommodation({ onComplete, onBack, defaultValues }: Step4P
         <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Work & Accommodation
         </h2>
-        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-          Help candidates understand career opportunities and what you offer
-        </p>
       </div>
 
       <div className="space-y-5">
@@ -141,7 +138,7 @@ export function Step4Accommodation({ onComplete, onBack, defaultValues }: Step4P
             control={control}
             name="couples_welcome"
             render={({ field }) => (
-              <Toggle checked={field.value} onCheckedChange={field.onChange} />
+              <Toggle ariaLabel="Couples welcome" checked={field.value} onCheckedChange={field.onChange} />
             )}
           />
         </div>
@@ -186,7 +183,7 @@ export function Step4Accommodation({ onComplete, onBack, defaultValues }: Step4P
             control={control}
             name="accommodation_available"
             render={({ field }) => (
-              <Toggle checked={field.value} onCheckedChange={field.onChange} />
+              <Toggle ariaLabel="Accommodation available" checked={field.value} onCheckedChange={field.onChange} />
             )}
           />
         </div>
@@ -242,7 +239,7 @@ export function Step4Accommodation({ onComplete, onBack, defaultValues }: Step4P
             control={control}
             name="vehicle_provided"
             render={({ field }) => (
-              <Toggle checked={field.value} onCheckedChange={field.onChange} />
+              <Toggle ariaLabel="Vehicle provided" checked={field.value} onCheckedChange={field.onChange} />
             )}
           />
         </div>
@@ -281,7 +278,7 @@ export function Step4Accommodation({ onComplete, onBack, defaultValues }: Step4P
             control={control}
             name="broadband_available"
             render={({ field }) => (
-              <Toggle checked={field.value} onCheckedChange={field.onChange} />
+              <Toggle ariaLabel="Broadband available" checked={field.value} onCheckedChange={field.onChange} />
             )}
           />
         </div>

@@ -86,9 +86,6 @@ export function Step2FarmDetails({ onComplete, onBack, defaultValues }: Step2Pro
         <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Tell us about your farm
         </h2>
-        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-          These details help candidates understand your operation
-        </p>
       </div>
 
       <div className="space-y-4">

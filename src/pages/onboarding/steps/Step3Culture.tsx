@@ -59,9 +59,6 @@ export function Step3Culture({ onComplete, onBack, defaultValues }: Step3Props) 
         <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Farm culture & team
         </h2>
-        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-          Help candidates understand what it's like to work on your farm
-        </p>
       </div>
 
       <div className="space-y-4">

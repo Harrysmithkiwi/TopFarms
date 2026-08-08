@@ -41,7 +41,6 @@ export function SeekerList() {
       <AdminPageHeader
         eyebrow="People"
         title="Seekers"
-        description="Seeker accounts — onboarding progress, match scores, and region."
       />
 
       <AdminTable<SeekerRow>

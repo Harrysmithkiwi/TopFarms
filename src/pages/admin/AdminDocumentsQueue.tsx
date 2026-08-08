@@ -255,7 +255,7 @@ export function AdminDocumentsQueue() {
       <AdminPageHeader
         eyebrow="People"
         title="Document Queue"
-        description="Review uploaded evidence and decide. Seeker documents grant the “Documents Verified” badge; employer submissions grant the verified-employer badge. Every document you open is recorded in the audit log."
+        description="Approving grants a verification badge. Every document you open is recorded in the audit log."
       />
 
       {/* Source switch. Two queues, one shell — same shape of decision. */}

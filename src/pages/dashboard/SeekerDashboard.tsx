@@ -198,11 +198,7 @@ export function SeekerDashboard() {
                   <h2 className="mb-1 text-lg font-semibold text-text">
                     Complete your profile to start matching with jobs
                   </h2>
-                  <p className="mb-4 text-sm text-text-muted">
-                    Tell us about your experience, skills, and what you're looking for to get
-                    matched with the best roles
-                  </p>
-                  <ProgressBar progress={onboardingProgress} className="mb-2" />
+                  <ProgressBar progress={onboardingProgress} className="mt-3 mb-4" />
                   <p className="text-xs text-text-subtle">
                     {onboardingStep} of 7 steps completed
                   </p>

@@ -213,9 +213,6 @@ export function SeekerOnboarding() {
           >
             Set up your job seeker profile
           </h1>
-          <p className="mt-1 text-sm text-text-muted">
-            Complete your profile to search with match scores and apply to farm jobs
-          </p>
         </div>
 
         {/* Step indicator */}

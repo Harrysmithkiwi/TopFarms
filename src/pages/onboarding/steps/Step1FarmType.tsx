@@ -88,7 +88,7 @@ export function Step1FarmType({ onComplete, defaultValues }: Step1Props) {
           What type of farm do you operate?
         </h2>
         <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-          This helps us show the right fields and match you with suitable candidates
+          This changes which fields you see next.
         </p>
       </div>
 

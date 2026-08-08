@@ -187,7 +187,7 @@ export function AdminAnalytics() {
       <AdminPageHeader
         eyebrow="Overview"
         title="Founder Analytics"
-        description="Funnel, retention, match quality and revenue — aggregates only, all-time range."
+        description="Aggregates only, all-time range."
       />
 
       {loading && (

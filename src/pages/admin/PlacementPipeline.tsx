@@ -97,7 +97,7 @@ export function PlacementPipeline() {
       <AdminPageHeader
         eyebrow="Jobs & Revenue"
         title="Placement Pipeline"
-        description="Acknowledged placements awaiting an invoice. Overdue (>14 days) is flagged; click through to Stripe to bill."
+        description="Overdue (>14 days) is flagged. Click through to Stripe to bill."
       />
 
       {summaryError && (

@@ -87,9 +87,6 @@ export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: 
         <h2 className="text-lg font-semibold text-text">
           Life situation
         </h2>
-        <p className="mt-1 text-sm text-text-muted">
-          Help us find jobs that are the right fit for your lifestyle
-        </p>
       </div>
 
       <div className="space-y-4">
@@ -108,7 +105,7 @@ export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: 
               control={control}
               name="couples_seeking"
               render={({ field }) => (
-                <Toggle checked={field.value} onCheckedChange={field.onChange} />
+                <Toggle ariaLabel="Looking for a couples role" checked={field.value} onCheckedChange={field.onChange} />
               )}
             />
           </div>
@@ -137,7 +134,7 @@ export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: 
               control={control}
               name="accommodation_needed"
               render={({ field }) => (
-                <Toggle checked={field.value} onCheckedChange={field.onChange} />
+                <Toggle ariaLabel="Accommodation needed" checked={field.value} onCheckedChange={field.onChange} />
               )}
             />
           </div>

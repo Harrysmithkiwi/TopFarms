@@ -41,7 +41,7 @@ export function AdminSkillCoverage() {
       <AdminPageHeader
         eyebrow="Overview"
         title="Skill Coverage"
-        description="Per-competency supply and demand across the 24 ag-broad competencies. Supply counts how many candidates hold each skill; demand counts how many active listings require it — use it to spot gaps between what candidates offer and what employers need."
+        description="Supply counts candidates holding each skill; demand counts active listings requiring it."
       />
 
       <AdminTable<SkillCoverageRow>
