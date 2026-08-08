@@ -101,9 +101,6 @@ export function Step7Preview({ onComplete, onBack, onGoToStep, profileData }: St
         <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Review your profile
         </h2>
-        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-          Check your details before completing your profile
-        </p>
       </div>
 
       <div className="space-y-4">

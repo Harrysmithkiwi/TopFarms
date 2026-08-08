@@ -135,9 +135,6 @@ export function SeekerStep4Skills({ onComplete, onBack, seekerId }: SeekerStep4P
         <h2 className="text-lg font-semibold text-text">
           Your skills
         </h2>
-        <p className="mt-1 text-sm text-text-muted">
-          Select the skills you have and your proficiency level in each
-        </p>
       </div>
 
       <SkillsPicker

@@ -87,9 +87,6 @@ export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: 
         <h2 className="text-lg font-semibold text-text">
           Life situation
         </h2>
-        <p className="mt-1 text-sm text-text-muted">
-          Help us find jobs that are the right fit for your lifestyle
-        </p>
       </div>
 
       <div className="space-y-4">

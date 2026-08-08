@@ -118,7 +118,7 @@ export function SeekerStep1FarmType({ onComplete, defaultValues }: SeekerStep1Pr
           What type of farm work are you looking for?
         </h2>
         <p className="mt-1 text-sm text-text-muted">
-          Select all that apply — this helps us match you with relevant jobs
+          Select all that apply.
         </p>
       </div>
 

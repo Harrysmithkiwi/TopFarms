@@ -53,7 +53,6 @@ export function EmployerList() {
       <AdminPageHeader
         eyebrow="People"
         title="Employers"
-        description="Employer accounts — verification tier, jobs posted, and account status."
       />
 
       <AdminTable<EmployerRow>

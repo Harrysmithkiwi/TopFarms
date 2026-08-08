@@ -313,11 +313,7 @@ export function EmployerDashboard() {
                 <h2 className="mb-1 text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
                   Complete your farm profile to start posting jobs
                 </h2>
-                <p className="mb-4 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                  Set up your farm details, verification, and team culture to attract the best
-                  candidates
-                </p>
-                <ProgressBar progress={onboardingProgress} className="mb-2" />
+                <ProgressBar progress={onboardingProgress} className="mb-4 mt-3" />
                 <p className="text-xs" style={{ color: 'var(--color-text-subtle)' }}>
                   {profile?.onboarding_step ?? 0} of {TOTAL_STEPS} steps completed
                 </p>

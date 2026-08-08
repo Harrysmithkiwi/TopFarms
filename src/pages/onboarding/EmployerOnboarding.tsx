@@ -225,9 +225,6 @@ export function EmployerOnboarding() {
           >
             Set up your farm profile
           </h1>
-          <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-            Complete your profile to start posting jobs and finding great farm workers
-          </p>
         </div>
 
         {/* Step indicator */}

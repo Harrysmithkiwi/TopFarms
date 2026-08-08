@@ -91,7 +91,7 @@ export function AdminRevenue() {
       <AdminPageHeader
         eyebrow="Jobs & Revenue"
         title="Revenue"
-        description="Placement fees: invoiced vs paid vs overdue (Net-14). Listing revenue alongside. Click through to Stripe to chase or write off."
+        description="Net-14. Click through to Stripe to chase or write off."
       />
 
       {summary && (

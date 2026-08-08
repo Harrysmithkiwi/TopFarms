@@ -755,7 +755,7 @@ export function AdminLeadsStaging() {
       <AdminPageHeader
         eyebrow="Leads"
         title="Lead Staging"
-        description="Review captured leads and approve them into the pipeline. Nothing goes live until you approve it here."
+        description="Nothing goes live until you approve it here."
         action={
           <Button
             variant="primary"

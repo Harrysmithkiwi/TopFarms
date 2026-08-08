@@ -286,7 +286,7 @@ export function AdminLeadsOutreach() {
       <AdminPageHeader
         eyebrow="Leads"
         title="Outreach"
-        description="FB posts with no listed contact — reach out from your own account. Edit the drafted reply, approve, copy it, send it manually on Facebook, then mark it sent."
+        description="No listed contact — send from your own account, then mark it sent here."
       />
 
       <AdminTable<OutreachRow>

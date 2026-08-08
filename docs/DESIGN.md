@@ -280,6 +280,25 @@ different jobs. Reconcile deliberately, not by editing one of them in passing.
 
 **The 70ch Rule.** Body copy never exceeds 70ch measure. Long-form content uses a 65–70ch column even when the container is wider.
 
+**The No-Subtitle Rule.** Do not add subtitles, helper text, or descriptive copy beneath
+headings, labels, cards, or settings by default. Prefer one concise, self-explanatory heading
+or label. Only add supporting copy when it is necessary to prevent misunderstanding or error,
+and **never use it to restate the heading**.
+
+Applies to the **gated portals — admin, employer, seeker**. The public marketing surface is
+settled under `docs/design/v11-DIRECTIVE.md` and is out of scope (`CLAUDE.md` §10).
+
+The test is whether removing the line loses information. "Review your profile / Check your
+details before completing your profile" loses nothing — the second line is the first line
+again. "Verify your identity / you can complete these later" loses something real: without it
+the step reads as mandatory. Keep the second kind, and keep only the clause that does the
+work — not the sentence it arrived in.
+
+Copy that survives this rule is usually one of: a constraint the UI cannot show
+("Select all that apply"), a consequence ("Nothing goes live until you approve it here"), a
+privacy disclosure, or a non-obvious interaction ("Click a row to open the employer").
+Motivation ("Verified employers get more trust") and restatement are not reasons.
+
 ## 4. Elevation
 
 **Flat by default.** Depth is signalled through borders and spacing, not through shadows. A shadow is a *response* to a state change (hover, modal open, dropdown open) — never a default decoration.

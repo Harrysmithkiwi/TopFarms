@@ -89,9 +89,6 @@ export function Step4Accommodation({ onComplete, onBack, defaultValues }: Step4P
         <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Work & Accommodation
         </h2>
-        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-          Help candidates understand career opportunities and what you offer
-        </p>
       </div>
 
       <div className="space-y-5">
