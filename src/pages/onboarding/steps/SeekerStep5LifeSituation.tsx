@@ -141,14 +141,12 @@ export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: 
 
           {accommodationOn && (
             <div className="space-y-3 pl-1">
-              <p className="font-body text-text mb-2 text-label font-semibold">
-                Housing requirements
-              </p>
               <Controller
                 control={control}
                 name="housing_sub_options"
                 render={({ field }) => (
                   <ChipSelector
+                    label="Housing requirements"
                     options={HOUSING_SUB_OPTIONS}
                     value={field.value ?? []}
                     onChange={field.onChange}
@@ -163,7 +161,10 @@ export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: 
 
         {/* Preferred regions */}
         <div>
-          <p className="font-body text-text mb-2 text-label font-semibold">Preferred regions</p>
+          <p className="font-body text-text text-label mb-2 font-semibold">Preferred regions</p>
+          {/* Kept under the No-Subtitle Rule: a constraint on how to answer, not a restatement.
+              It sits between the label and the chips, so the label stays out here and the group
+              is named with ariaLabel rather than ChipSelector's own rendered label. */}
           <p className="mb-2 text-xs text-text-muted">
             Select all regions you'd work in
           </p>
@@ -172,6 +173,7 @@ export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: 
             name="preferred_regions"
             render={({ field }) => (
               <ChipSelector
+                ariaLabel="Preferred regions"
                 options={PREFERRED_REGION_OPTIONS}
                 value={field.value ?? []}
                 onChange={field.onChange}
@@ -185,14 +187,12 @@ export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: 
         {/* Salary, availability, notice period */}
         <div className="space-y-4">
           <div>
-            <label className="mb-2 block text-sm font-medium text-[--color-text-muted]">
-              Minimum salary
-            </label>
             <Controller
               control={control}
               name="min_salary"
               render={({ field }) => (
                 <ChipSelector
+                  label="Minimum salary"
                   options={SALARY_BAND_OPTIONS}
                   value={field.value != null ? [String(field.value)] : []}
                   onChange={(vals) => field.onChange(vals[0] ? Number(vals[0]) : undefined)}

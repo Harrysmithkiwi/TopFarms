@@ -80,7 +80,7 @@ is in scope on any surface, and this is a gated portal.
 *Effort: small — an `aria-label` on each `Toggle`, plus adding the employer wizard to the
 sweep so it cannot regress. The second half matters more than the first.*
 
-## 4. Selection state is invisible to assistive tech in places — 🟠
+## 4. Selection state is invisible to assistive tech in places — ✅ **CLOSED 2026-08-11**
 
 `ChipSelector` — the control behind the **required** `farm_types` and `shed_type` fields —
 contains **zero** aria attributes and zero roles (`grep -c "aria-\|role=" ChipSelector.tsx`
@@ -91,18 +91,44 @@ universal.
 Sighted users see a border change. Non-sighted users get no selected/unselected state at all
 on fields they are required to complete.
 
-*Effort: small — `role="group"` on the container, `aria-pressed` on each chip.*
+**Fixed.** `ChipSelector` now renders `role="group"` with `aria-pressed` on every chip, and the
+tick icon is `aria-hidden` since `aria-pressed` already carries selection. The group also takes
+`aria-required` and `aria-invalid`.
 
-## 5. Errors are visible but not programmatically associated — 🟠
+**Naming is enforced by the type, not by a sweep** — `ChipSelectorProps` is a union of
+`{ label } | { ariaLabel }`, so `tsc` rejects an unnamed group. That gate caught **all 15**
+call sites across 7 files; a manual pass would have been guesswork about which ones mattered.
+Same precedent as `Toggle` in `b110f2f`.
 
-`Select` renders its error as a plain sibling `<p>` (`Select.tsx:109`) and sets neither
-`aria-invalid` nor `aria-describedby` (`:52` carries only `aria-label`). Text inputs marked
-required in their visible label — *"Farm name \*"* — report `required: false` and
-`aria-required: null` in the DOM. So required-ness and failure are both **visual-only**:
-native validation never fires, and a screen reader announces neither.
+*One deliberate ceiling, marked `ponytail:` in the source:* `aria-pressed` is used for
+`mode="single"` as well as `multi`. It is accurate either way and needs no roving tabindex or
+arrow-key handling, but it does not announce mutual exclusivity. Upgrade to `role="radiogroup"`
+with roving tabindex if that ever bites.
 
-*Effort: small, and it is the same edit as #4 — one pass over the shared form primitives fixes
-#3, #4 and #5 together.*
+## 5. Errors are visible but not programmatically associated — ✅ **CLOSED 2026-08-11**
+
+**Fixed, and the root cause was worse than the symptom.** `Select` and `ChipSelector` now give
+the error `<p>` an id and wire `aria-invalid` + `aria-describedby`. `Input` had the identical
+defect and was not in the original finding — it is fixed in the same pass, which is the point
+of fixing at the primitive.
+
+The required-ness half had a **root cause the finding did not name**: the asterisk was
+decorative text inside the label string. A sweep of `src/` found **7 fields labelled `"… *"`
+and 0 passing `required`** — the glyph and the attribute were free to drift, and had. All three
+primitives now take a `required` prop that renders the marker *and* sets the attribute
+(`required` natively on `Input`, `aria-required` on the button-based `Select` and
+`ChipSelector`), so the two cannot diverge again. The marker is `aria-hidden` because the
+attribute already announces it.
+
+**Verified:** `tsc -b` 0, vitest **649 passed / 0 failed**, lint 0 errors at the 54-warning
+pin, `npm run build` 0. The a11y sweep runs **27 passed** with `/onboarding/employer` and
+`/onboarding/seeker` green at both 1200px and 360px. New assertions in
+`tests/chip-status.test.tsx` were **mutation-checked**: removing `aria-pressed` fails it, and
+so does removing `aria-describedby`; source restored clean both times.
+
+**Standing caveat, unchanged:** the sweep only scans the step the wizard *resumes* at, so a
+green run is not proof that every step is clean. The `color-contrast` serious on step 8 in §6
+is out of its reach and remains open.
 
 ## 6. Smaller, still real
 

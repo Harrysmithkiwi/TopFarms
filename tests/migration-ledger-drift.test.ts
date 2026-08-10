@@ -74,10 +74,17 @@ describe('migration ledger manifest', () => {
   })
 
   it('keeps numbering sequential with no gaps', () => {
+    // A number can be legitimately missing from main while its PR is still open — the file
+    // exists, just on a branch. LEDGER.md has to say so in as many words, and that row is
+    // what stops this gate degrading into a silent hole: delete the row and the gap fails
+    // again. Shape: `(079 = `name`, applied `version`; file lives on `branch`, PR #N, unmerged)`
+    const documentedUnmerged = new Set(
+      [...ledgerDoc.matchAll(/\((\d{3}) = [^)]*unmerged\)/g)].map((m) => parseInt(m[1], 10)),
+    )
     const nums = diskMigrations.map((f) => parseInt(f.slice(0, 3), 10)).sort((a, b) => a - b)
     const gaps: number[] = []
     for (let i = nums[0]; i <= nums[nums.length - 1]; i++) {
-      if (!nums.includes(i)) gaps.push(i)
+      if (!nums.includes(i) && !documentedUnmerged.has(i)) gaps.push(i)
     }
     expect(gaps, `Gaps in migration numbering: ${gaps.join(', ')}`).toEqual([])
   })

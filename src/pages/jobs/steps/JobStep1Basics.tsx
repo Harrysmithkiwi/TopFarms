@@ -126,7 +126,8 @@ export function JobStep1Basics({ onComplete, defaultValues }: Step1Props) {
 
           <div className="space-y-4">
             <Input
-              label="Job title *"
+              label="Job title"
+              required
               placeholder="e.g. Farm Manager — Dairy"
               error={errors.title?.message}
               {...register('title')}
@@ -138,7 +139,8 @@ export function JobStep1Basics({ onComplete, defaultValues }: Step1Props) {
               name="sector"
               render={({ field }) => (
                 <Select
-                  label="Sector *"
+                  label="Sector"
+                  required
                   placeholder="Select a sector"
                   options={FARM_TYPE_OPTIONS}
                   value={field.value}
@@ -153,7 +155,8 @@ export function JobStep1Basics({ onComplete, defaultValues }: Step1Props) {
               name="role_type"
               render={({ field }) => (
                 <Select
-                  label="Role type *"
+                  label="Role type"
+                  required
                   placeholder="Select a role type"
                   options={ROLE_TYPE_OPTIONS}
                   value={field.value}
@@ -168,7 +171,8 @@ export function JobStep1Basics({ onComplete, defaultValues }: Step1Props) {
               name="contract_type"
               render={({ field }) => (
                 <Select
-                  label="Contract type *"
+                  label="Contract type"
+                  required
                   placeholder="Select contract type"
                   options={CONTRACT_TYPE_OPTIONS}
                   value={field.value}
@@ -191,7 +195,8 @@ export function JobStep1Basics({ onComplete, defaultValues }: Step1Props) {
               name="region"
               render={({ field }) => (
                 <Select
-                  label="Region *"
+                  label="Region"
+                  required
                   placeholder="Select a region"
                   options={NZ_REGIONS.map((r) => ({ value: r, label: r }))}
                   value={field.value}

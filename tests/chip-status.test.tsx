@@ -60,17 +60,26 @@ describe('ChipSelector', () => {
     expect(unselectedButton.className).toMatch(/border-border/)
   })
 
+  // These query role="group" rather than container.firstElementChild: the chips now sit inside
+  // a labelled group, so the outer element is the label/error wrapper, not the grid.
   it('columns=3 renders container with grid-cols-3', () => {
-    const { container } = render(
-      <ChipSelector options={options} value={[]} onChange={vi.fn()} mode="multi" columns={3} />,
+    render(
+      <ChipSelector
+        ariaLabel="Farm type"
+        options={options}
+        value={[]}
+        onChange={vi.fn()}
+        mode="multi"
+        columns={3}
+      />,
     )
-    const grid = container.firstElementChild
-    expect(grid?.className).toMatch(/grid-cols-3/)
+    expect(screen.getByRole('group').className).toMatch(/grid-cols-3/)
   })
 
   it('columns="inline" renders container with flex-wrap', () => {
-    const { container } = render(
+    render(
       <ChipSelector
+        ariaLabel="Farm type"
         options={options}
         value={[]}
         onChange={vi.fn()}
@@ -78,8 +87,34 @@ describe('ChipSelector', () => {
         columns="inline"
       />,
     )
-    const grid = container.firstElementChild
-    expect(grid?.className).toMatch(/flex-wrap/)
+    expect(screen.getByRole('group').className).toMatch(/flex-wrap/)
+  })
+
+  it('names the group, marks required and wires the error — the three a11y gaps', () => {
+    render(
+      <ChipSelector
+        label="Shed type"
+        required
+        error="Select shed type"
+        options={options}
+        value={['dairy']}
+        onChange={vi.fn()}
+        mode="multi"
+      />,
+    )
+    const group = screen.getByRole('group', { name: 'Shed type' })
+    expect(group).toHaveAttribute('aria-required', 'true')
+    expect(group).toHaveAttribute('aria-invalid', 'true')
+    // The error must be reachable from the group, not just rendered near it.
+    const describedBy = group.getAttribute('aria-describedby')
+    expect(describedBy).toBeTruthy()
+    expect(document.getElementById(describedBy!)?.textContent).toBe('Select shed type')
+    // Selection state reaches assistive tech, not only the colour and the tick.
+    expect(screen.getByRole('button', { name: /Dairy/i })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('button', { name: /Sheep & Beef/i })).toHaveAttribute(
+      'aria-pressed',
+      'false',
+    )
   })
 
   it('renders optional icon when provided in chip option', () => {

@@ -122,7 +122,9 @@ export function SeekerStep1FarmType({ onComplete, defaultValues }: SeekerStep1Pr
         </p>
       </div>
 
+      {/* ariaLabel, not label: the h2 above already asks the question visibly. */}
       <ChipSelector
+        ariaLabel="Farm types you are looking for"
         options={FARM_TYPE_OPTIONS}
         value={selectedTypes}
         onChange={setSelectedTypes}

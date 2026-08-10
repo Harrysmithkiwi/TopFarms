@@ -94,14 +94,12 @@ export function Step4Accommodation({ onComplete, onBack, defaultValues }: Step4P
       <div className="space-y-5">
         {/* Section A: Career development (EONB-04) */}
         <div>
-          <p className="font-body text-text mb-2 text-[13px] font-semibold">
-            Career development opportunities
-          </p>
           <Controller
             control={control}
             name="career_development"
             render={({ field }) => (
               <ChipSelector
+                label="Career development opportunities"
                 options={CAREER_DEV_OPTIONS}
                 value={field.value ?? []}
                 onChange={field.onChange}
@@ -207,14 +205,12 @@ export function Step4Accommodation({ onComplete, onBack, defaultValues }: Step4P
 
             {/* Accommodation extras ChipSelector */}
             <div>
-              <p className="font-body text-text mb-3 text-[13px] font-medium">
-                Accommodation extras
-              </p>
               <Controller
                 control={control}
                 name="accommodation_extras"
                 render={({ field }) => (
                   <ChipSelector
+                    label="Accommodation extras"
                     options={ACCOMMODATION_EXTRAS_OPTIONS}
                     value={field.value ?? []}
                     onChange={field.onChange}
@@ -250,6 +246,7 @@ export function Step4Accommodation({ onComplete, onBack, defaultValues }: Step4P
               name="vehicle_types"
               render={({ field }) => (
                 <ChipSelector
+                  ariaLabel="Vehicle types provided"
                   options={[
                     { value: 'farm_vehicle', label: 'Farm vehicle' },
                     { value: 'car', label: 'Car' },
