@@ -36,6 +36,80 @@ Source of truth for launch readiness. An item is ticked ONLY when fixed **and** 
 > 404s; Stripe test harness + first automated webhook coverage; token/hygiene fixes.
 > Carry-forward is tracked in the roadmap, not here.
 
+---
+
+## Readiness rerun — 2026-08-11, against live prod at `dac7e06`
+
+**Both standing scores above were stale.** The 93 predates the adversarial audit; the 53 predates
+uplift Phases 1–5, which have all since landed. This rerun re-tested the severe findings against
+live production state rather than trusting either number or any commit message.
+
+**Prod == main, proved by content not status.** `EmployerOnboarding-DiFTwXT7.js` is **byte-identical**
+(`cmp`) between the local build of `dac7e06` and what prod serves. A first attempt polled `/`'s
+asset hashes and saw no change for 10 minutes — `/` is code-split away from every file in the
+commit, so its bundle is genuinely unchanged. *Choosing a signal the change cannot reach reads
+exactly like a failed deploy.*
+
+### The four severe findings from `AUDIT-PRELAUNCH-2026-07-30.md` — all closed, verified live
+
+| Finding | State | Evidence |
+|---|---|---|
+| CV releases the contact the placement fee sells | ✅ closed | `seeker_documents` RLS: the `cv` branch requires `employer_has_placement_access(seeker_id)`; `seeker_contacts` employer SELECT joins `placement_fees` |
+| Any user can `set_user_role('employer')` and read every open-to-work seeker | ✅ closed | live `prosrc`: requires `auth.uid()`, whitelists `('employer','seeker')`, and is **first-assignment-only** — a second call raises `42501` |
+| Two Edge Functions cross-tenant with service-role and zero caller check | ✅ closed | `stripe-webhook` verifies `stripe-signature` against `STRIPE_WEBHOOK_SECRET`; `lead-harvest` checks `x-webhook-secret` against `LEAD_INTAKE_SECRET` (`index.ts:123-124`). Both `verify_jwt=false` deliberately, documented in `config.toml` |
+| Placement fee `amount_nzd` computed in the browser | ✅ closed | uplift Phase 2 Task 2.1, PR #77 — server-derived |
+
+**A correction on my own method:** a grep for caller-guard identifiers reported both Edge Functions
+as unguarded. Both are guarded; the pattern simply did not include `x-webhook-secret` or
+`stripe-signature`. The grep was the false positive, not the code.
+
+### Measured this run
+
+- **Supabase advisors: 0 ERROR, 71 WARN, 10 INFO.** `authenticated_security_definer_function_executable`
+  fell **67 → 65** — exactly the two functions revoked in `080`, independent confirmation that landed.
+- **5 anon-executable definer functions are a non-finding.** Three return `trigger`, so they cannot be
+  invoked by PostgREST or directly; the other two (`get_platform_stats`, `employer_has_public_job`)
+  are deliberately public.
+- **E2E against live prod: 37 passed, 0 failed, 6 skipped.** All six skips need an active listing.
+- **a11y sweep: 27 passed** at 1200px and 360px, `/onboarding/employer` and `/onboarding/seeker` green.
+- **Truth pass holds:** no `500+`, `2,000+`, `hundreds of farms` or `85%` in the served landing page.
+- **Infra plumbing:** `/robots.txt`, `/sitemap.xml` (7 urls), `/llms.txt`, `/favicon.svg`, `/privacy`,
+  `/terms` all 200.
+
+### New finding this run
+
+- [ ] **S1. `/definitely-not-a-page` returns HTTP 200, not 404** — soft 404. The branded page renders
+  correctly ("This paddock's empty", no dev error screen), which is all B3 ever checked; the **status
+  code** was never asserted. Search engines will index nonexistent URLs as valid pages. Engineering-owned,
+  **not launch-blocking** — week one. The catch-all falls through to the SPA shell, which Vercel serves
+  200; the fix belongs with the hybrid SSR route config, not the component.
+- [ ] **S2. One RLS policy is `TO public` where the regime says `TO authenticated`** —
+  `seeker_documents: employers select applicant visible documents`. **Not exploitable**
+  (`get_user_role(auth.uid()) = 'employer'` is false for anon), but inconsistent with the hardening
+  regime. Tidy-up, not a defect.
+
+### Score — 2026-08-11
+
+| Domain | Score | Why |
+|---|---|---|
+| Security & authorization | **92** | 0 ERROR advisors; every severe finding re-verified closed against live catalog; last vestigial grant revoked. Open: leaked-password protection off (operator toggle), S2. |
+| Architecture & infra | **90** | prod == main byte-proved; SSR live; error boundary, offline banner, ledger drift guard, full SEO plumbing. Open: S1 soft 404. |
+| Design & accessibility | **90** | axe clean on every swept route at both widths; form primitives now carry names, required and error association. Open: `color-contrast` on wizard step 8, `landmark-unique`, the 14px/16px ramp rulings. |
+| **Product & revenue** | **55** | **The weak domain, and it is not a code defect.** 0 jobs · 0 applications · 0 `listing_fees` · 0 `placement_fees` · 0 `employer_entitlements` · 0 `placements`. The revenue path has never executed even in test mode, and the employer/seeker lifecycle cannot be walked end to end without inventory. |
+
+**Engineering-owned readiness: 91/100** — holds the standing bar.
+**Whole-business launch readiness: ⚠️ not ready**, and no amount of engineering moves it.
+
+**Recommendation: ⚠️ Ready with human-owned blockers.** The platform is sound. What is unproven is
+everything that needs a real listing to exist. Directive §1.15 forbids seeding production, so this
+cannot be closed by engineering — **note this prompt's §3 explicitly authorises seeding, and
+`CLAUDE.md` overrides it.** That conflict should be resolved in the prompt.
+
+**Gating on a human, in order of leverage:** go-live ticket 01 (inventory ruling — nothing downstream
+starts without it) · ticket 02 (redirect allowlist, ~5 min, **re-confirmed still broken this run**:
+`redirect_to` is discarded and the user lands on the apex) · PEND-01 (Stripe test→live) · legal review
+· ticket 04 purge.
+
 ## 🔴 Launch blockers (engineering-owned) — ALL CLOSED
 
 - [x] **B1. Privacy Policy page** (TF-001) — `/privacy` live, NZ Privacy Act 2020 draft content. _Flag O1: legal review._ ✔ prod title "Privacy Policy — TopFarms".
