@@ -91,6 +91,8 @@ database ledger is the runtime record.
 | 076_storage_purge_via_api | `20260730063416` | Phase 3 — 075's SQL storage deletes were inert (storage.protect_delete); split to Edge Fn + ordering guard. Also carries `list_user_storage_objects` (`20260730063632`) |
 | 077_seeker_contacts_truth | `20260730064300` | Phase 3 — the paywalled table was empty for 3 of 4 seekers; trigger + backfill + first/last name; connector-applied |
 | 078_audit_log_outlives_the_actor | `20260730065000` | Phase 3 — admin_id was NOT NULL + ON DELETE SET NULL, so no admin could ever be deleted; FK dropped |
+| _(079 = `training_demand`, applied `20260807032652`; file lives on `feat/training-demand-form`, PR #87, unmerged)_ | | |
+| 080_revoke_compute_match_score_from_authenticated | `20260810220505` | go-live M4 — the two SECURITY DEFINER match functions took an arbitrary seeker_id with EXECUTE granted to `authenticated` and no auth.uid() check, exposing the §1.4 breakdown to any signed-in user. Grant was vestigial (blanket re-grant in 037). No caller in src/ or supabase/functions/; all 5 internal callers are definer-owned by postgres. service_role retained; connector-applied |
 
 ## Ledger rows with no dedicated file (documented duplicates)
 
