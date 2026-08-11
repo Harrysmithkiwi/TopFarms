@@ -159,6 +159,8 @@ export const SHED_TYPES: { value: ShedType; label: string }[] = [
 // Seeker profile data shape (mirrors wizard steps)
 export interface SeekerProfileData {
   sector_pref?: string[]
+  /** Canonical role vocabulary — the same tokens an employer picks for jobs.role_type. */
+  role_type_pref?: string[]
   years_experience?: number
   shed_types_experienced?: ShedType[]
   herd_sizes_worked?: HerdSizeBucket[]

@@ -3,18 +3,34 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { ChipSelector } from '@/components/ui/ChipSelector'
+import { Select } from '@/components/ui/Select'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/hooks/useAuth'
 import { FARM_TYPE_OPTIONS } from '@/types/domain'
+import { NZ_REGIONS, ROLE_TYPES } from '@/lib/constants'
 import type { SeekerProfileData } from '@/types/domain'
 
 interface SeekerStep1Props {
   onComplete: (data: Partial<SeekerProfileData>) => void
-  defaultValues?: { sector_pref?: string[] }
+  defaultValues?: { sector_pref?: string[]; region?: string; role_type_pref?: string[] }
 }
+
+/**
+ * Step 1 is the MATCHABLE CORE: after this screen a profile can be scored against a job,
+ * and every later step only sharpens the score. That is why region and role live here
+ * rather than deeper in the wizard — the steps after this one are escapable
+ * ("Save and finish later"), and a cold visitor who bails must still leave behind a
+ * profile the match engine can see.
+ *
+ * `sector_pref` is the load-bearing one. trigger_recompute_job_scores filters
+ * `WHERE NEW.sector = ANY(sp.sector_pref)`, so a profile without it matches NOTHING —
+ * it is invisible to every job ever posted, silently. Verified 2026-08-11 (LAUNCH.md R3).
+ */
 
 export function SeekerStep1FarmType({ onComplete, defaultValues }: SeekerStep1Props) {
   const [selectedTypes, setSelectedTypes] = useState<string[]>(defaultValues?.sector_pref ?? [])
+  const [region, setRegion] = useState<string>(defaultValues?.region ?? '')
+  const [roles, setRoles] = useState<string[]>(defaultValues?.role_type_pref ?? [])
 
   // Phase 3 Task 3.6. Name and phone live in seeker_contacts — the table the
   // employer's placement fee unlocks. Nothing in the product asked for either
@@ -49,7 +65,7 @@ export function SeekerStep1FarmType({ onComplete, defaultValues }: SeekerStep1Pr
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (selectedTypes.length === 0) return
+    if (selectedTypes.length === 0 || !region) return
 
     const userId = session?.user?.id
     if (userId) {
@@ -71,7 +87,11 @@ export function SeekerStep1FarmType({ onComplete, defaultValues }: SeekerStep1Pr
       }
     }
 
-    onComplete({ sector_pref: selectedTypes })
+    onComplete({
+      sector_pref: selectedTypes,
+      region,
+      ...(roles.length ? { role_type_pref: roles } : {}),
+    })
   }
 
   return (
@@ -138,12 +158,33 @@ export function SeekerStep1FarmType({ onComplete, defaultValues }: SeekerStep1Pr
         </p>
       )}
 
+      {/* Region and role complete the matchable core. Region carries real weight in the
+          score; role sharpens it. Both sit here so a visitor who stops after this screen
+          is still a profile the engine can see. */}
+      <Select
+        label="Where do you want to work?"
+        required
+        placeholder="Select a region"
+        options={NZ_REGIONS.map((r) => ({ value: r, label: r }))}
+        value={region}
+        onValueChange={setRegion}
+      />
+
+      <ChipSelector
+        label="Roles you're after"
+        options={ROLE_TYPES.filter((r) => r !== 'Other').map((r) => ({ value: r, label: r }))}
+        value={roles}
+        onChange={setRoles}
+        mode="multi"
+        columns={2}
+      />
+
       <div className="flex justify-end pt-2">
         <Button
           type="submit"
           variant="primary"
           size="md"
-          disabled={selectedTypes.length === 0 || saving}
+          disabled={selectedTypes.length === 0 || !region || saving}
         >
           {saving ? 'Saving…' : 'Continue'}
         </Button>
