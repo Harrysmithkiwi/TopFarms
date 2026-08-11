@@ -12,6 +12,7 @@ import {
   BarChart2,
   TrendingUp,
   Inbox,
+  UserSearch,
   Send,
   Target,
   LogOut,
@@ -60,7 +61,10 @@ const navGroups: NavGroup[] = [
   {
     label: 'Leads',
     items: [
-      { to: '/admin/leads/staging', label: 'Lead Staging', icon: Inbox },
+      // "Lead Staging" was unambiguous while employers were the only lane. Renamed
+      // the moment a seeker queue existed beside it.
+      { to: '/admin/leads/staging', label: 'Employer Staging', icon: Inbox },
+      { to: '/admin/leads/seekers', label: 'Seeker Staging', icon: UserSearch },
       { to: '/admin/leads/outreach', label: 'Outreach', icon: Send },
       { to: '/admin/leads', label: 'Leads', icon: Target },
     ],

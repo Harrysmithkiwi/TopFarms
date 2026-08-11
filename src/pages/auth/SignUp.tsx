@@ -86,6 +86,15 @@ export function SignUp() {
   const roleParam = searchParams.get('role')
   const initialRole = roleParam === 'employer' || roleParam === 'seeker' ? roleParam : null
 
+  // Attribution: `?ref=<lead_staging.id>` on an outreach link. Validated as a UUID
+  // rather than passed through — it lands in user metadata, and a junk value would
+  // sit there forever pretending to be a lead. Absent/invalid simply means organic.
+  const refParam = searchParams.get('ref')
+  const attributionRef =
+    refParam && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(refParam)
+      ? refParam
+      : null
+
   const [selectedRole, setSelectedRole] = useState<'employer' | 'seeker' | null>(initialRole)
 
   const {
@@ -122,14 +131,14 @@ export function SignUp() {
     if (!data.role) return
     setIsSubmitting(true)
     try {
-      const result = await signUpWithRole(data.email, data.password, data.role)
+      const result = await signUpWithRole(data.email, data.password, data.role, attributionRef)
       if (result.error) {
         toast.error(result.error.message, {
           duration: Infinity,
           closeButton: true,
         })
       } else {
-        track('signup_complete', { role: data.role })
+        track('signup_complete', { role: data.role, attributed: attributionRef ? 'yes' : 'no' })
         navigate('/auth/verify')
       }
     } catch {

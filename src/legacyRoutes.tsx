@@ -142,6 +142,9 @@ const AdminAnalytics = lazy(() =>
 const AdminLeadsStaging = lazy(() =>
   import('@/pages/admin/AdminLeadsStaging').then((m) => ({ default: m.AdminLeadsStaging })),
 )
+const AdminSeekerStaging = lazy(() =>
+  import('@/pages/admin/AdminSeekerStaging').then((m) => ({ default: m.AdminSeekerStaging })),
+)
 const AdminLeads = lazy(() =>
   import('@/pages/admin/AdminLeads').then((m) => ({ default: m.AdminLeads })),
 )
@@ -452,6 +455,20 @@ export function routeTable() {
           {s(
             <AdminLayout>
               <AdminLeadsStaging />
+            </AdminLayout>,
+          )}
+        </ProtectedRoute>
+      ),
+    },
+    {
+      // Seeker staging — sibling of /admin/leads/staging, same lead_staging table
+      // filtered to type='seeker'. Sub-path declared BEFORE /admin/leads.
+      path: '/admin/leads/seekers',
+      element: (
+        <ProtectedRoute requiredRole="admin">
+          {s(
+            <AdminLayout>
+              <AdminSeekerStaging />
             </AdminLayout>,
           )}
         </ProtectedRoute>

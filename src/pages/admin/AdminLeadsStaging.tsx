@@ -787,7 +787,14 @@ export function AdminLeadsStaging() {
         highlightedId={highlightedId}
         onRowsChange={setRows}
         searchPlaceholder="Search staging by name, region, locality, source…"
-        extraArgs={{ p_source: sourceFilter, p_geo: geoFilter, p_hide_expired: hideExpired }}
+        // p_type pins this queue to employers now that seeker rows share the table
+        // (migration 082). Legacy rows have no `type` key and read as employer.
+        extraArgs={{
+          p_source: sourceFilter,
+          p_geo: geoFilter,
+          p_hide_expired: hideExpired,
+          p_type: 'employer',
+        }}
         toolbar={
           <div className="flex flex-wrap items-center gap-3">
             <SegmentedControl<SourceFilter>

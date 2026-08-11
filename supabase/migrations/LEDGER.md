@@ -94,6 +94,7 @@ database ledger is the runtime record.
 | _(079 = `training_demand`, applied `20260807032652`; file lives on `feat/training-demand-form`, PR #87, unmerged)_ | | |
 | 080_revoke_compute_match_score_from_authenticated | `20260810220505` | go-live M4 — the two SECURITY DEFINER match functions took an arbitrary seeker_id with EXECUTE granted to `authenticated` and no auth.uid() check, exposing the §1.4 breakdown to any signed-in user. Grant was vestigial (blanket re-grant in 037). No caller in src/ or supabase/functions/; all 5 internal callers are definer-owned by postgres. service_role retained; connector-applied |
 | 081_dedupe_sees_staging | `20260811013748` | Leads — the "Possible duplicate" badge had never fired: the fuzzy pass searched `leads` (2 rows) not `lead_staging` (93), and the exact fingerprint keyed on `region`, which the harvester nulls ~1 row in 11. Two-tier match (>=0.9 region-blind, 0.6–0.9 region-tolerant) + backfill; 13 rows flagged across 7 genuine pairs; connector-applied |
+| 082_staging_type_filter_and_signup_attribution | `20260811022630` | Leads — `p_type` filter so the employer and seeker queues can share `lead_staging` without sharing a screen, plus a `signed_up` flag per row joining `auth.users.raw_user_meta_data->>'ref'` (the `?ref=` attribution loop). DROP+CREATE, not OR REPLACE: a new signature would have created an overload and PostgREST refuses to choose. Grants re-applied; connector-applied |
 
 ## Ledger rows with no dedicated file (documented duplicates)
 
