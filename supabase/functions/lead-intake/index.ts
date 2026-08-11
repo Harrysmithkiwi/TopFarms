@@ -70,8 +70,33 @@ interface StructuredLead {
   application_method: string | null
   // Leads v2: ISO date (YYYY-MM-DD) applications close, if stated; else null.
   applications_close: string | null
+  // Seeker lane. Null on every employer post. Nested rather than flat so an employer
+  // row does not carry ten null columns it will never use.
+  //
+  // `training_wanted` is the load-bearing one: people state skill gaps voluntarily in
+  // these posts ("my partner wants to be able to milk by herself"), and the aggregate
+  // of those statements is the evidence base for the skills-training funding case.
+  seeker: SeekerDetail | null
   confidence: number
   missing_fields: string[]
+}
+
+interface SeekerDetail {
+  roles_sought: string[]
+  /** Competencies claimed, verbatim from the post — maps onto the 24-skill taxonomy later. */
+  skills: string[]
+  licences: string[]
+  /** Sheds they have WORKED in — not a shed they are advertising, as on an employer post. */
+  sheds_experienced: string[]
+  availability: string | null
+  accommodation_needed: string | null
+  /** Who is coming with them — "partner, 3 kids, partner's mother". */
+  household: string | null
+  couple_seeking: boolean
+  /** A hard constraint on where they can go — "must stay in Cambridge, kids at school". */
+  location_constraint: string | null
+  /** Skills they say they LACK or want to learn. The funding-case signal. */
+  training_wanted: string[]
 }
 
 interface IntakeItem {
@@ -220,6 +245,8 @@ Deno.serve(async (req) => {
             herd_details: l.herd_details ?? null,
             application_method: l.application_method ?? null,
             applications_close: l.applications_close ?? null,
+            // Only ride along on seeker posts — an employer row keeps its existing shape.
+            seeker: l.type === 'seeker' ? (l.seeker ?? null) : null,
             geo_scope: classifyGeo(contact, l.region, hay),
             source_group: item.source_group ?? null,
             post_timestamp: item.post_timestamp ?? null,
@@ -358,6 +385,7 @@ async function structureWithClaude(
         herd_details: null,
         application_method: null,
         applications_close: null,
+        seeker: null,
         confidence: 0,
         missing_fields: [`all — ${note}`],
       } as StructuredLead,
@@ -417,6 +445,31 @@ async function structureWithClaude(
           'applications_close = the date applications close AS AN ISO DATE (YYYY-MM-DD),',
           'if a closing date is stated — convert "10/7/2026" → "2026-07-10", "1st July',
           '2026" → "2026-07-01" (NZ day/month order). null if no closing date is stated.',
+          // ── Seeker lane ───────────────────────────────────────────────────
+          'type = "seeker" when the AUTHOR is looking for work (they describe what',
+          'they can do, what they are seeking, when they are available). type =',
+          '"employer" when the author is offering work. A post can look like a job',
+          'ad and still be a seeker post — decide by WHO WANTS WHAT, not by format.',
+          'For a seeker post ALSO fill the `seeker` object; leave it null for employers.',
+          'seeker.roles_sought = roles they want ("Farm Assistant", "Herd Manager", "2IC").',
+          'seeker.skills = tasks they say they CAN do, one per item, verbatim-ish',
+          '("break fencing", "detect mastitis and lameness", "plant and vat washes").',
+          'seeker.licences = licences held ("Class 1", "HT").',
+          'seeker.sheds_experienced = sheds they have WORKED in (for a seeker this is',
+          'experience, NOT a shed being advertised — do not confuse it with shed_type).',
+          'seeker.availability = when they can start, verbatim.',
+          'seeker.accommodation_needed = housing they require ("3-4 bedroom").',
+          'seeker.household = who is coming with them ("partner, 3 kids, partner\'s mother").',
+          'seeker.couple_seeking = true ONLY if a partner is also explicitly seeking work.',
+          'seeker.location_constraint = a hard limit on where they can go, verbatim',
+          '("need to stay in the Cambridge area as our kids are at school").',
+          'seeker.training_wanted = skills they say they LACK, want to learn, or are',
+          'working towards ("doesn\'t have much experience but wants to be able to milk',
+          'by herself" → ["milking"]). Empty array if none stated. This one matters:',
+          'never infer it, but never miss it when it is stated.',
+          'For a seeker, display_name = the PERSON\'S name and region = where they want',
+          'to work (or where they say they are), not an employer location.',
+          // ──────────────────────────────────────────────────────────────────
           'NEVER guess or infer absent fields — use null and list them in',
           'missing_fields. Only include contact details EXPLICITLY stated in the',
           'post (no enrichment, no inference). confidence is your 0-1 certainty',
@@ -446,6 +499,7 @@ async function structureWithClaude(
                       'herd_details',
                       'application_method',
                       'applications_close',
+                      'seeker',
                       'confidence',
                       'missing_fields',
                     ],
@@ -469,6 +523,23 @@ async function structureWithClaude(
                       herd_details: { type: ['string', 'null'] },
                       application_method: { type: ['string', 'null'] },
                       applications_close: { type: ['string', 'null'] },
+                      // Null on every employer post. Required so the model always makes
+                      // an explicit decision rather than silently omitting it.
+                      seeker: {
+                        type: ['object', 'null'],
+                        properties: {
+                          roles_sought: { type: 'array', items: { type: 'string' } },
+                          skills: { type: 'array', items: { type: 'string' } },
+                          licences: { type: 'array', items: { type: 'string' } },
+                          sheds_experienced: { type: 'array', items: { type: 'string' } },
+                          availability: { type: ['string', 'null'] },
+                          accommodation_needed: { type: ['string', 'null'] },
+                          household: { type: ['string', 'null'] },
+                          couple_seeking: { type: 'boolean' },
+                          location_constraint: { type: ['string', 'null'] },
+                          training_wanted: { type: 'array', items: { type: 'string' } },
+                        },
+                      },
                       confidence: { type: 'number' },
                       missing_fields: { type: 'array', items: { type: 'string' } },
                     },
