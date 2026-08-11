@@ -1,216 +1,163 @@
-# Brief: unblocked engineering, then the seeker-first pivot
+# Phase brief: close the seeker funnel's leak, then the tidy-ups
 
-Written 2026-08-11. Supersedes the previous `NEXT-SESSION.md` (M1 merge train — complete).
+Written 2026-08-11. Supersedes the previous `NEXT-SESSION.md` (four unblocked items — A1, A2
+and A3 done; A4 carried forward here as item 3).
 
-You are design and architecture lead for TopFarms. Work through Part A in order, then read
-Part B before touching anything in it — Part B changes what "launch" means and the operator
-has not ruled on it yet.
+Work the items in order. Nothing here depends on Stripe, and nothing depends on go-live
+ticket 01. Item 6 is blocked on an operator ruling and is listed so it is not forgotten.
 
 ## Standing rules
 
-- `CLAUDE.md` is binding, in particular §3 (diagnose before fix), §4 (atomic commits, no
-  history rewriting without an explicit instruction in chat), §9 (verification discipline),
-  §10 (two design canons; `impeccable` is the frontend design skill).
-- **Verify before claiming.** A finding carries `file:line` or command output, or it is
-  marked unverified. `tsc -b` is the typecheck gate, never `tsc --noEmit`.
-- `main` auto-deploys to production. Nothing merges without deciding it can be live that
-  minute. After any deploy, **poll a content signal, never `vercel ls` status**.
-- Supabase project ref is `inlagtgpynemhipnqvty`; the project MCP is `--read-only`. DB writes
-  go through the claude.ai Supabase connector `apply_migration`, and the SQL is also saved to
-  `supabase/migrations/`.
-- Directive §1.15: **production is never seeded.** There is no local Supabase stack on this
-  machine (no container runtime), so prefer checks that need no database.
-- Operator-owned, flag and never attempt: Stripe live keys, the Supabase dashboard toggles,
-  legal review, naming accounts to purge, sending any outreach email.
+- `CLAUDE.md` is binding: §3 diagnose before fix · §4 atomic commits, no history rewriting ·
+  §9 verification discipline · §10 two design canons, `impeccable` is the frontend skill.
+- **Verify before claiming.** A finding carries `file:line` or command output, or it is marked
+  unverified. `tsc -b`, never `tsc --noEmit`. **Never read an exit code through a pipe** —
+  `cmd > /tmp/x.log 2>&1; echo $?`, because `| head` reports head's status, not the command's.
+- `main` auto-deploys to production. After a deploy, poll a **content signal from a chunk the
+  change actually touches** — twice this week a poll watched a code-split chunk the commit
+  never reached and read like a failed deploy.
+- Supabase project ref `inlagtgpynemhipnqvty`; project MCP is `--read-only`, writes go through
+  the claude.ai connector. Directive §1.15: **production is never seeded.**
+- Operator-owned, flag and never attempt: Stripe keys, dashboard toggles, legal review,
+  sending outreach.
 
-## Measured starting state, 2026-08-11 (live prod, read-only MCP)
+## Measured state, 2026-08-11
 
 ```
-jobs 0 · applications 0 · match_scores 0 · training_demand 0 · seeker_skills 0
-employers 2 (one is +ci-employer) · seekers 3 · auth users 10
-newest signup 2026-08-07 — nothing has moved since the merge train
-lead_staging 77 (harvest cron healthy, newest 2026-08-10)
-  → NZ + direct employer + emailable: 15   ← the real Lane A push list
-  → NZ + recruiter + emailable: 12
-  → no usable contact: 37
-main = ff65c7f, tree clean, prod 200 on / /jobs /pricing /for-employers /login
+jobs 0 · applications 0 · match_scores 0 · placement_fees 0 · placements 0
+lead_staging 95  (94 employer · 1 seeker — Shaye Boyd, stale, see item 1)
+seeker_profiles 3 · employer_profiles 2
+main = 55ab87c · prod healthy · tree clean
 ```
+
+**Closed today, do not re-litigate:** ticket 02 (redirect allowlist — Site URL is now `www`,
+`redirect_to` verified honoured), R3 (match engine works; the earlier zero was a probe
+artefact), A1 (`compute_match_score` REVOKE), A2 (form-primitive a11y), A3 (readiness rerun).
 
 ---
 
-# Part A — the four unblocked items
+## 1. Shaye's stale row — 1 minute, do first
 
-Do them in this order. 2, 3 and 4 are independent; 1 wants a clean tree, so land the others
-first or run 1 on its own branch.
+The one seeker row predates the canonical vocabulary: it holds `roles_sought: ["Farm
+Assistant"]` and `skills: ["hard working","reliable"]`. The operator tried re-pasting and it
+was **refused as an exact duplicate** — `_lead_intake`'s fingerprint check (name + region +
+type) blocks a re-capture, which is correct behaviour but also blocks refreshing a row.
 
-## A1 — `compute_match_score` REVOKE (smallest, do first)
+Delete `lead_staging` id `277a1ff5-8cb5-417e-bf57-cec2ae0cf353` so the operator's re-paste
+lands. **Confirm with them before deleting** — it is their data, even if it is one test row.
 
-`compute_match_score(uuid,uuid)` and `compute_match_scores_batch` are `SECURITY DEFINER`,
-accept an arbitrary `seeker_id`, and carry `GRANT EXECUTE … TO authenticated` with no
-`auth.uid()` check. Any signed-in user with a `seeker_profiles.id` can recompute that seeker's
-full per-dimension breakdown — the exact data directive §1.4 keeps from workers — routing
-around `employer_may_view_seeker`. Origin: migration `037_definer_function_hardening.sql:105-106`
-re-granted them in a blanket list, not as a considered decision.
+**Done when:** the row is gone and the operator's re-paste yields `Farm Hand` /
+`Dairy cattle management`.
 
-**Before revoking**, confirm no caller depends on the grant. `grep -rn '\.rpc(' src/` returned
-nothing for either function; you must **also** check `supabase/functions/` — that read was
-never done and it is the one thing that could make this unsafe.
+---
 
-```sql
-REVOKE EXECUTE ON FUNCTION public.compute_match_score(uuid,uuid) FROM authenticated;
-REVOKE EXECUTE ON FUNCTION public.compute_match_scores_batch(uuid) FROM authenticated;
-```
+## 2. Waitlist landing + split onboarding — the big one, ~half a day
 
-Verify the exact signatures from `pg_catalog` first (§9.4) — do not trust the ones above.
-The trigger and precompute paths call these inside owner-context definer functions, so they
-are unaffected; **prove that** by re-running match precompute after the revoke rather than
-asserting it.
+**The leak.** A seeker who signs up today lands on a job board with **zero jobs**. That is the
+first impression of the product for every person the outreach converts, and they do not come
+back. Meanwhile onboarding is seven steps, which sheds most of a cold Facebook click before any
+profile exists.
 
-**Done when:** `pg_proc`/`information_schema.role_routine_grants` shows no `authenticated`
-grant, and a match precompute still produces a `match_scores` row.
+### 2a. The waitlist state
 
-## A2 — `ChipSelector` / `Select` accessibility pass
+When the board has no live jobs, the seeker's post-signup surface must not be an empty list.
+It should:
 
-Three findings from `M1-EMPLOYER-ONBOARDING-GAP-ANALYSIS.md`, all in shared form primitives,
-all closed by one pass:
+- **Say where they stand honestly** — position in the queue is motivating and it is true.
+- **Make profile completion the single call to action.** This is the thing the business
+  actually wants; it converts a waiting user into a complete record.
+- **Promise a specific trigger** — "we'll email you when a job matching you goes live" — and
+  nothing vaguer. The match engine exists and works (R3), so this is a promise that can be kept.
 
-- `ChipSelector` carries zero aria attributes on required fields (`farm_types`, `shed_type`).
-- `Select` renders errors with no `aria-invalid` / `aria-describedby`.
-- "Farm name \*" reports `required: false` to assistive tech.
+Condition it on live job count, not on a feature flag: the same screen must stop appearing by
+itself the day M3 inventory lands, with no second deploy.
 
-**Fix at the primitive, not the call sites** (§ponytail: one guard in the shared component is
-a smaller diff than a guard in every caller, and patching only the named field leaves every
-sibling broken). Follow the `Toggle` precedent from `b110f2f`: where a prop is genuinely
-required for accessibility, make the **type** enforce it so `tsc` rejects an unnamed instance —
-that is what guarantees no unnamed control ships, not a sweep.
+### 2b. Split onboarding
 
-Check whether the same defect exists on the seeker wizard and the job-posting wizard before
-declaring it closed. The `Toggle` fix surfaced **ten** nameless switches where axe had found
-five, because axe only sees rendered controls.
+- **Core (≤ 2 min, at signup): region · sector · role.**
+- **Everything else deferred** to the waitlist screen's completion CTA.
 
-**Done when:** `tsc -b` clean, the a11y sweep passes on `/onboarding/employer` **and**
-`/onboarding/seeker`, and the three findings are struck from the gap analysis with evidence.
-Note the standing caveat: the sweep only scans the step the wizard *resumes* at.
+> **`sector` is mandatory and this is not negotiable.** `trigger_recompute_job_scores` filters
+> `WHERE NEW.sector = ANY(sp.sector_pref)`. A profile with no `sector_pref` matches **nothing** —
+> it is invisible to every job ever posted. Verified 2026-08-11; see `LAUNCH.md` R3.
 
-## A3 — Re-run the launch readiness audit against live prod
+Region and role are what make a match meaningful; sector is what makes it happen at all.
 
-Run `docs/LAUNCH-READINESS-PROMPT.md` against `www.topfarms.co.nz`. It has been blocked on M1
-the whole time and is now genuinely runnable — prod finally *is* everything built. Standing
-score is 91/100; hold or raise it.
+### 2c. Carry the attribution through
 
-This wants a dedicated session at high effort. Give it the measured state above so it does not
-re-derive it. Expect the score to be dragged by things that are **true and known**: 0 jobs,
-0 applications, Stripe still in test mode. Score them honestly rather than explaining them
-away — an audit that excuses the empty board is worthless.
+`?ref=` currently reaches `auth.users.raw_user_meta_data` at signup (email path) and via
+`SelectRole` (OAuth path). Confirm it still survives the new onboarding — a split that drops it
+silently un-measures the whole funnel, and nothing will fail loudly if it does.
 
-**Done when:** the audit output is written to `LAUNCH.md` with a dated score, and every item
-that moved is traceable to a commit or a prod measurement.
+**Done when:** a seeker signing up on prod reaches a waitlist screen naming their position and
+offering profile completion; a profile created through the core carries a non-empty
+`sector_pref`; `?ref=` still lands in user metadata; `tsc -b` / vitest / lint / build all clean.
 
-## A4 — Lead contact enrichment (scoped down — read this before starting)
+---
 
-**I was wrong about this being cheap, and checked before writing it up.** The hypothesis was
-that contacts were already sitting in `raw_excerpt` and merely unparsed, which would have made
-this a free re-parse. Measured on the 37 contactless rows:
+## 3. A4 — lead contact enrichment, scoped to a measurement (~1 hour)
 
-```
-emails in raw_excerpt: 0     phones in raw_excerpt: 0     company_profile_url present: 3
-```
+37 staged employer leads have no usable contact. Measured earlier: **0 emails and 0 phones are
+hiding in `raw_excerpt`**, so this is a network scrape, not a re-parse — it costs Firecrawl
+credits, which is why it is scoped down rather than built out.
 
-So the data is genuinely not in the database and enrichment means going back to source over
-the network. That is a scrape job, not a parse job, and it costs Firecrawl credits.
-
-Given that, **do the cheap half only, and stop:**
-
-1. Re-scrape the 3 rows with a `company_profile_url`. Trivial, bounded.
-2. For the rest, the source listing page (`source_ref`) is the only lead. **Sample 5 by hand
-   first** and measure the hit rate before building anything. If fewer than 2 of 5 yield a
-   contact, the remaining 34 are not worth automating — report that and stop.
-3. Do **not** build a general enrichment pipeline on a 34-row problem.
-
-Reuse the existing commercial Firecrawl lane; do not add a dependency. `normalise()` logic is
-mirrored in the cleanup SQL — keep them consistent if you touch either.
+1. Re-scrape the 3 rows carrying a `company_profile_url`. Bounded, trivial.
+2. **Hand-sample 5 of the rest** via their `source_ref` listing page and measure the hit rate.
+3. **If fewer than 2 of 5 yield a contact, stop and report.** Do not build a general pipeline
+   for a 34-row problem.
 
 **Never send outreach.** Enrichment fills fields; the operator sends mail.
 
-**Done when:** the hit rate is measured and reported, `lead_staging` reflects whatever was
-recovered, and the emailable NZ direct-employer count is restated.
+**Done when:** the hit rate is measured and reported, and the emailable NZ direct-employer count
+is restated (it was 15).
 
 ---
 
-# Part B — the seeker-first pivot (read, do not build unasked)
+## 4. S1 — the soft 404
 
-The operator's stated intent, 2026-08-11:
+`/definitely-not-a-page` returns **HTTP 200**. The branded page renders correctly, which is all
+`LAUNCH.md` B3 ever asserted — the **status code** was never checked. Search engines will index
+nonexistent URLs as valid pages.
 
-> Build a waitlist of **1000 job seekers in 2 weeks**, sourced from Facebook groups and
-> similar, *before* going after employers. Capture CVs, skills, and skills gaps, so that
-> (a) training can be plugged in later and (b) the aggregate skills-gap data becomes the
-> evidence base for a government funding application for skills training.
+The catch-all falls through to the SPA shell, which Vercel serves 200; the fix belongs with the
+hybrid SSR route config, not the component. **Not launch-blocking.**
 
-This is a coherent strategy and it **dissolves the launch dilemma** in the current map. That
-map treats an empty job board on 2026-08-14 as a failure to be avoided. Under seeker-first it
-is simply the plan: you are not launching a marketplace to employers, you are opening seeker
-registration. **Go-live ticket 01 should be re-asked in those terms** rather than answered as
-written — the counter gate already hides the stats band below 10, so a thin board degrades
-honestly.
+**Done when:** the route returns 404 with the branded page still rendering, and a test asserts
+the **status code**, not merely the copy — the copy assertion is what let this hide.
 
-## What already exists (verified, not assumed)
+---
 
-- `seeker_profiles` captures a great deal: `dairynz_level`, `shed_types_experienced`,
-  `herd_sizes_worked`, `licence_types`, `certifications`, `document_urls`, `years_experience`,
-  visa, availability, regions.
-- `seeker_documents` exists — CV capture is built.
-- `skills` holds the **24-competency taxonomy**; `seeker_skills` is the join.
-  `SeekerStep4Skills.tsx` writes to it correctly (read the file, it deletes then re-inserts).
-- **`training_demand` shipped to prod as migration 079** — `audience`, `skill_ids[]`,
-  `other_text`, `context`.
+## 5. S2 and the a11y leftovers — small, tidy
 
-## The three findings that matter
+- **S2:** `seeker_documents: employers select applicant visible documents` is `TO public` where
+  the hardening regime says `TO authenticated`. **Not exploitable** — `get_user_role(auth.uid())
+  = 'employer'` is false for anon — but inconsistent. One policy rewrite.
+- **`color-contrast` serious on employer wizard step 8.** The a11y sweep cannot reach it: it
+  only scans the step the wizard *resumes* at. Drive to step 8 to reproduce.
+- **`landmark-unique` moderate** on the employer wizard.
 
-**1. PR #87 is the funding instrument, and it is unmerged.** `feat/training-demand-form`
-(898 insertions) puts `TrainingDemandCard` on both dashboards against that live table. The
-roadmap files it as "S1, separable, cannot block launch". Under seeker-first that is backwards:
-it is the **only** thing that captures skills *wanted*, which is precisely the gap evidence a
-funding case is built from. `seeker_skills` gives you skills *held*; `training_demand` gives
-you skills *wanted*; the delta across 1000 seekers **is** the application. Merging it after
-1000 people have onboarded means emailing all of them again. **Re-rank it to first.**
+**Done when:** the policy is `TO authenticated` and still permits the legitimate read; contrast
+meets `docs/DESIGN.md` §5; the a11y sweep stays green at both widths.
 
-**2. Seven wizard steps is the wrong front door for a cold Facebook click.** Onboarding is
-`SeekerStep1FarmType` → `…7Complete`. That is right for someone who arrived intending to find
-work; it will shed most of a cold social audience before you have any way to contact them. The
-lazy fix is not to rebuild onboarding — it is to **capture email first and let the wizard be
-the second visit**. Whatever the entry point, get a contactable address into the database on
-screen one, then invite them back to complete a profile. Design this before driving traffic,
-not after.
+---
 
-**3. One unverified risk worth ten minutes.** `SeekerStep4Skills.tsx:57` has a silent-skip
-path — *"No seeker profile ID yet — skip skills save, just advance"*. If `seekerId` is ever
-unset at step 4, the user's skills are silently dropped and they advance as though saved.
-All three existing seekers show `onboarding_complete = true` with **zero** `seeker_skills`
-rows, which is consistent with that path firing — **but those profiles date from April/May and
-may predate the step entirely, so this is a hypothesis, not a finding.** Reproduce it before
-fixing it. If it is real it is severe under this plan: 1000 seekers through a wizard that
-silently drops skills yields no gap data and no funding case.
+## 6. PR #87 — training-demand form · BLOCKED
 
-## Before any traffic is driven
+`feat/training-demand-form`, 898 insertions. The table (migration 079) is already live in prod;
+only the UI is stranded. **Blocked on go-live ticket 05** (placement sign-off), not on code.
 
-Answer these — they are cheap now and expensive after 1000 signups:
+Worth raising with the operator when the moment fits: under the seeker-first plan this is the
+instrument that captures skills *wanted*. `seeker_skills` gives skills *held*; the delta across
+1000 seekers **is** the government-funding application. Merging it after those seekers onboard
+means emailing all of them again.
 
-- **What is the minimum viable capture on screen one?** Email alone, or email + region + role?
-- **Does a waitlist entry need an auth user?** A `waitlist` table with no account is far lower
-  friction than signup + confirm + 7 steps, but it forks the data model. Decide deliberately.
-- **What does the funding case actually need?** Sample size, regional spread, and the specific
-  gap framing shape what you ask. Work backwards from the application, not forwards from the
-  form. The operator is a lawyer — this is their strongest ground and they should specify it.
-- **Privacy.** 1000 CVs is a real obligation. The privacy policy and the retention story need
-  to cover bulk CV collection before collection starts, not after. Operator + legal.
+---
 
-## Sequencing recommendation
+## Not in this phase
 
-1. Merge PR #87 (needs ticket 05 placement sign-off).
-2. Reproduce or clear the step-4 skills risk.
-3. Design the low-friction front door; decide waitlist-vs-account.
-4. Only then drive Facebook traffic.
-
-**Do not build any of Part B until the operator rules on the front-door question.** Driving
-traffic into the current 7-step wizard is the one move that is hard to undo — you cannot
-re-collect an audience that bounced.
+- Anything needing Stripe — PEND-01 and the R4 `stripe_customer_id` reset are operator-owned,
+  and R5 (prod uses a different Stripe account than the connected one) needs ruling first.
+- **The triage stream.** Deliberately deferred until the operator has DM'd 10–15 seekers by
+  hand — the right shape follows from friction they have not felt yet, and building it now
+  would be guessing.
+- M3 inventory and go-live ticket 01. Operator's call, still open.

@@ -106,8 +106,9 @@ cannot be closed by engineering — **note this prompt's §3 explicitly authoris
 `CLAUDE.md` overrides it.** That conflict should be resolved in the prompt.
 
 **Gating on a human, in order of leverage:** go-live ticket 01 (inventory ruling — nothing downstream
-starts without it) · ticket 02 (redirect allowlist, ~5 min, **re-confirmed still broken this run**:
-`redirect_to` is discarded and the user lands on the apex) · PEND-01 (Stripe test→live) · legal review
+starts without it) · ~~ticket 02~~ ✅ **CLOSED 2026-08-11** — Site URL moved to `www`; `redirect_to` now honoured,
+verified landing on `https://www.topfarms.co.nz/reset-password` where it previously fell back
+to the apex · PEND-01 (Stripe test→live) · legal review
 · ticket 04 purge.
 
 ---
