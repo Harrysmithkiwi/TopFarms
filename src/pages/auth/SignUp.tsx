@@ -72,6 +72,13 @@ export function SignUp() {
   const handleOAuth = async (provider: 'google' | 'facebook') => {
     setOauthLoading(true)
     try {
+      // OAuth leaves the app, so `?ref=` cannot ride in signUp metadata the way the
+      // email path does. Stash it and let SelectRole write it after the round trip.
+      // sessionStorage rather than a redirectTo param on purpose: the Supabase redirect
+      // allowlist is a known-broken surface (go-live ticket 02), and this needs no
+      // allowlist entry at all. A Facebook-sourced seeker is ALREADY signed into
+      // Facebook, so this is the likely path, not the edge case.
+      if (attributionRef) sessionStorage.setItem('tf-signup-ref', attributionRef)
       await signInWithOAuth(provider)
     } catch {
       toast.error(

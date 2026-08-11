@@ -35,6 +35,14 @@ export function SelectRole() {
         toast.error('Failed to save your role. Please try again.')
         return
       }
+      // Carry the outreach attribution across the OAuth round trip. Best-effort: a
+      // failure here must never block someone finishing signup, so it is swallowed —
+      // the cost is one unattributed lead, not a lost account.
+      const ref = sessionStorage.getItem('tf-signup-ref')
+      if (ref) {
+        sessionStorage.removeItem('tf-signup-ref')
+        await supabase.auth.updateUser({ data: { ref } }).catch(() => {})
+      }
       await refreshRole()
       navigate(`/onboarding/${selectedRole}`, { replace: true })
     } catch {

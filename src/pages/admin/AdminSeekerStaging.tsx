@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { toast } from 'sonner'
+import { Link2 } from 'lucide-react'
 import { AdminTable } from '@/components/admin/AdminTable'
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
 import { KpiCard } from '@/components/admin/KpiCard'
@@ -62,9 +64,30 @@ const COLUMNS = [
   { key: 'training', label: 'Training wanted' },
   { key: 'captured', label: 'Captured', sortKey: 'captured' },
   { key: 'status', label: 'Status' },
+  { key: 'link', label: 'Link' },
 ]
 
 const cell = 'px-3 py-2 align-middle text-[13px]'
+
+/**
+ * The signup link to DM this person. Built here rather than by hand: the `ref` is the
+ * staging row id, and a hand-typed URL with an empty or wrong `ref` silently loses the
+ * attribution — the signup still works, so nothing ever tells you it was lost.
+ *
+ * www, not the apex: the apex 308s, and a redirect can drop the query string.
+ */
+function outreachLink(stagingId: string): string {
+  return `https://www.topfarms.co.nz/signup?role=seeker&ref=${stagingId}`
+}
+
+async function copyOutreachLink(stagingId: string, name: string | null | undefined) {
+  try {
+    await navigator.clipboard.writeText(outreachLink(stagingId))
+    toast.success(`Signup link copied${name ? ` for ${name}` : ''}`)
+  } catch {
+    toast.error('Could not copy — your browser blocked clipboard access.')
+  }
+}
 
 function fmtDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-NZ', {
@@ -158,6 +181,16 @@ export function AdminSeekerStaging() {
               </td>
               <td className={cell}>
                 <Tag variant={status.variant}>{status.label}</Tag>
+              </td>
+              <td className={cell}>
+                <button
+                  type="button"
+                  onClick={() => void copyOutreachLink(row.id, s.display_name)}
+                  className="border-border text-text hover:border-brand-hover focus-visible:outline-brand inline-flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-[8px] border-[1.5px] px-2.5 py-1.5 transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 md:min-h-[32px]"
+                >
+                  <Link2 size={13} aria-hidden="true" />
+                  Copy link
+                </button>
               </td>
             </tr>
           )
