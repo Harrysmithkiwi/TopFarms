@@ -4,7 +4,7 @@ import { Link2, ClipboardPaste } from 'lucide-react'
 import { AdminTable } from '@/components/admin/AdminTable'
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
 import { KpiCard } from '@/components/admin/KpiCard'
-import { DrawerShell } from '@/components/admin/DrawerShell'
+import { DrawerShell, DrawerSection } from '@/components/admin/DrawerShell'
 import { PasteCapture } from '@/components/admin/PasteCapture'
 import { Button } from '@/components/ui/Button'
 import { Tag } from '@/components/ui/Tag'
@@ -54,7 +54,8 @@ type SeekerStagingRow = {
     display_name?: string | null
     region?: string | null
     locality?: string | null
-    contact?: { email?: string; phone?: string; url?: string; name?: string } | null
+    role_or_category?: string | null
+    contact?: { email?: string; phone?: string; url?: string; name?: string; notes?: string } | null
     seeker?: SeekerDetail | null
   }
 }
@@ -70,7 +71,9 @@ const COLUMNS = [
   { key: 'link', label: 'Link' },
 ]
 
-const cell = 'px-3 py-2 align-middle text-[13px]'
+// px-4 matches AdminTable's own <th> padding — a different value here puts every cell
+// out of step with its header.
+const cell = 'px-4 align-middle text-[13px]'
 
 /**
  * The signup link to DM this person. Built here rather than by hand: a hand-typed URL
@@ -105,6 +108,26 @@ function fmtDate(iso: string): string {
   })
 }
 
+function regionLocality(s: SeekerStagingRow['structured']): string {
+  return [s.region, s.locality].filter(Boolean).join(' · ') || '—'
+}
+
+function Field({ label, value }: { label: string; value: React.ReactNode }) {
+  if (value === null || value === undefined || value === '' || value === false) return null
+  return (
+    <div className="flex gap-3 py-1 text-[13px]">
+      <span className="w-[150px] shrink-0" style={{ color: 'var(--color-text-subtle)' }}>
+        {label}
+      </span>
+      <span className="text-text">{value}</span>
+    </div>
+  )
+}
+
+function list(v?: string[] | null): string | null {
+  return v && v.length ? v.join(', ') : null
+}
+
 /** Where a seeker sits in the funnel. Signed up wins — it is the only outcome. */
 function statusOf(row: SeekerStagingRow): { label: string; variant: 'green' | 'warn' | 'grey' } {
   if (row.signed_up) return { label: 'Signed up', variant: 'green' }
@@ -116,6 +139,7 @@ function statusOf(row: SeekerStagingRow): { label: string; variant: 'green' | 'w
 export function AdminSeekerStaging() {
   const [rows, setRows] = useState<SeekerStagingRow[]>([])
   const [capturing, setCapturing] = useState(false)
+  const [selected, setSelected] = useState<SeekerStagingRow | null>(null)
   // Remounts AdminTable so a fresh capture appears without a page reload — same
   // refreshKey pattern the employer queue uses.
   const [refreshKey, setRefreshKey] = useState(0)
@@ -158,6 +182,7 @@ export function AdminSeekerStaging() {
         inCard
         searchable
         onRowsChange={setRows}
+        onRowClick={(row) => setSelected(row)}
         searchPlaceholder="Search seekers by name, region, locality, post text…"
         extraArgs={{ p_type: 'seeker', p_geo: 'all' }}
         columns={COLUMNS}
@@ -171,8 +196,11 @@ export function AdminSeekerStaging() {
           const status = statusOf(row)
           const skills = d.skills ?? []
           const training = d.training_wanted ?? []
+          // Cells only — AdminTable owns the <tr> (hover, click, height). Returning a
+          // <tr> here nests one inside another; the browser hoists it out and every
+          // column silently stops lining up with its header.
           return (
-            <tr key={row.id} className="border-border border-b last:border-0">
+            <>
               <td className={cell}>
                 <div className="flex items-center gap-2">
                   <span className="text-text font-medium">{s.display_name ?? '—'}</span>
@@ -183,7 +211,7 @@ export function AdminSeekerStaging() {
                 </div>
               </td>
               <td className={cell} style={{ color: 'var(--color-text-muted)' }}>
-                {[s.region, s.locality].filter(Boolean).join(' · ') || '—'}
+                {regionLocality(s)}
               </td>
               <td className={cell} style={{ color: 'var(--color-text-muted)' }}>
                 {(d.roles_sought ?? []).join(', ') || '—'}
@@ -206,7 +234,7 @@ export function AdminSeekerStaging() {
               <td className={cell}>
                 <Tag variant={status.variant}>{status.label}</Tag>
               </td>
-              <td className={cell}>
+              <td className={cell} onClick={(e) => e.stopPropagation()}>
                 <button
                   type="button"
                   onClick={() => void copyOutreachLink(row.id, s.display_name)}
@@ -216,10 +244,95 @@ export function AdminSeekerStaging() {
                   Copy link
                 </button>
               </td>
-            </tr>
+            </>
           )
         }}
       />
+
+      {selected && (
+        <DrawerShell
+          label={selected.structured.display_name ?? 'Seeker'}
+          onClose={() => setSelected(null)}
+        >
+          {/* The post first, in full. Every extracted field below is a claim ABOUT this
+              text — you cannot judge the extraction, or write a DM that sounds like a
+              human read it, from a summary. */}
+          <DrawerSection label="The post">
+            <p
+              className="text-[13px] leading-6 whitespace-pre-wrap"
+              style={{ color: 'var(--color-text)' }}
+            >
+              {selected.raw_excerpt?.trim() || 'No post text was captured for this lead.'}
+            </p>
+          </DrawerSection>
+
+          <DrawerSection label="Contact">
+            <Field label="Email" value={selected.structured.contact?.email} />
+            <Field label="Phone" value={selected.structured.contact?.phone} />
+            <Field label="Profile" value={selected.structured.contact?.url} />
+            <Field label="Notes" value={selected.structured.contact?.notes} />
+            {!selected.structured.contact?.email &&
+              !selected.structured.contact?.phone &&
+              !selected.structured.contact?.url && (
+                <p className="text-[13px]" style={{ color: 'var(--color-text-subtle)' }}>
+                  No contact details in the post — reply to the post or DM them on the platform
+                  you found it.
+                </p>
+              )}
+          </DrawerSection>
+
+          <DrawerSection label="What they're after">
+            <Field label="Region · Locality" value={regionLocality(selected.structured)} />
+            <Field label="Roles sought" value={list(selected.structured.seeker?.roles_sought)} />
+            <Field label="Their words" value={selected.structured.role_or_category} />
+            <Field label="Available" value={selected.structured.seeker?.availability} />
+            <Field
+              label="Accommodation"
+              value={selected.structured.seeker?.accommodation_needed}
+            />
+            <Field label="Household" value={selected.structured.seeker?.household} />
+            <Field
+              label="Must stay near"
+              value={selected.structured.seeker?.location_constraint}
+            />
+            <Field
+              label="Partner also seeking"
+              value={selected.structured.seeker?.couple_seeking ? 'Yes' : null}
+            />
+          </DrawerSection>
+
+          <DrawerSection label="What they can do">
+            <Field label="Skills" value={list(selected.structured.seeker?.skills)} />
+            <Field label="Sheds worked" value={list(selected.structured.seeker?.sheds_experienced)} />
+            <Field label="Licences" value={list(selected.structured.seeker?.licences)} />
+            <Field
+              label="Training wanted"
+              value={
+                selected.structured.seeker?.training_wanted?.length ? (
+                  <span className="text-warn-text-on-bg">
+                    {selected.structured.seeker.training_wanted.join(', ')}
+                  </span>
+                ) : null
+              }
+            />
+          </DrawerSection>
+
+          <DrawerSection label="Outreach">
+            <Field label="Source" value={selected.source} />
+            <Field label="Original post" value={selected.source_ref} />
+            <Field label="Confidence" value={`${Math.round(selected.confidence * 100)}%`} />
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+              onClick={() => void copyOutreachLink(selected.id, selected.structured.display_name)}
+            >
+              <Link2 size={14} />
+              Copy signup link
+            </Button>
+          </DrawerSection>
+        </DrawerShell>
+      )}
 
       {capturing && (
         <DrawerShell label="Capture seeker post" onClose={() => setCapturing(false)}>
