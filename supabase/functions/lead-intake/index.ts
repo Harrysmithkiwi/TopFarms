@@ -469,6 +469,12 @@ async function structureWithClaude(
           'never infer it, but never miss it when it is stated.',
           'For a seeker, display_name = the PERSON\'S name and region = where they want',
           'to work (or where they say they are), not an employer location.',
+          'ONE deliberate exception to NEVER-INFER, and only this one: if a SEEKER post',
+          'names a town but no region, resolve the town to its region (Cambridge →',
+          'Waikato, Ashburton → Canterbury) and keep the town in locality. A seeker with',
+          'no region cannot be matched to a job and cannot be deduplicated against their',
+          'own re-posts, so a null region costs more here than a safe geographic lookup.',
+          'Resolve only when the town is unambiguous; leave null when it is not.',
           // ──────────────────────────────────────────────────────────────────
           'NEVER guess or infer absent fields — use null and list them in',
           'missing_fields. Only include contact details EXPLICITLY stated in the',
