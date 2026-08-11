@@ -54,7 +54,7 @@ exactly like a failed deploy.*
 
 | Finding | State | Evidence |
 |---|---|---|
-| CV releases the contact the placement fee sells | ✅ closed | `seeker_documents` RLS: the `cv` branch requires `employer_has_placement_access(seeker_id)`; `seeker_contacts` employer SELECT joins `placement_fees` |
+| CV releases the contact the placement fee sells | ⚠️ **partially closed — corrected 2026-08-11, see the probe below** | A server-enforced predicate now exists (`employer_has_placement_access`), which closes the *tampering* half. But that function tests `acknowledged_at IS NOT NULL` — **acknowledgement, not payment** — so the contact is still released before any money moves. |
 | Any user can `set_user_role('employer')` and read every open-to-work seeker | ✅ closed | live `prosrc`: requires `auth.uid()`, whitelists `('employer','seeker')`, and is **first-assignment-only** — a second call raises `42501` |
 | Two Edge Functions cross-tenant with service-role and zero caller check | ✅ closed | `stripe-webhook` verifies `stripe-signature` against `STRIPE_WEBHOOK_SECRET`; `lead-harvest` checks `x-webhook-secret` against `LEAD_INTAKE_SECRET` (`index.ts:123-124`). Both `verify_jwt=false` deliberately, documented in `config.toml` |
 | Placement fee `amount_nzd` computed in the browser | ✅ closed | uplift Phase 2 Task 2.1, PR #77 — server-derived |
@@ -109,6 +109,69 @@ cannot be closed by engineering — **note this prompt's §3 explicitly authoris
 starts without it) · ticket 02 (redirect allowlist, ~5 min, **re-confirmed still broken this run**:
 `redirect_to` is discarded and the user lands on the apex) · PEND-01 (Stripe test→live) · legal review
 · ticket 04 purge.
+
+---
+
+## Revenue-path probe — 2026-08-11, live prod, Phase A (no Stripe call)
+
+First execution of the placement chain in production history. Ran through the **real
+RLS-enforced path with real user JWTs**, not service role: employer published a job → seeker
+applied → employer acknowledged the placement fee. **Fully torn down**; every table verified
+back to its pre-probe count (jobs 0, applications 0, placement_fees 0, placements 0,
+match_scores 0, listing_fees 0).
+
+### ✅ Server-derived pricing is real — proven, not asserted
+
+The acknowledge call deliberately carried **tampered** values: `fee_tier: 'entry'`,
+`amount_nzd: 1`. The row written was **`senior` / `80000` cents ($800)**, derived from the job
+(`Farm Manager`, $60–70k → avg $65k → `experienced`, then the "Manager" keyword bumps to
+`senior`). The server ignored the body entirely. Uplift Task 2.1 holds under adversarial input.
+
+### 🔴 R1. The paywall releases on acknowledgement, not payment
+
+**This corrects the row above, which I had marked closed.** Measured live: after acknowledging —
+a free, self-service action with no money moved — the employer could read
+`seeker_contacts.email`. The gate function is exactly:
+
+```sql
+SELECT EXISTS (SELECT 1 FROM placement_fees pf … WHERE ep.user_id = auth.uid()
+  AND pf.seeker_id = p_seeker_id AND pf.acknowledged_at IS NOT NULL);
+```
+
+`acknowledged_at IS NOT NULL` — not `paid_at`, not even `confirmed_at`. So an employer clicks
+"I hired them", receives the contact and CV immediately, and the invoice is a **promise**.
+Nothing technical prevents never paying.
+
+**This is probably the deliberate Option C product decision** (trust-then-invoice — the 7d/14d
+followup crons exist for exactly this), so it is filed as a **business risk to confirm, not a
+bug to fix**. But it is the single largest revenue leak in the model and it is now demonstrated
+rather than theorised. **Operator: confirm this is the intended model.**
+
+*Method note:* `seeker_documents` returned empty for the probe seeker and I nearly reported the
+CV as "still gated". It is not — that seeker simply has **0 documents**. The CV rides the same
+acknowledgement gate as the contact. An empty result is not a denial.
+
+### 🟠 R2. `E2E_SEEKER_EMAIL` is the operator's personal account, not `+ci-seeker`
+
+`.env` points the seeker E2E role at `harry.symmans.smith@gmail.com`, which carries a real
+onboarded profile from 2026-05-05. `+ci-seeker` exists with the seeker role but **has never
+onboarded** (no `seeker_profiles` row, no `seeker_contacts` row). So the E2E suite has been
+exercising the operator's own profile. The probe was reworked to *read* that profile and never
+create or delete it. **This invalidates a ticket-04 assumption**: purging on the belief that
+`+ci-seeker` is the E2E seeker would leave CI green but pointed at personal data — or break it.
+
+### 🟠 R3. An active job plus an open-to-work seeker produced 0 `match_scores`
+
+`trigger_recompute_job_scores` fires on `jobs`, and the job was `active` with a seeker whose
+`open_to_work` is true — yet no row appeared. **Cause not established** (the profile carries
+`profile_complete_pct = 0`, which may gate scoring). Recorded as an open question, not a
+finding. Worth resolving before inventory lands, since matching is the product.
+
+### Not run
+
+The Stripe invoice half (`create-placement-invoice`). Prod's server-side key mode could not be
+read from here, and finalising an invoice emails the customer — so it waits on the operator
+confirming test mode. Everything up to that point is proven.
 
 ## 🔴 Launch blockers (engineering-owned) — ALL CLOSED
 
