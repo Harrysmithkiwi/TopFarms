@@ -105,6 +105,7 @@ are not missing migrations. Verified 2026-07-30 by comparing the live function a
 |---|---|---|---|
 | `20260722232729` | `fix_get_applicants_for_job_joins` | `058_fix_admin_profile_doc_queue_applicants.sql:6-45` | live `get_applicants_for_job` carries `LEFT(a.id::text, 8)` + `v_employer_user_id`, matching 058 |
 | `20260730063632` | `list_user_storage_objects` | `076_storage_purge_via_api.sql` §4 | applied as a separate connector call while probing admin-purge, then folded into 076 on disk |
+| `20260811034524` | `signed_up_matches_short_ref` | `082_staging_type_filter_and_signup_attribution.sql` (the `signed_up` EXISTS clause) | live function compares `left(raw_user_meta_data->>'ref',8) = left(id::text,8)`, matching 082 on disk |
 | `20260729095445` | `leads_list_expose_draft` | `064_lane_a_outreach_worklist.sql` (`admin_leads_list`) | live function exposes `drafted_email/draft_model/contacted_at`, has `follow_up_date`, orders by `status_changed_at DESC` — matching 064 |
 
 This corrects audit finding **P0-8**, which claimed production schema existed outside version

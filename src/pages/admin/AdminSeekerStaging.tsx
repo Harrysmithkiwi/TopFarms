@@ -73,14 +73,19 @@ const COLUMNS = [
 const cell = 'px-3 py-2 align-middle text-[13px]'
 
 /**
- * The signup link to DM this person. Built here rather than by hand: the `ref` is the
- * staging row id, and a hand-typed URL with an empty or wrong `ref` silently loses the
- * attribution — the signup still works, so nothing ever tells you it was lost.
+ * The signup link to DM this person. Built here rather than by hand: a hand-typed URL
+ * with an empty or wrong `ref` silently loses the attribution — the signup still
+ * works, so nothing ever tells you it was lost.
+ *
+ * The ref is the first 8 hex characters of the staging row id, not the full UUID. A
+ * 36-character tracking token in a cold Facebook DM reads as spam to exactly the
+ * person you are trying to earn trust from, and 8 hex is a 4.3-billion space — no
+ * collisions across the current queue, and none plausible at any size this reaches.
  *
  * www, not the apex: the apex 308s, and a redirect can drop the query string.
  */
 function outreachLink(stagingId: string): string {
-  return `https://www.topfarms.co.nz/signup?role=seeker&ref=${stagingId}`
+  return `https://www.topfarms.co.nz/signup?role=seeker&ref=${stagingId.slice(0, 8)}`
 }
 
 async function copyOutreachLink(stagingId: string, name: string | null | undefined) {

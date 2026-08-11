@@ -93,13 +93,16 @@ export function SignUp() {
   const roleParam = searchParams.get('role')
   const initialRole = roleParam === 'employer' || roleParam === 'seeker' ? roleParam : null
 
-  // Attribution: `?ref=<lead_staging.id>` on an outreach link. Validated as a UUID
-  // rather than passed through — it lands in user metadata, and a junk value would
-  // sit there forever pretending to be a lead. Absent/invalid simply means organic.
+  // Attribution: `?ref=` on an outreach link, carrying the first 8 hex characters of a
+  // lead_staging id (a full UUID is still accepted — links already sent stay valid).
+  // Validated rather than passed through: it lands in user metadata permanently, and a
+  // junk value would sit there forever pretending to be a lead. Absent or malformed
+  // simply means organic, which is a real and common case.
   const refParam = searchParams.get('ref')
   const attributionRef =
-    refParam && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(refParam)
-      ? refParam
+    refParam &&
+    /^[0-9a-f]{8}$|^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(refParam)
+      ? refParam.toLowerCase()
       : null
 
   const [selectedRole, setSelectedRole] = useState<'employer' | 'seeker' | null>(initialRole)

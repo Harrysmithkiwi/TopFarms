@@ -96,8 +96,12 @@ AS $function$
              st.dedupe_status, st.dedupe_match_id,
              st.outreach_status, st.sent_at, st.responded_at,
              -- The attribution loop: did this captured lead become an account?
+             -- Compares the first 8 chars of BOTH sides: the outreach link carries an
+             -- 8-hex ref (a full UUID in a cold DM reads as spam), and this still
+             -- matches any full-UUID link already sent. Applied as a delta after 082 landed
+             -- (ledger `signed_up_matches_short_ref`), then folded back in here.
              EXISTS (SELECT 1 FROM auth.users u
-                     WHERE u.raw_user_meta_data->>'ref' = st.id::text) AS signed_up
+                     WHERE left(u.raw_user_meta_data->>'ref', 8) = left(st.id::text, 8)) AS signed_up
       FROM lead_staging st
       WHERE st.review_status = 'pending'
         AND (v_type IS NULL

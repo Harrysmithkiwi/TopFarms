@@ -1,6 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import * as jose from 'https://esm.sh/jose@5'
 import { NZ_REGIONS, canonicalRegion, classifyGeo } from '../_shared/leadGeo.ts'
+import { ROLE_TYPES, SKILL_TAXONOMY } from '../_shared/leadVocab.ts'
 
 // lead-intake — the single intake door, L1 (Claude Haiku structuring).
 //
@@ -451,9 +452,23 @@ async function structureWithClaude(
           '"employer" when the author is offering work. A post can look like a job',
           'ad and still be a seeker post — decide by WHO WANTS WHAT, not by format.',
           'For a seeker post ALSO fill the `seeker` object; leave it null for employers.',
-          'seeker.roles_sought = roles they want ("Farm Assistant", "Herd Manager", "2IC").',
-          'seeker.skills = tasks they say they CAN do, one per item, verbatim-ish',
-          '("break fencing", "detect mastitis and lameness", "plant and vat washes").',
+          // Canonical vocabularies. A seeker who says "farm assistant" must land on the
+          // SAME token an employer picks when posting, or the two never match.
+          `seeker.roles_sought MUST use ONLY these exact values: ${ROLE_TYPES.join(', ')}.`,
+          'Map what they wrote onto that list — "farm assistant"/"farmhand"/"dairy',
+          'assistant" → "Farm Hand"; "2ic"/"second in charge" → "2IC"; "herd manager"',
+          '→ "Herd Manager"; "relief milking" → "Relief Milker"; "manager" → "Farm',
+          'Manager". Use "Other" only when nothing fits. Keep their own wording in',
+          'role_or_category, which stays verbatim.',
+          `seeker.skills MUST use ONLY these exact values: ${SKILL_TAXONOMY.join('; ')}.`,
+          'Map each task they say they can do onto the closest one — "break fencing" →',
+          '"Fencing & yard construction"; "detect mastitis and lameness"/"treatments for',
+          'cows" → "Animal health & husbandry"; "plant and vat washes"/"milking" →',
+          '"Dairy cattle management"; "undersow"/"tractor work" → "Tractor operation";',
+          '"load/feed out mixer wagons" → "Heavy machinery & harvest equipment".',
+          'Deduplicate after mapping. OMIT personal qualities entirely — "hard working",',
+          '"reliable", "work independently", "good team player" are NOT skills and must',
+          'never appear. An empty array is correct when the post claims no real tasks.',
           'seeker.licences = licences held ("Class 1", "HT").',
           'seeker.sheds_experienced = sheds they have WORKED in (for a seeker this is',
           'experience, NOT a shed being advertised — do not confuse it with shed_type).',
