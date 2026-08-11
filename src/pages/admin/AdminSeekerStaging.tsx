@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { Link2 } from 'lucide-react'
+import { Link2, ClipboardPaste } from 'lucide-react'
 import { AdminTable } from '@/components/admin/AdminTable'
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
 import { KpiCard } from '@/components/admin/KpiCard'
+import { DrawerShell } from '@/components/admin/DrawerShell'
+import { PasteCapture } from '@/components/admin/PasteCapture'
+import { Button } from '@/components/ui/Button'
 import { Tag } from '@/components/ui/Tag'
 
 /**
@@ -107,6 +110,10 @@ function statusOf(row: SeekerStagingRow): { label: string; variant: 'green' | 'w
 
 export function AdminSeekerStaging() {
   const [rows, setRows] = useState<SeekerStagingRow[]>([])
+  const [capturing, setCapturing] = useState(false)
+  // Remounts AdminTable so a fresh capture appears without a page reload — same
+  // refreshKey pattern the employer queue uses.
+  const [refreshKey, setRefreshKey] = useState(0)
 
   // Counted from the loaded page, not the whole queue — an honest page-level tally
   // beats a second round-trip while the volumes are small.
@@ -120,6 +127,17 @@ export function AdminSeekerStaging() {
         eyebrow="Leads"
         title="Seeker staging"
         description="Captured job-seeker posts. Nothing goes live until you approve it here."
+        action={
+          <Button
+            variant="primary"
+            size="sm"
+            className="gap-1.5"
+            onClick={() => setCapturing(true)}
+          >
+            <ClipboardPaste size={15} />
+            Capture / Paste post
+          </Button>
+        }
       />
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -130,6 +148,7 @@ export function AdminSeekerStaging() {
       </div>
 
       <AdminTable<SeekerStagingRow>
+        key={refreshKey}
         rpc="admin_leads_staging_list"
         inCard
         searchable
@@ -139,7 +158,7 @@ export function AdminSeekerStaging() {
         columns={COLUMNS}
         defaultSort={{ key: 'captured', dir: 'desc' }}
         emptyHeading="No seeker posts captured yet"
-        emptyBody="Paste a job-seeker post from a Facebook group to capture it here."
+        emptyBody="Use Capture / Paste post above to add a job-seeker post from a Facebook group."
         errorCopy="We could not load the seeker queue."
         renderRow={(row) => {
           const s = row.structured
@@ -196,6 +215,19 @@ export function AdminSeekerStaging() {
           )
         }}
       />
+
+      {capturing && (
+        <DrawerShell label="Capture seeker post" onClose={() => setCapturing(false)}>
+          {/* Same component as the employer queue: lead-intake classifies employer vs
+              seeker itself, so a post pasted here still lands in the right queue —
+              and one pasted on the employer screen lands here if it is a seeker. */}
+          <PasteCapture
+            onCaptured={() => setRefreshKey((k) => k + 1)}
+            blurb="Paste a job-seeker post — someone describing what they can do and what they're after. Skills, tickets, housing needs and any training gaps are extracted automatically; nothing goes live until you approve it."
+            placeholder="Paste the post here — e.g. “currently on the hunt for a fulltime Dairy Farm Assistant… 3-4 bedroom will be a must…”. Screenshots work too (Cmd/Ctrl+V)."
+          />
+        </DrawerShell>
+      )}
     </div>
   )
 }
