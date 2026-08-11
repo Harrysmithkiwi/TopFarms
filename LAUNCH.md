@@ -167,11 +167,57 @@ create or delete it. **This invalidates a ticket-04 assumption**: purging on the
 `profile_complete_pct = 0`, which may gate scoring). Recorded as an open question, not a
 finding. Worth resolving before inventory lands, since matching is the product.
 
-### Not run
+### ✅ Phase B — the Stripe half, run 2026-08-11. The revenue path works end to end.
 
-The Stripe invoice half (`create-placement-invoice`). Prod's server-side key mode could not be
-read from here, and finalising an invoice emails the customer — so it waits on the operator
-confirming test mode. Everything up to that point is proven.
+**Test mode confirmed by evidence, not assumption:** the hosted invoice URL Stripe returned is
+`invoice.stripe.com/i/…/test_…`. That is the proof; everything before it was inference.
+
+State written, then removed:
+
+| Field | Value |
+|---|---|
+| `fee_tier` / `amount_nzd` | `senior` / `80000` (= $800) — **body again sent `entry` / `1`, again ignored** |
+| `stripe_invoice_id` | `in_1U34IuRpIiAQpOa7zzJznHFi`, status `open` |
+| `acknowledged_at` / `confirmed_at` | both set |
+| `paid_at` | `null` — correct, the invoice is open and unpaid |
+| `placements` | **1 row, `employer_confirmed_at` set — the first placement in production history** |
+
+### 🔴 R4. The test→live swap must NULL `employer_profiles.stripe_customer_id` (PEND-01)
+
+`create-placement-invoice` creates a Stripe customer and **caches its id on the employer
+profile**, reusing it on every later invoice. A test-mode customer id **does not exist in live
+mode**, so after the key swap the first live invoice for any previously-test employer fails at
+customer lookup. Add to the PEND-01 checklist:
+
+```sql
+UPDATE public.employer_profiles SET stripe_customer_id = NULL;
+```
+
+Found because the probe left exactly this residue on `+ci-employer`; cleared via migration
+`clear_test_mode_stripe_customer_id_probe_residue`. One row today, every transacting employer
+later.
+
+### 🟠 R5. The Stripe MCP is connected to a different account than production uses
+
+MCP session account: `acct_1SyPEB2LRklZaY5B` ("TopFarms", livemode false). The invoice
+production actually created landed in **`acct_1SyPEbRpIiAQpOa7`** — and the MCP account lists
+**0 invoices** before and after. So prod's `STRIPE_SECRET_KEY` belongs to a different Stripe
+account, and the connector can neither verify nor manage production's Stripe state.
+
+**This matters for PEND-01:** confirm *which* account goes live, and that its live keys are the
+ones that land in Supabase secrets. Two TopFarms-ish Stripe accounts is itself worth resolving.
+
+### Left behind, deliberately
+
+Test invoice `in_1U34IuRpIiAQpOa7zzJznHFi` is still `open` in production's Stripe **test**
+account. It cannot be voided from here (wrong account, see R5). Harmless test data — void it in
+the dashboard if you want a clean test ledger.
+
+### Prod state after teardown — verified, not assumed
+
+`jobs 0 · applications 0 · placement_fees 0 · placements 0 · match_scores 0 · listing_fees 0 ·
+profiles_with_stripe_customer 0`, seeker_profiles 3 and employer_profiles 2 unchanged. Identical
+to the pre-probe baseline.
 
 ## 🔴 Launch blockers (engineering-owned) — ALL CLOSED
 

@@ -124,6 +124,21 @@ try {
   log('acknowledge-placement-fee returned', ack)
   if (ack.status < 300) created.feeRow = true
 
+  // ── 6. PHASE B (opt-in): the Stripe half. Creates and finalises a TEST-MODE invoice.
+  //       Finalising makes Stripe email the hosted invoice to the employer, and this
+  //       function also emails the seeker a "you've been hired" note via Resend — so it
+  //       stays behind a flag rather than running by default.
+  if (process.env.PHASE_B === '1') {
+    const inv = await invokeFn(empTok, 'create-placement-invoice', {
+      application_id: created.appId,
+      fee_tier: 'entry', // tamper again — the ACK snapshot must win
+      amount_nzd: 1,
+      rating: 5,
+    })
+    log('create-placement-invoice returned', inv)
+    created.invoiceId = inv.body?.invoice_id ?? null
+  }
+
   console.log('\n=== PROBE COMPLETE — verify via SQL before teardown ===')
   console.log(JSON.stringify({ ...created, employer_profile_id: EMPLOYER_PROFILE_ID }, null, 2))
   console.log('\nLeaving rows in place for verification. Run with TEARDOWN=1 to remove them.')
