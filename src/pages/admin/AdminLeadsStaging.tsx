@@ -540,7 +540,7 @@ function StagingDrawer({
           {row.dedupe_status === 'suspect_duplicate' && (
             <p className="text-warn-text-on-bg flex items-start gap-1.5 text-[12px]">
               <AlertTriangle size={13} className="mt-0.5 shrink-0" />
-              Possible duplicate of an existing lead — approve only if genuinely distinct.
+              Possible duplicate of another captured lead — approve only if genuinely distinct.
             </p>
           )}
           {row.missing_fields.length > 0 && (
