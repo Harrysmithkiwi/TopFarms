@@ -9,6 +9,13 @@ import { ErrorState } from '@/components/ui/ErrorState'
 interface PlacementsSummary {
   count: number
   overdue: number
+  /**
+   * CENTS, despite the name. `admin_get_placements_summary` returns
+   * `sum(placement_fees.amount_nzd)`, and that column stores cents — Stripe's
+   * invoiceItems.create takes cents, and PLACEMENT_FEE_AMOUNTS is 20000/40000/80000
+   * for $200/$400/$800. `admin_revenue_reconciliation` names the same value
+   * `*_cents`; this RPC does not, which is what made the 100× render below possible.
+   */
   value_nzd: number
 }
 
@@ -17,6 +24,9 @@ const nzd = new Intl.NumberFormat('en-NZ', {
   currency: 'NZD',
   maximumFractionDigits: 0,
 })
+
+/** Always divide before formatting — see the unit note on PlacementsSummary.value_nzd. */
+const fromCents = (cents: number) => nzd.format(cents / 100)
 
 // type (not interface): AdminTable<TRow extends Record<string, unknown>> needs
 // the implicit index signature that only type-alias object literals get.
@@ -112,7 +122,7 @@ export function PlacementPipeline() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <KpiCard label="In-flight placements" value={summary.count} />
           <KpiCard label="Overdue (>14 days)" value={summary.overdue} />
-          <KpiCard label="Pipeline value" value={nzd.format(summary.value_nzd)} />
+          <KpiCard label="Pipeline value" value={fromCents(summary.value_nzd)} />
         </div>
       )}
 
