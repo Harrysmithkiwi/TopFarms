@@ -160,12 +160,28 @@ exercising the operator's own profile. The probe was reworked to *read* that pro
 create or delete it. **This invalidates a ticket-04 assumption**: purging on the belief that
 `+ci-seeker` is the E2E seeker would leave CI green but pointed at personal data — or break it.
 
-### 🟠 R3. An active job plus an open-to-work seeker produced 0 `match_scores`
+### ✅ R3. RESOLVED 2026-08-11 — matching works; the probe deleted its own evidence
 
-`trigger_recompute_job_scores` fires on `jobs`, and the job was `active` with a seeker whose
-`open_to_work` is true — yet no row appeared. **Cause not established** (the profile carries
-`profile_complete_pct = 0`, which may gate scoring). Recorded as an open question, not a
-finding. Worth resolving before inventory lands, since matching is the product.
+**Not a defect — a measurement error, mine.** The probe inserted the job `active` (which fires
+`job_match_rescore` and writes the scores), then patched it to `draft` to pull it off the board.
+That fires `cleanup_match_scores_on_status_change`, whose guard is
+`OLD.status = 'active' AND NEW.status IS DISTINCT FROM 'active'` → `DELETE FROM match_scores`.
+The count was taken *after* the withdrawal, so it read the deletion, not a failure.
+
+Re-run counting **before** withdrawal:
+
+```
+match_scores while ACTIVE:      3 rows — scores 55, 64, 58 across all three seekers
+match_scores after WITHDRAWAL:  0 rows
+```
+
+**The match engine is fine**, and the dependency the whole seeker plan rests on is clear.
+`profile_complete_pct = 0` does not gate scoring; the real filter is
+`WHERE NEW.sector = ANY(sp.sector_pref)`, and all three seekers carry `["dairy","sheep_beef"]`.
+
+**One real consequence for the seeker funnel, though:** `sector_pref` is the only thing standing
+between a seeker and every match. A thin two-minute onboarding that skips it produces a profile
+that matches *nothing* — so sector must be in the minimum capture, alongside region and role.
 
 ### ✅ Phase B — the Stripe half, run 2026-08-11. The revenue path works end to end.
 
