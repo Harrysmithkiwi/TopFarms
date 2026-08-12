@@ -3,6 +3,9 @@
 Written 2026-08-11. Supersedes the previous `NEXT-SESSION.md` (four unblocked items — A1, A2
 and A3 done; A4 carried forward here as item 3).
 
+**Items 1 and 2 are DONE (2026-08-12) — do not redo them.** Start at item 3. Item 2 carries a
+small unfinished piece, flagged inline.
+
 Work the items in order. Nothing here depends on Stripe, and nothing depends on go-live
 ticket 01. Item 6 is blocked on an operator ruling and is listed so it is not forgotten.
 
@@ -36,7 +39,7 @@ artefact), A1 (`compute_match_score` REVOKE), A2 (form-primitive a11y), A3 (read
 
 ---
 
-## 1. Shaye's stale row — 1 minute, do first
+## 1. ✅ DONE 2026-08-12 — Shaye's stale row
 
 The one seeker row predates the canonical vocabulary: it holds `roles_sought: ["Farm
 Assistant"]` and `skills: ["hard working","reliable"]`. The operator tried re-pasting and it
@@ -46,12 +49,14 @@ type) blocks a re-capture, which is correct behaviour but also blocks refreshing
 Delete `lead_staging` id `277a1ff5-8cb5-417e-bf57-cec2ae0cf353` so the operator's re-paste
 lands. **Confirm with them before deleting** — it is their data, even if it is one test row.
 
-**Done when:** the row is gone and the operator's re-paste yields `Farm Hand` /
-`Dairy cattle management`.
+**Deleted** (`277a1ff5…`). Deleted rather than rejected — a rejection can put the fingerprint
+into `lead_suppression` and refuse the re-paste outright. Suppression list verified empty, so
+the operator's re-capture will land with canonical values. `lead_staging` back to 94, seeker
+rows 0.
 
 ---
 
-## 2. Waitlist landing + split onboarding — the big one, ~half a day
+## 2. ✅ DONE 2026-08-12 — Waitlist landing + split onboarding
 
 **The leak.** A seeker who signs up today lands on a job board with **zero jobs**. That is the
 first impression of the product for every person the outreach converts, and they do not come
@@ -89,9 +94,37 @@ Region and role are what make a match meaningful; sector is what makes it happen
 `SelectRole` (OAuth path). Confirm it still survives the new onboarding — a split that drops it
 silently un-measures the whole funnel, and nothing will fail loudly if it does.
 
-**Done when:** a seeker signing up on prod reaches a waitlist screen naming their position and
-offering profile completion; a profile created through the core carries a non-empty
-`sector_pref`; `?ref=` still lands in user metadata; `tsc -b` / vitest / lint / build all clean.
+**Shipped in `6c7adce`** and walked on live prod with Playwright (`scripts/seeker-signup-walk.mjs`):
+
+- **Attribution proven end to end** — a real prod signup carried `ref: "52e62e58"` and
+  `role: "seeker"` into `auth.users.raw_user_meta_data`.
+- **The waitlist card renders** as the FIRST screen a new seeker sees, with "Complete your
+  profile" as the only CTA and **"Browse jobs" suppressed**. Screenshot taken; account torn
+  down; prod back to 10 auth users, zero residue.
+- Step 1 gained region + role; steps 2-7 gained "Save and finish later"; the escape hatch is
+  deliberately absent on step 1. Guarded by `tests/seeker-matchable-core.test.tsx`,
+  mutation-checked.
+
+### ⚠️ Carried forward — the half the walk did not reach
+
+A brand-new seeker lands on **`/dashboard/seeker`, not the wizard**, so the browser walk never
+entered onboarding. Still covered only by unit tests, never by a real browser:
+
+- step 1 actually persisting `sector_pref` + `region` on submit
+- the "Save and finish later" escape hatch on steps 2-7
+
+**Finish `scripts/seeker-signup-walk.mjs`** from the dashboard: click "Complete your profile",
+fill step 1, submit, assert the DB row, then bail from step 2 and assert the dashboard again.
+
+### Findings from the walk, worth keeping
+
+- **The password policy requires ≥ 10 characters.** `Test1234!` is 9 and is rejected by
+  client-side validation with **no request sent** — two signups did nothing silently before
+  this surfaced. Note `+ci-employer`'s password is `Test1234!`: fine for login (set directly
+  in the DB) but it would fail if ever re-registered through the form.
+- **Playwright selector trap:** `getByRole('button', { name: /log in|sign in/i })` matches
+  **"Sign in with Google"** first and walks into Google OAuth. Use
+  `{ name: 'Log in', exact: true }`. Same trap awaits the next spec.
 
 ---
 
