@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'react'
-import { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router'
-import type { LinksFunction, MetaDescriptor } from 'react-router'
+import { Links, Meta, Outlet, Scripts, ScrollRestoration, matchRoutes } from 'react-router'
+import type { LinksFunction, LoaderFunctionArgs, MetaDescriptor } from 'react-router'
 import { MotionConfig } from 'motion/react'
 import { Analytics } from '@vercel/analytics/react'
 import { Toaster } from 'sonner'
@@ -10,6 +10,7 @@ import { AppErrorBoundary } from '@/components/layout/AppErrorBoundary'
 import { OfflineBanner } from '@/components/layout/OfflineBanner'
 import { RecoveryRedirect } from '@/components/layout/RecoveryRedirect'
 import { initObservability } from '@/lib/observability'
+import { routeTable } from '@/legacyRoutes'
 import stylesheet from './index.css?url'
 
 // v13 stage 3b root (directive 1.16, 1.18). This replaces index.html AND the
@@ -58,6 +59,43 @@ export function meta(): MetaDescriptor[] {
     },
     { name: 'twitter:card', content: 'summary' },
   ]
+}
+
+/**
+ * The status code for URLs that do not exist (S1).
+ *
+ * `/definitely-not-a-page` used to answer 200. The branded NotFound page rendered
+ * correctly on the client — which is all LAUNCH.md B3 ever asserted — over an HTTP 200,
+ * so a crawler indexes junk URLs as real pages. The copy assertion is exactly what let
+ * this hide.
+ *
+ * The check lives here, in the root loader, rather than in the `*` route module. Giving
+ * routes/spa.tsx a server loader turns every client-only route into a server-rendered one
+ * (measured: /login's document went 6,036 → 11,399 bytes), and not server-rendering the
+ * gated surface is the whole point of directive 1.16's staging. Root already renders on
+ * the server, so asking here costs nothing and changes no other route's markup.
+ *
+ * The legacy table is the only thing that knows which paths are real, so ask it: if the
+ * deepest match is its own `*` entry — the one whose element is NotFound — nothing real
+ * matched. matchRoutes renders nothing; the table's elements are lazy() wrappers and stay
+ * unevaluated. The thrown Response gives the document its status, and the ErrorBoundary
+ * below renders the same branded page (AppErrorBoundary routes genuine 404s to NotFound),
+ * so only the header changes.
+ *
+ * /jobs and /jobs/:id are server-rendered by their own modules and are NOT in the legacy
+ * table, hence the explicit exemption — a 404 on the two routes crawlers actually want
+ * would be a far worse bug than the one this fixes.
+ */
+export function loader({ request }: LoaderFunctionArgs) {
+  const { pathname } = new URL(request.url)
+  if (pathname === '/jobs' || pathname.startsWith('/jobs/')) return null
+
+  const matches = matchRoutes(routeTable(), pathname)
+  const deepest = matches?.[matches.length - 1]
+  if (!matches || deepest?.route.path === '*') {
+    throw new Response('Not Found', { status: 404, statusText: 'Not Found' })
+  }
+  return null
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
