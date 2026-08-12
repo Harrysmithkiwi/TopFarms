@@ -20,6 +20,12 @@
         "value": "bricolage grotesque",
         "createdAt": "2026-08-12T21:53:35.194Z",
         "reason": "Marketing canon per docs/design/v11-DIRECTIVE.md; fenced by DESIGN.md 3 Second-Canon Rule and out of scope under CLAUDE.md 10"
+      },
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "createdAt": "2026-08-12T21:57:55.846Z",
+        "reason": "Operator-confirmed brand decision, not drift: DESIGN.md picks Inter because NZ farmers already read it daily in Xero, so the type is familiar in their daily kit. Portal canon per CLAUDE.md 10. Revisit post-launch if the register is ever reopened."
       }
     ]
   }
