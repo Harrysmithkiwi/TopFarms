@@ -274,6 +274,10 @@ different jobs. Reconcile deliberately, not by editing one of them in passing.
 
 **The One-Family Rule.** Inter is the only typeface in product UI. JetBrains Mono is permitted only for code snippets and schema references. No serif. No display font experiments. No italic-for-emphasis — use weight (400 → 600), not slant.
 
+**The Second-Canon Rule.** `src/index.css` also loads **Archivo** and **Bricolage Grotesque**. They are not undeclared and they are not available here: they belong to the public marketing canon in `docs/design/v11-DIRECTIVE.md`, which governs `Home`, `ForEmployers`, `Pricing`, `legal/` and `src/components/landing/` and is settled and out of scope (`CLAUDE.md` §10). One stylesheet serves both worlds, so seeing a face in `index.css` says nothing about whether it is permitted on the surface you are working on.
+
+This rule exists as a fence, not a permission. **Archivo and Bricolage Grotesque must not appear in a gated portal** — admin, employer, seeker — and Inter must not appear on a marketing surface. A tool reading this file as the whole type system will flag the marketing faces as undeclared; that finding is discarded under §10, and the fix is never to reach for the other canon's font. If you find yourself wanting one in the portal, the answer is a weight or a size, not a typeface.
+
 **The Two-Variables Rule.** The codebase keeps `--font-display` AND `--font-body` as separate CSS variables (legacy from v1) but both point at Inter (per Migration Audit Decision 2). Components using `font-display` class will pick up Inter automatically. Variable collapse is a post-migration cleanup, not a Phase 19 task.
 
 **The Tabular-Numbers Rule.** Numbers in tables, match scores, salary bands, and counters use `font-variant-numeric: tabular-nums`. Variable-width digits in dense data displays look amateur.
