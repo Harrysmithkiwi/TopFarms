@@ -15,13 +15,18 @@ import { SeekerStep1FarmType } from '@/pages/onboarding/steps/SeekerStep1FarmTyp
  * to require is permanently optional in practice. That is why the guard lives here.
  */
 
-const { updateMock } = vi.hoisted(() => ({ updateMock: vi.fn() }))
+const { upsertMock } = vi.hoisted(() => ({ upsertMock: vi.fn() }))
 vi.mock('@/lib/supabase', () => ({
   supabase: {
     from: () => ({
-      update: (...a: unknown[]) => {
-        updateMock(...a)
-        return { eq: () => Promise.resolve({ error: null }) }
+      upsert: (...a: unknown[]) => {
+        upsertMock(...a)
+        return Promise.resolve({ error: null })
+      },
+      // An UPDATE here matches no row on a seeker's first pass and reports no error,
+      // dropping the contact details silently. Fail loudly instead of re-shipping that.
+      update: () => {
+        throw new Error('seeker_contacts must be upserted — the row does not exist yet')
       },
       select: () => ({
         eq: () => ({ maybeSingle: () => Promise.resolve({ data: null }) }),
@@ -33,7 +38,7 @@ vi.mock('@/hooks/useAuth', () => ({
   useAuth: () => ({ session: { user: { id: 'u1' } } }),
 }))
 
-beforeEach(() => updateMock.mockReset())
+beforeEach(() => upsertMock.mockReset())
 
 describe('seeker step 1 is the matchable core', () => {
   it('cannot be submitted without a sector — the field that decides whether any match happens', async () => {
@@ -65,6 +70,23 @@ describe('seeker step 1 is the matchable core', () => {
     const payload = onComplete.mock.calls[0][0]
     expect(payload.sector_pref).toEqual(['dairy'])
     expect(payload.region).toBe('Waikato')
+  })
+
+  it('writes the contact row it cannot assume exists — first_name is what an employer pays for', async () => {
+    const user = userEvent.setup()
+    render(
+      <SeekerStep1FarmType
+        onComplete={vi.fn()}
+        defaultValues={{ sector_pref: ['dairy'], region: 'Waikato' }}
+      />,
+    )
+    await user.type(screen.getByLabelText(/first name/i), 'Ada')
+    await user.click(screen.getByRole('button', { name: /continue/i }))
+    await waitFor(() => expect(upsertMock).toHaveBeenCalled())
+    const [row, options] = upsertMock.mock.calls[0] as [Record<string, unknown>, unknown]
+    expect(row.user_id).toBe('u1')
+    expect(row.first_name).toBe('Ada')
+    expect(options).toEqual({ onConflict: 'user_id' })
   })
 
   it('names the role group so the chips are not a nameless set of buttons', () => {

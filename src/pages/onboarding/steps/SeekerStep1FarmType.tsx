@@ -70,14 +70,23 @@ export function SeekerStep1FarmType({ onComplete, defaultValues }: SeekerStep1Pr
     const userId = session?.user?.id
     if (userId) {
       setSaving(true)
-      const { error } = await supabase
-        .from('seeker_contacts')
-        .update({
+      // upsert, not update. `seeker_contacts` rows are created by the
+      // seeker_profiles_ensure_contact trigger, which fires AFTER INSERT on
+      // seeker_profiles — and the profile is only upserted by onComplete() below,
+      // i.e. after this runs. So on a seeker's FIRST pass through step 1 there is no
+      // row yet, an UPDATE matches nothing, and PostgREST returns no error: the name
+      // and phone the employer pays $200–800 to see are silently dropped. Confirmed
+      // on live prod 2026-08-12 (scripts/seeker-signup-walk.mjs walked it; the row
+      // came back first_name NULL after the form was filled).
+      const { error } = await supabase.from('seeker_contacts').upsert(
+        {
+          user_id: userId,
           first_name: firstName.trim() || null,
           last_name: lastName.trim() || null,
           phone: phone.trim() || null,
-        })
-        .eq('user_id', userId)
+        },
+        { onConflict: 'user_id' },
+      )
       setSaving(false)
       if (error) {
         // Non-fatal: the profile step should still proceed. The employer-facing
