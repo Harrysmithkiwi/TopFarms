@@ -36,6 +36,206 @@ Source of truth for launch readiness. An item is ticked ONLY when fixed **and** 
 > 404s; Stripe test harness + first automated webhook coverage; token/hygiene fixes.
 > Carry-forward is tracked in the roadmap, not here.
 
+---
+
+## Readiness rerun — 2026-08-11, against live prod at `dac7e06`
+
+**Both standing scores above were stale.** The 93 predates the adversarial audit; the 53 predates
+uplift Phases 1–5, which have all since landed. This rerun re-tested the severe findings against
+live production state rather than trusting either number or any commit message.
+
+**Prod == main, proved by content not status.** `EmployerOnboarding-DiFTwXT7.js` is **byte-identical**
+(`cmp`) between the local build of `dac7e06` and what prod serves. A first attempt polled `/`'s
+asset hashes and saw no change for 10 minutes — `/` is code-split away from every file in the
+commit, so its bundle is genuinely unchanged. *Choosing a signal the change cannot reach reads
+exactly like a failed deploy.*
+
+### The four severe findings from `AUDIT-PRELAUNCH-2026-07-30.md` — all closed, verified live
+
+| Finding | State | Evidence |
+|---|---|---|
+| CV releases the contact the placement fee sells | ⚠️ **partially closed — corrected 2026-08-11, see the probe below** | A server-enforced predicate now exists (`employer_has_placement_access`), which closes the *tampering* half. But that function tests `acknowledged_at IS NOT NULL` — **acknowledgement, not payment** — so the contact is still released before any money moves. |
+| Any user can `set_user_role('employer')` and read every open-to-work seeker | ✅ closed | live `prosrc`: requires `auth.uid()`, whitelists `('employer','seeker')`, and is **first-assignment-only** — a second call raises `42501` |
+| Two Edge Functions cross-tenant with service-role and zero caller check | ✅ closed | `stripe-webhook` verifies `stripe-signature` against `STRIPE_WEBHOOK_SECRET`; `lead-harvest` checks `x-webhook-secret` against `LEAD_INTAKE_SECRET` (`index.ts:123-124`). Both `verify_jwt=false` deliberately, documented in `config.toml` |
+| Placement fee `amount_nzd` computed in the browser | ✅ closed | uplift Phase 2 Task 2.1, PR #77 — server-derived |
+
+**A correction on my own method:** a grep for caller-guard identifiers reported both Edge Functions
+as unguarded. Both are guarded; the pattern simply did not include `x-webhook-secret` or
+`stripe-signature`. The grep was the false positive, not the code.
+
+### Measured this run
+
+- **Supabase advisors: 0 ERROR, 71 WARN, 10 INFO.** `authenticated_security_definer_function_executable`
+  fell **67 → 65** — exactly the two functions revoked in `080`, independent confirmation that landed.
+- **5 anon-executable definer functions are a non-finding.** Three return `trigger`, so they cannot be
+  invoked by PostgREST or directly; the other two (`get_platform_stats`, `employer_has_public_job`)
+  are deliberately public.
+- **E2E against live prod: 37 passed, 0 failed, 6 skipped.** All six skips need an active listing.
+- **a11y sweep: 27 passed** at 1200px and 360px, `/onboarding/employer` and `/onboarding/seeker` green.
+- **Truth pass holds:** no `500+`, `2,000+`, `hundreds of farms` or `85%` in the served landing page.
+- **Infra plumbing:** `/robots.txt`, `/sitemap.xml` (7 urls), `/llms.txt`, `/favicon.svg`, `/privacy`,
+  `/terms` all 200.
+
+### New finding this run
+
+- [ ] **S1. `/definitely-not-a-page` returns HTTP 200, not 404** — soft 404. The branded page renders
+  correctly ("This paddock's empty", no dev error screen), which is all B3 ever checked; the **status
+  code** was never asserted. Search engines will index nonexistent URLs as valid pages. Engineering-owned,
+  **not launch-blocking** — week one. The catch-all falls through to the SPA shell, which Vercel serves
+  200; the fix belongs with the hybrid SSR route config, not the component.
+- [ ] **S2. One RLS policy is `TO public` where the regime says `TO authenticated`** —
+  `seeker_documents: employers select applicant visible documents`. **Not exploitable**
+  (`get_user_role(auth.uid()) = 'employer'` is false for anon), but inconsistent with the hardening
+  regime. Tidy-up, not a defect.
+
+### Score — 2026-08-11
+
+| Domain | Score | Why |
+|---|---|---|
+| Security & authorization | **92** | 0 ERROR advisors; every severe finding re-verified closed against live catalog; last vestigial grant revoked. Open: leaked-password protection off (operator toggle), S2. |
+| Architecture & infra | **90** | prod == main byte-proved; SSR live; error boundary, offline banner, ledger drift guard, full SEO plumbing. Open: S1 soft 404. |
+| Design & accessibility | **90** | axe clean on every swept route at both widths; form primitives now carry names, required and error association. Open: `color-contrast` on wizard step 8, `landmark-unique`, the 14px/16px ramp rulings. |
+| **Product & revenue** | **55** | **The weak domain, and it is not a code defect.** 0 jobs · 0 applications · 0 `listing_fees` · 0 `placement_fees` · 0 `employer_entitlements` · 0 `placements`. The revenue path has never executed even in test mode, and the employer/seeker lifecycle cannot be walked end to end without inventory. |
+
+**Engineering-owned readiness: 91/100** — holds the standing bar.
+**Whole-business launch readiness: ⚠️ not ready**, and no amount of engineering moves it.
+
+**Recommendation: ⚠️ Ready with human-owned blockers.** The platform is sound. What is unproven is
+everything that needs a real listing to exist. Directive §1.15 forbids seeding production, so this
+cannot be closed by engineering — **note this prompt's §3 explicitly authorises seeding, and
+`CLAUDE.md` overrides it.** That conflict should be resolved in the prompt.
+
+**Gating on a human, in order of leverage:** go-live ticket 01 (inventory ruling — nothing downstream
+starts without it) · ~~ticket 02~~ ✅ **CLOSED 2026-08-11** — Site URL moved to `www`; `redirect_to` now honoured,
+verified landing on `https://www.topfarms.co.nz/reset-password` where it previously fell back
+to the apex · PEND-01 (Stripe test→live) · legal review
+· ticket 04 purge.
+
+---
+
+## Revenue-path probe — 2026-08-11, live prod, Phase A (no Stripe call)
+
+First execution of the placement chain in production history. Ran through the **real
+RLS-enforced path with real user JWTs**, not service role: employer published a job → seeker
+applied → employer acknowledged the placement fee. **Fully torn down**; every table verified
+back to its pre-probe count (jobs 0, applications 0, placement_fees 0, placements 0,
+match_scores 0, listing_fees 0).
+
+### ✅ Server-derived pricing is real — proven, not asserted
+
+The acknowledge call deliberately carried **tampered** values: `fee_tier: 'entry'`,
+`amount_nzd: 1`. The row written was **`senior` / `80000` cents ($800)**, derived from the job
+(`Farm Manager`, $60–70k → avg $65k → `experienced`, then the "Manager" keyword bumps to
+`senior`). The server ignored the body entirely. Uplift Task 2.1 holds under adversarial input.
+
+### 🔴 R1. The paywall releases on acknowledgement, not payment
+
+**This corrects the row above, which I had marked closed.** Measured live: after acknowledging —
+a free, self-service action with no money moved — the employer could read
+`seeker_contacts.email`. The gate function is exactly:
+
+```sql
+SELECT EXISTS (SELECT 1 FROM placement_fees pf … WHERE ep.user_id = auth.uid()
+  AND pf.seeker_id = p_seeker_id AND pf.acknowledged_at IS NOT NULL);
+```
+
+`acknowledged_at IS NOT NULL` — not `paid_at`, not even `confirmed_at`. So an employer clicks
+"I hired them", receives the contact and CV immediately, and the invoice is a **promise**.
+Nothing technical prevents never paying.
+
+**This is probably the deliberate Option C product decision** (trust-then-invoice — the 7d/14d
+followup crons exist for exactly this), so it is filed as a **business risk to confirm, not a
+bug to fix**. But it is the single largest revenue leak in the model and it is now demonstrated
+rather than theorised. **Operator: confirm this is the intended model.**
+
+*Method note:* `seeker_documents` returned empty for the probe seeker and I nearly reported the
+CV as "still gated". It is not — that seeker simply has **0 documents**. The CV rides the same
+acknowledgement gate as the contact. An empty result is not a denial.
+
+### 🟠 R2. `E2E_SEEKER_EMAIL` is the operator's personal account, not `+ci-seeker`
+
+`.env` points the seeker E2E role at `harry.symmans.smith@gmail.com`, which carries a real
+onboarded profile from 2026-05-05. `+ci-seeker` exists with the seeker role but **has never
+onboarded** (no `seeker_profiles` row, no `seeker_contacts` row). So the E2E suite has been
+exercising the operator's own profile. The probe was reworked to *read* that profile and never
+create or delete it. **This invalidates a ticket-04 assumption**: purging on the belief that
+`+ci-seeker` is the E2E seeker would leave CI green but pointed at personal data — or break it.
+
+### ✅ R3. RESOLVED 2026-08-11 — matching works; the probe deleted its own evidence
+
+**Not a defect — a measurement error, mine.** The probe inserted the job `active` (which fires
+`job_match_rescore` and writes the scores), then patched it to `draft` to pull it off the board.
+That fires `cleanup_match_scores_on_status_change`, whose guard is
+`OLD.status = 'active' AND NEW.status IS DISTINCT FROM 'active'` → `DELETE FROM match_scores`.
+The count was taken *after* the withdrawal, so it read the deletion, not a failure.
+
+Re-run counting **before** withdrawal:
+
+```
+match_scores while ACTIVE:      3 rows — scores 55, 64, 58 across all three seekers
+match_scores after WITHDRAWAL:  0 rows
+```
+
+**The match engine is fine**, and the dependency the whole seeker plan rests on is clear.
+`profile_complete_pct = 0` does not gate scoring; the real filter is
+`WHERE NEW.sector = ANY(sp.sector_pref)`, and all three seekers carry `["dairy","sheep_beef"]`.
+
+**One real consequence for the seeker funnel, though:** `sector_pref` is the only thing standing
+between a seeker and every match. A thin two-minute onboarding that skips it produces a profile
+that matches *nothing* — so sector must be in the minimum capture, alongside region and role.
+
+### ✅ Phase B — the Stripe half, run 2026-08-11. The revenue path works end to end.
+
+**Test mode confirmed by evidence, not assumption:** the hosted invoice URL Stripe returned is
+`invoice.stripe.com/i/…/test_…`. That is the proof; everything before it was inference.
+
+State written, then removed:
+
+| Field | Value |
+|---|---|
+| `fee_tier` / `amount_nzd` | `senior` / `80000` (= $800) — **body again sent `entry` / `1`, again ignored** |
+| `stripe_invoice_id` | `in_1U34IuRpIiAQpOa7zzJznHFi`, status `open` |
+| `acknowledged_at` / `confirmed_at` | both set |
+| `paid_at` | `null` — correct, the invoice is open and unpaid |
+| `placements` | **1 row, `employer_confirmed_at` set — the first placement in production history** |
+
+### 🔴 R4. The test→live swap must NULL `employer_profiles.stripe_customer_id` (PEND-01)
+
+`create-placement-invoice` creates a Stripe customer and **caches its id on the employer
+profile**, reusing it on every later invoice. A test-mode customer id **does not exist in live
+mode**, so after the key swap the first live invoice for any previously-test employer fails at
+customer lookup. Add to the PEND-01 checklist:
+
+```sql
+UPDATE public.employer_profiles SET stripe_customer_id = NULL;
+```
+
+Found because the probe left exactly this residue on `+ci-employer`; cleared via migration
+`clear_test_mode_stripe_customer_id_probe_residue`. One row today, every transacting employer
+later.
+
+### 🟠 R5. The Stripe MCP is connected to a different account than production uses
+
+MCP session account: `acct_1SyPEB2LRklZaY5B` ("TopFarms", livemode false). The invoice
+production actually created landed in **`acct_1SyPEbRpIiAQpOa7`** — and the MCP account lists
+**0 invoices** before and after. So prod's `STRIPE_SECRET_KEY` belongs to a different Stripe
+account, and the connector can neither verify nor manage production's Stripe state.
+
+**This matters for PEND-01:** confirm *which* account goes live, and that its live keys are the
+ones that land in Supabase secrets. Two TopFarms-ish Stripe accounts is itself worth resolving.
+
+### Left behind, deliberately
+
+Test invoice `in_1U34IuRpIiAQpOa7zzJznHFi` is still `open` in production's Stripe **test**
+account. It cannot be voided from here (wrong account, see R5). Harmless test data — void it in
+the dashboard if you want a clean test ledger.
+
+### Prod state after teardown — verified, not assumed
+
+`jobs 0 · applications 0 · placement_fees 0 · placements 0 · match_scores 0 · listing_fees 0 ·
+profiles_with_stripe_customer 0`, seeker_profiles 3 and employer_profiles 2 unchanged. Identical
+to the pre-probe baseline.
+
 ## 🔴 Launch blockers (engineering-owned) — ALL CLOSED
 
 - [x] **B1. Privacy Policy page** (TF-001) — `/privacy` live, NZ Privacy Act 2020 draft content. _Flag O1: legal review._ ✔ prod title "Privacy Policy — TopFarms".

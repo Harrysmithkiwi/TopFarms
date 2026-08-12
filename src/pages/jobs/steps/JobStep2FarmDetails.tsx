@@ -103,23 +103,22 @@ export function JobStep2FarmDetails({ onComplete, onBack, defaultValues }: Step2
       <div className="space-y-5">
         {/* Shed type — ChipSelector (5 options, inline, multi) */}
         <div>
-          <p className="font-body text-text mb-2 text-[13px] font-semibold">Shed type *</p>
           <Controller
             control={control}
             name="shed_type"
             render={({ field }) => (
               <ChipSelector
+                label="Shed type"
+                required
                 options={SHED_TYPES}
                 value={field.value ?? []}
                 onChange={field.onChange}
                 mode="multi"
                 columns="inline"
+                error={errors.shed_type?.message}
               />
             )}
           />
-          {errors.shed_type && (
-            <p className="text-danger mt-1 text-[12px]">{errors.shed_type.message}</p>
-          )}
         </div>
 
         {/* Breed */}
@@ -233,7 +232,7 @@ export function JobStep2FarmDetails({ onComplete, onBack, defaultValues }: Step2
             control={control}
             name="visa_sponsorship"
             render={({ field }) => (
-              <Toggle checked={field.value} onCheckedChange={field.onChange} />
+              <Toggle ariaLabel="Visa sponsorship available" checked={field.value} onCheckedChange={field.onChange} />
             )}
           />
         </div>
@@ -250,7 +249,7 @@ export function JobStep2FarmDetails({ onComplete, onBack, defaultValues }: Step2
             control={control}
             name="couples_welcome"
             render={({ field }) => (
-              <Toggle checked={field.value} onCheckedChange={field.onChange} />
+              <Toggle ariaLabel="Couples welcome" checked={field.value} onCheckedChange={field.onChange} />
             )}
           />
         </div>
@@ -270,7 +269,7 @@ export function JobStep2FarmDetails({ onComplete, onBack, defaultValues }: Step2
               control={control}
               name="accommodation.available"
               render={({ field }) => (
-                <Toggle checked={field.value ?? false} onCheckedChange={field.onChange} />
+                <Toggle ariaLabel="Accommodation available" checked={field.value ?? false} onCheckedChange={field.onChange} />
               )}
             />
           </div>

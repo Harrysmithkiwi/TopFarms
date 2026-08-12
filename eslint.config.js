@@ -12,6 +12,10 @@ export default tseslint.config(
   {
     ignores: [
       'dist',
+      // react-router build output (client + server bundles) and the generated
+      // route-type cache — build artefacts, not source.
+      'build',
+      '.react-router',
       'coverage',
       'TopFarms_Launch_Pack',
       '_archive',
@@ -58,8 +62,12 @@ export default tseslint.config(
     // App entry: boots the root, has no exports, and hosts the lazy() route
     // consts — fast refresh always falls back to a full reload here, so the
     // react-refresh rule cannot apply.
-    files: ['src/main.tsx'],
+    files: ['src/main.tsx', 'src/root.tsx', 'src/legacyRoutes.tsx', 'src/routes/**'],
     rules: {
+      // Entries and route modules export non-components by design: main.tsx
+      // boots the root, legacyRoutes hosts the lazy() consts, and a framework-
+      // mode route module's loader/meta/clientLoader/HydrateFallback sit beside
+      // its component because that colocation IS the routing convention.
       'react-refresh/only-export-components': 'off',
     },
   },

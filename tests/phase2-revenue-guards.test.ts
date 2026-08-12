@@ -13,6 +13,14 @@ import { calculatePlacementFee, PLACEMENT_FEE_TIERS } from '@/types/domain'
 const ROOT = resolve(__dirname, '..')
 const read = (p: string) => readFileSync(resolve(ROOT, p), 'utf8')
 
+// Strip comments before a "must NOT appear" assertion. A source-grep guard that
+// cannot tell code from prose fails the moment someone documents WHY a thing was
+// removed, which is exactly when the comment is most worth writing. Caught 2026-08-04:
+// the 1.19 header explaining that TIER_PRICES and employer_entitlements are gone made
+// the guards assert they were still present.
+const code = (src: string) =>
+  src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1')
+
 const pricing = read('supabase/functions/_shared/pricing.ts')
 const ack = read('supabase/functions/acknowledge-placement-fee/index.ts')
 const invoice = read('supabase/functions/create-placement-invoice/index.ts')
@@ -42,12 +50,15 @@ describe('pricing parity — client copy is display-only and must not drift', ()
     expect(calculatePlacementFee(null, null, 'Farm Hand').amount).toBe(20000)
   })
 
-  it('listing TIER_PRICES live in the shared module and create-payment-intent imports them', () => {
-    expect(pricing).toMatch(/1:\s*10000/)
-    expect(pricing).toMatch(/2:\s*15000/)
-    expect(pricing).toMatch(/3:\s*20000/)
-    expect(intent).toMatch(/import\s*{\s*TIER_PRICES\s*}\s*from\s*'\.\.\/_shared\/pricing\.ts'/)
-    expect(intent).not.toMatch(/const TIER_PRICES/)
+  // Pricing model v3 (directive 1.19): listing fees are GONE. This guard used to
+  // assert that create-payment-intent imported TIER_PRICES from the shared module
+  // rather than redeclaring them. It now asserts the opposite: no listing price may
+  // reach that function at all, because charging for a listing is the regression.
+  it('create-payment-intent charges nothing for a listing', () => {
+    expect(code(intent)).not.toMatch(/TIER_PRICES/)
+    expect(code(intent)).not.toMatch(/paymentIntents\.create/)
+    expect(code(intent)).not.toMatch(/esm\.sh\/stripe/)
+    expect(intent).toMatch(/amount_nzd:\s*0/)
   })
 })
 
@@ -91,17 +102,31 @@ describe('create-placement-invoice derives fee and context server-side', () => {
 // ─── Task 2.2 — entitlement ledger, not a count ──────────────────────────────
 
 describe('free listing is an entitlement, not a count', () => {
-  it('create-payment-intent no longer counts listing_fees', () => {
-    expect(intent).not.toMatch(/count:\s*'exact'/)
-    expect(intent).toMatch(/from\('employer_entitlements'\)/)
+  // Task 2.2 metered ONE free listing per account, so the delete-and-retry exploit
+  // (listing_fees CASCADE on job delete) had to be defended with an entitlement row.
+  // Directive 1.19 makes every listing free, so there is nothing to meter and the
+  // exploit class is gone rather than guarded. What must not come back is a COUNT:
+  // any counting of prior listings is a paywall being rebuilt.
+  it('create-payment-intent counts nothing and meters nothing', () => {
+    expect(code(intent)).not.toMatch(/count:\s*'exact'/)
+    expect(code(intent)).not.toMatch(/employer_entitlements/)
   })
 
-  it('treats a duplicate consumption as the paid path (23505)', () => {
-    expect(intent).toMatch(/23505/)
+  it('still refuses to publish a job the caller does not own', () => {
+    expect(intent).toMatch(/requireEmployerOwnsJob\(/)
+    expect(intent).toMatch(/employer_id = owned\.employerId/)
   })
 
-  it('gives the entitlement back if the free listing was not delivered', () => {
-    expect(intent).toMatch(/from\('employer_entitlements'\)\s*\n?\s*\.delete\(\)/)
+  // Was: "gives the entitlement back if the free listing was not delivered". There is
+  // no entitlement to give back now. What still has to hold is that a failed write
+  // does not leave a job advertised as active with no publication record behind it.
+  it('does not activate a job whose publication record failed to write', () => {
+    const body = code(intent)
+    const feeInsert = body.indexOf("from('listing_fees').insert")
+    const activate = body.indexOf("status: 'active'")
+    expect(feeInsert).toBeGreaterThan(-1)
+    expect(activate).toBeGreaterThan(feeInsert)
+    expect(body).toMatch(/Failed to record listing/)
   })
 
   it('migration: PK (employer_id, kind) is the enforcement; job_id is SET NULL provenance', () => {

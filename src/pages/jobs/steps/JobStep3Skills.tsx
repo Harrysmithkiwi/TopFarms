@@ -126,28 +126,24 @@ export function JobStep3Skills({ jobId, onComplete, onBack, defaultValues }: Ste
       />
 
       {/* Qualifications */}
-      <div>
-        <p className="font-body text-text mb-2 text-[13px] font-semibold">Qualifications</p>
-        <ChipSelector
-          options={QUALIFICATION_OPTIONS}
-          value={qualifications}
-          onChange={setQualifications}
-          mode="multi"
-          columns={2}
-        />
-      </div>
+      <ChipSelector
+        label="Qualifications"
+        options={QUALIFICATION_OPTIONS}
+        value={qualifications}
+        onChange={setQualifications}
+        mode="multi"
+        columns={2}
+      />
 
       {/* Visa requirements */}
-      <div>
-        <p className="font-body text-text mb-2 text-[13px] font-semibold">Visa requirements</p>
-        <ChipSelector
-          options={VISA_CHIP_OPTIONS}
-          value={visaRequirements}
-          onChange={setVisaRequirements}
-          mode="multi"
-          columns={2}
-        />
-      </div>
+      <ChipSelector
+        label="Visa requirements"
+        options={VISA_CHIP_OPTIONS}
+        value={visaRequirements}
+        onChange={setVisaRequirements}
+        mode="multi"
+        columns={2}
+      />
 
       <div className="flex justify-between pt-2">
         {onBack && (

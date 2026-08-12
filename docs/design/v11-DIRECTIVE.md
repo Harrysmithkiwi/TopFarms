@@ -391,6 +391,36 @@ Decided 2026-08-03. The public routes move to React Router 7 **framework mode** 
 server rendering for `/jobs/:id`, run as its own stage between the landing port and the
 `/jobs` port.
 
+> **CORRECTION, 2026-08-04 (operator). The stated deciding case was wrong. Read this
+> before the paragraph it corrects.**
+>
+> The original rationale below is struck through in effect: **TopFarms does not post
+> into Facebook groups.** Facebook groups are where listings are *sourced* — inbound,
+> via the lead-harvest pipeline — and nothing about our rendering touches that
+> direction. Nobody is sharing `topfarms.co.nz/jobs/<id>` into a group, so "the card
+> renders generic" was a defect nobody was ever going to see.
+>
+> **What actually justifies this stage, and it is the only thing that does: Google
+> Jobs.** `JobPosting` JSON-LD on a server-rendered, indexable page is what puts a
+> listing in the jobs widget for a search like "dairy farm job waikato". That is a real
+> acquisition channel for a job board and it does not depend on social sharing at all.
+> Faster and more reliable indexing is a second, smaller benefit: Googlebot does render
+> JavaScript, but on a queue and with no guarantee for a new low-authority domain.
+>
+> **Consequence, stated plainly because it cuts against the decision:** the paragraph
+> below rejects client-side JSON-LD on the grounds that "Facebook never executes JS."
+> Google does. With Facebook out of the picture that rejection loses most of its force,
+> and the cheap alternative was more viable than this section admitted. The stage was
+> nevertheless completed and kept — it is built, preview-green, and revertible in one
+> commit, so the marginal cost from here is zero and server rendering is still the
+> better of the two for the Google Jobs path. **Anyone re-opening this decision should
+> argue it on Google Jobs, not on social sharing, and should know the cost was already
+> sunk when the premise was corrected.**
+>
+> Downstream: the `og:image` gap recorded in 1.18e is CLOSED AS NOT NEEDED. Text-only
+> link previews are sufficient for the incidental case (a worker sending a mate a link
+> on WhatsApp or Messenger), and no other case exists.
+
 **The deciding case is social sharing, not SEO.** Facebook groups are the primary
 organic channel for NZ farm hiring, and no social crawler executes JavaScript. Today the
 site serves every route as an empty SPA shell (`vercel.json` rewrites everything to
@@ -403,6 +433,9 @@ few days of work by giving up the primary organic channel.
 Secondary but real: server-rendered `/jobs/:id` carries JobPosting JSON-LD and per-job
 og tags in the initial HTML, which is what Google Jobs and every non-Google crawler
 actually read.
+
+*(The two paragraphs above are kept verbatim, not edited, so the correction above has
+something to correct. "Secondary but real" is now the whole case.)*
 
 **Why framework mode and not alternatives:** the repo is already on `react-router@7.5`
 in library mode; framework mode is the same library's designed upgrade path, with a
@@ -441,6 +474,257 @@ Postbuild script extends the static launch baseline with one url per active job 
 anon REST. Fail-soft: any error keeps the static baseline and exits 0, because a
 degraded sitemap must never fail a deploy. Needed under every rendering option; its
 freshness is deploy-frequency until framework mode gives it a proper route.
+
+### 1.19 Pricing model v3 (2026-08-04)
+
+Decided as a CFO pass with the competitive landscape fetched and verified the same day.
+Supersedes the canonical model ("first listing free, then $100 / $150 / $200 per
+listing"). Section 1.18 is reserved for the stage 3b entry on its own branch.
+
+**Verified landscape, 2026-08-04.** ZEIL $199 per 30-day job post, TalentSeeker from
+$280/month. NZ Farming Jobs $170 Standard and $200 Ultimate, both 60 days, plus a
+$800 five-pack; Ultimate's real product is sharing to their NZ Farming and NZ Farming
+Jobs Facebook pages. Trade Me Jobs $99 to $809 plus GST across five tiers, 7 to 30
+days. SEEK NZ publishes no pricing at all. findmeajob.co.nz runs free listings, $29
+one-off featured, $99/month unlimited, with all seeker AI tools free. Farm Source runs
+a live board whose posting cost is not publicly stated. The incumbent, Facebook groups
+and word of mouth, is $0.
+
+**The model.**
+
+- **Listings are free and unlimited.** Not first-free. No card is ever required to list.
+- **Featured listing $99**, dormant at launch, switched on when the median listing
+  receives 5 or more applications or the job pages reach 1,000 weekly sessions.
+  Featured means top of search, a highlighted card, and inclusion in the matched-seeker
+  alert email. It is distribution, not decoration.
+- **Placement fees unchanged: $200 under $55k, $400 for $55k to $80k, $800 for $80k
+  and above**, title keywords bump up and never down, derived server-side from the
+  advertised band. Acknowledged at shortlist through the Option C contact gate,
+  invoiced Net 14 on confirmed hire.
+- **Every placement fee buys a replacement guarantee, scoped by `contract_type`:**
+  permanent 90 days, fixed term 30 days, casual none. One replacement per role, ever.
+- **Seekers pay nothing. Absolutely nothing.**
+
+**Why free listings.** Cash costs are roughly $150/month, so "sustainable" is not the
+constraint; liquidity is. At cold start a paid listing loses to NZ Farming Jobs at $170
+with 40,000 Facebook followers on value, and to Facebook groups at $0 on price. The
+forgone listing revenue is bounded (about $1,600/month even at 40 listings/month with a
+40% pay rate) and the traffic it suppresses is not. Revenue concentrates downstream
+where the differentiation actually is.
+
+**Why the guarantee exists at all.** Collection is the whole game. A self-serve
+marketplace cannot see a hire; the employer posts, rings, hires and never marks it
+filled. The Option C contact gate already converts "declare your hire" into "pay to get
+the phone number", but names are visible and rural New Zealand is small. The guarantee
+makes the fee a purchase rather than a toll, which is what moves collection from an
+honour-system rate to something worth modelling. Collection rate is the single largest
+lever in the model: at 12 hires/month it is the difference between roughly $1,080 and
+$3,240 a month.
+
+**Why the guarantee is split by contract type, not flat.** A flat 90 days was the first
+draft and it is wrong for seasonal work. Live listings put calf rearing and calving
+relief at 7 to 11 weeks, so a 90-day guarantee outlives the job: the worker leaving when
+the season ends would trigger a waived fee on the next season's rehire. Sized at the
+month-18 base case that leak is $600 to $1,200 a month against $2,970 of placement
+revenue, a fifth to two fifths of the line. Ninety days is nevertheless right for
+permanent roles, because 90-day trial periods have been available to all New Zealand
+employers since 23 December 2023, so the number is already in the employment agreement
+the farmer signed. Casual and relief work gets no guarantee, because the window would
+outlive most of the jobs.
+
+**Rejected: percentage placement fees.** At a percentage anyone in this ICP would pay,
+0.5 to 1 percent, revenue lands at $275 to $1,200 on New Zealand agricultural salaries,
+which is the same magnitude as the flat bands already shipped. For that nil gain it
+adds a self-declared salary input nobody can audit, an incentive to under-declare
+exactly where migrant pay is already sensitive, a larger invoice that makes hiding the
+hire more rational, and a formula where the published-pricing position wants a number.
+At recruiter percentages, 15 to 20 percent of first-year salary, it is unsellable to a
+farmer who currently hires for $0. All downside between two losing endpoints.
+
+**Rejected: a flat 30-day guarantee everywhere.** It closes the seasonal leak but
+discards the trial-period alignment on precisely the band where the fee is $800 and the
+persuasion is worth the most. The split costs one extra line of published copy and no
+additional code, because `contract_type` is already required on every listing.
+
+**Rejected: $10 seeker visibility boost and $10 CV review.** "Workers never pay" is
+live on six shipped surfaces. Revenue potential is a few hundred dollars, one-off. The
+optics of charging the structurally vulnerable side of the market $10 to be seen, in a
+sector where AEWV exploitation is national news, are disqualifying on their own. And
+there is no clean line: search prominence IS employer-facing ordering, so any paid
+boost either reorders a list an employer reads, which kills "applicants ordered by fit",
+or it changes nothing and is a product that does nothing. The CV helper ships free
+instead, as an acquisition asset that improves profile completeness and therefore match
+quality. A paid seeker tier is deferred behind a real trigger, such as exportable
+verified work history for third parties, and is recorded here as considered rather than
+planned.
+
+**Rejected: the four-tier listing restructure.** Discussed in chat, never written down,
+subsumed by this entry and rejected on the same paid-listing counterfactuals.
+
+**Left deliberately unpriced.** Casual placements stay at the $200 entry band at launch
+rather than inventing a fourth number on zero data, and are reviewed against the
+trigger below. A $200 fee to unlock a phone number for three days of relief milking is
+probably a price nobody pays, and publishing a fee nobody pays corrodes the
+published-pricing position as surely as hiding one does. Casual cannot simply be free:
+if it were, every employer would list casual to bypass the contact gate.
+
+**Revision triggers.**
+
+| Metric | Threshold | Action |
+|---|---|---|
+| Hire-declaration rate | Under 30% over a rolling 8 weeks, after the first 10 closes | Fix enforcement mechanics before touching price |
+| Featured take-rate, once live | Under 5% of new listings after 12 weeks on sale | Repackage or reprice Featured; check distribution before price |
+| Free-listing subsidy | Over 100 listings/month AND under $15 placement revenue per listing | Reintroduce a paid standard tier; the liquidity argument has expired |
+| Guarantee claim rate, permanent | Over 20% of permanent placements claim inside 90 days | The matching is not holding. Fix matching, not the guarantee |
+| Casual collection rate | Under 10% collected after 20 casual listings | Drop casual placement to $50, or to $0 behind a different gate |
+
+**Publication order, which is not the order these were written.** The decision record
+lands first. The product change lands second: `create-payment-intent` must stop charging
+for a second listing before any surface says listings are free. The copy lands third,
+with or after the product change, never before. Seven surfaces carry "first listing
+free" today and all of them go stale together.
+### 1.18 Stage 3b decisions: the shape of the migration (v13)
+
+Decided 2026-08-03, during stage 3b step 1. Three structural choices that 1.16 left
+open. Each narrows the migration; none changes what ships.
+
+**a. One client-only catch-all, not forty-five route modules.** `src/routes.ts`
+declares a module for `/jobs`, `/jobs/:id`, `/jobs/new` and `/jobs/:id/edit`, and sends
+every other path to `src/routes/spa.tsx`, which feeds the legacy route table to
+`useRoutes` unchanged. The alternative — a wrapper file per route — writes 45 files to
+server-render 45 surfaces that no crawler can see, and buys a hydration audit of every
+dashboard, wizard and admin table. The catch-all declares `clientLoader` +
+`HydrateFallback` with no server `loader`, which is framework mode's supported way to
+say "do not server-render this route", so those routes behave byte-for-byte as they do
+under the SPA shell today. That satisfies 1.16's "gated routes must not SSR" with a
+mechanism rather than a promise.
+
+Promoting a route later is a two-file change: add a module, delete its entry from
+`legacyRoutes`. The catch-all is a floor, not a ceiling.
+
+`/jobs/new` and `/jobs/:id/edit` need their own module despite being gated, because
+`routes.ts` must claim those paths before `/jobs/:id` does — otherwise "new" matches
+`:id` and hits the public job loader. They cannot be served by the catch-all:
+`useRoutes` matches relative to the matched route's pathname, which equals the full URL
+only under a splat. Their element is the legacy table's entry unchanged.
+
+**The library table's "declare `/jobs/new` before `/jobs/:id`" rule does not carry
+over** — framework mode ranks by specificity, not by declaration order.
+
+**Correction, 2026-08-03, after the swap.** This section originally recorded route
+ranking as "verified with `matchRoutes`", including `/` → `*`. That verification was
+worthless and the claim was wrong. `matchRoutes` on a FLAT array does match `*` against
+`/`; the real route tree nests the catch-all under the root layout, where **a splat
+child does not match the parent's index position**. The landing page rendered a blank
+document — no error, no warning, no console output, and the a11y e2e sweep passed on it
+because axe finds nothing to complain about on an empty page. It was caught by driving
+the built server and asking what was actually on the page. `routes.ts` now declares an
+explicit `index()` onto the same module. Verified against the running server:
+`/` → index, `/jobs` → jobs, `/jobs/new` → jobs/new, `/jobs/<uuid>` → jobs/:id,
+`/dashboard/employer` → `*`, `/nope` → `*`.
+
+The general lesson, which is §9 of CLAUDE.md restated: a check that does not exercise
+the real artefact is not a check. `matchRoutes` on a hand-built array tested my model of
+the router, not the router.
+
+**b. `appDirectory` is `src`, not `app`.** One source root. `@/` still resolves,
+`tsconfig.app.json`'s `include: ["src"]` is unchanged, no page moved, and `root.tsx` /
+`routes.ts` sit beside `main.tsx` instead of in a parallel tree that would have to be
+kept in sync with it.
+
+**a-ii. `useRouteError` cannot be called below the catch-all.** `NotFound` used it to
+decide between the 404 copy and the error copy, relying on it returning `undefined`
+outside an error boundary. In framework mode it THROWS — "can only be used on routes
+that contain a unique id" — because the catch-all's descendant table has no route ids,
+and that table is where every 404 on the site is rendered. The error is now a prop that
+`AppErrorBoundary` passes down. **Any hook that needs a route id is unavailable below
+the catch-all**; that is the standing cost of decision (a), and the fix for a future
+one is the same: pass it in, or promote the route out of the table.
+
+**c. `/jobs` server-renders without a loader — for now.** `JobSearch` builds its query
+from roughly twenty URL parameters across 190 lines. Reproducing that server-side is the
+expensive half of this stage, and it buys a board page that crawlers already reach
+through the sitemap and that nobody shares into a Facebook group. `/jobs` therefore
+server-renders its shell — nav, footer, `h1`, `title`, canonical, og tags — and the
+listings arrive client-side as they do today. `/jobs/:id`, the route the stage exists
+for, gets the full loader.
+
+This is a deviation from 1.16's "loaders for `/jobs` and `/jobs/:id`", recorded here
+rather than done quietly. The loader drops into `src/routes/jobs.tsx` later without
+touching anything else. **What is NOT deferred: og tags and JobPosting JSON-LD on
+`/jobs/:id`.** Those are the deciding case and they are in the raw HTML or the stage
+has failed.
+
+**d. `/jobs/:id` server-renders the LISTING, not a skeleton.** The loader first fetched
+only the columns the meta tags needed, which left the raw body reading "Loading
+listing" under a JSON-LD block describing a job. That pairing — structured data
+asserting content the HTML does not contain — is a documented reason Google rejects a
+JobPosting, and it makes the page worthless to every crawler that does not run
+JavaScript. The loader now fetches the job, its skills, and the employer verifications
+the trust badge is computed from; `JobDetail` takes them as an optional `seed` prop and
+skips its loading gate when seeded.
+
+The gate could not simply become "render when the job is present": `authLoading` is
+ALWAYS true on the server, because the session resolves in an effect that never runs
+there. Hence `!seed?.job && (loading || authLoading)` — unseeded client navigation
+behaves exactly as before.
+
+Deliberately NOT seeded: application count and similar jobs (below the fold), match
+score and applied state (personal to a signed-in seeker, and correctly absent from an
+anonymous server render). The route module keys `JobDetail` on the job id so a
+job → job navigation cannot show a previous listing's seed.
+
+**e. Verification used a stub, because seeding prod is forbidden.** Prod has zero
+active jobs and section 4 forbids seeding it, so the deciding case was proven against
+a throwaway PostgREST stand-in on localhost: real production build, real server bundle,
+real `curl`, fabricated row. Confirmed in the raw HTML — `<title>`, `og:title`,
+`og:description`, `og:url`, `og:site_name`, `canonical`, the full `JobPosting` JSON-LD,
+and the listing text itself, with `Loading listing` absent. Zero console errors and
+zero page errors across `/`, `/jobs` and `/jobs/:id` after hydration.
+
+**`og:image`: NOT NEEDED. Closed 2026-08-04, not deferred.** There is no `og:image`
+anywhere in the repo and there does not need to be. It was raised as a gap only because
+of the social-sharing premise that 1.16's correction retracts — TopFarms does not post
+into Facebook groups. A text-only preview is fine for the one case that survives (a
+worker sending a mate a link), and Google Jobs reads the JSON-LD, not the card. Do not
+commission a 1200×630 asset for this.
+
+**Note on route `meta` exports:** a route's `meta` REPLACES the root's descriptors
+rather than merging with them, so site-level tags (`og:site_name`, `twitter:card`) are
+restated in each server-rendered route. `canonical` deliberately is not: `index.html`
+used to emit `canonical="https://www.topfarms.co.nz/"` on EVERY route, telling crawlers
+that each job page was the homepage. Canonical is now per-route, and routes without one
+are self-canonical.
+
+**Loader authority is anonymous, deliberately.** The `/jobs/:id` loader uses its own
+Supabase client with `persistSession: false` — not `@/lib/supabase`, whose session
+persistence and URL detection are browser behaviour with no meaning on a server that
+must stay anonymous. Anonymous is also the correct authority: RLS policy
+"jobs: anon users view active" returns active listings and nothing else, so a draft or
+archived job cannot reach crawlable HTML by construction rather than by a status check
+someone might delete.
+
+**f. The harness had to move with the entry.** `vitest.config.ts` no longer merges
+`vite.config.ts` — that file now carries `reactRouter()`, which takes over the entry and
+expects a route graph, neither of which exists under vitest. Tests only ever needed the
+JSX transform and the `@` alias, so `@vitejs/plugin-react` survives as a devDependency
+for that reason alone. Playwright's local server was `vite preview`, which serves a
+static SPA shell and cannot serve a framework build; it now runs the SAME production
+server bundle Vercel runs, via `react-router-serve`. `vercel.json` drops the
+`/(.*) → /index.html` rewrite, which would now 404 every route, and `outputDirectory`,
+because the Vercel builder assembles `.vercel/output` from `build/` plus the preset's
+manifest. The sitemap postbuild writes to `build/client/`, which the builder copies
+afterwards.
+
+**Pre-existing, found not caused (2026-08-03):** `npm run lint` fails on `main` — one
+error (`react-refresh/only-export-components` on `src/contexts/AudienceContext.tsx`,
+which exports both `AudienceProvider` and `useAudience`) and 54 warnings against a
+`--max-warnings 46` pin. Measured by running eslint in a clean `main` worktree: 55
+problems, 1 error, 54 warnings. CI runs this gate, so **`main`'s lint step is red
+independently of stage 3b**, and the warning ratchet has been overshot by 8. Stage 3b
+lands at exactly the same numbers. Not fixed here — the error's fix moves `useAudience`
+out of the context file, and stage 3b changes rendering only — but it needs its own
+commit, because a gate nobody can pass is a gate nobody reads.
 
 ---
 
@@ -609,6 +893,21 @@ Settled. Do not re-propose without new evidence.
       names win; the mapping is in 1.14.
 - [ ] **Do not remove the counter credibility gate** (`MIN_CREDIBLE` in
       `CountersSection`). See 1.15.
+
+### Pricing (added 1.19, 2026-08-04)
+
+- [ ] **Do not charge workers anything, for anything, at any price point.** Not $10,
+      not $1, not a boost, not a CV review. See 1.19.
+- [ ] **Do not price placement as a percentage of salary.** Bands are the model. The
+      reasons in 1.19 are structural and do not expire with scale.
+- [ ] **Do not sell Featured before its trigger fires.** Selling prominence on an empty
+      board is 1.15's counter-credibility failure with an invoice attached.
+- [ ] **Do not put any price behind "contact us".** If a price cannot be published, the
+      product does not ship. The model can change; the transparency cannot.
+- [ ] **Do not let any paid product reorder an employer's applicant list.** Ordering is
+      by fit, or the integrity claim comes off every surface first. See 1.19 and 1.4.
+- [ ] **Do not offer a guarantee longer than the job.** Guarantee windows are scoped by
+      `contract_type`; a seasonal role must never carry a window that outlives it.
 
 ---
 

@@ -180,7 +180,7 @@ export function JobStep4Compensation({ onComplete, onBack, defaultValues }: Step
             control={control}
             name="on_call_allowance"
             render={({ field }) => (
-              <Toggle checked={field.value} onCheckedChange={field.onChange} />
+              <Toggle ariaLabel="On-call allowance" checked={field.value} onCheckedChange={field.onChange} />
             )}
           />
         </div>

@@ -64,7 +64,6 @@ export interface EmployerProfileData {
   broadband_available?: boolean
   salary_min?: number
   salary_max?: number
-  billing_period?: string
 }
 
 export function EmployerOnboarding() {
@@ -93,7 +92,7 @@ export function EmployerOnboarding() {
       const { data, error } = await supabase
         .from('employer_profiles')
         .select(
-          'onboarding_step, farm_type, farm_name, region, herd_size, shed_type, milking_frequency, breed, property_size_ha, ownership_type, culture_description, team_size, about_farm, accommodation_available, accommodation_type, accommodation_extras, farm_types, nearest_town, distance_from_town_km, calving_system, career_development, hiring_frequency, couples_welcome, partner_role, vehicle_provided, vehicle_types, broadband_available, salary_min, salary_max, billing_period',
+          'onboarding_step, farm_type, farm_name, region, herd_size, shed_type, milking_frequency, breed, property_size_ha, ownership_type, culture_description, team_size, about_farm, accommodation_available, accommodation_type, accommodation_extras, farm_types, nearest_town, distance_from_town_km, calving_system, career_development, hiring_frequency, couples_welcome, partner_role, vehicle_provided, vehicle_types, broadband_available, salary_min, salary_max',
         )
         .eq('user_id', session.user.id)
         .single()
@@ -140,7 +139,6 @@ export function EmployerOnboarding() {
           broadband_available: data.broadband_available,
           salary_min: data.salary_min,
           salary_max: data.salary_max,
-          billing_period: data.billing_period,
         })
       }
 
@@ -225,9 +223,6 @@ export function EmployerOnboarding() {
           >
             Set up your farm profile
           </h1>
-          <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-            Complete your profile to start posting jobs and finding great farm workers
-          </p>
         </div>
 
         {/* Step indicator */}
@@ -237,8 +232,11 @@ export function EmployerOnboarding() {
         <div className="bg-surface border-border rounded-[16px] border p-6 shadow-sm">
           {saving && (
             <div
+              // brand-hover (5.02:1), not brand (3.30:1, retired as text in
+              // docs/design/contrast.md). The seeker wizard's identical indicator
+              // already uses it.
               className="mb-4 flex items-center gap-2 text-sm"
-              style={{ color: 'var(--color-brand)' }}
+              style={{ color: 'var(--color-brand-hover)' }}
             >
               <div
                 className="h-4 w-4 animate-spin rounded-full border-[2px] border-brand border-t-transparent"
@@ -267,7 +265,14 @@ export function EmployerOnboarding() {
                 breed: profileData.breed,
                 property_size_ha: profileData.property_size_ha,
                 ownership_type: profileData.ownership_type,
-                farm_types: profileData.farm_types,
+                // Step 1 answers `farm_type` (singular enum); this step requires
+                // `farm_types` (array). Without this seed the employer picks their
+                // farm type twice and step 1's answer never satisfies step 2.
+                farm_types: profileData.farm_types?.length
+                  ? profileData.farm_types
+                  : profileData.farm_type
+                    ? [profileData.farm_type]
+                    : [],
               }}
             />
           )}
@@ -324,7 +329,7 @@ export function EmployerOnboarding() {
 
           {currentStep === 6 && (
             <Step7Preview
-              onComplete={(data) => handleStepComplete(data, 6)}
+              onComplete={() => handleStepComplete({}, 6)}
               onBack={() => wizard.prevStep()}
               onGoToStep={(step) => wizard.goToStep(step)}
               profileData={profileData}

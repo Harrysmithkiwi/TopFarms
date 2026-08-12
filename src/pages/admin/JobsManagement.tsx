@@ -60,7 +60,7 @@ export function JobsManagement() {
       <AdminPageHeader
         eyebrow="Jobs & Revenue"
         title="Jobs"
-        description="Every posted job across the marketplace. Click a row to open the employer."
+        description="Click a row to open the employer."
       />
 
       <AdminTable<JobRow>

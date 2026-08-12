@@ -61,7 +61,7 @@ export function SeekerStep3Qualifications({ onComplete, onBack, defaultValues }:
           DairyNZ qualification
         </h2>
         <p className="mt-1 text-sm text-text-muted">
-          Select your highest DairyNZ qualification level, if any
+          Select your highest level, if any.
         </p>
       </div>
 
@@ -126,12 +126,12 @@ export function SeekerStep3Qualifications({ onComplete, onBack, defaultValues }:
 
       {/* NZ driver's licence */}
       <div>
-        <p className="font-body text-text mb-2 text-label font-semibold">NZ driver's licence</p>
         <Controller
           control={control}
           name="licence_types"
           render={({ field }) => (
             <ChipSelector
+              label="NZ driver's licence"
               options={LICENCE_TYPE_OPTIONS}
               value={field.value ?? []}
               onChange={field.onChange}
@@ -144,12 +144,12 @@ export function SeekerStep3Qualifications({ onComplete, onBack, defaultValues }:
 
       {/* Certifications */}
       <div>
-        <p className="font-body text-text mb-2 text-label font-semibold">Certifications</p>
         <Controller
           control={control}
           name="certifications"
           render={({ field }) => (
             <ChipSelector
+              label="Certifications"
               options={CERTIFICATION_OPTIONS}
               value={field.value ?? []}
               onChange={field.onChange}

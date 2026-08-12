@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import * as SelectPrimitive from '@radix-ui/react-select'
 import * as Label from '@radix-ui/react-label'
 import { ChevronDown, ChevronUp } from 'lucide-react'
@@ -20,6 +21,7 @@ interface SelectProps {
   id?: string
   /** Accessible name for label-less selects (axe button-name, Phase 4.6). */
   ariaLabel?: string
+  required?: boolean
 }
 
 export function Select({
@@ -33,8 +35,11 @@ export function Select({
   className,
   id,
   ariaLabel,
+  required,
 }: SelectProps) {
-  const selectId = id || (label ? `select-${label.toLowerCase().replace(/\s+/g, '-')}` : undefined)
+  const reactId = useId()
+  const selectId = id || (label ? `select-${label.toLowerCase().replace(/\s+/g, '-')}` : reactId)
+  const errorId = `${selectId}-error`
 
   return (
     <div className={cn('w-full', className)}>
@@ -44,12 +49,23 @@ export function Select({
           className="font-body text-text mb-1 block text-[13px] font-medium"
         >
           {label}
+          {/* aria-hidden: aria-required on the trigger carries this to assistive tech. */}
+          {required && (
+            <span className="text-danger ml-0.5" aria-hidden="true">
+              *
+            </span>
+          )}
         </Label.Root>
       )}
       <SelectPrimitive.Root value={value} onValueChange={onValueChange} disabled={disabled}>
         <SelectPrimitive.Trigger
           id={selectId}
           aria-label={ariaLabel}
+          // The trigger is a button, so the native `required` attribute does not apply —
+          // aria-required is the only way to convey it here.
+          aria-required={required || undefined}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? errorId : undefined}
           className={cn(
             'flex w-full items-center justify-between',
             'font-body bg-surface-2 min-h-[44px] rounded-[8px] border-[1.5px] px-3 py-2 text-[15px]',
@@ -106,7 +122,11 @@ export function Select({
         </SelectPrimitive.Portal>
       </SelectPrimitive.Root>
 
-      {error && <p className="text-danger font-body mt-1 text-[12px]">{error}</p>}
+      {error && (
+        <p id={errorId} className="text-danger font-body mt-1 text-[12px]">
+          {error}
+        </p>
+      )}
     </div>
   )
 }

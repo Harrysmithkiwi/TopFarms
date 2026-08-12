@@ -48,7 +48,11 @@ export function Nav() {
 
   return (
     <>
+      {/* aria-label, paired with the Sidebar's: a dashboard renders two navigation
+          landmarks, and axe's landmark-unique flags a pair a screen reader user cannot
+          tell apart when jumping between them. */}
       <nav
+        aria-label="Main"
         className="sticky top-0 z-50 flex h-14 items-center px-4 md:px-6"
         style={{
           backgroundColor: 'var(--color-brand-900)',

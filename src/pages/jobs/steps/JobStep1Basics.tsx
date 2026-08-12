@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Button } from '@/components/ui/Button'
 import { FARM_TYPE_OPTIONS } from '@/types/domain'
+import { ROLE_TYPES } from '@/lib/constants'
 
 const schema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters').max(100, 'Title too long'),
@@ -31,16 +32,8 @@ interface Step1Props {
   defaultValues?: Partial<FormData>
 }
 
-const ROLE_TYPE_OPTIONS = [
-  { value: 'Farm Manager', label: 'Farm Manager' },
-  { value: 'Assistant Manager', label: 'Assistant Manager' },
-  { value: 'Farm Hand', label: 'Farm Hand' },
-  { value: 'General', label: 'General' },
-  { value: 'Herd Manager', label: 'Herd Manager' },
-  { value: '2IC', label: '2IC' },
-  { value: 'Relief Milker', label: 'Relief Milker' },
-  { value: 'Other', label: 'Other' },
-]
+// Shared with the seeker lane via lib/constants — see ROLE_TYPES there for why.
+const ROLE_TYPE_OPTIONS = ROLE_TYPES.map((r) => ({ value: r, label: r }))
 
 const CONTRACT_TYPE_OPTIONS = [
   { value: 'permanent', label: 'Permanent' },
@@ -97,7 +90,7 @@ export function JobStep1Basics({ onComplete, defaultValues }: Step1Props) {
         <div className="space-y-4">
           <div>
             <p className="text-2xl font-semibold text-white">Free</p>
-            <p className="font-body text-[13px] text-white/70">your first listing costs nothing</p>
+            <p className="font-body text-[13px] text-white/70">listing this job costs nothing</p>
           </div>
           <div>
             <p className="text-2xl font-semibold text-white">Matched</p>
@@ -126,7 +119,8 @@ export function JobStep1Basics({ onComplete, defaultValues }: Step1Props) {
 
           <div className="space-y-4">
             <Input
-              label="Job title *"
+              label="Job title"
+              required
               placeholder="e.g. Farm Manager — Dairy"
               error={errors.title?.message}
               {...register('title')}
@@ -138,7 +132,8 @@ export function JobStep1Basics({ onComplete, defaultValues }: Step1Props) {
               name="sector"
               render={({ field }) => (
                 <Select
-                  label="Sector *"
+                  label="Sector"
+                  required
                   placeholder="Select a sector"
                   options={FARM_TYPE_OPTIONS}
                   value={field.value}
@@ -153,7 +148,8 @@ export function JobStep1Basics({ onComplete, defaultValues }: Step1Props) {
               name="role_type"
               render={({ field }) => (
                 <Select
-                  label="Role type *"
+                  label="Role type"
+                  required
                   placeholder="Select a role type"
                   options={ROLE_TYPE_OPTIONS}
                   value={field.value}
@@ -168,7 +164,8 @@ export function JobStep1Basics({ onComplete, defaultValues }: Step1Props) {
               name="contract_type"
               render={({ field }) => (
                 <Select
-                  label="Contract type *"
+                  label="Contract type"
+                  required
                   placeholder="Select contract type"
                   options={CONTRACT_TYPE_OPTIONS}
                   value={field.value}
@@ -191,7 +188,8 @@ export function JobStep1Basics({ onComplete, defaultValues }: Step1Props) {
               name="region"
               render={({ field }) => (
                 <Select
-                  label="Region *"
+                  label="Region"
+                  required
                   placeholder="Select a region"
                   options={NZ_REGIONS.map((r) => ({ value: r, label: r }))}
                   value={field.value}

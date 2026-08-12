@@ -83,7 +83,7 @@ export function Step5Verification({ onComplete, onBack }: Step5Props) {
           Verify your identity
         </h2>
         <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-          Verified employers get more trust from candidates — but you can complete these later
+          You can complete these later.
         </p>
       </div>
 

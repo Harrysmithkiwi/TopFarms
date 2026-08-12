@@ -118,10 +118,14 @@ export function Step8Complete({ profileData, onComplete }: Step8CompleteProps) {
           >
             Go to Dashboard
           </Button>
+          {/* brand-hover, not brand: #16a34a on white is 3.30:1 and docs/design/contrast.md
+              records it as RETIRED as text. brand-hover is 5.02:1. The a11y sweep never
+              caught this because it only scans the step the wizard resumes at, and nobody
+              resumes at the completion screen. */}
           <button
             onClick={() => navigate('/onboarding/employer')}
-            className="font-body mx-auto block text-[14px]"
-            style={{ color: 'var(--color-brand)' }}
+            className="font-body focus-visible:outline-brand mx-auto block min-h-[44px] text-[14px] underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2"
+            style={{ color: 'var(--color-brand-hover)' }}
           >
             Edit Profile
           </button>

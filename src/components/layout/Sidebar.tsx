@@ -38,7 +38,8 @@ export function Sidebar() {
         borderColor: 'var(--color-border)',
       }}
     >
-      <nav className="flex flex-col gap-0.5 p-3">
+      {/* See Nav.tsx: the two navigation landmarks need distinct names. */}
+      <nav aria-label="Dashboard sections" className="flex flex-col gap-0.5 p-3">
         {items.map((item) => (
           <NavLink
             key={item.to}

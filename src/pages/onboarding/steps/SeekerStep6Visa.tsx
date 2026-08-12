@@ -39,7 +39,7 @@ export function SeekerStep6Visa({ onComplete, onBack, defaultValues }: SeekerSte
           Visa status
         </h2>
         <p className="mt-1 text-sm text-text-muted">
-          This helps us match you with employers offering the right sponsorship
+          Used to match you with employers who can sponsor.
         </p>
       </div>
 

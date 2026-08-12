@@ -92,6 +92,10 @@ database ledger is the runtime record.
 | 077_seeker_contacts_truth | `20260730064300` | Phase 3 — the paywalled table was empty for 3 of 4 seekers; trigger + backfill + first/last name; connector-applied |
 | 078_audit_log_outlives_the_actor | `20260730065000` | Phase 3 — admin_id was NOT NULL + ON DELETE SET NULL, so no admin could ever be deleted; FK dropped |
 | 079_training_demand | `20260807032652` | Go-live S1 — training demand capture keyed to the skills taxonomy; own-row RLS + `admin_training_demand_summary` behind `_admin_gate()`; connector-applied, verified via pg_catalog |
+| 080_revoke_compute_match_score_from_authenticated | `20260810220505` | go-live M4 — the two SECURITY DEFINER match functions took an arbitrary seeker_id with EXECUTE granted to `authenticated` and no auth.uid() check, exposing the §1.4 breakdown to any signed-in user. Grant was vestigial (blanket re-grant in 037). No caller in src/ or supabase/functions/; all 5 internal callers are definer-owned by postgres. service_role retained; connector-applied |
+| 081_dedupe_sees_staging | `20260811013748` | Leads — the "Possible duplicate" badge had never fired: the fuzzy pass searched `leads` (2 rows) not `lead_staging` (93), and the exact fingerprint keyed on `region`, which the harvester nulls ~1 row in 11. Two-tier match (>=0.9 region-blind, 0.6–0.9 region-tolerant) + backfill; 13 rows flagged across 7 genuine pairs; connector-applied |
+| 082_staging_type_filter_and_signup_attribution | `20260811022630` | Leads — `p_type` filter so the employer and seeker queues can share `lead_staging` without sharing a screen, plus a `signed_up` flag per row joining `auth.users.raw_user_meta_data->>'ref'` (the `?ref=` attribution loop). DROP+CREATE, not OR REPLACE: a new signature would have created an overload and PostgREST refuses to choose. Grants re-applied; connector-applied |
+| 083_seeker_documents_employer_policy_to_authenticated | `20260812103059` | go-live S1/S2 batch — the employer read policy on `seeker_documents` was the only policy on that table without a TO clause, so it was TO PUBLIC and evaluated for `anon` on every anonymous request. Not exploitable: the predicate opens with `get_user_role(auth.uid()) = 'employer'`, which is NULL for anon. `ALTER POLICY … TO authenticated` only — the USING expression is not restated, since retyping a predicate that gates CVs is a chance to get it wrong; connector-applied |
 
 ## Ledger rows with no dedicated file (documented duplicates)
 
@@ -102,6 +106,7 @@ are not missing migrations. Verified 2026-07-30 by comparing the live function a
 |---|---|---|---|
 | `20260722232729` | `fix_get_applicants_for_job_joins` | `058_fix_admin_profile_doc_queue_applicants.sql:6-45` | live `get_applicants_for_job` carries `LEFT(a.id::text, 8)` + `v_employer_user_id`, matching 058 |
 | `20260730063632` | `list_user_storage_objects` | `076_storage_purge_via_api.sql` §4 | applied as a separate connector call while probing admin-purge, then folded into 076 on disk |
+| `20260811034524` | `signed_up_matches_short_ref` | `082_staging_type_filter_and_signup_attribution.sql` (the `signed_up` EXISTS clause) | live function compares `left(raw_user_meta_data->>'ref',8) = left(id::text,8)`, matching 082 on disk |
 | `20260729095445` | `leads_list_expose_draft` | `064_lane_a_outreach_worklist.sql` (`admin_leads_list`) | live function exposes `drafted_email/draft_model/contacted_at`, has `follow_up_date`, orders by `status_changed_at DESC` — matching 064 |
 
 This corrects audit finding **P0-8**, which claimed production schema existed outside version

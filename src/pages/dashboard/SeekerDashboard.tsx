@@ -61,6 +61,7 @@ export function SeekerDashboard() {
   const [profile, setProfile] = useState<SeekerProfile | null>(null)
   const [loadingProfile, setLoadingProfile] = useState(true)
   const [loadError, setLoadError] = useState(false)
+  const [liveJobCount, setLiveJobCount] = useState<number | null>(null)
   const [reloadNonce, setReloadNonce] = useState(0)
 
   const [recentApplications, setRecentApplications] = useState<ApplicationWithJob[]>([])
@@ -74,6 +75,16 @@ export function SeekerDashboard() {
         setLoadingProfile(false)
         return
       }
+
+      // Waitlist state. Keyed on the LIVE JOB COUNT, not a feature flag, so this screen
+      // stops appearing by itself the day real inventory lands — no second deploy, and no
+      // flag left switched on by accident. Until then a seeker who was told "jobs are
+      // coming" must not be handed an empty board and a "Browse jobs" button.
+      const { count: liveJobs } = await supabase
+        .from('jobs')
+        .select('id', { count: 'exact', head: true })
+        .eq('status', 'active')
+      setLiveJobCount(liveJobs ?? 0)
 
       const { data: profileData, error: profileError } = await supabase
         .from('seeker_profiles')
@@ -168,9 +179,41 @@ export function SeekerDashboard() {
     0,
   )
 
+  // Waiting, not empty. `null` means the count has not resolved — do not guess.
+  const isWaitlisted = liveJobCount === 0
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
+        {isWaitlisted && (
+          <Card className="border-brand/30 bg-brand-50 p-6">
+            <h2 className="text-text mb-1 text-lg font-semibold">
+              You're on the list — farms are being added now
+            </h2>
+            <p className="text-text-muted max-w-[62ch] text-sm">
+              We're signing up farms across the country. The moment one is posted that matches
+              what you're after, we'll email you — you don't need to check back.
+            </p>
+            <p className="text-text-muted mt-3 max-w-[62ch] text-sm">
+              {isOnboardingComplete
+                ? 'Your profile is complete, so you\'ll be in the running from the first listing.'
+                : 'The more of your profile we have, the better we can match you — and the earlier you show up to an employer.'}
+            </p>
+            {!isOnboardingComplete && (
+              <Link
+                to="/onboarding/seeker"
+                className={cn(
+                  'font-body mt-4 inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
+                  'bg-brand-hover hover:bg-brand-900 text-white',
+                  'min-h-[44px] px-4 py-2 text-label',
+                )}
+              >
+                {onboardingStep > 0 ? 'Finish your profile' : 'Complete your profile'}
+              </Link>
+            )}
+          </Card>
+        )}
+
         {/* Onboarding prompt (only if not complete) */}
         {!isOnboardingComplete && (
           <>
@@ -199,11 +242,7 @@ export function SeekerDashboard() {
                   <h2 className="mb-1 text-lg font-semibold text-text">
                     Complete your profile to start matching with jobs
                   </h2>
-                  <p className="mb-4 text-sm text-text-muted">
-                    Tell us about your experience, skills, and what you're looking for to get
-                    matched with the best roles
-                  </p>
-                  <ProgressBar progress={onboardingProgress} className="mb-2" />
+                  <ProgressBar progress={onboardingProgress} className="mt-3 mb-4" />
                   <p className="text-xs text-text-subtle">
                     {onboardingStep} of 7 steps completed
                   </p>
@@ -390,18 +429,21 @@ export function SeekerDashboard() {
               {recentApplications.length === 0 ? (
                 <div className="py-8 text-center">
                   <p className="mb-3 text-sm text-text-muted">
-                    No applications yet
+                    {isWaitlisted ? 'No jobs are live yet — we\'ll email you' : 'No applications yet'}
                   </p>
-                  <Link
-                    to="/jobs"
-                    className={cn(
-                      'font-body inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
-                      'bg-brand-hover hover:bg-brand-900 text-white',
-                      'px-4 py-2 text-label',
-                    )}
-                  >
-                    Browse jobs
-                  </Link>
+                  {/* Sending someone to an empty board is the fastest way to lose them. */}
+                  {!isWaitlisted && (
+                    <Link
+                      to="/jobs"
+                      className={cn(
+                        'font-body inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
+                        'bg-brand-hover hover:bg-brand-900 text-white',
+                        'min-h-[44px] px-4 py-2 text-label',
+                      )}
+                    >
+                      Browse jobs
+                    </Link>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-3">

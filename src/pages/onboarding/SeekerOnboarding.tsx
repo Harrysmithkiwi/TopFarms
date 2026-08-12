@@ -213,13 +213,30 @@ export function SeekerOnboarding() {
           >
             Set up your job seeker profile
           </h1>
-          <p className="mt-1 text-sm text-text-muted">
-            Complete your profile to search with match scores and apply to farm jobs
-          </p>
         </div>
 
         {/* Step indicator */}
         <StepIndicator currentStep={currentStep} totalSteps={TOTAL_STEPS} labels={STEP_LABELS} />
+
+        {/*
+          Escape hatch, deliberately only from step 2 onward. Step 1 is the matchable core
+          (sector, region, role) — leaving before it produces a profile the match engine
+          cannot see, which is worse for the seeker than a slightly longer form. After it,
+          every remaining step only sharpens an existing score, so holding someone hostage
+          to another five screens just loses them. Their progress is already saved: each
+          step upserts on completion.
+        */}
+        {currentStep > 0 && (
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={() => navigate('/dashboard/seeker')}
+              className="text-text-muted hover:text-text focus-visible:outline-brand min-h-[44px] cursor-pointer text-[13px] underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2"
+            >
+              Save and finish later
+            </button>
+          </div>
+        )}
 
         {/* Step content */}
         <div className="bg-surface border-border rounded-[16px] border p-6 shadow-sm">
@@ -237,7 +254,11 @@ export function SeekerOnboarding() {
           {currentStep === 0 && (
             <SeekerStep1FarmType
               onComplete={(data) => handleStepComplete(data, 0)}
-              defaultValues={{ sector_pref: profileData.sector_pref }}
+              defaultValues={{
+                sector_pref: profileData.sector_pref,
+                region: profileData.region,
+                role_type_pref: profileData.role_type_pref,
+              }}
             />
           )}
 

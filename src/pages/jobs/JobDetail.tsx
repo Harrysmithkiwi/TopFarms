@@ -155,14 +155,32 @@ function formatDate(dateStr?: string): string | null {
  * - Archived/not-found jobs: show "no longer available" message
  * - Draft jobs: only visible to owning employer
  */
-export function JobDetail() {
+/**
+ * What the /jobs/:id route loader can hand this page so the FIRST paint is the
+ * listing rather than a skeleton (v13 stage 3b, directive 1.18). Exactly the
+ * three fetches that decide the above-the-fold render: the job, its skills, and
+ * the employer verifications the trust badge is computed from.
+ *
+ * Absent (client-only navigation, or a job the anon loader cannot see — drafts,
+ * archived, expired) the page behaves exactly as it did before: skeleton, then
+ * the client fetch below fills everything in.
+ */
+export interface JobDetailSeed {
+  job: JobDetailData
+  skills: JobSkill[]
+  verifications: EmployerVerification[]
+}
+
+export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
   const { id: jobId } = useParams<{ id: string }>()
   const { session, role, loading: authLoading } = useAuth()
 
-  const [job, setJob] = useState<JobDetailData | null>(null)
-  const [skills, setSkills] = useState<JobSkill[]>([])
-  const [verifications, setVerifications] = useState<EmployerVerification[]>([])
-  const [loading, setLoading] = useState(true)
+  const [job, setJob] = useState<JobDetailData | null>(seed?.job ?? null)
+  const [skills, setSkills] = useState<JobSkill[]>(seed?.skills ?? [])
+  const [verifications, setVerifications] = useState<EmployerVerification[]>(
+    seed?.verifications ?? [],
+  )
+  const [loading, setLoading] = useState(!seed?.job)
   const [notFound, setNotFound] = useState(false)
   // Phase 5.6 — distinct from notFound. A 404 has no retry; a failure needs one.
   const [loadError, setLoadError] = useState(false)
@@ -350,8 +368,12 @@ export function JobDetail() {
 
   const trustLevel = computeTrustLevel(verifications)
 
-  // Loading state
-  if (loading || authLoading) {
+  // Loading state. Skipped entirely when the route loader seeded this render:
+  // the content is already here, and `authLoading` is ALWAYS true on the server
+  // (the session resolves in an effect, which never runs there), so gating on it
+  // would server-render the skeleton and defeat the loader. Client-only
+  // navigation is unseeded and behaves exactly as before.
+  if (!seed?.job && (loading || authLoading)) {
     return (
       <div className="bg-cream">
         <RouteSkeleton label="Loading listing" />
@@ -490,8 +512,11 @@ export function JobDetail() {
         />
       </div>
 
-      {/* Main content */}
-      <main className="mx-auto max-w-5xl px-4 py-8">
+      {/* Main content. A div, not <main>: every route that renders JobDetail
+          wraps it in PublicShell, which already provides the page's only <main>
+          landmark. Unlike /pricing this route IS server-rendered, so the nested
+          landmark went into the raw HTML a job-seeking crawler indexes. */}
+      <div className="mx-auto max-w-5xl px-4 py-8">
         <div className="gap-8 lg:grid lg:grid-cols-[1fr_320px]">
           {/* Left column — all content sections */}
           <div className="space-y-8">
@@ -950,7 +975,7 @@ export function JobDetail() {
             </div>
           </div>
         </div>
-      </main>
+      </div>
 
       {/* Sticky CTA bar — visitor */}
       {isVisitor && (

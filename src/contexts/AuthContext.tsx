@@ -17,6 +17,13 @@ export interface AuthHookReturn {
     email: string,
     password: string,
     role: 'employer' | 'seeker',
+    /**
+     * Attribution token from `?ref=` — the `lead_staging.id` of the captured post
+     * that produced this signup. Rides in user metadata rather than a column so it
+     * survives email confirmation and onboarding without a migration;
+     * `admin_leads_staging_list` reads it back to mark a lead converted.
+     */
+    ref?: string | null,
   ) => Promise<
     | Awaited<ReturnType<typeof supabase.auth.signUp>>
     | { data: { user: User | null; session: Session | null }; error: AuthError }
@@ -142,12 +149,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  const signUpWithRole: AuthHookReturn['signUpWithRole'] = async (email, password, userRole) => {
+  const signUpWithRole: AuthHookReturn['signUpWithRole'] = async (
+    email,
+    password,
+    userRole,
+    ref,
+  ) => {
     const result = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { role: userRole },
+        // `ref` is omitted entirely when absent rather than written as null, so an
+        // organic signup carries no attribution key at all.
+        data: { role: userRole, ...(ref ? { ref } : {}) },
         emailRedirectTo: `${window.location.origin}/auth/verify`,
       },
     })

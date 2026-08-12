@@ -4,6 +4,12 @@ node_modules/
 # Build output
 dist/
 dist-ssr/
+# v13 stage 3b: react-router build writes build/client + build/server, and the
+# Vercel preset writes .vercel/react-router-build-result.json for the platform
+# builder. .react-router/ is the generated-types cache.
+build/
+.react-router/
+.vercel/
 
 # Environment files
 .env

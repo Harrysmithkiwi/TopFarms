@@ -95,6 +95,18 @@ my own work. **Care is not a control. Gates are.** So the rules are mechanical, 
 
 ## 10. Design canon — two worlds, one is closed
 
+**`impeccable` is the frontend design skill for this project — the default, not an option.**
+(https://github.com/pbakaus/impeccable.) Any work on a frontend surface goes through it:
+building, reviewing, auditing, polishing. Its PostToolUse hook already runs on every edit and
+its config lives at `.impeccable/`; `docs/DESIGN.md` and `docs/PRODUCT.md` are auto-discovered
+from `docs/`. Do not reach for a different design skill, and do not hand-roll a design pass
+that `impeccable` covers.
+
+Hook findings are not automatically defects. Judge each against the two canons below: a
+**visual** finding on a marketing surface is discarded (that world is settled), and a finding
+on a gated portal is real. Never silence one with an ignore command without the operator
+saying so — the waiver is a change to the gate's shape.
+
 Two design systems ship here on purpose. Applying one to the other's surface is the failure
 mode this rule exists to prevent.
 

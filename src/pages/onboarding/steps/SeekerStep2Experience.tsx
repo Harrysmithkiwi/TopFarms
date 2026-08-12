@@ -54,9 +54,6 @@ export function SeekerStep2Experience({ onComplete, onBack, defaultValues }: See
         <h2 className="text-lg font-semibold text-text">
           Your experience
         </h2>
-        <p className="mt-1 text-sm text-text-muted">
-          Tell us about your farming background so we can find the best matches
-        </p>
       </div>
 
       {/* Years of experience */}

@@ -1,4 +1,4 @@
-import { Link, useRouteError, isRouteErrorResponse } from 'react-router'
+import { Link, isRouteErrorResponse } from 'react-router'
 import { PublicShell } from '@/components/shell/PublicShell'
 import { usePageMeta } from '@/lib/usePageMeta'
 
@@ -12,10 +12,15 @@ import { usePageMeta } from '@/lib/usePageMeta'
  * lost visitor is guaranteed to see, so leaving it on the old system would make
  * the error surface the least coherent page on the site. The 404-vs-error split
  * is preserved exactly: a real error must not be shown to the user as a 404.
+ *
+ * v13 stage 3b: the error arrives as a PROP, where it used to come from
+ * useRouteError(). In library mode that hook returned undefined outside an error
+ * boundary; in framework mode it THROWS ("can only be used on routes that
+ * contain a unique id") when this page is reached through the catch-all's
+ * descendant route table, which is every 404 on the site. The caller has the
+ * error and the hook does not, so the caller passes it.
  */
-export function NotFound() {
-  // undefined outside an error boundary (i.e. when rendered via the `*` route)
-  const error = useRouteError()
+export function NotFound({ error }: { error?: unknown } = {}) {
   const is404 = error == null || (isRouteErrorResponse(error) && error.status === 404)
 
   usePageMeta(

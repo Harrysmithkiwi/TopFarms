@@ -434,7 +434,7 @@ export function AdminLeads() {
       <AdminPageHeader
         eyebrow="Leads"
         title="Leads Pipeline"
-        description="Approved leads only — everything here passed your staging review. Click a row to work it."
+        description="Approved leads only. Click a row to work it."
       />
 
       <LeadsFunnel refreshKey={refreshKey} />

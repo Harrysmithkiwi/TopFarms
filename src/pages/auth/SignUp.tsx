@@ -72,6 +72,13 @@ export function SignUp() {
   const handleOAuth = async (provider: 'google' | 'facebook') => {
     setOauthLoading(true)
     try {
+      // OAuth leaves the app, so `?ref=` cannot ride in signUp metadata the way the
+      // email path does. Stash it and let SelectRole write it after the round trip.
+      // sessionStorage rather than a redirectTo param on purpose: the Supabase redirect
+      // allowlist is a known-broken surface (go-live ticket 02), and this needs no
+      // allowlist entry at all. A Facebook-sourced seeker is ALREADY signed into
+      // Facebook, so this is the likely path, not the edge case.
+      if (attributionRef) sessionStorage.setItem('tf-signup-ref', attributionRef)
       await signInWithOAuth(provider)
     } catch {
       toast.error(
@@ -85,6 +92,18 @@ export function SignUp() {
   const [searchParams] = useSearchParams()
   const roleParam = searchParams.get('role')
   const initialRole = roleParam === 'employer' || roleParam === 'seeker' ? roleParam : null
+
+  // Attribution: `?ref=` on an outreach link, carrying the first 8 hex characters of a
+  // lead_staging id (a full UUID is still accepted — links already sent stay valid).
+  // Validated rather than passed through: it lands in user metadata permanently, and a
+  // junk value would sit there forever pretending to be a lead. Absent or malformed
+  // simply means organic, which is a real and common case.
+  const refParam = searchParams.get('ref')
+  const attributionRef =
+    refParam &&
+    /^[0-9a-f]{8}$|^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(refParam)
+      ? refParam.toLowerCase()
+      : null
 
   const [selectedRole, setSelectedRole] = useState<'employer' | 'seeker' | null>(initialRole)
 
@@ -122,14 +141,14 @@ export function SignUp() {
     if (!data.role) return
     setIsSubmitting(true)
     try {
-      const result = await signUpWithRole(data.email, data.password, data.role)
+      const result = await signUpWithRole(data.email, data.password, data.role, attributionRef)
       if (result.error) {
         toast.error(result.error.message, {
           duration: Infinity,
           closeButton: true,
         })
       } else {
-        track('signup_complete', { role: data.role })
+        track('signup_complete', { role: data.role, attributed: attributionRef ? 'yes' : 'no' })
         navigate('/auth/verify')
       }
     } catch {

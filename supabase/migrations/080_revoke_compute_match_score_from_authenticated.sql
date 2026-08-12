@@ -1,0 +1,39 @@
+-- 080_revoke_compute_match_score_from_authenticated.sql
+--
+-- Removes the vestigial EXECUTE grant on the two match-scoring functions from
+-- `authenticated`.
+--
+-- WHY
+-- Both functions are SECURITY DEFINER and accept an arbitrary seeker_id with no
+-- auth.uid() check. With EXECUTE granted to `authenticated`, any signed-in user
+-- holding a seeker_profiles.id could recompute that seeker's full per-dimension
+-- breakdown — shed, location, accommodation, skills, salary, visa, couples — against
+-- any job. That is exactly the data directive 1.4 keeps from workers, and it routes
+-- around employer_may_view_seeker.
+--
+-- The grant was never a considered decision: 037_definer_function_hardening.sql:105-106
+-- re-granted these two as part of a blanket list after revoking from PUBLIC and anon.
+--
+-- WHY THIS IS SAFE (verified against pg_catalog on prod, 2026-08-11, not assumed)
+--   1. No caller in application code. `compute_match_score` appears nowhere in src/
+--      nor in supabase/functions/. The only RPCs Edge Functions invoke are
+--      _lead_intake, _lead_outreach_seed, admin_delete_account,
+--      admin_mark_document_purged and log_admin_document_view.
+--   2. Every internal caller is SECURITY DEFINER owned by postgres, so each executes
+--      as postgres and relies on postgres=X/postgres, not on the authenticated grant:
+--        trigger_recompute_seeker_scores()
+--        trigger_recompute_job_scores()
+--        trigger_recompute_scores_for_seeker_skills()
+--        trigger_recompute_scores_for_job_skills()
+--        cleanup_match_scores_on_status_change()
+--      These back 9 triggers on jobs, seeker_profiles, seeker_skills and job_skills.
+--   3. service_role keeps EXECUTE. It is the trusted backend identity; removing it
+--      would break any future server-side precompute for no security gain, since
+--      service_role already bypasses RLS entirely.
+--
+-- Signatures were read from pg_proc rather than from memory (CLAUDE.md 9.4). Note
+-- `compute_match_scores_batch` takes (uuid, uuid[]) — an earlier note recorded it as
+-- (uuid), which would have made this migration a no-op that reported success.
+
+REVOKE EXECUTE ON FUNCTION public.compute_match_score(uuid, uuid) FROM authenticated;
+REVOKE EXECUTE ON FUNCTION public.compute_match_scores_batch(uuid, uuid[]) FROM authenticated;

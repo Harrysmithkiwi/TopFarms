@@ -158,6 +158,21 @@ for (const viewport of [DESKTOP, MOBILE]) {
     test.skip(() => !hasState('employer'), SKIP_NO_CREDS('employer'))
     test.use({ storageState: hasState('employer') ? statePath('employer') : undefined, viewport })
 
+    // The employer wizard was outside this sweep entirely until 2026-08-08 —
+    // /onboarding/seeker was covered and /onboarding/employer never was. Five
+    // unnamed switches (axe button-name, CRITICAL) sat on the employer
+    // cold-start path unseen the whole time. That is the gap, not the switches.
+    test(`/onboarding/employer passes axe @ ${vp}`, async ({ page }) => {
+      await page.goto('/onboarding/employer')
+      await page.waitForLoadState('networkidle')
+      // A completed employer bounces to the dashboard. Say what got scanned.
+      if (!page.url().includes('/onboarding/employer')) {
+        console.warn(`[a11y] /onboarding/employer redirected to ${page.url()} — scanned that`)
+      }
+      await runAxe(page, `/onboarding/employer @ ${vp}`)
+      if (viewport === MOBILE) await assertNoHorizontalScroll(page, `/onboarding/employer @ ${vp}`)
+    })
+
     test(`applicant dashboard passes axe @ ${vp}`, async ({ page }) => {
       // Route needs a job id owned by this employer — take the first
       // "view applicants" link from the employer dashboard.
@@ -211,4 +226,72 @@ test.describe('reduced motion honoured by JS animation (Phase 4.4 / A7)', () => 
     const second = await sample()
     expect(second, 'transforms still changing under reduced motion').toEqual(first)
   })
+})
+
+test.describe('public routes carry exactly one h1 and one main', () => {
+  // axe rates landmark-no-duplicate-main and the heading rules MODERATE, and
+  // runAxe above only logs moderate — so the sweep watched these four routes
+  // for weeks while /jobs served a <main> nested inside PublicShell's plus a
+  // second h1, and /pricing served one h1 per audience view. Both are invalid
+  // for a crawler and both split the document outline for a screen reader.
+  // Asserted explicitly, for the same reason the admin heading test above is.
+  //
+  // Each route also asserts WHICH h1 it got. Counting alone cannot tell a
+  // correct page from the 404: NotFound renders inside PublicShell, so it too
+  // has exactly one h1 and one main, and a route that broke and fell through to
+  // it would keep this green.
+  //
+  // `aud` runs the audience-swapped routes through BOTH lenses. The employer
+  // string is the CSS default (directive 1.11), so a seek-only regression —
+  // which is exactly half of the /pricing bug this guards — is invisible unless
+  // the lens is set. sessionStorage must be written against the origin, hence
+  // the goto-then-set-then-reload.
+  // Patterns are case-INSENSITIVE on purpose: the landing h1 is CSS-uppercased,
+  // and innerText returns rendered casing ("THE RIGHT MATCH,"). Matching the
+  // source casing here fails against a page that is perfectly correct.
+  const ROUTES = [
+    { path: '/', h1: /the right match/i },
+    { path: '/', h1: /find the farm job/i, aud: 'seeker' },
+    { path: '/jobs', h1: /find your next farming opportunity/i },
+    { path: '/pricing', h1: /what it costs/i },
+    { path: '/pricing', h1: /workers never pay/i, aud: 'seeker' },
+    { path: '/for-employers', h1: /what happens after you post/i },
+  ]
+  for (const { path, h1, aud } of ROUTES) {
+    const label = `${path}${aud ? ` (${aud} lens)` : ''}`
+    test(`${label} has one h1 and one main`, async ({ page }) => {
+      await page.goto(path)
+      if (aud) {
+        await page.evaluate((a) => sessionStorage.setItem('tf-aud', a), aud)
+        await page.reload()
+      }
+      await page.waitForLoadState('networkidle')
+      await page.locator('main').first().waitFor({ timeout: 20_000 })
+      const found = await page.evaluate(() => ({
+        h1: document.querySelectorAll('h1').length,
+        main: document.querySelectorAll('main').length,
+        // innerText, not textContent: the hidden audience string must not count.
+        text: (document.querySelector('h1') as HTMLElement | null)?.innerText ?? '',
+      }))
+      expect(found.h1, `${label}: h1 elements`).toBe(1)
+      expect(found.main, `${label}: main landmarks`).toBe(1)
+      expect(found.text, `${label}: h1 text — is this the right page, or the 404?`).toMatch(h1)
+    })
+  }
+})
+
+test('/login and /signup have a main landmark', async ({ page }) => {
+  // AuthLayout has no shell around it and had no <main> of its own, so these
+  // two routes shipped ZERO landmarks — nothing for a screen-reader user to
+  // skip to — while DashboardLayout and AdminLayout both provide one. Found by
+  // a verifier sweeping for siblings of the /jobs nested-landmark defect.
+  //
+  // NOTE for the merge train: pricing/model-v3 appends its own block to the end
+  // of this file, so merge ③ will conflict here. Both blocks are wanted; keep
+  // them both.
+  for (const path of ['/login', '/signup']) {
+    await page.goto(path)
+    await page.waitForLoadState('networkidle')
+    await expect(page.locator('main'), `${path}: main landmarks`).toHaveCount(1)
+  }
 })

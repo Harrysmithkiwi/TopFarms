@@ -86,53 +86,46 @@ export function Step2FarmDetails({ onComplete, onBack, defaultValues }: Step2Pro
         <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Tell us about your farm
         </h2>
-        <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-          These details help candidates understand your operation
-        </p>
       </div>
 
       <div className="space-y-4">
         {/* Farm type chips — 2-column grid, multi-select */}
-        <div>
-          <p className="font-body text-text mb-2 text-[13px] font-semibold">Farm type *</p>
-          <Controller
-            control={control}
-            name="farm_types"
-            render={({ field }) => (
-              <ChipSelector
-                options={FARM_TYPE_OPTIONS}
-                value={field.value ?? []}
-                onChange={field.onChange}
-                mode="multi"
-                columns={2}
-              />
-            )}
-          />
-          {errors.farm_types && (
-            <p className="text-danger mt-1 text-[12px]">{errors.farm_types.message}</p>
+        <Controller
+          control={control}
+          name="farm_types"
+          render={({ field }) => (
+            <ChipSelector
+              label="Farm type"
+              required
+              options={FARM_TYPE_OPTIONS}
+              value={field.value ?? []}
+              onChange={field.onChange}
+              mode="multi"
+              columns={2}
+              error={errors.farm_types?.message}
+            />
           )}
-        </div>
+        />
 
         {/* Ownership structure chips — 2-column grid, multi-select */}
-        <div>
-          <p className="font-body text-text mb-2 text-[13px] font-semibold">Ownership structure</p>
-          <Controller
-            control={control}
-            name="ownership_type"
-            render={({ field }) => (
-              <ChipSelector
-                options={OWNERSHIP_TYPE_OPTIONS}
-                value={field.value ?? []}
-                onChange={field.onChange}
-                mode="multi"
-                columns={2}
-              />
-            )}
-          />
-        </div>
+        <Controller
+          control={control}
+          name="ownership_type"
+          render={({ field }) => (
+            <ChipSelector
+              label="Ownership structure"
+              options={OWNERSHIP_TYPE_OPTIONS}
+              value={field.value ?? []}
+              onChange={field.onChange}
+              mode="multi"
+              columns={2}
+            />
+          )}
+        />
 
         <Input
-          label="Farm name *"
+          label="Farm name"
+          required
           placeholder="e.g. Green Valley Farm"
           error={errors.farm_name?.message}
           {...register('farm_name')}
@@ -143,7 +136,8 @@ export function Step2FarmDetails({ onComplete, onBack, defaultValues }: Step2Pro
           name="region"
           render={({ field }) => (
             <Select
-              label="Region *"
+              label="Region"
+              required
               placeholder="Select a region"
               options={NZ_REGIONS.map((r) => ({ value: r, label: r }))}
               value={field.value}
@@ -162,25 +156,22 @@ export function Step2FarmDetails({ onComplete, onBack, defaultValues }: Step2Pro
         />
 
         {/* Shed type chips — inline, multi-select */}
-        <div>
-          <p className="font-body text-text mb-2 text-[13px] font-semibold">Shed type *</p>
-          <Controller
-            control={control}
-            name="shed_type"
-            render={({ field }) => (
-              <ChipSelector
-                options={SHED_TYPES}
-                value={field.value ?? []}
-                onChange={field.onChange}
-                mode="multi"
-                columns="inline"
-              />
-            )}
-          />
-          {errors.shed_type && (
-            <p className="text-danger mt-1 text-[12px]">{errors.shed_type.message}</p>
+        <Controller
+          control={control}
+          name="shed_type"
+          render={({ field }) => (
+            <ChipSelector
+              label="Shed type"
+              required
+              options={SHED_TYPES}
+              value={field.value ?? []}
+              onChange={field.onChange}
+              mode="multi"
+              columns="inline"
+              error={errors.shed_type?.message}
+            />
           )}
-        </div>
+        />
 
         <Controller
           control={control}

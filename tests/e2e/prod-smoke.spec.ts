@@ -72,3 +72,20 @@ test('HOMEBUG-01: get_platform_stats RPC returns 200 with {jobs,seekers,matches}
     }),
   )
 })
+
+// S1: the soft 404. The branded page always rendered — LAUNCH.md B3 asserted the copy and
+// nothing else — while the server answered 200, so a crawler could index any junk URL as a
+// real page. Assert the STATUS, since the copy assertion is exactly what let this hide.
+test('S1: an unknown URL answers 404 and still renders the branded page', async ({ page }) => {
+  const res = await page.goto('/definitely-not-a-page')
+  expect(res?.status()).toBe(404)
+  await expect(page.getByText(/this paddock's empty/i)).toBeVisible()
+  await expect(page.getByRole('link', { name: /go home/i })).toBeVisible()
+})
+
+// The other half of the same guard: the check keys on the legacy route table, so a bug in
+// it would 404 real routes. A page nobody can mistake for junk has to keep answering 200.
+test('S1: a real route still answers 200', async ({ page }) => {
+  expect((await page.goto('/login'))?.status()).toBe(200)
+  expect((await page.goto('/jobs'))?.status()).toBe(200)
+})
