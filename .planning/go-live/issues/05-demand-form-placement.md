@@ -1,7 +1,7 @@
 # Where does the training-demand form live?
 
 Type: grilling
-Status: open
+Status: resolved
 
 ## Question
 
@@ -24,3 +24,23 @@ Options, with the recommendation first:
 Also to confirm: does it ship inside launch week at all, or the week after? It is separable
 by construction (own branch, own migration, no coupling) — nothing about go-live changes
 either way.
+
+## Answer
+
+Operator ruled 2026-08-07: **Option A.** Wired same day.
+
+- `SeekerDashboard.tsx` — between the header and the profile card (the exact spot the
+  approval screenshot showed), `role="seeker"`, `context="seeker-dashboard"`.
+- `EmployerDashboard.tsx` — below the Quick Stats row, above Job Listings,
+  `role="employer"`, `context="employer-dashboard"`. Both sit in the onboarding-complete
+  branch, so a user mid-onboarding never sees them.
+
+Proven live before commit, not assumed: a real browser session on the wired seeker dashboard
+clicked two chips, submitted, and the thanks state rendered; the prod row was then read back
+carrying exactly those two skills **resolved to names via the taxonomy join** (the
+partner-signal query working on its first datum), then purged so the dataset starts empty.
+The employer variant is unit-tested (toggle defaults to staff) and code-identical in mount;
+it has no visual pass yet because no onboarded employer account exists — noted, not hidden.
+
+Ships inside launch week as S1, still incapable of blocking go-live: if the merge train
+stalls, this branch simply waits.

@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import { UserRound } from 'lucide-react'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { Card } from '@/components/ui/Card'
+import { TrainingDemandCard } from '@/components/ui/TrainingDemandCard'
 import { ProgressBar } from '@/components/ui/ProgressBar'
 import { ApplicationCard } from '@/components/ui/ApplicationCard'
 import { cn } from '@/lib/utils'
@@ -277,6 +278,11 @@ export function SeekerDashboard() {
                 Your job seeker dashboard
               </p>
             </div>
+
+            {/* Training demand capture (go-live S1) — placement A, operator-approved
+                2026-08-07: between the header and the profile card, dismissible,
+                outside every launch funnel. */}
+            <TrainingDemandCard role="seeker" context="seeker-dashboard" />
 
             {/* Profile summary card */}
             <Card className="p-6">

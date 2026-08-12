@@ -4,6 +4,7 @@ import { Plus, AlertCircle, Wheat, Pin } from 'lucide-react'
 import { toast } from 'sonner'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { Card } from '@/components/ui/Card'
+import { TrainingDemandCard } from '@/components/ui/TrainingDemandCard'
 import { ProgressBar } from '@/components/ui/ProgressBar'
 import { JobCard } from '@/components/ui/JobCard'
 import { VerificationBadge } from '@/components/ui/VerificationBadge'
@@ -450,6 +451,10 @@ export function EmployerDashboard() {
                 </p>
               </Card>
             </div>
+
+            {/* Training demand capture (go-live S1) — placement A, operator-approved
+                2026-08-07: below the KPI row, above the listings, dismissible. */}
+            <TrainingDemandCard role="employer" context="employer-dashboard" />
 
             {/* Job Listings section */}
             <div>

@@ -399,6 +399,12 @@ the assessment. The kill signals from `v2.1-MILESTONE-SCOPING.md` stand.
 
 ## Decisions so far
 
+- [Where does the training-demand form live?](issues/05-demand-form-placement.md) —
+  **Option A, ruled by the operator and wired 2026-08-07**: dismissible card on both
+  dashboards, in the onboarding-complete branch, outside every launch funnel. Live
+  click-through captured a prod row with the clicked skills resolved by name through the
+  taxonomy join, then purged. Branch `feat/training-demand-form`, stacked on PR #86.
+
 - [Training & qualifications assessment](issues/06-training-quals-assessment.md) — fits the
   existing architecture cleanly (the 24-competency taxonomy is the join key); it is v2.1
   Phases 24–26 already scoped with a zero-added-cost constraint; sequence 25→24→26 after
