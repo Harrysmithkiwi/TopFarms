@@ -76,7 +76,7 @@
 
   /* === Type scale (Phase 5.2) ===
      Before this, the repo had NO documented scale and had accumulated 14 distinct
-     arbitrary `text-[Npx]` values — including text-[9px] and text-[10px], below
+     arbitrary `text-[Npx]` values — the smallest two were nine and ten pixels, below
      anything legible for someone reading a job card outdoors on a phone. Same class
      of defect Phase 4.1 found in contrast: not a bug in any one component, a missing
      token every component re-improvised.
