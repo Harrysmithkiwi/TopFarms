@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-font",
+        "value": "jetbrains mono",
+        "createdAt": "2026-08-12T21:53:35.115Z",
+        "reason": "Declared in docs/DESIGN.md:224 as the Mono Font; The One-Family Rule permits it for code snippets and schema references only"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "archivo",
+        "createdAt": "2026-08-12T21:53:35.159Z",
+        "reason": "Marketing canon per docs/design/v11-DIRECTIVE.md; fenced by DESIGN.md 3 Second-Canon Rule and out of scope under CLAUDE.md 10"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "bricolage grotesque",
+        "createdAt": "2026-08-12T21:53:35.194Z",
+        "reason": "Marketing canon per docs/design/v11-DIRECTIVE.md; fenced by DESIGN.md 3 Second-Canon Rule and out of scope under CLAUDE.md 10"
+      }
+    ]
+  }
+}
