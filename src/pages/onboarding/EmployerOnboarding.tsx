@@ -232,8 +232,11 @@ export function EmployerOnboarding() {
         <div className="bg-surface border-border rounded-[16px] border p-6 shadow-sm">
           {saving && (
             <div
+              // brand-hover (5.02:1), not brand (3.30:1, retired as text in
+              // docs/design/contrast.md). The seeker wizard's identical indicator
+              // already uses it.
               className="mb-4 flex items-center gap-2 text-sm"
-              style={{ color: 'var(--color-brand)' }}
+              style={{ color: 'var(--color-brand-hover)' }}
             >
               <div
                 className="h-4 w-4 animate-spin rounded-full border-[2px] border-brand border-t-transparent"
