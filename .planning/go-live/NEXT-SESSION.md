@@ -36,13 +36,38 @@ and A3 done; A4 carried forward here as item 3).
 > 2. **Sentry has no DSN in production** — `initObservability` no-ops, confirmed by grepping
 >    the built bundle. Operator pastes the value; wiring is minutes.
 >
-> Also open, small: DMARC is `p=none` with no `rua=` (re-verified 2026-08-13). The **Site URL
-> worry is CLOSED**: a bogus-token `/auth/v1/verify` probe 303s to `https://www.topfarms.co.nz#…`
-> — config is www; the apex landing predated ticket 02's fix.
+> ✅ **DMARC now collects — done 2026-08-13.** `_dmarc.topfarms.co.nz` is
+> `v=DMARC1; p=none; rua=mailto:dmarc@topfarms.co.nz`, verified in public DNS via `@1.1.1.1`.
+> **`p=none` is deliberately unchanged** — tightening to quarantine before any report has been
+> read would risk silently quarantining real mail days before launch. Read a few weeks of
+> reports, confirm alignment, then tighten.
 >
-> The Cloudflare plugin loaded after the restart but its MCP servers are **OAuth-gated** —
-> each needs a one-time browser authorization before any tool works. DMARC fix is blocked on
-> that click, nothing else.
+> **The trap that would have made this look like it worked when it didn't:** the obvious
+> `rua=mailto:admin.topfarms@gmail.com` fails silently. A DMARC report destination at a
+> *different* domain must be authorized by that domain, and
+> `dig topfarms.co.nz._report._dmarc.gmail.com` returns nothing — Gmail publishes no such
+> record, so most reporters drop the reports and you conclude "DMARC doesn't work". Fixed by
+> going same-domain: `dmarc@topfarms.co.nz` plus a Cloudflare Email Routing rule
+> (`629c610f0d364daba451770dd836f47f`) forwarding it to the already-verified
+> `admin.topfarms@gmail.com`. **Rule created BEFORE the record was published** — the reverse
+> order bounces reports during the gap, and the catch-all is disabled+drop so `dmarc@` had no
+> other path.
+>
+> To confirm from the first reports (expected, not yet verified): root SPF is
+> `include:_spf.mx.cloudflare.net` (inbound routing, does NOT list Resend), so outbound
+> alignment rests on DKIM `resend._domainkey.topfarms.co.nz` and on `send.topfarms.co.nz`
+> (`include:amazonses.com`) aligning relaxed. Both should pass; the reports will say so
+> empirically, which is the whole point of turning them on.
+>
+> The **Site URL worry is CLOSED**: a bogus-token `/auth/v1/verify` probe 303s to
+> `https://www.topfarms.co.nz#…` — config is www; the apex landing predated ticket 02's fix.
+>
+> **Cloudflare MCP is authorized and working** (zone `35ef14676d0f1808b817d06358d98afa`).
+> Gotcha for next time it lapses: each `authenticate` call opens a callback listener on a
+> **new random port**, and only that port can complete the flow — clicking a URL from an
+> earlier call authorizes against a dead listener and silently does nothing. If tools appear
+> but every call returns `token expired`, that is the symptom. Re-run `authenticate`, click
+> the *newest* URL promptly.
 >
 > ---
 >
