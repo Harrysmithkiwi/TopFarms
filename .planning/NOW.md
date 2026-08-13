@@ -8,25 +8,44 @@ stream doc disagree, the stream doc wins and this file is out of date — fix it
 
 ---
 
-## ▶ Next session, start here — updated 2026-08-08
+## ▶ Next session, start here — updated 2026-08-13 (end of day)
 
-**Launch is 2026-08-14. Six days. M1 is done and prod is coherent; M3 real inventory is now
-the long pole and it is blocked on two operator decisions (tickets 01 and 02, below).**
+**Launch is 2026-08-14 — that is TOMORROW.** `main` = `74ed520`, tree clean, everything
+pushed, CI + E2E green on all three of today's commits.
 
-Engineering work that is unblocked and ready to pick up, in order:
+**The single highest-value thing left is not code — it is posting one real job listing.**
+It unblocks the payment path (never run in prod), the employer experience, and it is now also
+the live test of the match alert. Guide written: `.planning/go-live/OPERATOR-GUIDES.md`.
 
-1. **Re-run `docs/LAUNCH-READINESS-PROMPT.md` against live prod.** This has been waiting on M1
-   all along and is now genuinely unblocked — prod finally *is* everything built. Biggest
-   remaining engineering deliverable; wants a dedicated session at high effort. Hold or raise
-   the standing 91/100.
-2. **The `compute_match_score` REVOKE** (Open rulings below). One line, safe now.
-3. **The employer-onboarding leftovers** — one pass over `ChipSelector` / `Select` closes three
-   filed a11y findings at once.
+Engineering work that is unblocked, in order:
 
-Do **not** start M4's cold-start check or §4 payment verification yet: both need a real
-listing to exist, which only M3 produces.
+1. **Nothing is blocking launch that is mine to fix.** Both remaining gaps are operator acts —
+   paste the Sentry DSN, post a listing. Both have step-by-step guides in
+   `.planning/go-live/OPERATOR-GUIDES.md`.
+2. **When the first listing exists, verify the match alert end to end.** The path has never
+   fired: prod has zero jobs and is never seeded. Confirm the email lands at
+   `admin.topfarms@gmail.com`, then confirm `match_scores` rows match what it listed.
+3. **Also unblocked by that first listing:** M4's cold-start check, §4 payment verification,
+   and S2's positive read (the `seeker_documents` employer policy returns 200 but has never
+   returned an actual row — recheck at the first real application).
+4. **Still filed, still cheap:** `ChipSelector` / `Select` a11y pass closes three findings at
+   once. The Step-2 "shed type required on a Sheep & Beef listing" wart found while writing
+   the operator guide is worth adding to that pass.
 
-Working tree was clean and everything pushed at session end (`main` = `8351acf`).
+**Shipped today (2026-08-13), do not re-litigate:**
+
+- **Operator match alert** — `cf3ebcd`, migration 084 (ledger `20260813120337`). Job goes
+  `active` → `on_job_activated_notify_matches` → pg_net → `notify-job-matches` Edge Fn →
+  emails the operator the ranked matched-seeker list. Seeker-facing sends stay MANUAL by
+  design. Verified: trigger in `pg_catalog`, deploy green, no-secret probe → 403.
+- **DMARC now collects** — `v=DMARC1; p=none; rua=mailto:dmarc@topfarms.co.nz` plus a
+  Cloudflare Email Routing rule for `dmarc@`. `p=none` deliberately kept until reports are
+  read. The trap that would have wasted weeks: `rua=` at a non-matching domain needs that
+  domain's authorization record and Gmail publishes none, so `rua=mailto:…@gmail.com` is
+  silently discarded by reporters.
+- **Site URL confirmed www** (probe 303s to `www.topfarms.co.nz`) — the apex sighting
+  predated ticket 02's fix. Closed, stop re-checking it.
+- **Cloudflare MCP authorized and working**, zone `35ef14676d0f1808b817d06358d98afa`.
 
 ---
 
