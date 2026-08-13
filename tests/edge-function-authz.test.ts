@@ -43,6 +43,10 @@ const NON_USER_INVOKED: Record<string, { mechanism: RegExp; why: string }> = {
     mechanism: /x-webhook-secret/i,
     why: 'invoked by the on_job_filled DB trigger via pg_net with a Vault secret',
   },
+  'notify-job-matches': {
+    mechanism: /x-webhook-secret/i,
+    why: 'invoked by the on_job_activated_notify_matches DB trigger via pg_net with a Vault secret',
+  },
   'send-followup-emails': {
     mechanism: /x-webhook-secret/i,
     why: 'cron-invoked; no user context',

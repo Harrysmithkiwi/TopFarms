@@ -14,6 +14,7 @@ const ROOT = resolve(__dirname, '..')
 const FNS = [
   'supabase/functions/notify-job-filled/index.ts',
   'supabase/functions/send-followup-emails/index.ts',
+  'supabase/functions/notify-job-matches/index.ts',
 ]
 
 describe.each(FNS)('Edge fn %s — X-Webhook-Secret defence-in-depth', (relPath) => {

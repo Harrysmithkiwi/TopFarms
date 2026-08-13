@@ -14,6 +14,14 @@
 # described shipped work as outstanding.)
 verify_jwt = false
 
+[functions.notify-job-matches]
+# Operator match-alert. Called server-side by DB trigger
+# on_job_activated_notify_matches (migration 084) via pg_net when a job
+# becomes 'active' — no user JWT in flight, so the gateway check is off and
+# defence-in-depth is the in-function X-Webhook-Secret validation (same
+# pattern as notify-job-filled, guarded by tests/webhook-secret-presence.test.ts).
+verify_jwt = false
+
 [functions.send-followup-emails]
 # Cron-driven (placement-fee-followup-job from migration 011). Same legacy JWT issue as
 # notify-job-filled — gateway check disabled. Function does not use caller-bound logic.
