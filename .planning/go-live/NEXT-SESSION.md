@@ -3,6 +3,43 @@
 Written 2026-08-11. Supersedes the previous `NEXT-SESSION.md` (four unblocked items — A1, A2
 and A3 done; A4 carried forward here as item 3).
 
+> ## ▶ START HERE — state at end of 2026-08-13
+>
+> **All six items are closed.** Item 6 was never blocked on a ruling: ticket 05 was RESOLVED
+> 2026-08-07 (operator chose placement A, wired same day) and PR #87 was simply pointing at
+> `design/admin-gate`, a base that had merged separately. Retargeted and merged — `8d89930`.
+>
+> **CI is green again.** It had been red since 2026-08-11 and nobody noticed, so six commits
+> landed on a red main while local gates were reported green. Three breakages, each hiding the
+> next: the `saved-search` spec ratcheting its own fixture dead at the 10-search cap; two npm
+> advisories (patched, not waived); and a bundle-budget step still reading `dist/assets` after
+> framework mode moved output to `build/client/assets`. **A broken check hides the check behind
+> it** — do not step around a red CI again.
+>
+> **Email works end to end**, verified on prod with a real signup: Supabase → Resend SMTP →
+> Cloudflare routing → `admin.topfarms@gmail.com`, arriving as `TopFarms <hello@topfarms.co.nz>`
+> in the Inbox, link consuming its token. Auth email rate limit **2/h → 200/h** — the 2 was a
+> silent launch-day ceiling. Setup detail worth keeping: the Supabase SMTP **username is the
+> literal string `resend`**, not an email address.
+>
+> ### The two things left before this funnel works
+>
+> 1. **The waitlist promises an email that nothing sends.** No trigger on `jobs` notifies a
+>    seeker and no edge function exists — verified against prod. Recommended: alert the
+>    OPERATOR when a job posts with matches and let them send the first ones by hand. Same
+>    shape as `notify-job-filled`. Under 100 users, discovering the copy beats automating it.
+> 2. **Sentry has no DSN in production** — `initObservability` no-ops, confirmed by grepping
+>    the built bundle. Operator pastes the value; wiring is minutes.
+>
+> Also open, small: DMARC is `p=none` with no `rua=` (enforces nothing, collects nothing), and
+> the auth **Site URL still looks like the apex** — a redirect-less confirmation landed on
+> `topfarms.co.nz/#`, not `www`.
+>
+> The Cloudflare plugin (`cloudflare@cloudflare`) is installed but needs a **full Claude Code
+> restart** to load — `/reload-plugins` did not surface its MCP servers.
+>
+> ---
+>
 > **CLOSED 2026-08-12. Items 1–5 are all done, item 6 is still blocked on the operator.**
 > Nothing below needs redoing. What this phase actually changed, beyond the tickets:
 >
