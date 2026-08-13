@@ -1,4 +1,4 @@
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, useWatch, Controller } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Input } from '@/components/ui/Input'
@@ -7,17 +7,35 @@ import { Button } from '@/components/ui/Button'
 import { ChipSelector } from '@/components/ui/ChipSelector'
 import { FARM_TYPE_OPTIONS, OWNERSHIP_TYPE_OPTIONS, SHED_TYPES } from '@/types/domain'
 
-const schema = z.object({
-  farm_name: z.string().min(1, 'Farm name is required'),
-  region: z.string().min(1, 'Region is required'),
-  farm_types: z.array(z.string()).min(1, 'Select at least one farm type'),
-  ownership_type: z.array(z.string()).optional(),
-  shed_type: z.array(z.string()).min(1, 'Select shed type'),
-  herd_size: z.coerce.number().optional(),
-  milking_frequency: z.string().optional(),
-  breed: z.string().optional(),
-  property_size_ha: z.coerce.number().optional(),
-})
+/**
+ * Shed type is a dairy concept. Requiring it unconditionally meant a Sheep & Beef (or cropping,
+ * or deer) farmer could not finish onboarding at all — the form blocked on a field their farm
+ * does not have, at the very front of the funnel. Same defect as the job wizard's step 2; the
+ * rule is expressed twice because the two forms share no schema.
+ *
+ * `farm_types` is on this same form, so the condition reads straight off the submitted value.
+ */
+const schema = z
+  .object({
+    farm_name: z.string().min(1, 'Farm name is required'),
+    region: z.string().min(1, 'Region is required'),
+    farm_types: z.array(z.string()).min(1, 'Select at least one farm type'),
+    ownership_type: z.array(z.string()).optional(),
+    shed_type: z.array(z.string()),
+    herd_size: z.coerce.number().optional(),
+    milking_frequency: z.string().optional(),
+    breed: z.string().optional(),
+    property_size_ha: z.coerce.number().optional(),
+  })
+  .superRefine((d, ctx) => {
+    if (d.farm_types.includes('dairy') && d.shed_type.length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['shed_type'],
+        message: 'Select shed type',
+      })
+    }
+  })
 
 type FormData = z.infer<typeof schema>
 
@@ -80,8 +98,20 @@ export function Step2FarmDetails({ onComplete, onBack, defaultValues }: Step2Pro
     },
   })
 
+  // Reacts to the chips above: pick Sheep & Beef only, and the dairy questions go away. Nothing
+  // selected yet still shows them, so the form does not flicker fields in on first paint.
+  const farmTypes = useWatch({ control, name: 'farm_types' }) ?? []
+  const showsDairyFields =
+    farmTypes.length === 0 || farmTypes.includes('dairy') || farmTypes.includes('mixed')
+
+  // Clear the dairy-only answers when they are hidden, so a value picked before the farm type
+  // was narrowed cannot be saved against a farm that never showed the question.
+  function submit(data: FormData) {
+    onComplete(showsDairyFields ? data : { ...data, shed_type: [], milking_frequency: '' })
+  }
+
   return (
-    <form onSubmit={handleSubmit(onComplete)} className="space-y-6">
+    <form onSubmit={handleSubmit(submit)} className="space-y-6">
       <div>
         <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Tell us about your farm
@@ -155,37 +185,41 @@ export function Step2FarmDetails({ onComplete, onBack, defaultValues }: Step2Pro
           {...register('herd_size')}
         />
 
-        {/* Shed type chips — inline, multi-select */}
-        <Controller
-          control={control}
-          name="shed_type"
-          render={({ field }) => (
-            <ChipSelector
-              label="Shed type"
-              required
-              options={SHED_TYPES}
-              value={field.value ?? []}
-              onChange={field.onChange}
-              mode="multi"
-              columns="inline"
-              error={errors.shed_type?.message}
-            />
-          )}
-        />
+        {/* Shed type chips — inline, multi-select. Dairy only. */}
+        {showsDairyFields && (
+          <Controller
+            control={control}
+            name="shed_type"
+            render={({ field }) => (
+              <ChipSelector
+                label="Shed type"
+                required={farmTypes.includes('dairy')}
+                options={SHED_TYPES}
+                value={field.value ?? []}
+                onChange={field.onChange}
+                mode="multi"
+                columns="inline"
+                error={errors.shed_type?.message}
+              />
+            )}
+          />
+        )}
 
-        <Controller
-          control={control}
-          name="milking_frequency"
-          render={({ field }) => (
-            <Select
-              label="Milking frequency"
-              placeholder="Select frequency"
-              options={MILKING_FREQUENCY_OPTIONS}
-              value={field.value}
-              onValueChange={field.onChange}
-            />
-          )}
-        />
+        {showsDairyFields && (
+          <Controller
+            control={control}
+            name="milking_frequency"
+            render={({ field }) => (
+              <Select
+                label="Milking frequency"
+                placeholder="Select frequency"
+                options={MILKING_FREQUENCY_OPTIONS}
+                value={field.value}
+                onValueChange={field.onChange}
+              />
+            )}
+          />
+        )}
 
         <Input
           label="Breed"

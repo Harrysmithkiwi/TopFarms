@@ -83,6 +83,7 @@ export interface JobPostingData {
 export interface EmployerProfileDefaults {
   id?: string // employer_profiles.id (UUID) — required for jobs FK
   region?: string
+  farm_name?: string
   farm_type?: string
   shed_type?: string[]
   herd_size?: number
@@ -122,7 +123,7 @@ export function PostJob() {
       const { data: profile, error: profileError } = await supabase
         .from('employer_profiles')
         .select(
-          'id, onboarding_complete, onboarding_step, region, farm_type, shed_type, herd_size, accommodation_available, accommodation_type',
+          'id, onboarding_complete, onboarding_step, region, farm_name, farm_type, shed_type, herd_size, accommodation_available, accommodation_type',
         )
         .eq('user_id', session.user.id)
         .single()
@@ -155,6 +156,7 @@ export function PostJob() {
         setEmployerProfile({
           id: profile.id, // employer_profiles.id used as employer_id FK in jobs table
           region: profile.region,
+          farm_name: profile.farm_name,
           farm_type: profile.farm_type,
           shed_type: profile.shed_type,
           herd_size: profile.herd_size,
@@ -441,6 +443,7 @@ export function PostJob() {
               <JobStep2FarmDetails
                 onComplete={(data) => handleStepComplete(data, 1)}
                 onBack={() => wizard.prevStep()}
+                sector={jobData.sector}
                 defaultValues={{
                   shed_type: jobData.shed_type ?? employerProfile.shed_type,
                   herd_size_min: jobData.herd_size_min,
@@ -540,7 +543,7 @@ export function PostJob() {
                   jobData.title
                     ? {
                         title: jobData.title,
-                        farmName: employerProfile.farm_type ?? '',
+                        farmName: employerProfile.farm_name ?? '',
                         location: jobData.region ?? '',
                         salaryRange:
                           jobData.salary_min && jobData.salary_max

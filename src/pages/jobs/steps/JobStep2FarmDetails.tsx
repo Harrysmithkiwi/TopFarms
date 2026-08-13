@@ -11,7 +11,7 @@ import { InfoBox } from '@/components/ui/InfoBox'
 import { SHED_TYPES, CALVING_SYSTEM_OPTIONS, DISTANCE_OPTIONS } from '@/types/domain'
 
 const schema = z.object({
-  shed_type: z.array(z.string()).min(1, 'Select shed type'),
+  shed_type: z.array(z.string()),
   herd_size_min: z.coerce.number().min(0).optional(),
   herd_size_max: z.coerce.number().min(0).optional(),
   visa_sponsorship: z.boolean(),
@@ -37,10 +37,27 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
+/**
+ * Shed type is a dairy concept. Requiring it unconditionally made a Sheep & Beef (or cropping,
+ * or deer) listing impossible to submit — the wizard blocked on a field the farm does not have.
+ * The matcher was already ready for this: `compute_match_score` sets `v_shed_applicable = false`
+ * on an empty `shed_type` and drops the dimension out of the denominator, so a non-dairy job
+ * scores on its remaining dimensions rather than losing 25 points.
+ */
+const makeSchema = (shedRequired: boolean) =>
+  shedRequired
+    ? schema.refine((d) => d.shed_type.length > 0, {
+        message: 'Select shed type',
+        path: ['shed_type'],
+      })
+    : schema
+
 interface Step2Props {
   onComplete: (data: FormData) => void
   onBack?: () => void
   defaultValues?: Partial<FormData>
+  /** The job's farm type, chosen at step 1 (`jobs.sector`). Decides which fields apply. */
+  sector?: string
 }
 
 const ACCOMMODATION_TYPE_OPTIONS = [
@@ -59,7 +76,12 @@ const MILKING_FREQUENCY_OPTIONS = [
   { value: 'robotic', label: 'Robotic (AMS)' },
 ]
 
-export function JobStep2FarmDetails({ onComplete, onBack, defaultValues }: Step2Props) {
+export function JobStep2FarmDetails({ onComplete, onBack, defaultValues, sector }: Step2Props) {
+  // An unknown sector shows the block: hiding it on a resumed draft could silently drop a
+  // shed type the employer already saved. Only a positively non-dairy sector hides it.
+  const showsDairyFields = !sector || sector === 'dairy' || sector === 'mixed'
+  const shedRequired = sector === 'dairy'
+
   const {
     register,
     handleSubmit,
@@ -67,7 +89,7 @@ export function JobStep2FarmDetails({ onComplete, onBack, defaultValues }: Step2
     watch,
     formState: { errors },
   } = useForm<FormData>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(makeSchema(shedRequired)),
     defaultValues: {
       shed_type: defaultValues?.shed_type ?? [],
       herd_size_min: defaultValues?.herd_size_min,
@@ -89,8 +111,14 @@ export function JobStep2FarmDetails({ onComplete, onBack, defaultValues }: Step2
   const distance = watch('distance_from_town_km')
   const showDistanceWarning = distance === '>30km' || distance === '>50km'
 
+  // Clear the dairy-only answers when they are hidden, so a prefill from the employer's own
+  // dairy profile cannot ride along onto a Sheep & Beef job the employer never saw them on.
+  function submit(data: FormData) {
+    onComplete(showsDairyFields ? data : { ...data, shed_type: [], milking_frequency: '' })
+  }
+
   return (
-    <form onSubmit={handleSubmit(onComplete)} className="space-y-6">
+    <form onSubmit={handleSubmit(submit)} className="space-y-6">
       <div>
         <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
           Farm details
@@ -101,25 +129,27 @@ export function JobStep2FarmDetails({ onComplete, onBack, defaultValues }: Step2
       </div>
 
       <div className="space-y-5">
-        {/* Shed type — ChipSelector (5 options, inline, multi) */}
-        <div>
-          <Controller
-            control={control}
-            name="shed_type"
-            render={({ field }) => (
-              <ChipSelector
-                label="Shed type"
-                required
-                options={SHED_TYPES}
-                value={field.value ?? []}
-                onChange={field.onChange}
-                mode="multi"
-                columns="inline"
-                error={errors.shed_type?.message}
-              />
-            )}
-          />
-        </div>
+        {/* Shed type — ChipSelector (5 options, inline, multi). Dairy only. */}
+        {showsDairyFields && (
+          <div>
+            <Controller
+              control={control}
+              name="shed_type"
+              render={({ field }) => (
+                <ChipSelector
+                  label="Shed type"
+                  required={shedRequired}
+                  options={SHED_TYPES}
+                  value={field.value ?? []}
+                  onChange={field.onChange}
+                  mode="multi"
+                  columns="inline"
+                  error={errors.shed_type?.message}
+                />
+              )}
+            />
+          </div>
+        )}
 
         {/* Breed */}
         <Input
@@ -128,21 +158,27 @@ export function JobStep2FarmDetails({ onComplete, onBack, defaultValues }: Step2
           {...register('breed')}
         />
 
-        {/* Milking frequency */}
-        <Controller
-          control={control}
-          name="milking_frequency"
-          render={({ field }) => (
-            <Select
-              label="Milking frequency"
-              placeholder="Select frequency"
-              options={MILKING_FREQUENCY_OPTIONS}
-              value={field.value}
-              onValueChange={field.onChange}
-            />
-          )}
-        />
+        {/* Milking frequency — dairy only. */}
+        {showsDairyFields && (
+          <Controller
+            control={control}
+            name="milking_frequency"
+            render={({ field }) => (
+              <Select
+                label="Milking frequency"
+                placeholder="Select frequency"
+                options={MILKING_FREQUENCY_OPTIONS}
+                value={field.value}
+                onValueChange={field.onChange}
+              />
+            )}
+          />
+        )}
 
+        {/* ponytail: only the two unambiguously-dairy fields are gated. Breed, calving system and
+            herd size stay visible for every sector — they read fine for beef and deer, are all
+            optional, and none of them blocks submit. The ceiling: they are still odd on a cropping
+            listing. Upgrade to a per-sector field set if cropping employers actually show up. */}
         {/* Calving system */}
         <Controller
           control={control}
