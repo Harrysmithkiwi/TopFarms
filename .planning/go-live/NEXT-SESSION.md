@@ -24,19 +24,25 @@ and A3 done; A4 carried forward here as item 3).
 >
 > ### The two things left before this funnel works
 >
-> 1. **The waitlist promises an email that nothing sends.** No trigger on `jobs` notifies a
->    seeker and no edge function exists — verified against prod. Recommended: alert the
->    OPERATOR when a job posts with matches and let them send the first ones by hand. Same
->    shape as `notify-job-filled`. Under 100 users, discovering the copy beats automating it.
+> 1. ✅ **DONE 2026-08-13 (`cf3ebcd`, migration 084 = ledger `20260813120337`).** Operator
+>    match-alert live in prod: `on_job_activated_notify_matches` fires when a job becomes
+>    `active` → pg_net → `notify-job-matches` Edge Fn → emails `OPERATOR_EMAIL` (default
+>    admin.topfarms@gmail.com) the ranked matched-seeker list (score/name/email/phone/region/
+>    roles). Zero matches → logged skip. Same Vault/webhook-secret shape as `notify-job-filled`;
+>    registered in both CI guards. Verified: trigger in `pg_catalog`, deploy + CI + E2E green,
+>    live no-secret probe → 403 (proves deploy AND `WEBHOOK_SECRET` present — unset would 503).
+>    **Known-unverified: the full path has never fired** — zero jobs in prod, never seeded.
+>    Recheck at the first real listing. Seeker-facing sends stay manual by design.
 > 2. **Sentry has no DSN in production** — `initObservability` no-ops, confirmed by grepping
 >    the built bundle. Operator pastes the value; wiring is minutes.
 >
-> Also open, small: DMARC is `p=none` with no `rua=` (enforces nothing, collects nothing), and
-> the auth **Site URL still looks like the apex** — a redirect-less confirmation landed on
-> `topfarms.co.nz/#`, not `www`.
+> Also open, small: DMARC is `p=none` with no `rua=` (re-verified 2026-08-13). The **Site URL
+> worry is CLOSED**: a bogus-token `/auth/v1/verify` probe 303s to `https://www.topfarms.co.nz#…`
+> — config is www; the apex landing predated ticket 02's fix.
 >
-> The Cloudflare plugin (`cloudflare@cloudflare`) is installed but needs a **full Claude Code
-> restart** to load — `/reload-plugins` did not surface its MCP servers.
+> The Cloudflare plugin loaded after the restart but its MCP servers are **OAuth-gated** —
+> each needs a one-time browser authorization before any tool works. DMARC fix is blocked on
+> that click, nothing else.
 >
 > ---
 >
