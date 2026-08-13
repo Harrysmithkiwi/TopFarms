@@ -28,11 +28,29 @@ Engineering work that is unblocked, in order:
 3. **Also unblocked by that first listing:** M4's cold-start check, §4 payment verification,
    and S2's positive read (the `seeker_documents` employer policy returns 200 but has never
    returned an actual row — recheck at the first real application).
-4. **Still filed, still cheap:** `ChipSelector` / `Select` a11y pass closes three findings at
-   once. The Step-2 "shed type required on a Sheep & Beef listing" wart found while writing
-   the operator guide is worth adding to that pass.
+4. **Both of these are now DONE — do not pick them up again.** The `ChipSelector` / `Select`
+   a11y pass shipped on 2026-08-11 (`dac7e06`, findings 4 + 5 closed at the primitives), and
+   the shed-type wart shipped 2026-08-14 (below). What remains from that gap analysis is §6
+   polish only: the `406` on a brand-new employer's first load, `color-contrast` serious on
+   step 8, `landmark-unique` moderate on every step, and the step-8 `h2` scale drift.
 
-**Shipped today (2026-08-13), do not re-litigate:**
+**Shipped 2026-08-14 (launch morning):**
+
+- **Shed type is dairy-only.** It was required on every sector, so a Sheep & Beef, cropping or
+  deer employer could not submit — and the same rule existed **twice**, in the job wizard AND
+  in employer onboarding step 2. The onboarding one was the worse of the pair: it blocked
+  profile completion at the front of the funnel, not just one listing. Both now gate on farm
+  type; required only for dairy; hidden fields cleared on submit so a dairy prefill cannot ride
+  onto a non-dairy job. The dairy path is byte-identical — this is a no-op for dairy employers.
+  `compute_match_score` already handled it (`v_shed_applicable` false on an empty `shed_type`,
+  dimension drops out of the denominator), so no DB change was needed.
+- **`PostJob` live preview showed the farm *type* where the farm *name* belongs** — it read
+  `employer_profiles.farm_type`, and `farm_name` was never fetched. Every employer posting a
+  job saw "dairy" as their farm name.
+- Gate: `tsc -b` 0, 673 tests, lint 0 errors at the 54 pin, build 0. `tests/shed-type-sector-gating.test.tsx`
+  covers both forms and was mutation-checked in both directions.
+
+**Shipped 2026-08-13, do not re-litigate:**
 
 - **Operator match alert** — `cf3ebcd`, migration 084 (ledger `20260813120337`). Job goes
   `active` → `on_job_activated_notify_matches` → pg_net → `notify-job-matches` Edge Fn →
@@ -117,11 +135,12 @@ a numeral. Mutation-checked. The fabricated blurred `78` teaser is gone.
   M5 polish. No impeccable waiver has been run.
 - **`ProtectedRoute`** — one guard, 24 routes, all three portals. Decides where admin-gate
   Phase B starts. Detail in `.planning/admin-design-gate/STATE.md` § Open rulings.
-- **Employer-onboarding leftovers**, from `M1-EMPLOYER-ONBOARDING-GAP-ANALYSIS.md`: the
-  `ChipSelector` has zero aria on required fields; `Select` errors carry no `aria-invalid` /
-  `aria-describedby`; a `406` fires on every brand-new employer's first screen; `color-contrast`
-  serious on wizard step 8. All filed, none launch-blocking. One pass over the shared form
-  primitives fixes the first two together.
+- **Employer-onboarding leftovers**, from `M1-EMPLOYER-ONBOARDING-GAP-ANALYSIS.md`: a `406`
+  fires on every brand-new employer's first screen; `color-contrast` serious on wizard step 8.
+  Filed, neither launch-blocking. **The a11y half of this bullet is CLOSED** — `ChipSelector`
+  and `Select` both carry `aria-required` / `aria-invalid` / `aria-describedby` as of `dac7e06`
+  (2026-08-11). The stale wording here is what aimed a whole session at finished work on launch
+  morning; the gap-analysis doc had it right and this file did not.
 - **`compute_match_score` grant** — `SECURITY DEFINER`, takes an arbitrary `seeker_id`, granted
   to `authenticated`, no `auth.uid()` check, and nothing in `src/` calls it. One-line `REVOKE`.
   Deliberately not applied mid-merge-train; safe to do now. Detail in go-live map § M4.
