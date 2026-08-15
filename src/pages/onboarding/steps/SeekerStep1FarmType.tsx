@@ -42,6 +42,14 @@ export function SeekerStep1FarmType({ onComplete, defaultValues }: SeekerStep1Pr
   const [lastName, setLastName] = useState('')
   const [phone, setPhone] = useState('')
   const [saving, setSaving] = useState(false)
+  // DATA LOSS guard, not a display flag. If the prefill read below fails, the three inputs
+  // stay empty — and handleSubmit writes `firstName.trim() || null`, so an untouched step
+  // NULLs the name and phone the employer pays $200–800 to unlock. This step is re-entered
+  // on every resume at step 0 and every Back from step 2, and the seeker is on rural data
+  // (docs/PRODUCT.md), so the failing read is a realistic event rather than a theoretical
+  // one. On a read failure we skip the contact UPDATE entirely and still advance: the
+  // profile upsert in onComplete() is independent and must not be blocked by it.
+  const [contactPrefillFailed, setContactPrefillFailed] = useState(false)
 
   useEffect(() => {
     const userId = session?.user?.id
@@ -52,8 +60,16 @@ export function SeekerStep1FarmType({ onComplete, defaultValues }: SeekerStep1Pr
       .select('first_name, last_name, phone')
       .eq('user_id', userId)
       .maybeSingle()
-      .then(({ data }) => {
-        if (cancelled || !data) return
+      .then(({ data, error }) => {
+        if (cancelled) return
+        if (error) {
+          console.error('SeekerStep1FarmType: contact prefill failed', error)
+          setContactPrefillFailed(true)
+          return
+        }
+        // No row yet is the normal first-pass state, not a failure — the row is created
+        // by the upsert in handleSubmit. Leave the fields empty and allow the write.
+        if (!data) return
         setFirstName(data.first_name ?? '')
         setLastName(data.last_name ?? '')
         setPhone(data.phone ?? '')
@@ -68,7 +84,26 @@ export function SeekerStep1FarmType({ onComplete, defaultValues }: SeekerStep1Pr
     if (selectedTypes.length === 0 || !region) return
 
     const userId = session?.user?.id
-    if (userId) {
+    // When the prefill failed the inputs never received the stored values, so writing an
+    // empty field back would null real data. Send only the fields the seeker actually
+    // filled — their typed input is still honoured, the untouched ones are left alone.
+    // When the prefill succeeded the inputs mirror the stored row, so all three are sent
+    // and deliberately clearing a field still works.
+    const contactPatch: Record<string, string | null> = contactPrefillFailed
+      ? Object.fromEntries(
+          Object.entries({
+            first_name: firstName.trim(),
+            last_name: lastName.trim(),
+            phone: phone.trim(),
+          }).filter(([, v]) => v !== ''),
+        )
+      : {
+          first_name: firstName.trim() || null,
+          last_name: lastName.trim() || null,
+          phone: phone.trim() || null,
+        }
+
+    if (userId && Object.keys(contactPatch).length > 0) {
       setSaving(true)
       // Ensure the row exists before updating it. `seeker_contacts` rows are created by
       // the seeker_profiles_ensure_contact trigger, which fires AFTER INSERT on
@@ -93,11 +128,7 @@ export function SeekerStep1FarmType({ onComplete, defaultValues }: SeekerStep1Pr
 
       const { error } = await supabase
         .from('seeker_contacts')
-        .update({
-          first_name: firstName.trim() || null,
-          last_name: lastName.trim() || null,
-          phone: phone.trim() || null,
-        })
+        .update(contactPatch)
         .eq('user_id', userId)
       setSaving(false)
       if (error) {

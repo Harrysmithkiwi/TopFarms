@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { supabase } from '@/lib/supabase'
 import { SkillsPicker } from '@/components/ui/SkillsPicker'
 import { Button } from '@/components/ui/Button'
 import { Select } from '@/components/ui/Select'
 import { ChipSelector } from '@/components/ui/ChipSelector'
+import { ErrorState } from '@/components/ui/ErrorState'
 import {
   MIN_DAIRY_EXPERIENCE_OPTIONS,
   SENIORITY_OPTIONS,
@@ -39,9 +40,51 @@ export function JobStep3Skills({ jobId, onComplete, onBack, defaultValues }: Ste
   const [visaRequirements, setVisaRequirements] = useState<string[]>(
     defaultValues?.visa_requirements ?? [],
   )
+  const [loadingSkills, setLoadingSkills] = useState(true)
+  const [prefillError, setPrefillError] = useState(false)
+  const [reloadNonce, setReloadNonce] = useState(0)
+
+  // Load the job's saved skills on mount. Without this the picker starts empty on every
+  // re-entry — Edit from the preview, Back from step 4, reopening the wizard — and
+  // handleSubmit below deletes every job_skills row before inserting what is in state,
+  // so saving an untouched step WIPES the requirements the employer already chose.
+  // Skills are a 20-point match dimension, and the preview then reports "No skills
+  // selected", which reads as the employer's own omission rather than as data loss.
+  // Same defect and same fix as SeekerStep4Skills.tsx:24-52 — block the save rather
+  // than let an empty picker overwrite real data.
+  useEffect(() => {
+    if (!jobId) return
+
+    // No setLoadingSkills(true) here: the state initialises to true, so the first render is
+    // already the loading one, and the retry handler re-arms it. Setting it synchronously
+    // inside the effect is what react-hooks/set-state-in-effect flags.
+    supabase
+      .from('job_skills')
+      .select('skill_id, requirement_level')
+      .eq('job_id', jobId)
+      .then(({ data, error }) => {
+        if (error) {
+          console.error('Error loading job skills:', error)
+          setPrefillError(true)
+        } else if (data) {
+          setSelectedSkills(
+            data.map((row) => ({
+              skill_id: row.skill_id as string,
+              // SkillsPicker runs in requirementMode here, so proficiency carries
+              // 'required' | 'preferred' verbatim — the inverse of the write below.
+              proficiency: row.requirement_level as SelectedSkill['proficiency'],
+            })),
+          )
+        }
+        setLoadingSkills(false)
+      })
+  }, [jobId, reloadNonce])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    // Refuse to save on a failed prefill: selectedSkills would be empty and the
+    // delete-then-insert below would destroy the job's real skills.
+    if (prefillError) return
     setSaving(true)
 
     try {
@@ -88,6 +131,27 @@ export function JobStep3Skills({ jobId, onComplete, onBack, defaultValues }: Ste
     } finally {
       setSaving(false)
     }
+  }
+
+  if (prefillError) {
+    return (
+      <ErrorState
+        message="We could not load this job's saved skills"
+        onRetry={() => {
+          setPrefillError(false)
+          setLoadingSkills(true)
+          setReloadNonce((n) => n + 1)
+        }}
+      />
+    )
+  }
+
+  if (loadingSkills) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="border-brand-hover h-6 w-6 animate-spin rounded-full border-[2px] border-t-transparent" />
+      </div>
+    )
   }
 
   return (
