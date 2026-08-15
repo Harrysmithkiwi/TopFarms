@@ -75,9 +75,8 @@ export function EmployerOnboarding() {
   const [profileError, setProfileError] = useState(false)
   const [reloadNonce, setReloadNonce] = useState(0)
   const [saving, setSaving] = useState(false)
-  const [initialStep, setInitialStep] = useState(0)
 
-  const wizard = useWizard({ totalSteps: TOTAL_STEPS, initialStep })
+  const wizard = useWizard({ totalSteps: TOTAL_STEPS })
 
   // Load existing profile on mount to resume progress
   useEffect(() => {
@@ -107,7 +106,6 @@ export function EmployerOnboarding() {
 
       if (data) {
         const resumeStep = Math.min(data.onboarding_step ?? 0, TOTAL_STEPS - 1)
-        setInitialStep(resumeStep)
         wizard.goToStep(resumeStep)
         setProfileData({
           farm_type: data.farm_type,

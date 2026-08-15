@@ -105,9 +105,8 @@ export function PostJob() {
   const [profileError, setProfileError] = useState(false)
   const [reloadNonce, setReloadNonce] = useState(0)
   const [saving, setSaving] = useState(false)
-  const [initialStep, setInitialStep] = useState(0)
 
-  const wizard = useWizard({ totalSteps: TOTAL_STEPS, initialStep })
+  const wizard = useWizard({ totalSteps: TOTAL_STEPS })
 
   // Load employer profile and optionally an existing draft job on mount
   useEffect(() => {
@@ -216,9 +215,11 @@ export function PostJob() {
             hours_max: job.hours_max,
             weekend_roster: job.weekend_roster,
           })
-          // Resume at step 1+ if we already have basics
+          // Resume past Basics if we already have them. goToStep, not a captured
+          // initialStep: this runs after the fetch, i.e. after first render, which is
+          // exactly when the old option stopped having any effect.
           if (job.title && job.sector) {
-            setInitialStep(1)
+            wizard.goToStep(1)
           }
         }
       }

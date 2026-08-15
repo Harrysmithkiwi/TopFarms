@@ -36,7 +36,6 @@ export function SeekerOnboarding() {
   const [profileError, setProfileError] = useState(false)
   const [reloadNonce, setReloadNonce] = useState(0)
   const [saving, setSaving] = useState(false)
-  const [initialStep, setInitialStep] = useState(0)
   const [seekerProfileId, setSeekerProfileId] = useState<string | null>(null)
 
   // BUG-03 2026-05-04: guard against double-firing the completion marker when
@@ -44,7 +43,7 @@ export function SeekerOnboarding() {
   // onComplete prop of its own; SeekerOnboarding marks completion via this useEffect.
   const completionMarked = useRef(false)
 
-  const wizard = useWizard({ totalSteps: TOTAL_STEPS, initialStep })
+  const wizard = useWizard({ totalSteps: TOTAL_STEPS })
 
   // Load existing seeker profile on mount to resume progress
   useEffect(() => {
@@ -81,7 +80,6 @@ export function SeekerOnboarding() {
           return
         }
         const resumeStep = Math.min(data.onboarding_step ?? 0, TOTAL_STEPS - 1)
-        setInitialStep(resumeStep)
         wizard.goToStep(resumeStep)
         setSeekerProfileId(data.id)
         setProfileData({
