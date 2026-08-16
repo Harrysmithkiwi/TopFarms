@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router'
 import { toast } from 'sonner'
 import { Mail, RefreshCw, Loader2 } from 'lucide-react'
 import { AuthLayout } from '@/components/layout/AuthLayout'
+import { ErrorState } from '@/components/ui/ErrorState'
 import { supabase } from '@/lib/supabase'
 import { dashboardPathFor } from '@/lib/routing'
 import type { UserRole } from '@/types/domain'
@@ -11,40 +12,92 @@ export function VerifyEmail() {
   const navigate = useNavigate()
   const [isProcessing, setIsProcessing] = useState(false)
   const [isResending, setIsResending] = useState(false)
+  const [roleError, setRoleError] = useState(false)
+  const [retryNonce, setRetryNonce] = useState(0)
 
-  // Check if URL contains auth hash tokens (coming from email link click)
-  const hasHashToken =
-    typeof window !== 'undefined' && window.location.hash.includes('access_token')
+  // Audit F-12b: both entry points below can fire for the same confirmation, so the first
+  // one to resolve wins and the rest are ignored. Without this the page can navigate twice.
+  const routed = useRef(false)
+
+  const routeForUser = useCallback(
+    async (userId: string) => {
+      if (routed.current) return
+      routed.current = true
+      setIsProcessing(true)
+
+      // Audit F-12: this used `.single()` and DISCARDED its error, then fell back to
+      // `?? 'seeker'`. A newly verified EMPLOYER was therefore sent to the seeker
+      // dashboard, where ProtectedRoute correctly refused them — "Access Denied" on the
+      // highest-traffic step of signup. A transport failure is not evidence of a role, so
+      // it must never be answered with a guess.
+      //
+      // `.maybeSingle()` so "no row yet" is data===null rather than an error, which
+      // separates the two cases cleanly: no role is a real state (OAuth signups reach it),
+      // a failed read is not.
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .maybeSingle()
+
+      if (error) {
+        console.error('VerifyEmail: failed to load role', error)
+        routed.current = false
+        setIsProcessing(false)
+        setRoleError(true)
+        return
+      }
+
+      const role = data?.role as UserRole | undefined
+
+      // No role assigned yet — let them choose. SelectRole redirects onward by itself if a
+      // role does resolve, so this stays correct even if the read raced an insert.
+      navigate(role ? dashboardPathFor(role) : '/auth/select-role', { replace: true })
+    },
+    [navigate],
+  )
 
   useEffect(() => {
-    if (hasHashToken) {
-      setIsProcessing(true)
-    }
+    let cancelled = false
 
-    // Listen for SIGNED_IN event — fires when email link is clicked and session is established
+    // Audit F-12b: the ONLY trigger used to be the SIGNED_IN event. But supabase-js
+    // consumes the URL hash at module init — before this component mounts — so the event
+    // had already fired by the time we subscribed, and the hash was stripped to a bare `#`
+    // (which also made the old `hasHashToken` check false). The handler never ran: a
+    // confirmed, signed-in employer sat on "Check your inbox" with no way forward.
+    // Reproduced twice on live prod, the second time on wiped storage.
+    //
+    // So read the session that already exists, and ALSO subscribe for one that arrives
+    // later. Whichever resolves first routes; `routed` makes the other a no-op.
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!cancelled && session?.user) void routeForUser(session.user.id)
+    })
+
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' && session?.user) {
-        setIsProcessing(true)
-
-        // Load role from user_roles table to determine redirect destination
-        const { data: roleData } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', session.user.id)
-          .single()
-
-        const role = (roleData?.role as UserRole) ?? 'seeker'
-        const dest = dashboardPathFor(role)
-        navigate(dest)
-      }
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) void routeForUser(session.user.id)
     })
 
     return () => {
+      cancelled = true
       subscription.unsubscribe()
     }
-  }, [navigate, hasHashToken])
+  }, [routeForUser, retryNonce])
+
+  if (roleError) {
+    return (
+      <AuthLayout title="We could not finish setting up your account">
+        <ErrorState
+          message="Your email is verified, but we could not load your account type."
+          onRetry={() => {
+            setRoleError(false)
+            setRetryNonce((n) => n + 1)
+          }}
+        />
+      </AuthLayout>
+    )
+  }
 
   const handleResend = async () => {
     // Get the user's email from the current auth state
