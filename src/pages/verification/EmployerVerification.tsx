@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router'
 import {
   Mail,
-  Phone,
   Building2,
   FileText,
   Camera,
   Check,
   Clock,
+  X,
   ChevronRight,
   Loader2,
 } from 'lucide-react'
@@ -17,7 +17,6 @@ import { useVerifications } from '@/hooks/useVerifications'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { Card } from '@/components/ui/Card'
 import { VerificationBadge } from '@/components/ui/VerificationBadge'
-import { PhoneVerification } from './PhoneVerification'
 import { NzbnVerification } from './NzbnVerification'
 import type { VerificationMethod, EmployerVerification } from '@/types/domain'
 import { cn } from '@/lib/utils'
@@ -52,6 +51,7 @@ function VerificationCard({
   const status = verification?.status
   const isVerified = status === 'verified'
   const isPending = status === 'pending'
+  const isRejected = status === 'rejected'
 
   return (
     <Card className="p-5">
@@ -84,6 +84,19 @@ function VerificationCard({
               <span className="font-body flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700">
                 <Clock className="h-3 w-3" />
                 Pending Review
+              </span>
+            )}
+            {/* A rejected row is truthy but neither verified nor pending, so before this
+                branch existed ALL THREE conditions were false and the card rendered NO
+                badge — while the action link below (gated on !isVerified && !isPending)
+                still showed. An employer whose NZBN was rejected saw an untouched-looking
+                card and had to expand it to discover they needed to act. Rejection is the
+                one state that REQUIRES the employer to do something, so it was the worst
+                one to leave silent. Found on prod 2026-08-17. */}
+            {isRejected && (
+              <span className="font-body text-danger flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-semibold">
+                <X className="h-3 w-3 stroke-[3]" />
+                Action needed
               </span>
             )}
             {!verification && (
@@ -266,29 +279,15 @@ export function EmployerVerification() {
             verification={verificationMap.get('email') ?? null}
           />
 
-          {/* 2. Phone */}
-          <VerificationCard
-            method="phone"
-            label="Phone Number"
-            description="Verify your NZ mobile number via SMS code"
-            icon={<Phone className="h-full w-full" />}
-            verification={verificationMap.get('phone') ?? null}
-            action="Verify Phone"
-            isExpanded={expandedMethod === 'phone'}
-            onExpand={() => toggleExpand('phone')}
-            expandContent={
-              employerId ? (
-                <PhoneVerification
-                  onSuccess={() => {
-                    setExpandedMethod(null)
-                    refresh()
-                  }}
-                />
-              ) : null
-            }
-          />
+          {/* Phone was here. Removed 2026-08-17 alongside dropping it from the trust ladder:
+              phone auth is disabled project-wide, so the first call PhoneVerification makes —
+              updateUser({ phone }) — returns 500 "Unable to get SMS provider" for everyone.
+              Verified on prod. Leaving the card would have been a second dead button on a live
+              signup surface, which is exactly what the Facebook button was. PhoneVerification
+              and employer_sync_self_verifications' phone branch are both kept: nothing about
+              them is broken, and restoring the card is a revert once Twilio is configured. */}
 
-          {/* 3. NZBN */}
+          {/* NZBN */}
           <VerificationCard
             method="nzbn"
             label="Business (NZBN)"
@@ -422,10 +421,14 @@ export function EmployerVerification() {
           <div className="space-y-1.5">
             {[
               { level: 'Basic Verified', requirement: 'Email verified', color: 'text-[#2563eb]' },
-              { level: 'Verified', requirement: 'Email + Phone verified', color: 'text-brand-hover' },
+              {
+                level: 'Verified',
+                requirement: 'Email + Business/Documents',
+                color: 'text-brand-hover',
+              },
               {
                 level: 'Fully Verified',
-                requirement: 'Email + Phone + Business/Documents + Farm Photos',
+                requirement: 'Email + Business/Documents + Farm Photos',
                 color: 'text-[#b45309]',
               },
             ].map(({ level, requirement, color }) => (
