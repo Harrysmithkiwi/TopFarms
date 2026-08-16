@@ -257,11 +257,29 @@ a numeral. Mutation-checked. The fabricated blurred `78` teaser is gone.
 
 ## Open rulings
 
-- **16px is not on the DESIGN.md ramp but 18 gated-portal components use it** (modal titles,
-  stat values, banner titles, sidebar headings), almost all `font-semibold`. The doc is wrong,
-  not the code. Either add 16px/600 to the ramp (zero visual change, recommended) or normalise
-  all 18 to the existing 17px step (18 files of visual churn for 1px). Not launch-blocking —
-  M5 polish. No impeccable waiver has been run.
+- **Two sizes ship in the gated portals that are not on the `DESIGN.md` ramp — 14px AND 16px.**
+  The ramp is `48 / 36 / 24 / 20 / 17 / 15 / 13 / 12 / 11`; neither value appears on it.
+  Measured 2026-08-17, marketing surfaces excluded (`Home`, `ForEmployers`, `Pricing`,
+  `legal/`, `components/landing/` are settled and out of scope, §10):
+
+  | size | gated-portal usage | where |
+  |---|---|---|
+  | **14px** | **47 uses across 26 files** | card titles, modal headings, admin table headers — almost all `font-semibold` |
+  | **16px** | **20 uses across 14 files** | modal titles, stat values, banner titles, sidebar headings |
+
+  **14px was recorded as 16px's ruling by mistake and is the bigger of the two.** It surfaced
+  again 2026-08-17 as an impeccable hook finding on `EmployerVerification.tsx:74/335/387`,
+  where it was waved off as "the open 16px ruling" three times before anyone checked the ramp.
+  It is not the same value. Both lines blame to `2574fe9`, a `prettier --write` format-only
+  commit from 2026-06-10 — this is old, shipped, systemic drift, not a recent slip.
+
+  **One decision covers both, ~67 usages.** Either add 14/600 and 16/600 to the ramp (zero
+  visual change, recommended — the doc is wrong, not the code) or normalise to the existing
+  15px and 17px steps (40 files of churn for 1–2px). Not launch-blocking — M5 polish.
+
+  **No impeccable waiver has been run and none should be** without the operator saying so: a
+  waiver is a change to the gate's shape (`CLAUDE.md` §10). Expect the hook to keep flagging
+  these on any file you touch in the portals; that is the gate working, not a false positive.
 - **`ProtectedRoute`** — one guard, 24 routes, all three portals. Decides where admin-gate
   Phase B starts. Detail in `.planning/admin-design-gate/STATE.md` § Open rulings.
 - **Employer-onboarding leftovers**, from `M1-EMPLOYER-ONBOARDING-GAP-ANALYSIS.md`: a `406`
