@@ -32,7 +32,10 @@ const SENSITIVE_KEYS =
   /email|phone|visa|passport|first_name|last_name|contact|address|dob|date_of_birth|nzbn|document_url|storage_path/i
 
 function scrub(value: unknown, depth = 0): unknown {
-  if (depth > 6 || value == null) return value
+  // Depth 10, not 6: a console breadcrumb nests breadcrumbs → item → data → arguments →
+  // arg object → string, and the old limit returned the remainder UNSCRUBBED — a
+  // fail-open exactly where the deepest payloads live.
+  if (depth > 10 || value == null) return value
   if (Array.isArray(value)) return value.map((v) => scrub(v, depth + 1))
   if (typeof value === 'object') {
     const out: Record<string, unknown> = {}
@@ -47,6 +50,54 @@ function scrub(value: unknown, depth = 0): unknown {
       .replace(/\b(?:\+?64|0)[\s-]?\d{1,2}[\s-]?\d{3}[\s-]?\d{3,4}\b/g, '[phone]')
   }
   return value
+}
+
+/**
+ * Redact an outgoing event in place.
+ *
+ * Exported for tests. Verified against a REAL captured envelope from prod on 2026-08-16
+ * (a deliberate probe error carrying a fake email and phone), which is how the gap below
+ * was found: `beforeSend` scrubbed only `extra` and `contexts`, so the same email and
+ * phone travelled unredacted in THREE other places — the exception message, the console
+ * breadcrumb, and the breadcrumb's raw arguments. ~59 console.error calls feed that path,
+ * all shaped `console.error('context', err)`, so any error whose message quotes a seeker's
+ * details was shipping them to a third party.
+ *
+ * Scrub every free-text carrier, not a list of the ones we happened to think of.
+ */
+export function scrubEvent(event: SentryTypes.ErrorEvent): SentryTypes.ErrorEvent {
+  // Request bodies can contain an entire seeker profile — never send them.
+  if (event.request) {
+    delete event.request.data
+    delete event.request.cookies
+    delete event.request.headers
+    if (event.request.query_string) event.request.query_string = '[redacted]'
+    // The path itself can carry an identifier even with the query string gone.
+    if (event.request.url) event.request.url = scrub(event.request.url) as string
+  }
+
+  // Identify the user by opaque id only.
+  if (event.user) event.user = { id: event.user.id }
+
+  // The exception's own message. This is the one that mattered most: it is the headline
+  // Sentry shows for the issue, so unredacted PII would be the first thing on screen.
+  if (event.exception?.values) {
+    for (const value of event.exception.values) {
+      if (value.value) value.value = scrub(value.value) as string
+    }
+  }
+
+  if (event.message) event.message = scrub(event.message) as string
+
+  // Breadcrumbs carry every console.* call and every fetch URL leading up to the error.
+  if (event.breadcrumbs) {
+    event.breadcrumbs = scrub(event.breadcrumbs) as typeof event.breadcrumbs
+  }
+
+  if (event.extra) event.extra = scrub(event.extra) as Record<string, unknown>
+  if (event.contexts) event.contexts = scrub(event.contexts) as typeof event.contexts
+
+  return event
 }
 
 export function initObservability(): void {
@@ -78,20 +129,7 @@ function initSentry(Sentry: typeof SentryTypes): void {
       // below stays available for new code that wants tags and structured extra.
       Sentry.captureConsoleIntegration({ levels: ['error'] }),
     ],
-    beforeSend(event) {
-      // Request bodies can contain an entire seeker profile — never send them.
-      if (event.request) {
-        delete event.request.data
-        delete event.request.cookies
-        delete event.request.headers
-        if (event.request.query_string) event.request.query_string = '[redacted]'
-      }
-      // Identify the user by opaque id only.
-      if (event.user) event.user = { id: event.user.id }
-      if (event.extra) event.extra = scrub(event.extra) as Record<string, unknown>
-      if (event.contexts) event.contexts = scrub(event.contexts) as typeof event.contexts
-      return event
-    },
+    beforeSend: scrubEvent,
   })
 }
 
