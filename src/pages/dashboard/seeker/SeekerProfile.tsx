@@ -13,6 +13,8 @@ import { SeekerStep3Qualifications } from '@/pages/onboarding/steps/SeekerStep3Q
 import { SeekerStep4Skills } from '@/pages/onboarding/steps/SeekerStep4Skills'
 import { SeekerStep5LifeSituation } from '@/pages/onboarding/steps/SeekerStep5LifeSituation'
 import { SeekerStep6Visa } from '@/pages/onboarding/steps/SeekerStep6Visa'
+import { SeekerContactFields } from '@/components/ui/SeekerContactFields'
+import { useSeekerContact } from '@/hooks/useSeekerContact'
 import {
   labelFrom,
   visaLabel,
@@ -65,6 +67,15 @@ interface Section {
 }
 
 const SECTIONS: Section[] = [
+  {
+    key: 'contact',
+    title: 'Your details',
+    // Contact details sit first and under their own name because that is what a seeker
+    // comes here to change. They used to be reachable only inside step 1 under the heading
+    // "Farm type & region", so the capability existed but nobody would ever find it.
+    // Rows are supplied by the contact hook, not the profile row — see renderRows below.
+    rows: () => [],
+  },
   {
     key: 'farm-type',
     title: 'Farm type & region',
@@ -136,6 +147,26 @@ export function SeekerProfile() {
   const [reloadNonce, setReloadNonce] = useState(0)
   const [editing, setEditing] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+
+  // Contact details live in seeker_contacts, not on the profile row, so they load and save
+  // on their own path. The hook carries the prefill-failure guard that stops an untouched
+  // form from nulling the name and phone an employer pays to unlock.
+  const contact = useSeekerContact()
+
+  async function handleContactSave(e: React.FormEvent) {
+    e.preventDefault()
+    setSaving(true)
+    const result = await contact.save()
+    setSaving(false)
+    if (result?.error) {
+      // Leave the form open so the seeker can retry without retyping.
+      toast.error('Could not save your details. Please try again.')
+      console.error('Contact save error:', result.error)
+      return
+    }
+    setEditing(null)
+    toast.success('Profile updated')
+  }
 
   useEffect(() => {
     async function load() {
@@ -330,9 +361,35 @@ export function SeekerProfile() {
                     </div>
                   )}
 
+                  {section.key === 'contact' && (
+                    <form onSubmit={handleContactSave} className="space-y-6">
+                      <SeekerContactFields
+                        firstName={contact.firstName}
+                        lastName={contact.lastName}
+                        phone={contact.phone}
+                        onFirstNameChange={contact.setFirstName}
+                        onLastNameChange={contact.setLastName}
+                        onPhoneChange={contact.setPhone}
+                      />
+                      <div className="flex items-center justify-between pt-2">
+                        <button
+                          type="button"
+                          onClick={() => setEditing(null)}
+                          className="text-text-muted hover:text-text focus-visible:outline-brand min-h-[44px] cursor-pointer text-[13px] underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2"
+                        >
+                          Cancel
+                        </button>
+                        <Button type="submit" variant="primary" size="md" disabled={saving}>
+                          {saving ? 'Saving…' : 'Save changes'}
+                        </Button>
+                      </div>
+                    </form>
+                  )}
+
                   {section.key === 'farm-type' && (
                     <SeekerStep1FarmType
                       submitLabel="Save changes"
+                      showContactFields={false}
                       onComplete={handleSectionSave}
                       defaultValues={{
                         sector_pref: profile.sector_pref,
@@ -419,7 +476,16 @@ export function SeekerProfile() {
                 </div>
               ) : (
                 <dl className="mt-4 space-y-2.5">
-                  {section.rows(profile).map((row) => (
+                  {(section.key === 'contact'
+                    ? [
+                        {
+                          label: 'Name',
+                          value: [contact.firstName, contact.lastName].filter(Boolean).join(' ') || SUMMARY_EMPTY,
+                        },
+                        { label: 'Phone', value: contact.phone || SUMMARY_EMPTY },
+                      ]
+                    : section.rows(profile)
+                  ).map((row) => (
                     <div key={row.label} className="flex flex-wrap gap-x-3 text-sm">
                       <dt className="text-text-muted w-44 flex-shrink-0">{row.label}</dt>
                       <dd className="text-text min-w-0 font-medium">{row.value}</dd>

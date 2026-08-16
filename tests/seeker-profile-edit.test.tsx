@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import { visaLabel, dairynzLabel, labelFrom, VISA_OPTIONS } from '@/types/domain'
 import { Sidebar } from '@/components/layout/Sidebar'
+import { SeekerContactFields } from '@/components/ui/SeekerContactFields'
 
 // Sidebar only needs the role to choose its nav item list; the full AuthProvider
 // would drag in a live Supabase session for an assertion about an href.
@@ -53,6 +54,51 @@ describe('seeker profile — enum labels', () => {
     expect(visaLabel(null)).toBe('')
     expect(visaLabel(undefined)).toBe('')
     expect(visaLabel('')).toBe('')
+  })
+})
+
+describe('seeker profile — contact details are their own section', () => {
+  it('renders the three contact inputs with a shared privacy explainer', () => {
+    const noop = () => {}
+    render(
+      <SeekerContactFields
+        heading="Your details"
+        firstName="Riley"
+        lastName="Thornton"
+        phone="0211234567"
+        onFirstNameChange={noop}
+        onLastNameChange={noop}
+        onPhoneChange={noop}
+      />,
+    )
+
+    // The capability existed before but only inside step 1, under a heading about farm
+    // type — a seeker wanting to change their phone number had no reason to click there.
+    expect(screen.getByLabelText(/first name/i)).toHaveValue('Riley')
+    expect(screen.getByLabelText(/last name/i)).toHaveValue('Thornton')
+    expect(screen.getByLabelText(/phone/i)).toHaveValue('0211234567')
+
+    // Both callers must keep telling the seeker who sees this, so the copy lives with the
+    // fields rather than being retyped per surface.
+    expect(screen.getByText(/shared only with an employer who shortlists you/i)).toBeInTheDocument()
+  })
+
+  it('uses autocomplete tokens so a phone correction is one tap on mobile', () => {
+    const noop = () => {}
+    render(
+      <SeekerContactFields
+        firstName=""
+        lastName=""
+        phone=""
+        onFirstNameChange={noop}
+        onLastNameChange={noop}
+        onPhoneChange={noop}
+      />,
+    )
+
+    expect(screen.getByLabelText(/first name/i)).toHaveAttribute('autocomplete', 'given-name')
+    expect(screen.getByLabelText(/phone/i)).toHaveAttribute('autocomplete', 'tel')
+    expect(screen.getByLabelText(/phone/i)).toHaveAttribute('type', 'tel')
   })
 })
 
