@@ -99,19 +99,16 @@ export function FarmPhotoUpload() {
     // Add the new photo to the local list immediately
     setPhotos((prev) => [url, ...prev])
 
-    const { error } = await supabase.from('employer_verifications').upsert(
-      {
-        employer_id: employerId,
-        method: 'farm_photo',
-        status: 'verified',
-        document_url: url,
-        verified_at: new Date().toISOString(),
-      },
-      { onConflict: 'employer_id,method' },
-    )
+    // Audit F-11: the browser cannot write `status`/`verified_at` (073 revoked both), so the
+    // old direct upsert returned 42501 and no farm photo has ever registered. Farm photos stay
+    // SELF-verifying by operator decision (2026-08-17) — they are a "here's my place" richness
+    // signal, not an identity claim, and the identity rung (nzbn OR document) remains
+    // admin-reviewed, so fully_verified still cannot be self-asserted. The RPC scopes the write
+    // to the caller's own employer row via auth.uid().
+    const { error } = await supabase.rpc('employer_record_farm_photo', { p_url: url })
 
     if (error) {
-      console.error('FarmPhotoUpload: failed to upsert verification record', error)
+      console.error('FarmPhotoUpload: failed to record farm photo verification', error)
       toast.error('Photo uploaded but verification record failed to save')
       return
     }

@@ -169,38 +169,34 @@ export function EmployerVerification() {
       })
   }, [session?.user?.id, reloadNonce])
 
-  // Auto-create email verification record on mount when employerId is available
+  // Mirror the email/phone confirmations GoTrue already holds into employer_verifications.
+  //
+  // Audit F-11: this used to upsert `status: 'verified'` directly, which migration 073 had
+  // revoked from `authenticated` — so it returned 42501 on EVERY mount, toasted the error
+  // every time, and no employer ever reached `basic`, the ladder's first rung. The truth
+  // lives in auth.users.{email,phone}_confirmed_at; employer_sync_self_verifications copies
+  // it across under SECURITY DEFINER, scoped to auth.uid(). It is idempotent — the upsert
+  // inside it no-ops when the row is already 'verified'.
   useEffect(() => {
     if (!employerId) return
-
-    const emailVerification = verifications.find((v) => v.method === 'email')
-    if (emailVerification) return // already exists
-
-    // Only attempt after verifications have loaded (not initial empty state)
     if (loadingVerifications) return
 
-    supabase
-      .from('employer_verifications')
-      .upsert(
-        {
-          employer_id: employerId,
-          method: 'email',
-          status: 'verified',
-          verified_at: new Date().toISOString(),
-        },
-        { onConflict: 'employer_id,method' },
-      )
-      .then(({ error }) => {
-        if (error) {
-          // Phase 5.6 (adjacent family): a failed WRITE, not a false empty state.
-          // Swallowed, the employer's email verification never registers and the
-          // badge silently never appears -- with nothing to retry.
-          console.error('EmployerVerification: failed to create email verification record', error)
-          toast.error('We could not confirm your email verification. Reload to try again.')
-          return
-        }
-        refresh()
-      })
+    // Call only when the email rung is missing or not yet verified, so a settled hub does
+    // not fire an RPC on every visit.
+    const emailVerification = verifications.find((v) => v.method === 'email')
+    if (emailVerification?.status === 'verified') return
+
+    supabase.rpc('employer_sync_self_verifications').then(({ error }) => {
+      if (error) {
+        // Phase 5.6 (adjacent family): a failed WRITE, not a false empty state.
+        // Swallowed, the employer's verification never registers and the badge
+        // silently never appears -- with nothing to retry.
+        console.error('EmployerVerification: failed to sync self verifications', error)
+        toast.error('We could not confirm your email verification. Reload to try again.')
+        return
+      }
+      refresh()
+    })
   }, [employerId, verifications, loadingVerifications, refresh])
 
   // Build a map of method -> verification record for easy lookup
@@ -283,7 +279,6 @@ export function EmployerVerification() {
             expandContent={
               employerId ? (
                 <PhoneVerification
-                  employerId={employerId}
                   onSuccess={() => {
                     setExpandedMethod(null)
                     refresh()

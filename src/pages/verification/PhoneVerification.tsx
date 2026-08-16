@@ -6,7 +6,8 @@ import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 
 interface PhoneVerificationProps {
-  employerId: string
+  // No employerId: employer_sync_self_verifications derives the employer from auth.uid(),
+  // so the caller can no longer point this component at someone else's row (audit F-11).
   onSuccess: () => void
 }
 
@@ -16,9 +17,9 @@ type PhoneStep = 'enter_phone' | 'enter_otp'
  * Inline phone OTP verification component.
  * Step 1: Enter NZ phone number → supabase.auth.updateUser({ phone })
  * Step 2: Enter 6-digit OTP → supabase.auth.verifyOtp({ phone, token, type: 'phone_change' })
- * On success: upserts employer_verifications record and calls onSuccess callback.
+ * On success: syncs employer_verifications via RPC and calls onSuccess callback.
  */
-export function PhoneVerification({ employerId, onSuccess }: PhoneVerificationProps) {
+export function PhoneVerification({ onSuccess }: PhoneVerificationProps) {
   const [step, setStep] = useState<PhoneStep>('enter_phone')
   const [phone, setPhone] = useState('')
   const [otp, setOtp] = useState('')
@@ -79,19 +80,19 @@ export function PhoneVerification({ employerId, onSuccess }: PhoneVerificationPr
         return
       }
 
-      // Upsert verification record
-      const { error: upsertError } = await supabase.from('employer_verifications').upsert(
-        {
-          employer_id: employerId,
-          method: 'phone',
-          status: 'verified',
-          verified_at: new Date().toISOString(),
-        },
-        { onConflict: 'employer_id,method' },
-      )
+      // Audit F-11: the browser cannot write `status`/`verified_at` (073 revoked both), so
+      // the old direct upsert returned 42501 every time. GoTrue has just confirmed the
+      // number via verifyOtp above, and auth.users.phone_confirmed_at is the truth — this
+      // RPC mirrors it across. No admin review: there is nothing left for a human to decide.
+      const { error: syncError } = await supabase.rpc('employer_sync_self_verifications')
 
-      if (upsertError) {
-        console.error('PhoneVerification: failed to upsert verification record', upsertError)
+      if (syncError) {
+        // Previously this was swallowed to console.error and the success toast fired
+        // regardless, so the employer was told they were verified while nothing was
+        // stored. A failed write must not read as a completed one.
+        console.error('PhoneVerification: failed to sync verification record', syncError)
+        setError('Your number was confirmed, but we could not update your badge. Please retry.')
+        return
       }
 
       toast.success('Phone number verified!')

@@ -49,11 +49,14 @@ export function NzbnVerification({
     setLoading(true)
 
     try {
+      // Audit F-11: `status` is NOT sent. Migration 073 revoked it from `authenticated`,
+      // so supplying it — even the honest 'pending' — returns 42501 and the submission is
+      // silently lost. The column DEFAULTs to 'pending' and the admin queue decides.
+      // Same shape as DocumentUpload.tsx, the writer that was already correct.
       const { error: upsertError } = await supabase.from('employer_verifications').upsert(
         {
           employer_id: employerId,
           method: 'nzbn',
-          status: 'pending',
           nzbn_number: nzbn,
         },
         { onConflict: 'employer_id,method' },
