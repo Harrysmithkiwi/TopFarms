@@ -36,21 +36,37 @@ Where the two documents disagree, **the walk wins** — it is empirical.
   handler never ran, so F-12's `?? 'seeker'` was never even reached — which is why the audit's
   predicted "Access Denied" is not what actually happens. Reproduced twice, once on wiped storage.
 
-### Still blocking, and two of these are NOT code
+### F-11 IS NOW FULLY CLOSED — proven on prod, 2026-08-17
+
+**An employer reached `Fully Verified` on live prod.** First time in the project's history; the
+ladder had never been climbable past its first rung. Every rung is now earnable:
+
+  email       `employer_sync_self_verifications` mirrors `auth.users.email_confirmed_at`
+  identity    `employer_submit_verification` (086) — nzbn OR document, admin-reviewed
+  farm photo  `employer_record_farm_photo` — self-verifying by operator decision
+
+**Phone was dropped from the ladder rather than enabling Twilio** (`9b4256f`, operator decision).
+It was unearnable — phone auth is disabled project-wide and `updateUser({ phone })` returns
+500 `"Unable to get SMS provider"` — and it was the wrong signal: an NZBN is a government
+registry number, a confirmed mobile proves someone held a phone for thirty seconds. The ladder
+is now `basic` = email, `verified` = email + identity, `fully_verified` = + farm photo. The
+Phone card is removed too; `PhoneVerification` and the RPC's phone branch are kept, so restoring
+it is a revert once Twilio exists. **Do not re-add phone to the ladder without that decision
+being reversed** — `tests/trust-ladder.test.ts` will fail 4 if you do.
+
+Also closed: the **Facebook button is deleted** from `/signup` and `/login` (`aa2f2d5`) — the
+provider was never enabled (`authorize?provider=facebook` → 400) so it had never worked, and
+`signInWithOAuth` is now typed to the single literal `'google'` to stop it returning. And a
+**rejected verification now shows an "Action needed" badge** — before, all three chip branches
+were false for `rejected`, so the card looked untouched while silently needing the employer to act.
+
+### Still blocking
 
 1. **F-21** — an opt-out cannot be recorded for anyone you email. `lead_suppression` is writable
    only from a *staging* row; once a lead is promoted there is no control at all. The documented
    procedure in `docs/OUTREACH-EMAIL.md:52` is not executable. **Compliance, not code quality.**
-   This is now the top item.
-2. **Phone auth is disabled project-wide** — `/auth/v1/settings` returns `"phone": false`.
-   `useVerifications.ts` requires `hasPhone` for **both** `verified` and `fully_verified`, so
-   **every employer is permanently capped at Basic Verified** while the page's own "How trust
-   levels work" panel advertises two tiers nobody can reach. **Operator act** (Supabase toggle +
-   Twilio credentials), ~10 min. **Until this flips, F-11 stays `[ ]` — CLAUDE.md §7.**
-3. **"Continue with Facebook" is dead** on `/signup` and `/login` — full-width, brand-blue, above
-   the email form. `authorize?provider=facebook` → 400 `"provider is not enabled"`; google → 302.
-   Either enable it or delete the button. **Operator act or a 2-line delete.**
-4. **F-22** — every role filter on `/jobs` returns zero results (two vocabularies, no mapping).
+   This is now the top item, and the only remaining blocker that is squarely mine to fix.
+2. **F-22** — every role filter on `/jobs` returns zero results (two vocabularies, no mapping).
 
 **Best single code slice: F-01** — add `AND is_active` to `get_user_role`. One predicate, one
 function body, no policy DDL, and suspension starts working across ~30 policies and 51 RPCs at
