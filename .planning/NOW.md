@@ -12,6 +12,13 @@ stream doc disagree, the stream doc wins and this file is out of date — fix it
 
 `main` = `b93a9c5`, tree clean, CI green on all of today's commits.
 
+**OUTREACH TO REAL JOB SEEKERS AND EMPLOYERS BEGINS 2026-08-17.** From that point the signup
+flow has real strangers in it and must be trusted, not assumed. The seeker signup + profile flow
+was driven end to end on live prod 2026-08-16 and verified field-by-field against the database.
+**The employer signup → onboarding → post-a-job flow has NOT been re-driven since today's
+changes** — that is the largest untested path going into outreach, and employers are half the
+audience being contacted.
+
 **Sentry is LIVE** (project `topfarms-web`, EU region, errors only). One gap remains and it is
 not code: **post one real job listing.** It unblocks the payment path (never run in prod), the
 employer experience, and it is the live test of the match alert. Guide:
