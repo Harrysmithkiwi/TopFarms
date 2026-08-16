@@ -8,24 +8,51 @@ stream doc disagree, the stream doc wins and this file is out of date — fix it
 
 ---
 
-## ▶ Next session, start here — updated 2026-08-17
+## ▶ Next session, start here — updated 2026-08-17 (evening)
 
 **A full read-only DSA audit ran 2026-08-17 across 19 subsystems. Read
 `.planning/DSA-AUDIT-2026-08-17.md` BEFORE picking anything up.** 27 verified defects, each
-re-checked against the live database rather than taken from the reviewing agent. It changes the
-priority order below: several things believed working are not.
+re-checked against the live database rather than taken from the reviewing agent.
 
-**The four that block onboarding or outreach** — detail and fix shape in the audit doc:
+**Then read `.planning/EMPLOYER-WALK-2026-08-17.md`.** The employer flow was driven end to end
+on live prod that evening — fresh signup, email confirmation, all 8 onboarding steps, the whole
+verification ladder. It corrects the audit in two places and found two defects the audit missed.
+Where the two documents disagree, **the walk wins** — it is empirical.
+
+### Closed on 2026-08-17 — do not pick these up again
+
+- **F-11 identity rungs — `163cc29`, migration 086 (applied, verified in `pg_proc`).** The audit
+  and 085 both had the cause wrong. The payload was never the problem: the **upsert form** was.
+  PostgREST puts the conflict keys in `ON CONFLICT … DO UPDATE SET` and Postgres checks UPDATE
+  privilege at *plan* time, while `authenticated` holds INSERT-only on `employer_id`/`method` —
+  so `nzbn` AND `document` returned 42501 on the **first** submit, not just a resubmit. Proven on
+  prod: identical payload, plain INSERT 201 vs upsert 42501. 085's claim that `DocumentUpload`
+  "already worked" was false. Now on `employer_submit_verification()`, `status` hard-coded to
+  `'pending'` so the queue still rules. Also fixes a stale verdict — a *rejected* employer
+  resubmitting used to keep `status='rejected'` on brand-new evidence.
+- **F-12 + F-12b — `e65a5a1`.** F-12b was the real blocker and is **not** in the audit: a
+  confirmed employer was signed in and stranded on "Check your inbox", because supabase-js
+  consumes the URL hash at module init and fires `SIGNED_IN` before `VerifyEmail` mounts. The
+  handler never ran, so F-12's `?? 'seeker'` was never even reached — which is why the audit's
+  predicted "Access Denied" is not what actually happens. Reproduced twice, once on wiped storage.
+
+### Still blocking, and two of these are NOT code
 
 1. **F-21** — an opt-out cannot be recorded for anyone you email. `lead_suppression` is writable
    only from a *staging* row; once a lead is promoted there is no control at all. The documented
    procedure in `docs/OUTREACH-EMAIL.md:52` is not executable. **Compliance, not code quality.**
-2. **F-11** — no employer can complete verification. 073 revoked `status`/`verified_at`; four of
-   five client writers still send them. `PhoneVerification` says "verified" while the write is denied.
-3. **F-22** — every role filter on `/jobs` returns zero results (two vocabularies, no mapping).
-4. **F-12** — a newly verified employer can land on "Access Denied" (`?? 'seeker'` on a discarded error).
+   This is now the top item.
+2. **Phone auth is disabled project-wide** — `/auth/v1/settings` returns `"phone": false`.
+   `useVerifications.ts` requires `hasPhone` for **both** `verified` and `fully_verified`, so
+   **every employer is permanently capped at Basic Verified** while the page's own "How trust
+   levels work" panel advertises two tiers nobody can reach. **Operator act** (Supabase toggle +
+   Twilio credentials), ~10 min. **Until this flips, F-11 stays `[ ]` — CLAUDE.md §7.**
+3. **"Continue with Facebook" is dead** on `/signup` and `/login` — full-width, brand-blue, above
+   the email form. `authorize?provider=facebook` → 400 `"provider is not enabled"`; google → 302.
+   Either enable it or delete the button. **Operator act or a 2-line delete.**
+4. **F-22** — every role filter on `/jobs` returns zero results (two vocabularies, no mapping).
 
-**Best single first slice: F-01** — add `AND is_active` to `get_user_role`. One predicate, one
+**Best single code slice: F-01** — add `AND is_active` to `get_user_role`. One predicate, one
 function body, no policy DDL, and suspension starts working across ~30 policies and 51 RPCs at
 once. Nothing else in the register has that ratio.
 
@@ -34,6 +61,15 @@ once. Nothing else in the register has that ratio.
   second silently reverts the first.**
 - F-04 depends on F-03's trigger existing.
 - F-05 before F-06 — idempotency is what makes the retry F-06's constraint assumes safe.
+
+**Test data left in prod, yours to purge:** two employer accounts
+(`admin.topfarms+e2e-emp-0817@gmail.com` and `…-0817b@gmail.com`), one complete
+`employer_profiles` row (Kowhai Downs Station), and its `employer_verifications` rows carrying a
+fabricated NZBN and `https://example.test/…` URLs. Nothing was deleted.
+
+**Both write connectors are back.** The claude.ai Supabase connector applied 086 and recorded
+`20260816223150`; `vercel whoami`/`ls` work and never needed `vercel login`. The 2026-08-17
+morning note claiming both had lapsed is stale.
 
 ---
 
