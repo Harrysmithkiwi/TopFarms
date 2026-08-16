@@ -8,20 +8,28 @@ stream doc disagree, the stream doc wins and this file is out of date — fix it
 
 ---
 
-## ▶ Next session, start here — updated 2026-08-13 (end of day)
+## ▶ Next session, start here — updated 2026-08-16
 
-**Launch is 2026-08-14 — that is TOMORROW.** `main` = `74ed520`, tree clean, everything
-pushed, CI + E2E green on all three of today's commits.
+`main` = `b93a9c5`, tree clean, CI green on all of today's commits.
 
-**The single highest-value thing left is not code — it is posting one real job listing.**
-It unblocks the payment path (never run in prod), the employer experience, and it is now also
-the live test of the match alert. Guide written: `.planning/go-live/OPERATOR-GUIDES.md`.
+**Sentry is LIVE** (project `topfarms-web`, EU region, errors only). One gap remains and it is
+not code: **post one real job listing.** It unblocks the payment path (never run in prod), the
+employer experience, and it is the live test of the match alert. Guide:
+`.planning/go-live/OPERATOR-GUIDES.md`.
+
+**Deploy-trust caveat, 2026-08-16.** A push to `main` (`b93a9c5`) passed CI and produced NO
+git-sourced Vercel deployment — verified via the API: every other push that day has
+`source='git'` within a minute, that one has only my later `source='cli'` deploy. The Git link
+itself is intact and correct (`github`, `Harrysmithkiwi/TopFarms`, `productionBranch: main`,
+credential present, no `commandForIgnoringBuildStep`), and other projects were sitting `Queued`
+in the same window, so this reads as a dropped or delayed platform event rather than a broken
+connection. **Do not treat "pushed to main" as "live" — verify the deploy.** Cheapest check:
+`curl` the API deployments list and confirm a `source='git'` entry exists for your SHA.
 
 Engineering work that is unblocked, in order:
 
-1. **Nothing is blocking launch that is mine to fix.** Both remaining gaps are operator acts —
-   paste the Sentry DSN, post a listing. Both have step-by-step guides in
-   `.planning/go-live/OPERATOR-GUIDES.md`.
+1. **Nothing is blocking launch that is mine to fix.** The one remaining gap is an operator act —
+   post a listing. Step-by-step guide in `.planning/go-live/OPERATOR-GUIDES.md`.
 2. **When the first listing exists, verify the match alert end to end.** The path has never
    fired: prod has zero jobs and is never seeded. Confirm the email lands at
    `admin.topfarms@gmail.com`, then confirm `match_scores` rows match what it listed.
@@ -33,6 +41,39 @@ Engineering work that is unblocked, in order:
    the shed-type wart shipped 2026-08-14 (below). What remains from that gap analysis is §6
    polish only: the `406` on a brand-new employer's first load, `color-contrast` serious on
    step 8, `landmark-unique` moderate on every step, and the step-8 `h2` scale drift.
+
+**Shipped 2026-08-16:**
+
+- **Seekers could not edit their profile at all.** `/onboarding/seeker` hard-redirects once
+  `onboarding_complete` is true, and three "Edit Profile" affordances — the persistent sidebar
+  item, the dashboard link, the completion screen — all pointed at it, so every one was a no-op.
+  The redirect's own comment anticipated a `/profile` route that was never built. Now
+  `/dashboard/seeker/profile`: section list, Edit per section, form expands in place. It reuses
+  the six onboarding step components (new `submitLabel` prop) rather than reimplementing their
+  forms, so the Phase 5.6 prefill guards are not duplicated. Employers were never affected —
+  `EmployerOnboarding` has no `navigate()` at all. `36d1d2e`.
+- **Contact details are their own section.** Name and phone were already editable — inside step
+  1, under the heading "Farm type & region", where nobody would look. Split into a "Your
+  details" section, first, summarised with the name and phone themselves. State + prefill guard
+  extracted to `useSeekerContact`, inputs to `SeekerContactFields`. **No confirmation step on
+  name/phone, deliberately** — 2FA guards logging in; once a session exists a second factor on a
+  field edit adds friction without stopping the attack. Email (the login identity) is still not
+  editable; when it lands it must use Supabase's confirm flow with Secure email change ON.
+  `38d696e`.
+- **Sentry was leaking the PII it claimed to scrub.** Found by firing a probe error at PROD and
+  reading the envelope off the wire. `beforeSend` scrubbed `extra` and `contexts` only — the
+  same email and phone travelled raw in the exception message (the issue *headline*), the console
+  breadcrumb, and its nested arguments. ~59 `console.error` calls feed that path. Also raised the
+  recursion cap 6 → 10: the old limit returned the remainder **unscrubbed**, failing open exactly
+  at `breadcrumbs → data → arguments → object → string`. Re-probed after deploy: 0 raw email, 0
+  raw phone, 12 redaction markers. `b93a9c5`.
+- Also fixed: `nz_citizen` rendered as "Nz Citizen" in three places including `ApplicantPanel`,
+  the employer-facing surface behind a paid placement (label maps existed and were bypassed); and
+  `role_type_pref` was missing from the onboarding prefill while step 1 read it as a default, so
+  leaving mid-onboarding cleared the seeker's chosen roles and the next upsert wrote that over
+  the real value.
+- Gate on each: `tsc -b` 0, lint 0 errors at the 54 pin, build 0, 696 tests. All three
+  mutation-checked.
 
 **Shipped 2026-08-14 (launch morning):**
 
