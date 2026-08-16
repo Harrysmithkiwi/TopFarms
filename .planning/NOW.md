@@ -8,7 +8,36 @@ stream doc disagree, the stream doc wins and this file is out of date — fix it
 
 ---
 
-## ▶ Next session, start here — updated 2026-08-16
+## ▶ Next session, start here — updated 2026-08-17
+
+**A full read-only DSA audit ran 2026-08-17 across 19 subsystems. Read
+`.planning/DSA-AUDIT-2026-08-17.md` BEFORE picking anything up.** 27 verified defects, each
+re-checked against the live database rather than taken from the reviewing agent. It changes the
+priority order below: several things believed working are not.
+
+**The four that block onboarding or outreach** — detail and fix shape in the audit doc:
+
+1. **F-21** — an opt-out cannot be recorded for anyone you email. `lead_suppression` is writable
+   only from a *staging* row; once a lead is promoted there is no control at all. The documented
+   procedure in `docs/OUTREACH-EMAIL.md:52` is not executable. **Compliance, not code quality.**
+2. **F-11** — no employer can complete verification. 073 revoked `status`/`verified_at`; four of
+   five client writers still send them. `PhoneVerification` says "verified" while the write is denied.
+3. **F-22** — every role filter on `/jobs` returns zero results (two vocabularies, no mapping).
+4. **F-12** — a newly verified employer can land on "Access Denied" (`?? 'seeker'` on a discarded error).
+
+**Best single first slice: F-01** — add `AND is_active` to `get_user_role`. One predicate, one
+function body, no policy DDL, and suspension starts working across ~30 policies and 51 RPCs at
+once. Nothing else in the register has that ratio.
+
+**Three sequencing constraints that will bite if ignored:**
+- F-15 and F-20 both rewrite the same four trigger functions in 072 — **one migration or the
+  second silently reverts the first.**
+- F-04 depends on F-03's trigger existing.
+- F-05 before F-06 — idempotency is what makes the retry F-06's constraint assumes safe.
+
+---
+
+## Previous entry — 2026-08-16
 
 `main` = `b93a9c5`, tree clean, CI green on all of today's commits.
 
