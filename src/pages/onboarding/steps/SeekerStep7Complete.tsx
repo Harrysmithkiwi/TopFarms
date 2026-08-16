@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button'
 import { MatchBand } from '@/components/ui/MatchBand'
 import { supabase } from '@/lib/supabase'
 import type { SeekerProfileData } from '@/types/domain'
+import { visaLabel } from '@/types/domain'
 
 interface SeekerStep7CompleteProps {
   profileData?: Partial<SeekerProfileData>
@@ -244,7 +245,7 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
             variant="outline"
             size="lg"
             className="w-full"
-            onClick={() => navigate('/onboarding/seeker')}
+            onClick={() => navigate('/dashboard/seeker/profile')}
           >
             Edit Profile
           </Button>
@@ -310,7 +311,7 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
             {/* Visa */}
             {profileData?.visa_status && (
               <p className="font-body text-xs text-text-subtle">
-                {profileData.visa_status.replace(/_/g, ' ')}
+                {visaLabel(profileData.visa_status)}
               </p>
             )}
           </div>

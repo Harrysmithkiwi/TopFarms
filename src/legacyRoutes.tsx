@@ -104,6 +104,9 @@ const SavedSearches = lazy(() =>
 const SeekerDocuments = lazy(() =>
   import('@/pages/dashboard/seeker/SeekerDocuments').then((m) => ({ default: m.SeekerDocuments })),
 )
+const SeekerProfile = lazy(() =>
+  import('@/pages/dashboard/seeker/SeekerProfile').then((m) => ({ default: m.SeekerProfile })),
+)
 const ApplicantDashboard = lazy(() =>
   import('@/pages/dashboard/employer/ApplicantDashboard').then((m) => ({
     default: m.ApplicantDashboard,
@@ -310,6 +313,10 @@ export function routeTable() {
     {
       path: '/dashboard/seeker/documents',
       element: <ProtectedRoute requiredRole="seeker">{s(<SeekerDocuments />)}</ProtectedRoute>,
+    },
+    {
+      path: '/dashboard/seeker/profile',
+      element: <ProtectedRoute requiredRole="seeker">{s(<SeekerProfile />)}</ProtectedRoute>,
     },
     {
       path: '/dashboard/seeker',

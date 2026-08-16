@@ -72,11 +72,15 @@ export function SeekerOnboarding() {
 
       if (data) {
         // BUG-03 2026-05-04: re-entry redirect. If onboarding is already complete,
-        // /onboarding/seeker should bounce to /dashboard/seeker rather than re-render
-        // the wizard chrome. Editing happens elsewhere (when /profile route exists,
-        // per Phase 17/18 nav consolidation).
+        // /onboarding/seeker should bounce rather than re-render the wizard chrome.
+        //
+        // 2026-08-16: it used to bounce to the dashboard, which made every "Edit
+        // Profile" affordance a no-op — the seeker clicked and simply stayed put,
+        // with no way to change anything ever again. The `/profile` route this
+        // comment anticipated now exists as /dashboard/seeker/profile, so send them
+        // there: a stale link or bookmark lands on the editor instead of a dead end.
         if (data.onboarding_complete) {
-          navigate('/dashboard/seeker', { replace: true })
+          navigate('/dashboard/seeker/profile', { replace: true })
           return
         }
         const resumeStep = Math.min(data.onboarding_step ?? 0, TOTAL_STEPS - 1)
@@ -84,6 +88,11 @@ export function SeekerOnboarding() {
         setSeekerProfileId(data.id)
         setProfileData({
           sector_pref: data.sector_pref,
+          // role_type_pref was missing from this list until 2026-08-16 while step 1
+          // read it as a default value, so a seeker who left mid-onboarding and came
+          // back found their chosen roles cleared — and the upsert below then wrote
+          // that empty state over the real one.
+          role_type_pref: data.role_type_pref,
           years_experience: data.years_experience,
           shed_types_experienced: data.shed_types_experienced,
           herd_sizes_worked: data.herd_sizes_worked,

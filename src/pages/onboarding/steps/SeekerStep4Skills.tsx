@@ -11,9 +11,15 @@ interface SeekerStep4Props {
   onBack?: () => void
   seekerId: string | null
   sectorPref?: string[]
+  /** Overrides the submit label. The profile editor reuses this form to edit one
+   *  section, where "Continue" would imply a next step that does not exist. */
+  submitLabel?: string
 }
 
-export function SeekerStep4Skills({ onComplete, onBack, seekerId }: SeekerStep4Props) {
+export function SeekerStep4Skills({
+  onComplete, onBack, seekerId,
+  submitLabel = 'Continue',
+}: SeekerStep4Props) {
   const [selectedSkills, setSelectedSkills] = useState<SelectedSkill[]>([])
   const [saving, setSaving] = useState(false)
   const [loadingSkills, setLoadingSkills] = useState(false)
@@ -156,7 +162,7 @@ export function SeekerStep4Skills({ onComplete, onBack, seekerId }: SeekerStep4P
           className={onBack ? '' : 'ml-auto'}
           disabled={saving}
         >
-          {saving ? 'Saving...' : 'Continue'}
+          {saving ? 'Saving...' : submitLabel}
         </Button>
       </div>
     </form>

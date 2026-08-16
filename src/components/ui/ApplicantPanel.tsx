@@ -11,7 +11,12 @@ import { ApplicantDocuments } from '@/components/ui/ApplicantDocuments'
 import { DocumentsVerifiedBadge } from '@/components/ui/DocumentsVerifiedBadge'
 import { supabase } from '@/lib/supabase'
 import type { ApplicationStatus, MatchScore, SeekerContact } from '@/types/domain'
-import { VALID_TRANSITIONS, APPLICATION_STATUS_LABELS } from '@/types/domain'
+import {
+  VALID_TRANSITIONS,
+  APPLICATION_STATUS_LABELS,
+  visaLabel,
+  dairynzLabel,
+} from '@/types/domain'
 
 type TagVariant = 'green' | 'warn' | 'blue' | 'grey' | 'purple' | 'red'
 
@@ -331,16 +336,16 @@ export function ApplicantPanel({
                   {seeker.visa_status && (
                     <div>
                       <span className="font-body text-text-subtle text-[11px]">Visa Status</span>
-                      <p className="font-body text-text text-[13px] capitalize">
-                        {seeker.visa_status.replace(/_/g, ' ')}
+                      <p className="font-body text-text text-[13px]">
+                        {visaLabel(seeker.visa_status)}
                       </p>
                     </div>
                   )}
                   {seeker.dairynz_level && (
                     <div>
                       <span className="font-body text-text-subtle text-[11px]">DairyNZ Level</span>
-                      <p className="font-body text-text text-[13px] capitalize">
-                        {seeker.dairynz_level.replace(/_/g, ' ')}
+                      <p className="font-body text-text text-[13px]">
+                        {dairynzLabel(seeker.dairynz_level)}
                       </p>
                     </div>
                   )}

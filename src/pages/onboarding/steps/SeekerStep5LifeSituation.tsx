@@ -6,21 +6,14 @@ import { Select } from '@/components/ui/Select'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { ChipSelector } from '@/components/ui/ChipSelector'
-import type { ChipOption } from '@/components/ui/ChipSelector'
 import { InfoBox } from '@/components/ui/InfoBox'
-import { HOUSING_SUB_OPTIONS, PREFERRED_REGION_OPTIONS } from '@/types/domain'
+import {
+  HOUSING_SUB_OPTIONS,
+  PREFERRED_REGION_OPTIONS,
+  SALARY_BAND_OPTIONS,
+  NOTICE_PERIOD_OPTIONS,
+} from '@/types/domain'
 import type { SeekerProfileData } from '@/types/domain'
-
-const SALARY_BAND_OPTIONS: ChipOption[] = [
-  { value: '50000', label: '$50–60k' },
-  { value: '60000', label: '$60–70k' },
-  { value: '70000', label: '$70–80k' },
-  { value: '80000', label: '$80–90k' },
-  { value: '90000', label: '$90–100k' },
-  { value: '100000', label: '$100–110k' },
-  { value: '110000', label: '$110–120k' },
-  { value: '120000', label: '$120k+' },
-]
 
 const schema = z.object({
   couples_seeking: z.boolean().optional(),
@@ -47,9 +40,15 @@ interface SeekerStep5Props {
     availability_date?: string
     notice_period_text?: string
   }
+  /** Overrides the submit label. The profile editor reuses this form to edit one
+   *  section, where "Continue" would imply a next step that does not exist. */
+  submitLabel?: string
 }
 
-export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: SeekerStep5Props) {
+export function SeekerStep5LifeSituation({
+  onComplete, onBack, defaultValues,
+  submitLabel = 'Continue',
+}: SeekerStep5Props) {
   const { handleSubmit, control, watch, register } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -212,13 +211,7 @@ export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: 
               <Select
                 label="Notice period"
                 placeholder="Select notice period"
-                options={[
-                  { value: 'immediately', label: 'Available immediately' },
-                  { value: '1_week', label: '1 week' },
-                  { value: '2_weeks', label: '2 weeks' },
-                  { value: '1_month', label: '1 month' },
-                  { value: '2_months', label: '2+ months' },
-                ]}
+                options={NOTICE_PERIOD_OPTIONS}
                 value={field.value}
                 onValueChange={field.onChange}
               />
@@ -238,7 +231,7 @@ export function SeekerStep5LifeSituation({ onComplete, onBack, defaultValues }: 
           </Button>
         )}
         <Button type="submit" variant="primary" size="md" className={onBack ? '' : 'ml-auto'}>
-          Continue
+          {submitLabel}
         </Button>
       </div>
     </form>

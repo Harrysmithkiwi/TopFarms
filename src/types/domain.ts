@@ -403,6 +403,48 @@ export const PREFERRED_REGION_OPTIONS: { value: string; label: string }[] = [
   { value: 'Northland', label: 'Northland' },
 ]
 
+export const SALARY_BAND_OPTIONS: { value: string; label: string }[] = [
+  { value: '50000', label: '$50–60k' },
+  { value: '60000', label: '$60–70k' },
+  { value: '70000', label: '$70–80k' },
+  { value: '80000', label: '$80–90k' },
+  { value: '90000', label: '$90–100k' },
+  { value: '100000', label: '$100–110k' },
+  { value: '110000', label: '$110–120k' },
+  { value: '120000', label: '$120k+' },
+]
+
+export const NOTICE_PERIOD_OPTIONS: { value: string; label: string }[] = [
+  { value: 'immediately', label: 'Available immediately' },
+  { value: '1_week', label: '1 week' },
+  { value: '2_weeks', label: '2 weeks' },
+  { value: '1_month', label: '1 month' },
+  { value: '2_months', label: '2+ months' },
+]
+
+/**
+ * Render a stored enum value using its option list's label.
+ *
+ * Every option list above is the single source of truth for how a value is spelled
+ * to a human. Three render sites had instead been doing `value.replace(/_/g, ' ')`
+ * plus CSS `capitalize`, which turns `nz_citizen` into "Nz Citizen" — including on
+ * ApplicantPanel, the employer-facing surface behind a paid placement. The fallback
+ * keeps that old behaviour for a value missing from its list, so an unmapped enum
+ * degrades to readable text rather than disappearing.
+ *
+ * Found driving the seeker UAT on prod, 2026-08-16.
+ */
+export function labelFrom(
+  options: readonly { value: string; label: string }[],
+  value?: string | null,
+): string {
+  if (!value) return ''
+  return options.find((o) => o.value === value)?.label ?? value.replace(/_/g, ' ')
+}
+
+export const visaLabel = (value?: string | null) => labelFrom(VISA_OPTIONS, value)
+export const dairynzLabel = (value?: string | null) => labelFrom(DAIRYNZ_LEVELS, value)
+
 // Match scoring types
 //
 // Scoring v2 (migration 072): a dimension that does not apply to a pairing is

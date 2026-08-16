@@ -16,11 +16,17 @@ interface SeekerStep6Props {
   onComplete: (data: Partial<SeekerProfileData>) => void
   onBack?: () => void
   defaultValues?: { visa_status?: VisaStatus }
+  /** Overrides the submit label. The profile editor reuses this form to edit one
+   *  section, where "Continue" would imply a next step that does not exist. */
+  submitLabel?: string
 }
 
 const VISA_SELECT_OPTIONS = VISA_OPTIONS.map((v) => ({ value: v.value, label: v.label }))
 
-export function SeekerStep6Visa({ onComplete, onBack, defaultValues }: SeekerStep6Props) {
+export function SeekerStep6Visa({
+  onComplete, onBack, defaultValues,
+  submitLabel = 'Complete Profile',
+}: SeekerStep6Props) {
   const { handleSubmit, control } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -78,7 +84,7 @@ export function SeekerStep6Visa({ onComplete, onBack, defaultValues }: SeekerSte
           </Button>
         )}
         <Button type="submit" variant="primary" size="md" className={onBack ? '' : 'ml-auto'}>
-          Complete Profile
+          {submitLabel}
         </Button>
       </div>
     </form>

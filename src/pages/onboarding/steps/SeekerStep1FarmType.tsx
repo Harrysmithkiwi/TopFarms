@@ -13,6 +13,9 @@ import type { SeekerProfileData } from '@/types/domain'
 interface SeekerStep1Props {
   onComplete: (data: Partial<SeekerProfileData>) => void
   defaultValues?: { sector_pref?: string[]; region?: string; role_type_pref?: string[] }
+  /** Overrides the submit label. The profile editor reuses this form to edit one
+   *  section, where "Continue" would imply a next step that does not exist. */
+  submitLabel?: string
 }
 
 /**
@@ -27,7 +30,11 @@ interface SeekerStep1Props {
  * it is invisible to every job ever posted, silently. Verified 2026-08-11 (LAUNCH.md R3).
  */
 
-export function SeekerStep1FarmType({ onComplete, defaultValues }: SeekerStep1Props) {
+export function SeekerStep1FarmType({
+  onComplete,
+  defaultValues,
+  submitLabel = 'Continue',
+}: SeekerStep1Props) {
   const [selectedTypes, setSelectedTypes] = useState<string[]>(defaultValues?.sector_pref ?? [])
   const [region, setRegion] = useState<string>(defaultValues?.region ?? '')
   const [roles, setRoles] = useState<string[]>(defaultValues?.role_type_pref ?? [])
@@ -238,7 +245,7 @@ export function SeekerStep1FarmType({ onComplete, defaultValues }: SeekerStep1Pr
           size="md"
           disabled={selectedTypes.length === 0 || !region || saving}
         >
-          {saving ? 'Saving…' : 'Continue'}
+          {saving ? 'Saving…' : submitLabel}
         </Button>
       </div>
     </form>

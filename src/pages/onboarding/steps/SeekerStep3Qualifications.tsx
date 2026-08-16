@@ -26,11 +26,17 @@ interface SeekerStep3Props {
     licence_types?: string[]
     certifications?: string[]
   }
+  /** Overrides the submit label. The profile editor reuses this form to edit one
+   *  section, where "Continue" would imply a next step that does not exist. */
+  submitLabel?: string
 }
 
 const LEVEL_OPTIONS = DAIRYNZ_LEVELS.map((l) => ({ value: l.value, label: l.label }))
 
-export function SeekerStep3Qualifications({ onComplete, onBack, defaultValues }: SeekerStep3Props) {
+export function SeekerStep3Qualifications({
+  onComplete, onBack, defaultValues,
+  submitLabel = 'Continue',
+}: SeekerStep3Props) {
   const { session } = useAuth()
   const seekerProfileId = useSeekerProfileId()
 
@@ -192,7 +198,7 @@ export function SeekerStep3Qualifications({ onComplete, onBack, defaultValues }:
           </Button>
         )}
         <Button type="submit" variant="primary" size="md" className={onBack ? '' : 'ml-auto'}>
-          Continue
+          {submitLabel}
         </Button>
       </div>
     </form>

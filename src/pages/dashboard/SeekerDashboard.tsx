@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/hooks/useAuth'
 import type { Application, ApplicationStatus, JobListing } from '@/types/domain'
-import { ACTIVE_STATUSES } from '@/types/domain'
+import { ACTIVE_STATUSES, visaLabel } from '@/types/domain'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { SectionSkeleton } from '@/components/ui/Skeleton'
 
@@ -293,7 +293,7 @@ export function SeekerDashboard() {
                       Your Profile
                     </h2>
                     <Link
-                      to="/onboarding/seeker"
+                      to="/dashboard/seeker/profile"
                       className="font-body text-sm font-semibold text-brand-hover"
                     >
                       Edit Profile
@@ -350,9 +350,9 @@ export function SeekerDashboard() {
                           Visa
                         </p>
                         <p
-                          className="mt-0.5 text-sm font-semibold capitalize text-text"
+                          className="mt-0.5 text-sm font-semibold text-text"
                         >
-                          {profile.visa_status.replace(/_/g, ' ')}
+                          {visaLabel(profile.visa_status)}
                         </p>
                       </div>
                     )}

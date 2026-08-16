@@ -23,9 +23,15 @@ interface SeekerStep2Props {
     shed_types_experienced?: ShedType[]
     herd_sizes_worked?: HerdSizeBucket[]
   }
+  /** Overrides the submit label. The profile editor reuses this form to edit one
+   *  section, where "Continue" would imply a next step that does not exist. */
+  submitLabel?: string
 }
 
-export function SeekerStep2Experience({ onComplete, onBack, defaultValues }: SeekerStep2Props) {
+export function SeekerStep2Experience({
+  onComplete, onBack, defaultValues,
+  submitLabel = 'Continue',
+}: SeekerStep2Props) {
   const {
     register,
     handleSubmit,
@@ -146,7 +152,7 @@ export function SeekerStep2Experience({ onComplete, onBack, defaultValues }: See
           </Button>
         )}
         <Button type="submit" variant="primary" size="md" className={onBack ? '' : 'ml-auto'}>
-          Continue
+          {submitLabel}
         </Button>
       </div>
     </form>
