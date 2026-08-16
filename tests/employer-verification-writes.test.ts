@@ -75,13 +75,37 @@ describe('employer_verifications — methods that must not queue for admin revie
     expect(read('FarmPhotoUpload.tsx')).toContain("rpc('employer_record_farm_photo'")
   })
 
-  it('nzbn and document stay direct writes so the DEFAULT pending stands', () => {
-    // These two are evidence an admin rules on. They must NOT route through a definer RPC,
-    // or the review step disappears.
-    expect(read('NzbnVerification.tsx')).toContain("from('employer_verifications')")
-    expect(read('DocumentUpload.tsx')).toContain("from('employer_verifications')")
-    expect(read('NzbnVerification.tsx')).not.toContain('employer_record_farm_photo')
-    expect(read('DocumentUpload.tsx')).not.toContain('employer_sync_self_verifications')
+  it('nzbn and document submit through the definer RPC, not a client upsert', () => {
+    // REVERSED 2026-08-17 after driving the flow on live prod. This test used to assert the
+    // opposite — that these two must stay direct writes "or the review step disappears".
+    // That reasoning was wrong on both halves:
+    //
+    //   1. The direct write did not work. `.upsert(..., { onConflict: 'employer_id,method' })`
+    //      returned 42501 on the FIRST submit, because PostgREST puts the conflict keys in
+    //      `DO UPDATE SET` and Postgres checks UPDATE privilege at plan time, while
+    //      `authenticated` holds INSERT only on employer_id/method. Both identity rungs were
+    //      dead, so fully_verified was unreachable from the UI.
+    //   2. The review step is preserved by denying the CALLER a say in `status` — which
+    //      migration 086 does by hard-coding 'pending' inside the function — not by keeping
+    //      the write client-side.
+    expect(read('NzbnVerification.tsx')).toContain("rpc('employer_submit_verification'")
+    expect(read('DocumentUpload.tsx')).toContain("rpc('employer_submit_verification'")
+  })
+
+  it('no verification writer reaches employer_verifications through a client upsert', () => {
+    // The form, not the payload, was the defect — so guard the form. Any `.upsert()` against
+    // this table is denied for `authenticated` no matter which columns it carries.
+    for (const file of WRITERS) {
+      expect(read(file)).not.toMatch(/from\(['"]employer_verifications['"]\)[\s\S]{0,200}?\.upsert\(/)
+    }
+  })
+
+  it('the client never picks its own verification status', () => {
+    // 086 hard-codes 'pending' server-side. A caller-supplied status would put the admin
+    // queue back in the caller's hands, which is the thing 073 revoked in the first place.
+    for (const file of WRITERS) {
+      expect(read(file)).not.toMatch(/p_status\s*:/)
+    }
   })
 })
 

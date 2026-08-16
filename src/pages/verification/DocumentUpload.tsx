@@ -53,21 +53,23 @@ export function DocumentUpload() {
 
     // Phase 3 Task 3.2 (audit P0-9): the browser must NOT set status. Uploading a
     // file is a SUBMISSION, not a verification — an admin decides via the
-    // /admin/documents verification queue. `status` DEFAULTs to 'pending', and
-    // both the RLS WITH CHECK and the column grants in migration 073 refuse an
-    // employer-supplied status, so omitting it here is the honest write rather
-    // than the only permitted one.
-    const { error } = await supabase.from('employer_verifications').upsert(
-      {
-        employer_id: employerId,
-        method: 'document',
-        document_url: url,
-      },
-      { onConflict: 'employer_id,method' },
-    )
+    // /admin/documents verification queue.
+    //
+    // Audit F-11 (reopened 2026-08-17, migration 086). This writer was recorded as the one
+    // that "already worked"; it never did. Omitting `status` was correct, but the UPSERT
+    // FORM was denied regardless: PostgREST puts the conflict keys in `DO UPDATE SET` and
+    // Postgres checks UPDATE privilege at PLAN time, while `authenticated` holds INSERT
+    // only on employer_id/method. Verified on live prod — 42501 on the first upload, with
+    // the file already in storage and nothing recording it.
+    //
+    // The definer RPC hard-codes status='pending', so the review step is intact.
+    const { error } = await supabase.rpc('employer_submit_verification', {
+      p_method: 'document',
+      p_document_url: url,
+    })
 
     if (error) {
-      console.error('DocumentUpload: failed to upsert verification record', error)
+      console.error('DocumentUpload: failed to record verification submission', error)
       toast.error('Upload recorded but verification record failed to save')
       return
     }
@@ -169,8 +171,11 @@ export function DocumentUpload() {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="font-body text-text truncate text-[13px]">Verification document</p>
+                {/* Audit F-11: this said "Verified". A document sits at status='pending'
+                    until an admin rules on it, so the upload surface must not award the
+                    badge the queue has not granted. */}
                 <p className="font-body text-text-subtle text-[11px]">
-                  Verified — uploaded to secure storage
+                  Uploaded to secure storage — awaiting review
                 </p>
               </div>
               <a

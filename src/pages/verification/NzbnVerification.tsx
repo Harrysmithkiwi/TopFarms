@@ -7,7 +7,9 @@ import { Button } from '@/components/ui/Button'
 import type { EmployerVerification } from '@/types/domain'
 
 interface NzbnVerificationProps {
-  employerId: string
+  // Audit F-11 (086): `employerId` is gone. The definer RPC derives the employer from
+  // auth.uid(), so the caller can no longer point this component at another employer's row.
+  // Same reasoning that removed the prop from PhoneVerification in 085.
   existingVerification: EmployerVerification | null
   onSuccess: () => void
 }
@@ -22,11 +24,7 @@ interface NzbnVerificationProps {
  * - Verified: green check (admin approved)
  * - Rejected: red X with option to resubmit
  */
-export function NzbnVerification({
-  employerId,
-  existingVerification,
-  onSuccess,
-}: NzbnVerificationProps) {
+export function NzbnVerification({ existingVerification, onSuccess }: NzbnVerificationProps) {
   const [nzbn, setNzbn] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -49,21 +47,24 @@ export function NzbnVerification({
     setLoading(true)
 
     try {
-      // Audit F-11: `status` is NOT sent. Migration 073 revoked it from `authenticated`,
-      // so supplying it — even the honest 'pending' — returns 42501 and the submission is
-      // silently lost. The column DEFAULTs to 'pending' and the admin queue decides.
-      // Same shape as DocumentUpload.tsx, the writer that was already correct.
-      const { error: upsertError } = await supabase.from('employer_verifications').upsert(
-        {
-          employer_id: employerId,
-          method: 'nzbn',
-          nzbn_number: nzbn,
-        },
-        { onConflict: 'employer_id,method' },
-      )
+      // Audit F-11 (reopened 2026-08-17, migration 086). Dropping `status` from the payload
+      // was necessary but not sufficient: the UPSERT FORM itself was denied. PostgREST
+      // renders onConflict as `ON CONFLICT (employer_id, method) DO UPDATE SET ...` with the
+      // conflict keys in the SET list, and Postgres checks UPDATE privilege at PLAN time —
+      // so it returned 42501 on the FIRST submit, not just a resubmit. `authenticated` holds
+      // INSERT on those two columns and no UPDATE. Verified on live prod: the same payload
+      // as a plain INSERT returned 201, as an upsert 42501.
+      //
+      // The definer RPC hard-codes status='pending', so the admin queue still rules on every
+      // identity claim — the review step is preserved by denying the caller a say in
+      // `status`, not by avoiding a definer.
+      const { error: submitError } = await supabase.rpc('employer_submit_verification', {
+        p_method: 'nzbn',
+        p_nzbn: nzbn,
+      })
 
-      if (upsertError) {
-        setError(upsertError.message)
+      if (submitError) {
+        setError(submitError.message)
         return
       }
 

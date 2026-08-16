@@ -301,7 +301,6 @@ export function EmployerVerification() {
             expandContent={
               employerId ? (
                 <NzbnVerification
-                  employerId={employerId}
                   existingVerification={verificationMap.get('nzbn') ?? null}
                   onSuccess={() => {
                     setExpandedMethod(null)
