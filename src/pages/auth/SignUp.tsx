@@ -69,21 +69,18 @@ export function SignUp() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [oauthLoading, setOauthLoading] = useState(false)
 
-  const handleOAuth = async (provider: 'google' | 'facebook') => {
+  const handleOAuth = async (provider: 'google') => {
     setOauthLoading(true)
     try {
       // OAuth leaves the app, so `?ref=` cannot ride in signUp metadata the way the
       // email path does. Stash it and let SelectRole write it after the round trip.
       // sessionStorage rather than a redirectTo param on purpose: the Supabase redirect
       // allowlist is a known-broken surface (go-live ticket 02), and this needs no
-      // allowlist entry at all. A Facebook-sourced seeker is ALREADY signed into
-      // Facebook, so this is the likely path, not the edge case.
+      // allowlist entry at all.
       if (attributionRef) sessionStorage.setItem('tf-signup-ref', attributionRef)
       await signInWithOAuth(provider)
     } catch {
-      toast.error(
-        `Could not connect to ${provider === 'google' ? 'Google' : 'Facebook'}. Please try again.`,
-      )
+      toast.error('Could not connect to Google. Please try again.')
       setOauthLoading(false)
     }
     // No finally — on success, browser redirects away and component unmounts
@@ -194,34 +191,6 @@ export function SignUp() {
               />
             </svg>
             Sign in with Google
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleOAuth('facebook')}
-            disabled={oauthLoading}
-            className="min-h-11 flex w-full items-center justify-center gap-3 rounded-full px-4 py-2.5 text-sm font-medium transition-colors disabled:opacity-60"
-            // Facebook brand blue. A third-party brand colour, like a logo fill:
-            // no TopFarms token applies and substituting one would misrepresent
-            // the provider. Sanctioned exception (Task 5.3).
-            style={{
-              backgroundColor: '#1877F2',
-              color: '#FFFFFF',
-            }}
-          >
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 18 18"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M18 9a9 9 0 1 0-10.406 8.89v-6.29H5.309V9h2.285V7.017c0-2.255 1.343-3.501 3.4-3.501.984 0 2.014.176 2.014.176v2.215h-1.135c-1.118 0-1.467.694-1.467 1.406V9h2.496l-.399 2.6h-2.097v6.29A9.002 9.002 0 0 0 18 9Z"
-                fill="#FFFFFF"
-              />
-            </svg>
-            Continue with Facebook
           </button>
         </div>
 

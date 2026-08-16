@@ -26,14 +26,12 @@ export function Login() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [oauthLoading, setOauthLoading] = useState(false)
 
-  const handleOAuth = async (provider: 'google' | 'facebook') => {
+  const handleOAuth = async (provider: 'google') => {
     setOauthLoading(true)
     try {
       await signInWithOAuth(provider)
     } catch {
-      toast.error(
-        `Could not connect to ${provider === 'google' ? 'Google' : 'Facebook'}. Please try again.`,
-      )
+      toast.error('Could not connect to Google. Please try again.')
       setOauthLoading(false)
     }
     // No finally — on success, browser redirects away and component unmounts
@@ -104,32 +102,6 @@ export function Login() {
               />
             </svg>
             Sign in with Google
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleOAuth('facebook')}
-            disabled={oauthLoading}
-            className="min-h-11 flex w-full items-center justify-center gap-3 rounded-full px-4 py-2.5 text-sm font-medium transition-colors disabled:opacity-60"
-            // Facebook brand blue — third-party brand colour, sanctioned (Task 5.3).
-            style={{
-              backgroundColor: '#1877F2',
-              color: '#FFFFFF',
-            }}
-          >
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 18 18"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M18 9a9 9 0 1 0-10.406 8.89v-6.29H5.309V9h2.285V7.017c0-2.255 1.343-3.501 3.4-3.501.984 0 2.014.176 2.014.176v2.215h-1.135c-1.118 0-1.467.694-1.467 1.406V9h2.496l-.399 2.6h-2.097v6.29A9.002 9.002 0 0 0 18 9Z"
-                fill="#FFFFFF"
-              />
-            </svg>
-            Continue with Facebook
           </button>
         </div>
 

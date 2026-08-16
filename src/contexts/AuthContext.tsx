@@ -32,7 +32,12 @@ export interface AuthHookReturn {
   signOut: () => Promise<void>
   resetPassword: (email: string) => ReturnType<typeof supabase.auth.resetPasswordForEmail>
   updatePassword: (newPassword: string) => ReturnType<typeof supabase.auth.updateUser>
-  signInWithOAuth: (provider: 'google' | 'facebook') => Promise<void>
+  // Google is the only enabled provider. Facebook was offered on /signup and /login until
+  // 2026-08-17, when driving signup on prod showed `authorize?provider=facebook` returning
+  // 400 "provider is not enabled" — so the button had never worked, and its catch handler
+  // told people to "try again". Narrowed to a single literal rather than left permissive:
+  // the type is what stops it being re-added before the Meta app actually exists.
+  signInWithOAuth: (provider: 'google') => Promise<void>
   refreshRole: () => Promise<UserRole | null>
 }
 
@@ -224,7 +229,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       provider,
       options: {
         redirectTo: `${window.location.origin}/auth/select-role`,
-        scopes: provider === 'facebook' ? 'email' : undefined,
       },
     })
     if (error) throw error
