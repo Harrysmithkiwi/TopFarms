@@ -60,13 +60,46 @@ provider was never enabled (`authorize?provider=facebook` → 400) so it had nev
 **rejected verification now shows an "Action needed" badge** — before, all three chip branches
 were false for `rejected`, so the card looked untouched while silently needing the employer to act.
 
+### Also closed 2026-08-17 — the pre-outreach security + compliance pass
+
+Four findings, sequenced deliberately around the fact that **prod still holds zero real
+users and zero jobs**, which is the cheapest possible moment for all of them.
+
+- **F-21 — `9c03d3f`, migration 087.** The opt-out control. Applied at **0 leads contacted**,
+  so the compliance gap cost nothing; from the first send it would have. Also fixed the half
+  an RPC alone would not: suppression keyed on `name|region|type` while `region` is null ~1 row
+  in 11, so an opt-out silently stopped holding on re-harvest. Separate
+  `_lead_suppression_key(name, type)`; dedupe keeps its region-bearing fingerprint.
+- **F-01 — `c69eb52`, migration 088.** Suspension now gates. **Read the commit before touching
+  this:** the one-line fix the audit describes would have been a *security regression*.
+  `get_user_role` returning NULL is fine for all 22 policies (they use `=`, fail closed) but
+  `_admin_gate` used `!= 'admin'`, and `NULL != 'admin'` is NULL, which does not fire an `IF`.
+  Shipping the predicate alone would have opened the admin gate to **any authenticated user
+  with no `user_roles` row**. Both functions must stay in one migration.
+- **F-02 — `8badbfa`, migration 089.** 38 employer columns were readable by any seeker. The
+  audit's prescribed fix would have taken the marketplace dark — the view is
+  `security_invoker=true`, so dropping the base policy returns zero rows to anon and every
+  logged-in seeker. The view now stands on its own `WHERE` at owner rights instead.
+- **F-22 — `08fcc6f`.** Role filters. The forked list also invented four roles that do not
+  exist and omitted four that do, so a case-mapping layer would still have been wrong.
+
+**Two of the four audit fix-shapes were wrong in ways that would have caused an incident.**
+Treat the audit's "Fix" column as a hypothesis, not a spec — verify against live catalogs first.
+
+**Prod is now clean:** the three `+e2e-emp-0817*` test accounts and the Kowhai Downs profile
+with its fabricated NZBN are deleted. 4 users remain — `admin@`, `+ci-seeker`, `+ci-employer`,
+`+uat16aug`. **Both CI accounts survive**, so `E2E_REQUIRED_ROLES` stays green. 0 employer
+profiles, 0 verifications, 0 jobs. The first real employer will genuinely be the first row.
+
 ### Still blocking
 
-1. **F-21** — an opt-out cannot be recorded for anyone you email. `lead_suppression` is writable
-   only from a *staging* row; once a lead is promoted there is no control at all. The documented
-   procedure in `docs/OUTREACH-EMAIL.md:52` is not executable. **Compliance, not code quality.**
-   This is now the top item, and the only remaining blocker that is squarely mine to fix.
-2. **F-22** — every role filter on `/jobs` returns zero results (two vocabularies, no mapping).
+1. **M3 — one real listing.** Unchanged since 2026-08-07 and now the *only* thing gating
+   launch. **Outreach has not actually been sent**: 104 staged, 2 promoted, **0 contacted**.
+   Everything downstream waits on this single event — the payment path (never run in prod),
+   the match alert (never fired), M4's cold-start check, §4 payment verification, S2's positive
+   read, and v2.1 Phases 24–26 (explicitly gated on "real ag-employer liquidity").
+2. **PEND-01** — Stripe test→live swap, needs a real $0.50 charge and refund. Blocks
+   `/gsd:complete-milestone v2.0`. Also downstream of a listing.
 
 **Best single code slice: F-01** — add `AND is_active` to `get_user_role`. One predicate, one
 function body, no policy DDL, and suspension starts working across ~30 policies and 51 RPCs at
