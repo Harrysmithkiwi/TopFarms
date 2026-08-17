@@ -7,7 +7,7 @@ import { Toggle } from '@/components/ui/Toggle'
 import { Select } from '@/components/ui/Select'
 import { Button } from '@/components/ui/Button'
 import { SHED_TYPES, HERD_SIZE_BUCKETS, DAIRYNZ_LEVELS } from '@/types/domain'
-import { NZ_REGIONS } from '@/lib/constants'
+import { NZ_REGIONS, ROLE_TYPES } from '@/lib/constants'
 
 interface FilterSidebarProps {
   searchParams: URLSearchParams
@@ -18,16 +18,18 @@ interface FilterSidebarProps {
   isMobile?: boolean
 }
 
-const ROLE_TYPES = [
-  { value: 'farm_manager', label: 'Farm Manager' },
-  { value: 'head_stockman', label: 'Head Stockman' },
-  { value: '2ic', label: '2IC' },
-  { value: 'herd_manager', label: 'Herd Manager' },
-  { value: 'dairy_assistant', label: 'Dairy Assistant' },
-  { value: 'trainee', label: 'Trainee' },
-  { value: 'relief_milker', label: 'Relief Milker' },
-  { value: 'couple', label: 'Couple Position' },
-]
+// Audit F-22: this file used to hold its own snake_case role list — farm_manager,
+// head_stockman, dairy_assistant, trainee, couple — none of which any job has ever carried.
+// `jobs.role_type` stores the DISPLAY STRING, written by the wizard from the same canonical
+// ROLE_TYPES imported here (JobStep1Basics.tsx:36 does `.map(r => ({ value: r, label: r }))`).
+// JobSearch.tsx:356 then does `.eq('role_type', <snake_case>)` with no translation anywhere,
+// so every role filter on /jobs returned zero results.
+//
+// The fork also invented four roles that do not exist (Head Stockman, Dairy Assistant,
+// Trainee, Couple Position) and omitted four that do (Assistant Manager, Farm Hand, General,
+// Other) — so even a mapping layer would have been wrong. One list, value === label, exactly
+// as the employer wizard does it.
+const ROLE_TYPE_OPTIONS = ROLE_TYPES.map((r) => ({ value: r, label: r }))
 
 const EXTRAS_FILTERS = [
   { key: 'mentorship', label: 'Mentorship available' },
@@ -155,7 +157,7 @@ export function FilterSidebar({
             <SectionHeader title="Role Type" />
           </summary>
           <div className="flex flex-col gap-2">
-            {ROLE_TYPES.map((type) => (
+            {ROLE_TYPE_OPTIONS.map((type) => (
               <Checkbox
                 key={type.value}
                 label={type.label}
