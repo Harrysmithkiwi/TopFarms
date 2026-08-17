@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Button } from '@/components/ui/Button'
 import { ChipSelector } from '@/components/ui/ChipSelector'
+import { Toggle } from '@/components/ui/Toggle'
 import { FARM_TYPE_OPTIONS, OWNERSHIP_TYPE_OPTIONS, SHED_TYPES } from '@/types/domain'
 
 /**
@@ -26,8 +27,20 @@ const schema = z
     milking_frequency: z.string().optional(),
     breed: z.string().optional(),
     property_size_ha: z.coerce.number().optional(),
+    // Seeker gap G-13. Mirrors the DB CHECK in 091: claiming accreditation requires saying
+    // until when, because a lapsed claim is worse than none — a migrant who relies on it has
+    // wasted an application fee and possibly a season.
+    inz_accredited: z.boolean().optional(),
+    inz_accreditation_expires: z.string().optional(),
   })
   .superRefine((d, ctx) => {
+    if (d.inz_accredited && !d.inz_accreditation_expires) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['inz_accreditation_expires'],
+        message: 'Enter the date your accreditation expires',
+      })
+    }
     if (d.farm_types.includes('dairy') && d.shed_type.length === 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -101,6 +114,7 @@ export function Step2FarmDetails({ onComplete, onBack, defaultValues }: Step2Pro
   // Reacts to the chips above: pick Sheep & Beef only, and the dairy questions go away. Nothing
   // selected yet still shows them, so the form does not flicker fields in on first paint.
   const farmTypes = useWatch({ control, name: 'farm_types' }) ?? []
+  const isAccredited = useWatch({ control, name: 'inz_accredited' }) ?? false
   const showsDairyFields =
     farmTypes.length === 0 || farmTypes.includes('dairy') || farmTypes.includes('mixed')
 
@@ -240,6 +254,44 @@ export function Step2FarmDetails({ onComplete, onBack, defaultValues }: Step2Pro
           >
             ha
           </span>
+        </div>
+
+        {/* Seeker gap G-13. Across 23 real seeker posts, 30% are visa-touched and the question
+            they keep asking in comments is not "will you sponsor" — it is "are you accredited",
+            because without INZ accreditation a migrant cannot apply at all. Answering it here
+            makes those seekers findable instead of them going farm by farm asking. */}
+        <div className="space-y-3">
+          <Controller
+            control={control}
+            name="inz_accredited"
+            render={({ field }) => (
+              <Toggle
+                label="INZ accredited employer"
+                checked={field.value ?? false}
+                onCheckedChange={field.onChange}
+              />
+            )}
+          />
+
+          <p className="font-body text-[12px]" style={{ color: 'var(--color-text-subtle)' }}>
+            Lets you hire migrant workers on an Accredited Employer Work Visa. Job seekers
+            search for this.
+          </p>
+
+          {isAccredited && (
+            <>
+              <Input
+                label="Accreditation expires"
+                type="date"
+                error={errors.inz_accreditation_expires?.message}
+                {...register('inz_accreditation_expires')}
+              />
+              <p className="font-body text-[12px]" style={{ color: 'var(--color-text-subtle)' }}>
+                We show this to job seekers as your own statement — we do not yet check it
+                against Immigration New Zealand. It stops showing once the date passes.
+              </p>
+            </>
+          )}
         </div>
       </div>
 

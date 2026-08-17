@@ -64,6 +64,8 @@ export interface EmployerProfileData {
   broadband_available?: boolean
   salary_min?: number
   salary_max?: number
+  inz_accredited?: boolean
+  inz_accreditation_expires?: string
 }
 
 export function EmployerOnboarding() {
@@ -91,7 +93,7 @@ export function EmployerOnboarding() {
       const { data, error } = await supabase
         .from('employer_profiles')
         .select(
-          'onboarding_step, farm_type, farm_name, region, herd_size, shed_type, milking_frequency, breed, property_size_ha, ownership_type, culture_description, team_size, about_farm, accommodation_available, accommodation_type, accommodation_extras, farm_types, nearest_town, distance_from_town_km, calving_system, career_development, hiring_frequency, couples_welcome, partner_role, vehicle_provided, vehicle_types, broadband_available, salary_min, salary_max',
+          'onboarding_step, farm_type, farm_name, region, herd_size, shed_type, milking_frequency, breed, property_size_ha, ownership_type, culture_description, team_size, about_farm, accommodation_available, accommodation_type, accommodation_extras, farm_types, nearest_town, distance_from_town_km, calving_system, career_development, hiring_frequency, couples_welcome, partner_role, vehicle_provided, vehicle_types, broadband_available, salary_min, salary_max, inz_accredited, inz_accreditation_expires',
         )
         .eq('user_id', session.user.id)
         .single()
@@ -117,6 +119,11 @@ export function EmployerOnboarding() {
           breed: data.breed,
           property_size_ha: data.property_size_ha,
           ownership_type: data.ownership_type,
+          // Step 2 reads these as defaults, so omitting them here would clear a returning
+          // employer's accreditation claim and write the blank back — the role_type_pref
+          // data-loss shape (2026-08-16).
+          inz_accredited: data.inz_accredited,
+          inz_accreditation_expires: data.inz_accreditation_expires,
           culture_description: data.culture_description,
           team_size: data.team_size,
           about_farm: data.about_farm,
@@ -263,6 +270,8 @@ export function EmployerOnboarding() {
                 breed: profileData.breed,
                 property_size_ha: profileData.property_size_ha,
                 ownership_type: profileData.ownership_type,
+                inz_accredited: profileData.inz_accredited,
+                inz_accreditation_expires: profileData.inz_accreditation_expires,
                 // Step 1 answers `farm_type` (singular enum); this step requires
                 // `farm_types` (array). Without this seed the employer picks their
                 // farm type twice and step 1's answer never satisfies step 2.
