@@ -62,6 +62,71 @@ interface Suggestion {
 }
 
 /**
+ * Audit F-21 — record that a lead asked not to be contacted.
+ *
+ * `lead_suppression` had exactly one writer, `admin_lead_reject`, which needs a *staging*
+ * row. Once a lead was promoted there was no control at all, so the procedure in
+ * `docs/OUTREACH-EMAIL.md:52` was not executable and anyone replying "stop" could be
+ * re-surfaced by the next harvest.
+ *
+ * Two-step confirm because it is irreversible from this screen and it deliberately does two
+ * things: writes the suppression AND marks the lead dead.
+ */
+function OptOutControl({ lead, onSuppressed }: { lead: LeadRow; onSuppressed: () => void }) {
+  const [confirming, setConfirming] = useState(false)
+  const [busy, setBusy] = useState(false)
+
+  async function suppress() {
+    setBusy(true)
+    try {
+      const { error } = await supabase.rpc('admin_lead_suppress', {
+        p_lead_id: lead.id,
+        p_reason: 'opted_out',
+      })
+      if (error) {
+        toast.error(`Failed: ${error.message}`)
+        return
+      }
+      toast.success('Opt-out recorded — they will not be re-surfaced')
+      onSuppressed()
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <DrawerSection label="Opt-out">
+      {!confirming ? (
+        <div className="space-y-2">
+          <p className="text-[13px] leading-5" style={{ color: 'var(--color-text-muted)' }}>
+            Use this when they have asked not to be contacted. Records the opt-out against the
+            name so a future harvest cannot re-surface them, and marks the lead dead.
+          </p>
+          <Button variant="outline" size="sm" onClick={() => setConfirming(true)}>
+            Record opt-out
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <p className="text-[13px] leading-5" style={{ color: 'var(--color-text-muted)' }}>
+            Suppress <span className="font-semibold">{lead.display_name}</span>? This cannot be
+            undone from here.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" size="sm" disabled={busy} onClick={suppress}>
+              {busy ? 'Recording…' : 'Confirm opt-out'}
+            </Button>
+            <Button variant="outline" size="sm" disabled={busy} onClick={() => setConfirming(false)}>
+              Cancel
+            </Button>
+          </div>
+        </div>
+      )}
+    </DrawerSection>
+  )
+}
+
+/**
  * Park-with-reason-and-when. One gate-guarded call (admin_lead_categorise) sets
  * category + follow-up date + notes; entering a follow-up date parks the lead
  * (status='follow_up'); clearing it wipes the date. Mounted with key={lead.id}
@@ -333,6 +398,12 @@ function LeadDrawer({
           ))}
         </div>
       </DrawerSection>
+
+      {/* Audit F-21. Deliberately NOT a fifth lifecycle chip above: `dead` records our
+          judgement about a lead, this records THEIR instruction, and conflating the two is
+          what left the documented opt-out procedure unexecutable. Separate section, separate
+          confirm, and it writes lead_suppression so the next harvest cannot re-surface them. */}
+      <OptOutControl key={lead.id} lead={lead} onSuppressed={onSaved} />
 
       {/* Park / categorise — keyed by lead id so local state resets per selection. */}
       <CategoriseForm key={lead.id} lead={lead} onSaved={onSaved} />
