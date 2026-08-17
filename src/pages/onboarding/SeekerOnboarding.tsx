@@ -93,6 +93,10 @@ export function SeekerOnboarding() {
           // back found their chosen roles cleared — and the upsert below then wrote
           // that empty state over the real one.
           role_type_pref: data.role_type_pref,
+          // Same trap as role_type_pref above: step 1 reads this as a default, so omitting
+          // it here would clear a returning seeker's stated terms and then write the blank
+          // back over the real value.
+          contract_type_pref: data.contract_type_pref,
           years_experience: data.years_experience,
           shed_types_experienced: data.shed_types_experienced,
           herd_sizes_worked: data.herd_sizes_worked,
@@ -265,6 +269,7 @@ export function SeekerOnboarding() {
                 sector_pref: profileData.sector_pref,
                 region: profileData.region,
                 role_type_pref: profileData.role_type_pref,
+                contract_type_pref: profileData.contract_type_pref,
               }}
             />
           )}

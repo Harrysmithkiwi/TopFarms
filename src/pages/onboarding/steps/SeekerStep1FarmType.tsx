@@ -6,12 +6,17 @@ import { Select } from '@/components/ui/Select'
 import { SeekerContactFields } from '@/components/ui/SeekerContactFields'
 import { useSeekerContact } from '@/hooks/useSeekerContact'
 import { FARM_TYPE_OPTIONS } from '@/types/domain'
-import { NZ_REGIONS, ROLE_TYPES } from '@/lib/constants'
+import { NZ_REGIONS, ROLE_TYPES, CONTRACT_TYPE_PREFS } from '@/lib/constants'
 import type { SeekerProfileData } from '@/types/domain'
 
 interface SeekerStep1Props {
   onComplete: (data: Partial<SeekerProfileData>) => void
-  defaultValues?: { sector_pref?: string[]; region?: string; role_type_pref?: string[] }
+  defaultValues?: {
+    sector_pref?: string[]
+    region?: string
+    role_type_pref?: string[]
+    contract_type_pref?: string[]
+  }
   /** Overrides the submit label. The profile editor reuses this form to edit one
    *  section, where "Continue" would imply a next step that does not exist. */
   submitLabel?: string
@@ -45,6 +50,7 @@ export function SeekerStep1FarmType({
   const [selectedTypes, setSelectedTypes] = useState<string[]>(defaultValues?.sector_pref ?? [])
   const [region, setRegion] = useState<string>(defaultValues?.region ?? '')
   const [roles, setRoles] = useState<string[]>(defaultValues?.role_type_pref ?? [])
+  const [terms, setTerms] = useState<string[]>(defaultValues?.contract_type_pref ?? [])
   const [saving, setSaving] = useState(false)
 
   // Phase 3 Task 3.6. Name and phone live in seeker_contacts — the table the employer's
@@ -75,6 +81,7 @@ export function SeekerStep1FarmType({
       sector_pref: selectedTypes,
       region,
       ...(roles.length ? { role_type_pref: roles } : {}),
+      ...(terms.length ? { contract_type_pref: terms } : {}),
     })
   }
 
@@ -134,6 +141,19 @@ export function SeekerStep1FarmType({
         options={ROLE_TYPES.filter((r) => r !== 'Other').map((r) => ({ value: r, label: r }))}
         value={roles}
         onChange={setRoles}
+        mode="multi"
+        columns={2}
+      />
+
+      {/* Gap G-1. Four of six real seeker posts wanted relief or part-time work and had
+          nowhere to say so — the profile could carry the role but never the terms. Multi
+          on purpose: "a permanent job, or relief in the meantime" is the commonest answer
+          in those posts, and a single-select would force them to misrepresent it. */}
+      <ChipSelector
+        label="Type of work"
+        options={CONTRACT_TYPE_PREFS.map((c) => ({ value: c.value, label: c.label }))}
+        value={terms}
+        onChange={setTerms}
         mode="multi"
         columns={2}
       />

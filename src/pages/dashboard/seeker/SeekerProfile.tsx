@@ -29,6 +29,7 @@ import {
   NOTICE_PERIOD_OPTIONS,
 } from '@/types/domain'
 import type { SeekerProfileData } from '@/types/domain'
+import { CONTRACT_TYPE_PREFS } from '@/lib/constants'
 
 /**
  * Seeker profile editor.
@@ -83,6 +84,7 @@ const SECTIONS: Section[] = [
       { label: 'Farm types', value: list(FARM_TYPE_OPTIONS, p.sector_pref) },
       { label: 'Region', value: text(p.region) },
       { label: 'Roles', value: p.role_type_pref?.join(', ') || SUMMARY_EMPTY },
+      { label: 'Type of work', value: list(CONTRACT_TYPE_PREFS, p.contract_type_pref) },
     ],
   },
   {
@@ -198,6 +200,7 @@ export function SeekerProfile() {
         setProfile({
           sector_pref: data.sector_pref,
           role_type_pref: data.role_type_pref,
+          contract_type_pref: data.contract_type_pref,
           years_experience: data.years_experience,
           shed_types_experienced: data.shed_types_experienced,
           herd_sizes_worked: data.herd_sizes_worked,
@@ -395,6 +398,7 @@ export function SeekerProfile() {
                         sector_pref: profile.sector_pref,
                         region: profile.region,
                         role_type_pref: profile.role_type_pref,
+                        contract_type_pref: profile.contract_type_pref,
                       }}
                     />
                   )}

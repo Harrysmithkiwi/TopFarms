@@ -161,6 +161,12 @@ export interface SeekerProfileData {
   sector_pref?: string[]
   /** Canonical role vocabulary — the same tokens an employer picks for jobs.role_type. */
   role_type_pref?: string[]
+  /**
+   * What kind of engagement they want, mirroring `jobs.contract_type` exactly (gap G-1).
+   * A role is not a term: 'Relief Milker' is a role, but "a permanent job OR relief" is a
+   * term, and three of six real seeker posts said some version of the latter.
+   */
+  contract_type_pref?: string[]
   years_experience?: number
   shed_types_experienced?: ShedType[]
   herd_sizes_worked?: HerdSizeBucket[]

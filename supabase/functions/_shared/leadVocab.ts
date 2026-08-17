@@ -24,6 +24,15 @@ export const ROLE_TYPES = [
   'Herd Manager',
   '2IC',
   'Relief Milker',
+  // Added 2026-08-17 with the seeker lane. Not cosmetic here: this list is what the
+  // extraction prompt tags a harvested post with, so before it carried these, a shepherd
+  // post could only come back as the catch-all or as Farm Hand. The seeker lane intake
+  // would have flattened the very thing that makes that person findable.
+  // NB: keep comments in this block free of apostrophes and quoted tokens —
+  // tests/lead-vocab-parity.test.ts parses the array with a string-literal regex.
+  'Shepherd',
+  'Stock Manager',
+  'Calf Rearer',
   'Other',
 ] as const
 
