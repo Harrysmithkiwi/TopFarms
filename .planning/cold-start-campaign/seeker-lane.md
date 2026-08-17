@@ -149,3 +149,168 @@ not strategy:
   back. But shipping schema before 100 real profiles is guessing. This is a genuine call.
 - **T-06d — Does the 100–200 target come before, with, or after the employer batch?** Both
   sides are cold; whichever goes first waits on the other.
+
+---
+---
+
+# Round 2 — seven more posts, 2026-08-18
+
+Sample is now **13 posts across five groups** (NZ Dairy Jobs, Dairy & Drystock Farm Jobs
+Canterbury NZ, NZ Backpacker JOBS, plus the two from round 1). Three findings change priorities
+before any of the schema gaps do.
+
+## Three things that are not schema
+
+### R2-1 · One of the seven is an EMPLOYER post, and it is the best test case we have
+
+**Glesni Angharad Morgan, Dairy & Drystock Farm Jobs Canterbury NZ** — *"Dairy Farm Assistant.
+WANTED. Full time. SHORT term. Help over calving."* Fairlie, Canterbury. Now until end of
+October / early November, possibly longer. **890 cows, 54-point rotary, 2-off-8 roster.** Double
+bedroom in a shared house on farm. Immediate start. Must be able to drive a 2-wheeler.
+
+Two things follow:
+
+1. **It is a live employer lead sitting in a seeker batch.** The saved collection is mixing
+   lanes. Whatever the capture workflow is, it needs a fork at the top — `lead_staging` already
+   carries `type` (`employer` | `seeker`) and `AdminSeekerStaging` is a sibling route, so the
+   plumbing exists; the *human* step does not.
+2. **It is the sharpest employer test case in the whole sample** — seasonal, short-term,
+   accommodation included, precise shed spec, and a roster. If the job wizard can carry this
+   post faithfully, it can carry most of what Canterbury posts. Worth walking it through
+   `/jobs/new` as the T-05 prototype rather than inventing a fictional farm.
+
+### R2-2 · The same person appears twice under different names, and dedupe will not catch it
+
+`ceylon_dairy_boy` in **NZ Dairy Jobs** is `Deyoun_Dairy_boy` from round 1 — **identical body
+text**, different group, different display name. `_lead_fingerprint` keys on
+`display_name|region|type`, and `_lead_suppression_key` (087) on `name|type`. Neither matches
+across a changed handle.
+
+At 100–200 seekers harvested from five overlapping groups this is not an edge case. It also has
+a compliance edge: someone who opts out under one handle stays contactable under the other,
+which is the exact failure F-21 was meant to close.
+
+The 0.6-similarity fuzzy pass in `_lead_intake` runs on `display_name`, so it will not help
+either. The signal that *would* catch it is the post body, which is byte-identical here.
+
+### R2-3 · Yesterday's role additions are already validated
+
+Added 2026-08-17, and this batch would have needed them:
+
+| Role | Evidence in this batch |
+|---|---|
+| **Calf Rearer** | *"SEEKING HERD MANAGER / CALF & YOUNGSTOCK SPECIALIST"*; *"calf rearing in and around Rotorua"* |
+| **Stock Manager** | *"relief milking and/or stock work"*; solo-running fattening beef, drystock |
+| Shepherd | no direct hit this round; drystock/beef adjacent |
+
+And **G-1's terms field**: *"open to any job opportunity, short or long term"* (Louison),
+*"drive in relief milking"* (Rotorua). Relief-or-part-time is now **6 of 13**.
+
+---
+
+## New gaps
+
+### G-12 · The sector list cannot hold what these people actually do — **strongest new gap**
+`FARM_TYPE_OPTIONS` = dairy, sheep_beef, cropping, deer, mixed, other. This batch contains:
+
+- **beekeeping**, **forestry and logging**, **landscaping**, **factory operator** (Louison, a
+  French backpacker — an entire channel segment, since NZ Backpacker JOBS is one of the groups)
+- a **dairy goat** farm, 1300 head, running staff (Te Kuiti) — Dairy Goat Co-op country, a real
+  NZ sector
+- **breaking in horses** and **farm sitting** (same post)
+- **fattening beef / drystock** run solo over 600 acres
+
+"Other" absorbs all of it and tells an employer nothing. Forestry in particular is a major NZ
+rural employer sitting entirely outside the taxonomy.
+
+### G-13 · AEWV / accredited employer is a hard requirement, not a nice-to-have — **escalates G-11**
+**Three of thirteen** posts now turn on it:
+
+> *"looking to secure a long-term position with an **accredited employer** in advance"* (vet)
+> *"willing to support the visa process (such as the **Accredited Employer Work Visa**)"* (Geraldine)
+> *"Do you have right to work in NZ or seeking an accredited employer?"* (comment, round 1)
+
+`jobs.visa_sponsorship` is a boolean — "will you sponsor". **AEWV accreditation is a specific
+INZ status a farm either holds or does not**, and a migrant cannot apply without it. A boolean
+cannot answer the question being asked. Feasibility was already confirmed (INZ list API → NZBN
++ expiry) and the immigration phase is parked; this is the demand evidence for un-parking it.
+
+### G-14 · Professional and tertiary qualifications have nowhere to go — **escalates G-3/G-4**
+This batch alone: **Veterinarian (DVM)**, **BSc Computer Science**, **National Certificate II
+in Animal Production (Ruminants)**, NZQA L4, NZQA L6 (HND), West German Tractor Training
+(Sri Lanka). Seeker-side we offer `certifications` — ATV, Tractor, 4WD, First Aid, Growsafe,
+Chainsaw — and `dairynz_level`, which caps at 4. **A qualified vet has to record themselves as
+having no qualifications.**
+
+### G-15 · Roster is the thing seekers ask about and cannot state
+The employer post says **"2 off 8 on"**. A seeker says *"early mornings don't worry me, team
+work or alone"*. `jobs.weekend_roster` is free text so a listing can carry it, but there is no
+seeker-side roster preference and nothing filters or matches on it. In NZ dairy the roster is
+often the deciding factor.
+
+### G-16 · Availability far in the future has no model
+The vet is returning from parental leave in **Spring–Summer 2027** and is looking *now* to line
+up 2027 in advance. `availability_date` is a date so it stores fine — but jobs expire, and
+matching someone available in 14 months against listings that close in 6 weeks is noise in both
+directions. There is no "planning ahead / future season" concept on either side.
+
+### G-17 · English proficiency
+*"Upper-Intermediate English"*, *"fluent in English and confident in communicating effectively
+with farm owners, managers and team members"*. Volunteered by migrants because they know it is
+screened on. Nothing captures it.
+
+### G-18 · Drive-in versus live-in
+*"looking for **drive in** relief milking"*, *"own reliable vehicle"*. `accommodation_needed =
+false` is the inverse but drive-in is the NZ term and it is a positive statement — I have my
+own place and will travel — not the absence of a need.
+
+### G-19 · Entry-level as a positive signal
+*"I'm green in the industry but I make up for that with my eagerness to get stuck in"*, and
+disarmingly, *"reversing with it is a skill still under improvement"*. `years_experience = 0`
+reads purely as a deficit. Nothing carries trainability, attitude, or an honest self-assessment
+— and for calf rearing and relief work, keen-and-green is often exactly what a farm wants.
+
+### G-20 · Pre-employment checks — **escalates G-10**
+*"I can pass all pre employment checks"*, *"drugs and smoke free"*. Now 2 of 13, volunteered
+unprompted both times.
+
+### G-21 · The skill taxonomy is coarser than the seekers are
+The vet lists **colostrum management, growth scoring, scours and pneumonia treatment, heat
+detection, TMR management, ration analysis, metabolic disorder prevention**. All 24 competencies
+absorb this into *"Animal health & husbandry"* and *"Dairy cattle management"*. The taxonomy is
+right for matching breadth; it cannot express depth, and depth is what a specialist is selling.
+
+---
+
+## Revised gap ranking
+
+Frequency across all 13 posts, which is the only honest way to rank these:
+
+| Rank | Gap | Hits | Status |
+|---|---|---|---|
+| 1 | **G-1** terms — relief / part-time / short-term | **6/13** | **shipped 2026-08-17** (090) |
+| 2 | **G-13** AEWV / accredited employer | 3/13 | parked — strongest case to un-park |
+| 3 | **G-14** professional & tertiary quals | 6/13 carry one | open |
+| 4 | **G-12** sector list too narrow | 3/13 | open |
+| 5 | **G-20** pre-employment checks | 2/13 | open |
+| 6 | **G-2** role vocabulary | 2/13 | **shipped 2026-08-17** |
+| — | G-15…G-19, G-21 | 1–2 each | open |
+
+**The two shipped yesterday were the right two.** G-1 was and remains the most frequent thing
+these people say, and this batch adds four more instances of it.
+
+**The next one is not a schema change.** G-13 is an integration and a parked phase, and G-14 is
+a modelling decision (a free-text qualifications list is cheap; a structured NZQA/overseas
+ladder is not). Both are bigger than a column, so they belong on the map as decisions rather
+than in the next commit.
+
+## What this adds to the map
+
+- **T-06e — how do we fork employer posts out of the seeker collection?** R2-1. The plumbing
+  exists; the human step does not, and one live Canterbury employer lead is already sitting in
+  the wrong pile.
+- **T-06f — how do we dedupe the same person across groups and handles?** R2-2. Compliance
+  edge, not just tidiness: an opt-out under one handle does not suppress the other.
+- **T-05 gets a real subject.** Walk the Fairlie post through `/jobs/new` instead of inventing
+  a farm — seasonal, short-term, 54-point rotary, 2-off-8, room in a shared house. If the
+  wizard cannot carry that faithfully, that is the finding.

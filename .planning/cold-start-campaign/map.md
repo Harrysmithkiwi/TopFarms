@@ -95,6 +95,11 @@ family. **How to close: grilling.**
 *Blocked by: T-01, T-02.*
 
 ### T-05 · Does Harry post the job for them, or do they post it?
+**Now has a real subject** (round 2): walk the **Fairlie, Canterbury** post through `/jobs/new`
+rather than inventing a farm — full time, *short* term over calving, immediate start until
+end Oct/early Nov, 890 cows, 54-point rotary, 2-off-8 roster, double bedroom in a shared house,
+"pay depends on experience", must drive a 2-wheeler. If the wizard cannot carry that faithfully,
+that is the finding.
 Buried inside T-01 but it deserves its own answer, because it changes what the funnel has to
 do. If Harry posts, the employer never touches onboarding and consent has to be explicit; the
 listing exists but the account does not. If they post, the whole signup → onboarding →
@@ -133,6 +138,21 @@ the role list has no Shepherd. A seeker who cannot describe themselves may fill 
 never come back — but shipping schema before 100 real profiles is guessing.
 **How to close: grilling.** *Blocked by: nothing, but answering it early is what makes it
 cheap.*
+
+### T-06e · How do employer posts get forked out of the seeker collection? — **FRONTIER**
+Round 2 of the saved posts contained **a live employer lead** — a Fairlie, Canterbury dairy
+assistant role over calving, 890 cows, 54-point rotary, 2-off-8 roster, room in a shared house.
+It is sitting in the seeker pile. `lead_staging.type` already distinguishes the two lanes and
+`AdminSeekerStaging` is already a sibling route, so the plumbing exists — the human step at
+capture time does not. **How to close: task.**
+
+### T-06f · How do we dedupe one person across groups and handles?
+`ceylon_dairy_boy` and `Deyoun_Dairy_boy` are the same person with **byte-identical post text**,
+posted to two different groups under two different display names. `_lead_fingerprint` keys on
+`display_name|region|type` and the fuzzy pass also runs on the name, so neither catches it.
+Not just tidiness — **an opt-out recorded against one handle leaves the other contactable**,
+which is the failure F-21 exists to prevent. The signal that would catch it is the post body.
+**How to close: grilling**, then likely a body-hash pass in `_lead_intake`.
 
 ### T-06d · Does the seeker 100–200 land before, with, or after the employer batch?
 Both sides are cold. Whichever goes first is waiting on the other, and inviting either to an
