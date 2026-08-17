@@ -36,7 +36,7 @@ Not estimates. Read from the database while charting this.
 
 | | |
 |---|---|
-| Staged leads | **113** · 111 pending · **100% `employer`, 0 seeker** |
+| Staged leads | **113** · 111 pending · **100% `employer`, 0 seeker** — the seeker lane is built (`AdminSeekerStaging` + `PasteCapture`) and **idle**, not missing |
 | With an email address | **70** of 113 — the other 43 are DM-or-nothing |
 | Region null | 9 (matters for suppression, fixed in 087) |
 | Promoted to `leads` | 2 · **contacted 0** · suppressed 0 |
@@ -102,17 +102,45 @@ post-a-job path has to convert a cold stranger — and that path was only proven
 **How to close: grilling.**
 *Blocked by: T-01.*
 
-### T-06 · How does a seeker ever hear about TopFarms?
-The pipeline harvests **only employers**. Zero seeker leads, no waitlist table, no capture
-beyond signup itself. The goal needs an application, and right now nothing would produce one.
-This is the largest unexamined hole on the map. **How to close: grilling**, then likely
-research on where NZ farm workers actually look.
-*Independent of T-01. Could start now if you want two threads running.*
+### ~~T-06 · How does a seeker ever hear about TopFarms?~~ — **WITHDRAWN 2026-08-17, mis-filed**
+Not an open decision. The strategy is settled — harvest seeker posts from NZ farming Facebook
+groups, DM, sign up; 100–200 before going live; then rural newsletters and agri universities
+(Lincoln); **Meta groups are the whole strategy for the first six months**. And the tooling is
+already built: `AdminSeekerStaging` + `PasteCapture` exist as a sibling lane to the employer
+queue, with a `SeekerDetail` shape already extracting roles, skills, licences, sheds,
+availability, household and couple status.
 
-### T-07 · How many live listings before seekers get invited?
-Inviting workers to a board with two jobs burns the introduction, and they are the harder
-side to re-engage. **How to close: grilling.**
-*Blocked by: T-05 (which determines how fast listings can appear).*
+I read "zero seeker rows in `lead_staging`" as "no channel". It means **the lane is built and
+idle** — the Facebook "TopFarms People" collection is the queue, un-transferred. Full analysis
+of six real posts and the resulting product gaps: [seeker-lane.md](seeker-lane.md).
+
+Replaced by T-06a…d below.
+
+### T-06a · What is the DM → signup step, exactly? — **FRONTIER**
+Saved post → DM → landing → signed-up seeker. What the DM says, what link they land on, what
+proves it worked. T-01's doctrine conflict applies here but probably resolves *differently*:
+a seeker DM has no "mention free" problem and no "who posts it" question, so this is not
+blocked on T-01. **How to close: prototype** — three DMs against three of the saved posts.
+
+### T-06b · Which groups, and at what saving cadence? — **FRONTIER**
+Six posts saved by three contributors is a proof of concept, not a pipeline aimed at 100–200
+in a week. **How to close: grilling.**
+
+### T-06c · Fix any of G-1…G-11 before the first 100 sign up, or after?
+The gap register in [seeker-lane.md](seeker-lane.md). The sharp end: **4 of 6 posts want relief
+or part-time work and the seeker profile has no hours or employment-type field at all**, and
+the role list has no Shepherd. A seeker who cannot describe themselves may fill it in wrong and
+never come back — but shipping schema before 100 real profiles is guessing.
+**How to close: grilling.** *Blocked by: nothing, but answering it early is what makes it
+cheap.*
+
+### T-06d · Does the seeker 100–200 land before, with, or after the employer batch?
+Both sides are cold. Whichever goes first is waiting on the other, and inviting either to an
+empty board burns the introduction. Supersedes T-07. **How to close: grilling.**
+*Blocked by: T-05.*
+
+### ~~T-07 · How many live listings before seekers get invited?~~ — folded into **T-06d**
+Same decision seen from the employer side. One ticket, not two.
 
 ### T-08 · `OUTREACH-EMAIL.md:52` documents the wrong opt-out procedure — **FRONTIER**
 It says to record an opt-out by rejecting the lead with suppression in `/admin/leads`. That
@@ -132,22 +160,33 @@ would bake in assumptions the frontier is about to invalidate.
 | Fog | Cleared by |
 |---|---|
 | Follow-up #2 and the sequence after first contact | T-01 (voice) + real reply data from batch one |
-| Seeker-side creative and channel spend | T-06 |
+| **Rural newsletter partnerships** | the first 100 seekers — nothing to show a partner until then |
+| **Agri university partnerships (Lincoln, Canterbury)** | same, plus an academic calendar the campaign has not been mapped against |
+| **Seeker profile schema changes (G-1…G-11)** | T-06c, and ideally ~100 real profiles to aim at |
 | The farm → farm referral loop | first successful placement |
+| **Seeker → seeker referral** (this community talks; six posts already have 3 contributors saving them) | first cohort signed up |
 | Paid ads, any platform | knowing a conversion rate, which needs batch-one numbers |
 | `?ref=` attribution reporting | any lead actually being contacted — the loop is built and has never carried traffic |
-| Seeker match-alert email (currently operator-only, manual by design) | T-07 + first listings |
+| Seeker match-alert email (currently operator-only, manual by design) | T-06d + first listings |
+| **Accredited-employer badge** (INZ list API; feasibility already confirmed, immigration parked) | a migrant seeker cohort large enough to justify un-parking it — G-11 is the demand signal |
 | Case study / first-farm story | a real placement |
 
 ## Frontier
 
 Tickets with nothing blocking them, in the order I would take them:
 
-1. **T-01** — the doctrine. Everything downstream is guessing until this lands.
-2. **T-02** — compliance, and it can run in parallel because it is research, not judgement.
-3. **T-08** — ten minutes, removes a live doc lie.
-4. **T-03** — criteria only.
-5. **T-06** — the other half of the marketplace, and it has had no attention at all.
+1. **T-06a** — the seeker DM. Promoted to first because the lane is **already built**, the
+   queue already has posts in it, and it does not wait on T-01. It is the shortest path from
+   here to a real user.
+2. **T-01** — the employer doctrine. Everything on that side is guessing until it lands.
+3. **T-02** — compliance, in parallel; it is research, not judgement.
+4. **T-08** — ten minutes, removes a live doc lie.
+5. **T-06b** — group list and saving cadence.
+6. **T-06c** — schema-now-or-later, cheapest to answer before 100 profiles exist.
+7. **T-03** — batch-one criteria.
+
+**Two lanes can run at once here** — seeker (T-06a/b) and employer (T-01/02/03) block each
+other only at T-06d, which is about sequencing the *invitations*, not the preparation.
 
 Work the frontier one ticket at a time. Write the answer on the ticket, add a line to the
 decision list, promote any cleared fog. Stop when quality drops — five tickets forced into one
