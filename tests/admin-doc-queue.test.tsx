@@ -290,3 +290,117 @@ describe('AdminDocumentsQueue end-to-end action dispatch (DOC-QUEUE-02 email sid
     expect(functionsInvokeMock).not.toHaveBeenCalled()
   })
 })
+
+// D4 Stage 1 (migration 101) — the register check on the employer-verification tab.
+//
+// The screen shows a claim, a link and two buttons. This session began by finding a hero on
+// /jobs mounted with no callbacks at all — rendering perfectly, doing nothing — so the one thing
+// worth asserting here is not that the buttons appear but that pressing them reaches the RPC
+// with the right employer, and that "does not confirm" sends false rather than nothing.
+describe('INZ register check on the verification queue (D4 Stage 1)', () => {
+  const verificationRow = {
+    verification_id: 'ver-1',
+    employer_id: 'emp-1',
+    farm_name: 'Probe Farm',
+    region: 'Waikato',
+    method: 'nzbn',
+    status: 'pending',
+    nzbn_number: '9429034603017',
+    document_url: null,
+    created_at: '2026-08-18T00:00:00Z',
+    reviewed_at: null,
+    verified_at: null,
+    rejection_reason: null,
+    inz_accredited: true,
+    inz_accreditation_expires: '2028-06-22',
+    inz_accredited_verified_at: null,
+    inz_register_checked_at: null,
+    inz_register_confirmed: null,
+  }
+
+  async function renderEmployerTab(row: Record<string, unknown> = verificationRow) {
+    rpcMock.mockImplementation((fn: string) => {
+      if (fn === 'admin_list_document_queue') {
+        return Promise.resolve({ data: { rows: [], total: 0 }, error: null })
+      }
+      if (fn === 'admin_list_verification_queue') {
+        return Promise.resolve({ data: { rows: [row], total: 1 }, error: null })
+      }
+      return Promise.resolve({ data: { employer_id: 'emp-1' }, error: null })
+    })
+    const { AdminDocumentsQueue } = await import('@/pages/admin/AdminDocumentsQueue')
+    render(
+      <MemoryRouter>
+        <AdminDocumentsQueue />
+      </MemoryRouter>,
+    )
+    fireEvent.click(screen.getByRole('tab', { name: 'Employer verification' }))
+    await waitFor(() => expect(screen.getByText('Probe Farm')).toBeInTheDocument())
+  }
+
+  it('shows the claim beside the NZBN it should be checked against', async () => {
+    // The whole point of the phase: these two facts were on different screens, so the person
+    // holding the number could not check the claim.
+    await renderEmployerTab()
+    expect(screen.getByText(/NZBN 9429034603017/)).toBeInTheDocument()
+    expect(screen.getByText(/Claims accredited/)).toBeInTheDocument()
+    expect(screen.getByText(/22 Jun 2028/)).toBeInTheDocument()
+    expect(screen.getByText(/Employer-declared — not checked yet/)).toBeInTheDocument()
+  })
+
+  it('links out to the register instead of querying it', async () => {
+    // INZ's terms of use forbid scripted access, so the admin searches it in their own browser.
+    await renderEmployerTab()
+    const link = screen.getByRole('link', { name: /Search the INZ register/ })
+    expect(link).toHaveAttribute(
+      'href',
+      'https://www.immigration.govt.nz/work/requirements-for-work-visas/approved-employers/accredited-employer-list/',
+    )
+    expect(link).toHaveAttribute('target', '_blank')
+    expect(link).toHaveAttribute('rel', expect.stringContaining('noopener'))
+  })
+
+  it('"Register confirms" reaches the RPC with p_confirms true', async () => {
+    await renderEmployerTab()
+    fireEvent.click(screen.getByRole('button', { name: 'Register confirms' }))
+    await waitFor(() => {
+      const call = rpcMock.mock.calls.find((c) => c[0] === 'admin_record_inz_register_check')
+      expect(call).toBeTruthy()
+      expect(call![1]).toEqual({ p_employer_id: 'emp-1', p_confirms: true })
+    })
+  })
+
+  it('"Does not confirm" sends false, not nothing', async () => {
+    // NULL is not a third outcome — the RPC rejects it — so the button must send an explicit
+    // false. A missing arg would surface as an error the admin cannot act on.
+    await renderEmployerTab()
+    fireEvent.click(screen.getByRole('button', { name: 'Does not confirm' }))
+    await waitFor(() => {
+      const call = rpcMock.mock.calls.find((c) => c[0] === 'admin_record_inz_register_check')
+      expect(call).toBeTruthy()
+      expect(call![1]).toEqual({ p_employer_id: 'emp-1', p_confirms: false })
+    })
+  })
+
+  it('offers no buttons when there is no claim to check', async () => {
+    // Confirming a claim nobody made is refused by the RPC; offering the button anyway is a
+    // control that exists only to produce an error.
+    await renderEmployerTab({ ...verificationRow, inz_accredited: false, inz_accreditation_expires: null })
+    expect(screen.getByText('No accreditation claimed')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Register confirms' })).not.toBeInTheDocument()
+  })
+
+  it('a cleared claim still shows that someone looked, and why that is not an accusation', async () => {
+    // inz_accredited=false with a NULL timestamp is byte-identical to an employer who never
+    // claimed anything. The audit log is what makes the refusal visible, and the copy is what
+    // stops the next admin reading a privacy setting as a lie.
+    await renderEmployerTab({
+      ...verificationRow,
+      inz_accredited: false,
+      inz_register_checked_at: '2026-08-19T00:00:00Z',
+      inz_register_confirmed: false,
+    })
+    expect(screen.getByText(/the register did\s+not confirm it/)).toBeInTheDocument()
+    expect(screen.getByText(/opt out of being\s+published/)).toBeInTheDocument()
+  })
+})

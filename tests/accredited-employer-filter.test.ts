@@ -39,10 +39,17 @@ describe('D3 — accreditation is filterable and is not sponsorship', () => {
     expect(SIDEBAR).toMatch(/checked=\{visa === 'true'\}/)
   })
 
-  it('says plainly that it is self-declared', () => {
+  it('says plainly that it is self-declared, and does not claim the check is visible here', () => {
     // F-11's lesson: a self-declared trust claim is not a verified one, and this one can cost
     // a migrant an application fee and a season if they rely on it.
-    expect(SIDEBAR).toMatch(/We do not yet check it against the INZ register/)
+    //
+    // D4 Stage 1 (migration 101) made the check real — an admin confirms it against the INZ
+    // register while reviewing the NZBN — so "we do not yet check it" became false and the copy
+    // moved. What did NOT change is that nothing on this list tells a seeker WHICH claims were
+    // confirmed, so the sentence must still refuse the word "verified".
+    expect(SIDEBAR).toMatch(/Employer-declared/)
+    expect(SIDEBAR).toMatch(/results\s*\n?\s*are not shown here yet/)
+    expect(SIDEBAR).not.toMatch(/do not yet check it against the INZ register/)
   })
 
   it('counts toward the active-filter state', () => {

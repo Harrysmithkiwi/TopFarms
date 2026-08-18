@@ -340,8 +340,15 @@ export function FilterSidebar({
               checked={accredited === 'true'}
               onCheckedChange={(val) => onFilterChange('accredited', val ? 'true' : null)}
             />
+            {/* D4 Stage 1 changed what this sentence may claim, and not by much. An admin now
+                checks each claimed accreditation against the INZ register while reviewing that
+                employer's NZBN (migration 101) — by hand, because INZ's terms forbid scripted
+                access. But nothing on this list shows a seeker WHICH claims were confirmed, so
+                saying "verified" here would be the overclaim the old sentence existed to avoid.
+                This copy changes again, once, in the commit that ships the badge. */}
             <p className="font-body text-text-subtle mt-1 text-[11px]">
-              Employer-declared. We do not yet check it against the INZ register.
+              Employer-declared. We check these against the INZ register by hand — the results
+              are not shown here yet.
             </p>
           </div>
         </details>

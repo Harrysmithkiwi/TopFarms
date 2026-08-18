@@ -97,16 +97,31 @@ describe('G-13 — the value survives a round trip', () => {
 })
 
 describe('G-13 — it is not passed off as verified', () => {
-  it('the form tells the employer we do not check it', () => {
-    // The substance, not the phrasing: the employer is told this is their own statement and
-    // that we have not checked it.
+  it('the form tells the employer what we do with the claim', () => {
+    // The substance, not the phrasing. It said "we do not yet check it" until D4 Stage 1
+    // (migration 101) made the check real, so the promise inverted: it is still THEIR statement,
+    // and now we also tell them we check it and clear it if we cannot confirm it. Leaving the
+    // old sentence would have been the rarer failure — a product under-claiming what it does,
+    // which costs the employer the chance to fix a wrong NZBN before a migrant relies on it.
     expect(STEP2).toMatch(/your own statement/i)
-    expect(STEP2).toMatch(/do not yet check it/i)
+    expect(STEP2).toMatch(/check it against the\s*\n?\s*Immigration New Zealand/i)
+    expect(STEP2).toMatch(/clear it if we cannot confirm it/i)
+    expect(STEP2).not.toMatch(/do not yet check it/i)
   })
 
-  it('the migration reserves a place for real verification without pretending to have it', () => {
+  it('091 reserved a place for real verification, and 101 is what fills it', () => {
+    // 091 was honest about being unverified: the column existed and was documented as always
+    // NULL. That is still the right record of what 091 did, so this file keeps asserting it.
     expect(SQL).toMatch(/inz_accredited_verified_at/)
     expect(SQL).toMatch(/Always NULL today/)
+    // And it is no longer true of the live column, because 101 writes it. A reserved column that
+    // stays reserved forever is the failure mode the reservation was meant to avoid.
+    const SQL101 = readFileSync(
+      join(process.cwd(), 'supabase/migrations/101_inz_register_check.sql'),
+      'utf-8',
+    )
+    expect(SQL101).toMatch(/inz_accredited_verified_at = CASE WHEN p_confirms THEN now\(\) ELSE NULL END/)
+    expect(SQL101).toMatch(/COMMENT ON COLUMN public\.employer_profiles\.inz_accredited_verified_at/)
   })
 
   it('it stays out of the trust ladder', () => {

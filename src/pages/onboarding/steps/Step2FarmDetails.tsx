@@ -273,8 +273,9 @@ export function Step2FarmDetails({ onComplete, onBack, defaultValues }: Step2Pro
                 {...register('inz_accreditation_expires')}
               />
               <p className="font-body text-[12px]" style={{ color: 'var(--color-text-subtle)' }}>
-                We show this to job seekers as your own statement — we do not yet check it
-                against Immigration New Zealand. It stops showing once the date passes.
+                We show this to job seekers as your own statement. We check it against the
+                Immigration New Zealand accredited-employer register when we review your NZBN,
+                and clear it if we cannot confirm it. It stops showing once the date passes.
               </p>
             </>
           )}

@@ -37,6 +37,16 @@ interface VerificationRow extends Record<string, unknown> {
   reviewed_at: string | null
   verified_at: string | null
   rejection_reason: string | null
+  // D4 Stage 1 (migration 101). The NZBN was already on this screen; the claim it should be
+  // checked against lived on a different one, so nobody could do the check where the number was.
+  inz_accredited: boolean
+  inz_accreditation_expires: string | null
+  inz_accredited_verified_at: string | null
+  // Read back out of admin_audit_log, so a REFUSAL is visible too. Without it,
+  // inz_accredited=false + verified_at=null is byte-identical to an employer who never claimed
+  // anything, and the admin loses the fact that they looked.
+  inz_register_checked_at: string | null
+  inz_register_confirmed: boolean | null
 }
 
 const STATUS_DISPLAY: Record<
@@ -48,6 +58,9 @@ const STATUS_DISPLAY: Record<
   rejected: { label: 'Rejected', variant: 'red' },
   needs_resubmission: { label: 'Needs Resubmission', variant: 'blue' },
 }
+
+const formatNzDate = (iso: string) =>
+  new Date(iso).toLocaleDateString('en-NZ', { day: '2-digit', month: 'short', year: 'numeric' })
 
 const VERIFICATION_STATUS_DISPLAY: Record<
   string,
@@ -117,6 +130,55 @@ export function AdminDocumentsQueue() {
     } catch (e) {
       console.error('[AdminDocumentsQueue] document open failed', e)
       toast.error('Could not open the document')
+    }
+  }
+
+  /**
+   * The register, which the admin opens themselves.
+   *
+   * There is no deep link and no inline result, and neither is an oversight. INZ's terms of use
+   * forbid "scraping… automation, or any similar data gathering, extraction or monitoring
+   * method" and require access "via standard web browsers only" — so the endpoint the search box
+   * calls is off limits to us, and a proxy would be building around a prohibition. The page also
+   * ignores every query-string form tried (?query=, ?keyword=, ?search=, ?q=), sends no
+   * Access-Control-Allow-Origin, and sets X-Frame-Options: SAMEORIGIN. Evidence and method:
+   * docs/immigration/06-inz-register-verification.md.
+   *
+   * A plain hyperlink IS explicitly permitted by the same terms, provided it does not imply INZ
+   * endorses us. So: a link, and the NZBN rendered beside it for the admin to paste.
+   */
+  const INZ_REGISTER_URL =
+    'https://www.immigration.govt.nz/work/requirements-for-work-visas/approved-employers/accredited-employer-list/'
+
+  /**
+   * Record what the register said. Admin-gated and audit-logged in the RPC body (migration 101).
+   *
+   * "Does not confirm" is not a punishment and the RPC is built that way: it clears the
+   * accreditation claim and nothing else. The employer's stated expiry survives — it is what the
+   * follow-up conversation is about — and their job listings are untouched. The likeliest reasons
+   * for a miss are that the employer opted out of publication (INZ's own page says some do) or
+   * that one of thirteen hand-typed digits is wrong, and the register returns the identical
+   * HTTP 400 either way. The harm was the claim, so the claim is what goes.
+   */
+  async function handleRegisterCheck(row: VerificationRow, confirms: boolean) {
+    setBusyId(row.verification_id)
+    try {
+      const { error } = await supabase.rpc(
+        'admin_record_inz_register_check' as never,
+        { p_employer_id: row.employer_id, p_confirms: confirms } as never,
+      )
+      if (error) {
+        toast.error(error.message || 'Could not record the register check')
+        return
+      }
+      toast.success(
+        confirms
+          ? 'Recorded: the register confirms this accreditation'
+          : 'Recorded: not confirmed — the accreditation claim has been cleared',
+      )
+      bumpRefresh()
+    } finally {
+      setBusyId(null)
     }
   }
 
@@ -300,6 +362,7 @@ export function AdminDocumentsQueue() {
           columns={[
             { key: 'employer', label: 'Employer' },
             { key: 'method', label: 'Method' },
+            { key: 'accreditation', label: 'INZ accreditation' },
             { key: 'submitted', label: 'Submitted' },
             { key: 'status', label: 'Status' },
             { key: 'actions', label: 'Actions' },
@@ -327,12 +390,85 @@ export function AdminDocumentsQueue() {
                     </div>
                   )}
                 </td>
+                {/* D4 Stage 1. The claim, the register, and the two buttons, all beside the
+                    NZBN that settles it — the whole point of the phase was that these three
+                    facts were on three different screens. */}
+                <td className="px-4 py-3 align-top">
+                  <div className="flex w-[260px] flex-col gap-1.5">
+                    {row.inz_accredited ? (
+                      <>
+                        <div className="text-[13px]" style={{ color: 'var(--color-text)' }}>
+                          Claims accredited
+                          {row.inz_accreditation_expires && (
+                            <span style={{ color: 'var(--color-text-muted)' }}>
+                              {' '}
+                              · expires {formatNzDate(row.inz_accreditation_expires)}
+                            </span>
+                          )}
+                        </div>
+                        {row.inz_accredited_verified_at ? (
+                          <Tag variant="green">
+                            Register confirmed {formatNzDate(row.inz_accredited_verified_at)}
+                          </Tag>
+                        ) : (
+                          <span
+                            className="text-[12px]"
+                            style={{ color: 'var(--color-text-subtle)' }}
+                          >
+                            Employer-declared — not checked yet
+                          </span>
+                        )}
+                        <a
+                          href={INZ_REGISTER_URL}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-brand-hover text-[12px] font-semibold hover:underline"
+                        >
+                          Search the INZ register
+                          <span className="sr-only"> (opens in a new tab)</span>
+                        </a>
+                        <div className="flex flex-wrap gap-2 pt-0.5">
+                          <Button
+                            type="button"
+                            variant="primary"
+                            size="sm"
+                            onClick={() => handleRegisterCheck(row, true)}
+                            disabled={busy}
+                          >
+                            Register confirms
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleRegisterCheck(row, false)}
+                            disabled={busy}
+                          >
+                            Does not confirm
+                          </Button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
+                          No accreditation claimed
+                        </span>
+                        {/* A refusal has no home on the profile row — inz_accredited=false with
+                            no timestamp is identical to an employer who never claimed anything.
+                            This comes back out of the audit log so the follow-up is not lost. */}
+                        {row.inz_register_checked_at && row.inz_register_confirmed === false && (
+                          <span className="text-[12px]" style={{ color: 'var(--color-text-subtle)' }}>
+                            Cleared {formatNzDate(row.inz_register_checked_at)} — the register did
+                            not confirm it. Not necessarily wrong: some employers opt out of being
+                            published, and a mistyped NZBN looks the same.
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </td>
                 <td className="px-4 py-3 text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
-                  {new Date(row.created_at).toLocaleDateString('en-NZ', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric',
-                  })}
+                  {formatNzDate(row.created_at)}
                 </td>
                 <td className="px-4 py-3">
                   <Tag variant={status.variant}>{status.label}</Tag>
