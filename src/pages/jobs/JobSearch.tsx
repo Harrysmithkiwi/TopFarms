@@ -14,7 +14,7 @@ import { SearchJobCard } from '@/components/ui/SearchJobCard'
 import { SearchHero } from '@/components/ui/SearchHero'
 import { Pagination } from '@/components/ui/Pagination'
 import { ActiveFilterPills } from '@/components/ui/ActiveFilterPills'
-import { hasActiveFilters, snapshotFilters, deriveAutoName } from '@/lib/savedSearch'
+import { FILTER_KEYS, hasActiveFilters, snapshotFilters, deriveAutoName } from '@/lib/savedSearch'
 import { SaveSearchModal } from '@/components/saved-search/SaveSearchModal'
 import { ReplaceOldestModal } from '@/components/saved-search/ReplaceOldestModal'
 import { SavedSearchesDropdown } from '@/components/saved-search/SavedSearchesDropdown'
@@ -218,24 +218,12 @@ export function JobSearch() {
     setSearchParams(
       (prev) => {
         const next = new URLSearchParams(prev)
-        const filterKeys = [
-          'role_type',
-          'mentorship',
-          'vehicle',
-          'dairynz_pathway',
-          'posted_recent',
-          'shed_type',
-          'region',
-          'contract_type',
-          'herd_size',
-          'salary_min',
-          'salary_max',
-          'accommodation_type',
-          'visa',
-          'accredited',
-          'dairynz_level',
-          'page',
-        ]
+        // Audit F-17: DERIVED from savedSearch's FILTER_KEYS rather than copied. This list
+        // and that one had drifted apart — `q` was in neither, so Clear All left a text
+        // search in place while the sidebar reported no active filters, and a saved search
+        // silently dropped it. `sort` is deliberately kept by Clear All (it is a view
+        // preference, not a filter); `page` is deliberately cleared.
+        const filterKeys: string[] = [...FILTER_KEYS.filter((k) => k !== 'sort'), 'page']
         filterKeys.forEach((key) => next.delete(key))
         return next
       },

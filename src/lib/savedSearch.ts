@@ -1,19 +1,22 @@
 import { SHED_TYPES } from '@/types/domain'
 
 /**
- * Authoritative list of filter keys snapshotted into a saved search.
- * MUST mirror src/pages/jobs/JobSearch.tsx:170-176 handleClearAll() filterKeys
- * EXCEPT 'page' is excluded (saved searches always start at page 1)
- * AND 'sort' is included (user-meaningful per Phase 17 RESEARCH §2 recommendation).
+ * THE list of filter keys — audit F-17.
  *
- * Drift risk: if JobSearch.tsx adds/renames a filter key without updating this
- * list, saved searches silently lose that filter. Pitfall 6 in 17-RESEARCH.md.
+ * It used to say "MUST mirror JobSearch.tsx handleClearAll()" and flag the drift risk in its
+ * own docstring. It had then drifted exactly as predicted: `q` was missing, so a saved search
+ * silently dropped the seeker's text search; four keys that filter nothing were still in it;
+ * and `accredited` had never been added. Four registries were being kept in step by hand —
+ * this one, JobSearch's clear-all, ActiveFilterPills' label map, and FilterSidebar's
+ * hasActiveFilters.
+ *
+ * JobSearch now DERIVES its clear-all list from this one, so there is a single list rather
+ * than a rule about copying. `sort` is here and excluded there; `page` is the reverse (a saved
+ * search always starts at page 1).
  */
 export const FILTER_KEYS = [
+  'q',
   'role_type',
-  'mentorship',
-  'vehicle',
-  'dairynz_pathway',
   'posted_recent',
   'shed_type',
   'region',
@@ -23,7 +26,7 @@ export const FILTER_KEYS = [
   'salary_max',
   'accommodation_type',
   'visa',
-  'dairynz_level',
+  'accredited',
   'sort',
 ] as const
 

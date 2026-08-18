@@ -4,9 +4,8 @@ import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Checkbox } from '@/components/ui/Checkbox'
 import { Toggle } from '@/components/ui/Toggle'
-import { Select } from '@/components/ui/Select'
 import { Button } from '@/components/ui/Button'
-import { SHED_TYPES, HERD_SIZE_BUCKETS, DAIRYNZ_LEVELS } from '@/types/domain'
+import { SHED_TYPES, HERD_SIZE_BUCKETS } from '@/types/domain'
 import { NZ_REGIONS, ROLE_TYPES } from '@/lib/constants'
 
 interface FilterSidebarProps {
@@ -31,12 +30,15 @@ interface FilterSidebarProps {
 // as the employer wizard does it.
 const ROLE_TYPE_OPTIONS = ROLE_TYPES.map((r) => ({ value: r, label: r }))
 
-const EXTRAS_FILTERS = [
-  { key: 'mentorship', label: 'Mentorship available' },
-  { key: 'vehicle', label: 'Vehicle provided' },
-  { key: 'dairynz_pathway', label: 'DairyNZ pathway' },
-  { key: 'posted_recent', label: 'Posted in last 7 days' },
-]
+// Audit F-17. `mentorship`, `vehicle` and `dairynz_pathway` were removed: they rendered here,
+// persisted to the URL, produced a pill and counted toward hasActiveFilters — and JobSearch
+// never applied any of them to the query. `jobs` has no column for any of the three. A filter
+// that visibly narrows nothing is worse than a missing one, because the seeker reads the
+// unchanged result list as "these are the only jobs that offer it".
+//
+// `vehicle_provided` DOES exist on employer_profiles, so that one could come back as a real
+// filter through the marketplace view — as a feature, not as a repair.
+const EXTRAS_FILTERS = [{ key: 'posted_recent', label: 'Posted in last 7 days' }]
 
 const ACCOMMODATION_OPTIONS = [
   { value: 'house', label: 'House' },
@@ -89,7 +91,6 @@ export function FilterSidebar({
   const salaryMax = searchParams.get('salary_max')
   const visa = searchParams.get('visa')
   const accredited = searchParams.get('accredited')
-  const dairynzLevel = searchParams.get('dairynz_level')
 
   const currentSalaryMin = salaryMin ? Number(salaryMin) : SALARY_MIN
   const currentSalaryMax = salaryMax ? Number(salaryMax) : SALARY_MAX
@@ -116,9 +117,6 @@ export function FilterSidebar({
   const hasActiveFilters =
     selectedRoleTypes.length > 0 ||
     selectedAccommodationTypes.length > 0 ||
-    searchParams.get('mentorship') !== null ||
-    searchParams.get('vehicle') !== null ||
-    searchParams.get('dairynz_pathway') !== null ||
     searchParams.get('posted_recent') !== null ||
     selectedShedTypes.length > 0 ||
     selectedRegions.length > 0 ||
@@ -128,7 +126,7 @@ export function FilterSidebar({
     salaryMax !== null ||
     visa !== null ||
     accredited !== null ||
-    dairynzLevel !== null
+    searchParams.get('q') !== null
 
   const visibleRegions = showAllRegions ? NZ_REGIONS : NZ_REGIONS.slice(0, 6)
 
@@ -348,23 +346,12 @@ export function FilterSidebar({
           </div>
         </details>
 
-        {/* 10. DairyNZ Level */}
-        <details open className="border-border border-t py-4">
-          <summary className="mb-3 flex cursor-pointer list-none items-center justify-between">
-            <SectionHeader title="DairyNZ Level" />
-          </summary>
-          <p className="font-body text-text-subtle mb-2 text-[11px]">Show jobs you qualify for</p>
-          <Select
-            placeholder="Any level"
-            ariaLabel="DairyNZ level"
-            options={[
-              { value: 'all', label: 'Any level' },
-              ...DAIRYNZ_LEVELS.map((l) => ({ value: l.value, label: l.label })),
-            ]}
-            value={dairynzLevel ?? 'all'}
-            onValueChange={(val) => onFilterChange('dairynz_level', val === 'all' ? null : val)}
-          />
-        </details>
+        {/* Audit F-17: the DairyNZ Level select lived here. It said "Show jobs you qualify
+            for" and JobSearch never applied it — `jobs` carries no DairyNZ column, so the
+            result list was identical at every level. A seeker filtering to Level 1 read the
+            unchanged list as "these are the jobs open to me". Removed rather than repaired:
+            matching on DairyNZ level is a scoring question, and compute_match_score does not
+            read it either. */}
 
         {/* Clear All */}
         {hasActiveFilters && (

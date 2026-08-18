@@ -12,25 +12,18 @@ const PILL_LABEL_MAP: Record<string, (v: string) => string> = {
   contract_type: (v) => `Contract: ${v}`,
   herd_size: (v) => `Herd: ${v}`,
   accommodation_type: (v) => `Accommodation: ${v.replace(/_/g, ' ')}`,
-  mentorship: () => 'Mentorship',
-  vehicle: () => 'Vehicle provided',
-  dairynz_pathway: () => 'DairyNZ pathway',
+  // Audit F-17: `q` was READ by JobSearch and sent by OpenRolesSection, but appeared in no
+  // registry — so a text search produced no pill, could not be cleared, was not saved with a
+  // saved search, and drove the "no filters applied" empty state while filtering hard.
+  q: (v) => `Search: ${v}`,
   posted_recent: () => 'Posted < 7 days',
   visa: () => 'Visa sponsorship',
+  accredited: () => 'Accredited employer',
   couples: () => 'Couples welcome',
-  dairynz_level: (v) => `DairyNZ: ${v}`,
 }
 
 // Single-value keys (remove entire param)
-const SINGLE_VALUE_KEYS = new Set([
-  'mentorship',
-  'vehicle',
-  'dairynz_pathway',
-  'posted_recent',
-  'visa',
-  'couples',
-  'dairynz_level',
-])
+const SINGLE_VALUE_KEYS = new Set(['q', 'posted_recent', 'visa', 'accredited', 'couples'])
 
 export function ActiveFilterPills({ searchParams, onRemove }: ActiveFilterPillsProps) {
   const pills: { key: string; value: string; label: string }[] = []

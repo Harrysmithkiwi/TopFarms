@@ -68,8 +68,12 @@ describe('D3 — the query filters on the derived flag', () => {
   })
 
   it('is registered as a known filter param', () => {
-    // F-17 in the audit: `q` was read but absent from the filter registry, so it produced no
-    // pill, could not be saved, and drove the wrong empty state.
-    expect(SEARCH).toMatch(/'visa',\s*\n\s*'accredited',/)
+    // F-17: `q` was read but absent from the registry, so it produced no pill, could not be
+    // saved, and drove the wrong empty state. After F-17 there is ONE list — savedSearch's
+    // FILTER_KEYS — which JobSearch derives its clear-all from, so that is where a filter is
+    // registered now.
+    const saved = readFileSync(join(process.cwd(), 'src/lib/savedSearch.ts'), 'utf-8')
+    expect(saved).toMatch(/'accredited',/)
+    expect(SEARCH).toMatch(/FILTER_KEYS\.filter\(\(k\) => k !== 'sort'\)/)
   })
 })
