@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { Link2, ClipboardPaste } from 'lucide-react'
+import { Link2, ClipboardPaste, Ban } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
 import { AdminTable } from '@/components/admin/AdminTable'
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
 import { KpiCard } from '@/components/admin/KpiCard'
@@ -134,6 +135,68 @@ function statusOf(row: SeekerStagingRow): { label: string; variant: 'green' | 'w
   if (row.responded_at) return { label: 'Replied', variant: 'warn' }
   if (row.sent_at) return { label: 'Messaged', variant: 'grey' }
   return { label: 'To review', variant: 'grey' }
+}
+
+/**
+ * Record that a seeker asked not to be contacted.
+ *
+ * This screen had no such control at all. 087 closed the gap for PROMOTED leads
+ * (`admin_lead_suppress` + a button on Leads), but the seeker lane never promotes — outreach
+ * state lives on `lead_staging` and the only action here was "copy link". So a reply of
+ * "stop" to a DM had nowhere to go, which is the failure UEMA 2007 actually cares about.
+ *
+ * `admin_lead_reject` already accepted `p_suppress`; it just had no caller on this screen.
+ * Migration 092 makes the suppression it writes hold across a second Facebook handle.
+ *
+ * Two-step rather than a confirm dialog: a browser modal blocks the extension driving this
+ * page, and suppression is not reversible from any UI.
+ */
+function OptOutControl({ row, onDone }: { row: SeekerStagingRow; onDone: () => void }) {
+  const [confirming, setConfirming] = useState(false)
+  const [saving, setSaving] = useState(false)
+
+  async function suppress() {
+    setSaving(true)
+    const { error } = await supabase.rpc('admin_lead_reject', {
+      p_staging_id: row.id,
+      p_suppress: true,
+      p_reason: 'opted_out',
+    })
+    setSaving(false)
+    if (error) {
+      toast.error(`Could not record the opt-out: ${error.message}`)
+      return
+    }
+    toast.success('Opt-out recorded — they will not resurface on a re-capture')
+    onDone()
+  }
+
+  if (!confirming) {
+    return (
+      <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setConfirming(true)}>
+        <Ban size={14} aria-hidden="true" />
+        They asked not to be contacted
+      </Button>
+    )
+  }
+
+  return (
+    <div className="border-border space-y-2 rounded-[8px] border-[1.5px] p-3">
+      <p className="text-[13px] leading-6" style={{ color: 'var(--color-text)' }}>
+        Records the opt-out and removes them from the queue. Re-capturing this post — or the
+        same post under a different handle — will be blocked from here on. This cannot be
+        undone from the admin screens.
+      </p>
+      <div className="flex flex-wrap gap-2">
+        <Button variant="primary" size="sm" disabled={saving} onClick={() => void suppress()}>
+          {saving ? 'Recording…' : 'Record opt-out'}
+        </Button>
+        <Button variant="outline" size="sm" disabled={saving} onClick={() => setConfirming(false)}>
+          Cancel
+        </Button>
+      </div>
+    </div>
+  )
 }
 
 export function AdminSeekerStaging() {
@@ -321,15 +384,24 @@ export function AdminSeekerStaging() {
             <Field label="Source" value={selected.source} />
             <Field label="Original post" value={selected.source_ref} />
             <Field label="Confidence" value={`${Math.round(selected.confidence * 100)}%`} />
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-1.5"
-              onClick={() => void copyOutreachLink(selected.id, selected.structured.display_name)}
-            >
-              <Link2 size={14} />
-              Copy signup link
-            </Button>
+            <div className="flex flex-col gap-2 pt-1">
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5 self-start"
+                onClick={() => void copyOutreachLink(selected.id, selected.structured.display_name)}
+              >
+                <Link2 size={14} />
+                Copy signup link
+              </Button>
+              <OptOutControl
+                row={selected}
+                onDone={() => {
+                  setSelected(null)
+                  setRefreshKey((k) => k + 1)
+                }}
+              />
+            </div>
           </DrawerSection>
         </DrawerShell>
       )}
