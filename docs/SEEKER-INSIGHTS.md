@@ -52,7 +52,7 @@ bridge to the gated v2.1 training phases.
 |---|---|---|---|
 | **G-1** | Seekers could state a role but never the **terms** — no employment-type field at all | 9/23 want relief / part-time / short-term | `090` `contract_type_pref` |
 | **G-2** | Role list was dairy-shaped on a site claiming five sectors | Shepherd, calf rearing, stock work | `ROLE_TYPES` += Shepherd, Stock Manager, Calf Rearer |
-| **G-13** | *"Are you accredited?"* was unanswerable; `jobs.visa_sponsorship` answers *"will you sponsor"* | 3+/23 hunting accredited employers | `091` `inz_accredited` + expiry + derived flag |
+| **G-13** | *"Are you accredited?"* was unanswerable; `jobs.visa_sponsorship` answers *"will you sponsor"* | 3+/23 hunting accredited employers | `091` `inz_accredited` + expiry + derived flag; `101` an admin checks it against the INZ register |
 
 **Open, ranked by frequency**
 
@@ -87,6 +87,38 @@ weight budget, and it is probably the highest-leverage matching work available.
 
 ---
 
+## What verifying accreditation taught us (D4, 2026-08-18/19)
+
+The corpus said seekers hunt for accredited employers; `091` let farms say so; D4 asked whether
+we could check it. Four findings worth keeping, because each one generalises past this feature.
+
+**Feasible and permitted are different questions, and we asked them in the wrong order.**
+The knowledge base had recorded the INZ register as *"feasibility CONFIRMED"* since July, on the
+strength of a JSON endpoint that answers a bare `curl`. That was true and it was not the
+question. The terms of use forbid *"scraping… automation, or any similar data gathering,
+extraction or monitoring method"* and require access *"via standard web browsers only"*. Reading
+them took three minutes and closed a phase we had costed as an Edge Function plus a cron plus a
+mismatch queue. **Read the terms in the same sitting as the spike.** A permissive `robots.txt` is
+not a permission — it governs crawlers, and the terms govern us.
+
+**The scale argument beat the design.** 29,000 accredited employers, zero employer profiles in
+prod. The manual version — a link and two buttons on a screen an admin is already looking at —
+works at five employers and at five hundred, and it took one migration. The automated version was
+never buildable anyway, but we would have found that out *after* designing around it.
+
+**Absence of evidence is the state that needed the most care.** INZ's own page says some
+employers opt out of being published, and a mistyped digit in a 13-digit NZBN returns the
+identical HTTP 400 as a genuine miss. So *"the register does not confirm this"* has at least five
+causes and only one of them is dishonesty. That ruled the whole response: clear the claim (the
+claim is the harm), leave the listing alone, and word the UI so an admin reading it later does
+not mistake a privacy setting for a lie.
+
+**A "not found" has no natural home in a schema, and that is where the bug hides.** A
+confirmation had a column waiting for it since `091`. A refusal did not — clearing
+`inz_accredited` leaves the row byte-identical to an employer who never claimed anything, so the
+admin loses the fact that they looked. `admin_audit_log` already held it. **When an outcome has
+nowhere to be recorded, check whether the log already records it before adding a column.**
+
 ## Guardrails learned from this corpus
 
 - **Never reference private circumstances** a post volunteers — a broken leg, a pregnancy, a
@@ -95,4 +127,17 @@ weight budget, and it is probably the highest-leverage matching work available.
 - **Do not charge seekers.** They are the scarce side, several are low-income migrants and single
   parents, and the Facebook groups' goodwill is the entire distribution channel.
 - **A self-declared trust claim is not a verified one** (F-11). `inz_accredited` sits outside
-  `employer_verifications` on purpose.
+  `employer_verifications` on purpose — and it stayed outside when the check became real (`101`).
+  The ladder answers *"is this a real farm run by real people"*; accreditation answers *"has INZ
+  licensed them to hire migrants"*. Folding the second into the first makes every unaccredited
+  farm — most NZ dairy farms — look less trustworthy than it is, and makes an accredited one look
+  like **we** vouched for it. "An admin reviewed it" is not the criterion for the ladder; "it is
+  the same kind of claim" is.
+- **Do not charge for a trust signal.** Verifying accreditation sits on the
+  accreditation-as-a-service line and was worth asking about. The answer is no: if checking is a
+  paid upgrade, the free default is a board of unchecked claims advertised to the people who lose
+  money when one is false. A badge everyone eligible gets is readable by its absence; a badge only
+  buyers hold says nothing. The paid work is helping a farm *get* accredited, not looking them up.
+- **Show which claim a seeker is reading, or show neither.** "They say so" and "we checked" are
+  different claims. Until both can be displayed honestly, the `/jobs` copy says what is actually
+  true and no more.

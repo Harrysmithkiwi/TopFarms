@@ -138,7 +138,7 @@ site's content under **CC-BY 3.0 NZ** with attribution to the Crown and the Mini
 automated retrieval that is prohibited, not the knowledge. (The licence excludes logos and
 emblems, so no INZ mark goes anywhere near our UI.)
 
-## 5. What this means for Stage 1
+## 5. What this means for Stage 1 — **shipped 2026-08-19, migration `101`**
 
 Unchanged in shape, and now unambiguous in its middle step:
 
@@ -155,6 +155,36 @@ Unchanged in shape, and now unambiguous in its middle step:
 publication, and per §2 a mistyped NZBN is indistinguishable from a genuine miss. Clearing the
 flag is right, because we cannot stand behind an unconfirmed claim on a surface migrants spend
 money on. Anything harsher than that is not supported by what the register actually tells us.
+
+### What shipped, and three things that did not
+
+`101` adds `admin_record_inz_register_check(employer_id, confirms)` — admin-gated, audit-logged
+— and extends `admin_list_verification_queue` with the employer's claim and the last check.
+Proven on prod inside a rolled-back transaction; the first probe caught a real defect (two audit
+rows in one transaction share `now()`, so the queue reported a refusal as confirmed).
+
+Deliberately absent, each for a reason recorded above or beside it:
+
+- **No Edge Function and no inline result** — §4.
+- **No change to the employer's jobs on a refusal.** The harm is the claim, not the listing, and
+  four of the five reasons a check fails are innocent.
+- **No second derived column on `marketplace_employer_profiles`, and no seeker-facing badge.**
+  Nothing renders `accredited_employer` to a seeker today — it is filter-only — so a "verified"
+  flag would be a column with no reader. "They say so" and "we checked" must never collapse into
+  one boolean, and showing neither is the honest way to hold that until both can be shown. The
+  `/jobs` filter copy therefore changed only as far as the truth allows: from *"we do not yet
+  check it against the INZ register"* to *"we check these against the INZ register by hand — the
+  results are not shown here yet."* It changes once more, in the commit that ships the badge.
+- **No automated email to the employer.** At zero employer profiles the founder writes a better
+  one by hand than a template would, and knows the person. The admin screen shows a cleared claim
+  with its date so the follow-up is not lost. Automate it when doing it by hand becomes tedious.
+
+**Chargeable?** No, and not as a line item. It is fifteen seconds of an admin typing a number
+into a free government site the seeker can search themselves. Making it a paid upgrade would
+mean the free default is a board of unchecked accreditation claims shown to exactly the people
+who lose money when one is false — selling the fix to a problem we created, in a product whose
+stated enemy is the fee scam. The money is next door in `02-legal-line.md`: helping a farm *get*
+accredited and through a Job Check is hours of founder-lawyer work. Checking a register is not.
 
 ## 6. The two lawful channels, and the one we are not using
 

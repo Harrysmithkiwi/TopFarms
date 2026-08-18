@@ -8,7 +8,41 @@ stream doc disagree, the stream doc wins and this file is out of date — fix it
 
 ---
 
-## ▶ Next session, start here — updated 2026-08-17 (evening)
+## ▶ Next session, start here — updated 2026-08-19
+
+**D4 (INZ register verification) is DONE at Stage 1, and Stages 2–3 are CLOSED, not deferred.**
+Stage 0 opened the register in a browser: it **is** keyed on NZBN and **does** publish an expiry,
+and **INZ's terms of use forbid scripted access** — "standard web browsers only, unless we agree
+otherwise". Evidence: `docs/immigration/06-inz-register-verification.md`. So there is no Edge
+Function and there never will be without an agreement with MBIE (or an OIA request for the list
+as a dataset — recorded in `06` §6 with its staleness cost). Migration `101` ships the manual
+version: an admin sees the claim beside the NZBN on `/admin/documents`, opens the register
+themselves, and presses one of two buttons.
+
+**Three operator decisions were taken and are now load-bearing** — do not quietly reverse them:
+
+1. **A refusal clears the claim and nothing else.** Jobs are untouched, the stated expiry
+   survives. Four of the five reasons a check fails are innocent (opted-out publication, a
+   mistyped digit in 13, a trading-name mismatch, a lapsed date).
+2. **Accreditation stays an attribute, never a trust-ladder rung** (F-11), and **the
+   seeker-facing badge is deliberately NOT built yet** — nothing renders `accredited_employer`
+   to a seeker today, so a "verified" flag would be a column with no reader. It lands in the
+   same commit as the badge, and the `/jobs` filter copy changes once more then.
+3. **Not chargeable.** The paid work is helping a farm *get* accredited (`02-legal-line.md`), not
+   looking one up.
+
+**Also shipped:** `<SearchHero />` on `/jobs` was mounted with **no props at all** — search box,
+region dropdown and all five pills inert (F-17 family), plus a fifth region vocabulary that
+matched nothing in the database. Wired, region rebuilt from `NZ_REGIONS`, pills rebuilt from
+`ROLE_TYPES`.
+
+**Still open from the D4 lane:** the automated email to an employer whose claim was cleared is
+deliberately not built — the admin screen shows the cleared claim with its date; write the email
+by hand until that is tedious. And the seeker-facing badge above.
+
+---
+
+## ▶ Previous entry — updated 2026-08-17 (evening)
 
 **2026-08-18: the next batch is written up as a paste-ready work order —
 `.planning/NEXT-BATCH-PROMPT.md` (Phases B→C→D→E). Phase A, sending the first outreach batch, is
