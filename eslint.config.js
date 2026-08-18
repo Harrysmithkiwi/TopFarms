@@ -22,6 +22,10 @@ export default tseslint.config(
       // Deno runtime (Deno.serve, URL imports) — not lintable with this
       // browser/Node config. Typecheck happens at deploy via Supabase CLI.
       'supabase/functions',
+      // Same reason, one file: a Deno CLI check that imports supabase/functions/_shared
+      // and prints its results. `deno check` covers it. Named individually rather than
+      // ignoring all of scripts/ — the rest of that directory stays linted.
+      'scripts/seeker-extraction-check.ts',
       // Vendored skill/agent dirs at any depth (e.g. marketing/video/**/.claude
       // fixture corpora) — not app code, not held to app lint standards.
       '**/.claude',

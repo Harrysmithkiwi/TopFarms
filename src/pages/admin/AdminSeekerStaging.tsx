@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { Link2, ClipboardPaste, Ban } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { CONTRACT_TYPE_PREFS } from '@/lib/constants'
 import { AdminTable } from '@/components/admin/AdminTable'
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
 import { KpiCard } from '@/components/admin/KpiCard'
@@ -27,6 +28,8 @@ import { Tag } from '@/components/ui/Tag'
 
 interface SeekerDetail {
   roles_sought?: string[]
+  /** DB tokens from `CONTRACT_TYPES` — the terms they want. Mirrors migration 090. */
+  contract_type_pref?: string[]
   skills?: string[]
   licences?: string[]
   sheds_experienced?: string[]
@@ -127,6 +130,19 @@ function Field({ label, value }: { label: string; value: React.ReactNode }) {
 
 function list(v?: string[] | null): string | null {
   return v && v.length ? v.join(', ') : null
+}
+
+/**
+ * DB tokens → the words farmers use, borrowed from `CONTRACT_TYPE_PREFS`. Showing the raw
+ * token would put "casual" in front of a reviewer reading a post that says "relief only",
+ * and relief is the word that actually appears in 9 of the 23 corpus posts.
+ */
+const CONTRACT_LABELS: Record<string, string> = Object.fromEntries(
+  CONTRACT_TYPE_PREFS.map((c) => [c.value, c.label]),
+)
+
+function terms(v?: string[] | null): string | null {
+  return v && v.length ? v.map((t) => CONTRACT_LABELS[t] ?? t).join(' · ') : null
 }
 
 /** Where a seeker sits in the funnel. Signed up wins — it is the only outcome. */
@@ -347,6 +363,10 @@ export function AdminSeekerStaging() {
           <DrawerSection label="What they're after">
             <Field label="Region · Locality" value={regionLocality(selected.structured)} />
             <Field label="Roles sought" value={list(selected.structured.seeker?.roles_sought)} />
+            {/* Terms sit directly under the role because they are the pair that decides
+                whether a job is even worth showing them — and terms are the more common
+                statement of the two in these posts. */}
+            <Field label="Terms" value={terms(selected.structured.seeker?.contract_type_pref)} />
             <Field label="Their words" value={selected.structured.role_or_category} />
             <Field label="Available" value={selected.structured.seeker?.availability} />
             <Field

@@ -1,7 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import * as jose from 'https://esm.sh/jose@5'
 import { NZ_REGIONS, canonicalRegion, classifyGeo } from '../_shared/leadGeo.ts'
-import { ROLE_TYPES, SKILL_TAXONOMY } from '../_shared/leadVocab.ts'
+import { CONTRACT_TYPES, ROLE_TYPES, SKILL_TAXONOMY } from '../_shared/leadVocab.ts'
 
 // lead-intake — the single intake door, L1 (Claude Haiku structuring).
 //
@@ -91,6 +91,16 @@ interface StructuredLead {
 
 interface SeekerDetail {
   roles_sought: string[]
+  /**
+   * The TERMS they want, mirroring `seeker_profiles.contract_type_pref` (090) and, through
+   * it, `jobs.contract_type`. The most common ask in the corpus — 9 of 23 — and until now
+   * the extractor had nowhere to put it, so the single strongest signal in a seeker post
+   * was read and discarded.
+   *
+   * Distinct from `roles_sought`: "Relief Milker" is a ROLE, while "permanent OR relief,
+   * whichever comes up" is a TERM, and several posts state one without the other.
+   */
+  contract_type_pref: string[]
   /** Competencies claimed, verbatim from the post — maps onto the 24-skill taxonomy later. */
   skills: string[]
   licences: string[]
@@ -493,8 +503,28 @@ async function structureWithClaude(
           'Map what they wrote onto that list — "farm assistant"/"farmhand"/"dairy',
           'assistant" → "Farm Hand"; "2ic"/"second in charge" → "2IC"; "herd manager"',
           '→ "Herd Manager"; "relief milking" → "Relief Milker"; "manager" → "Farm',
-          'Manager". Use "Other" only when nothing fits. Keep their own wording in',
+          'Manager"; "calf rearing"/"calf rearer" → "Calf Rearer"; "shepherd"/"shepherding"',
+          '→ "Shepherd". Use "Other" only when nothing fits. Keep their own wording in',
           'role_or_category, which stays verbatim.',
+          // "Stock Manager" is a senior post, so general stock work does NOT map to it.
+          // Getting this wrong promotes a farm hand into a manager and makes the queue lie
+          // about the person, which is worse than the catch-all.
+          'CAUTION on "Stock Manager": use it ONLY when the post says they manage stock or',
+          'hold that title. Generic "stock work" / "working with stock" on a sheep and beef',
+          'farm is "Shepherd" if they muster or shepherd, otherwise "Farm Hand". Never',
+          'promote someone into a management role they did not claim.',
+          // ── Terms ─────────────────────────────────────────────────────────
+          `seeker.contract_type_pref MUST use ONLY these exact values: ${CONTRACT_TYPES.join(', ')}.`,
+          'This is the ENGAGEMENT they want, and it is separate from the role: "Relief',
+          'Milker" is a role, while "permanent or relief, whichever comes up" is a term, and',
+          'a post can state either without the other. Map "permanent", "full time position"',
+          'and "long term" → "permanent". Map "fixed term", "contract", "over calving",',
+          '"for the season", "short term" and "until Christmas" → "contract". Map "relief",',
+          '"casual", "part time", "a few days a week", "weekends", "odd jobs" and "cover"',
+          '→ "casual".',
+          'MULTIPLE values when they say they would take more than one ("weekends, or',
+          'ideally permanent part time") — list every one they would accept. Empty array',
+          'when the post states no terms at all; never guess from the role.',
           `seeker.skills MUST use ONLY these exact values: ${SKILL_TAXONOMY.join('; ')}.`,
           'Map each task they say they can do onto the closest one — "break fencing" →',
           '"Fencing & yard construction"; "detect mastitis and lameness"/"treatments for',
@@ -593,6 +623,10 @@ async function structureWithClaude(
                         type: ['object', 'null'],
                         properties: {
                           roles_sought: { type: 'array', items: { type: 'string' } },
+                          contract_type_pref: {
+                            type: 'array',
+                            items: { type: 'string', enum: [...CONTRACT_TYPES] },
+                          },
                           skills: { type: 'array', items: { type: 'string' } },
                           licences: { type: 'array', items: { type: 'string' } },
                           sheds_experienced: { type: 'array', items: { type: 'string' } },

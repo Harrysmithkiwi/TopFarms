@@ -36,6 +36,20 @@ export const ROLE_TYPES = [
   'Other',
 ] as const
 
+/**
+ * Mirrors CONTRACT_TYPE_PREFS in src/lib/constants.ts and, through it,
+ * jobs_contract_type_check and seeker_profiles.contract_type_pref (migration 090).
+ *
+ * The single most common thing seekers state and the schema had no field for until
+ * 2026-08-17: 9 of the 23 corpus posts ask for relief, part-time or short-term work. The
+ * words they use are relief, casual, part time, short term, over calving, a few days a week
+ * — almost never the DB token itself, so the prompt has to do the mapping.
+ *
+ * NB: keep comments in this block free of apostrophes and quoted tokens —
+ * tests/lead-vocab-parity.test.ts parses the array with a string-literal regex.
+ */
+export const CONTRACT_TYPES = ['permanent', 'contract', 'casual'] as const
+
 /** Mirrors public.skills.name — the 24-competency taxonomy, the join key for matching. */
 export const SKILL_TAXONOMY = [
   'Agronomy & soil management',

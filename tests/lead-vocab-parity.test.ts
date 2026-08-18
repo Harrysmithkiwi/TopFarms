@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { ROLE_TYPES } from '@/lib/constants'
+import { CONTRACT_TYPE_PREFS, ROLE_TYPES } from '@/lib/constants'
 
 /**
  * Deno Edge Functions cannot import from `src/`, so the extraction vocabularies are
@@ -36,6 +36,14 @@ describe('lead extraction vocabularies stay in step', () => {
     expect(new Set(skills).size).toBe(24)
   })
 
+  it('CONTRACT_TYPES matches the seeker-facing options, in order', () => {
+    // These are the DB tokens behind CONTRACT_TYPE_PREFS, which mirror
+    // jobs_contract_type_check and seeker_profiles.contract_type_pref (090). Drift here is
+    // worse than a role mismatch: the CHECK constraint rejects the write outright, so an
+    // extracted term would be silently lost at the point it is used.
+    expect(arrayLiteral('CONTRACT_TYPES')).toEqual(CONTRACT_TYPE_PREFS.map((c) => c.value))
+  })
+
   it('the prompt actually interpolates both vocabularies', () => {
     // The lists are worthless if the system prompt stops embedding them — the model
     // would fall back to free text and nothing would fail loudly.
@@ -45,5 +53,8 @@ describe('lead extraction vocabularies stay in step', () => {
     )
     expect(intake).toMatch(/\$\{ROLE_TYPES\.join/)
     expect(intake).toMatch(/\$\{SKILL_TAXONOMY\.join/)
+    expect(intake).toMatch(/\$\{CONTRACT_TYPES\.join/)
+    // The schema enum is the second half: the prompt asks, the enum enforces.
+    expect(intake).toMatch(/enum: \[\.\.\.CONTRACT_TYPES\]/)
   })
 })
