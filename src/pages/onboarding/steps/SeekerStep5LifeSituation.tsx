@@ -75,8 +75,13 @@ export function SeekerStep5LifeSituation({
       min_salary: data.min_salary || undefined,
       availability_date: data.availability_date || undefined,
       notice_period_text: data.notice_period_text || undefined,
-      // Keep region as first preferred region for backward compatibility
-      region: data.preferred_regions?.[0] || undefined,
+      // Audit F-23: this used to write `region: preferred_regions?.[0]`, described as
+      // "backward compatibility". It was data loss. `region` is captured in Step 1 from the
+      // full 16-region list and drives the 20-point location dimension in
+      // compute_match_score; `preferred_regions` is a multi-select captured in TAP ORDER, so
+      // the "first" one is an artefact of which chip the seeker happened to press first. On
+      // the profile editor, which reuses this form per section, saving "Life situation"
+      // silently rewrote the Region shown in the section above it.
     })
   }
 

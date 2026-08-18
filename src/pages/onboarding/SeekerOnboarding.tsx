@@ -338,7 +338,10 @@ export function SeekerOnboarding() {
                 years_experience: profileData.years_experience,
                 dairynz_level: profileData.dairynz_level,
                 accommodation_needed: profileData.accommodation_needed,
-                region: profileData.preferred_regions?.[0] ?? profileData.region,
+                // Audit F-23, the display half: this read `preferred_regions?.[0] ?? region`,
+                // so the completion summary could show a different region than the one
+                // actually stored and scored on. Show what is in the profile.
+                region: profileData.region,
                 visa_status: profileData.visa_status,
               }}
               seekerProfileId={seekerProfileId ?? undefined}

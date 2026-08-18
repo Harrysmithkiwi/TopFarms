@@ -1,3 +1,5 @@
+import { NZ_REGIONS } from '@/lib/constants'
+
 export type UserRole = 'employer' | 'seeker' | 'admin'
 
 export type AuthState = 'loading' | 'authenticated' | 'unauthenticated'
@@ -398,16 +400,16 @@ export const HOUSING_SUB_OPTIONS: { value: string; label: string }[] = [
   { value: 'pets', label: 'Pets' },
 ]
 
-export const PREFERRED_REGION_OPTIONS: { value: string; label: string }[] = [
-  { value: 'Waikato', label: 'Waikato' },
-  { value: 'Canterbury', label: 'Canterbury' },
-  { value: 'Southland', label: 'Southland' },
-  { value: 'Taranaki', label: 'Taranaki' },
-  { value: 'Manawatu-Whanganui', label: 'Manawatu-Whanganui' },
-  { value: 'Otago', label: 'Otago' },
-  { value: 'Bay of Plenty', label: 'Bay of Plenty' },
-  { value: 'Northland', label: 'Northland' },
-]
+/**
+ * Derived from NZ_REGIONS (audit F-23). This was a hand-written subset of EIGHT — a seeker
+ * in Gisborne, Marlborough, Nelson, Tasman, the West Coast, Wellington, Auckland or Hawke's
+ * Bay could not say they would work in their own region. It was also the only place in the
+ * app spelling regions independently, which is how a divergent value gets in: `region` and
+ * `jobs.region` compare by exact string equality in compute_match_score.
+ */
+export const PREFERRED_REGION_OPTIONS: { value: string; label: string }[] = NZ_REGIONS.map(
+  (r) => ({ value: r, label: r }),
+)
 
 export const SALARY_BAND_OPTIONS: { value: string; label: string }[] = [
   { value: '50000', label: '$50–60k' },
