@@ -78,6 +78,13 @@ interface StructuredLead {
   // these posts ("my partner wants to be able to milk by herself"), and the aggregate
   // of those statements is the evidence base for the skills-training funding case.
   seeker: SeekerDetail | null
+  // The post as written. Only load-bearing for SCREENSHOT items, which arrive as an image
+  // and carry no raw_text — before this, every screenshot-captured lead stored an empty
+  // raw_excerpt. Three things depend on that column: the drawer panel the reviewer reads
+  // to judge the extraction and write a DM that sounds like a human read the post,
+  // `_lead_body_key` (092, the opt-out that holds across handles), and the staging search.
+  // A text item keeps its own raw_text — that is ground truth and beats a transcription.
+  verbatim_text: string | null
   confidence: number
   missing_fields: string[]
 }
@@ -205,11 +212,24 @@ Deno.serve(async (req) => {
     exact_duplicate: 0,
     error: 0,
   }
+  // Which lane each staged row landed in. The two queues are sibling routes filtered by
+  // `type`, and this function decides the type — so a mixed paste on the seeker screen
+  // sends the employer posts somewhere the operator is not looking. "Staged 10" then reads
+  // as ten seekers when one was forked away, and an untyped row defaults to `employer`
+  // (`admin_leads_staging_list`: coalesce(type,'employer')), so an unsure model quietly
+  // moves a seeker too. Counting the split is what makes the fork visible.
+  const staged: Record<'employer' | 'seeker', number> = { employer: 0, seeker: 0 }
   const structuredNote: string[] = []
 
   for (const item of items) {
     // Pre-structured passthrough (Apify L2 actors may pre-map fields).
-    let leads: { structured: Record<string, unknown>; confidence: number; missing: string[] }[]
+    let leads: {
+      structured: Record<string, unknown>
+      confidence: number
+      missing: string[]
+      /** Transcribed post text, image items only. See StructuredLead.verbatim_text. */
+      verbatim?: string | null
+    }[]
     if (item.structured) {
       leads = [
         {
@@ -255,6 +275,7 @@ Deno.serve(async (req) => {
           },
           confidence: l.confidence,
           missing: l.missing_fields,
+          verbatim: l.verbatim_text ?? null,
         }
       })
     }
@@ -263,7 +284,11 @@ Deno.serve(async (req) => {
       const { data, error } = await db.rpc('_lead_intake', {
         p_source: source,
         p_source_ref: item.source_ref ?? null,
-        p_raw_excerpt: (item.raw_text ?? '').slice(0, 2000),
+        // A text item's own raw_text wins — it is ground truth. The transcription is the
+        // fallback for SCREENSHOT items, which have no raw_text at all; without it every
+        // screenshot-captured lead stored an empty excerpt, leaving the reviewer's "The
+        // post" panel blank, `_lead_body_key` (092) NULL, and the row unsearchable by text.
+        p_raw_excerpt: (item.raw_text ?? lead.verbatim ?? '').slice(0, 2000),
         p_structured: lead.structured,
         p_confidence: lead.confidence,
         p_missing_fields: lead.missing,
@@ -275,6 +300,10 @@ Deno.serve(async (req) => {
       }
       const outcome = (data as { outcome?: string; staging_id?: string })?.outcome ?? 'error'
       results[outcome] = (results[outcome] ?? 0) + 1
+      if (outcome === 'inserted') {
+        // Mirrors the queue's own default, so the count matches the screen it lands on.
+        staged[lead.structured.type === 'seeker' ? 'seeker' : 'employer']++
+      }
 
       // Lane B + freshly staged → seed a drafted FB reply (A4). The draft itself
       // is a PLACEHOLDER until lead_outreach_config is populated — see draftReply.
@@ -295,7 +324,12 @@ Deno.serve(async (req) => {
     }
   }
 
-  return json({ received: items.length, results, structuring: structuredNote[0] ?? 'passthrough' })
+  return json({
+    received: items.length,
+    results,
+    staged,
+    structuring: structuredNote[0] ?? 'passthrough',
+  })
 })
 
 // ─── auth ─────────────────────────────────────────────────────────────────────
@@ -387,6 +421,7 @@ async function structureWithClaude(
         application_method: null,
         applications_close: null,
         seeker: null,
+        verbatim_text: null,
         confidence: 0,
         missing_fields: [`all — ${note}`],
       } as StructuredLead,
@@ -490,6 +525,13 @@ async function structureWithClaude(
           'no region cannot be matched to a job and cannot be deduplicated against their',
           'own re-posts, so a null region costs more here than a safe geographic lookup.',
           'Resolve only when the town is unambiguous; leave null when it is not.',
+          // Only read from an IMAGE. A pasted-text item already carries its own raw text,
+          // which is ground truth and is what gets stored — this field is ignored there.
+          'verbatim_text = the post as written, transcribed in full when the input is an',
+          'IMAGE. Do not summarise, tidy, translate or reorder it; keep the line breaks and',
+          'the spelling. A reviewer reads this to judge everything else you extracted and to',
+          'write a reply that sounds like a human read the post. Null if the input is text',
+          'rather than an image, or if the image carries no legible post.',
           // ──────────────────────────────────────────────────────────────────
           'NEVER guess or infer absent fields — use null and list them in',
           'missing_fields. Only include contact details EXPLICITLY stated in the',
@@ -521,6 +563,7 @@ async function structureWithClaude(
                       'application_method',
                       'applications_close',
                       'seeker',
+                      'verbatim_text',
                       'confidence',
                       'missing_fields',
                     ],
@@ -561,6 +604,7 @@ async function structureWithClaude(
                           training_wanted: { type: 'array', items: { type: 'string' } },
                         },
                       },
+                      verbatim_text: { type: ['string', 'null'] },
                       confidence: { type: 'number' },
                       missing_fields: { type: 'array', items: { type: 'string' } },
                     },

@@ -107,9 +107,25 @@ export function PasteCapture({
       toast.error(`Intake failed: ${error.message}`)
       return
     }
-    const r = (data as { results?: Record<string, number>; structuring?: string }) ?? {}
+    const r =
+      (data as {
+        results?: Record<string, number>
+        staged?: { employer?: number; seeker?: number }
+        structuring?: string
+      }) ?? {}
+    const employer = r.staged?.employer ?? 0
+    const seeker = r.staged?.seeker ?? 0
+    // Name the lanes, because the two queues are sibling routes filtered by type and
+    // lead-intake — not this screen — decides which one a post lands in. A bare "Staged 10"
+    // on the seeker queue reads as ten seekers even when one was forked to the employer
+    // side and is no longer anywhere you are looking. Only split when there is a split;
+    // a single-lane batch stays a plain count.
+    const where =
+      employer && seeker
+        ? `${seeker} to seekers, ${employer} to employers`
+        : `${employer + seeker}`
     toast.success(
-      `Staged ${r.results?.inserted ?? 0} (dupes ${r.results?.exact_duplicate ?? 0}, suppressed ${r.results?.suppressed ?? 0}) — ${r.structuring ?? ''}`,
+      `Staged ${where} (dupes ${r.results?.exact_duplicate ?? 0}, suppressed ${r.results?.suppressed ?? 0}) — ${r.structuring ?? ''}`,
     )
     setText('')
     setImages([])
