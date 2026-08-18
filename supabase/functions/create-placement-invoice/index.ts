@@ -105,6 +105,20 @@ Deno.serve(async (req) => {
       })
     }
 
+    // Audit F-05. The guard below reads `confirmed_at`, and `confirmed_at` is written AFTER
+    // `finalizeInvoice` has already emailed the employer a payable invoice — so two concurrent
+    // calls, or one retry after a timeout, both pass the guard and both bill the farm. The DB
+    // write that would have closed the window is itself swallowed further down.
+    //
+    // Stripe idempotency keys close it at the only place that can be authoritative: Stripe.
+    // A repeat of the same key returns the ORIGINAL object instead of creating a second one,
+    // whatever our database believes. `application_id` is already UNIQUE on placement_fees,
+    // so it is the natural identity of "this placement, billed once".
+    //
+    // Keys are per-operation, not per-request: three different calls with one shared key would
+    // collide in Stripe and the second would fail rather than dedupe.
+    const idem = (op: string) => ({ idempotencyKey: `placement:${op}:${application_id}` })
+
     if (existingFee?.confirmed_at) {
       // Already confirmed — return early (idempotency guard)
       console.log(
@@ -266,11 +280,14 @@ Deno.serve(async (req) => {
         customerId = existingCustomers.data[0].id
       } else {
         // Create new Stripe customer
-        const newCustomer = await stripe.customers.create({
-          email: employer_email,
-          name: farm_name ?? undefined,
-          metadata: { employer_id },
-        })
+        const newCustomer = await stripe.customers.create(
+          {
+            email: employer_email,
+            name: farm_name ?? undefined,
+            metadata: { employer_id },
+          },
+          idem('customer'),
+        )
         customerId = newCustomer.id
       }
 
@@ -287,29 +304,36 @@ Deno.serve(async (req) => {
     }
 
     // Create Stripe Invoice (draft — we manually finalize after adding line items)
-    const invoice = await stripe.invoices.create({
-      customer: customerId,
-      // Pin the currency: without this the invoice inherits the Stripe ACCOUNT default
-      // and a non-NZD account rejects the NZD line item ("cannot combine currencies").
-      // Found live 2026-07-30 against an AUD-default test sandbox.
-      currency: 'nzd',
-      collection_method: 'send_invoice',
-      days_until_due: 14,
-      auto_advance: false, // Manually finalize after adding line items
-      metadata: { application_id, employer_id, job_id: job_id ?? '' },
-    })
+    const invoice = await stripe.invoices.create(
+      {
+        customer: customerId,
+        // Pin the currency: without this the invoice inherits the Stripe ACCOUNT default
+        // and a non-NZD account rejects the NZD line item ("cannot combine currencies").
+        // Found live 2026-07-30 against an AUD-default test sandbox.
+        currency: 'nzd',
+        collection_method: 'send_invoice',
+        days_until_due: 14,
+        auto_advance: false, // Manually finalize after adding line items
+        metadata: { application_id, employer_id, job_id: job_id ?? '' },
+      },
+      idem('invoice'),
+    )
 
     // Add placement fee line item
-    await stripe.invoiceItems.create({
-      customer: customerId,
-      invoice: invoice.id,
-      amount: amount_nzd, // NZD cents, server-derived (e.g. 40000 = $400)
-      currency: 'nzd',
-      description: invoiceDescription,
-    })
+    await stripe.invoiceItems.create(
+      {
+        customer: customerId,
+        invoice: invoice.id,
+        amount: amount_nzd, // NZD cents, server-derived (e.g. 40000 = $400)
+        currency: 'nzd',
+        description: invoiceDescription,
+      },
+      idem('item'),
+    )
 
-    // Finalize — triggers Stripe to send hosted invoice email to the customer
-    const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id)
+    // Finalize — triggers Stripe to send hosted invoice email to the customer. This is the
+    // irreversible step: after it, the farm has a payable invoice in their inbox.
+    const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id, {}, idem('finalize'))
 
     // Record confirmed_at, invoice ID, and optional rating. Upsert for the same
     // hire-without-shortlist reason as the waived branch above.
@@ -332,10 +356,17 @@ Deno.serve(async (req) => {
         { onConflict: 'application_id' },
       )
 
+    // The invoice is already sent, so failing the request here would be worse than useless —
+    // the farm has been billed either way. But returning a bare success taught the caller that
+    // everything reconciled, when in fact `confirmed_at` is missing and the guard above will
+    // wave the next call straight through. The idempotency keys now stop that becoming a second
+    // invoice; this flag is so the operator knows a row needs fixing rather than finding out
+    // from the farm.
     if (updateFeeError) {
-      console.error('Failed to update placement_fees record:', updateFeeError)
-      // Invoice already created — log but don't fail the response
-      // Manual reconciliation can be done via stripe_invoice_id
+      console.error(
+        'placement_fees write FAILED after invoice was finalized — reconciliation required:',
+        { application_id, stripe_invoice_id: invoice.id, error: updateFeeError.message },
+      )
     }
 
     // Send seeker congratulations email via Resend (fire-and-forget)
@@ -391,6 +422,9 @@ Deno.serve(async (req) => {
         success: true,
         invoice_id: invoice.id,
         hosted_invoice_url: finalizedInvoice.hosted_invoice_url,
+        // Audit F-05: `success: true` used to be returned even when the placement_fees write
+        // had failed, so a row with no confirmed_at looked like a clean placement.
+        reconciliation_required: Boolean(updateFeeError),
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     )

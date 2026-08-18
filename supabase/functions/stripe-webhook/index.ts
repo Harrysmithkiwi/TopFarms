@@ -211,10 +211,21 @@ Deno.serve(async (req) => {
       // NULL — a failed invoice is still owed; an uncollectible one is written off
       // by the admin, not by Stripe.
       const status = event.type === 'invoice.payment_failed' ? 'payment_failed' : 'uncollectible'
-      const { error: statusErr } = await supabaseClient
+      // Audit F-06. `.is('paid_at', null)` is the whole fix. Stripe delivers events out of
+      // order and retries them, so a late `payment_failed` — or a replayed one — could
+      // overwrite the status of an invoice that HAS been paid. The fee then counted as paid
+      // (paid_at set) and as written off (status uncollectible) at the same time, and the
+      // revenue reconciliation reads both.
+      //
+      // A filter rather than a thrown error on purpose: this makes the stale event a no-op and
+      // returns 200, where raising would make Stripe retry the same doomed event indefinitely.
+      // Migration 096 adds the CHECK that catches any other writer.
+      const { data: updated, error: statusErr } = await supabaseClient
         .from('placement_fees')
         .update({ stripe_invoice_status: status })
         .eq('id', existingPf.id)
+        .is('paid_at', null)
+        .select('id')
       if (statusErr) {
         console.error(`Failed to record invoice status ${status}:`, statusErr)
         return new Response(JSON.stringify({ error: 'Failed to record invoice status' }), {
@@ -222,7 +233,16 @@ Deno.serve(async (req) => {
           headers: { 'Content-Type': 'application/json' },
         })
       }
-      console.log(`Invoice ${status} for application:`, application_id)
+      if (!updated || updated.length === 0) {
+        // Not an error, and worth seeing: a failure event arrived for an invoice already
+        // recorded as paid. Silently discarding it would hide a genuine ordering problem.
+        console.log(
+          `Ignored ${status} event for an already-paid fee — application:`,
+          application_id,
+        )
+      } else {
+        console.log(`Invoice ${status} for application:`, application_id)
+      }
     }
   }
 
