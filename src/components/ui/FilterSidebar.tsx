@@ -88,6 +88,7 @@ export function FilterSidebar({
   const salaryMin = searchParams.get('salary_min')
   const salaryMax = searchParams.get('salary_max')
   const visa = searchParams.get('visa')
+  const accredited = searchParams.get('accredited')
   const dairynzLevel = searchParams.get('dairynz_level')
 
   const currentSalaryMin = salaryMin ? Number(salaryMin) : SALARY_MIN
@@ -126,6 +127,7 @@ export function FilterSidebar({
     salaryMin !== null ||
     salaryMax !== null ||
     visa !== null ||
+    accredited !== null ||
     dairynzLevel !== null
 
   const visibleRegions = showAllRegions ? NZ_REGIONS : NZ_REGIONS.slice(0, 6)
@@ -329,6 +331,21 @@ export function FilterSidebar({
             checked={visa === 'true'}
             onCheckedChange={(val) => onFilterChange('visa', val ? 'true' : null)}
           />
+          {/* Distinct from sponsorship, and the distinction is the whole point (gap G-13).
+              "Will you sponsor" is an offer this farm makes. AEWV accreditation is a status
+              INZ grants, and without it a migrant cannot apply AT ALL — so a farm can honestly
+              offer to sponsor and still be unable to hire them. Across the 23-post corpus
+              three or more seekers are hunting specifically for accredited employers. */}
+          <div className="mt-3">
+            <Toggle
+              label="Accredited employer (AEWV)"
+              checked={accredited === 'true'}
+              onCheckedChange={(val) => onFilterChange('accredited', val ? 'true' : null)}
+            />
+            <p className="font-body text-text-subtle mt-1 text-[11px]">
+              Employer-declared. We do not yet check it against the INZ register.
+            </p>
+          </div>
         </details>
 
         {/* 10. DairyNZ Level */}

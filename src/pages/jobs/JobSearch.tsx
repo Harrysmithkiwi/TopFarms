@@ -232,6 +232,7 @@ export function JobSearch() {
           'salary_max',
           'accommodation_type',
           'visa',
+          'accredited',
           'dairynz_level',
           'page',
         ]
@@ -273,7 +274,7 @@ export function JobSearch() {
         let query = supabase
           .from('jobs')
           .select(
-            '*, employer_profiles:marketplace_employer_profiles!inner(id, farm_name, region, accommodation_extras)',
+            '*, employer_profiles:marketplace_employer_profiles!inner(id, farm_name, region, accommodation_extras, accredited_employer)',
             {
               count: 'exact',
             },
@@ -382,6 +383,14 @@ export function JobSearch() {
         const visa = searchParams.get('visa')
         if (visa === 'true') {
           query = query.eq('visa_sponsorship', true)
+        }
+
+        // AEWV accreditation, not sponsorship — a different question with a different answer
+        // (gap G-13). The flag is DERIVED in marketplace_employer_profiles as
+        // `inz_accredited AND inz_accreditation_expires > current_date`, so an accreditation
+        // that lapses stops matching on its own, with nobody having to switch it off.
+        if (searchParams.get('accredited') === 'true') {
+          query = query.eq('employer_profiles.accredited_employer', true)
         }
 
         // Sort handling
