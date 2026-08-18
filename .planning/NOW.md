@@ -10,6 +10,10 @@ stream doc disagree, the stream doc wins and this file is out of date — fix it
 
 ## ▶ Next session, start here — updated 2026-08-17 (evening)
 
+**2026-08-18: the next batch is written up as a paste-ready work order —
+`.planning/NEXT-BATCH-PROMPT.md` (Phases B→C→D→E). Phase A, sending the first outreach batch, is
+DEFERRED by operator decision; M3 is not the goal of that batch.**
+
 **A full read-only DSA audit ran 2026-08-17 across 19 subsystems. Read
 `.planning/DSA-AUDIT-2026-08-17.md` BEFORE picking anything up.** 27 verified defects, each
 re-checked against the live database rather than taken from the reviewing agent.
