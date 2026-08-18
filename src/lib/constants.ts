@@ -6,7 +6,12 @@ export const NZ_REGIONS = [
   'Gisborne',
   "Hawke's Bay",
   'Taranaki',
-  'Manawatu-Whanganui',
+  // Macron is correct te reo and is what supabase/functions/_shared/leadGeo.ts already
+  // canonicalises TO. The two spellings had split the same region into two buckets in
+  // lead_staging (6 rows each way, measured 2026-08-18) — the exact defect leadGeo's own
+  // header describes fixing between the two edge functions, while nobody noticed the app used
+  // the other form. Region is compared by EXACT string equality in compute_match_score.
+  'Manawatū-Whanganui',
   'Wellington',
   'Tasman',
   'Nelson',

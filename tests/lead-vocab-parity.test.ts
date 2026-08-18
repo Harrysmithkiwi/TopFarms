@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { CONTRACT_TYPE_PREFS, ROLE_TYPES } from '@/lib/constants'
+import { CONTRACT_TYPE_PREFS, NZ_REGIONS, ROLE_TYPES } from '@/lib/constants'
 
 /**
  * Deno Edge Functions cannot import from `src/`, so the extraction vocabularies are
@@ -42,6 +42,27 @@ describe('lead extraction vocabularies stay in step', () => {
     // worse than a role mismatch: the CHECK constraint rejects the write outright, so an
     // extracted term would be silently lost at the point it is used.
     expect(arrayLiteral('CONTRACT_TYPES')).toEqual(CONTRACT_TYPE_PREFS.map((c) => c.value))
+  })
+
+  it('NZ_REGIONS matches leadGeo.ts exactly, in order', () => {
+    // Not in the audit; found 2026-08-18 and fixed by migration 100. The app spelled
+    // 'Manawatu-Whanganui' and leadGeo 'Manawatū-Whanganui', and BOTH were in production data
+    // — lead_staging held 6 rows each way, the same region split into two buckets. That is the
+    // exact defect leadGeo's own header describes fixing between the two edge functions, while
+    // nobody noticed the app used the other form.
+    //
+    // It matters because compute_match_score compares regions by EXACT string equality, so a
+    // seeker in one spelling never matches a job in the other and nothing reports it.
+    const geo = readFileSync(
+      resolve(__dirname, '../supabase/functions/_shared/leadGeo.ts'),
+      'utf8',
+    )
+    const block = /export const NZ_REGIONS = \[([\s\S]*?)\]/.exec(geo)
+    expect(block, 'NZ_REGIONS not found in leadGeo.ts').not.toBeNull()
+    const regions = [...block![1].matchAll(/'((?:[^'\\]|\\.)*)'|"([^"]*)"/g)].map(
+      (m) => (m[1] ?? m[2]).replace(/\\'/g, "'"),
+    )
+    expect(regions).toEqual([...NZ_REGIONS])
   })
 
   it('the prompt actually interpolates both vocabularies', () => {

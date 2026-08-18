@@ -1,3 +1,4 @@
+import { NZ_REGIONS } from '@/lib/constants'
 import { useForm, useWatch, Controller } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -61,24 +62,9 @@ interface Step2Props {
   }
 }
 
-const NZ_REGIONS = [
-  'Northland',
-  'Auckland',
-  'Waikato',
-  'Bay of Plenty',
-  'Gisborne',
-  "Hawke's Bay",
-  'Taranaki',
-  'Manawatu-Whanganui',
-  'Wellington',
-  'Tasman',
-  'Nelson',
-  'Marlborough',
-  'West Coast',
-  'Canterbury',
-  'Otago',
-  'Southland',
-]
+// Region list DELETED here: it was a hand-written copy of NZ_REGIONS, and this component
+// writes the column compute_match_score compares by exact string equality. Two copies is how
+// the Manawatū macron diverged in the first place.
 
 const MILKING_FREQUENCY_OPTIONS = [
   { value: 'once_a_day', label: 'Once-a-day' },

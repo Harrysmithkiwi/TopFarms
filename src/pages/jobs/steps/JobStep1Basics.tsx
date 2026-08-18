@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Button } from '@/components/ui/Button'
 import { FARM_TYPE_OPTIONS } from '@/types/domain'
-import { ROLE_TYPES } from '@/lib/constants'
+import { NZ_REGIONS, ROLE_TYPES } from '@/lib/constants'
 
 const schema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters').max(100, 'Title too long'),
@@ -41,24 +41,9 @@ const CONTRACT_TYPE_OPTIONS = [
   { value: 'casual', label: 'Casual' },
 ]
 
-const NZ_REGIONS = [
-  'Northland',
-  'Auckland',
-  'Waikato',
-  'Bay of Plenty',
-  'Gisborne',
-  "Hawke's Bay",
-  'Taranaki',
-  'Manawatu-Whanganui',
-  'Wellington',
-  'Tasman',
-  'Nelson',
-  'Marlborough',
-  'West Coast',
-  'Canterbury',
-  'Otago',
-  'Southland',
-]
+// Region list DELETED here: it was a hand-written copy of NZ_REGIONS, and this component
+// writes the column compute_match_score compares by exact string equality. Two copies is how
+// the Manawatū macron diverged in the first place.
 
 export function JobStep1Basics({ onComplete, defaultValues }: Step1Props) {
   const {
