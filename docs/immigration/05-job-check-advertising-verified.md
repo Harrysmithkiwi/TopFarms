@@ -98,16 +98,20 @@ Fetched 2026-08-18:
 
 ---
 
-## D4 — INZ register verification: NOT BUILT (recorded 2026-08-18)
+## D4 — INZ register verification: **superseded by `06`, same day**
 
-The register is a public INZ tool listing **29,000+ accredited employers**
-(https://www.immigration.govt.nz/work/requirements-for-work-visas/approved-employers/accredited-employer-list/).
-Whether it exposes a documented JSON API, or only an HTML search, was not established here —
-it needs the page inspected in a browser.
+This section said the register's shape "was not established here — it needs the page inspected
+in a browser", and called D4 "a phase, not a ticket". Both were inspected and answered on
+2026-08-18: see **`06-inz-register-verification.md`**.
 
-**This is a phase, not a ticket.** Moving `inz_accredited` from self-declared to verified needs:
-a lookup keyed on NZBN, a **re-verification schedule** (accreditation lapses on 12- then
-24-month renewals), a policy for what happens when the register and the employer disagree, and
-an admin queue for those mismatches. Until it exists, `/jobs` says "employer-declared" and
-`accredited_employer` stays outside `employer_verifications` — per F-11, a self-declared trust
-claim is not a verified one.
+Short version, so nobody re-derives it from this page: the register **is** keyed on NZBN and
+**does** publish an accreditation expiry, through a JSON endpoint — and INZ's terms of use
+forbid reaching that endpoint by any means other than a standard web browser. So the lookup is
+a one-line admin task rather than a fuzzy-matching phase, and the automation is closed rather
+than deferred. The re-verification schedule this section worried about was already solved by
+`091`: `accredited_employer` is recomputed per read against the expiry date, so a lapsed claim
+stops advertising itself with nobody switching it off.
+
+`accredited_employer` still stays outside `employer_verifications` — per F-11, a self-declared
+trust claim is not a verified one, and an admin confirming it against a register does not make
+it an earned identity rung.
