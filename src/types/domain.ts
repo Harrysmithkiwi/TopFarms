@@ -461,17 +461,37 @@ export const dairynzLabel = (value?: string | null) => labelFrom(DAIRYNZ_LEVELS,
 // across the APPLICABLE dimensions only, so a perfect match reads 100 in every
 // sector. `_meta` makes the arithmetic reproducible from the row alone:
 // round(100 * raw_total / applicable_max) === total_score.
+/**
+ * Scoring v3 (migration 093). Every dimension is always a number — v2's `null` meant
+ * "excluded from the total", which made two jobs' percentages incomparable and let a sparse
+ * listing outrank a detailed one. v3 pays 60% of a dimension's weight when either side leaves
+ * it blank, so the denominator is always 100.
+ *
+ * Dealbreakers are no longer points. They are `gates`, applied multiplicatively, and `true`
+ * means BLOCKED.
+ */
 export interface MatchBreakdown {
-  shed_type: number | null
+  role: number
+  contract: number
+  skills: number
   location: number
   accommodation: number
-  skills: number | null
+  experience: number
   salary: number
-  visa: number
-  couples: number | null
+  timing: number
+  herd_size: number
+  shed_type: number
+  gates?: {
+    visa: boolean
+    terms: boolean
+    accommodation: boolean
+    sector: boolean
+  }
   _meta?: {
     raw_total: number
     applicable_max: number
+    /** Product of the fired gates. 1.0 when nothing is blocked. */
+    gate_multiplier?: number
     algorithm_version: number
   }
 }

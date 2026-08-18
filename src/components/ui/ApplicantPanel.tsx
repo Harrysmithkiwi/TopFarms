@@ -93,19 +93,26 @@ function getMatchHighlights(score: MatchScore, profile: SeekerProfile): string[]
   const highlights: string[] = []
   const bd = score.breakdown
 
-  // Scoring v2: shed_type and skills are null when the dimension does not apply
-  // to this pairing, so `?? 0` keeps an inapplicable dimension from claiming a
-  // highlight it did not earn.
-  if ((bd.shed_type ?? 0) > 15) highlights.push('Rotary/herringbone shed experience')
-  if (bd.location >= 16)
+  // Thresholds are FRACTIONS of each dimension's maximum, not absolute points. The v2
+  // version hard-coded absolutes and three of them were already unreachable when the maxima
+  // changed — `location >= 16` against a 15-point dimension can never fire, and a highlight
+  // that never renders looks identical to a candidate who did not earn it.
+  const at = (v: number | null | undefined, max: number, frac: number) => (v ?? 0) >= max * frac
+
+  // Order matters: the first three win. Role and terms lead because they are what the job
+  // IS — v2 could not surface either, since it scored neither.
+  if (at(bd.role, 18, 1)) highlights.push('Exactly the role they are after')
+  else if (at(bd.role, 18, 0.6)) highlights.push('A role they would step into')
+  if (at(bd.contract, 12, 1)) highlights.push('Wants this kind of engagement')
+  if (at(bd.skills, 15, 0.8)) highlights.push('Strong skill alignment')
+  if (at(bd.location, 15, 1))
     highlights.push(profile.region ? `Same region (${profile.region})` : 'Location match')
-  else if (bd.location > 0) highlights.push('Open to relocation')
-  if (bd.accommodation > 15) highlights.push('Accommodation needs match')
-  if (bd.visa > 0) highlights.push('Eligible to work in NZ')
-  // Was `> 20` against a 20-point maximum — unreachable, so this highlight had
-  // never once rendered. 16 is 80 % of the dimension.
-  if ((bd.skills ?? 0) >= 16) highlights.push('Strong skill alignment')
-  if (bd.salary > 0) highlights.push('Salary expectations compatible')
+  else if (at(bd.location, 15, 0.6)) highlights.push('Open to relocation')
+  if (at(bd.experience, 10, 1)) highlights.push('Experience fits the level')
+  if (at(bd.accommodation, 10, 0.8)) highlights.push('Accommodation needs match')
+  if (at(bd.timing, 6, 1)) highlights.push('Available when the role starts')
+  if (at(bd.salary, 8, 1)) highlights.push('Salary expectations compatible')
+  if (at(bd.shed_type, 3, 1)) highlights.push('Shed experience matches')
 
   return highlights.slice(0, 3)
 }

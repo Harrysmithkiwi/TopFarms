@@ -19,15 +19,21 @@ import type { MatchScore } from '@/types/domain'
 
 const SCORE: MatchScore = {
   total_score: 83,
+  // Scoring v3 (migration 093). Every dimension always carries a number; dealbreakers moved
+  // out of the points table into `gates`.
   breakdown: {
-    shed_type: 25,
-    location: 16,
-    accommodation: 20,
-    skills: 14,
+    role: 18,
+    skills: 12,
+    location: 15,
+    contract: 12,
+    accommodation: 8,
+    experience: 10,
     salary: 8,
-    visa: 5,
-    couples: 0,
-    _meta: { raw_total: 88, applicable_max: 105 },
+    timing: 6,
+    herd_size: 2,
+    shed_type: 2,
+    gates: { visa: false, terms: false, accommodation: false, sector: false },
+    _meta: { raw_total: 93, applicable_max: 100, gate_multiplier: 1 },
   },
 } as MatchScore
 
@@ -64,8 +70,10 @@ describe('MatchBreakdown — §1.4 worker/employer split', () => {
     // Per-dimension points and the stated denominator — the explainability
     // half of the rule. If these vanish, the employer view has been "unified"
     // with the worker view, which the component doc explicitly forbids.
-    expect(digits, 'employer view must render per-dimension points').toContain('25')
-    expect(container.textContent).toMatch(/88 of 105 applicable points/)
+    expect(digits, 'employer view must render per-dimension points').toContain('18')
+    // v3's denominator is always 100, which is the point: a sparse listing and a detailed one
+    // are now scored on the same basis, so the two percentages can be compared.
+    expect(container.textContent).toMatch(/93 of 100 applicable points/)
   })
 
   it('never renders a negative band word to a worker', () => {
