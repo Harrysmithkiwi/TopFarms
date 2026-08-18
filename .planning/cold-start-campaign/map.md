@@ -139,14 +139,33 @@ never come back — but shipping schema before 100 real profiles is guessing.
 **How to close: grilling.** *Blocked by: nothing, but answering it early is what makes it
 cheap.*
 
-### T-06e · How do employer posts get forked out of the seeker collection? — **FRONTIER**
+### ~~T-06e · How do employer posts get forked out of the seeker collection?~~ — **CLOSED 2026-08-18 (`8ded09a`, Phase B2)**
+Not a stray row to move: prod holds **zero seeker rows**, so the Fairlie post is in the saved
+collection, not the queue. Reading the code closed the question differently — `lead-intake`
+already classifies employer vs seeker and `PasteCapture` declares no lane, so **the fork works**.
+Two things around it did not. A screenshot item carries no `raw_text`, so every screenshot
+capture stored an **empty `raw_excerpt`** — blanking the drawer panel you read to write the DM,
+returning NULL from `_lead_body_key` (092), and hiding the row from text search. And the fork was
+**invisible**: "Staged 10" on the seeker screen never said one went to employers, while
+`coalesce(type,'employer')` sends an unsure model's seeker there too. Both fixed. *Ruled out on
+inspection: `classifyLane` is Lane A/B contactability and never overrides `type`.*
+
+### T-06e (original) · How do employer posts get forked out of the seeker collection?
 Round 2 of the saved posts contained **a live employer lead** — a Fairlie, Canterbury dairy
 assistant role over calving, 890 cows, 54-point rotary, 2-off-8 roster, room in a shared house.
 It is sitting in the seeker pile. `lead_staging.type` already distinguishes the two lanes and
 `AdminSeekerStaging` is already a sibling route, so the plumbing exists — the human step at
 capture time does not. **How to close: task.**
 
-### T-06f · How do we dedupe one person across groups and handles?
+### ~~T-06f · How do we dedupe one person across groups and handles?~~ — **CLOSED 2026-08-18 (`0fff871`, Phase B1)**
+Closed as predicted — a body key — plus a **bigger defect found on the way**: the seeker lane had
+**no opt-out control at all**. 087 gave promoted `leads` one, but the seeker lane never promotes,
+so a reply of "stop" to a DM had nowhere to go. `admin_lead_reject` already accepted `p_suppress`
+and simply had no caller on that screen. Migration **092** adds `_lead_body_key()` (md5 of the
+normalised body, NULL under 120 chars so a short generic post cannot suppress a stranger), seeker
+lane only, and `admin_lead_reject` now writes a second suppression row under it.
+
+### T-06f (original) · How do we dedupe one person across groups and handles?
 `ceylon_dairy_boy` and `Deyoun_Dairy_boy` are the same person with **byte-identical post text**,
 posted to two different groups under two different display names. `_lead_fingerprint` keys on
 `display_name|region|type` and the fuzzy pass also runs on the name, so neither catches it.
