@@ -14,6 +14,16 @@ stream doc disagree, the stream doc wins and this file is out of date — fix it
 `.planning/NEXT-BATCH-PROMPT.md` (Phases B→C→D→E). Phase A, sending the first outreach batch, is
 DEFERRED by operator decision; M3 is not the goal of that batch.**
 
+**⚠ BLOCKED, and it blocks B4: the Anthropic API key in `.env` returns 400 "Your credit balance
+is too low".** So the B3 behaviour gate could not run — `scripts/seeker-extraction-check.ts`
+replays the real prompt and schema against Haiku and needs credit. **Whether the Edge secret
+`ANTHROPIC_API_KEY` is the same exhausted key is unknown.** It matters: `lead-intake` degrades
+*honestly* but silently to `confidence 0` / `missing_fields ['all — unstructured (claude 400)']`,
+so bulk-loading 100–200 seeker posts against a dead key stages 100–200 unusable rows that each
+look staged. Last evidence of working structuring is **2026-08-11** (rows at confidence
+0.88–0.95). **Before B4: top up credit, then paste ONE post and check the drawer shows Terms and
+a confidence above 0.** Two minutes, and it decides whether the whole batch is worth pasting.
+
 **A full read-only DSA audit ran 2026-08-17 across 19 subsystems. Read
 `.planning/DSA-AUDIT-2026-08-17.md` BEFORE picking anything up.** 27 verified defects, each
 re-checked against the live database rather than taken from the reviewing agent.
