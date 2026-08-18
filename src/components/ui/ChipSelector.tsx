@@ -55,7 +55,11 @@ export function ChipSelector({
 
   function handleClick(optionValue: string) {
     if (mode === 'single') {
-      onChange([optionValue])
+      // Audit F-34: this was `onChange([optionValue])`, so single mode could SELECT but never
+      // DESELECT — once a chip was tapped the value could be changed but not cleared. The only
+      // caller is the optional `min_salary` band, so a seeker who tapped one by accident could
+      // not get back to "no minimum". Multi mode always toggled; single silently did not.
+      onChange(value.includes(optionValue) ? [] : [optionValue])
     } else {
       if (value.includes(optionValue)) {
         onChange(value.filter((v) => v !== optionValue))

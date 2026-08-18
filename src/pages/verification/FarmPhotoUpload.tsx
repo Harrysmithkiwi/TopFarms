@@ -60,12 +60,19 @@ export function FarmPhotoUpload() {
       })
   }, [session?.user?.id, reloadNonce])
 
-  // Load existing photos from storage
+  // Load existing photos from storage.
+  //
+  // Audit F-25: `reloadNonce` was missing from the dependency list, so the Retry button —
+  // which only calls setPhotosError(false) — cleared the error and refetched NOTHING. The
+  // render guard below is `!photosError && (loadingPhotos || photos.length > 0)`, and after a
+  // failed load all three are false, so retrying replaced the error with an EMPTY PANEL. The
+  // employer is then looking at a screen that says nothing at all about their photos.
   useEffect(() => {
     if (!session?.user?.id) return
 
     const userId = session.user.id
     setLoadingPhotos(true)
+    setPhotosError(false)
 
     supabase.storage
       .from('employer-photos')
@@ -91,7 +98,7 @@ export function FarmPhotoUpload() {
         setPhotos(urls)
         setLoadingPhotos(false)
       })
-  }, [session?.user?.id])
+  }, [session?.user?.id, reloadNonce])
 
   async function handleUploadComplete(url: string) {
     if (!employerId) return
@@ -194,7 +201,8 @@ export function FarmPhotoUpload() {
         {photosError && (
           <ErrorState
             message="Could not load your uploaded photos"
-            onRetry={() => setPhotosError(false)}
+            // Bump the nonce — clearing the flag alone leaves the panel blank (F-25).
+            onRetry={() => setReloadNonce((n) => n + 1)}
             compact
             className="mb-4"
           />

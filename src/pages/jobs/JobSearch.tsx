@@ -337,18 +337,36 @@ export function JobSearch() {
 
         const herdSizes = searchParams.getAll('herd_size')
         if (herdSizes.length > 0) {
-          // Convert buckets to herd size range filters using .or()
-          const conditions = herdSizes
+          // Audit F-18. This used to build strings like
+          // 'herd_size_min.lte.500,herd_size_max.gte.200' and join them with a comma into
+          // .or() — but a COMMA IS PostgREST'S OR SEPARATOR, so each two-sided bucket became
+          // two independent OR terms. "200-500" asked for min<=500 OR max>=200, which is
+          // satisfied by almost every job on the board. The filter rendered, persisted, and
+          // filtered nothing.
+          //
+          // Bounds as data, grouping derived from arity: one term goes in bare, two are
+          // wrapped in and(). Overlap is `job.min <= bucket.hi AND job.max >= bucket.lo`,
+          // the same test `_herd_bucket_overlaps` performs in migration 093 — the two must
+          // agree, or a job the search shows scores as a herd-size miss.
+          const BOUNDS: Record<string, { lo?: number; hi?: number }> = {
+            '<200': { hi: 199 },
+            '200-500': { lo: 200, hi: 500 },
+            '500-1000': { lo: 500, hi: 1000 },
+            '1000+': { lo: 1000 },
+          }
+          const groups = herdSizes
             .map((bucket) => {
-              if (bucket === '<200') return 'herd_size_min.lte.200'
-              if (bucket === '200-500') return 'herd_size_min.lte.500,herd_size_max.gte.200'
-              if (bucket === '500-1000') return 'herd_size_min.lte.1000,herd_size_max.gte.500'
-              if (bucket === '1000+') return 'herd_size_max.gte.1000'
-              return null
+              const b = BOUNDS[bucket]
+              if (!b) return null
+              const terms: string[] = []
+              if (b.hi !== undefined) terms.push(`herd_size_min.lte.${b.hi}`)
+              if (b.lo !== undefined) terms.push(`herd_size_max.gte.${b.lo}`)
+              if (terms.length === 0) return null
+              return terms.length === 1 ? terms[0] : `and(${terms.join(',')})`
             })
-            .filter(Boolean)
-          if (conditions.length > 0) {
-            query = query.or(conditions.join(','))
+            .filter((g): g is string => g !== null)
+          if (groups.length > 0) {
+            query = query.or(groups.join(','))
           }
         }
 

@@ -18,12 +18,20 @@ export function useSeekerContact() {
   const [lastName, setLastName] = useState('')
   const [phone, setPhone] = useState('')
 
-  // DATA LOSS guard, not a display flag. If the prefill read below fails, the three inputs
-  // stay empty — and a save writes `firstName.trim() || null`, so an untouched form NULLs
-  // the name and phone the employer pays $200–800 to unlock. The seeker is on rural data
-  // (docs/PRODUCT.md), so a failing read is realistic rather than theoretical. On a read
-  // failure we send only the fields the human actually typed.
-  const [prefillFailed, setPrefillFailed] = useState(false)
+  // DATA LOSS guard, not a display flag. Until the prefill read below settles, the three
+  // inputs are empty — and a save writes `firstName.trim() || null`, so an untouched form
+  // NULLs the name and phone an employer pays $200–800 to unlock. The seeker is on rural data
+  // (docs/PRODUCT.md), so both a slow read and a failing one are realistic.
+  //
+  // Audit F-14: this used to be `prefillFailed`, defaulting to FALSE — which claims the
+  // prefill SUCCEEDED. So the full-overwrite branch was the default, and a save that landed
+  // before the fetch settled took it. The guard covered a failed read and not a pending one,
+  // which is the more common case.
+  //
+  // Inverted: `loaded` is true only once the read has settled WITHOUT error. Pending and
+  // failed now behave identically, which is right — in both the inputs do not mirror stored
+  // data, so only what the human actually typed may be written.
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
     const userId = session?.user?.id
@@ -38,8 +46,7 @@ export function useSeekerContact() {
         if (cancelled) return
         if (error) {
           console.error('useSeekerContact: contact prefill failed', error)
-          setPrefillFailed(true)
-          return
+          return   // `loaded` stays false — treated exactly like still-pending
         }
         // No row yet is the normal first-pass state, not a failure — the row is created by
         // the save below. Leave the fields empty and allow the write.
@@ -48,6 +55,7 @@ export function useSeekerContact() {
           setLastName(data.last_name ?? '')
           setPhone(data.phone ?? '')
         }
+        setLoaded(true)
       })
     return () => {
       cancelled = true
@@ -62,12 +70,12 @@ export function useSeekerContact() {
     const userId = session?.user?.id
     if (!userId) return null
 
-    // When the prefill failed the inputs never received the stored values, so writing an
-    // empty field back would null real data. Send only the fields the seeker actually
-    // filled — their typed input is honoured, the untouched ones are left alone. When the
-    // prefill succeeded the inputs mirror the stored row, so all three are sent and
-    // deliberately clearing a field still works.
-    const patch: Record<string, string | null> = prefillFailed
+    // Until the prefill has settled cleanly the inputs never received the stored values, so
+    // writing an empty field back would null real data. Send only the fields the seeker
+    // actually filled — their typed input is honoured, the untouched ones are left alone.
+    // Once loaded, the inputs mirror the stored row, so all three are sent and deliberately
+    // clearing a field still works.
+    const patch: Record<string, string | null> = !loaded
       ? Object.fromEntries(
           Object.entries({
             first_name: firstName.trim(),
@@ -112,7 +120,9 @@ export function useSeekerContact() {
     setFirstName,
     setLastName,
     setPhone,
-    prefillFailed,
+    /** True only once the prefill read settled without error. See F-14 above: a caller may
+     *  use this to keep a save button disabled until the stored values have arrived. */
+    loaded,
     save,
   }
 }
