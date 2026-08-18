@@ -89,6 +89,8 @@ interface MatchLine {
   phone: string
   region: string
   roles: string
+  /** The terms they asked for. 9 of the 23 corpus posts state these; nothing showed them. */
+  terms: string
 }
 
 function matchesEmailBody(
@@ -105,7 +107,7 @@ function matchesEmailBody(
         <td style="padding:8px 12px;border-bottom:1px solid #EEE8DC;font-size:13px;color:#1A1208;font-weight:600;">${m.score}</td>
         <td style="padding:8px 12px;border-bottom:1px solid #EEE8DC;font-size:13px;color:#1A1208;">${m.name}</td>
         <td style="padding:8px 12px;border-bottom:1px solid #EEE8DC;font-size:13px;color:#1A1208;"><a href="mailto:${m.email}" style="color:#2D5016;">${m.email}</a><br>${m.phone}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid #EEE8DC;font-size:13px;color:#6B5D4A;">${m.region}<br>${m.roles}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #EEE8DC;font-size:13px;color:#6B5D4A;">${m.region}<br>${m.roles}<br><em>${m.terms}</em></td>
       </tr>`,
     )
     .join('')
@@ -189,7 +191,7 @@ Deno.serve(async (req) => {
     // pg_net delivers the request.
     const { data: matches, error: matchErr } = await supabaseClient
       .from('match_scores')
-      .select('seeker_id, total_score')
+      .select('seeker_id, total_score, breakdown')
       .eq('job_id', jobId)
       .order('total_score', { ascending: false })
       .limit(100)
@@ -202,12 +204,31 @@ Deno.serve(async (req) => {
       })
     }
 
-    if (!matches || matches.length === 0) {
-      console.log(`notify-job-matches: job=${jobId} has 0 matches — nothing to send`)
-      return new Response(JSON.stringify({ skipped: true, reason: 'no matches', job_id: jobId }), {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
+    // Scoring v3 (migration 093) records DEALBREAKERS as `breakdown.gates`, applied
+    // multiplicatively: a seeker who needs sponsorship on a non-sponsoring job, or who asked
+    // for relief work on a permanent role, is not a low match — they are blocked. Emailing
+    // the operator "here are your matches" with those names in it is worse than noise: these
+    // people were promised an email when a MATCHING job appears, and a farm they cannot
+    // legally take is not one. Rows scored before v3 carry no `gates` key and pass through.
+    const blocked = (m: { breakdown?: { gates?: Record<string, boolean> } | null }) =>
+      Object.values(m.breakdown?.gates ?? {}).some(Boolean)
+
+    const eligible = (matches ?? []).filter((m) => !blocked(m))
+    const excluded = (matches ?? []).length - eligible.length
+    // Never a silent cap: a drop the operator cannot see reads as "nobody matched".
+    if (excluded > 0) {
+      console.log(`notify-job-matches: job=${jobId} excluded ${excluded} gate-blocked pair(s)`)
+    }
+
+    if (eligible.length === 0) {
+      console.log(
+        `notify-job-matches: job=${jobId} has 0 sendable matches ` +
+          `(${(matches ?? []).length} scored, ${excluded} blocked) — nothing to send`,
+      )
+      return new Response(
+        JSON.stringify({ skipped: true, reason: 'no matches', excluded, job_id: jobId }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      )
     }
 
     // Farm name for the subject line
@@ -219,10 +240,10 @@ Deno.serve(async (req) => {
     const farmName = employer?.farm_name ?? 'an employer'
 
     // Batch-fetch profiles and contacts (two queries, not 2N)
-    const seekerIds = matches.map((m) => m.seeker_id)
+    const seekerIds = eligible.map((m) => m.seeker_id)
     const { data: profiles } = await supabaseClient
       .from('seeker_profiles')
-      .select('id, user_id, region, role_type_pref')
+      .select('id, user_id, region, role_type_pref, contract_type_pref')
       .in('id', seekerIds)
     const profileById = new Map((profiles ?? []).map((p) => [p.id, p]))
 
@@ -233,7 +254,7 @@ Deno.serve(async (req) => {
       .in('user_id', userIds)
     const contactByUserId = new Map((contacts ?? []).map((c) => [c.user_id, c]))
 
-    const lines: MatchLine[] = matches.map((m) => {
+    const lines: MatchLine[] = eligible.map((m) => {
       const profile = profileById.get(m.seeker_id)
       const contact = profile ? contactByUserId.get(profile.user_id) : undefined
       const name =
@@ -245,6 +266,14 @@ Deno.serve(async (req) => {
         phone: contact?.phone ?? '—',
         region: profile?.region ?? '—',
         roles: (profile?.role_type_pref ?? []).join(', ') || '—',
+        // The DB tokens read badly in an email — nobody in these posts writes "casual", they
+        // write "relief". Mirrors CONTRACT_TYPE_PREFS in src/lib/constants.ts.
+        terms:
+          (profile?.contract_type_pref ?? [])
+            .map((t: string) =>
+              t === 'casual' ? 'Casual or relief' : t === 'contract' ? 'Fixed term' : 'Permanent',
+            )
+            .join(' · ') || 'terms not stated',
       }
     })
 
@@ -255,12 +284,14 @@ Deno.serve(async (req) => {
       emailWrapper(matchesEmailBody(jobTitle, farmName, jobRegion, jobId, lines)),
     )
 
-    console.log(`notify-job-matches: job=${jobId}, matches=${lines.length}, sent=${ok}`)
+    console.log(
+      `notify-job-matches: job=${jobId}, matches=${lines.length}, blocked=${excluded}, sent=${ok}`,
+    )
 
-    return new Response(JSON.stringify({ sent: ok ? 1 : 0, matches: lines.length, job_id: jobId }), {
-      status: 200,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    })
+    return new Response(
+      JSON.stringify({ sent: ok ? 1 : 0, matches: lines.length, excluded, job_id: jobId }),
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+    )
   } catch (error) {
     console.error('Unexpected error in notify-job-matches:', error)
     return new Response(JSON.stringify({ error: 'Internal server error' }), {
