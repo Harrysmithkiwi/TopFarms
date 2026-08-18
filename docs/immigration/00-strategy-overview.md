@@ -14,7 +14,21 @@ The catch — and the single most important finding — is a legal line we must 
 
 ## 2. The hard constraint: we cannot give immigration advice (design around this)
 
-**NZ Immigration Advisers Licensing Act 2007 (IALA).** Providing "immigration advice" without a licence is a **criminal offence — up to $100,000 fine and/or 7 years — even if given for free** (s 63/67). TopFarms is not a licensed party. So we do **not** advise; we build rails and refer the advice.
+**NZ Immigration Advisers Licensing Act 2007 (IALA).** Providing "immigration advice" without a licence is a **criminal offence — up to $100,000 fine and/or 7 years — even if given for free** (s 63/67).
+
+> ⚠️ **CORRECTED 2026-08-18. `02-legal-line.md` is the authority and it supersedes what this
+> section originally said** — that "TopFarms is not a licensed party. So we do **not** advise;
+> we build rails and refer the advice."
+>
+> **That is wrong, and reading it first makes you design the wrong product.** The founder holds
+> a **current NZ practising certificate**, and under **IALA s 11 NZ lawyers with a current
+> practising certificate are exempt from the licensing requirement**. No IAA licence and no
+> partner LIA are needed. The advice layer can be **in-house**, which is the moat — see
+> `02-legal-line.md`. (An IAA licence and a practising certificate cannot be held at the same
+> time; the regimes are alternatives.)
+>
+> The rest of this file still assumes the referral-only posture. Read `02-legal-line.md` before
+> acting on any of it.
 
 **What "advice" is (s 7):** using immigration knowledge to *advise, direct, assist or represent* a person on a NZ immigration matter. The moment generic public info is **tailored/applied/interpreted for an individual** ("based on your situation, apply for X / you qualify"), it's regulated advice.
 
