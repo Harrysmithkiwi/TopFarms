@@ -95,3 +95,19 @@ Fetched 2026-08-18:
 - [Overview of AEWV employer accreditation and job check](https://www.immigration.govt.nz/work/for-employers/getting-accreditation-or-approval-to-hire/employer-accreditation-for-the-aewv/aewv-employer-accreditation-and-job-check-process/)
 
 **Re-verify before shipping anything user-facing.** These rules changed twice in 2025.
+
+---
+
+## D4 — INZ register verification: NOT BUILT (recorded 2026-08-18)
+
+The register is a public INZ tool listing **29,000+ accredited employers**
+(https://www.immigration.govt.nz/work/requirements-for-work-visas/approved-employers/accredited-employer-list/).
+Whether it exposes a documented JSON API, or only an HTML search, was not established here —
+it needs the page inspected in a browser.
+
+**This is a phase, not a ticket.** Moving `inz_accredited` from self-declared to verified needs:
+a lookup keyed on NZBN, a **re-verification schedule** (accreditation lapses on 12- then
+24-month renewals), a policy for what happens when the register and the employer disagree, and
+an admin queue for those mismatches. Until it exists, `/jobs` says "employer-declared" and
+`accredited_employer` stays outside `employer_verifications` — per F-11, a self-declared trust
+claim is not a verified one.
