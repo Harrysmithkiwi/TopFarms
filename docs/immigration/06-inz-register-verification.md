@@ -156,7 +156,27 @@ publication, and per §2 a mistyped NZBN is indistinguishable from a genuine mis
 flag is right, because we cannot stand behind an unconfirmed claim on a surface migrants spend
 money on. Anything harsher than that is not supported by what the register actually tells us.
 
-## 6. What was NOT established
+## 6. The two lawful channels, and the one we are not using
+
+Only two ways to learn what the register says are consistent with §4.
+
+1. **An admin searches it in a standard web browser.** Permitted explicitly, costs about
+   fifteen seconds, and is what Stage 1 ships. At the current employer count — zero in prod —
+   this is not a compromise, it is the correct amount of machinery.
+2. **Ask MBIE for the data.** Either an agreement under the terms' own `unless we agree
+   otherwise` clause, or an **Official Information Act request** for the accredited-employer
+   list as a dataset. The OIA route was already in the knowledge base as the "snapshot
+   fallback" and is worth restating here because it is the one path that survives §4 intact: a
+   dataset released under the OIA is ours to hold, and the ToU governs retrieval from the
+   website, not knowledge lawfully obtained from the agency.
+
+The OIA route has a cost the endpoint does not: a snapshot goes stale, and the register is
+"updated daily". It would need re-requesting on a cadence, which is the re-verification
+schedule Stage 3 was deferring. **Not worth requesting until there are enough accredited
+employers on TopFarms that an admin's browser search is the bottleneck.** Recorded so the
+option is not rediscovered from scratch.
+
+## 7. What was NOT established
 
 - Whether MBIE would grant programmatic access on request. Not asked. That is the only route to
   Stage 2 and it is a conversation, not a build.
