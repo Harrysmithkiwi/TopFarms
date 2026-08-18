@@ -191,6 +191,19 @@ export function JobSearch() {
     [setSearchParams],
   )
 
+  // ─── Hero wiring ────────────────────────────────────────────────────────────
+  // `<SearchHero />` was mounted with NO props, so its search box, region dropdown and five
+  // pills rendered and did nothing — F-17's family, on the most prominent control on the page.
+  // A seeker who types a role and presses Search reads the unchanged list as "no jobs match".
+  //
+  // Every key written here is in FILTER_KEYS, so each produces an ActiveFilterPill and is
+  // removed by clear-all. The hero's region select is a second view of the sidebar's `region`
+  // filter, not a separate one: it reads the URL and writes it through the same handler, so
+  // the two cannot disagree. It offers a single region where the sidebar is multi-select, so
+  // the value shown is blank unless exactly one region is active.
+  const regionParams = searchParams.getAll('region')
+  const heroRegion = regionParams.length === 1 ? regionParams[0] : ''
+
   // ─── Remove filter handler (for ActiveFilterPills) ─────────────────────────
   function handleRemoveFilter(key: string, value?: string) {
     setSearchParams(
@@ -561,7 +574,12 @@ export function JobSearch() {
 
   return (
     <div className="bg-cream-2">
-      <SearchHero />
+      <SearchHero
+        onSearch={(q) => handleFilterChange('q', q || null)}
+        region={heroRegion}
+        onRegionChange={(r) => handleFilterChange('region', r || null)}
+        onPillClick={(pill) => handleFilterChange('role_type', pill)}
+      />
 
       <div className="mx-auto max-w-[1200px] px-4 py-6">
         {/* Mobile: sticky header with filter icon */}

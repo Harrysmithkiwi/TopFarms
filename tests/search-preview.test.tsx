@@ -19,29 +19,53 @@ describe('SearchHero', () => {
     expect(screen.getByRole('button', { name: 'Search Jobs' })).toBeInTheDocument()
   })
 
+  // `Dairy` and `Sheep & Beef` were here until 2026-08-18. They are SECTORS, and `sector` is
+  // not a registered filter key — a pill emitting one could never have produced an
+  // ActiveFilterPill or been cleared. The defaults are role_type values now; the vocabulary
+  // itself is asserted against ROLE_TYPES in tests/search-hero-wired.test.ts.
   it('renders 5 default quick-filter pills', () => {
     render(<SearchHero />)
-    expect(screen.getByText('Dairy')).toBeInTheDocument()
-    expect(screen.getByText('Sheep & Beef')).toBeInTheDocument()
-    expect(screen.getByText('Farm Manager')).toBeInTheDocument()
-    expect(screen.getByText('Herd Manager')).toBeInTheDocument()
-    expect(screen.getByText('Relief Milker')).toBeInTheDocument()
+    for (const pill of ['Farm Manager', 'Herd Manager', 'Farm Hand', 'Relief Milker', 'Calf Rearer']) {
+      expect(screen.getByText(pill)).toBeInTheDocument()
+    }
   })
 
   it('calls onPillClick with the pill label when a pill is clicked', () => {
     const onPillClick = vi.fn()
     render(<SearchHero onPillClick={onPillClick} />)
-    fireEvent.click(screen.getByText('Dairy'))
-    expect(onPillClick).toHaveBeenCalledWith('Dairy')
+    fireEvent.click(screen.getByText('Herd Manager'))
+    expect(onPillClick).toHaveBeenCalledWith('Herd Manager')
   })
 
-  it('calls onSearch with query and region values when Search Jobs is clicked', () => {
+  // These assertions always passed while `<SearchHero />` was mounted with no props at all —
+  // proving the callback fires says nothing about whether anyone supplied one. That gap is
+  // what tests/search-hero-wired.test.ts closes.
+  it('calls onSearch with the trimmed query when Search Jobs is clicked', () => {
     const onSearch = vi.fn()
     render(<SearchHero onSearch={onSearch} />)
     const input = screen.getByPlaceholderText(/Search jobs, roles, farms/)
-    fireEvent.change(input, { target: { value: 'milker' } })
+    fireEvent.change(input, { target: { value: '  milker ' } })
     fireEvent.click(screen.getByRole('button', { name: 'Search Jobs' }))
-    expect(onSearch).toHaveBeenCalledWith('milker', '')
+    expect(onSearch).toHaveBeenCalledWith('milker')
+  })
+
+  it('calls onSearch when Enter is pressed in the box', () => {
+    const onSearch = vi.fn()
+    render(<SearchHero onSearch={onSearch} />)
+    const input = screen.getByPlaceholderText(/Search jobs, roles, farms/)
+    fireEvent.change(input, { target: { value: 'shepherd' } })
+    fireEvent.keyDown(input, { key: 'Enter' })
+    expect(onSearch).toHaveBeenCalledWith('shepherd')
+  })
+
+  it('shows the region its caller passes, not one it invented', () => {
+    // Region is controlled by the URL, not by local state — held locally it desynced from the
+    // sidebar's `region` filter the moment either one moved. The value is also the canonical
+    // NZ_REGIONS string, so it equals what `jobs.region` stores.
+    render(<SearchHero region="Manawatū-Whanganui" />)
+    expect(screen.getByLabelText('Filter by region')).toHaveTextContent('Manawatū-Whanganui')
+    render(<SearchHero region="" />)
+    expect(screen.getAllByLabelText('Filter by region')[1]).toHaveTextContent('All Regions')
   })
 
   it('renders with a gradient background via inline style', () => {
@@ -54,7 +78,7 @@ describe('SearchHero', () => {
     render(<SearchHero pills={['Viticulture', 'Horticulture']} />)
     expect(screen.getByText('Viticulture')).toBeInTheDocument()
     expect(screen.getByText('Horticulture')).toBeInTheDocument()
-    expect(screen.queryByText('Dairy')).not.toBeInTheDocument()
+    expect(screen.queryByText('Farm Manager')).not.toBeInTheDocument()
   })
 })
 
