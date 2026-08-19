@@ -3,6 +3,7 @@ import { toast } from 'sonner'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { StepIndicator } from '@/components/ui/StepIndicator'
 import { supabase } from '@/lib/supabase'
+import { reportError } from '@/lib/observability'
 import { useAuth } from '@/hooks/useAuth'
 import { useWizard } from '@/hooks/useWizard'
 import type { FarmType } from '@/types/domain'
@@ -100,7 +101,15 @@ export function EmployerOnboarding() {
 
       if (error && error.code !== 'PGRST116') {
         // PGRST116 = no rows found (expected for new users)
-        console.error('Error loading profile:', error)
+        // reportError, not console.error: the console integration concatenates its arguments, so
+        // a PostgrestError arrived in Sentry as '[object Object]' (TOPFARMS-WEB-7) and the alert
+        // could not name its own cause. code/details/hint are what identify a 42501 grant gap
+        // from a dropped column.
+        reportError('employer onboarding profile load', error, {
+          code: error.code,
+          details: error.details,
+          hint: error.hint,
+        })
         setProfileError(true)
         setLoading(false)
         return

@@ -8,6 +8,7 @@
 //      worse outcome than having no error tracking.
 
 import { describe, it, expect } from 'vitest'
+import { toError } from '../src/lib/observability'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
@@ -90,5 +91,26 @@ describe('router error handling', () => {
   it('gives the user a recovery path and a contact address', () => {
     expect(boundary).toMatch(/Try again/)
     expect(boundary).toContain('hello@topfarms.co.nz')
+  })
+})
+
+describe('error coercion', () => {
+  // Sentry TOPFARMS-WEB-7 (2026-08-18) arrived titled '[object Object]': a Supabase
+  // PostgrestError is a plain object, so String() on it says nothing. The alert fired and
+  // withheld the one detail that identified the cause.
+  it('reads message off a plain object rather than stringifying it', () => {
+    const postgrest = { message: 'permission denied for table employer_profiles', code: '42501' }
+    expect(toError(postgrest).message).toBe('permission denied for table employer_profiles')
+  })
+
+  it('passes a real Error through untouched so its stack survives', () => {
+    const original = new Error('boom')
+    expect(toError(original)).toBe(original)
+  })
+
+  it('still produces something for values with no message', () => {
+    expect(toError('plain string').message).toBe('plain string')
+    expect(toError(null).message).toBe('null')
+    expect(toError({ message: '' }).message).toBe('[object Object]')
   })
 })

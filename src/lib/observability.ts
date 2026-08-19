@@ -134,6 +134,22 @@ function initSentry(Sentry: typeof SentryTypes): void {
 }
 
 /**
+ * Coerce anything throwable into an Error with a readable message.
+ *
+ * `String(value)` on a plain object yields '[object Object]', and a Supabase PostgrestError IS a
+ * plain object — which is how Sentry TOPFARMS-WEB-7 arrived as "Error loading profile: [object
+ * Object]" and named its symptom while destroying its cause. Fixed here rather than at the call
+ * site so the next caller that hands us a rejected fetch or a Postgrest error gets a title too.
+ *
+ * Exported for tests.
+ */
+export function toError(value: unknown): Error {
+  if (value instanceof Error) return value
+  const message = (value as { message?: unknown } | null)?.message
+  return new Error(typeof message === 'string' && message ? message : String(value))
+}
+
+/**
  * Report a handled error. Use instead of a bare console.error so failures are visible in
  * production, not just in a devtools console nobody has open.
  *
@@ -144,7 +160,7 @@ export function reportError(context: string, error: unknown, extra?: Record<stri
   // Not loaded (no DSN, still resolving, or the chunk failed) — the console.error above
   // is still captured by the console integration once Sentry is up.
   if (!sentry) return
-  sentry.captureException(error instanceof Error ? error : new Error(String(error)), {
+  sentry.captureException(toError(error), {
     tags: { context },
     extra: extra ? (scrub(extra) as Record<string, unknown>) : undefined,
   })
