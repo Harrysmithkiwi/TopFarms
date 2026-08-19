@@ -3,7 +3,7 @@ import {
   captureAgeDays,
   captureAgeLabel,
   isStaleCapture,
-} from '@/pages/admin/AdminLeadsStaging'
+} from '@/lib/leadDisplay'
 
 // The "Likely expired" badge reads `applications_close`, which the extractor fills ONLY when
 // the ad printed a closing date and is forbidden from inferring. Measured on prod 2026-08-19:
