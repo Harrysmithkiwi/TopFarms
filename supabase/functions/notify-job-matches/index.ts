@@ -1,12 +1,11 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { sendOnceEmail } from '../_shared/notify.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
-const FROM_EMAIL = Deno.env.get('RESEND_FROM_EMAIL') ?? 'TopFarms <hello@topfarms.co.nz>'
 const APP_URL = Deno.env.get('APP_URL') ?? 'https://topfarms.co.nz'
 
 // Operator alert destination. hello@ routes to the same inbox via Cloudflare,
@@ -22,26 +21,11 @@ const WEBHOOK_SECRET = Deno.env.get('WEBHOOK_SECRET') ?? ''
 // Resend email helper (notify-job-filled:21-40)
 // ---------------------------------------------------------------------------
 
-async function sendEmail(to: string, subject: string, html: string): Promise<boolean> {
-  if (!RESEND_API_KEY) {
-    console.error('RESEND_API_KEY not set — skipping email to', to)
-    return false
-  }
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${RESEND_API_KEY}`,
-    },
-    body: JSON.stringify({ from: FROM_EMAIL, to: [to], subject, html }),
-  })
-  if (!res.ok) {
-    const error = await res.text()
-    console.error(`Resend error for ${to}: ${error}`)
-    return false
-  }
-  return true
-}
+// Sending lives in ../_shared/notify.ts now — audit F-19. The local sendEmail() that used to
+// sit here sent whenever it was called, and `handle_job_activated` calls it whenever a job's
+// status BECOMES 'active'. `paused` is employer-reachable, so pause -> resume re-sent this
+// digest. It goes to the operator alone, so it was noise rather than harm — but it is the same
+// defect as notify-job-filled's, and one of them lands on seekers.
 
 // ---------------------------------------------------------------------------
 // Email HTML template (notify-job-filled:46-80)
@@ -278,18 +262,29 @@ Deno.serve(async (req) => {
     })
 
     const subject = `${lines.length} ${lines.length === 1 ? 'match' : 'matches'}: ${jobTitle} at ${farmName} (${jobRegion})`
-    const ok = await sendEmail(
-      OPERATOR_EMAIL,
+    // One digest per job, whatever the status does afterwards. Keyed on the job rather than on
+    // the match set on purpose: if a new seeker matches later, the RIGHT answer is a new kind of
+    // email about that seeker, not a re-send of the whole list with one line added.
+    const result = await sendOnceEmail(supabaseClient, {
+      kind: 'job_match_digest',
+      subjectId: jobId,
+      recipient: OPERATOR_EMAIL,
       subject,
-      emailWrapper(matchesEmailBody(jobTitle, farmName, jobRegion, jobId, lines)),
-    )
+      html: emailWrapper(matchesEmailBody(jobTitle, farmName, jobRegion, jobId, lines)),
+    })
 
     console.log(
-      `notify-job-matches: job=${jobId}, matches=${lines.length}, blocked=${excluded}, sent=${ok}`,
+      `notify-job-matches: job=${jobId}, matches=${lines.length}, blocked=${excluded}, outcome=${result.outcome}`,
     )
 
     return new Response(
-      JSON.stringify({ sent: ok ? 1 : 0, matches: lines.length, excluded, job_id: jobId }),
+      JSON.stringify({
+        sent: result.outcome === 'sent' ? 1 : 0,
+        outcome: result.outcome,
+        matches: lines.length,
+        excluded,
+        job_id: jobId,
+      }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     )
   } catch (error) {

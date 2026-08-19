@@ -1,12 +1,11 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { sendOnceEmail } from '../_shared/notify.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
-const FROM_EMAIL = Deno.env.get('RESEND_FROM_EMAIL') ?? 'TopFarms <hello@topfarms.co.nz>'
 const APP_URL = Deno.env.get('APP_URL') ?? 'https://topfarms.co.nz'
 
 // Phase 18.1 #3 — defence-in-depth header validation (verify_jwt:false fn).
@@ -15,29 +14,14 @@ const APP_URL = Deno.env.get('APP_URL') ?? 'https://topfarms.co.nz'
 const WEBHOOK_SECRET = Deno.env.get('WEBHOOK_SECRET') ?? ''
 
 // ---------------------------------------------------------------------------
-// Resend email helper
+// Sending lives in ../_shared/notify.ts now — audit F-19.
+//
+// The local sendEmail() that used to sit here would send whenever it was called, and
+// `handle_job_filled` calls it whenever a job's status BECOMES 'filled'. An employer who fills
+// a job, reopens it because the hire fell through, and fills it again therefore emailed every
+// unresolved applicant "this job has been filled" a second time — and nothing recorded the
+// first send, so nothing could tell. RESEND_API_KEY and FROM_EMAIL are read there too.
 // ---------------------------------------------------------------------------
-
-async function sendEmail(to: string, subject: string, html: string): Promise<boolean> {
-  if (!RESEND_API_KEY) {
-    console.error('RESEND_API_KEY not set — skipping email to', to)
-    return false
-  }
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${RESEND_API_KEY}`,
-    },
-    body: JSON.stringify({ from: FROM_EMAIL, to: [to], subject, html }),
-  })
-  if (!res.ok) {
-    const error = await res.text()
-    console.error(`Resend error for ${to}: ${error}`)
-    return false
-  }
-  return true
-}
 
 // ---------------------------------------------------------------------------
 // Email HTML templates
@@ -185,6 +169,7 @@ Deno.serve(async (req) => {
     }
 
     let sent = 0
+    let alreadySent = 0
     let failed = 0
 
     for (const app of applications ?? []) {
@@ -218,18 +203,27 @@ Deno.serve(async (req) => {
       const seekerName = seekerProfile.region ? `Seeker from ${seekerProfile.region}` : 'Job seeker'
       const subject = `Update on your application — ${jobTitle} at ${farmName}`
 
-      const ok = await sendEmail(
-        seekerEmail,
+      // Keyed on (job, applicant): a second applicant on the same job is a different email, and
+      // the same applicant on the same job never is — however many times the status flips.
+      const result = await sendOnceEmail(supabaseClient, {
+        kind: 'job_filled',
+        subjectId: filledJobId,
+        recipient: seekerEmail,
         subject,
-        emailWrapper(jobFilledEmailBody(seekerName, jobTitle, farmName)),
-      )
-      if (ok) sent++
+        html: emailWrapper(jobFilledEmailBody(seekerName, jobTitle, farmName)),
+      })
+      if (result.outcome === 'sent') sent++
+      // A duplicate is a SUCCESS — the applicant already heard from us. Counting it as a
+      // failure would make a correctly-suppressed re-fire look like an outage.
+      else if (result.outcome === 'duplicate') alreadySent++
       else failed++
     }
 
-    console.log(`notify-job-filled: job=${filledJobId}, sent=${sent}, failed=${failed}`)
+    console.log(
+      `notify-job-filled: job=${filledJobId}, sent=${sent}, already_sent=${alreadySent}, failed=${failed}`,
+    )
 
-    return new Response(JSON.stringify({ sent, failed, job_id: filledJobId }), {
+    return new Response(JSON.stringify({ sent, already_sent: alreadySent, failed, job_id: filledJobId }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
