@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { toast } from 'sonner'
 import { UploadCloud, X } from 'lucide-react'
@@ -62,11 +62,20 @@ export function PasteCapture({
   const [images, setImages] = useState<CapturedImage[]>([])
   const [busy, setBusy] = useState(false)
 
+  // Kept in a ref as well as state so overflow can be measured without reading `images`
+  // inside the updater — React runs updaters twice in StrictMode and would double-toast.
+  const countRef = useRef(0)
+
   const addFiles = useCallback(async (files: File[]) => {
     const imgs = files.filter((f) => f.type.startsWith('image/'))
     if (imgs.length === 0) return
     const read = await Promise.all(imgs.map(readImage))
+    const dropped = Math.max(0, countRef.current + read.length - MAX_IMAGES)
     setImages((prev) => [...prev, ...read].slice(0, MAX_IMAGES))
+    countRef.current = Math.min(countRef.current + read.length, MAX_IMAGES)
+    // The cap used to drop the overflow in silence, so pasting a 12th image looked
+    // identical to pasting nothing.
+    if (dropped > 0) toast.warning(`Kept ${MAX_IMAGES} images — ${dropped} dropped.`)
     // A screenshot is rarely from your own FB group → default the source label.
     setSource((s) => (s === 'fb_own_group' ? s : 'manual_paste'))
   }, [])
@@ -79,15 +88,36 @@ export function PasteCapture({
     onDrop: (accepted) => void addFiles(accepted),
   })
 
-  // Clipboard-paste an image directly (Cmd/Ctrl+V of a screenshot). Text paste
-  // still flows to the textarea; we only intercept image items.
-  function onPaste(e: React.ClipboardEvent) {
-    const files = Array.from(e.clipboardData.items)
-      .filter((it) => it.kind === 'file' && it.type.startsWith('image/'))
-      .map((it) => it.getAsFile())
-      .filter((f): f is File => f !== null)
-    if (files.length) void addFiles(files)
-  }
+  // Clipboard-paste an image anywhere in the drawer, not just the textarea.
+  //
+  // This used to be an onPaste on the <textarea> alone, while the dropzone below it
+  // advertised "Drag, click, or paste". Clicking the dropzone is the obvious move when you
+  // want to add a picture, and it blurs the textarea — so the one element that listened for
+  // a paste was the one you had just left. The label promised something the element did not
+  // do. Scoped by mount, not by an open flag: the drawer renders under `{capturing && …}`,
+  // so the listener exists exactly as long as the panel does.
+  useEffect(() => {
+    function onPaste(e: ClipboardEvent) {
+      const items = Array.from(e.clipboardData?.items ?? [])
+      const files = items
+        .filter((it) => it.kind === 'file' && it.type.startsWith('image/'))
+        .map((it) => it.getAsFile())
+        .filter((f): f is File => f !== null)
+      if (files.length) {
+        void addFiles(files)
+        return
+      }
+      // Only complain when the clipboard carried a FILE we could not read. Pasting text is
+      // the normal case and lands in the textarea by itself; saying anything there would be
+      // noise. Copying a post out of Facebook puts text and an image URL on the clipboard —
+      // never the image bytes — which is why that particular paste can never work.
+      if (items.some((it) => it.kind === 'file')) {
+        toast.error('That clipboard item is not an image. Use ⌃⌘⇧4 to copy a screenshot.')
+      }
+    }
+    window.addEventListener('paste', onPaste)
+    return () => window.removeEventListener('paste', onPaste)
+  }, [addFiles])
 
   // L1 batch lane (§9.2): one item per screenshot (vision) + one for the text;
   // lead-intake structures them all with Claude server-side.
@@ -147,7 +177,6 @@ export function PasteCapture({
         placeholder={placeholder}
         value={text}
         onChange={(e) => setText(e.target.value)}
-        onPaste={onPaste}
       />
 
       {/* Screenshot dropzone — drag, click, or paste. Each image is its own lead. */}
