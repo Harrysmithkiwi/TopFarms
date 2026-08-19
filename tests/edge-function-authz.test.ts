@@ -192,3 +192,37 @@ describe('the shared helper keeps its safety properties', () => {
     expect(auth).toMatch(/Invalid auth token/)
   })
 })
+
+// Every remote import carries a version.
+//
+// `generate-candidate-summary` and `generate-match-explanation` imported
+// 'https://esm.sh/@anthropic-ai/sdk' with NO version at all, while every other esm.sh import in
+// the tree was pinned. A deployed function therefore tracked whatever esm.sh resolved on the day
+// it was deployed, so its behaviour could change without a commit. Those are also the two
+// functions that spent weeks calling a model that returned 404, inside a catch that swallowed it
+// into a null — silent drift here has form, which is why this is a gate and not a convention.
+describe('remote imports are pinned', () => {
+  const allSources = readdirSync(FN_DIR, { recursive: true, withFileTypes: true })
+    .filter((d) => d.isFile() && d.name.endsWith('.ts'))
+    .map((d) => ({
+      path: `${d.parentPath ?? d.path}/${d.name}`.slice(FN_DIR.length + 1),
+      src: readFileSync(resolve(`${d.parentPath ?? d.path}`, d.name), 'utf8'),
+    }))
+
+  it('finds sources to check', () => {
+    expect(allSources.length).toBeGreaterThan(0)
+  })
+
+  it.each(allSources.map((f) => f.path))('%s pins every remote import', (path) => {
+    const src = allSources.find((f) => f.path === path)!.src
+    // A pinned specifier has an @version after the package name: esm.sh/pkg@1, esm.sh/@scope/pkg@2.
+    const unpinned = [...src.matchAll(/https:\/\/esm\.sh\/(@?[^'"\s]+)/g)]
+      .map((m) => m[1])
+      .filter((spec) => {
+        const withoutScope = spec.startsWith('@') ? spec.slice(1) : spec
+        return !withoutScope.includes('@')
+      })
+    expect(unpinned).toEqual([])
+  })
+})
+

@@ -1,4 +1,9 @@
-import Anthropic from 'https://esm.sh/@anthropic-ai/sdk'
+// Pinned to the minor. The SDK is 0.x, where the MINOR is the breaking-change axis, so
+// `@0` would pin nothing — 0.117 admits patches and blocks a breaking release landing on a
+// deploy nobody made. Unpinned, these two functions tracked whatever esm.sh resolved that
+// day; they are also the two that spent weeks calling a dead model inside a swallowing
+// catch, so silent drift here has form.
+import Anthropic from 'https://esm.sh/@anthropic-ai/sdk@0.117'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import {
   requireCaller,
