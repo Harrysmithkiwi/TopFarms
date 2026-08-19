@@ -94,20 +94,41 @@ Deno.serve(async (req) => {
     while (attempt < 3) {
       try {
         const message = await anthropic.messages.create({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-sonnet-5',
+          // `claude-sonnet-4-20250514` was RETIRED and returned 404 from the live API — verified
+          // 2026-08-19, not inferred. The retry loop below swallowed it, so this function has been
+          // silently writing null since the retirement; nothing surfaced because the key was also
+          // out of credit and everything failed for that reason instead.
+          //
+          // Sonnet 5 runs ADAPTIVE THINKING when `thinking` is omitted (Sonnet 4.x ran
+          // thinking-off), and max_tokens caps thinking AND response text together — so at
+          // 150 tokens the model's own per-request decision to think could eat the budget the
+          // answer needs. Tested both ways on the live API before writing this: on a
+          // representative prompt it did NOT think and returned fine either way, so this is a
+          // determinism guard, not a fix for an observed break. It stays because "adaptive"
+          // means the model re-decides per request and a longer or harder input can spend the
+          // budget differently. The output is one short paragraph and needs no reasoning.
+          thinking: { type: 'disabled' },
           max_tokens: 150,
           messages: [
             { role: 'user', content: buildPrompt(scoreRow.total_score, scoreRow.breakdown) },
           ],
         })
 
-        const firstContent = message.content[0]
+        // Find the text block rather than trusting content[0]. With thinking enabled the first
+        // block is a thinking block, and `content[0].type === 'text'` would quietly evaluate false
+        // and store null — the same silent-null shape that hid the dead model ID.
+        const firstContent = message.content.find((b) => b.type === 'text')
         if (firstContent && firstContent.type === 'text') {
           explanation = firstContent.text.trim()
         }
 
         break
-      } catch (_err) {
+      } catch (err) {
+        // Logged, not swallowed. A bare `catch (_err)` is why a 404 on a retired model looked
+        // identical to "the model had nothing to say" for weeks: three silent retries, then a
+        // null written to the row. The function still degrades gracefully — it just says so now.
+        console.error(`generate-match-explanation: Anthropic call failed (attempt ${attempt + 1}/3)`, err)
         attempt++
         if (attempt < 3) {
           await new Promise((resolve) => setTimeout(resolve, delays[attempt - 1]))
