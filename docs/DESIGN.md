@@ -87,6 +87,27 @@ typography:
     fontWeight: 600
     lineHeight: "14px"
     letterSpacing: "0.04em"
+  marketing-display:
+    fontFamily: "'Cormorant Garamond', 'Iowan Old Style', Georgia, serif"
+    fontSize: "clamp(1.5rem, 6.2vw, 4.6rem)"
+    fontWeight: 600
+    letterSpacing: "-0.02em"
+  marketing-lead:
+    fontFamily: "Inter, system-ui, sans-serif"
+    fontSize: "1.1875rem"
+    fontWeight: 400
+  marketing-intro:
+    fontFamily: "Inter, system-ui, sans-serif"
+    fontSize: "1.0625rem"
+    fontWeight: 400
+  marketing-body:
+    fontFamily: "Inter, system-ui, sans-serif"
+    fontSize: "0.9375rem"
+    fontWeight: 400
+  marketing-micro:
+    fontFamily: "Inter, system-ui, sans-serif"
+    fontSize: "0.875rem"
+    fontWeight: 400
 rounded:
   sm: "6px"
   md: "8px"
@@ -226,7 +247,7 @@ A disciplined single-accent palette: one green, three shades, tinted neutrals ar
 **Character:** One sans-serif family doing every job at a disciplined weight ladder. Inter chosen because Kiwi farmers already use Xero (which uses Inter) — the type is familiar in their daily kit, not foreign. Used at 400 (body) and 600 (display, headline, title, label) only. No 300, no 800, no italics-for-emphasis-in-UI.
 
 ### Hierarchy
-- **Display** (600, 48/56, -0.02em): Hero headlines on landing only. Never in product UI.
+- **Display** (600, 48/56, -0.02em): Large headlines in PORTAL surfaces. No longer used on the public landing page, which moved to the marketing ramp below on 2026-08-19.
 - **Headline** (600, 36/44, -0.02em): Page titles, major section headers. One per screen.
 - **Title** (600, 20/28, -0.01em): Card titles, modal titles, dashboard widget headers.
 - **Subtitle** (600, 17/24, -0.005em): Subsection headers, applicant card headers.
@@ -269,6 +290,31 @@ same way it wins on any hex. `--text-micro` (11/14) and `--text-label` (13/16) a
 there; this ramp documents them rather than competing with them. Known open discrepancy:
 `--text-label` sets 13/16 while Small above is 13/20 — same size, different leading, two
 different jobs. Reconcile deliberately, not by editing one of them in passing.
+
+### Marketing surface only (v12, 2026-08-19)
+
+**This ramp does NOT apply to any gated portal.** `CLAUDE.md` §10 keeps two design systems on
+purpose; the authority for the public marketing world is `docs/design/v12-DIRECTIVE.md` §2, and
+this section exists so the design-system detector recognises those values instead of reading
+them as ad-hoc literals. A portal that reaches for Cormorant Garamond has crossed the line the
+two-worlds rule draws.
+
+**Display font:** Cormorant Garamond (operator-pinned by the approved comp). Sizes are
+`clamp()` throughout, never fixed steps — the landing headline runs from `1.5rem` to `4.6rem`.
+
+**Body ramp — four steps, and only four:**
+
+| Step | Size | Use |
+|---|---|---|
+| `marketing-micro` | `0.875rem` | chips, feature body |
+| `marketing-body` | `0.9375rem` | card copy, links |
+| `marketing-intro` | `1.0625rem` | section lead-ins, card headings |
+| `marketing-lead` | `1.1875rem` | hero subhead, split-card headings |
+
+The operator's concept HTML carried six values (`0.92 / 0.95 / 1.02 / 1.05 / 1.15 / 1.2rem`),
+which is a collection rather than a scale. They were normalised to the four above; the
+difference is sub-pixel at these sizes, and the approved comp is a rendered PNG rather than a
+type specimen.
 
 ### Named Rules
 

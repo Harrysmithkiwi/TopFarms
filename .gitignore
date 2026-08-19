@@ -69,6 +69,13 @@ docs/design/*
 !docs/design/phase-5-ledger.md
 # v13: the directive governs the port and is the decision record. Tracked, not scratch.
 !docs/design/v11-DIRECTIVE.md
+# v12: supersedes v11 for the marketing surface, and is cited by CLAUDE.md section 10. The
+# approved comp travels with it — a directive that cites a reference nobody can open is half
+# a record, and this one is the authority the build was reproduced against.
+!docs/design/v12-DIRECTIVE.md
+!docs/design/design-reference/
+docs/design/design-reference/*
+!docs/design/design-reference/topfarming landing concept 3.png
 content/
 .claude/skills/playwright-skill/
 docs/index.docx

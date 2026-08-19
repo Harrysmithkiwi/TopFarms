@@ -55,12 +55,12 @@ export function ShellNav() {
   const linkClass = (isActive: boolean) =>
     [
       'inline-flex min-h-11 flex-none items-center rounded-full px-4 text-sm font-medium transition-colors md:min-h-9',
-      isActive ? 'bg-cream-2 text-ink' : 'text-ink-60 hover:bg-cream-2 hover:text-ink',
+      isActive ? 'bg-fern-50 text-bark' : 'text-sage hover:bg-fern-50 hover:text-bark',
     ].join(' ')
 
   return (
     <nav className="px-3 pt-3 sm:px-5" aria-label="Main">
-      <div className="bg-card border-line mx-auto flex max-w-[1440px] flex-wrap items-center gap-2 rounded-3xl border px-4 py-2 md:rounded-full md:px-3 md:py-2 md:pl-6">
+      <div className="bg-white border-rule mx-auto flex max-w-[1440px] flex-wrap items-center gap-2 rounded-3xl border px-4 py-2 md:rounded-full md:px-3 md:py-2 md:pl-6">
         <Link
           to="/"
           className="mr-auto inline-flex min-h-11 items-center text-xl font-extrabold tracking-tight"
@@ -73,7 +73,7 @@ export function ShellNav() {
             second row with an edge fade so a clipped link reads as scrollable,
             not broken (v12 comp pattern, measured at 390). */}
         <div
-          className="border-line -mx-1 flex w-full basis-full items-center gap-1 overflow-x-auto border-t px-1 pt-1.5 [mask-image:linear-gradient(90deg,#000_calc(100%-28px),transparent)] [scrollbar-width:none] md:mx-0 md:w-auto md:flex-none md:basis-auto md:border-t-0 md:px-0 md:pt-0 md:[mask-image:none]"
+          className="border-rule -mx-1 flex w-full basis-full items-center gap-1 overflow-x-auto border-t px-1 pt-1.5 [mask-image:linear-gradient(90deg,#000_calc(100%-28px),transparent)] [scrollbar-width:none] md:mx-0 md:w-auto md:flex-none md:basis-auto md:border-t-0 md:px-0 md:pt-0 md:[mask-image:none]"
         >
           {navLinks.map((link) => (
             <NavLink
@@ -93,7 +93,7 @@ export function ShellNav() {
           <div className="relative order-first ml-2 md:order-none">
             <button
               onClick={() => setUserMenuOpen(!userMenuOpen)}
-              className="bg-green flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-sm font-semibold text-white transition-opacity hover:opacity-85"
+              className="bg-fern-700 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-sm font-semibold text-white transition-opacity hover:opacity-85"
               aria-label="User menu"
               aria-expanded={userMenuOpen}
             >
@@ -102,23 +102,23 @@ export function ShellNav() {
             {userMenuOpen && (
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setUserMenuOpen(false)} />
-                <div className="bg-card border-line absolute top-11 right-0 z-20 w-48 rounded-2xl border py-1 shadow-lg">
+                <div className="bg-white border-rule absolute top-11 right-0 z-20 w-48 rounded-2xl border py-1 shadow-lg">
                   {role && (
                     <Link
                       to={dashboardPathFor(role)}
                       onClick={() => setUserMenuOpen(false)}
-                      className="text-ink hover:bg-cream block px-4 py-2.5 text-sm transition-colors"
+                      className="text-bark hover:bg-paper block px-4 py-2.5 text-sm transition-colors"
                     >
                       Dashboard
                     </Link>
                   )}
-                  {role && <hr className="border-line my-1" />}
+                  {role && <hr className="border-rule my-1" />}
                   <button
                     onClick={() => {
                       setUserMenuOpen(false)
                       signOut()
                     }}
-                    className="text-danger-ink hover:bg-cream w-full cursor-pointer px-4 py-2.5 text-left text-sm transition-colors"
+                    className="text-danger-ink hover:bg-paper w-full cursor-pointer px-4 py-2.5 text-left text-sm transition-colors"
                   >
                     Sign Out
                   </button>

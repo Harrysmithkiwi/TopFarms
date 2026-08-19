@@ -30,8 +30,8 @@ Voice that of a respected farm advisor — knows the sector, gives straight answ
 Specifically NOT to look like:
 
 - **Generic B2B SaaS** — Salesforce, Monday, HubSpot. Bloated CTAs, glassmorphism, purple/blue gradients, "innovative platform" hero copy.
-- **Craft-beer / artisan-food aesthetics** — sepia, cream backgrounds, editorial serif display fonts, "from the soil to your plate" warmth-via-chrome.
-- **Stock agricultural branding** — green-gradients-over-rolling-hills, drone-overhead cliches, smiling-farmer-with-arms-crossed stock photos.
+- ~~**Craft-beer / artisan-food aesthetics** — sepia, cream backgrounds, editorial serif display fonts, "from the soil to your plate" warmth-via-chrome.~~ **AMENDED 2026-08-19.** The operator reviewed this exact line against the approved landing comp and chose the comp: the public marketing surface is now cream (`linen #f8f6f1`) with a Cormorant Garamond display serif, per `docs/design/v12-DIRECTIVE.md`. Still binding everywhere else, and **sepia remains banned outright**. The GATED PORTALS are untouched by this amendment — `docs/DESIGN.md` governs them and neither cream nor a serif belongs there.
+- **Stock agricultural branding** — drone-overhead cliches, smiling-farmer-with-arms-crossed stock photos. **AMENDED 2026-08-19:** "green-gradients-over-rolling-hills" is struck for the marketing surface, which is now a drawn NZ paddock by operator decision. The rest of this line still binds, and v12 honours it deliberately — the figures in the scene face AWAY from the viewer for exactly the reason this bullet exists.
 - **Notion / overly-minimal** — ultra-light type weights, whitespace-as-luxury. Farmers value information density not airiness.
 - **Slick tech-bro startup** — purple/pink gradients, wave animations, "leveraging AI to revolutionise" copy.
 
@@ -41,7 +41,7 @@ The visual register to aim for instead: Linear, Stripe, Vercel (light mode), Xer
 
 1. **Anti-chrome paranoia.** Are we leaning on chrome to do work content should do? Does any surface look like it could be for any SaaS product? Is there anything that would feel out of place in a Kiwi farmer's daily workflow alongside Xero and MINDA? If the answer to any of these is yes, the surface is failing — even if every v2 token is correctly applied. The chrome (Inter, hex palette, single-green) is settled and deliberate. Audit and critique passes focus exclusively on whether the chrome is getting out of the way of the content, not on whether the chrome itself is "perfect."
 
-2. **Authentic via content, not chrome.** Warmth and Kiwi-ness come from real farm photos, real job counts, real NZ-specific copy ("8/2 roster", "relief milking", "calf-rearing season"). Never from sepia filters, cream backgrounds, or rustic decorative elements. If a surface feels generic, fix the content not the chrome.
+2. **Authentic via content, not chrome.** Warmth and Kiwi-ness come from real job counts and real NZ-specific copy ("8/2 roster", "relief milking", "calf-rearing season"). Never from sepia filters or rustic decorative clichés. If a surface feels generic, fix the content not the chrome. **AMENDED 2026-08-19:** on the MARKETING surface only, illustration is now part of the content rather than chrome — the drawn paddock is the argument that this is a New Zealand farm product, and it is built from the same fern ramp as the interface. In the PORTALS this principle stands exactly as written.
 
 3. **Show, don't tell.** Product screenshots beat marketing illustrations. Live counters beat "thousands of farmers" copy. Real match percentages beat "AI-powered matching" buzzwords. Defensible numbers always beat aspirational adjectives.
 

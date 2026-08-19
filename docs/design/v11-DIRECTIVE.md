@@ -1,3 +1,15 @@
+> **SUPERSEDED for the public marketing surface, 2026-08-19, by
+> [`v12-DIRECTIVE.md`](v12-DIRECTIVE.md).**
+>
+> Not deleted, and not wholly dead. v12 §0 carries a rule-by-rule table of what survived: the
+> PRODUCT decisions (1.3 mechanic underplayed in marketing, 1.4 a worker never sees a personal
+> score, 1.5 never disparage applicants, 1.9 the audience toggle, 1.12 pricing position, 1.15
+> inventory honesty, 1.19 pricing model v3) are all CARRIED FORWARD and still bind, and
+> CLAUDE.md §10 still points several of them at the gated portals. What was replaced is the
+> VISUAL world, above all 1.2 "the page is zero-photography", which v12 reverses outright.
+>
+> Read this file for the reasoning behind a decision. Read v12 for what ships.
+
 # TopFarms v11 Design Directive
 
 **Status:** authoritative for the v13 port of this design system into the production app

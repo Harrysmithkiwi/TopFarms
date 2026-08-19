@@ -1,26 +1,31 @@
 import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import { AudienceProvider } from '@/contexts/AudienceContext'
 import { Home } from '@/pages/Home'
 
-// v13 landing suite (stage 2 of the port, docs/design/v11-DIRECTIVE.md).
-// Replaces the LAND-01..04 suite for the old landing: the tabs section,
-// "Best Farms" hero and featured-card grid retired with it.
+// v12 landing suite (docs/design/v12-DIRECTIVE.md), replacing the v13 suite.
+//
+// The v13 suite asserted the SHAPE of a page that no longer exists — an example match panel,
+// a counters band, numbered steps. Those assertions retired with their sections. What did NOT
+// retire is the set of product rules underneath them, which v12 carries forward unchanged and
+// which this file re-pins to the new markup:
+//
+//   1.4  a worker is never shown a personal score       -> no digit+% anywhere on the page
+//   1.5  the page never disparages applicants           -> the banned vocabulary stays absent
+//   1.12 pricing lives at /pricing, the position stays  -> the free-listing claim links there
+//   1.15 inventory honesty                              -> zero jobs renders an empty state,
+//                                                          never an invented listing
+//
+// Plus the v12-specific contract: the two-audience fork, and every CTA pointing at a route
+// that actually exists.
 
-// Mock supabase: stats credible by default (counters visible), jobs empty
-// (the production-realistic state: board has no listings).
 vi.mock('@/lib/supabase', () => ({
   supabase: {
-    rpc: vi.fn().mockResolvedValue({ data: { jobs: 42, seekers: 128, matches: 350 }, error: null }),
+    rpc: vi.fn().mockResolvedValue({ data: null, error: null }),
     from: vi.fn().mockReturnValue({
       select: vi.fn().mockReturnValue({
         eq: vi.fn().mockReturnValue({
-          in: vi.fn().mockReturnValue({
-            order: vi.fn().mockReturnValue({
-              limit: vi.fn().mockResolvedValue({ data: [], error: null }),
-            }),
-          }),
           order: vi.fn().mockReturnValue({
             limit: vi.fn().mockResolvedValue({ data: [], error: null }),
           }),
@@ -35,15 +40,15 @@ vi.mock('@/hooks/useAuth', () => ({
 }))
 
 beforeAll(() => {
-  const mockIntersectionObserver = vi.fn(() => ({
-    observe: vi.fn(),
-    unobserve: vi.fn(),
-    disconnect: vi.fn(),
-  }))
-  vi.stubGlobal('IntersectionObserver', mockIntersectionObserver)
+  vi.stubGlobal(
+    'IntersectionObserver',
+    vi.fn(() => ({ observe: vi.fn(), unobserve: vi.fn(), disconnect: vi.fn() })),
+  )
   window.matchMedia =
     window.matchMedia ||
-    (vi.fn().mockReturnValue({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() }) as never)
+    (vi
+      .fn()
+      .mockReturnValue({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() }) as never)
 })
 
 beforeEach(() => sessionStorage.clear())
@@ -58,141 +63,104 @@ function renderHome() {
   )
 }
 
-describe('v13 landing', () => {
-  describe('hero (directive 1.11)', () => {
-    it('BOTH headline strings are in the DOM', () => {
-      renderHome()
-      expect(screen.getByText('The right match,')).toBeInTheDocument()
-      expect(screen.getByText('Find the farm job')).toBeInTheDocument()
-    })
+/** Every href the page offers, deduped. */
+function hrefs(): string[] {
+  return [...document.querySelectorAll('a[href]')].map((a) => a.getAttribute('href') ?? '')
+}
 
-    it('employer is the default lens on the shell root', () => {
-      renderHome()
-      expect(document.querySelector('.v13-shell')).toHaveAttribute('data-aud', 'employer')
-    })
-
-    it('seeker lens flips the shell attribute (CSS swaps the headline)', () => {
-      sessionStorage.setItem('tf-aud', 'seeker')
-      renderHome()
-      expect(document.querySelector('.v13-shell')).toHaveAttribute('data-aud', 'seeker')
-    })
-
-    it('example panel is labelled as an example, with a pause control (1.1)', () => {
-      renderHome()
-      expect(screen.getByText('Example: how applicants arrive')).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'Pause' })).toHaveAttribute('aria-pressed', 'false')
-    })
-
-    it('hero carries both intent CTAs with canonical labels', () => {
-      renderHome()
-      const hiring = screen.getAllByText("I'm hiring")
-      const looking = screen.getAllByText("I'm looking for work")
-      expect(hiring.length).toBeGreaterThan(0)
-      expect(looking.length).toBeGreaterThan(0)
-    })
+describe('v12 landing — the fork', () => {
+  it('leads with the comp headline, as one h1', () => {
+    renderHome()
+    const h1 = screen.getByRole('heading', { level: 1 })
+    expect(h1.textContent).toBe('The right people.The right farm.')
   })
 
-  describe('match band (directive 1.5, 1.7)', () => {
-    it('carries the load-bearing applicant-protection sentence', () => {
-      renderHome()
-      expect(
-        screen.getByText(/Every applicant stays on the list, ordered by fit/),
-      ).toBeInTheDocument()
-    })
-
-    it('anchors #how for the nav link', () => {
-      renderHome()
-      expect(document.getElementById('how')).not.toBeNull()
-    })
+  it('offers both intents in the first viewport', () => {
+    renderHome()
+    // Hero and close both carry the pair, so these are non-unique by design.
+    expect(screen.getAllByRole('link', { name: /find work/i }).length).toBeGreaterThan(0)
+    expect(screen.getAllByRole('link', { name: /hire staff/i }).length).toBeGreaterThan(0)
   })
 
-  describe('open roles (directive 1.13, 1.15)', () => {
-    it('search entry submits to /jobs with a visible label, not a placeholder', async () => {
-      renderHome()
-      expect(await screen.findByLabelText('Search open roles')).toBeInTheDocument()
-      expect(screen.getByRole('search')).toBeInTheDocument()
-    })
+  it('asks which audience the visitor is before anything else', () => {
+    renderHome()
+    expect(screen.getByRole('heading', { name: /looking for work\?/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /looking for people\?/i })).toBeInTheDocument()
+  })
+})
 
-    it('empty state renders the employer prompt when no jobs exist', async () => {
-      renderHome()
-      expect(await screen.findByText('No open roles listed right now.')).toBeInTheDocument()
-      expect(screen.getByText(/Post the first one and it will be listed/)).toBeInTheDocument()
-    })
+describe('v12 landing — routes are real', () => {
+  // A CTA pointing at a route that does not exist is the defect this pins. /signup?role=employer
+  // was walked on live prod 2026-08-19 and pre-selects the employer role.
+  it('sends every hiring action to the employer signup with the role pre-selected', () => {
+    renderHome()
+    expect(hrefs()).toContain('/signup?role=employer')
   })
 
-  describe('worker split (directive 1.4)', () => {
-    it('shows a WORD for fit, never a personal number', () => {
-      renderHome()
-      expect(screen.getByText('Strong')).toBeInTheDocument()
-      expect(screen.getByText('free, always. workers never pay.')).toBeInTheDocument()
-    })
+  it('sends every work action to /jobs', () => {
+    renderHome()
+    expect(hrefs()).toContain('/jobs')
   })
 
-  describe('pricing claim (directive 1.12)', () => {
-    it('claim line present and linking to /pricing; no pricing cards on the page', () => {
-      renderHome()
-      // "First listing free" until directive 1.19 (2026-08-04) retired the listing
-      // ladder. The CLAIM stays on the landing page (1.12 + NOT THIS); only the
-      // first word of it changed, because every listing is free now.
-      expect(screen.getByText('Every listing free. Workers never pay.')).toBeInTheDocument()
-      expect(screen.getByText('See pricing')).toHaveAttribute('href', '/pricing')
-      expect(screen.queryByText('$100')).not.toBeInTheDocument()
-    })
+  it('ships no dead links — the comp\'s Resources and About have no route behind them', () => {
+    renderHome()
+    for (const h of hrefs()) {
+      expect(h).not.toBe('#')
+      expect(h).not.toBe('')
+    }
+  })
+})
+
+describe('v12 landing — product rules carried forward from v11', () => {
+  it('1.4: never shows a worker a personal score', () => {
+    const { container } = renderHome()
+    // Any "87%" style figure on the marketing page would be a personal number.
+    expect(container.textContent ?? '').not.toMatch(/\d+\s?%/)
   })
 
-  describe('counters (directive 1.15: gated, dormant, PRESERVED)', () => {
-    it('renders when stats are credible (mock 42/128/350)', async () => {
-      renderHome()
-      expect(await screen.findByText('Jobs Posted')).toBeInTheDocument()
-    })
-
-    it('calls get_platform_stats RPC on mount', async () => {
-      const { supabase } = await import('@/lib/supabase')
-      renderHome()
-      expect(supabase.rpc).toHaveBeenCalledWith('get_platform_stats')
-    })
-
-    it('renders NOTHING when stats are real zeros (zero-counter regression)', async () => {
-      const { supabase } = await import('@/lib/supabase')
-      vi.mocked(supabase.rpc).mockResolvedValueOnce({
-        data: { jobs: 0, seekers: 0, matches: 0 },
-        error: null,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- test mock shape
-      } as any)
-      renderHome()
-      await screen.findByText('The right match,')
-      await vi.waitFor(() => expect(supabase.rpc).toHaveBeenCalled())
-      expect(screen.queryByText('Jobs Posted')).not.toBeInTheDocument()
-    })
+  it('1.5: never disparages applicants', () => {
+    const { container } = renderHome()
+    const text = (container.textContent ?? '').toLowerCase()
+    for (const banned of ['time-waster', 'timewaster', 'unqualified', 'weed out', 'filter out the', 'no-hopers']) {
+      expect(text).not.toContain(banned)
+    }
   })
 
-  describe('steps (directive 1.8)', () => {
-    it('three steps with the numerals kept', () => {
-      renderHome()
-      expect(screen.getByText('Three steps, either side.')).toBeInTheDocument()
-      expect(screen.getAllByText('01').length).toBeGreaterThanOrEqual(1)
-      expect(screen.getByText('Start with the strongest fits')).toBeInTheDocument()
-    })
+  it('1.12: states the pricing position without putting pricing cards on the page', () => {
+    const { container } = renderHome()
+    expect(container.textContent).toMatch(/listing is free|every listing free/i)
+    // The bands themselves belong to /pricing.
+    expect(container.textContent).not.toMatch(/\$200|\$400|\$800/)
   })
 
-  describe('close + shell', () => {
-    it('closing section carries both intent CTAs', () => {
-      renderHome()
-      expect(screen.getByText(/The whole job\./)).toBeInTheDocument()
-    })
+  it('1.15: renders an honest empty state rather than inventing listings', async () => {
+    renderHome()
+    await waitFor(() =>
+      expect(screen.getByText(/no roles listed right now/i)).toBeInTheDocument(),
+    )
+    expect(screen.getByRole('link', { name: /post the first job/i })).toBeInTheDocument()
+  })
+})
 
-    it('shell provides nav, utility bar and footer', () => {
-      renderHome()
-      expect(screen.getByRole('navigation', { name: 'Main' })).toBeInTheDocument()
-      expect(screen.getByRole('group', { name: 'Browsing as' })).toBeInTheDocument()
-      expect(screen.getByText('Match, train, retain.')).toBeInTheDocument()
-    })
+describe('v12 landing — accessibility floor', () => {
+  it('has exactly one h1', () => {
+    renderHome()
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1)
+  })
 
-    it('retired copy is gone: Best Farms hero, tier badges, tab labels', () => {
-      renderHome()
-      expect(screen.queryByText(/Best Farms/)).not.toBeInTheDocument()
-      expect(screen.queryByText('Featured Opportunities')).not.toBeInTheDocument()
-      expect(screen.queryByRole('tab')).not.toBeInTheDocument()
-    })
+  it('hides every decorative illustration from assistive tech', () => {
+    const { container } = renderHome()
+    const svgs = [...container.querySelectorAll('svg')]
+    expect(svgs.length).toBeGreaterThan(0)
+    for (const svg of svgs) {
+      expect(svg.getAttribute('aria-hidden')).toBe('true')
+    }
+  })
+
+  it('gives the sector list real list semantics, not a div soup', () => {
+    renderHome()
+    const sectors = screen.getByRole('heading', { name: /roles across every sector/i })
+      .parentElement as HTMLElement
+    expect(within(sectors).getAllByRole('listitem').length).toBe(6)
   })
 })

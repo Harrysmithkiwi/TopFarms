@@ -21,10 +21,10 @@ export function UtilityBar() {
   if (session) return null
 
   return (
-    <div className="border-line bg-cream border-b">
+    <div className="border-rule bg-paper border-b">
       <div className="mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-1 px-3 py-1 sm:px-5">
         <div
-          className="bg-cream-2 border-line flex gap-0.5 rounded-full border p-0.5"
+          className="bg-fern-50 border-rule flex gap-0.5 rounded-full border p-0.5"
           role="group"
           aria-label="Browsing as"
         >
@@ -38,8 +38,8 @@ export function UtilityBar() {
                 // px-2.5 at base: measured at 390, px-3 overflowed the row by 2px
                 'min-h-11 cursor-pointer rounded-full px-2.5 text-[13px] font-semibold transition-colors sm:px-4 sm:text-sm',
                 audience === value
-                  ? 'bg-green text-white'
-                  : 'text-ink-60 hover:text-ink bg-transparent',
+                  ? 'bg-fern-700 text-white'
+                  : 'text-sage hover:text-bark bg-transparent',
               ].join(' ')}
             >
               {label}
@@ -49,13 +49,13 @@ export function UtilityBar() {
         <div className="flex items-center gap-0.5">
           <Link
             to="/login"
-            className="text-ink hover:text-green inline-flex min-h-11 items-center px-2.5 text-[13.5px] font-semibold underline decoration-[1.5px] underline-offset-4 sm:px-3.5 sm:text-sm"
+            className="text-bark hover:text-fern-800 inline-flex min-h-11 items-center px-2.5 text-[13.5px] font-semibold underline decoration-[1.5px] underline-offset-4 sm:px-3.5 sm:text-sm"
           >
             Sign in
           </Link>
           <Link
             to={`/signup?role=${audience}`}
-            className="bg-green hover:bg-green-2 inline-flex min-h-11 items-center rounded-full px-3.5 text-[13.5px] font-semibold text-white transition-colors sm:px-5 sm:text-sm"
+            className="bg-fern-700 hover:bg-fern-900 inline-flex min-h-11 items-center rounded-full px-3.5 text-[13.5px] font-semibold text-white transition-colors sm:px-5 sm:text-sm"
           >
             Join TopFarms
           </Link>
