@@ -221,6 +221,46 @@ function isLikelyExpired(closeDate?: string | null): boolean {
   return !!closeDate && closeDate < new Date().toLocaleDateString('en-CA')
 }
 
+/**
+ * Staleness by capture age, for the leads `isLikelyExpired` structurally cannot reach.
+ *
+ * `applications_close` is only filled when the ad PRINTED a closing date, and the extractor is
+ * explicitly forbidden from inferring one. Measured 2026-08-19: of 125 pending leads only 34
+ * carry a close date, so 91 can never be badged however old they are — while 59 were captured
+ * between 27 June and 29 July. The absence of "Likely expired" was reading as "still open" on
+ * the oldest rows in the queue, which is the opposite of the truth.
+ *
+ * 28 days because a farm job ad that has been up a month is usually filled, and because it is
+ * long enough that nothing captured in the current fortnight's harvest gets badged.
+ */
+const STALE_AFTER_DAYS = 28
+
+/** Whole days since the row was staged. */
+export function captureAgeDays(createdAt: string, now: number = Date.now()): number {
+  return Math.floor((now - new Date(createdAt).getTime()) / 86_400_000)
+}
+
+/**
+ * Stale ONLY when the ad stated no closing date. When it did, `isLikelyExpired` has already
+ * said something more precise from better evidence, and stacking a second caution on the same
+ * row is noise rather than information.
+ */
+export function isStaleCapture(
+  row: { created_at: string; structured: { applications_close?: string | null } },
+  now: number = Date.now(),
+): boolean {
+  return (
+    !row.structured.applications_close && captureAgeDays(row.created_at, now) >= STALE_AFTER_DAYS
+  )
+}
+
+/** "5 weeks" / "1 week" / "29 days" — weeks once there is more than one, days below that. */
+export function captureAgeLabel(days: number): string {
+  const weeks = Math.floor(days / 7)
+  if (weeks < 2) return `${days} days`
+  return `${weeks} weeks`
+}
+
 /** Detail rows: small uppercase label + value (replaces emoji-prefixed fields). */
 function DetailRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -313,6 +353,14 @@ function StagingDrawer({
           {isLikelyExpired(s.applications_close) && (
             <Tag variant="warn" title={`Applications closed ${s.applications_close}`}>
               Likely expired
+            </Tag>
+          )}
+          {isStaleCapture(row) && (
+            <Tag
+              variant="grey"
+              title="The ad stated no closing date, so age of capture is the only staleness signal there is."
+            >
+              Captured {captureAgeLabel(captureAgeDays(row.created_at))} ago
             </Tag>
           )}
           {s.geo_scope === 'intl' && <Tag variant="grey">International</Tag>}
@@ -720,6 +768,15 @@ export function AdminLeadsStaging() {
                   {isLikelyExpired(row.structured.applications_close) && (
                     <Tag variant="warn" className="shrink-0">
                       expired
+                    </Tag>
+                  )}
+                  {isStaleCapture(row) && (
+                    <Tag
+                      variant="grey"
+                      className="shrink-0"
+                      title={`Captured ${captureAgeLabel(captureAgeDays(row.created_at))} ago; the ad stated no closing date`}
+                    >
+                      stale
                     </Tag>
                   )}
                   {row.structured.geo_scope === 'intl' && (
