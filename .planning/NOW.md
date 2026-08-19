@@ -40,6 +40,27 @@ matched nothing in the database. Wired, region rebuilt from `NZ_REGIONS`, pills 
 deliberately not built — the admin screen shows the cleared claim with its date; write the email
 by hand until that is tedious. And the seeker-facing badge above.
 
+**Audit F-19 is CLOSED (migration `102`, deployed 2026-08-19).** There was no delivery record
+anywhere, so every sender decided from derived state. The one that mattered was
+**`notify-job-filled`**, not the match alert: `handle_job_filled` fires whenever a job's status
+*becomes* `filled` and the function emails **every unresolved applicant**, so fill → reopen →
+fill emailed all of them twice. `notification_sends` + claim-by-insert; the unique index is
+PARTIAL on `failed_at IS NULL` so a failure can be retried without deleting the evidence.
+`send-followup-emails` and `send-document-status-email` were left alone — both already hold a
+record, and re-sending the second is the documented operator retry path.
+
+**⚠ The `.env` Anthropic key is still dead** (probed 2026-08-19: 400, credit too low), so
+`scripts/seeker-extraction-check.ts` cannot run. **But the EDGE secret is a separate question and
+was working**: 24 rows staged 2026-08-17 21:12 UTC at avg confidence 0.86, and across all 127
+`lead_staging` rows there are **zero** at confidence 0 and zero with a Claude failure. The
+`lead-harvest` cron runs 02:00 UTC daily and re-answers it for free.
+
+**⚠ New, and it changes what B4 is:** **no seeker row has ever been staged.** All 127
+`lead_staging` rows are `type='employer'` (81 nzfarmingjobs, 24 trademe, 20 fb_manual_capture,
+2 manual_paste). The seeker fork is coded and tested but has **never run in production** — so
+pasting one post is a first run, not a regression check. Budget for it failing on something
+other than credit.
+
 ---
 
 ## ▶ Previous entry — updated 2026-08-17 (evening)
