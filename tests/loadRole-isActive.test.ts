@@ -154,3 +154,29 @@ describe('AuthContext.loadRole is_active extension (IS-ACTIVE-02, IS-ACTIVE-03)'
     expect(captured.isActive).toBe(true)
   })
 })
+
+// Observed on live prod 2026-08-19 with Chrome DevTools: "[useAuth] loadRole timeout after 3s"
+// logged twice on every page load while both user_roles requests returned 200 in milliseconds.
+// Promise.race settles on the winner but does not cancel the loser, so the timer always fired.
+// Control flow was never wrong — but the auth subsystem cried wolf on every navigation, which
+// is the same defect shape as a swallowed error: a signal that no longer means anything.
+describe('loadRole timeout does not fire after a successful load', () => {
+  it('clears the 3s timer once the role resolves', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    try {
+      singleMock.mockResolvedValue({ data: { role: 'seeker', is_active: true }, error: null })
+      await mountAndCapture()
+      await waitFor(() => expect(singleMock).toHaveBeenCalled())
+
+      await vi.advanceTimersByTimeAsync(5000)
+
+      const timeoutWarnings = warn.mock.calls.filter((c) => String(c[0]).includes('loadRole timeout'))
+      expect(timeoutWarnings).toEqual([])
+    } finally {
+      warn.mockRestore()
+      vi.useRealTimers()
+    }
+  })
+})
+

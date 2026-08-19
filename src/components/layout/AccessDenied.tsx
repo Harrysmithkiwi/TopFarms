@@ -34,7 +34,10 @@ export function AccessDenied({
         >
           {/* 17/15 are the Subtitle and Body steps in DESIGN.md. The AdminLoginPage
               original used 16/14, off the ramp both ways; not inherited into shared code. */}
-          <p className="font-body text-[17px] font-semibold">Access denied</p>
+          {/* h1, not p: this IS the page, and the route renders nothing else. A screen-reader
+              user navigating by heading found no heading at all here. role="alert" on the
+              container still announces it on arrival; the two are complementary. */}
+          <h1 className="font-body text-[17px] font-semibold">Access denied</h1>
           <p className="font-body mt-1 text-[15px]" style={{ color: 'var(--color-text-muted)' }}>
             {REASON[requiredRole]}
           </p>

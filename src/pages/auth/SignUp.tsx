@@ -205,13 +205,19 @@ export function SignUp() {
 
         {/* Role Selection */}
         <div>
-          <p className="mb-3 text-sm font-medium text-ink">
+          <p className="mb-3 text-sm font-medium text-ink" id="signup-role-label">
             I am joining as...
           </p>
-          <div className="grid grid-cols-2 gap-3">
+          {/* A screen reader heard two unrelated buttons, neither of which said whether it was
+              the one currently chosen — the selection was carried by border and text colour
+              alone. Grouped and labelled by the prompt above, with aria-pressed mirroring
+              `selectedRole`. First screen of the funnel outreach drives to, so it is the last
+              place to make someone guess. docs/DESIGN.md §5. */}
+          <div className="grid grid-cols-2 gap-3" role="group" aria-labelledby="signup-role-label">
             {/* Employer card */}
             <button
               type="button"
+              aria-pressed={selectedRole === 'employer'}
               onClick={() => onRoleSelect('employer')}
               className={cn(
                 'flex flex-col items-center gap-2 rounded-xl border-2 p-4 text-left transition-all',
@@ -244,6 +250,7 @@ export function SignUp() {
             {/* Seeker card */}
             <button
               type="button"
+              aria-pressed={selectedRole === 'seeker'}
               onClick={() => onRoleSelect('seeker')}
               className={cn(
                 'flex flex-col items-center gap-2 rounded-xl border-2 p-4 text-left transition-all',

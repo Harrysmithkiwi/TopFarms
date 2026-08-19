@@ -73,15 +73,28 @@ type LoadRoleOutcome =
 // the lock-contention root cause is gone, but multi-tab races and supabase-js
 // internals can still hang briefly — kept as cheap insurance.
 async function loadRoleWithTimeout(userId: string): Promise<LoadRoleOutcome> {
-  return Promise.race<LoadRoleOutcome>([
-    loadRole(userId).then(({ role, isActive }) => ({ ok: true, role, isActive })),
-    new Promise<LoadRoleOutcome>((resolve) =>
-      setTimeout(() => {
-        console.warn('[useAuth] loadRole timeout after 3s, keeping previous role')
-        resolve({ ok: false, reason: 'timeout' })
-      }, 3000),
-    ),
-  ])
+  // The timer MUST be cleared. Promise.race settles on the winner but does not cancel the
+  // loser, so an uncleared setTimeout fired 3s after every successful load and logged
+  // "[useAuth] loadRole timeout after 3s" whether or not anything timed out. Observed on
+  // live prod 2026-08-19: the warning appeared twice on every page while both `user_roles`
+  // requests returned 200 in milliseconds. Harmless to control flow — the race had already
+  // resolved — but it made the auth subsystem cry wolf on every navigation, so a REAL
+  // timeout was indistinguishable from the noise. The resolve() is left in place: if the
+  // timer does win, the outcome must still be the timeout branch.
+  let timer: ReturnType<typeof setTimeout> | undefined
+  try {
+    return await Promise.race<LoadRoleOutcome>([
+      loadRole(userId).then(({ role, isActive }) => ({ ok: true, role, isActive })),
+      new Promise<LoadRoleOutcome>((resolve) => {
+        timer = setTimeout(() => {
+          console.warn('[useAuth] loadRole timeout after 3s, keeping previous role')
+          resolve({ ok: false, reason: 'timeout' })
+        }, 3000)
+      }),
+    ])
+  } finally {
+    clearTimeout(timer)
+  }
 }
 
 const AuthContext = createContext<AuthHookReturn | null>(null)
