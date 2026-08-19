@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import { toast } from 'sonner'
 import { ArrowLeft, ImageIcon, Loader2 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { reportError } from '@/lib/observability'
 import { useAuth } from '@/hooks/useAuth'
 import { useVerifications } from '@/hooks/useVerifications'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
@@ -51,7 +52,7 @@ export function FarmPhotoUpload() {
       .single()
       .then(({ data, error }) => {
         if (error && error.code !== 'PGRST116') {
-          console.error('FarmPhotoUpload: failed to load employer profile', error)
+          reportError('farm photo upload: load employer profile', error)
           setProfileError(true)
         } else {
           setEmployerId(data?.id ?? null)
@@ -79,7 +80,7 @@ export function FarmPhotoUpload() {
       .list(`${userId}/farm`, { sortBy: { column: 'created_at', order: 'desc' } })
       .then(({ data, error }: { data: StorageObject[] | null; error: StorageError | null }) => {
         if (error || !data) {
-          console.error('FarmPhotoUpload: failed to list farm photos', error)
+          reportError('farm photo upload: list photos', error)
           setPhotosError(true)
           setLoadingPhotos(false)
           return
@@ -115,7 +116,7 @@ export function FarmPhotoUpload() {
     const { error } = await supabase.rpc('employer_record_farm_photo', { p_url: url })
 
     if (error) {
-      console.error('FarmPhotoUpload: failed to record farm photo verification', error)
+      reportError('farm photo upload: record verification', error)
       toast.error('Photo uploaded but verification record failed to save')
       return
     }

@@ -4,6 +4,7 @@ import * as Dialog from '@radix-ui/react-dialog'
 import { SlidersHorizontal, Sprout, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { supabase } from '@/lib/supabase'
+import { reportError } from '@/lib/observability'
 import { useAuth } from '@/hooks/useAuth'
 import { usePageMeta } from '@/lib/usePageMeta'
 import { useSavedJobs } from '@/hooks/useSavedJobs'
@@ -424,7 +425,7 @@ export function JobSearch() {
         const { data, count, error } = await query
 
         if (error) {
-          console.error('JobSearch: query error', error)
+          reportError('job search: query', error)
           setLoadError(true)
           setLoading(false)
           return

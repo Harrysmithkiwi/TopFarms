@@ -12,6 +12,7 @@ import {
   Loader2,
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { reportError } from '@/lib/observability'
 import { useAuth } from '@/hooks/useAuth'
 import { useVerifications } from '@/hooks/useVerifications'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
@@ -173,7 +174,7 @@ export function EmployerVerification() {
       .single()
       .then(({ data, error }) => {
         if (error && error.code !== 'PGRST116') {
-          console.error('EmployerVerification: failed to load employer profile', error)
+          reportError('employer verification: load employer profile', error)
           setProfileError(true)
         } else {
           setEmployerId(data?.id ?? null)
@@ -204,7 +205,7 @@ export function EmployerVerification() {
         // Phase 5.6 (adjacent family): a failed WRITE, not a false empty state.
         // Swallowed, the employer's verification never registers and the badge
         // silently never appears -- with nothing to retry.
-        console.error('EmployerVerification: failed to sync self verifications', error)
+        reportError('employer verification: sync self verifications', error)
         toast.error('We could not confirm your email verification. Reload to try again.')
         return
       }

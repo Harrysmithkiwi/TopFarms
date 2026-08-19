@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { CheckCircle } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { reportError } from '@/lib/observability'
 import { Button } from '@/components/ui/Button'
 
 // Step 7 was the payment step. Listings are free and unlimited (directive 1.19), so
@@ -36,14 +37,14 @@ export function JobStep7Confirm({ jobId, onComplete, onBack }: JobStep7ConfirmPr
 
     if (error) {
       toast.error('Could not publish your listing. Please try again.')
-      console.error('publish listing error:', error)
+      reportError('job step 7: publish listing', error)
       return
     }
 
     // The endpoint keeps its old name and its `is_free` flag; see its header.
     if (!data?.is_free) {
       toast.error('Unexpected response while publishing. Please try again.')
-      console.error('publish listing: unexpected response', data)
+      reportError('job step 7: publish listing unexpected response', data)
       return
     }
 

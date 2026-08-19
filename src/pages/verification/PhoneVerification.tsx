@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { Phone, RefreshCw } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { reportError } from '@/lib/observability'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 
@@ -90,7 +91,7 @@ export function PhoneVerification({ onSuccess }: PhoneVerificationProps) {
         // Previously this was swallowed to console.error and the success toast fired
         // regardless, so the employer was told they were verified while nothing was
         // stored. A failed write must not read as a completed one.
-        console.error('PhoneVerification: failed to sync verification record', syncError)
+        reportError('phone verification: sync record', syncError)
         setError('Your number was confirmed, but we could not update your badge. Please retry.')
         return
       }

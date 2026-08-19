@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import { toast } from 'sonner'
 import { ArrowLeft, FileText, Loader2 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { reportError } from '@/lib/observability'
 import { useAuth } from '@/hooks/useAuth'
 import { useVerifications } from '@/hooks/useVerifications'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
@@ -39,7 +40,7 @@ export function DocumentUpload() {
       .single()
       .then(({ data, error }) => {
         if (error && error.code !== 'PGRST116') {
-          console.error('DocumentUpload: failed to load employer profile', error)
+          reportError('document upload: load employer profile', error)
           setProfileError(true)
         } else {
           setEmployerId(data?.id ?? null)
@@ -69,7 +70,7 @@ export function DocumentUpload() {
     })
 
     if (error) {
-      console.error('DocumentUpload: failed to record verification submission', error)
+      reportError('document upload: record submission', error)
       toast.error('Upload recorded but verification record failed to save')
       return
     }

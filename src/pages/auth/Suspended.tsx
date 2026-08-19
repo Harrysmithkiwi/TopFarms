@@ -4,6 +4,7 @@ import { toast } from 'sonner'
 import { AuthLayout } from '@/components/layout/AuthLayout'
 import { Button } from '@/components/ui/Button'
 import { useAuth } from '@/hooks/useAuth'
+import { reportError } from '@/lib/observability'
 
 /**
  * Phase 21 Track B — gate page for suspended users.
@@ -28,7 +29,7 @@ export function Suspended() {
       await signOut()
       navigate('/login', { replace: true })
     } catch (err) {
-      console.error('[Suspended] signOut failed', err)
+      reportError('suspended: sign out', err)
       toast.error('Sign out failed. Please refresh the page.')
       setSigningOut(false)
     }

@@ -4,6 +4,7 @@ import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/Button'
 import { supabase } from '@/lib/supabase'
+import { reportError } from '@/lib/observability'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { SectionSkeleton } from '@/components/ui/Skeleton'
@@ -49,7 +50,7 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
         const { data, error } = await supabase.rpc('get_applicants_for_job', { p_job_id: jobId })
 
         if (error) {
-          console.error('MarkFilledModal: failed to load applicants', error)
+          reportError('mark filled: load applicants', error)
           // Phase 5.6: this modal is on the placement-fee path. "No applicants"
           // here means the employer cannot record a hire they actually made.
           setLoadError(true)
@@ -84,7 +85,7 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
       })
 
       if (error) {
-        console.error('MarkFilledModal: mark_job_filled RPC error', error)
+        reportError('mark filled: mark_job_filled rpc', error)
         toast.error('Failed to mark listing as filled. Please try again.')
         return
       }

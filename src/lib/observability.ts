@@ -134,6 +134,23 @@ function initSentry(Sentry: typeof SentryTypes): void {
 }
 
 /**
+ * Lift the diagnostic fields a Supabase error carries beside its message.
+ *
+ * A PostgrestError is `{ message, code, details, hint }` — and `code` is usually the fastest
+ * route to the cause (42501 is a missing grant, 42703 a dropped column, PGRST116 no rows). Only
+ * `message` survives into the Sentry title, so without this every call site would have to pass
+ * the rest by hand and most would forget. Errors proper are left alone: their `code` means
+ * something else entirely.
+ *
+ * Exported for tests.
+ */
+export function errorMeta(value: unknown): Record<string, unknown> {
+  if (!value || typeof value !== 'object' || value instanceof Error) return {}
+  const { code, details, hint } = value as Record<string, unknown>
+  return Object.fromEntries(Object.entries({ code, details, hint }).filter(([, v]) => v != null))
+}
+
+/**
  * Coerce anything throwable into an Error with a readable message.
  *
  * `String(value)` on a plain object yields '[object Object]', and a Supabase PostgrestError IS a
@@ -160,9 +177,10 @@ export function reportError(context: string, error: unknown, extra?: Record<stri
   // Not loaded (no DSN, still resolving, or the chunk failed) — the console.error above
   // is still captured by the console integration once Sentry is up.
   if (!sentry) return
+  const merged = { ...errorMeta(error), ...extra }
   sentry.captureException(toError(error), {
     tags: { context },
-    extra: extra ? (scrub(extra) as Record<string, unknown>) : undefined,
+    extra: Object.keys(merged).length ? (scrub(merged) as Record<string, unknown>) : undefined,
   })
 }
 

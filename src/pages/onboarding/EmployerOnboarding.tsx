@@ -103,13 +103,8 @@ export function EmployerOnboarding() {
         // PGRST116 = no rows found (expected for new users)
         // reportError, not console.error: the console integration concatenates its arguments, so
         // a PostgrestError arrived in Sentry as '[object Object]' (TOPFARMS-WEB-7) and the alert
-        // could not name its own cause. code/details/hint are what identify a 42501 grant gap
-        // from a dropped column.
-        reportError('employer onboarding profile load', error, {
-          code: error.code,
-          details: error.details,
-          hint: error.hint,
-        })
+        // could not name its own cause. code/details/hint are lifted by reportError itself.
+        reportError('employer onboarding profile load', error)
         setProfileError(true)
         setLoading(false)
         return
@@ -188,7 +183,7 @@ export function EmployerOnboarding() {
 
     if (error) {
       toast.error('Failed to save progress. Please try again.')
-      console.error('Upsert error:', error)
+      reportError('employer onboarding: save', error)
       return
     }
 

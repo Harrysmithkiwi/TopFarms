@@ -5,6 +5,7 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { StepIndicator } from '@/components/ui/StepIndicator'
 import { LivePreviewSidebar } from '@/components/ui/LivePreviewSidebar'
 import { supabase } from '@/lib/supabase'
+import { reportError } from '@/lib/observability'
 import { useAuth } from '@/hooks/useAuth'
 import { useWizard } from '@/hooks/useWizard'
 import { computeJobCompleteness } from '@/lib/wizardUtils'
@@ -128,7 +129,7 @@ export function PostJob() {
         .single()
 
       if (profileError && profileError.code !== 'PGRST116') {
-        console.error('Error loading employer profile:', profileError)
+        reportError('post job: load employer profile', profileError)
         setProfileError(true)
         setLoading(false)
         return
@@ -175,7 +176,7 @@ export function PostJob() {
 
         if (jobError) {
           toast.error('Could not load job draft')
-          console.error('Error loading job draft:', jobError)
+          reportError('post job: load draft', jobError)
         } else if (job) {
           const acc = job.accommodation as JobPostingData['accommodation'] | null
           setJobData({
@@ -267,7 +268,7 @@ export function PostJob() {
 
       if (error || !data) {
         toast.error('Failed to create job draft. Please try again.')
-        console.error('Insert error:', error)
+        reportError('post job step 1: insert draft', error)
         return
       }
 
@@ -292,7 +293,7 @@ export function PostJob() {
 
       if (error) {
         toast.error('Failed to save. Please try again.')
-        console.error('Update error:', error)
+        reportError('post job step 1: update draft', error)
         return
       }
     }
@@ -346,7 +347,7 @@ export function PostJob() {
 
     if (error) {
       toast.error('Failed to save. Please try again.')
-      console.error('Update error:', error)
+      reportError('post job: save step', error)
       return
     }
 

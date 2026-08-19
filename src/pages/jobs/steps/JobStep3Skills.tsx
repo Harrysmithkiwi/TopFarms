@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { supabase } from '@/lib/supabase'
+import { reportError } from '@/lib/observability'
 import { SkillsPicker } from '@/components/ui/SkillsPicker'
 import { Button } from '@/components/ui/Button'
 import { Select } from '@/components/ui/Select'
@@ -64,7 +65,7 @@ export function JobStep3Skills({ jobId, onComplete, onBack, defaultValues }: Ste
       .eq('job_id', jobId)
       .then(({ data, error }) => {
         if (error) {
-          console.error('Error loading job skills:', error)
+          reportError('job step 3: load skills', error)
           setPrefillError(true)
         } else if (data) {
           setSelectedSkills(
@@ -93,7 +94,7 @@ export function JobStep3Skills({ jobId, onComplete, onBack, defaultValues }: Ste
 
       if (deleteError) {
         toast.error('Failed to update skills. Please try again.')
-        console.error('Delete job_skills error:', deleteError)
+        reportError('job step 3: delete skills', deleteError)
         setSaving(false)
         return
       }
@@ -116,7 +117,7 @@ export function JobStep3Skills({ jobId, onComplete, onBack, defaultValues }: Ste
 
         if (insertError) {
           toast.error('Failed to save skills. Please try again.')
-          console.error('Insert job_skills error:', insertError)
+          reportError('job step 3: insert skills', insertError)
           setSaving(false)
           return
         }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { supabase } from '@/lib/supabase'
+import { reportError } from '@/lib/observability'
 import { Button } from '@/components/ui/Button'
 
 interface JobPreviewData {
@@ -151,7 +152,7 @@ export function JobStep6Preview({ jobId, onComplete, onBack, onGoToStep }: Step6
 
       if (error) {
         toast.error('Failed to load job preview')
-        console.error('Preview load error:', error)
+        reportError('job step 6: load preview', error)
       } else {
         setJob(data as unknown as JobPreviewData)
       }

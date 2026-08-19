@@ -18,6 +18,7 @@ import {
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
+import { reportError } from '@/lib/observability'
 import { useAuth } from '@/hooks/useAuth'
 import { VerificationBadge } from '@/components/ui/VerificationBadge'
 import { MatchBreakdown } from '@/components/ui/MatchBreakdown'
@@ -235,7 +236,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
       // for a network failure tells the seeker the role was taken down, and
       // there is no way back from a 404 -- it has no retry.
       if (jobError && jobError.code !== 'PGRST116') {
-        console.error('JobDetail: failed to load job', jobError)
+        reportError('job detail: load job', jobError)
         setLoadError(true)
         setLoading(false)
         return

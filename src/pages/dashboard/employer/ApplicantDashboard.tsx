@@ -12,6 +12,7 @@ import { BulkActionsBar } from '@/components/ui/BulkActionsBar'
 import { PlacementFeeModal } from '@/pages/dashboard/employer/PlacementFeeModal'
 import { HireConfirmModal } from '@/pages/dashboard/employer/HireConfirmModal'
 import { supabase } from '@/lib/supabase'
+import { reportError } from '@/lib/observability'
 import { useAuth } from '@/hooks/useAuth'
 import type { ApplicationStatus, MatchScore, SeekerContact } from '@/types/domain'
 import {
@@ -151,7 +152,7 @@ export function ApplicantDashboard() {
       // genuine no-row case and keeps the redirect; anything else is a failure
       // the employer is entitled to see and retry.
       if (empError && empError.code !== 'PGRST116') {
-        console.error('ApplicantDashboard: failed to load employer profile', empError)
+        reportError('applicant dashboard: load employer profile', empError)
         setLoadError(true)
         setLoading(false)
         return
@@ -172,7 +173,7 @@ export function ApplicantDashboard() {
         .single()
 
       if (jobError && jobError.code !== 'PGRST116') {
-        console.error('ApplicantDashboard: failed to load job', jobError)
+        reportError('applicant dashboard: load job', jobError)
         setLoadError(true)
         setLoading(false)
         return
@@ -219,7 +220,7 @@ export function ApplicantDashboard() {
         .order('created_at', { ascending: false })
 
       if (appError) {
-        console.error('ApplicantDashboard: failed to load applicants', appError)
+        reportError('applicant dashboard: load applicants', appError)
         setLoadError(true)
         setLoading(false)
         return

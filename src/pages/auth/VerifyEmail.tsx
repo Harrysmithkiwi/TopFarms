@@ -5,6 +5,7 @@ import { Mail, RefreshCw, Loader2 } from 'lucide-react'
 import { AuthLayout } from '@/components/layout/AuthLayout'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { supabase } from '@/lib/supabase'
+import { reportError } from '@/lib/observability'
 import { dashboardPathFor } from '@/lib/routing'
 import type { UserRole } from '@/types/domain'
 
@@ -41,7 +42,7 @@ export function VerifyEmail() {
         .maybeSingle()
 
       if (error) {
-        console.error('VerifyEmail: failed to load role', error)
+        reportError('verify email: load role', error)
         routed.current = false
         setIsProcessing(false)
         setRoleError(true)

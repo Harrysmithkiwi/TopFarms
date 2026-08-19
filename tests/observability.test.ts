@@ -8,7 +8,7 @@
 //      worse outcome than having no error tracking.
 
 import { describe, it, expect } from 'vitest'
-import { toError } from '../src/lib/observability'
+import { toError, errorMeta } from '../src/lib/observability'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
@@ -114,3 +114,29 @@ describe('error coercion', () => {
     expect(toError({ message: '' }).message).toBe('[object Object]')
   })
 })
+
+describe('Supabase error metadata', () => {
+  // `code` is usually the fastest route to the cause and only `message` reaches the Sentry title.
+  // Lifted in reportError so no call site has to remember — 27 of them would not have.
+  it('lifts code, details and hint off a PostgrestError', () => {
+    expect(
+      errorMeta({
+        message: 'permission denied for table employer_profiles',
+        code: '42501',
+        details: null,
+        hint: 'grant it',
+      }),
+    ).toEqual({ code: '42501', hint: 'grant it' })
+  })
+
+  it('leaves a real Error alone — its code means something else', () => {
+    const err = Object.assign(new Error('ENOENT'), { code: 'ENOENT' })
+    expect(errorMeta(err)).toEqual({})
+  })
+
+  it('returns nothing for primitives and null', () => {
+    expect(errorMeta('boom')).toEqual({})
+    expect(errorMeta(null)).toEqual({})
+  })
+})
+
