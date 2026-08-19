@@ -8,7 +8,26 @@ stream doc disagree, the stream doc wins and this file is out of date — fix it
 
 ---
 
-## ▶ Next session, start here — updated 2026-08-19
+## ▶ Next session, start here — READ `.planning/NEXT-SESSION-PROMPT.md`
+
+**That file is the paste-ready restart prompt: measured prod state, the next five steps in
+order, and the wider phases before launch.** It supersedes `NEXT-BATCH-PROMPT.md` and
+`D4-AND-SEARCHHERO-PROMPT.md`, both complete.
+
+**One-line summary of where this stands: the binding constraint is not code — nobody has been
+contacted.** 0 employers, 0 jobs, 1 seeker, 125 staged leads, 0 contacted. Step 1 is triaging a
+**29.7% Resend bounce rate** (11 of 37), which gates whether the first batch can be sent at all.
+
+Also closed 2026-08-19, after the D4 entry below: audit **F-19** (migration `102`,
+`notification_sends` + claim-by-insert — `notify-job-filled` re-emailed every unresolved
+applicant on each fill→reopen→fill), and **two dead Anthropic model IDs** —
+`claude-sonnet-4-20250514` returns 404 and backed `generate-candidate-summary` and
+`generate-match-explanation`, both swallowing it into a null. Now `claude-sonnet-5`, with
+`tests/anthropic-model-ids-live.test.ts` pinning every model ID to a live-verified allowlist.
+
+---
+
+## ▶ D4 + SearchHero entry — 2026-08-19
 
 **D4 (INZ register verification) is DONE at Stage 1, and Stages 2–3 are CLOSED, not deferred.**
 Stage 0 opened the register in a browser: it **is** keyed on NZBN and **does** publish an expiry,
