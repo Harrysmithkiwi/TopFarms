@@ -76,6 +76,9 @@ docs/design/*
 !docs/design/design-reference/
 docs/design/design-reference/*
 !docs/design/design-reference/topfarming landing concept 3.png
+# The operator-approved landing uplift deliverable (2026-08-20): the standalone HTML comp
+# the React port will reproduce. A deliverable the ignore rule would silently eat.
+!docs/design/topfarms-landing-uplift.html
 content/
 .claude/skills/playwright-skill/
 docs/index.docx
