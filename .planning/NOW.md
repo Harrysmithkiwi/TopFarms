@@ -10,20 +10,26 @@ stream doc disagree, the stream doc wins and this file is out of date — fix it
 
 ## ▶ Next session, start here — READ `.planning/NEXT-SESSION-PROMPT.md`
 
-**That file is the paste-ready restart prompt: measured prod state, the next five steps in
-order, and the wider phases before launch.** It supersedes `NEXT-BATCH-PROMPT.md` and
-`D4-AND-SEARCHHERO-PROMPT.md`, both complete.
+**That file is the paste-ready restart prompt. Next session is the LANDING PAGE / MARKETING
+UPLIFT.**
 
-**One-line summary of where this stands: the binding constraint is not code — nobody has been
-contacted.** 0 employers, 0 jobs, 1 seeker, 125 staged leads, 0 contacted. Step 1 is triaging a
-**29.7% Resend bounce rate** (11 of 37), which gates whether the first batch can be sent at all.
+**Where it stands:** a v12 landing page is built, committed and **NOT PUSHED** (`8d3a3dd`).
+Layout, type, routes, copy and a11y are all verified correct. **The artwork is wrong and the
+operator rejected it** — their concept HTML specified real photographs and the build
+substituted flat vector SVG, so it matches neither the reference PNG nor the HTML. The fix is
+already in the repo: `docs/design/design-reference/Farm photos/` holds real NZ farm
+photography the operator curated, which is also what PRODUCT.md Design Principle 2 asked for.
+Only one asset (1900px) is wide enough for a full-bleed hero — the hero treatment is an
+operator decision, not a solo one.
 
-Also closed 2026-08-19, after the D4 entry below: audit **F-19** (migration `102`,
-`notification_sends` + claim-by-insert — `notify-job-filled` re-emailed every unresolved
-applicant on each fill→reopen→fill), and **two dead Anthropic model IDs** —
-`claude-sonnet-4-20250514` returns 404 and backed `generate-candidate-summary` and
-`generate-match-explanation`, both swallowing it into a null. Now `claude-sonnet-5`, with
-`tests/anthropic-model-ids-live.test.ts` pinning every model ID to a live-verified allowlist.
+**Still the blocker, unrelated to design:** nobody can complete signup. Verification emails
+deliver a corrupted link that fails 100% of the time — quoted-printable decoded twice, so
+`token=3D46b4…` becomes `tokenF…`. Deterministic, and it hits password reset and magic link
+too. Full diagnosis and the recommended path-based fix are in the restart prompt.
+
+Also shipped 2026-08-19/20 and live in prod: the onboarding grant fix (migration `103`), the
+Anthropic SDK pin, 27 error sites moved to `reportError`, the capture-drawer clipboard fix,
+the lead staleness badge, and three auth/a11y defects found walking signup on live prod.
 
 ---
 

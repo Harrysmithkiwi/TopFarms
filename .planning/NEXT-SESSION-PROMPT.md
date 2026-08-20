@@ -1,150 +1,153 @@
-# Restart prompt — pre-launch, written 2026-08-19
+# Restart prompt — landing page / marketing uplift, written 2026-08-20
 
-**Paste this whole file as the opening prompt of a fresh session.** It supersedes
-`.planning/NEXT-BATCH-PROMPT.md` and `.planning/D4-AND-SEARCHHERO-PROMPT.md`, both of which are
-complete.
+**Paste this whole file as the opening prompt of a fresh session.** It supersedes the
+2026-08-19 pre-launch prompt, whose steps 2 and 3 are now done and whose step 1 is carried
+forward below.
 
-Read first, in this order: this file, `.planning/NOW.md`, `CLAUDE.md` §3 §4 §9 §10.
+Read first, in this order: this file, `docs/design/v12-DIRECTIVE.md`, `CLAUDE.md` §3 §4 §9 §10.
 
 ---
 
-## Where prod actually is — measured 2026-08-19, not assumed
+## The one-line state
+
+**A v12 landing page is built, committed and NOT PUSHED (`8d3a3dd`). The operator has seen it
+and rejected the artwork.** The layout, type, routes and copy are right. The illustration is
+wrong, and the fix is already sitting in the repo.
+
+---
+
+## What went wrong, so it is not repeated
+
+The operator supplied two things: a reference PNG (a **painted** pastoral scene) and concept
+HTML. **The HTML specified real photographs** — six Unsplash URLs across the card bleeds, the
+banner, both split cards and the closing band.
+
+The previous session overrode that and authored **flat vector SVG** instead, reasoning that
+photographs would clash with a painted comp. The result matches neither input. The operator's
+words: *"looks nothing like what i asked for"*, and they were right — the reference has brush
+texture, shading, real animals and weathered timber; the build has flat colour bands, blob
+clouds and stick figures.
+
+**The lesson is not "SVG was a bad medium".** It is that the brief named an imagery treatment,
+the treatment was substituted without the operator agreeing to the substitution, and a long
+justification in a code comment is not agreement. When a brief pins imagery, either use it or
+get the change agreed BEFORE building on top of it.
+
+---
+
+## The fix — the assets are already in the repo
+
+`docs/design/design-reference/Farm photos/` holds real New Zealand farm photography that the
+operator curated on 2026-08-03. It is better than the Unsplash placeholders their own HTML
+pointed at, it is theirs, and it is what **PRODUCT.md Design Principle 2 originally asked
+for**: *"Warmth and Kiwi-ness come from real farm photos."*
+
+| File | Pixels | What it is | Suggested slot |
+|---|---|---|---|
+| `NZ Dairy Farmer .jpg` | 800×500 | Taranaki behind a jersey herd, farmer with a fence reel. The strongest image here. | hero, or the "Looking for people?" card |
+| `NZ Sheep farming 3.avif` | 1900×1267 | widest asset available | hero (only one big enough for full-bleed) |
+| `NZ Sheep farming image .jpg` | 960×720 | merino mob, dog and shepherd, shelter belt | banner "Good people make good farms" |
+| `NZ Sheep farming 2.avif` | 1140×1710 | portrait | split card |
+| `Dairy farm image 1.jpg` | 612×408 | | card bleed |
+| `dairy farm image 2.jpg` | 612×408 | | card bleed |
+
+**Resolution is the constraint.** Only `NZ Sheep farming 3.avif` (1900px) is wide enough for a
+full-bleed hero at 1440+. Everything else is ≤960px and will only survive in a card, a band or
+a half-width split. Ask the operator for higher-resolution originals before assuming a photo
+can carry the hero.
+
+### Do this
+
+1. Self-host: copy into `public/img/`, resize with `sips`, generate `.webp`. **Never** an
+   external host — the Unsplash URLs in the concept HTML are a third-party dependency and are
+   not licensed to TopFarms.
+2. Swap the photo slots in `src/components/landing/v12/V12Sections.tsx`: `PastoralVignette`
+   in the two audience cards and both split cards, `PastoralBand` in the banner and the close.
+3. **Decide the hero with the operator, do not choose alone.** Three real options: (a) the
+   1900px sheep photo full-bleed with a scrim; (b) keep an illustrated hero but rebuild it at
+   far higher fidelity — gradients, texture, shading — rather than flat bands; (c) commission
+   the painted scene the reference actually shows. The operator has asked for full-concept
+   fidelity twice, so (c) is what they literally want and (a) is what ships this week.
+4. Every photo needs a real `alt` unless it is purely decorative beside its own text.
+5. `PastoralScene.tsx` and its 15 findings-free icons can stay for now — `LandingIcons.tsx` is
+   good work and independent of this. Delete `PastoralScene.tsx` only once nothing imports it.
+
+---
+
+## What IS right and must not be rebuilt
+
+Verified in a browser at 1440 and 390 on 2026-08-19/20, all green:
+
+- Section order, copy and layout match the comp.
+- One `h1`, correct heading nesting, every `<svg>` `aria-hidden`, sector list is a real list.
+- **Every CTA resolves to a real route**, and "Hire staff" was clicked through to
+  `/signup?role=employer` landing with **Employer `pressed`**.
+- Cormorant Garamond confirmed loaded; v12 tokens resolving; no horizontal overflow at 390px;
+  zero console errors.
+- Tap targets fixed to ≥44px after verification caught seven at 23px.
+- Contrast measured on real hexes; `fern-500` is banned as text on dark (3.54:1) and
+  `fern-lite` exists for that job.
+- `tests/landing-page.test.tsx` — 13 cases pinning the v12 contract.
+- Gates: `tsc -b` 0 · `npm run lint` 0 errors / 52 warnings · vitest 1013 / 123 files ·
+  `npm run build` 0.
+
+`docs/design/v12-DIRECTIVE.md` supersedes v11 **partially and deliberately** — §0 is a
+rule-by-rule table, because CLAUDE.md §10 binds the gated portals to several v11 numbers.
+`PRODUCT.md`'s anti-references were amended with the reversal recorded. `CLAUDE.md` §10 now
+points at v12. None of that needs redoing.
+
+---
+
+## STILL THE BLOCKER — do not lose this behind the design work
+
+**Nobody can complete signup on TopFarms.** Verification emails deliver a corrupted link that
+fails 100% of the time.
+
+- Supabase generates token `46b4eaf…`; the email delivers `Fb4eaf…`; the link returns
+  `{"code":400,"error_code":"validation_failed"}`.
+- Mechanism: the message is quoted-printable **decoded twice**. `token=` is sent as
+  `token=3D46b4…`; the second decode reads `=46` as the byte `0x46` = `F`. Reproduces the
+  received string character for character, including the length.
+- **Deterministic, not intermittent**: a hex token always starts with two hex digits, so
+  `=` + 2 hex is always a valid escape. `type=signup` survives because `=si` is not hex.
+- Hits signup confirmation, password reset, magic link and email change alike.
+- The template is FINE — it uses `{{ .ConfirmationURL }}`. The fault is in the mail path
+  (Supabase → Resend → inbox), not in Supabase Auth.
+
+**Recommended fix, independent of any provider:** route through TopFarms with the token in the
+PATH, not a query string — `https://www.topfarms.co.nz/auth/confirm/{{ .TokenHash }}` — and a
+small route calls `verifyOtp`. No `=` before the token means nothing to double-decode.
+
+**Operator diagnostic, 60 seconds:** open the email in Gmail → ⋮ → Show original, and report
+the `Content-Transfer-Encoding` header and whether the raw body shows `token=3D46b4…`. That
+pins the fault on Resend rather than Supabase.
+
+Also: the auth emails are unbranded Supabase defaults — *"Follow this link to confirm your
+user"* — which reads like phishing to a first employer.
+
+---
+
+## Everything else outstanding
 
 | | |
 |---|---|
-| Employer profiles | **0** |
-| Jobs (any status) | **0** |
-| Applications | **0** |
-| Seeker profiles | **1** |
-| Leads staged, pending | **125** (63 reachable farms: not a recruiter + has a contact) |
-| Leads contacted | **0** |
-| Resend last 100 sends | 37 total, 26 delivered, **11 bounced (29.7%)** |
-
-**The binding constraint is not code. Nobody has been contacted.** Every feature built in the
-last fortnight serves an employer who does not exist. Re-verify these numbers before planning
-anything on top of them — they are the whole argument for what to do next.
-
-## What shipped in the previous session (all live in prod)
-
-- **D4 Stage 0** — the INZ register was opened in a browser and its terms read. It IS keyed on
-  NZBN and DOES publish an expiry, and INZ's terms forbid scripted access ("standard web
-  browsers only"). Evidence: `docs/immigration/06-inz-register-verification.md`. **Stages 2–3
-  are CLOSED, not deferred.**
-- **D4 Stage 1** — migration `101`, `admin_record_inz_register_check`, two buttons on
-  `/admin/documents`. Three operator decisions are load-bearing and must not be quietly
-  reversed: a refusal clears the claim and nothing else; accreditation stays an attribute, never
-  a trust-ladder rung, and the seeker badge is deliberately NOT built until there is an
-  accredited employer to show it on; not chargeable.
-- **SearchHero** — `/jobs`'s hero was mounted with no props at all (search box, region dropdown
-  and five pills all inert, plus a fifth region vocabulary matching nothing in the DB). Wired;
-  verified in a browser on live prod.
-- **Audit F-19** — `notification_sends` + claim-by-insert (migration `102`). `notify-job-filled`
-  emailed every unresolved applicant again on every fill→reopen→fill.
-- **Two dead model IDs** — `claude-sonnet-4-20250514` returns 404; it backed
-  `generate-candidate-summary` and `generate-match-explanation`, both swallowing the error into a
-  null. Now `claude-sonnet-5` with `thinking: {type:'disabled'}`, and
-  `tests/anthropic-model-ids-live.test.ts` pins every model ID to a live-verified allowlist.
-
----
-
-## The next five steps, in order
-
-**1. Triage the 29.7% bounce rate. Operator-owned, ~2 minutes, and it gates everything.**
-Open the Resend dashboard and classify the 11 bounces: old UAT/test addresses, or real harvested
-ones? `get-resend-stats` only exposes the aggregate and `RESEND_API_KEY` is an Edge secret, so
-this cannot be answered from the repo. **Test addresses** → historical noise, but the reputation
-hit is real: warm up at 10–15/day, not 63 at once. **Real addresses** → the harvest needs email
-verification before any batch goes out. Providers throttle above ~5%; Resend suspends accounts
-that sustain 30%. Do not send anything before this is answered.
-
-**2. Set `VITE_SENTRY_DSN` in Vercel prod. Operator-owned, ~5 minutes.**
-Confirmed absent from the served bundle — `src/lib/observability.ts` is gated on it and is
-currently a complete no-op. When the first real employer hits a bug you hear about it from them
-or not at all. Carried on the go-live map since 2026-08-13.
-
-**3. Walk one real employer signup on prod, end to end. Operator-owned, ~15 minutes.**
-Real email → verify → onboard → post a job → confirm it appears on `/jobs` → confirm the match
-digest fires. Zero employers means this path has never been walked live; E2E covers it on
-preview with CI accounts, which is not the same thing. Use a throwaway address and purge it
-after. This is also the only way to exercise D4 Stage 1's two buttons against a real NZBN.
-
-**4. Prepare the first outreach batch. Can be delegated to the session.**
-From the 63 reachable farms, pick the first tranche sized to whatever step 1 decided. Draft each
-one through `lead-draft-email` (prompt + `lead_outreach_config` are both populated and
-CI-guarded for UEMA), then stage them for the operator to read, edit and send. **The session must
-not send.** Note before drafting: the CTA is currently the bare homepage (`appUrl()` →
-`topfarms.co.nz`, which 308s to www) — decide whether it should point at `/for-employers` or
-straight at signup, a one-line change in `lead-draft-email`.
-
-**5. Send the first batch, warmed up. Operator-owned.**
-Then watch: `admin_lead_mark_contacted`, replies into `hello@` → `admin.topfarms@gmail.com`, and
-the bounce rate after the first tranche before sending the second.
-
----
-
-## Wider phases before launch
-
-**A — Deliverability hardening.** Depends on step 1. If the bounces are real: add email
-verification to the harvest before promotion, and consider dropping Lane B (no contact) leads
-entirely. Then a warm-up ramp, and once `rua=` reports are clean, move DMARC from `p=none` to
-`quarantine`. Today: SPF via `send.topfarms.co.nz` → amazonses, DKIM at the apex, DMARC `p=none`
-collecting, MX → Cloudflare for replies. All verified 2026-08-19; auth is not the problem,
-list quality is.
-
-**B — First-employer readiness.** Steps 2 and 3, plus two known copy issues: the CTA target
-above, and a contradiction between the two outreach lanes — `lead_outreach_config` says *"Never
-mention money, price, or 'free' in this first message"* while `lead-draft-email`'s prompt says
-*"inviting them to also list it free"* and *"free means free"*. Pick one.
-
-**C — Silent-failure sweep.** Three defects this month shared one shape: something failed and
-wrote a null or a 200 instead of saying so (the dead model ID in a swallowing catch; no delivery
-record before F-19; `accredited_employer` with no reader). Worth one deliberate pass for the rest
-of the family. Known starting points: the Edge functions import
-`https://esm.sh/@anthropic-ai/sdk` **unpinned**, so a deployed function silently tracks whatever
-esm.sh resolves; and `sector` is read by `JobSearch` but is in no filter registry, so it filters
-without a pill or a way to clear.
-
-**D — The seeker lane has never run in production.** All 127 `lead_staging` rows are
-`type='employer'` (81 nzfarmingjobs, 24 trademe, 20 fb_manual_capture, 2 manual_paste). **Zero
-seeker rows have ever been staged.** The fork is coded and tested but unexercised, so pasting one
-seeker post is a FIRST RUN, not a regression check — budget for it failing on something other
-than credit. The Anthropic key is live again as of 2026-08-19 (verified 200).
-
-**E — Waiting on a real employer, by design.** The verified-accreditation badge (D4 Stage 1
-deliberately stopped short of it: nothing renders `accredited_employer` to a seeker yet, so a
-"verified" flag would be a column with no reader — it lands in the same commit as the badge, and
-the `/jobs` filter copy changes once more then). Also the placement/payment flow, which has never
-run against a real listing.
-
-**F — Closed or parked; do not reopen without a reason.** D4 Stages 2–3 (INZ terms forbid
-scripted access; the only routes are an agreement with MBIE or an OIA request for the list as a
-dataset — recorded in `06` §6 with its staleness cost). The immigration phase generally.
-The automated email to an employer whose accreditation claim was cleared — at this scale the
-founder writes a better one by hand, and the admin screen shows the cleared claim with its date.
+| **Resend bounce triage** | 11 of 36 sends bounced (~30%). Carried from the last prompt, still not done. Operator-owned, ~2 min in the Resend dashboard. No outreach has ever been sent, so these cannot be harvested addresses — it gates ramp speed, not whether the batch can be prepared. |
+| **`ForEmployers` + `Pricing` still v13** | Click "See pricing" from the new home page and you land in the previous design. Needs porting to v12. |
+| **Gmail outreach tracking** | Connector is authenticated as `harry.symmans.smith@gmail.com`; operator will send from `admin.topfarms@gmail.com`. Reconnect and the routine needs **no code** — `admin_outreach_mark_sent` and `admin_outreach_mark_responded` already exist. |
+| **~11 orphaned v13 landing components** | `WorkerSplitSection`, `CardRowSection`, `StepsSection` etc. Nothing imports them since `Home.tsx` changed; 15 detector findings. Checked before deleting — a few names still appear in `ActiveFilterPills`, `JobStep8Success` and two tests, so unpick before removing. |
+| **Lead staleness** | Badge shipped. 24 expired + 50 stale of 125 pending; one lead has a 2024 close date two years before its capture, which is a bad parse nothing sanity-checks. |
 
 ---
 
 ## Standing constraints
 
-- Prod has **zero employer profiles** and the operator's requirement is that the first real
-  employer is the first row in the table. Prove behaviour inside a transaction you `ROLLBACK` —
-  the pattern used throughout migrations 092–102, and the one that caught a real defect in `101`
-  (two audit rows written in one transaction share `now()`, so `ORDER BY created_at DESC` tied).
+- **`8d3a3dd` is unpushed. Pushing deploys Vercel prod AND the Edge Functions — ask first.**
+- Gate on the project's own commands. `npm run lint` (`eslint . --max-warnings 54`), never
+  `npx eslint src tests` — the explicit-path form reported 0 errors on a tree CI failed on
+  2026-08-19.
+- `impeccable` is the design skill for any frontend work (CLAUDE.md §10). It is not optional.
+- Prod holds **0 employers, 0 jobs, 1 seeker**. The operator's requirement is that the first
+  real employer is the first row in the table; a walkthrough account was created and purged on
+  2026-08-19 with their explicit approval.
 - Migrations through the claude.ai Supabase connector, SQL saved to `supabase/migrations/`, a
   `LEDGER.md` row, verified via `pg_catalog` — never the banner.
-- Edge functions deploy on push to `main` (path filter `supabase/functions/**`); Vercel
-  auto-deploys `main` → prod. **Pushing is a production deploy of both — ask first.**
-- Gates: `tsc -b` 0 · `deno check` on any edge function touched · vitest green · lint 0 errors at
-  the 53 pin · `npm run build` 0. `tests/no-phantom-coverage.test.ts` ratchets the todo count
-  down only.
-- An audit's proposed fix is a hypothesis. Read the live `pg_proc` / `pg_policies` /
-  `pg_attribute` before implementing one. Two of four DSA fixes would have caused incidents as
-  written.
-- Model IDs are not memory. `claude-sonnet-4-20250514` looked fine in the source for weeks.
-  Call it before you ship it, and add it to `tests/anthropic-model-ids-live.test.ts` with the date.
-
-## Ask, do not assume
-
-Step 1's answer changes step 4's size and step 5's schedule. Do not draft a batch against an
-assumed bounce classification, and do not send on the session's own initiative under any
-circumstances.
