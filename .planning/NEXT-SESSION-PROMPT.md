@@ -35,6 +35,30 @@ get the change agreed BEFORE building on top of it.
 
 ---
 
+## ⚠ IMAGE QUALITY IS STILL THE OPEN PROBLEM (operator, 2026-08-20)
+
+**The artwork is not good enough yet, and the operator has said so twice.** Do not treat the
+landing page as finished.
+
+Two rounds have happened. Round one substituted flat vector SVG for the brief's photographs
+and was rejected outright. Round two cropped the concept painting itself into nine text-free
+regions, which the operator accepted in principle, then flagged two quality defects — a fog
+band through the hero middle and muddy people when zoomed. Both were diagnosed and fixed
+(`2a4eb4c`): the hero band was three stacked causes (radial-gradient hills with 50-60%
+transparent falloffs, crop masks fading from 55%, a blurred cloud on the horizon line), and
+the mud was a 2.2x bilinear upscale, now re-cut from the original PNG at 2x Lanczos+unsharp
+with display maths capped at ~1.05x.
+
+**The remaining ceiling is the source resolution and it cannot be engineered away.** Every
+crop comes from a 1024px-wide concept PNG. What ships now is as good as those pixels get —
+well-groomed interpolation, not real detail. **Ask the operator to re-export the concept at
+2048px+ from wherever it was generated**; re-cutting then takes minutes and the art gains
+actual detail. Failing that, commission or source genuinely higher-resolution painted assets.
+Do not spend another round sharpening 1024px pixels.
+
+Deliverable: `docs/design/topfarms-landing-uplift.html` (tracked, self-contained).
+Artifact: https://claude.ai/code/artifact/e830efb8-0ff3-49aa-a8e1-a702a0488508
+
 ## The fix — the assets are already in the repo
 
 `docs/design/design-reference/Farm photos/` holds real New Zealand farm photography that the
