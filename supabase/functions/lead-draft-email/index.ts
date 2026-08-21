@@ -214,10 +214,33 @@ Deno.serve(async (req) => {
 
   const { data: lead, error } = await db
     .from('leads')
-    .select('display_name, region, role_or_category, contact, salary_text, summary, advertiser_name, is_recruiter')
+    .select('display_name, region, type, status, role_or_category, contact, salary_text, summary, advertiser_name, is_recruiter')
     .eq('id', leadId)
     .single()
   if (error || !lead) return json({ error: 'lead not found' }, 404)
+
+  // UPLIFT-95 Phase 2: never draft for a lead that opted out or was judged dead.
+  // admin_lead_suppress (087) marks the opted-out lead 'dead' AND writes lead_suppression
+  // keyed by _lead_suppression_key — name+type, deliberately region-less. Check both:
+  // status covers this row; the key covers the same farm suppressed under a different row.
+  const typed = lead as LeadRow & { type: string | null; status: string | null }
+  if (typed.status === 'dead') {
+    return json({ error: 'lead is dead or opted out; drafting refused' }, 409)
+  }
+  // Mirrors _lead_suppression_key (087) — keep the two in sync.
+  const suppressionKey =
+    (typed.display_name ?? '').replace(/[^a-zA-Z0-9]+/g, '').toLowerCase() +
+    '|' +
+    (typed.type ?? '').toLowerCase()
+  const { data: suppressionRow, error: supErr } = await db
+    .from('lead_suppression')
+    .select('fingerprint')
+    .eq('fingerprint', suppressionKey)
+    .maybeSingle()
+  if (supErr) return json({ error: `suppression check failed: ${supErr.message}` }, 500)
+  if (suppressionRow) {
+    return json({ error: 'lead is suppressed; drafting refused' }, 409)
+  }
 
   const draft = await draftWithClaude(lead as LeadRow)
   const emailJson = { subject: draft.subject, body: draft.body }
