@@ -26,10 +26,29 @@ The auth gate that capped the whole audit at 46/100 is proven shut-then-open on 
   (`aud: authenticated`, `amr: ["otp"]`, correct `sub`). Session purged, tab closed, no
   password set, account unchanged.
 
-**The one step left is the operator's, and it is ~60 seconds:** walk a *signup* (not
-recovery) through a throwaway address and confirm the delivered link verifies. The template,
-the route type and the delivery pipeline are each proven independently, so the residual risk
-is low — but the Phase 1 gate names signup, and nobody has walked it since the fix.
+**Signup was walked end to end by the operator 2026-08-21 and it works** — employer signup,
+delivered link, verification, employer dashboard. Phase 1 is closed on evidence, not on
+inference.
+
+**Walking it immediately surfaced the NEXT gate, now also fixed** (`4446fa7`, PR #88):
+employer onboarding **step 2 failed on every attempt**. `inz_accreditation_expires` is a
+DATE column, Postgres rejects `''` with 22007, and because the step saves the whole form in
+ONE upsert that single empty string failed EVERY field on it — which is why the symptom read
+as a broken form rather than a broken field. Reachable without ever typing a date:
+react-hook-form v7 keeps the value of a field that was mounted and then hidden, so toggling
+INZ accreditation on and then off leaves `''` behind. The seeker form already had this guard;
+the employer form never did.
+
+**CI is green on `main` again** (`15e577b`, PR #89) — first time since 2026-08-19. It had been
+red since the v12 landing landed, because three e2e assertions still described the old
+homepage. None of them had found a product defect.
+
+⚠ **Two things left open on purpose, both flagged rather than silently resolved:**
+- The **numeric-tier invariant** (`listing_tier in (2,3)`) now has no mounted caller.
+  `OpenRolesSection` still holds the fix but nothing renders it — `V12Roles` replaced it.
+  Either it comes back or it is dead code. Product call.
+- The onboarding **number fields** use `z.coerce.number()`, and `Number('')` is `0` — so an
+  empty herd size or property size stores **0 rather than null**. No crash, wrong data.
 
 **Then Phase 2** (deliverability) needs 2 minutes in the Resend dashboard: filter Bounced,
 classify the 11.
