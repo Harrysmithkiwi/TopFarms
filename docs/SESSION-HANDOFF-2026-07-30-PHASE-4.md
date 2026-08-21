@@ -1,5 +1,8 @@
 # Session handoff — 2026-07-30 (Phase 4)
 
+> **SUPERSEDED — Phase 5 Stages 0–2 have since shipped (PR #84 merged 2026-08-01).**
+> Read **`docs/SESSION-HANDOFF-2026-08-01-PHASE-5.md`** instead. Kept for the Phase 4 record.
+
 Supersedes `docs/SESSION-HANDOFF-2026-07-30.md`, which was written after Phase 1 and still points
 at the Phase 2 brief. Phases 2, 3 and 4 have since shipped.
 
