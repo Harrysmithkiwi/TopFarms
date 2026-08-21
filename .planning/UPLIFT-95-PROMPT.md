@@ -73,6 +73,13 @@ commission. **Do not spend another round sharpening 1024px pixels.**
 
 **Gate:** measured prod state posted in chat; both decisions recorded in this file via edit.
 
+> **Recorded 2026-08-21:**
+> - **Decision A: (1) push the stack as-is.** One push carries v12 + the Phase 1 auth route.
+> - **Decision B: PENDING.** Operator answered A only; re-ask before Phase 5 starts. Until
+>   answered, Phase 5 plans for the current 2x crops.
+> - Prod re-measured 2026-08-21: 0 employers / 0 jobs / 0 applications / 1 seeker /
+>   0 leads contacted / 132 staging pending / 0 suppressed. Stack is 7 commits, not 6.
+
 ---
 
 ## Phase 1 — THE BLOCKER: signup verification (audit §1, +18 → ~64)

@@ -46,6 +46,9 @@ const SignUp = lazy(() => import('@/pages/auth/SignUp').then((m) => ({ default: 
 const VerifyEmail = lazy(() =>
   import('@/pages/auth/VerifyEmail').then((m) => ({ default: m.VerifyEmail })),
 )
+const ConfirmEmail = lazy(() =>
+  import('@/pages/auth/ConfirmEmail').then((m) => ({ default: m.ConfirmEmail })),
+)
 const ForgotPassword = lazy(() =>
   import('@/pages/auth/ForgotPassword').then((m) => ({ default: m.ForgotPassword })),
 )
@@ -206,6 +209,12 @@ export function routeTable() {
     {
       path: '/auth/verify',
       element: s(<VerifyEmail />),
+    },
+    {
+      // Path-based token exchange — the email templates link here so the token never sits
+      // after an `=` in the message body (the QP double-decode corruption; see ConfirmEmail).
+      path: '/auth/confirm/:type/:tokenHash',
+      element: s(<ConfirmEmail />),
     },
     {
       path: '/forgot-password',
