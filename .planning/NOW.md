@@ -50,6 +50,38 @@ homepage. None of them had found a product defect.
 - The onboarding **number fields** use `z.coerce.number()`, and `Number('')` is `0` — so an
   empty herd size or property size stores **0 rather than null**. No crash, wrong data.
 
+## ✅ Pre-outreach hardening — 2026-08-21 (PR #93, merged)
+
+**The ordering principle this session settled, and the reason it matters:** every remaining
+engineering task is reversible; **sending to the list is not.** ~51 addresses, one clean shot.
+So the test for what ships before tranche 1 is *does this change what a recipient
+experiences?* — not which audit dimension it belongs to. That cut the plan differently from
+its phase numbers, and three things moved ahead of Phase 3.
+
+| | |
+|---|---|
+| `cebc1fd` | **Empty number boxes stored `0`, not null** — and 093 branches on `IS NULL` to mean "score neutrally". A blank seeker `min_salary` scored **8/8 against every job**; a blank job `salary_max` scored **0/8 against every seeker**; blank `years_experience` read as a rank beginner. Silent: no crash, no Sentry event, no failing test — only bad matches, which is the product. Invisible today because there is no real data. One shared `optionalNumber()`; 13 tests, 7 red when reverted |
+| `7418d12` | **`Sentry.setUser`** (opaque id only, both entry points, cleared on sign-out, latched against the lazy chunk) — without it Phase 6 step 4 cannot be built. **`environment` now host-derived**: it was `import.meta.env.MODE`, which is `production` for every vite build *including preview deploys*. Plus the last 14 seeker-path `console.error` → `reportError` |
+| `58c3d6b` | **Migration 104 — the advisor's one-liner was NOT applied.** See below; this is the session's most important negative result |
+| `cea7e5f` | **`/for-employers` + `/pricing` ported to v12.** "See pricing" from the landing no longer drops the visitor into the old design mid-journey. Content byte-identical; browser-verified at 1440 and 390 in both audiences, 0 console errors; 20 tests |
+
+⚠ **The `security_invoker` fix in the work order would have broken `/jobs` for every anonymous
+visitor.** Probed on prod in rolled-back transactions rather than applied: the bare
+`ALTER VIEW` raises **42501 permission denied** for anon, and the public jobs board reaches
+employer data through `marketplace_employer_profiles!inner`, so it would have rendered **zero
+rows** — on the exact surface outreach lands on. Cause: **059 §3 is only partly live** (the
+`public marketplace read` policy does not exist; anon has no column grants; only the
+`authenticated` grants survived). And the *full* 059 restore still regresses seekers —
+`before=1 after=0` for an employer whose only job is `filled`, because under invoker rights
+the view reads `jobs` as the caller and caller RLS is `status='active'`, so filling a job
+drops the farm name from that seeker's own application history. Migration 104 records all of
+it; **the advisor ERROR stays open by decision**, with three options for the operator.
+
+**This is the third consecutive audit finding whose proposed fix was wrong-shaped** (Phase 2's
+suppression insert, this, and the bounce premise). Constraint 6 is earning its keep.
+
+---
+
 ## ✅ Phase 2 (deliverability) — bounce triage + draft guard, 2026-08-21
 
 **The 11 bounces are ALL synthetic.** Enumerated from the full Resend send log (42 sends)
