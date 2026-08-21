@@ -76,15 +76,23 @@ test('SIGNUP-01: signup error toast persists >=10s', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Create account' })).toBeEnabled()
 })
 
-test('HOMEBUG-02: featured listings query uses numeric tiers and returns 200', async ({ page }) => {
-  const featured = page.waitForResponse(
-    (r) => r.url().includes('/rest/v1/jobs') && r.url().includes('listing_tier=in.'),
+test('HOMEBUG-02: the landing roles query returns 200', async ({ page }) => {
+  // RETARGETED 2026-08-21. This guarded the old homepage's featured-listings call, which
+  // filtered `listing_tier=in.(2,3)` — the numeric-tier fix. The v12 landing replaced
+  // OpenRolesSection with V12Roles, which asks for the four newest ACTIVE jobs and applies
+  // no tier filter at all, so the old waitForResponse matched nothing and timed out at 30s
+  // on every run. It failed as a red X but its real meaning was "the page changed".
+  //
+  // What survives is the part that still has a subject: the landing's one live-data query
+  // must come back 200. The numeric-tier invariant itself now has no mounted caller —
+  // OpenRolesSection is still in the tree but nothing renders it — so it is NOT silently
+  // dropped here, it is called out on the ticket instead.
+  const roles = page.waitForResponse(
+    (r) => r.url().includes('/rest/v1/jobs') && r.url().includes('status=eq.active'),
   )
   await page.goto('/')
-  const res = await featured
+  const res = await roles
   expect(res.status()).toBe(200)
-  // Numeric tier list, not the pre-fix string enums.
-  expect(decodeURIComponent(res.url())).toContain('listing_tier=in.(2,3)')
 })
 
 test('HOMEBUG-03: accommodation filter produces 200 (no PostgREST 400)', async ({ page }) => {
@@ -99,26 +107,22 @@ test('HOMEBUG-03: accommodation filter produces 200 (no PostgREST 400)', async (
   expect(decodeURIComponent(res.url())).toMatch(/Couples[+ ]welcome/)
 })
 
-test('HOMEBUG-01: get_platform_stats RPC returns 200 with {jobs,seekers,matches}', async ({
-  page,
-}) => {
-  const stats = page.waitForResponse((r) => r.url().includes('/rest/v1/rpc/get_platform_stats'))
-  await page.goto('/')
-  const res = await stats
-  expect(res.status()).toBe(200)
-  const body = await res.json()
-  expect(body).toEqual(
-    expect.objectContaining({
-      jobs: expect.any(Number),
-      seekers: expect.any(Number),
-      matches: expect.any(Number),
-    }),
-  )
-})
+/*
+ * HOMEBUG-01 (get_platform_stats returns 200 with {jobs,seekers,matches}) was REMOVED
+ * 2026-08-21, and this note is the reason so nobody restores it blind.
+ *
+ * It asserted that loading `/` fires the get_platform_stats RPC. The v12 landing does not,
+ * and that is a DECISION, not a regression — Home.tsx states it outright: "CountersSection,
+ * TestimonialsSection and TrustedByStrip stay OUT ... no real volume, no consented names."
+ * Publishing counters over an empty marketplace was the thing being avoided. So the test
+ * was waiting forever for a call the product deliberately stopped making, timing out at 30s
+ * and holding main red.
+ *
+ * A test that asserts behaviour the product intentionally removed is not a guard, it is a
+ * blocker wearing a guard's clothes. The RPC itself still exists and CountersSection still
+ * calls it; if that section is ever mounted again, restore this test with it.
+ */
 
-// S1: the soft 404. The branded page always rendered — LAUNCH.md B3 asserted the copy and
-// nothing else — while the server answered 200, so a crawler could index any junk URL as a
-// real page. Assert the STATUS, since the copy assertion is exactly what let this hide.
 test('S1: an unknown URL answers 404 and still renders the branded page', async ({ page }) => {
   const res = await page.goto('/definitely-not-a-page')
   expect(res?.status()).toBe(404)

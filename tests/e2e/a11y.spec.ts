@@ -246,12 +246,17 @@ test.describe('public routes carry exactly one h1 and one main', () => {
   // which is exactly half of the /pricing bug this guards — is invisible unless
   // the lens is set. sessionStorage must be written against the origin, hence
   // the goto-then-set-then-reload.
-  // Patterns are case-INSENSITIVE on purpose: the landing h1 is CSS-uppercased,
-  // and innerText returns rendered casing ("THE RIGHT MATCH,"). Matching the
-  // source casing here fails against a page that is perfectly correct.
+  // Patterns are case-INSENSITIVE on purpose: some h1s are CSS-uppercased and
+  // innerText returns the RENDERED casing, so matching the source casing here
+  // fails against a page that is perfectly correct.
   const ROUTES = [
-    { path: '/', h1: /the right match/i },
-    { path: '/', h1: /find the farm job/i, aud: 'seeker' },
+    // v12 landing (Home.tsx -> V12Hero). The headline is "The right people. / The right
+    // farm." — two spans in ONE h1, and there is no audience lens on it: v12 asks which
+    // side you are on with the two cards below the fold instead of by swapping the
+    // headline. So the old `/` seeker-lens row is gone rather than retargeted; it was
+    // asserting a variant the page no longer has. The lens rows on /pricing still stand,
+    // because that page does still split emp-only / seek-only.
+    { path: '/', h1: /the right people/i },
     { path: '/jobs', h1: /find your next farming opportunity/i },
     { path: '/pricing', h1: /what it costs/i },
     { path: '/pricing', h1: /workers never pay/i, aud: 'seeker' },
