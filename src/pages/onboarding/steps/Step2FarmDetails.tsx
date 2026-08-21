@@ -107,7 +107,21 @@ export function Step2FarmDetails({ onComplete, onBack, defaultValues }: Step2Pro
   // Clear the dairy-only answers when they are hidden, so a value picked before the farm type
   // was narrowed cannot be saved against a farm that never showed the question.
   function submit(data: FormData) {
-    onComplete(showsDairyFields ? data : { ...data, shed_type: [], milking_frequency: '' })
+    const cleaned = showsDairyFields ? data : { ...data, shed_type: [], milking_frequency: '' }
+    onComplete({
+      // `''` must never reach `inz_accreditation_expires`: it is a DATE column and Postgres
+      // rejects an empty string with 22007, which fails the WHOLE step-2 upsert — every
+      // field on the form, not just this one. Reachable without ever typing a date, because
+      // react-hook-form keeps the value of a field that was mounted and then hidden (v7
+      // `shouldUnregister` defaults to false), so toggling INZ accreditation ON and then OFF
+      // leaves `''` here and `.optional()` accepts it. Cost a live signup 2026-08-21.
+      // Same guard the seeker form already had on its own date field
+      // (SeekerStep5LifeSituation: `data.availability_date || undefined`); this form never
+      // got it. Not a schema `.transform()` — that changes zod's output type away from its
+      // input type and react-hook-form's resolver requires the two to match.
+      ...cleaned,
+      inz_accreditation_expires: data.inz_accreditation_expires || undefined,
+    })
   }
 
   return (
