@@ -1,5 +1,6 @@
 import { useForm, Controller } from 'react-hook-form'
 import { z } from 'zod'
+import { optionalNumber } from '@/lib/zodHelpers'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
@@ -13,7 +14,7 @@ const ABOUT_MAX = 400
 
 const schema = z.object({
   culture_description: z.string().max(CULTURE_MAX, `Maximum ${CULTURE_MAX} characters`).optional(),
-  team_size: z.coerce.number().optional(),
+  team_size: optionalNumber(),
   about_farm: z.string().max(ABOUT_MAX, `Maximum ${ABOUT_MAX} characters`).optional(),
   calving_system: z.string().optional(),
   nearest_town: z.string().optional(),

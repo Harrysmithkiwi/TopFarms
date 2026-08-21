@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { optionalNumber } from '@/lib/zodHelpers'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
@@ -22,15 +23,15 @@ const BENEFIT_OPTIONS = [
 
 const schema = z
   .object({
-    salary_min: z.coerce.number().min(0, 'Enter minimum salary').optional(),
-    salary_max: z.coerce.number().min(0).optional(),
+    salary_min: optionalNumber(z.coerce.number().min(0, 'Enter minimum salary')),
+    salary_max: optionalNumber(z.coerce.number().min(0)),
     benefits: z.array(z.string()),
     other_benefit: z.string().optional(),
     // Phase 8 new fields
     pay_frequency: z.string().optional(),
     on_call_allowance: z.boolean().optional(),
-    hours_min: z.coerce.number().optional(),
-    hours_max: z.coerce.number().optional(),
+    hours_min: optionalNumber(),
+    hours_max: optionalNumber(),
     weekend_roster: z.string().optional(),
   })
   .refine((d) => !d.salary_min || !d.salary_max || d.salary_min < d.salary_max, {

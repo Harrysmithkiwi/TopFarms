@@ -1,5 +1,6 @@
 import { useForm, Controller } from 'react-hook-form'
 import { z } from 'zod'
+import { optionalNumber } from '@/lib/zodHelpers'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Input } from '@/components/ui/Input'
 import { Checkbox } from '@/components/ui/Checkbox'
@@ -8,7 +9,7 @@ import { SHED_TYPES, HERD_SIZE_BUCKETS } from '@/types/domain'
 import type { SeekerProfileData, ShedType, HerdSizeBucket } from '@/types/domain'
 
 const schema = z.object({
-  years_experience: z.coerce.number().min(0).max(50).optional(),
+  years_experience: optionalNumber(z.coerce.number().min(0).max(50)),
   shed_types_experienced: z.array(z.string()).optional(),
   herd_sizes_worked: z.array(z.string()).optional(),
 })

@@ -1,5 +1,6 @@
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { optionalNumber } from '@/lib/zodHelpers'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Toggle } from '@/components/ui/Toggle'
 import { Select } from '@/components/ui/Select'
@@ -12,8 +13,8 @@ import { SHED_TYPES, CALVING_SYSTEM_OPTIONS, DISTANCE_OPTIONS } from '@/types/do
 
 const schema = z.object({
   shed_type: z.array(z.string()),
-  herd_size_min: z.coerce.number().min(0).optional(),
-  herd_size_max: z.coerce.number().min(0).optional(),
+  herd_size_min: optionalNumber(z.coerce.number().min(0)),
+  herd_size_max: optionalNumber(z.coerce.number().min(0)),
   visa_sponsorship: z.boolean(),
   couples_welcome: z.boolean(),
   accommodation: z
@@ -30,7 +31,7 @@ const schema = z.object({
   breed: z.string().optional(),
   milking_frequency: z.string().optional(),
   calving_system: z.string().optional(),
-  farm_area_ha: z.coerce.number().optional(),
+  farm_area_ha: optionalNumber(),
   nearest_town: z.string().optional(),
   distance_from_town_km: z.string().optional(),
 })

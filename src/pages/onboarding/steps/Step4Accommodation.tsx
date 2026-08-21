@@ -1,5 +1,6 @@
 import { useForm, Controller } from 'react-hook-form'
 import { z } from 'zod'
+import { optionalNumber } from '@/lib/zodHelpers'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Toggle } from '@/components/ui/Toggle'
 import { Select } from '@/components/ui/Select'
@@ -28,8 +29,8 @@ const schema = z
     vehicle_types: z.array(z.string()).optional(),
     broadband_available: z.boolean().optional(),
     // Salary section (EONB-07)
-    salary_min: z.coerce.number().optional(),
-    salary_max: z.coerce.number().optional(),
+    salary_min: optionalNumber(),
+    salary_max: optionalNumber(),
   })
   .refine((d) => !d.salary_min || !d.salary_max || d.salary_min < d.salary_max, {
     message: 'Maximum must be greater than minimum',
