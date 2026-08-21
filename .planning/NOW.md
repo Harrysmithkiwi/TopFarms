@@ -50,8 +50,31 @@ homepage. None of them had found a product defect.
 - The onboarding **number fields** use `z.coerce.number()`, and `Number('')` is `0` — so an
   empty herd size or property size stores **0 rather than null**. No crash, wrong data.
 
-**Then Phase 2** (deliverability) needs 2 minutes in the Resend dashboard: filter Bounced,
-classify the 11.
+## ✅ Phase 2 (deliverability) — bounce triage + draft guard, 2026-08-21
+
+**The 11 bounces are ALL synthetic.** Enumerated from the full Resend send log (42 sends)
+via the resend MCP, not the dashboard: `not_an_email@example.test` ×9 and
+`probe-a@example.test` ×1 (2026-08-13/15 template probes), plus
+`e2e-signup-…@topfarms.co.nz` ×1 (2026-08-21 E2E). **No real address has ever bounced,
+because no real lead has ever been emailed.** The ~30% rate is a test artifact; the sending
+reputation carries no real damage. Proven by SQL: 0 rows in `leads`/`lead_staging` carry any
+bounced address; `lead_suppression` is 0 rows and correctly so.
+
+⚠ **The work order's Phase 2 step 2 was wrong as written** (constraint 6 vindicated):
+`lead_suppression` is keyed on `_lead_suppression_key(name, type)` — farm identity, not
+email. Inserting bounced *addresses* would create rows nothing ever matches. Nothing was
+inserted; the reconciliation against Resend's own suppression list (1 entry, the fake E2E
+address — theirs, correctly) found nothing to move in either direction.
+
+**The drafting gap is closed:** `lead-draft-email` now refuses `status = 'dead'` leads and
+any lead whose region-less 087 key is in `lead_suppression` (409). Guard proven to fail
+when removed (4/4 test failures with the fix stashed) — `tests/lead-draft-suppression-guard.test.ts`.
+
+**Warm-up plan (binding for Phase 6):** tranche 1 is 10–15 sends max, then HOLD 24h and
+re-read the Resend log before tranche 2. Any real hard bounce: leave it to Resend's
+auto-suppression AND mark the lead dead (`admin_lead_suppress`) so it is never redrafted.
+Auth email shares this sending reputation — outreach recklessness breaks signup for
+everyone, which is why the tranche cap is not negotiable.
 
 ---
 

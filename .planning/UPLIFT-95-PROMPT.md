@@ -128,6 +128,18 @@ in this session's browser, then purged. Vitest/tsc/lint/build green.
 **Gate:** `select count(*) from lead_suppression` equals the bounce count; a drafted batch
 provably excludes suppressed addresses (SQL shown).
 
+> **Addendum 2026-08-21 — gate revised on evidence, steps 1–2 as written were built on a
+> wrong model.** (a) The 11 bounces are all synthetic (9× + 1× `@example.test` probes, 1×
+> fake E2E address); no real lead has ever been emailed, so there are no real addresses to
+> suppress. (b) `lead_suppression` is keyed on `_lead_suppression_key(name, type)` — farm
+> identity, NOT email (087) — so "insert the bounced addresses" would create rows nothing
+> matches; constraint 6 applied, nothing inserted. Resend's own suppression list (1 entry,
+> the fake E2E address) reconciled: nothing to move either way. (c) Step 3 done for real:
+> `lead-draft-email` refuses dead + suppressed leads (409), guard proven to fail when
+> removed. (d) Warm-up plan recorded in NOW.md. Revised gate evidence: SQL shows 0
+> leads/staging rows carrying any bounced address and 0 suppression rows; guard test
+> red-without/green-with.
+
 ---
 
 ## Phase 3 — Security hardening (audit §2, +3 → ~72)
@@ -220,8 +232,8 @@ honestly** after each phase — update the tracker below rather than asserting a
 | Checkpoint | Claimed | Measured | Evidence |
 |---|---|---|---|
 | Baseline 2026-08-20 | 46 | 46 | audit file |
-| After Phase 1 | ~64 | ~64 | route live on prod (200); all 5 templates verified `{{ .TokenHash }}` from live config; recovery proven E2E on live prod 2026-08-21 — delivered link uncorrupted, session established (`amr: ["otp"]`), purged. **Signup-type delivery not yet walked — operator, 60s.** |
-| After Phase 2 | ~69 | | |
+| After Phase 1 | ~64 | ~64 | route live on prod (200); all 5 templates verified `{{ .TokenHash }}` from live config; recovery proven E2E on live prod 2026-08-21 — delivered link uncorrupted, session established (`amr: ["otp"]`), purged. Signup-type walked by the operator 2026-08-21 — works (NOW.md). |
+| After Phase 2 | ~69 | ~68 | bounce triage: all 11 synthetic (Resend log, 42 sends enumerated); reputation undamaged; SQL: 0 lead rows carry bounced addresses; draft guard proven red-without/green-with; warm-up plan in NOW.md. Held at ~68 not 69: the guard is committed but not yet deployed. |
 | After Phase 3 | ~72 | | |
 | After Phase 4 | ~75 | | |
 | After Phase 5 | ~80–82 | | |
