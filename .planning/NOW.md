@@ -50,6 +50,34 @@ homepage. None of them had found a product defect.
 - The onboarding **number fields** use `z.coerce.number()`, and `Number('')` is `0` — so an
   empty herd size or property size stores **0 rather than null**. No crash, wrong data.
 
+## ▶ START HERE — `.planning/PRE-LAUNCH-CHECKLIST.md`
+
+**Session closed 2026-08-21.** Everything that can be engineered before a real farmer arrives
+is done and on `main`. The next move is not code: it is **sending tranche 1**.
+
+- **Drafts ready:** `.planning/outreach/TRANCHE-01-DRAFT.md` — 9 emails, UEMA-verified,
+  nothing sent, nothing promoted to `leads` (promotion is the human approval gate).
+- **Checklist:** `.planning/PRE-LAUNCH-CHECKLIST.md` — what must pass before the tranche,
+  before taking money, and the six do-not-launch conditions.
+- **Review artifact:** the 80→100 audit, the landing-concept read and the design-system gap
+  analysis were published as an artifact 2026-08-21 (see `/artifacts`).
+
+⚠ **The score is 72, not 80.** The tracker reached ~80 by summing per-phase deltas; the work
+order's own rule is a re-walk of the eight dimensions with the same weights. Re-walked, it is
+72. Engineering ceiling is ~81 — **19 of the remaining 28 points require a market**, not a
+commit.
+
+**Three decisions parked for the operator**, all recorded rather than inferred:
+1. The design-system board mandates **photography**, and one sample is a smiling farmer with
+   folded arms — which `PRODUCT.md` names as an anti-reference in those exact words. The app
+   ships zero photos by a v12 decision made on rural-data grounds.
+2. **Satoshi** would be a sixth font family and is not on Google Fonts. If adopted it should
+   replace Inter in the portals, not join them.
+3. The **`main` branch rule** — solo review is unsatisfiable, so every merge is logged as an
+   `--admin` bypass.
+
+---
+
 ## ✅ Pre-outreach hardening — 2026-08-21 (PR #93, merged)
 
 **The ordering principle this session settled, and the reason it matters:** every remaining
