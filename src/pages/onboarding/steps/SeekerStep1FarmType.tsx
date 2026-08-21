@@ -8,6 +8,7 @@ import { useSeekerContact } from '@/hooks/useSeekerContact'
 import { FARM_TYPE_OPTIONS } from '@/types/domain'
 import { NZ_REGIONS, ROLE_TYPES, CONTRACT_TYPE_PREFS } from '@/lib/constants'
 import type { SeekerProfileData } from '@/types/domain'
+import { reportError } from '@/lib/observability'
 
 interface SeekerStep1Props {
   onComplete: (data: Partial<SeekerProfileData>) => void
@@ -72,7 +73,7 @@ export function SeekerStep1FarmType({
         // Non-fatal: the profile step should still proceed. The profile upsert in
         // onComplete() is independent and must not be blocked by a contact write. The
         // employer-facing display name falls back to the email derivation until it lands.
-        console.error('SeekerStep1FarmType: contact details save failed', result.error)
+        reportError('seeker onboarding step 1: contact save', result.error)
         toast.warning('We could not save your contact details — you can add them later.')
       }
     }

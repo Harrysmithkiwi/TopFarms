@@ -1,5 +1,6 @@
 import { useForm, Controller } from 'react-hook-form'
 import { z } from 'zod'
+import { optionalNumber } from '@/lib/zodHelpers'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Toggle } from '@/components/ui/Toggle'
 import { Select } from '@/components/ui/Select'
@@ -21,7 +22,7 @@ const schema = z.object({
   accommodation_needed: z.boolean().optional(),
   housing_sub_options: z.array(z.string()).optional(),
   preferred_regions: z.array(z.string()).optional(),
-  min_salary: z.coerce.number().optional(),
+  min_salary: optionalNumber(),
   availability_date: z.string().optional(),
   notice_period_text: z.string().optional(),
 })

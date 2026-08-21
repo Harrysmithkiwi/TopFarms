@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { supabase } from '@/lib/supabase'
+import { reportError } from '@/lib/observability'
 import { SkillsPicker } from '@/components/ui/SkillsPicker'
 import { Button } from '@/components/ui/Button'
 import type { SelectedSkill, SeekerProfileData } from '@/types/domain'
@@ -43,7 +44,7 @@ export function SeekerStep4Skills({
           // prefill failed, selectedSkills is empty, so saving wipes the skills
           // the seeker already had -- and 20 points of their match score with
           // them. Block the save rather than silently render "nothing selected".
-          console.error('Error loading seeker skills:', error)
+          reportError('seeker onboarding step 4: load skills', error)
           setPrefillError(true)
         } else if (data) {
           setSelectedSkills(
@@ -83,7 +84,7 @@ export function SeekerStep4Skills({
 
       if (deleteError) {
         toast.error('Failed to update skills. Please try again.')
-        console.error('Delete seeker_skills error:', deleteError)
+        reportError('seeker onboarding step 4: delete skills', deleteError)
         setSaving(false)
         return
       }
@@ -100,7 +101,7 @@ export function SeekerStep4Skills({
 
         if (insertError) {
           toast.error('Failed to save skills. Please try again.')
-          console.error('Insert seeker_skills error:', insertError)
+          reportError('seeker onboarding step 4: insert skills', insertError)
           setSaving(false)
           return
         }

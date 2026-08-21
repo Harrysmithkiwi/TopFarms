@@ -1,6 +1,7 @@
 import { NZ_REGIONS } from '@/lib/constants'
 import { useForm, useWatch, Controller } from 'react-hook-form'
 import { z } from 'zod'
+import { optionalNumber } from '@/lib/zodHelpers'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
@@ -24,10 +25,10 @@ const schema = z
     farm_types: z.array(z.string()).min(1, 'Select at least one farm type'),
     ownership_type: z.array(z.string()).optional(),
     shed_type: z.array(z.string()),
-    herd_size: z.coerce.number().optional(),
+    herd_size: optionalNumber(),
     milking_frequency: z.string().optional(),
     breed: z.string().optional(),
-    property_size_ha: z.coerce.number().optional(),
+    property_size_ha: optionalNumber(),
     // Seeker gap G-13. Mirrors the DB CHECK in 091: claiming accreditation requires saying
     // until when, because a lapsed claim is worse than none — a migrant who relies on it has
     // wasted an application fee and possibly a season.

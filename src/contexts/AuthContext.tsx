@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { AuthError, type Session, type User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
+import { setUser } from '@/lib/observability'
 import type { UserRole } from '@/types/domain'
 
 export interface AuthHookReturn {
@@ -112,6 +113,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .getSession()
       .then(async ({ data: { session: initialSession } }) => {
         setSession(initialSession)
+        // Tag errors with the opaque user id (id only) so a production failure can be
+        // traced to WHICH account hit it. Set before loadRole: a role read that fails is
+        // exactly the error worth attributing.
+        setUser(initialSession?.user?.id ?? null)
         if (initialSession?.user) {
           const result = await loadRoleWithTimeout(initialSession.user.id)
           if (result.ok) {
@@ -134,6 +139,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, newSession) => {
       setSession(newSession)
+      // Every transition, including sign-out — an id left behind would misattribute the
+      // next anonymous visitor's errors to the account that signed out on this device.
+      setUser(newSession?.user?.id ?? null)
 
       if (!newSession?.user) {
         // Genuine sign-out (or no session): clear role.

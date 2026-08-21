@@ -5,6 +5,7 @@ import { FileText, Trash2 } from 'lucide-react'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { Select } from '@/components/ui/Select'
 import { supabase } from '@/lib/supabase'
+import { reportError } from '@/lib/observability'
 import { useSeekerProfileId } from '@/hooks/useSeekerProfileId'
 import { DOCUMENT_TYPE_LABELS } from '@/types/domain'
 import type { DocumentType, SeekerDocument } from '@/types/domain'
@@ -84,7 +85,7 @@ export function SeekerDocuments() {
         .eq('seeker_id', seekerProfileId)
         .order('uploaded_at', { ascending: false })
       if (error) {
-        console.error('SeekerDocuments: load failed', error)
+        reportError('seeker documents: load', error)
         setErrorState('Failed to load your documents. Try refreshing.')
         setDocs(null)
         setLoading(false)
@@ -107,7 +108,7 @@ export function SeekerDocuments() {
       .eq('id', docId)
     if (error) {
       setDocs(before)
-      console.error('SeekerDocuments: type update failed', error)
+      reportError('seeker documents: type update', error)
       toast.error('Failed to update document type')
       return
     }
@@ -124,7 +125,7 @@ export function SeekerDocuments() {
     const { error: rowError } = await supabase.from('seeker_documents').delete().eq('id', doc.id)
     if (rowError) {
       setDocs(before)
-      console.error('SeekerDocuments: row delete failed', rowError)
+      reportError('seeker documents: row delete', rowError)
       toast.error('Failed to delete document')
       return
     }

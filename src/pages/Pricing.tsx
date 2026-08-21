@@ -1,20 +1,29 @@
-import { Link } from 'react-router'
 import { PublicShell } from '@/components/shell/PublicShell'
 import { usePageMeta } from '@/lib/usePageMeta'
+import { Container, Display, Btn } from '@/components/landing/v12/V12Kit'
+import { PastoralBand } from '@/components/landing/PastoralScene'
 
-// v13 port, stage 3a (directive 1.12, 1.17c). ONE route, audience-switched view:
-// two routes would split the SEO signal for the term the business most wants to
-// own, and contradict 1.14's rejection of audience-as-URL-segment. Employer view
-// is the CSS default so the page is correct without JS; the seeker view uses the
-// same .emp-only / .seek-only mechanism as the hero.
-// Pricing model v3 (directive 1.19, 2026-08-04). The three-tier listing ladder
-// (100 / 150 / 200) and "first listing free" are RETIRED: listings are free and
-// unlimited, and the placement fee carries the whole model. Featured ($99) is
-// deliberately absent, not forgotten. NOT THIS forbids selling prominence before
-// its traffic trigger fires, and an empty board is exactly when it would be a lie.
+// v12 port (docs/design/v12-DIRECTIVE.md §0 scope line). Costume change only: ONE route,
+// audience-switched view, and every price, band, boundary and sentence below is byte-for-byte
+// what the v13 page carried. Pricing model v3 (directive 1.19) is a COMMERCIAL fact, not a
+// design decision — 1.19 is listed in §0 as carried forward, unchanged — so a port that
+// "tidied" a number would be changing the business, and `tests/pricing-parity.test.ts` guards
+// the client copy against the server derivation regardless.
 //
-// Three cards, not five, because there are three facts: listing costs nothing,
-// hiring costs one published fee, and that fee buys a guarantee.
+// Carried forward from the v13 page, deliberately and unchanged:
+//   1.12 — pricing lives at /pricing; pinned by test.
+//   1.11 — the per-audience swap. Both strings live in the DOM and CSS picks one, so the page
+//          is correct with no JS. The mechanism is `.v13-shell[data-aud]` in index.css and
+//          PublicShell still carries both the class and the attribute — verified before this
+//          port, because a rename there would have silently shown employers the seeker page.
+//   1.17c — the seeker view is stated plainly and is never an empty page.
+//   ONE h1 — both audience strings sit inside a single shared h1 element. Two h1s split the
+//          outline for crawlers even though display:none keeps one out of the a11y tree.
+//
+// Dropped by v12 §5: the dark green panels and their repeating-gradient grille. The
+// highlighted tier reads on `fern-100` rather than a dark fill — v12 §2 bans `fern-500` as
+// text on dark panels (3.54:1) and the pale plate keeps the emphasis without going near that
+// rule. Featured ($99) remains deliberately absent, not forgotten.
 
 const tiers = [
   {
@@ -89,6 +98,19 @@ const faqs = [
   },
 ]
 
+const SEEKER_FREE: [string, string][] = [
+  [
+    'A profile that does the filtering',
+    'Set housing, roster, job type, stock class and visa type once. Every job is scored against it.',
+  ],
+  ['Applying to any listing', 'No limit, no credit, no upsell at the point of applying.'],
+  [
+    'Seeing the fit before you apply',
+    'You see how well a job matches you, and why, before you spend the time.',
+  ],
+  ['Your documents, stored once', 'Upload once and reuse across applications.'],
+]
+
 export function Pricing() {
   usePageMeta(
     'Pricing | TopFarms',
@@ -97,171 +119,144 @@ export function Pricing() {
 
   return (
     <PublicShell>
-      {/* One hero, one h1. Both audience strings live in the DOM and the CSS
-          swaps them (1.11, same pattern as HeroSection) — but the h1 element
-          itself is shared, so the page has exactly one no matter which
-          audience is active. Two h1s here split the outline for crawlers even
-          though display:none keeps one out of the a11y tree. */}
-      <section className="mx-auto max-w-[1440px] px-3 pt-3 sm:px-5">
-        <div className="v13-dark bg-green relative overflow-hidden rounded-3xl px-7 py-12 text-white md:px-11">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 opacity-50 [background:repeating-linear-gradient(96deg,rgba(255,255,255,.035)_0_1px,transparent_1px_54px)]"
-          />
-          <div className="relative">
-            <h1 className="max-w-[20ch] text-4xl leading-[.95] font-extrabold tracking-[-.04em] md:text-6xl">
-              <span className="emp-only">What it costs</span>
-              <span className="seek-only">
-                Free, always. <span className="text-lime">Workers never pay.</span>
-              </span>
-            </h1>
-            <p className="emp-only mt-5 max-w-[46ch] text-[17px] text-white/82">
-              Published in the open. No calls, no quotes. Every listing is free, you pay once only
-              if you hire, and workers never pay.
-            </p>
-            <p className="seek-only mt-5 max-w-[46ch] text-[17px] text-white/82">
-              Not to apply, not to match, not ever. Employers pay to list a job. You do not pay to
-              find one.
-            </p>
-            {/* Wrapper carries seek-only: the toggle forces display:block, which
-                would stretch the pill if it sat on the Link itself. */}
-            <div className="seek-only mt-7">
-              <Link
-                to="/signup?role=seeker"
-                className="bg-lime text-green-2 hover:bg-lime-2 inline-flex min-h-11 items-center rounded-full px-5 text-[15px] font-semibold transition-colors"
-              >
-                I'm looking for work
-              </Link>
-            </div>
+      {/* ── Hero. One h1; the audience strings swap inside it. ── */}
+      <section className="relative isolate overflow-hidden">
+        <PastoralBand className="absolute inset-0 h-full w-full" />
+        <div className="absolute inset-0 bg-white/45" aria-hidden="true" />
+        <Container className="relative py-20 text-center sm:py-24">
+          <Display as="h1" className="mx-auto max-w-[20ch] text-[clamp(2.2rem,5vw,3.6rem)] leading-[1.06]">
+            <span className="emp-only">What it costs</span>
+            <span className="seek-only">Free, always. Workers never pay.</span>
+          </Display>
+          <p className="emp-only text-bark/80 mx-auto mt-5 max-w-[46ch] text-[1.0625rem] leading-relaxed sm:text-[1.1875rem]">
+            Published in the open. No calls, no quotes. Every listing is free, you pay once only
+            if you hire, and workers never pay.
+          </p>
+          <p className="seek-only text-bark/80 mx-auto mt-5 max-w-[46ch] text-[1.0625rem] leading-relaxed sm:text-[1.1875rem]">
+            Not to apply, not to match, not ever. Employers pay to list a job. You do not pay to
+            find one.
+          </p>
+          {/* The wrapper carries seek-only, not the Btn: the toggle forces display:block,
+              which would stretch the pill to the full container width if it sat on the link. */}
+          <div className="seek-only mt-9">
+            <Btn to="/signup?role=seeker" size="lg">
+              I&rsquo;m looking for work
+            </Btn>
           </div>
-        </div>
+        </Container>
       </section>
 
-      {/* Employer view: the fee table. CSS default. */}
+      {/* ── Employer view: the fee table. CSS default. ── */}
       <div className="emp-only">
-        <section aria-labelledby="tiers-h2" className="mx-auto max-w-[1440px] px-3 pt-14 sm:px-5">
-          <h2 id="tiers-h2" className="sr-only">
-            What it costs
-          </h2>
-          <div className="grid gap-3.5 md:grid-cols-3">
-            {tiers.map((tier) => (
-              <div
-                key={tier.name}
-                className={`rounded-3xl border p-6 ${
-                  tier.highlight ? 'bg-lime border-lime text-green-2' : 'bg-card border-line'
-                }`}
-              >
-                <p
-                  className={`font-bricolage text-xs font-semibold tracking-[.05em] uppercase ${
-                    tier.highlight ? 'text-green-2/80' : 'text-ink-40'
+        <section aria-labelledby="tiers-h2" className="py-20 sm:py-24">
+          <Container>
+            <h2 id="tiers-h2" className="sr-only">
+              What it costs
+            </h2>
+            <div className="grid gap-6 md:grid-cols-3">
+              {tiers.map((tier) => (
+                <div
+                  key={tier.name}
+                  className={`rounded-2xl border p-7 shadow-[0_4px_24px_rgba(26,60,42,0.08)] ${
+                    tier.highlight ? 'border-fern-700 bg-fern-100' : 'border-rule bg-white'
                   }`}
                 >
-                  {tier.name}
-                </p>
-                <p className="mt-3 text-[34px] leading-none font-extrabold tracking-[-.045em]">
-                  {tier.price}
-                </p>
-                <p
-                  className={`mt-1.5 text-[12.5px] font-medium ${
-                    tier.highlight ? 'text-green-2/75' : 'text-ink-40'
-                  }`}
-                >
-                  {tier.period}
-                </p>
-                <p
-                  className={`mt-3 text-[13.5px] ${tier.highlight ? 'text-green-2/85' : 'text-ink-60'}`}
-                >
-                  {tier.description}
-                </p>
-                <ul className="mt-4 flex flex-col gap-2">
-                  {tier.features.map((f) => (
-                    <li
-                      key={f}
-                      className={`text-[13px] ${tier.highlight ? 'text-green-2/85' : 'text-ink-60'}`}
-                    >
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-          <p className="text-ink-40 mt-5 text-[13px] font-medium">
-            All prices in NZD. Workers never pay: not to apply, not to match, not ever.
-          </p>
+                  <p className="text-fern-800 text-[0.875rem] font-semibold">{tier.name}</p>
+                  {/* clamp(), not a fixed size: v12 §2 is "display sizes are clamp()
+                      throughout", and "$200-800" is the longest string of the three — at a
+                      fixed 2.6rem it is the one that would wrap on a narrow card. */}
+                  <p className="font-cormorant text-fern-900 mt-3 text-[clamp(2.1rem,3.6vw,2.6rem)] leading-none font-semibold tracking-[-0.02em]">
+                    {tier.price}
+                  </p>
+                  <p className="text-sage mt-2 text-[0.875rem]">{tier.period}</p>
+                  <p className="text-sage mt-4 text-[0.9375rem] leading-relaxed">
+                    {tier.description}
+                  </p>
+                  <ul className="mt-5 flex flex-col gap-2.5">
+                    {tier.features.map((f) => (
+                      <li key={f} className="text-bark/85 text-[0.9375rem] leading-relaxed">
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+            <p className="text-sage mt-6 text-[0.875rem]">
+              All prices in NZD. Workers never pay: not to apply, not to match, not ever.
+            </p>
+          </Container>
         </section>
 
-        <section aria-labelledby="faq-h2" className="mx-auto max-w-[1440px] px-3 pt-14 sm:px-5">
-          <div className="bg-card border-line rounded-3xl border px-7 py-9 md:px-11">
-            <h2 id="faq-h2" className="text-2xl font-extrabold tracking-[-.03em] md:text-[30px]">
-              Questions
-            </h2>
-            <div className="mt-6 grid gap-x-11 gap-y-7 md:grid-cols-2">
+        <section aria-labelledby="faq-h2" className="bg-linen py-20 sm:py-24">
+          <Container>
+            <Display className="text-[clamp(1.7rem,3.2vw,2.3rem)]">
+              <span id="faq-h2">Questions</span>
+            </Display>
+            <div className="mt-10 grid gap-x-12 gap-y-9 md:grid-cols-2">
               {faqs.map((faq) => (
                 <div key={faq.q}>
-                  <h3 className="text-[16px] font-bold tracking-[-.02em]">{faq.q}</h3>
-                  <p className="text-ink-60 mt-1.5 max-w-[60ch] text-[14px]">{faq.a}</p>
+                  <h3 className="text-fern-900 text-[1.0625rem] leading-snug font-semibold">
+                    {faq.q}
+                  </h3>
+                  <p className="text-sage mt-2.5 max-w-[60ch] text-[0.9375rem] leading-relaxed">
+                    {faq.a}
+                  </p>
                 </div>
               ))}
             </div>
-          </div>
+          </Container>
         </section>
       </div>
 
-      {/* Seeker view: stated plainly, never an empty page (directive 1.17c). */}
+      {/* ── Seeker view: stated plainly, never an empty page (directive 1.17c). ── */}
       <div className="seek-only">
-        <section aria-labelledby="free-h2" className="mx-auto max-w-[1440px] px-3 pt-14 sm:px-5">
-          <div className="bg-card border-line rounded-3xl border px-7 py-9 md:px-11">
-            <h2 id="free-h2" className="text-2xl font-extrabold tracking-[-.03em] md:text-[30px]">
-              What free actually covers
-            </h2>
-            <div className="mt-6 grid gap-x-11 gap-y-7 md:grid-cols-2">
-              {[
-                ['A profile that does the filtering', 'Set housing, roster, job type, stock class and visa type once. Every job is scored against it.'],
-                ['Applying to any listing', 'No limit, no credit, no upsell at the point of applying.'],
-                ['Seeing the fit before you apply', 'You see how well a job matches you, and why, before you spend the time.'],
-                ['Your documents, stored once', 'Upload once and reuse across applications.'],
-              ].map(([h, p]) => (
-                <div key={h}>
-                  <h3 className="text-[16px] font-bold tracking-[-.02em]">{h}</h3>
-                  <p className="text-ink-60 mt-1.5 max-w-[60ch] text-[14px]">{p}</p>
+        <section aria-labelledby="free-h2" className="bg-linen py-20 sm:py-24">
+          <Container>
+            <Display className="text-[clamp(1.7rem,3.2vw,2.3rem)]">
+              <span id="free-h2">What free actually covers</span>
+            </Display>
+            <div className="mt-10 grid gap-6 sm:grid-cols-2">
+              {SEEKER_FREE.map(([h, p]) => (
+                <div
+                  key={h}
+                  className="border-rule rounded-2xl border bg-white p-7 shadow-[0_4px_24px_rgba(26,60,42,0.08)]"
+                >
+                  <h3 className="text-fern-900 text-[1.0625rem] leading-snug font-semibold">{h}</h3>
+                  <p className="text-sage mt-2.5 max-w-[46ch] text-[0.9375rem] leading-relaxed">
+                    {p}
+                  </p>
                 </div>
               ))}
             </div>
-            <p className="text-ink-40 mt-7 text-[13px] font-medium">
-              Employers pay per listing, published on this page when you switch to the employer view.
+            <p className="text-sage mt-6 text-[0.875rem]">
+              Employers pay per listing, published on this page when you switch to the employer
+              view.
             </p>
-          </div>
+          </Container>
         </section>
       </div>
 
-      <section className="mx-auto max-w-[1440px] px-3 pt-14 pb-4 sm:px-5">
-        <div className="v13-dark bg-green-2 relative overflow-hidden rounded-3xl px-7 py-12 text-center text-white">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 opacity-50 [background:repeating-linear-gradient(96deg,rgba(255,255,255,.045)_0_1px,transparent_1px_28px)]"
-          />
-          <div className="relative">
-            <h2 className="mx-auto max-w-[20ch] text-3xl leading-none font-extrabold tracking-[-.04em] md:text-[44px]">
-              The whole job. <i className="text-lime font-normal">The whole person.</i>
-            </h2>
-            <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
-              <Link
-                to="/signup?role=employer"
-                className="bg-lime text-green-2 hover:bg-lime-2 inline-flex min-h-11 items-center rounded-full px-5 text-[15px] font-semibold transition-colors"
-              >
-                I'm hiring
-              </Link>
-              <Link
-                to="/signup?role=seeker"
-                className="hover:text-lime inline-flex min-h-11 items-center px-2.5 text-[15px] font-semibold text-white underline decoration-[1.5px] underline-offset-4 transition-colors"
-              >
-                I'm looking for work
-              </Link>
+      {/* ── Close ── */}
+      <Container className="py-20 sm:py-24">
+        <div className="relative isolate overflow-hidden rounded-2xl">
+          <PastoralBand className="absolute inset-0 h-full w-full" />
+          <div className="absolute inset-0 bg-white/45" aria-hidden="true" />
+          <div className="relative px-6 py-14 text-center sm:py-16">
+            <Display className="mx-auto max-w-[20ch] text-[clamp(1.8rem,3.4vw,2.4rem)]">
+              The whole job. The whole person.
+            </Display>
+            <div className="mt-7 flex flex-col items-center justify-center gap-3.5 sm:flex-row">
+              <Btn to="/signup?role=employer" size="lg">
+                I&rsquo;m hiring
+              </Btn>
+              <Btn to="/signup?role=seeker" variant="onScene" size="lg">
+                I&rsquo;m looking for work
+              </Btn>
             </div>
           </div>
         </div>
-      </section>
+      </Container>
     </PublicShell>
   )
 }
