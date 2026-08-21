@@ -1,5 +1,11 @@
 -- 104 — the marketplace view stays SECURITY DEFINER, and here is the measured reason
 --
+-- ⚠ SUPERSEDED BY 105 (same day). This file's DIAGNOSIS stands and is why 105 looks the way
+--   it does — the bare ALTER VIEW really does raise 42501, and 059 §3 really was only partly
+--   live. What is no longer current is the CONCLUSION: 105 took option (b), the definer
+--   helper, so the view IS security_invoker = true now and this file's COMMENT ON VIEW has
+--   been replaced. Kept unedited for the decision history, per the v11-DIRECTIVE precedent.
+--
 -- UPLIFT-95 Phase 3 item 1 proposed a one-liner:
 --
 --     ALTER VIEW public.marketplace_employer_profiles SET (security_invoker = true);
