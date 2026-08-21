@@ -220,7 +220,7 @@ honestly** after each phase — update the tracker below rather than asserting a
 | Checkpoint | Claimed | Measured | Evidence |
 |---|---|---|---|
 | Baseline 2026-08-20 | 46 | 46 | audit file |
-| After Phase 1 | ~64 | | |
+| After Phase 1 | ~64 | ~64 | route live on prod (200); all 5 templates verified `{{ .TokenHash }}` from live config; recovery proven E2E on live prod 2026-08-21 — delivered link uncorrupted, session established (`amr: ["otp"]`), purged. **Signup-type delivery not yet walked — operator, 60s.** |
 | After Phase 2 | ~69 | | |
 | After Phase 3 | ~72 | | |
 | After Phase 4 | ~75 | | |

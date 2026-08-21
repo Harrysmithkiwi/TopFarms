@@ -8,6 +8,34 @@ stream doc disagree, the stream doc wins and this file is out of date — fix it
 
 ---
 
+## ✅ Phase 1 (the signup blocker) is CLOSED — 2026-08-21
+
+The auth gate that capped the whole audit at 46/100 is proven shut-then-open on live prod.
+
+- **Route live:** `/auth/confirm/:type/:tokenHash` returns 200 on `www.topfarms.co.nz`.
+- **All FIVE templates carry `{{ .TokenHash }}` and none carry `{{ .ConfirmationURL }}`** —
+  verified by reading the live auth config back, not by recalling the edit.
+- ⚠ **`invite` was still broken** and nobody had noticed: it was the one template left on
+  `{{ .ConfirmationURL }}`, unbranded, while the route already accepted `invite` as a valid
+  type. Not reachable from the app — but a user invited from the Supabase dashboard would
+  have hit the identical bug. Patched 2026-08-21.
+- **Proven end to end on live prod** (recovery flow, which shares the fix): real send →
+  Resend → Gmail in 3s → delivered link byte-identical in both the button href and the
+  plain-text fallback, no `=` near the token → opened in a real browser → `verifyOtp`
+  accepted → redirected to `/auth/reset` → **authenticated session established**
+  (`aud: authenticated`, `amr: ["otp"]`, correct `sub`). Session purged, tab closed, no
+  password set, account unchanged.
+
+**The one step left is the operator's, and it is ~60 seconds:** walk a *signup* (not
+recovery) through a throwaway address and confirm the delivered link verifies. The template,
+the route type and the delivery pipeline are each proven independently, so the residual risk
+is low — but the Phase 1 gate names signup, and nobody has walked it since the fix.
+
+**Then Phase 2** (deliverability) needs 2 minutes in the Resend dashboard: filter Bounced,
+classify the 11.
+
+---
+
 ## ▶ Next session, start here — READ `.planning/UPLIFT-95-PROMPT.md`
 
 **That file is the paste-ready work order: six phases + M3 from the 46/100 audit to
