@@ -7,6 +7,7 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { ApplicationCard } from '@/components/ui/ApplicationCard'
 import { MyApplicationsSidebar } from '@/components/ui/MyApplicationsSidebar'
 import { supabase } from '@/lib/supabase'
+import { reportError } from '@/lib/observability'
 import { useAuth } from '@/hooks/useAuth'
 import { useSavedJobs } from '@/hooks/useSavedJobs'
 import type { Application, ApplicationStatus, MatchScore, JobListing } from '@/types/domain'
@@ -65,7 +66,7 @@ export function MyApplications() {
         .single()
 
       if (profileError && profileError.code !== 'PGRST116') {
-        console.error('MyApplications: failed to load seeker profile', profileError)
+        reportError('seeker applications: load profile', profileError)
         setLoadError(true)
         setLoading(false)
         return
@@ -85,7 +86,7 @@ export function MyApplications() {
         .order('created_at', { ascending: false })
 
       if (error) {
-        console.error('MyApplications: failed to load applications', error)
+        reportError('seeker applications: load applications', error)
         setLoadError(true)
         setLoading(false)
         return

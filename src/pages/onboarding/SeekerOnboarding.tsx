@@ -4,6 +4,7 @@ import { toast } from 'sonner'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { StepIndicator } from '@/components/ui/StepIndicator'
 import { supabase } from '@/lib/supabase'
+import { reportError } from '@/lib/observability'
 import { useAuth } from '@/hooks/useAuth'
 import { useWizard } from '@/hooks/useWizard'
 import { SeekerStep1FarmType } from './steps/SeekerStep1FarmType'
@@ -64,7 +65,7 @@ export function SeekerOnboarding() {
         // do NOT know whether this seeker has onboarded -- and Phase 5.6 says an
         // unknown must not be rendered as a known. Falling through here restarts
         // the wizard at step 0 for someone who already finished it.
-        console.error('Error loading seeker profile:', error)
+        reportError('seeker onboarding: load profile', error)
         setProfileError(true)
         setLoading(false)
         return
@@ -172,7 +173,7 @@ export function SeekerOnboarding() {
 
     if (error) {
       toast.error('Failed to save progress. Please try again.')
-      console.error('Upsert error:', error)
+      reportError('seeker onboarding: upsert', error)
       return
     }
 

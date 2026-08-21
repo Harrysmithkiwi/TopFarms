@@ -100,6 +100,25 @@ export function scrubEvent(event: SentryTypes.ErrorEvent): SentryTypes.ErrorEven
   return event
 }
 
+/**
+ * Which environment an event came from, derived from the HOST rather than the build mode.
+ *
+ * `import.meta.env.MODE` is 'production' for every `vite build` — including the preview
+ * deploy Vercel makes for each pull request. So if the DSN reaches a preview build at all,
+ * preview noise lands in the production environment and dilutes exactly the signal the
+ * first real employer will generate. Reading the host is true regardless of how the env var
+ * happens to be scoped in Vercel, which is the point: it cannot silently regress when
+ * somebody re-scopes a variable in a dashboard this code cannot see.
+ *
+ * Exported for tests.
+ */
+export function resolveEnvironment(hostname?: string): string {
+  const host = hostname ?? (typeof window === 'undefined' ? '' : window.location.hostname)
+  if (host === 'www.topfarms.co.nz' || host === 'topfarms.co.nz') return 'production'
+  if (host === 'localhost' || host === '127.0.0.1' || host === '') return 'development'
+  return 'preview'
+}
+
 export function initObservability(): void {
   if (!DSN) return // no DSN configured — stay inert rather than half-initialised
 
@@ -116,7 +135,7 @@ export function initObservability(): void {
 function initSentry(Sentry: typeof SentryTypes): void {
   Sentry.init({
     dsn: DSN,
-    environment: import.meta.env.MODE,
+    environment: resolveEnvironment(),
     // Errors only. No session replay, no profiling: both capture DOM/network content and
     // would defeat the scrubbing above. Revisit only with a deliberate privacy review.
     tracesSampleRate: 0,
@@ -131,6 +150,9 @@ function initSentry(Sentry: typeof SentryTypes): void {
     ],
     beforeSend: scrubEvent,
   })
+
+  // A session that resolved before this chunk landed set an id we could not apply yet.
+  if (pendingUserId) Sentry.setUser({ id: pendingUserId })
 }
 
 /**
@@ -182,6 +204,31 @@ export function reportError(context: string, error: unknown, extra?: Record<stri
     tags: { context },
     extra: Object.keys(merged).length ? (scrub(merged) as Record<string, unknown>) : undefined,
   })
+}
+
+/**
+ * Tag subsequent events with the signed-in user's opaque id, or clear it on sign-out.
+ *
+ * Id ONLY. No email, no name, no role — `sendDefaultPii` is false and `scrubEvent` already
+ * reduces `event.user` to `{ id }`, so anything else passed here would be dropped anyway;
+ * not sending it in the first place is the point (PRODUCT.md privacy posture).
+ *
+ * Why it matters: without it every production error is anonymous, so "the first employer hit
+ * something" cannot be turned into "WHICH employer hit what". That is the difference between
+ * an alert and a diagnosis on the day the first real employer arrives.
+ *
+ * The pending-id dance is load-bearing. Sentry is imported lazily, so on a fast session
+ * restore this is called BEFORE the module resolves; without the latch the id would be
+ * dropped silently and only sessions slower than the chunk fetch would be identified —
+ * an intermittent gap that looks like a Sentry bug rather than a race.
+ */
+let pendingUserId: string | null = null
+
+export function setUser(userId: string | null): void {
+  if (!DSN) return
+  pendingUserId = userId
+  if (!sentry) return // applied by initSentry once the chunk lands
+  sentry.setUser(userId ? { id: userId } : null)
 }
 
 /** True when error reporting is actually wired — used by diagnostics, not control flow. */

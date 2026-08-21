@@ -6,6 +6,7 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { Button } from '@/components/ui/Button'
 import { supabase } from '@/lib/supabase'
+import { reportError } from '@/lib/observability'
 import { useAuth } from '@/hooks/useAuth'
 import { SeekerStep1FarmType } from '@/pages/onboarding/steps/SeekerStep1FarmType'
 import { SeekerStep2Experience } from '@/pages/onboarding/steps/SeekerStep2Experience'
@@ -163,7 +164,7 @@ export function SeekerProfile() {
     if (result?.error) {
       // Leave the form open so the seeker can retry without retyping.
       toast.error('Could not save your details. Please try again.')
-      console.error('Contact save error:', result.error)
+      reportError('seeker profile: contact save', result.error)
       return
     }
     setEditing(null)
@@ -189,7 +190,7 @@ export function SeekerProfile() {
       // showing "Not set" for every field would invite the seeker to overwrite real
       // data with blanks.
       if (error && error.code !== 'PGRST116') {
-        console.error('Error loading seeker profile:', error)
+        reportError('seeker profile: load', error)
         setLoadError(true)
         setLoading(false)
         return
@@ -252,7 +253,7 @@ export function SeekerProfile() {
       // Leave the form open and the edit un-applied so the seeker can retry without
       // retyping — closing it here would look like a successful save.
       toast.error('Could not save your changes. Please try again.')
-      console.error('Profile upsert error:', error)
+      reportError('seeker profile: upsert', error)
       return
     }
 
