@@ -8,7 +8,15 @@ stream doc disagree, the stream doc wins and this file is out of date — fix it
 
 ---
 
-## ▶ Next session, start here — READ `.planning/NEXT-SESSION-PROMPT.md`
+## ▶ Next session, start here — READ `.planning/UPLIFT-95-PROMPT.md`
+
+**That file is the paste-ready work order: six phases + M3 from the 46/100 audit to
+launch-ready, with gates, owners and the two operator decisions that block everything
+(push the unpushed stack? can the concept art be re-exported at 2048px+?).**
+`NEXT-SESSION-PROMPT.md` below remains authoritative for the landing-page detail Phase 5
+references — it is superseded as the opener, not deleted.
+
+## ▶ Superseded opener — `.planning/NEXT-SESSION-PROMPT.md`
 
 **That file is the paste-ready restart prompt. Next session is the LANDING PAGE / MARKETING
 UPLIFT.**
