@@ -75,7 +75,15 @@ docs/design/*
 !docs/design/v12-DIRECTIVE.md
 !docs/design/design-reference/
 docs/design/design-reference/*
-!docs/design/design-reference/topfarming landing concept 3.png
+# v14 (2026-08-24): the operator moved the comps into "Landing pages /" (trailing space is
+# the operator's naming). The final-draft comp is the v14 canon's pinned reference
+# (MARKETING-DESIGN.md), concept 3 is v12's decision record — both travel with the docs.
+!docs/design/design-reference/Landing pages /
+docs/design/design-reference/Landing pages /*
+!docs/design/design-reference/Landing pages /TopFarms landing page final draft.png
+!docs/design/design-reference/Landing pages /topfarming landing concept 3.png
+# v14 marketing canon, cited by CLAUDE.md section 10. Tracked, not scratch.
+!docs/design/MARKETING-DESIGN.md
 # The operator-approved landing uplift deliverable (2026-08-20): the standalone HTML comp
 # the React port will reproduce. A deliverable the ignore rule would silently eat.
 !docs/design/topfarms-landing-uplift.html

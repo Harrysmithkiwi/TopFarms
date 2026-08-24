@@ -37,7 +37,7 @@ export function Display({
 }) {
   return (
     <Tag
-      className={`font-cormorant text-fern-900 font-semibold tracking-[-0.02em] text-balance ${className}`}
+      className={`font-serif text-fern-900 font-medium tracking-[-0.01em] text-balance ${className}`}
     >
       {children}
     </Tag>
@@ -57,20 +57,23 @@ type BtnProps = {
  *
  * `onScene` is the outline variant sitting on the illustration: it takes a solid white fill
  * rather than a transparent one, because a transparent outline button over a painted sky
- * fails contrast against whichever cloud happens to be behind it. Measured white-on-fern-700
- * 6.44:1 and fern-800-on-white 9.61:1; the transparent version was unmeasurable by
- * definition, which is the reason it does not exist.
+ * fails contrast against whichever cloud happens to be behind it. v14 hexes measured:
+ * white-on-fern-700 5.02:1 and white-on-fern-800 7.13:1 (hover); the transparent version
+ * was unmeasurable by definition, which is the reason it does not exist.
+ *
+ * `outline` is the comp's quiet secondary: a white surface with the hairline border, not a
+ * green-outlined button, so the primary is the only green object in a CTA pair.
  */
 export function Btn({ to, children, variant = 'primary', size = 'md', className = '' }: BtnProps) {
   const base =
-    'group inline-flex items-center justify-center gap-2 rounded-full font-semibold whitespace-nowrap transition-colors duration-200 border-2'
+    'group inline-flex items-center justify-center gap-2 rounded-full font-semibold whitespace-nowrap transition-colors duration-200 border'
   const sizing = size === 'lg' ? 'px-7 py-3.5 text-base' : 'px-5 py-2.5 text-[0.9375rem]'
   const skin =
     variant === 'primary'
       ? 'bg-fern-700 border-fern-700 text-white hover:bg-fern-800 hover:border-fern-800'
       : variant === 'onScene'
         ? 'bg-white border-white text-fern-800 hover:bg-fern-50 hover:border-fern-50'
-        : 'bg-transparent border-fern-700 text-fern-800 hover:bg-fern-50'
+        : 'bg-white border-rule text-bark hover:bg-fern-50 hover:border-fern-600/40'
 
   return (
     <Link to={to} className={`${base} ${sizing} ${skin} ${className}`}>

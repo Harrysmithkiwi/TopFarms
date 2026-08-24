@@ -80,7 +80,7 @@ export function V12Roles() {
           <Display className="text-[clamp(1.5rem,2.6vw,1.9rem)]">
             Find your next opportunity
           </Display>
-          <TextLink to="/jobs">Browse all jobs</TextLink>
+          <TextLink to="/jobs">Find work</TextLink>
         </div>
 
         {roles === null && (
@@ -98,7 +98,7 @@ export function V12Roles() {
 
         {roles !== null && roles.length === 0 && (
           <div className="border-rule mt-8 rounded-xl border border-dashed bg-white px-6 py-12 text-center">
-            <p className="text-fern-900 font-cormorant text-[clamp(1.35rem,2.2vw,1.6rem)] font-semibold">
+            <p className="text-fern-900 font-serif text-[clamp(1.35rem,2.2vw,1.6rem)] font-semibold">
               {failed ? 'Roles could not be loaded' : 'No roles listed right now'}
             </p>
             <p className="text-sage mx-auto mt-2 max-w-[30rem] text-[0.9375rem] leading-relaxed">
@@ -107,8 +107,8 @@ export function V12Roles() {
                 : 'New farm roles appear here as employers join. If you are the one hiring, listing is free.'}
             </p>
             <div className="mt-5 flex flex-wrap justify-center gap-x-6 gap-y-2">
-              <TextLink to="/jobs">Browse all jobs</TextLink>
-              {!failed && <TextLink to="/signup?role=employer">Post the first job</TextLink>}
+              <TextLink to="/jobs">Find work</TextLink>
+              {!failed && <TextLink to="/signup?role=employer">Post a job</TextLink>}
             </div>
           </div>
         )}

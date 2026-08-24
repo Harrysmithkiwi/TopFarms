@@ -1,83 +1,253 @@
 import { Btn, Container, Display, IconPlate, TextLink } from './V12Kit'
-import { PastoralBand, PastoralHero, PastoralVignette } from '@/components/landing/PastoralScene'
+import { PastoralBand, PastoralVignette } from '@/components/landing/PastoralScene'
 import {
   IconArable,
-  IconCheck,
   IconDairy,
   IconEmployer,
   IconForestry,
   IconHandshake,
   IconHorticulture,
   IconLeaf,
-  IconLock,
   IconMap,
+  IconPin,
   IconSeeker,
   IconSheepBeef,
-  IconShield,
   IconTractor,
   IconViticulture,
 } from '@/components/landing/LandingIcons'
 
-// v12 landing sections, in the approved comp's order.
+// v14 landing sections (docs/design/MARKETING-DESIGN.md), in the order of the operator's
+// 2026-08-24 comp "TopFarms landing page final draft.png". The comp's own move is the big
+// one: the marketing surface adopts the PORTAL material (one green around #16A34A, Inter
+// body, near-white canvas, Newsreader display), so the page a farmer lands on and the
+// product they sign into are one world.
 //
 // Routes are real and were walked on live prod before this build:
-//   Find Work / Browse jobs      -> /jobs
-//   Hire Staff / Post a job      -> /signup?role=employer  (pre-selects the employer role;
-//                                   verified 2026-08-19, the email+password fields are
-//                                   already expanded on arrival)
-//   See pricing                  -> /pricing
-//   Sign in                      -> /login   (owned by the shell's utility bar, not here)
+//   Find work    -> /jobs
+//   Post a job   -> /signup?role=employer  (pre-selects the employer role; verified
+//                   2026-08-19, the email+password fields are already expanded on arrival)
+//   Sign in      -> /login   (owned by the shell nav, not here)
 // The comp's "Resources" and "About" nav items have no route and no content behind them;
 // they are deliberately NOT rendered rather than shipped as dead links.
+//
+// ONE LABEL PER INTENT (taste 4.5 / vercel writing): the seeker action is "Find work"
+// everywhere, the employer action is "Post a job" everywhere. "Hire staff" and "Browse
+// jobs" are retired as labels; two names for one door reads as two doors.
+//
+// Where this build deviates from the comp, each with a reason:
+//   - The comp's hero mock shows "Match 95%" badges on public job rows. Directive 1.4
+//     (workers never see a numeric score) and the 2026-08-07 admin gate ruling (score is
+//     a word, not a number) both bind; the preview uses word chips.
+//   - The comp's macOS traffic-light dots and "129 jobs found" counter are dropped:
+//     fake window chrome and a fake-precise number on a real product's landing page.
+//   - The comp's eight-eyebrow rhythm is rationed to ONE eyebrow (the hero's), per the
+//     eyebrow ceiling (taste 4.7) that v12 §5 already enforced on this surface.
+//   - The comp's six-card "Why TopFarms" grid is folded into the feature strip: same
+//     claims, one section fewer, no three-equal-cards row.
 
 /* ============================ 1. HERO ============================ */
 
+// Illustrative preview data. NZ-plausible but INVENTED farms — never real leads or real
+// listings (real ones render two sections down, in LiveRoles). The whole preview is
+// aria-hidden: it is a picture of the product, not content.
+const PREVIEW_ROWS = [
+  {
+    icon: <IconDairy className="h-5 w-5" />,
+    role: 'Herd manager',
+    farm: 'Riverbend Dairy',
+    region: 'Waikato',
+    tags: ['Full-time', 'Accommodation'],
+    match: 'Strong match',
+  },
+  {
+    icon: <IconSheepBeef className="h-5 w-5" />,
+    role: 'Shepherd',
+    farm: 'Highfield Station',
+    region: 'Canterbury',
+    tags: ['Full-time'],
+    match: 'Good match',
+  },
+  {
+    icon: <IconViticulture className="h-5 w-5" />,
+    role: 'Vineyard worker',
+    farm: 'Awatere Vines',
+    region: 'Marlborough',
+    tags: ['Seasonal'],
+    match: null,
+  },
+  {
+    icon: <IconTractor className="h-5 w-5" />,
+    role: 'Machinery operator',
+    farm: 'Karamea Downs',
+    region: 'West Coast',
+    tags: ['Contract'],
+    match: null,
+  },
+]
+
 /**
- * Full-bleed illustration with the headline centred over the sky.
- *
- * The scene's top third is deliberately the quietest part of the drawing — that is where the
- * type lands, and fern-900 on the pale sky measures well past AA. The headline does not sit
- * in a card or a scrim, because the comp's whole idea is that the words are IN the landscape.
+ * Split hero, per the comp: copy left, product right. The preview is a real mini render
+ * of the /jobs UI in the product's own tokens — the honest version of a screenshot,
+ * because marketing and product now share one design system so the preview IS the
+ * product's styling, not an artist's impression of it.
  */
 export function V12Hero() {
   return (
     <section className="relative isolate overflow-hidden">
-      <PastoralHero className="absolute inset-0 h-full w-full" />
-      <Container className="relative pt-20 pb-44 sm:pt-24 sm:pb-56 lg:pb-64">
-        <div className="mx-auto max-w-[46rem] text-center">
-          <Display as="h1" className="text-[clamp(2.7rem,6.2vw,4.6rem)] leading-[1.04]">
+      <Container className="grid items-center gap-10 pt-12 pb-16 sm:pt-16 lg:grid-cols-12 lg:gap-12 lg:pb-20">
+        <div className="lg:col-span-5">
+          {/* The page's ONE eyebrow. */}
+          <span className="border-fern-600/20 bg-fern-100 text-fern-800 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold tracking-wider uppercase">
+            <IconLeaf className="h-3.5 w-3.5" aria-hidden="true" />
+            NZ agricultural recruitment
+          </span>
+          <Display
+            as="h1"
+            className="mt-5 text-[clamp(2.4rem,4.2vw,3.25rem)] leading-[1.12] tracking-[-0.02em]"
+          >
             <span className="block">The right people.</span>
-            <span className="block">The right farm.</span>
+            <span className="text-sage block pb-1 italic">The right farm.</span>
           </Display>
-          <p className="mx-auto mt-5 max-w-[30rem] text-[1.0625rem] leading-relaxed text-bark/80 sm:text-[1.1875rem]">
+          <p className="text-sage mt-5 max-w-[27rem] text-[1.0625rem] leading-relaxed sm:text-[1.125rem]">
             TopFarms connects agricultural employers with people looking for their next
             opportunity across New Zealand.
           </p>
-          <div className="mt-9 flex flex-col items-center justify-center gap-3.5 sm:flex-row">
+          <div className="mt-8 flex flex-wrap items-center gap-3.5">
             <Btn to="/jobs" size="lg">
               Find work
             </Btn>
-            <Btn to="/signup?role=employer" variant="onScene" size="lg">
-              Hire staff
+            <Btn to="/signup?role=employer" variant="outline" size="lg">
+              Post a job
             </Btn>
           </div>
-          <div className="mt-5">
-            <TextLink to="/jobs">Browse jobs</TextLink>
+        </div>
+
+        <div className="lg:col-span-7" aria-hidden="true">
+          <div className="border-rule rounded-2xl border bg-white p-4 shadow-[0_12px_40px_rgba(11,31,16,0.07)] sm:p-5">
+            <div className="border-rule flex items-center justify-between border-b pb-3.5">
+              <span className="bg-paper border-rule text-sage rounded-md border px-2.5 py-1 text-xs font-medium">
+                topfarms.co.nz/jobs
+              </span>
+              <span className="text-sage text-xs font-medium">Newest first</span>
+            </div>
+            <div className="grid gap-3.5 pt-4 md:grid-cols-12">
+              {/* Filter rail — static, illustrative */}
+              <div className="bg-paper/70 border-rule hidden space-y-3 rounded-xl border p-3 text-xs md:col-span-4 md:block">
+                <div>
+                  <span className="text-bark block font-semibold">Search jobs</span>
+                  <span className="border-rule text-sage mt-1 block rounded-lg border bg-white px-2.5 py-1.5">
+                    Dairy, shepherd, fencing
+                  </span>
+                </div>
+                <div>
+                  <span className="text-bark block font-semibold">Region</span>
+                  <span className="border-rule text-sage mt-1 block rounded-lg border bg-white px-2.5 py-1.5">
+                    All of New Zealand
+                  </span>
+                </div>
+                <div>
+                  <span className="text-bark block font-semibold">Sector</span>
+                  <div className="text-sage mt-1 space-y-1">
+                    <span className="flex items-center gap-1.5">
+                      <span className="bg-fern-600 h-3 w-3 rounded-sm" /> Dairy
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="bg-fern-600 h-3 w-3 rounded-sm" /> Sheep &amp; beef
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="border-rule h-3 w-3 rounded-sm border bg-white" /> Horticulture
+                    </span>
+                  </div>
+                </div>
+              </div>
+              {/* Result rows */}
+              <div className="space-y-2.5 md:col-span-8">
+                {PREVIEW_ROWS.map((r) => (
+                  <div
+                    key={r.role}
+                    className="border-rule flex items-start justify-between gap-3 rounded-xl border bg-white p-3.5"
+                  >
+                    <div className="flex gap-3">
+                      <span className="bg-fern-50 text-fern-700 flex h-9 w-9 shrink-0 items-center justify-center rounded-full">
+                        {r.icon}
+                      </span>
+                      <div>
+                        <span className="text-bark block text-sm font-semibold">{r.role}</span>
+                        <span className="text-sage flex items-center gap-1 text-xs">
+                          <IconPin className="h-3 w-3" />
+                          {r.farm}, {r.region}
+                        </span>
+                        <span className="mt-1.5 flex gap-1.5">
+                          {r.tags.map((t) => (
+                            <span
+                              key={t}
+                              className="bg-paper border-rule text-sage rounded-full border px-2 py-0.5 text-[11px] font-medium"
+                            >
+                              {t}
+                            </span>
+                          ))}
+                        </span>
+                      </div>
+                    </div>
+                    {r.match && (
+                      <span className="bg-fern-100 text-fern-800 shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold">
+                        {r.match}
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
+      </Container>
+
+      {/* The paddock strip the comp runs under the hero: the one place the illustrated
+          scene survives from v12, grounding the page in the place it serves. */}
+      <div className="relative -z-10 -mt-6 h-32 overflow-hidden sm:h-44">
+        <PastoralBand className="absolute inset-0 h-full w-full" />
+        <div className="absolute inset-0 bg-white/35" aria-hidden="true" />
+      </div>
+    </section>
+  )
+}
+
+/* ======================= 2. FEATURE STRIP ======================= */
+
+// The comp's under-hero strip carries the product's four honest claims. This section
+// absorbed the old "Why TopFarms" grid: same claims, one section fewer.
+const STRIP = [
+  { icon: <IconMap className="h-5 w-5" />, label: 'New Zealand only' },
+  { icon: <IconLeaf className="h-5 w-5" />, label: 'Every listing free' },
+  { icon: <IconHandshake className="h-5 w-5" />, label: 'No agency in between' },
+  { icon: <IconTractor className="h-5 w-5" />, label: 'Built for agriculture' },
+]
+
+export function V14FeatureStrip() {
+  return (
+    <section className="border-rule border-y bg-white py-6">
+      <Container>
+        <ul className="grid grid-cols-2 gap-x-6 gap-y-4 md:grid-cols-4">
+          {STRIP.map((s) => (
+            <li key={s.label} className="flex items-center justify-center gap-2.5 md:justify-start">
+              <span className="text-fern-600 shrink-0">{s.icon}</span>
+              <span className="text-bark text-sm font-medium">{s.label}</span>
+            </li>
+          ))}
+        </ul>
       </Container>
     </section>
   )
 }
 
-/* ==================== 2. THE TWO-AUDIENCE FORK ==================== */
+/* ==================== 3. THE TWO-AUDIENCE FORK ==================== */
 
 const AUDIENCE = [
   {
     icon: <IconSeeker className="h-[22px] w-[22px]" />,
     title: 'Looking for work?',
     body: 'Discover farm jobs that fit your skills, your experience and the life you want.',
-    cta: 'Browse jobs',
+    cta: 'Find work',
     to: '/jobs',
     art: 'paddock' as const,
   },
@@ -92,19 +262,21 @@ const AUDIENCE = [
 ]
 
 /**
- * The fork, riding up over the hero on the negative margin the comp specifies. This is the
- * page's most important decision point: a visitor is one of exactly two people, and the page
- * asks which before it says anything else.
+ * The page's most important decision point: a visitor is one of exactly two people, and
+ * this section asks which. The comp gives it its own centred headline.
  */
 export function V12AudienceCards() {
   return (
-    <section className="relative z-10 -mt-24 sm:-mt-28">
+    <section className="py-16 sm:py-20">
       <Container>
-        <div className="grid gap-6 md:grid-cols-2">
+        <Display className="text-center text-[clamp(1.8rem,3.4vw,2.4rem)]">
+          Two sides of the farming workforce.
+        </Display>
+        <div className="mt-10 grid gap-6 md:grid-cols-2">
           {AUDIENCE.map((c) => (
             <div
               key={c.title}
-              className="border-rule relative isolate min-h-[10rem] overflow-hidden rounded-2xl border bg-white shadow-[0_4px_24px_rgba(26,60,42,0.08)]"
+              className="border-rule relative isolate min-h-[10rem] overflow-hidden rounded-2xl border bg-white shadow-[0_4px_24px_rgba(11,31,16,0.06)]"
             >
               <PastoralVignette
                 variant={c.art}
@@ -133,7 +305,7 @@ export function V12AudienceCards() {
   )
 }
 
-/* ==================== 3. BUILT FOR AGRICULTURE ==================== */
+/* ==================== 4. BUILT FOR AGRICULTURE ==================== */
 
 const BUILT = [
   {
@@ -155,7 +327,7 @@ const BUILT = [
 
 export function V12Recruitment() {
   return (
-    <section className="py-20 sm:py-24">
+    <section className="pb-20 sm:pb-24">
       <Container>
         <div className="grid items-start gap-12 lg:grid-cols-[1.05fr_1fr] lg:gap-16">
           <div>
@@ -187,36 +359,6 @@ export function V12Recruitment() {
   )
 }
 
-/* ========================= 5. THE BANNER ========================= */
-
-export function V12Banner() {
-  return (
-    <Container className="pb-20 sm:pb-24">
-      <div className="border-rule relative isolate grid overflow-hidden rounded-2xl border md:grid-cols-[1fr_1.1fr]">
-        <div className="bg-fern-100 relative z-10 flex flex-col justify-center px-8 py-12 sm:px-11">
-          <Display className="text-[clamp(1.8rem,3.4vw,2.4rem)] leading-[1.16]">
-            Good people
-            <br />
-            make good farms.
-          </Display>
-          <p className="text-sage mt-4 max-w-[24rem] text-[1.0625rem] leading-relaxed">
-            Whether you are looking for your next role or the person who becomes part of your
-            team, TopFarms makes that easier to find.
-          </p>
-        </div>
-        <div className="relative min-h-[13rem]">
-          <PastoralBand className="absolute inset-0 h-full w-full" />
-          {/* left-edge feather into the pale green panel, mirrored for RTL safety */}
-          <div
-            className="from-fern-100 absolute inset-y-0 left-0 hidden w-24 bg-gradient-to-r to-transparent md:block"
-            aria-hidden="true"
-          />
-        </div>
-      </div>
-    </Container>
-  )
-}
-
 /* ======================= 6. THE SPLIT CARDS ======================= */
 
 const SPLIT = [
@@ -224,7 +366,7 @@ const SPLIT = [
     icon: <IconEmployer className="h-[22px] w-[22px]" />,
     h: 'Find the people your farm needs.',
     p: 'Post a role, reach the right workers, and hire with confidence.',
-    cta: 'Hire staff',
+    cta: 'Post a job',
     to: '/signup?role=employer',
     art: 'shed' as const,
   },
@@ -245,7 +387,7 @@ export function V12SplitCards() {
         {SPLIT.map((c) => (
           <div
             key={c.h}
-            className="border-rule grid overflow-hidden rounded-2xl border bg-white shadow-[0_4px_24px_rgba(26,60,42,0.08)] sm:grid-cols-2"
+            className="border-rule grid overflow-hidden rounded-2xl border bg-white shadow-[0_4px_24px_rgba(11,31,16,0.06)] sm:grid-cols-2"
           >
             <div className="flex flex-col justify-center p-8">
               <IconPlate className="mb-4">{c.icon}</IconPlate>
@@ -296,39 +438,6 @@ export function V12Sectors() {
   )
 }
 
-/* ======================== 8. WHY TOPFARMS ======================== */
-
-// Every line below is a claim the product can actually meet. The comp's original sixth item
-// read "Free first job listing", which UNDERSTATES and contradicts the pricing model shipped
-// on 2026-08-04: every listing is free, always, and the fee is a one-off on hire. A landing
-// page that promises less than the product delivers is still a landing page that is wrong.
-const WHY = [
-  { icon: <IconShield className="h-[22px] w-[22px]" />, label: 'Verified employers' },
-  { icon: <IconMap className="h-[22px] w-[22px]" />, label: 'New Zealand only' },
-  { icon: <IconLock className="h-[22px] w-[22px]" />, label: 'Secure applications' },
-  { icon: <IconTractor className="h-[22px] w-[22px]" />, label: 'Agriculture specific' },
-  { icon: <IconCheck className="h-[22px] w-[22px]" />, label: 'Applicants arrive scored' },
-  { icon: <IconLeaf className="h-[22px] w-[22px]" />, label: 'Every listing free' },
-]
-
-export function V12Why() {
-  return (
-    <section className="pb-20 text-center sm:pb-24">
-      <Container>
-        <Display className="text-[clamp(1.5rem,2.6vw,1.9rem)]">Why choose TopFarms?</Display>
-        <ul className="mt-9 flex flex-wrap justify-center gap-x-10 gap-y-6">
-          {WHY.map((w) => (
-            <li key={w.label} className="text-bark/85 flex items-center gap-2.5 text-[0.9375rem] font-medium">
-              <span className="text-fern-600">{w.icon}</span>
-              {w.label}
-            </li>
-          ))}
-        </ul>
-      </Container>
-    </section>
-  )
-}
-
 /* ========================== 9. THE CLOSE ========================== */
 
 export function V12Close() {
@@ -339,12 +448,16 @@ export function V12Close() {
         <div className="absolute inset-0 bg-white/45" aria-hidden="true" />
         <div className="relative px-6 py-14 text-center sm:py-16">
           <Display className="text-[clamp(1.8rem,3.4vw,2.4rem)]">Ready for what&rsquo;s next?</Display>
+          <p className="text-bark/80 mx-auto mt-4 max-w-[34rem] text-[1.0625rem] leading-relaxed">
+            Whether you&rsquo;re looking for your next role or the people your farm needs,
+            TopFarms makes it easier to connect.
+          </p>
           <div className="mt-7 flex flex-col items-center justify-center gap-3.5 sm:flex-row">
             <Btn to="/jobs" size="lg">
               Find work
             </Btn>
             <Btn to="/signup?role=employer" variant="onScene" size="lg">
-              Hire staff
+              Post a job
             </Btn>
           </div>
         </div>

@@ -2,10 +2,11 @@
 /* v13 port fonts (directive section 2). Loaded separately so the unported
    surfaces' Inter request is untouched; collapse to one import post-port. */
 @import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,400..800;1,62..125,400..700&family=Bricolage+Grotesque:opsz,wght@12..96,400..700&display=swap');
-/* v12 marketing fonts (docs/design/v12-DIRECTIVE.md section 2). Cormorant Garamond is
-   pinned by the operator's approved comp; it is the display voice of the landing world and
-   is never used in the portals. Inter is already loaded above and carries all body copy. */
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600&display=swap');
+/* v14 marketing font (docs/design/MARKETING-DESIGN.md). Newsreader is pinned by the
+   operator's 2026-08-24 comp ("TopFarms landing page final draft.png"); it replaces
+   Cormorant Garamond as the display voice of the marketing world and is never used in
+   the portals. Inter is already loaded above and carries all body copy. */
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap');
 @import 'tailwindcss';
 
 @theme {
@@ -159,35 +160,38 @@
   --font-archivo: 'Archivo', system-ui, sans-serif;
   --font-bricolage: 'Bricolage Grotesque', system-ui, sans-serif;
 
-  /* === v12 marketing world (docs/design/v12-DIRECTIVE.md section 2) ===
-     Deliberately NEW names rather than edits to the v13 tokens above: ForEmployers,
-     Pricing and legal/ still render the v13 world, and mutating --color-cream or
-     --color-green would restyle them on the same commit. The two worlds coexist until
-     those routes are ported. Portals are untouched by both — docs/DESIGN.md owns those.
+  /* === v14 marketing world (docs/design/MARKETING-DESIGN.md, 2026-08-24) ===
+     The token NAMES are v12's (every marketing surface consumes them); the VALUES are the
+     operator's 2026-08-24 comp, which deliberately adopts the PORTAL palette: one green
+     family around #16A34A, Inter body, near-white canvas. Changing values here rethemes
+     Home, ForEmployers, Pricing and legal/ in one move, and ends the two-design-worlds
+     split — marketing and product now share one material. Portals stay owned by
+     docs/DESIGN.md; these tokens simply agree with it now.
 
      Every pairing below was measured, not assumed (WCAG AA on the real hexes):
-       bark on paper 14.44  ·  bark on linen 13.71  ·  sage on paper 5.53
-       sage on linen 5.25   ·  sage on fern-50 5.36  ·  sage on fern-100 5.05
-       white on fern-700 6.44 (primary button)       ·  white on fern-800 9.61 (hover)
-       fern-700 on paper 6.44 (link)                 ·  fern-700 on linen 5.97
-       white on fern-900 12.18                       ·  fern-lite on fern-900 5.90
-     fern-500 (#4a9a65) measures 3.54 on fern-900 and so is BANNED as text on the dark
-     panels; fern-lite exists for exactly that job. fern-500 remains legal as a fill. */
-  --color-fern-900: #1a3c2a;
-  --color-fern-800: #234d36;
-  --color-fern-700: #2d6a45;
-  --color-fern-600: #3a7d52;
-  --color-fern-500: #4a9a65;
-  --color-fern-lite: #7cc493;
+       bark on paper 16.19   ·  bark on white 17.25  ·  sage on paper 5.31
+       sage on white 5.66    ·  sage on fern-50 5.24 ·  sage on fern-100 5.04
+       white on fern-700 5.02 (primary button)       ·  white on fern-800 7.13 (hover)
+       fern-700 on paper 4.71 (link)                 ·  fern-700 on white 5.02
+       fern-900 on paper 8.55 (display)              ·  fern-900 on fern-100 8.11
+     fern-600 (#16A34A, the brand green) measures 3.30 with white and so is BANNED as a
+     text-bearing fill or as small text; it is legal for icons, large display accents and
+     decorative fills. fern-700 is the text-bearing green. */
+  --color-fern-900: #14532d;
+  --color-fern-800: #166534;
+  --color-fern-700: #15803d;
+  --color-fern-600: #16a34a;
+  --color-fern-500: #22c55e;
+  --color-fern-lite: #86efac;
   --color-fern-100: #e8f5ec;
-  --color-fern-50: #f4faf6;
-  --color-bark: #1c2b22;
-  --color-sage: #5a6b60;
-  --color-paper: #fdfcfa;
-  --color-linen: #f8f6f1;
-  --color-rule: #e2e8e0;
+  --color-fern-50: #f1f8f3;
+  --color-bark: #0b1f10;
+  --color-sage: #5b6b5f;
+  --color-paper: #f7f8f6;
+  --color-linen: #ffffff;
+  --color-rule: #e5e8e2;
 
-  --font-cormorant: 'Cormorant Garamond', 'Iowan Old Style', Georgia, serif;
+  --font-serif: 'Newsreader', 'Iowan Old Style', Georgia, serif;
 }
 
 /* Phase 4.4 — global keyboard-focus ring. Lives in the base layer so Tailwind

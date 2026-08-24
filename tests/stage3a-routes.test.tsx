@@ -42,11 +42,11 @@ describe('stage 3a: shell adoption', () => {
   it.each([
     ['Pricing', <Pricing key="p" />],
     ['ForEmployers', <ForEmployers key="f" />],
-  ])('%s renders inside PublicShell (nav + utility bar + footer)', (_name, ui) => {
+  ])('%s renders inside PublicShell (nav + footer)', (_name, ui) => {
     renderIn(ui)
     expect(screen.getByRole('navigation', { name: 'Main' })).toBeInTheDocument()
-    expect(screen.getByRole('group', { name: 'Browsing as' })).toBeInTheDocument()
-    expect(screen.getByText('Match, train, retain.')).toBeInTheDocument()
+    // v14 shell: the audience toggle is retired; the footer brand line anchors the shell.
+    expect(screen.getByText(/© 2026 TopFarms/)).toBeInTheDocument()
   })
 
   it('LegalLayout wraps content in the shell without touching the text', () => {
@@ -112,17 +112,20 @@ describe('stage 3a: NotFound keeps the 404-vs-error split (1.17f)', () => {
   it('renders inside PublicShell and keeps the 404 copy', () => {
     renderRouted(<NotFound />)
     expect(screen.getByRole('navigation', { name: 'Main' })).toBeInTheDocument()
-    expect(screen.getByText('Match, train, retain.')).toBeInTheDocument()
+    expect(screen.getByText(/© 2026 TopFarms/)).toBeInTheDocument()
     expect(screen.getByText("This paddock's empty")).toBeInTheDocument()
     expect(screen.queryByText('Something went wrong')).not.toBeInTheDocument()
   })
 })
 
 describe('stage 3a: footer', () => {
-  it('adds Open roles but NOT login/signup (label gate)', () => {
+  it('links the board and both role signups, but never a bare /signup or /login', () => {
     renderRouted(<NotFound />)
-    const footer = screen.getByText('Match, train, retain.').closest('footer')!
+    const footer = screen.getByText(/© 2026 TopFarms/).closest('footer')!
     expect(footer.querySelector('a[href="/jobs"]')).not.toBeNull()
+    // v14 footer: the seeker signup lives here (the nav's only signup action is employer).
+    expect(footer.querySelector('a[href="/signup?role=seeker"]')).not.toBeNull()
+    expect(footer.querySelector('a[href="/signup?role=employer"]')).not.toBeNull()
     expect(footer.querySelector('a[href="/login"]')).toBeNull()
     expect(footer.querySelector('a[href="/signup"]')).toBeNull()
   })

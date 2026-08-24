@@ -50,6 +50,17 @@ homepage. None of them had found a product defect.
 - The onboarding **number fields** use `z.coerce.number()`, and `Number('')` is `0` — so an
   empty herd size or property size stores **0 rather than null**. No crash, wrong data.
 
+## ▶ 2026-08-24 (later) — the marketing surface moved to v14, one design world
+
+The operator ruled the v12 landing had not landed and pinned a new comp ("TopFarms
+landing page final draft.png"). The comp's palette IS the portal system (#16A34A, Inter,
+near-white), so the retheme was done at TOKEN level in `src/index.css`: Home was rebuilt
+(split hero with an honest product preview, single nav bar, no audience toggle, rich
+footer), and ForEmployers / Pricing / legal came along free. Canon is now
+`docs/design/MARKETING-DESIGN.md`; v12-DIRECTIVE carries a supersede banner; CLAUDE.md
+§10 updated. One label per intent sitewide: "Find work" / "Post a job". Verified at
+1440/768/390 via Playwright CLI. NOT PUSHED without the operator.
+
 ## ▶ START HERE — `.planning/PRE-LAUNCH-CHECKLIST.md`
 
 **2026-08-24 — `legal/` is ported to v12. There is no public route left on v13.** That was

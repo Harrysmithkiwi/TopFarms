@@ -115,16 +115,15 @@ mode this rule exists to prevent.
   impeccable skill audits; `docs/PRODUCT.md` sits beside it and both are auto-discovered from
   `docs/` — do not move them.
 - **Public marketing — `Home`, `ForEmployers`, `Pricing`, `legal/`, `src/components/landing/`.**
-  Canon is `docs/design/v12-DIRECTIVE.md` as of 2026-08-19 (illustrated NZ paddock, Cormorant
-  Garamond over Inter, the `fern` ramp, `linen`/`paper` grounds). It supersedes
-  `v11-DIRECTIVE.md`, which keeps a banner and stays readable for its decision history —
-  **several of its numbered rules are CARRIED FORWARD, not dead**, and v12 §0 is the
-  rule-by-rule table. `PRODUCT.md`'s anti-reference list was amended in the same commit,
-  because the operator reviewed the collision and chose the comp; do not "restore" it.
-  **`Home` and the public shell are now SETTLED under v12.** `ForEmployers`, `Pricing` and
-  `legal/` are still on v13 and are ported separately — the v12 tokens are new names beside
-  the v13 ones so both render correctly during that gap. A **visual** finding on a marketing
-  surface is still discarded, not filed.
+  Canon is `docs/design/MARKETING-DESIGN.md` (v14) as of 2026-08-24: the marketing surface
+  adopted the PORTAL material (one green family around `#16A34A`, Inter body, Newsreader
+  display, near-white canvas), so the two worlds now share one palette while keeping separate
+  canon documents. It supersedes `v12-DIRECTIVE.md` (illustrated paddock hero, Cormorant),
+  which keeps a banner and stays readable for its decision history. The product principles
+  carried forward from v11 (§1.3, §1.4, §1.5, 1.15, 1.17b) remain binding and are restated in
+  MARKETING-DESIGN.md §9. `PRODUCT.md`'s anti-reference amendment stands; do not "restore" it.
+  One label per intent sitewide: "Find work" and "Post a job" are the only action labels.
+  A **visual** finding on a marketing surface is still discarded, not filed.
 
 **The split is by dimension, not only by route** (ruled 2026-08-07, design-gate ticket 10).
 Three kinds of finding are filed wherever they are found, on any surface, in either canon:

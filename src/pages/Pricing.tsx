@@ -140,7 +140,7 @@ export function Pricing() {
               which would stretch the pill to the full container width if it sat on the link. */}
           <div className="seek-only mt-9">
             <Btn to="/signup?role=seeker" size="lg">
-              I&rsquo;m looking for work
+              Create a profile
             </Btn>
           </div>
         </Container>
@@ -165,7 +165,7 @@ export function Pricing() {
                   {/* clamp(), not a fixed size: v12 §2 is "display sizes are clamp()
                       throughout", and "$200-800" is the longest string of the three — at a
                       fixed 2.6rem it is the one that would wrap on a narrow card. */}
-                  <p className="font-cormorant text-fern-900 mt-3 text-[clamp(2.1rem,3.6vw,2.6rem)] leading-none font-semibold tracking-[-0.02em]">
+                  <p className="font-serif text-fern-900 mt-3 text-[clamp(2.1rem,3.6vw,2.6rem)] leading-none font-semibold tracking-[-0.02em]">
                     {tier.price}
                   </p>
                   <p className="text-sage mt-2 text-[0.875rem]">{tier.period}</p>
@@ -248,10 +248,10 @@ export function Pricing() {
             </Display>
             <div className="mt-7 flex flex-col items-center justify-center gap-3.5 sm:flex-row">
               <Btn to="/signup?role=employer" size="lg">
-                I&rsquo;m hiring
+                Post a job
               </Btn>
               <Btn to="/signup?role=seeker" variant="onScene" size="lg">
-                I&rsquo;m looking for work
+                Create a profile
               </Btn>
             </div>
           </div>

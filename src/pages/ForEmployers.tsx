@@ -94,7 +94,7 @@ export function ForEmployers() {
           </p>
           <div className="mt-9 flex flex-col items-center justify-center gap-3.5 sm:flex-row">
             <Btn to="/signup?role=employer" size="lg">
-              I&rsquo;m hiring
+              Post a job
             </Btn>
             <Btn to="/pricing" variant="onScene" size="lg">
               See pricing

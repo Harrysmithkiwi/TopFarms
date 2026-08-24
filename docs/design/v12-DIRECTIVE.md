@@ -1,6 +1,14 @@
 # TopFarms v12 Design Directive — the marketing world
 
-**Status: ACTIVE. Supersedes `v11-DIRECTIVE.md` for the public marketing surface only.**
+> **SUPERSEDED 2026-08-24 by `MARKETING-DESIGN.md` (v14).** The operator's comp
+> "TopFarms landing page final draft.png" moved the marketing surface onto the portal
+> material (one green around #16A34A, Inter, Newsreader display) and retired the
+> illustrated-hero world this document specified. The v12 token NAMES survive with v14
+> VALUES; the pastoral scene survives only as grounding bands. The product principles
+> this document carried forward from v11 (§1.3, §1.4, §1.5, 1.15, 1.17b) remain binding
+> and are restated in MARKETING-DESIGN.md §9. Kept readable for its decision history.
+
+**Status: SUPERSEDED (was: active). Superseded `v11-DIRECTIVE.md` for the public marketing surface only.**
 Written 2026-08-19 on the operator's instruction to replace the landing page with the
 approved comp at `docs/design/design-reference/topfarming landing concept 3.png`.
 

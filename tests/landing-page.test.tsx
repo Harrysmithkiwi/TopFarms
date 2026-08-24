@@ -79,7 +79,7 @@ describe('v12 landing — the fork', () => {
     renderHome()
     // Hero and close both carry the pair, so these are non-unique by design.
     expect(screen.getAllByRole('link', { name: /find work/i }).length).toBeGreaterThan(0)
-    expect(screen.getAllByRole('link', { name: /hire staff/i }).length).toBeGreaterThan(0)
+    expect(screen.getAllByRole('link', { name: /post a job/i }).length).toBeGreaterThan(0)
   })
 
   it('asks which audience the visitor is before anything else', () => {
@@ -138,7 +138,8 @@ describe('v12 landing — product rules carried forward from v11', () => {
     await waitFor(() =>
       expect(screen.getByText(/no roles listed right now/i)).toBeInTheDocument(),
     )
-    expect(screen.getByRole('link', { name: /post the first job/i })).toBeInTheDocument()
+    // "Post a job" is the sitewide employer label, so it is non-unique by design.
+    expect(screen.getAllByRole('link', { name: /post a job/i }).length).toBeGreaterThan(0)
   })
 })
 

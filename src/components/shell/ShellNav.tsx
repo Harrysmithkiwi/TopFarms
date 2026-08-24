@@ -1,32 +1,28 @@
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router'
 import { useAuth } from '@/hooks/useAuth'
-import { useAudience } from '@/contexts/AudienceContext'
 import { dashboardPathFor } from '@/lib/routing'
+import { IconLeaf } from '@/components/landing/LandingIcons'
 
-// v13 shell nav (directive 1.10, 1.14, section 3). Pill nav on the cream page,
-// wordmark LEFT (NOT THIS: never centred). Logged out, the section links are
-// audience-scoped; signed in, the ROLE link sets from the old Nav are preserved
-// verbatim -- role-aware nav is on the port's must-not-lose list, as are the
-// avatar menu, sign-out, and the mobile states. Old Nav.tsx stays untouched
-// until every consumer has moved to the shell (parallel-component strategy,
-// directive 1.10): pages flip atomically, never half-styled.
+// v14 shell nav (docs/design/MARKETING-DESIGN.md, comp of 2026-08-24): ONE bar, per the
+// comp. The old two-bar shell (utility bar with an audience toggle + a pill nav) spent
+// ~120px of the first viewport on chrome and made the visitor configure the page before
+// reading it. The comp shows both audiences at once instead: "Find work" in the links,
+// "Post a job" as the one green action, so neither farmer nor worker has to flip a switch
+// to see their door.
 //
-// "Post a job" and "Build a profile" are nav DESTINATIONS inside an audience-
-// scoped set, excluded from the action-label count by the directive section 3
-// scope note. /#how lands on the landing page; the anchor id arrives with the
-// stage 2 landing port and the link degrades to top-of-page until then.
+// Signed in, the ROLE link sets from the old Nav are preserved verbatim — role-aware nav
+// is on the port's must-not-lose list, as are the avatar menu, sign-out, and the mobile
+// states. Old Nav.tsx stays untouched until every consumer has moved to the shell.
+//
+// ONE LABEL PER INTENT: "Post a job" is the page's only employer CTA label; "For
+// employers" is a learn destination, not an action, so the two coexist. Sign in is a
+// quiet link — returning users know where they're going.
 
-const publicEmployerLinks = [
-  { to: '/#how', label: 'How it works' },
+const publicLinks = [
+  { to: '/jobs', label: 'Find work' },
+  { to: '/for-employers', label: 'For employers' },
   { to: '/pricing', label: 'Pricing' },
-  { to: '/for-employers', label: 'Post a job' },
-]
-
-const publicSeekerLinks = [
-  { to: '/#how', label: 'How it works' },
-  { to: '/jobs', label: 'Open roles' },
-  { to: '/signup?role=seeker', label: 'Build a profile' },
 ]
 
 // Preserved verbatim from Nav.tsx (see its comments for the removal history).
@@ -39,58 +35,50 @@ const authedSeekerLinks = [
 
 export function ShellNav() {
   const { session, role, signOut } = useAuth()
-  const { audience } = useAudience()
   const [userMenuOpen, setUserMenuOpen] = useState(false)
 
   const navLinks = session
     ? role === 'employer'
       ? authedEmployerLinks
       : authedSeekerLinks
-    : audience === 'seeker'
-      ? publicSeekerLinks
-      : publicEmployerLinks
+    : publicLinks
 
   const avatarLetter = session?.user?.email?.[0]?.toUpperCase() ?? '?'
 
   const linkClass = (isActive: boolean) =>
     [
-      'inline-flex min-h-11 flex-none items-center rounded-full px-4 text-sm font-medium transition-colors md:min-h-9',
-      isActive ? 'bg-fern-50 text-bark' : 'text-sage hover:bg-fern-50 hover:text-bark',
+      'inline-flex min-h-11 flex-none items-center rounded-full px-3.5 text-sm font-medium transition-colors md:min-h-9',
+      isActive ? 'bg-fern-50 text-bark' : 'text-sage hover:text-bark',
     ].join(' ')
 
   return (
-    <nav className="px-3 pt-3 sm:px-5" aria-label="Main">
-      <div className="bg-white border-rule mx-auto flex max-w-[1440px] flex-wrap items-center gap-2 rounded-3xl border px-4 py-2 md:rounded-full md:px-3 md:py-2 md:pl-6">
+    <nav className="border-rule bg-paper border-b" aria-label="Main">
+      <div className="mx-auto flex max-w-[1200px] flex-wrap items-center gap-x-2 gap-y-0 px-5 py-3">
         <Link
           to="/"
-          className="mr-auto inline-flex min-h-11 items-center text-xl font-extrabold tracking-tight"
+          className="inline-flex min-h-11 items-center gap-1.5 text-xl font-extrabold tracking-tight"
           aria-label="TopFarms"
         >
-          TopFarms<span className="text-ochre-ink">.</span>
+          <IconLeaf className="text-fern-600 h-5 w-5" aria-hidden="true" />
+          <span>
+            TopFarms<span className="text-fern-600">.</span>
+          </span>
         </Link>
 
-        {/* Section links. One row on md+; below md they wrap to a scrollable
-            second row with an edge fade so a clipped link reads as scrollable,
-            not broken (v12 comp pattern, measured at 390). */}
-        <div
-          className="border-rule -mx-1 flex w-full basis-full items-center gap-1 overflow-x-auto border-t px-1 pt-1.5 [mask-image:linear-gradient(90deg,#000_calc(100%-28px),transparent)] [scrollbar-width:none] md:mx-0 md:w-auto md:flex-none md:basis-auto md:border-t-0 md:px-0 md:pt-0 md:[mask-image:none]"
-        >
+        {/* Section links. One row on md+; below md they wrap to a scrollable second row
+            with an edge fade so a clipped link reads as scrollable, not broken. */}
+        <div className="border-rule order-last -mx-1 flex w-full basis-full items-center gap-1 overflow-x-auto border-t px-1 pt-1.5 [mask-image:linear-gradient(90deg,#000_calc(100%-28px),transparent)] [scrollbar-width:none] md:order-none md:mx-0 md:ml-6 md:w-auto md:flex-none md:basis-auto md:border-t-0 md:px-0 md:pt-0 md:[mask-image:none]">
           {navLinks.map((link) => (
-            <NavLink
-              key={link.to}
-              to={link.to}
-              className={({ isActive }) => linkClass(isActive)}
-            >
+            <NavLink key={link.to} to={link.to} className={({ isActive }) => linkClass(isActive)}>
               {link.label}
             </NavLink>
           ))}
         </div>
 
-        {/* Signed in: avatar menu (preserved states: menu open/closed, dashboard
-            link, sign out). Signed out: nothing here -- Sign in / Join live in
-            the utility bar, and duplicating them would break the label gate. */}
-        {session && (
-          <div className="relative order-first ml-2 md:order-none">
+        {/* Right side. Signed out: Sign in + the one green action. Signed in: avatar menu
+            (preserved states: menu open/closed, dashboard link, sign out). */}
+        {session ? (
+          <div className="relative ml-auto">
             <button
               onClick={() => setUserMenuOpen(!userMenuOpen)}
               className="bg-fern-700 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-sm font-semibold text-white transition-opacity hover:opacity-85"
@@ -125,6 +113,21 @@ export function ShellNav() {
                 </div>
               </>
             )}
+          </div>
+        ) : (
+          <div className="ml-auto flex items-center gap-1">
+            <Link
+              to="/login"
+              className="text-bark hover:text-fern-800 inline-flex min-h-11 items-center px-3 text-sm font-semibold underline decoration-[1.5px] underline-offset-4"
+            >
+              Sign in
+            </Link>
+            <Link
+              to="/signup?role=employer"
+              className="bg-fern-700 hover:bg-fern-800 inline-flex min-h-11 items-center rounded-full px-4.5 text-sm font-semibold text-white transition-colors"
+            >
+              Post a job
+            </Link>
           </div>
         )}
       </div>
