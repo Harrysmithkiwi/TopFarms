@@ -84,6 +84,8 @@ docs/design/design-reference/Landing pages /*
 !docs/design/design-reference/Landing pages /topfarming landing concept 3.png
 # v14 marketing canon, cited by CLAUDE.md section 10. Tracked, not scratch.
 !docs/design/MARKETING-DESIGN.md
+# Brand asset sheet (operator-supplied 2026-08-24). Tracked.
+!docs/design/design-reference/TopFarms logo sheet.png
 # The operator-approved landing uplift deliverable (2026-08-20): the standalone HTML comp
 # the React port will reproduce. A deliverable the ignore rule would silently eat.
 !docs/design/topfarms-landing-uplift.html
