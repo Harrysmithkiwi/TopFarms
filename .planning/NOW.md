@@ -50,7 +50,19 @@ homepage. None of them had found a product defect.
 - The onboarding **number fields** use `z.coerce.number()`, and `Number('')` is `0` — so an
   empty herd size or property size stores **0 rather than null**. No crash, wrong data.
 
-## ▶ 2026-08-24 (later) — the marketing surface moved to v14, one design world
+## ▶ 2026-08-24 (final) — minimal landing LIVE, illustrations deleted for good
+
+`b73367d` is on prod and verified by rendering the live site. No illustration, no
+photography, one audience fork (it used to be stated twice). **`PastoralScene.tsx` is
+deleted and `tests/marketing-v12-port.test.tsx` fails if it or any import returns** — the
+hand-drawn farm art was rejected twice and regenerated the second time only because the
+file survived. Do not recreate it. Where a comp shows photography and none exists, ship a
+clean ground and ASK; where it shows product UI, render real product UI small.
+
+Strategy for launch + revenue: `.planning/PATH-TO-50K-MRR.md`. Next move is still not
+code — it is sending tranche 1.
+
+## ▶ 2026-08-24 (earlier) — the marketing surface moved to v14, one design world
 
 The operator ruled the v12 landing had not landed and pinned a new comp ("TopFarms
 landing page final draft.png"). The comp's palette IS the portal system (#16A34A, Inter,
