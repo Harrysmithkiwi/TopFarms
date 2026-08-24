@@ -84,7 +84,11 @@ export function Step1FarmType({ onComplete, defaultValues }: Step1Props) {
   return (
     <form onSubmit={handleSubmit(onComplete)} className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
+        <h2
+          id="farm-type-legend"
+          className="text-lg font-semibold"
+          style={{ color: 'var(--color-text)' }}
+        >
           What type of farm do you operate?
         </h2>
         <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
@@ -92,11 +96,25 @@ export function Step1FarmType({ onComplete, defaultValues }: Step1Props) {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      {/* A radiogroup, because that is what this control IS: pick exactly one of six.
+          It previously rendered six plain buttons whose only selected-state signal was a
+          border colour, with no aria-pressed, aria-checked or grouping. A screen-reader
+          user could not tell which farm type they had chosen - on the FIRST step of
+          employer onboarding. axe cannot catch this (it does not require a selected state
+          on a button), so it took the DESIGN.md §5 judgement pass to find it, during the
+          pre-launch UAT on live prod, 2026-08-24. */}
+      <div
+        className="grid grid-cols-1 gap-4 sm:grid-cols-2"
+        role="radiogroup"
+        aria-labelledby="farm-type-legend"
+        aria-required="true"
+      >
         {FARM_TYPES.map((type) => (
           <button
             key={type.value}
             type="button"
+            role="radio"
+            aria-checked={selectedType === type.value}
             onClick={() => setValue('farm_type', type.value, { shouldValidate: true })}
             className={cn(
               'relative w-full cursor-pointer rounded-[12px] border-[2px] p-5 text-left transition-all duration-200',
