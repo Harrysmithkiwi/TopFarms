@@ -25,10 +25,16 @@
   /* Text */
   --color-text: #0b1f10;
   --color-text-muted: #5b6b5f;
-  /* text-subtle darkened #8a968d → #647268 (Phase 4.1): the old value was 3.08:1
-     on white and was carrying real prose. New value clears 4.5:1 on every surface
-     including surface-2 (scripts/contrast.mjs proves it). */
-  --color-text-subtle: #647268;
+  /* text-subtle darkened twice.
+     Phase 4.1: #8a968d → #647268, because 3.08:1 on white was carrying real prose.
+     2026-08-24: #647268 → #5c6a60. The Phase 4.1 value was measured against white,
+     bg and surface-2 only, and those were the only pairs in scripts/contrast.mjs.
+     It actually failed FOUR surfaces nobody had checked: cream-2 4.03, danger-bg
+     4.14, cream 4.33, info-bg 4.41. Found when the /jobs/:id axe sweep ran for the
+     first time — that test had been silently skipping because prod had no active
+     job to visit. #5c6a60 clears 4.5:1 on all eighteen surfaces, and the missing
+     pairs are now gated in scripts/contrast.mjs so this cannot drift again. */
+  --color-text-subtle: #5c6a60;
   --color-text-on-brand: #ffffff;
 
   /* Brand — one green, three shades */

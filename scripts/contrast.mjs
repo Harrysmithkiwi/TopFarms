@@ -51,6 +51,16 @@ const PAIRS = [
   ['text-subtle', 'surface', 'text', 'tertiary text on cards (darkened Phase 4.1)'],
   ['text-subtle', 'bg', 'text', 'tertiary text on page bg'],
   ['text-subtle', 'surface-2', 'text', 'tertiary text on tinted panels'],
+  // Added 2026-08-24. These pairs render on real pages and were never gated; the
+  // token failed all four and axe caught it on /jobs/:id the first time that sweep
+  // had a job to visit. An ungated pair is an unmeasured pair.
+  ['text-subtle', 'cream', 'text', 'tertiary text on the v13 cream surface'],
+  ['text-subtle', 'cream-2', 'text', 'tertiary text on the deeper cream surface'],
+  ['text-subtle', 'card', 'text', 'tertiary text on v13 cards'],
+  ['text-subtle', 'paper', 'text', 'tertiary text on the v14 marketing canvas'],
+  ['text-subtle', 'danger-bg', 'text', 'tertiary text on error panels'],
+  ['text-subtle', 'info-bg', 'text', 'tertiary text on info panels'],
+  ['text-subtle', 'warn-bg', 'text', 'tertiary text on warning panels'],
   // CTAs — brand demoted to fill/border; text & CTA fills use brand-hover
   ['text-on-brand', 'brand-hover', 'text', 'primary Button default (Phase 4.1 demotion)'],
   ['text-on-brand', 'brand-900', 'text', 'primary Button hover state'],
