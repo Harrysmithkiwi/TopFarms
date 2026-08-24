@@ -2,6 +2,12 @@ import { Bookmark, Share2, Clock, MapPin, Briefcase, DollarSign } from 'lucide-r
 import { Link } from 'react-router'
 import { cn } from '@/lib/utils'
 import { StarRating } from '@/components/ui/StarRating'
+// GUARD NOTE (2026-08-24). These were `!== undefined`. Postgres returns NULL for an
+// unanswered optional number, and `null !== undefined` is true, so the guard passed and
+// `null.toLocaleString()` threw - 500ing /jobs/:id for every visitor, on any listing whose
+// employer left herd size blank. Found by pre-launch UAT on live prod. `!= null` is the
+// only comparison that covers both, and the prop types now admit null so the compiler
+// keeps them honest.
 import { MatchBand } from '@/components/ui/MatchBand'
 import type { JobListing } from '@/types/domain'
 
@@ -12,7 +18,7 @@ interface SimilarJob {
   region: string
   salary_min?: number
   salary_max?: number
-  matchScore?: number
+  matchScore?: number | null
 }
 
 interface FarmProfile {
@@ -20,10 +26,10 @@ interface FarmProfile {
   farm_name: string
   region: string
   farm_type?: string
-  herd_size?: number
-  rating?: number
-  total_jobs?: number
-  total_hires?: number
+  herd_size?: number | null
+  rating?: number | null
+  total_jobs?: number | null
+  total_hires?: number | null
 }
 
 interface JobDetailSidebarProps {
@@ -158,7 +164,7 @@ export function JobDetailSidebar({
                       </p>
                     )}
                   </div>
-                  {sj.matchScore !== undefined && (
+                  {sj.matchScore != null && (
                     <div className="flex-shrink-0">
                       <MatchBand score={sj.matchScore} />
                     </div>
@@ -185,17 +191,17 @@ export function JobDetailSidebar({
         {/* Body */}
         <div className="bg-surface space-y-3 px-4 py-4">
           {/* Stats grid */}
-          {(farm.total_jobs !== undefined ||
-            farm.herd_size !== undefined ||
-            farm.total_hires !== undefined) && (
+          {(farm.total_jobs != null ||
+            farm.herd_size != null ||
+            farm.total_hires != null) && (
             <div className="border-border grid grid-cols-3 gap-2 border-b pb-3">
-              {farm.total_jobs !== undefined && (
+              {farm.total_jobs != null && (
                 <div className="text-center">
                   <p className="font-body text-text text-[15px] font-semibold">{farm.total_jobs}</p>
                   <p className="font-body text-text-subtle text-[11px]">Jobs</p>
                 </div>
               )}
-              {farm.herd_size !== undefined && (
+              {farm.herd_size != null && (
                 <div className="text-center">
                   <p className="font-body text-text text-[15px] font-semibold">
                     {farm.herd_size.toLocaleString()}
@@ -203,7 +209,7 @@ export function JobDetailSidebar({
                   <p className="font-body text-text-subtle text-[11px]">Herd Size</p>
                 </div>
               )}
-              {farm.total_hires !== undefined && (
+              {farm.total_hires != null && (
                 <div className="text-center">
                   <p className="font-body text-text text-[15px] font-semibold">
                     {farm.total_hires}
@@ -231,7 +237,7 @@ export function JobDetailSidebar({
           )}
 
           {/* Star rating */}
-          {farm.rating !== undefined && <StarRating value={farm.rating} size={14} />}
+          {farm.rating != null && <StarRating value={farm.rating} size={14} />}
 
           {/* 'View Farm Profile' link removed (UAT 2026-07-23): /farms/:id has no
               route and 404'd. Re-add when a farm profile page exists. */}

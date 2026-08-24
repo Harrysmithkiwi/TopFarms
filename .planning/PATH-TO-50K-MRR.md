@@ -46,11 +46,27 @@ application, none of them you. Everything else is theatre.
 | B1–B4 human walks (match-corruption fix never proven on a real submit) | Operator |
 | First-run risks: job expiry, notify-job-matches, filled-guard, doc upload (E-list) | Fire with first real data |
 
+### Found by UAT on live prod, 2026-08-24 (fixed same day)
+- **`/jobs/:id` returned 500 to every visitor** on any listing whose employer left an
+  optional number blank. `JobDetailSidebar` guarded with `!== undefined`; Postgres sends
+  NULL, and `null !== undefined` is true, so it rendered and `null.toLocaleString()` threw
+  during SSR. This is the second half of the blank-number work: storing NULL instead of 0
+  was correct, and it moved the failure into consumers that assumed a number. Regression
+  test added (`tests/job-detail-sidebar-nulls.test.tsx`) which reproduces the exact
+  production error without the fix.
+- **Latent, not yet fixed:** `employer_verifications` has an `anon view employer
+  verifications` RLS policy but **no SELECT grant to anon**, so the SSR loader's
+  verification fetch 401s and the trust badge server-renders as unverified for logged-out
+  visitors. Every sibling table the loader reads has the grant. One-line migration.
+
 ### Missing for SCALE (code, post-launch, ranked by leverage)
-1. **Google for Jobs structured data — confirmed absent** (no `JobPosting` JSON-LD
-   anywhere in `src/`). `/jobs/:id` is already SSR (~60KB HTML), so this is a small,
-   high-leverage add: NZ job seekers searching "dairy jobs Waikato" get your listings
-   inside Google's job panel, free, forever. The single biggest demand lever available.
+1. ~~Google for Jobs structured data — absent~~ **CORRECTION 2026-08-24: it ALREADY
+   EXISTS** and is verified rendering in production SSR HTML (`src/routes/job-detail.tsx`
+   emits `JobPosting` JSON-LD, og tags and canonical). My earlier "confirmed absent" claim
+   was wrong: I piped the grep through `head -5` and truncated the matches off, then
+   asserted the negative. The remaining work here is not building it, it is **submitting
+   the sitemap to Google Search Console and confirming listings get indexed** — a
+   30-minute operator task, not an engineering one.
 2. **Funnel measurement.** `@vercel/analytics` is wired with some `track()` calls
    (SignUp, JobDetail). Define THE funnel — land → signup start → verified → onboarded →
    listing/application — and make sure each step fires. You cannot steer to $50k MRR
