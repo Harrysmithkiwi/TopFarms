@@ -56,9 +56,16 @@ The recipient-facing path. If any of these fails, a real farmer hits it.
 - [ ] Request a reset, click the delivered link. **Pass:** you can set a new password and log
       in with it. (Mechanically proven, never walked by a human.)
 
-### B5 · Legal pages [C] — the only route still on the old design
-- [ ] Port `legal/` to v12. **Pass:** `/privacy` and `/terms` match the rest of the public shell.
-- [ ] **Pass:** both are reachable from the footer and render on mobile.
+### B5 · Legal pages [C] — DONE 2026-08-24
+- [x] Port `legal/` to v12. **Pass met:** `LegalLayout` now uses `Display` (Cormorant
+      Garamond, `fern-900`), the `bark` body ramp and `fern-700` links. The legal TEXT was
+      not touched, and 1.17b still exempts these pages from the zero-dash gate.
+- [x] **Pass met:** both reachable from `ShellFooter`, rendered and eyeballed at 1440 and 390.
+- Found while looking: Cormorant ships **old-style figures**, so `/terms` rendered
+  "1. What TopFarms is" with the numeral below the baseline, reading as a lowercase letter.
+  Fixed with `lining-nums` on the h2. It would have shipped unnoticed without the render.
+- Gates: `tsc -b` 0 · lint 0 errors / 52 warnings (pin holds) · 1,074 tests · build 0 ·
+  design-gate 16/17.
 
 ### B6 · Deliverability warm-up [O]
 - [ ] Send tranche 1 (**10–15 max**, drafts in `.planning/outreach/TRANCHE-01-DRAFT.md`).
@@ -112,7 +119,7 @@ Flagged because "it's built" and "it has run" are different states.
 - ❌ An employer can complete onboarding but their job does not appear on `/jobs`.
 - ❌ Blank number fields are storing `0`.
 - ❌ Bounce rate over 5% after tranche 1.
-- ❌ Any public route renders in the old design world.
+- ❌ Any public route renders in the old design world. *(closed 2026-08-24 — none left.)*
 - ❌ `get_advisors(security)` shows an ERROR.
 
 ---
@@ -126,7 +133,7 @@ Flagged because "it's built" and "it has run" are different states.
 | Engineering discipline | 15 | 14 | The `--admin` merge bypass resolved |
 | Observability | 10 | 9 | Sentry readable in-session |
 | Email deliverability | 10 | 7 | A real tranche delivered, inbox not spam |
-| Marketing surface | 10 | 7 | `legal/` ported; artwork (parked by operator) |
+| Marketing surface | 10 | 8 | artwork (parked by operator) — `legal/` ported 2026-08-24 |
 | Demand-side | 10 | 1 | ≥10 contacted, ≥1 reply |
 | Revenue proven | 5 | 1 | One invoice paid |
-| **Total** | **100** | **72** | |
+| **Total** | **100** | **73** | |

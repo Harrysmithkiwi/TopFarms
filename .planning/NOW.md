@@ -52,6 +52,11 @@ homepage. None of them had found a product defect.
 
 ## ▶ START HERE — `.planning/PRE-LAUNCH-CHECKLIST.md`
 
+**2026-08-24 — `legal/` is ported to v12. There is no public route left on v13.** That was
+the last checklist item Claude could close alone; B5 is ticked with evidence. Everything
+still open is either yours to walk (B1-B4, B6) or needs a real farmer (C, E).
+
+
 **Session closed 2026-08-21.** Everything that can be engineered before a real farmer arrives
 is done and on `main`. The next move is not code: it is **sending tranche 1**.
 
