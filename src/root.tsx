@@ -153,13 +153,16 @@ function Providers({ children }: { children: React.ReactNode }) {
             provider (directive 1.14). Must sit inside AuthProvider. */}
         <AudienceProvider>{children}</AudienceProvider>
       </AuthProvider>
-      {/* toastOptions, not bare richColors. sonner's richColors palette renders error
-          text at #e60000 on #fff0f0 = 4.34:1, under the 4.5:1 body floor in
+      {/* toastOptions, not bare richColors. sonner's own richColors palette renders
+          error text at 4.34:1 against its pink ground, under the 4.5:1 body floor in
           docs/DESIGN.md §5 — and a toast is how this product delivers most of its
           errors, so every one of them was below the floor. Found by the pre-launch UAT
-          design pass, 2026-08-24. These four pairs are the project's own semantic tokens
-          and are gated in scripts/contrast.mjs: danger 6.80, warn 6.37, success 6.35,
-          info 6.59. */}
+          design pass, 2026-08-24. The four classNames below map onto the project's own
+          semantic tokens, which scripts/contrast.mjs already gates: danger 6.80, warn
+          6.37, success 6.35, info 6.59.
+          (Hex literals are deliberately absent from this comment — scripts/design-gate.mjs
+          scans for them and does not exclude comments. Quoting the failing values here
+          would trip the gate that exists to keep them out of the code.) */}
       <Toaster
         position="top-right"
         richColors
