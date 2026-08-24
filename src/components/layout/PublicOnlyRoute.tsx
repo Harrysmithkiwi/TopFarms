@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { Navigate } from 'react-router'
 import { useAuth } from '@/hooks/useAuth'
 import { RouteSkeleton } from '@/components/ui/Skeleton'
@@ -18,19 +18,40 @@ import { dashboardPathFor } from '@/lib/routing'
  * and every future entry point all funnel through these two routes; one guard closes
  * them all, and a CTA added in six months is covered without anyone remembering to.
  *
- * The state machine deliberately mirrors ProtectedRoute's, including its hard-won
- * cases:
- *   - `loading`: show the skeleton, never a flash of the signup form.
- *   - suspended (`isActive === false`): /suspended owns that user, not their dashboard.
- *   - session but no role yet (a new OAuth user mid-signup): let them THROUGH. Sending
- *     them to a dashboard they have no role for would trap them in the redirect loop
- *     AUTH-FIX-02 exists to prevent, and /auth/select-role is reached from the signup
- *     flow itself.
+ * THE LATCH, and why it is not optional. This guard decides ONCE, the first time auth
+ * settles, and never re-decides. It answers "how did you ARRIVE at this page", not "are
+ * you authenticated right now".
+ *
+ * The first version re-evaluated on every render and broke login, which CI caught
+ * immediately. Login.tsx owns its own post-submit navigation through a `didSubmit` ref.
+ * A live guard unmounts Login the instant a session appears — destroying that ref — and
+ * if role resolution is slow (the AUTH-FIX-02 race), Login remounts with a fresh ref and
+ * never navigates. The user is stranded on /login holding a valid session.
+ *
+ * Latching also makes the signup flow correct for free: someone who arrives anonymous
+ * stays on the page through account creation, email verification and role selection,
+ * because the page they are standing on owns that journey.
  */
 export function PublicOnlyRoute({ children }: { children: ReactNode }) {
   const { session, role, isActive, loading } = useAuth()
 
-  if (loading) {
+  // undefined = not yet decided · null = stay · string = go there
+  const [decision, setDecision] = useState<string | null | undefined>(undefined)
+
+  useEffect(() => {
+    if (loading || decision !== undefined) return
+    setDecision(
+      session && isActive === false
+        ? '/suspended'
+        : // A session with no role yet is someone mid-signup; the page owns that flow.
+          session && role
+          ? dashboardPathFor(role)
+          : null,
+    )
+  }, [loading, session, role, isActive, decision])
+
+  // Never flash the signup form at someone who turns out to be signed in.
+  if (decision === undefined) {
     return (
       <div className="bg-bg min-h-screen">
         <RouteSkeleton />
@@ -38,12 +59,6 @@ export function PublicOnlyRoute({ children }: { children: ReactNode }) {
     )
   }
 
-  if (!session) return <>{children}</>
-
-  if (isActive === false) return <Navigate to="/suspended" replace />
-
-  // Signed in with no role resolved yet: this IS the signup flow. Let it run.
-  if (!role) return <>{children}</>
-
-  return <Navigate to={dashboardPathFor(role)} replace />
+  if (decision) return <Navigate to={decision} replace />
+  return <>{children}</>
 }

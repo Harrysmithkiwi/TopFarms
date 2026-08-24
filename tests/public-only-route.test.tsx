@@ -71,6 +71,52 @@ describe('PublicOnlyRoute', () => {
     expect(screen.getByText('Create your account')).toBeInTheDocument()
   })
 
+  // THE REGRESSION CI CAUGHT. A live (unlatched) guard unmounts Login the instant a
+  // session appears, destroying the didSubmit ref Login uses to navigate itself, and
+  // strands the user on /login holding a valid session. The guard must judge how you
+  // ARRIVED, not whether you are authenticated right now.
+  it('does not hijack the page when the user signs in while standing on it', () => {
+    auth.session = null
+    auth.role = null
+    const { rerender } = renderAt()
+    expect(screen.getByText('Create your account')).toBeInTheDocument()
+
+    // ...user submits, session and role arrive.
+    auth.session = { user: { id: 'u1' } }
+    auth.role = 'employer'
+    rerender(
+      <MemoryRouter initialEntries={['/signup']}>
+        <Routes>
+          <Route path="/signup" element={<PublicOnlyRoute><p>Create your account</p></PublicOnlyRoute>} />
+          <Route path="/dashboard/employer" element={<p>Employer dashboard</p>} />
+        </Routes>
+      </MemoryRouter>,
+    )
+    // The page stays mounted and keeps ownership of its own redirect.
+    expect(screen.getByText('Create your account')).toBeInTheDocument()
+  })
+
+  it('still redirects a session that appears only after loading settles', () => {
+    auth.loading = true
+    auth.session = null
+    const { rerender } = renderAt()
+    expect(screen.queryByText('Create your account')).not.toBeInTheDocument()
+
+    // Auth settles and reveals a pre-existing session: this IS an arrival.
+    auth.loading = false
+    auth.session = { user: { id: 'u1' } }
+    auth.role = 'seeker'
+    rerender(
+      <MemoryRouter initialEntries={['/signup']}>
+        <Routes>
+          <Route path="/signup" element={<PublicOnlyRoute><p>Create your account</p></PublicOnlyRoute>} />
+          <Route path="/dashboard/seeker" element={<p>Seeker dashboard</p>} />
+        </Routes>
+      </MemoryRouter>,
+    )
+    expect(screen.getByText('Seeker dashboard')).toBeInTheDocument()
+  })
+
   it('never flashes the form while auth is still loading', () => {
     auth.loading = true
     auth.session = { user: { id: 'u1' } }
