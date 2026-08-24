@@ -42,7 +42,7 @@ export function ShellFooter() {
           <p className="text-sage max-w-[36ch] text-sm leading-relaxed">
             Connecting agricultural employers with people looking for work across New Zealand.
           </p>
-          <p className="text-sage/80 text-xs">
+          <p className="text-sage text-xs">
             &copy; 2026 TopFarms &middot;{' '}
             <a className="hover:text-bark underline underline-offset-4" href="mailto:hello@topfarms.co.nz">
               hello@topfarms.co.nz
