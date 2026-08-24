@@ -2,7 +2,6 @@ import { PublicShell } from '@/components/shell/PublicShell'
 import {
   V12Hero,
   V14FeatureStrip,
-  V12AudienceCards,
   V12Recruitment,
   V12SplitCards,
   V12Sectors,
@@ -23,16 +22,20 @@ import { V12Roles } from '@/components/landing/v12/V12Roles'
 // side of the fork ("Find work" / "Post a job", the only two labels on the page), and
 // lands on /jobs or the employer signup with the role already chosen.
 //
-// Sections follow the comp's order. V12Roles is live-data and renders its honest empty
-// state while prod holds zero active jobs (directive 1.15, carried forward). Counters,
-// testimonials and logo walls stay OUT: no real volume, no consented names.
+// MINIMAL (2026-08-24, operator's call: clean and minimalist, no photography). The page
+// previously stated the two-audience fork TWICE in two card layouts. It now states it once,
+// in the version carrying real product UI. No illustration, no photography, no tinted
+// close panel: type, hairlines and two actions.
+//
+// V12Roles is live-data and renders its honest empty state while prod holds zero active
+// jobs (directive 1.15, carried forward). Counters, testimonials and logo walls stay OUT:
+// no real volume, no consented names.
 
 export function Home() {
   return (
     <PublicShell>
       <V12Hero />
       <V14FeatureStrip />
-      <V12AudienceCards />
       <V12Recruitment />
       <V12Roles />
       <V12SplitCards />

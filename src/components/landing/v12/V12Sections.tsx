@@ -1,5 +1,4 @@
 import { Btn, Container, Display, IconPlate, TextLink } from './V12Kit'
-import { PastoralBand, PastoralVignette } from '@/components/landing/PastoralScene'
 import {
   IconArable,
   IconDairy,
@@ -44,6 +43,13 @@ import {
 //     eyebrow ceiling (taste 4.7) that v12 §5 already enforced on this surface.
 //   - The comp's six-card "Why TopFarms" grid is folded into the feature strip: same
 //     claims, one section fewer, no three-equal-cards row.
+//
+// NO ILLUSTRATION. The hand-drawn PastoralScene SVGs are deleted, not parked — twice now
+// they have regenerated simply because the file existed and reuse is the default reflex.
+// Where the comp shows PHOTOGRAPHY (hero ground, closing band) this build ships a clean
+// ground and the gap is named, because inventing a substitute is exactly the failure. Where
+// the comp shows PRODUCT UI (the two split cards) this build renders real product UI in the
+// product's own tokens.
 
 /* ============================ 1. HERO ============================ */
 
@@ -96,9 +102,9 @@ export function V12Hero() {
     <section className="relative isolate overflow-hidden">
       <Container className="grid items-center gap-10 pt-12 pb-16 sm:pt-16 lg:grid-cols-12 lg:gap-12 lg:pb-20">
         <div className="lg:col-span-5">
-          {/* The page's ONE eyebrow. */}
-          <span className="border-fern-600/20 bg-fern-100 text-fern-800 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold tracking-wider uppercase">
-            <IconLeaf className="h-3.5 w-3.5" aria-hidden="true" />
+          {/* The page's ONE eyebrow, and it is plain text: the pill, tint, border and icon
+              were four pieces of chrome carrying one short line. */}
+          <span className="text-sage block text-xs font-semibold tracking-[0.14em] uppercase">
             NZ agricultural recruitment
           </span>
           <Display
@@ -123,7 +129,7 @@ export function V12Hero() {
         </div>
 
         <div className="lg:col-span-7" aria-hidden="true">
-          <div className="border-rule rounded-2xl border bg-white p-4 shadow-[0_12px_40px_rgba(11,31,16,0.07)] sm:p-5">
+          <div className="border-rule rounded-2xl border bg-white p-4 shadow-[0_10px_34px_rgba(11,31,16,0.05)] sm:p-5">
             <div className="border-rule flex items-center justify-between border-b pb-3.5">
               <span className="bg-paper border-rule text-sage rounded-md border px-2.5 py-1 text-xs font-medium">
                 topfarms.co.nz/jobs
@@ -201,13 +207,6 @@ export function V12Hero() {
           </div>
         </div>
       </Container>
-
-      {/* The paddock strip the comp runs under the hero: the one place the illustrated
-          scene survives from v12, grounding the page in the place it serves. */}
-      <div className="relative -z-10 -mt-6 h-32 overflow-hidden sm:h-44">
-        <PastoralBand className="absolute inset-0 h-full w-full" />
-        <div className="absolute inset-0 bg-white/35" aria-hidden="true" />
-      </div>
     </section>
   )
 }
@@ -225,7 +224,7 @@ const STRIP = [
 
 export function V14FeatureStrip() {
   return (
-    <section className="border-rule border-y bg-white py-6">
+    <section className="border-rule border-y py-5">
       <Container>
         <ul className="grid grid-cols-2 gap-x-6 gap-y-4 md:grid-cols-4">
           {STRIP.map((s) => (
@@ -235,71 +234,6 @@ export function V14FeatureStrip() {
             </li>
           ))}
         </ul>
-      </Container>
-    </section>
-  )
-}
-
-/* ==================== 3. THE TWO-AUDIENCE FORK ==================== */
-
-const AUDIENCE = [
-  {
-    icon: <IconSeeker className="h-[22px] w-[22px]" />,
-    title: 'Looking for work?',
-    body: 'Discover farm jobs that fit your skills, your experience and the life you want.',
-    cta: 'Find work',
-    to: '/jobs',
-    art: 'paddock' as const,
-  },
-  {
-    icon: <IconEmployer className="h-[22px] w-[22px]" />,
-    title: 'Looking for people?',
-    body: 'Post a role and reach people who already do this work. Listing is free.',
-    cta: 'Post a job',
-    to: '/signup?role=employer',
-    art: 'gate' as const,
-  },
-]
-
-/**
- * The page's most important decision point: a visitor is one of exactly two people, and
- * this section asks which. The comp gives it its own centred headline.
- */
-export function V12AudienceCards() {
-  return (
-    <section className="py-16 sm:py-20">
-      <Container>
-        <Display className="text-center text-[clamp(1.8rem,3.4vw,2.4rem)]">
-          Two sides of the farming workforce.
-        </Display>
-        <div className="mt-10 grid gap-6 md:grid-cols-2">
-          {AUDIENCE.map((c) => (
-            <div
-              key={c.title}
-              className="border-rule relative isolate min-h-[10rem] overflow-hidden rounded-2xl border bg-white shadow-[0_4px_24px_rgba(11,31,16,0.06)]"
-            >
-              <PastoralVignette
-                variant={c.art}
-                className="pointer-events-none absolute inset-y-0 right-0 hidden h-full w-[46%] sm:block"
-              />
-              {/* The comp fades the art into the card rather than butting it against the copy. */}
-              <div
-                className="pointer-events-none absolute inset-y-0 right-0 hidden w-[52%] bg-gradient-to-r from-white via-white/85 to-transparent sm:block"
-                aria-hidden="true"
-              />
-              <div className="relative flex gap-5 p-7">
-                <IconPlate>{c.icon}</IconPlate>
-                <div className="sm:max-w-[58%]">
-                  <h2 className="text-fern-900 text-[1.1875rem] font-semibold">{c.title}</h2>
-                  <p className="text-sage mt-2 text-[0.9375rem] leading-relaxed">{c.body}</p>
-                  <TextLink to={c.to} className="mt-4">
-                    {c.cta}
-                  </TextLink>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
       </Container>
     </section>
   )
@@ -327,9 +261,11 @@ const BUILT = [
 
 export function V12Recruitment() {
   return (
-    <section className="pb-20 sm:pb-24">
+    // pt matters now: the feature strip above is a hairline band, not a scene, so this
+    // section supplies its own top space instead of inheriting it.
+    <section className="pt-20 pb-20 sm:pt-24 sm:pb-24">
       <Container>
-        <div className="grid items-start gap-12 lg:grid-cols-[1.05fr_1fr] lg:gap-16">
+        <div className="grid items-start gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
           <div>
             <Display className="text-[clamp(2rem,4vw,2.8rem)] leading-[1.12]">
               Recruitment
@@ -348,7 +284,7 @@ export function V12Recruitment() {
             {BUILT.map((f) => (
               <div key={f.h}>
                 <span className="text-fern-600 block">{f.icon}</span>
-                <h3 className="text-fern-900 mt-4 text-[1.0625rem] font-semibold">{f.h}</h3>
+                <h3 className="text-fern-900 mt-4 text-[1.0625rem] font-semibold text-balance">{f.h}</h3>
                 <p className="text-sage mt-2 text-[0.875rem] leading-relaxed">{f.p}</p>
               </div>
             ))}
@@ -359,7 +295,79 @@ export function V12Recruitment() {
   )
 }
 
-/* ======================= 6. THE SPLIT CARDS ======================= */
+/* ================= 5. THE FORK (the only one) ================= */
+
+/**
+ * Compact previews of the two dashboards, in the product's own tokens. The comp puts a
+ * screenshot in each of these cards; because marketing and product now share one design
+ * system, rendering the real UI small IS the screenshot, and it can never drift out of
+ * date the way a pasted PNG does. Invented but NZ-plausible rows, never real farms.
+ */
+function EmployerPreview() {
+  const rows = [
+    { role: 'Herd manager', meta: '12 applicants', state: 'Live' },
+    { role: 'Shepherd', meta: '6 applicants', state: 'Live' },
+  ]
+  return (
+    <div className="space-y-2.5">
+      <div className="flex items-center justify-between">
+        <span className="text-bark text-xs font-semibold">Open roles</span>
+        <span className="text-fern-700 text-[11px] font-semibold">View all</span>
+      </div>
+      {rows.map((r) => (
+        <div key={r.role} className="border-rule flex items-center justify-between rounded-lg border bg-white px-3 py-2">
+          <span>
+            <span className="text-bark block text-xs font-semibold">{r.role}</span>
+            <span className="text-sage text-[11px]">{r.meta}</span>
+          </span>
+          <span className="bg-fern-100 text-fern-800 rounded-full px-2 py-0.5 text-[11px] font-semibold">
+            {r.state}
+          </span>
+        </div>
+      ))}
+      <div className="border-rule rounded-lg border bg-white px-3 py-2">
+        <span className="text-bark block text-xs font-semibold">Recent applicants</span>
+        <span className="text-sage mt-1 flex items-center gap-1.5 text-[11px]">
+          <span className="bg-fern-600 h-4 w-4 shrink-0 rounded-full" />
+          <span className="bg-fern-500 h-4 w-4 shrink-0 rounded-full" />
+          <span className="bg-fern-lite h-4 w-4 shrink-0 rounded-full" />
+          3 shortlisted, 2 interviewing
+        </span>
+      </div>
+    </div>
+  )
+}
+
+function SeekerPreview() {
+  const rows = [
+    { role: 'Dairy farm assistant', meta: 'Greenfield Dairy, Waikato' },
+    { role: 'Farm hand', meta: 'Riverbend Pastoral, Canterbury' },
+  ]
+  return (
+    <div className="space-y-2.5">
+      <span className="text-bark block text-xs font-semibold">Recommended for you</span>
+      {rows.map((r) => (
+        <div key={r.role} className="border-rule flex items-center gap-2.5 rounded-lg border bg-white px-3 py-2">
+          <span className="bg-fern-50 text-fern-700 flex h-7 w-7 shrink-0 items-center justify-center rounded-full">
+            <IconPin className="h-3.5 w-3.5" />
+          </span>
+          <span>
+            <span className="text-bark block text-xs font-semibold">{r.role}</span>
+            <span className="text-sage text-[11px]">{r.meta}</span>
+          </span>
+        </div>
+      ))}
+      <div className="border-rule rounded-lg border bg-white px-3 py-2.5">
+        <span className="text-sage flex items-center justify-between text-[11px] font-medium">
+          Profile strength <span className="text-fern-800 font-semibold">Strong</span>
+        </span>
+        <span className="bg-fern-100 mt-1.5 block h-1.5 w-full overflow-hidden rounded-full">
+          <span className="bg-fern-600 block h-full w-4/5 rounded-full" />
+        </span>
+      </div>
+    </div>
+  )
+}
 
 const SPLIT = [
   {
@@ -368,7 +376,7 @@ const SPLIT = [
     p: 'Post a role, reach the right workers, and hire with confidence.',
     cta: 'Post a job',
     to: '/signup?role=employer',
-    art: 'shed' as const,
+    preview: <EmployerPreview />,
   },
   {
     icon: <IconSeeker className="h-[22px] w-[22px]" />,
@@ -376,18 +384,26 @@ const SPLIT = [
     p: 'Search roles, build a profile once, and apply directly.',
     cta: 'Find work',
     to: '/jobs',
-    art: 'track' as const,
+    preview: <SeekerPreview />,
   },
 ]
 
+/**
+ * The two-audience fork, stated ONCE. It previously appeared twice on this page in two
+ * different card layouts saying the same thing; the version that survived is the one
+ * carrying real product UI, and it inherits the other's headline.
+ */
 export function V12SplitCards() {
   return (
     <Container className="pb-20 sm:pb-24">
-      <div className="grid gap-6 md:grid-cols-2">
+      <Display className="text-center text-[clamp(1.8rem,3.4vw,2.4rem)]">
+        Two sides of the farming workforce.
+      </Display>
+      <div className="mt-10 grid gap-6 md:grid-cols-2">
         {SPLIT.map((c) => (
           <div
             key={c.h}
-            className="border-rule grid overflow-hidden rounded-2xl border bg-white shadow-[0_4px_24px_rgba(11,31,16,0.06)] sm:grid-cols-2"
+            className="border-rule grid overflow-hidden rounded-2xl border bg-white sm:grid-cols-2"
           >
             <div className="flex flex-col justify-center p-8">
               <IconPlate className="mb-4">{c.icon}</IconPlate>
@@ -397,8 +413,8 @@ export function V12SplitCards() {
                 <Btn to={c.to}>{c.cta}</Btn>
               </div>
             </div>
-            <div className="relative min-h-[9rem]">
-              <PastoralVignette variant={c.art} className="absolute inset-0 h-full w-full" />
+            <div className="bg-paper border-rule flex flex-col justify-center border-t p-5 sm:border-t-0 sm:border-l" aria-hidden="true">
+              {c.preview}
             </div>
           </div>
         ))}
@@ -443,10 +459,10 @@ export function V12Sectors() {
 export function V12Close() {
   return (
     <Container className="pb-20 sm:pb-24">
-      <div className="relative isolate overflow-hidden rounded-2xl">
-        <PastoralBand className="absolute inset-0 h-full w-full" />
-        <div className="absolute inset-0 bg-white/45" aria-hidden="true" />
-        <div className="relative px-6 py-14 text-center sm:py-16">
+      {/* No panel and no ground treatment. The close is type and two actions on the page's
+          own canvas, separated by a hairline. */}
+      <div className="border-rule border-t">
+        <div className="px-6 py-16 text-center sm:py-20">
           <Display className="text-[clamp(1.8rem,3.4vw,2.4rem)]">Ready for what&rsquo;s next?</Display>
           <p className="text-bark/80 mx-auto mt-4 max-w-[34rem] text-[1.0625rem] leading-relaxed">
             Whether you&rsquo;re looking for your next role or the people your farm needs,
@@ -456,7 +472,7 @@ export function V12Close() {
             <Btn to="/jobs" size="lg">
               Find work
             </Btn>
-            <Btn to="/signup?role=employer" variant="onScene" size="lg">
+            <Btn to="/signup?role=employer" variant="outline" size="lg">
               Post a job
             </Btn>
           </div>

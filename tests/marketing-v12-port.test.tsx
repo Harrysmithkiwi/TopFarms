@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router'
 import { AudienceProvider } from '@/contexts/AudienceContext'
 import { ForEmployers } from '@/pages/ForEmployers'
 import { Pricing } from '@/pages/Pricing'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 // v12 port of /for-employers and /pricing (docs/design/v12-DIRECTIVE.md §0 scope line).
@@ -40,6 +40,11 @@ function renderPage(node: React.ReactElement) {
 
 const EMPLOYERS_SRC = readFileSync(join(process.cwd(), 'src/pages/ForEmployers.tsx'), 'utf-8')
 const PRICING_SRC = readFileSync(join(process.cwd(), 'src/pages/Pricing.tsx'), 'utf-8')
+const SECTIONS_SRC = readFileSync(
+  join(process.cwd(), 'src/components/landing/v12/V12Sections.tsx'),
+  'utf-8',
+)
+const HOME_SRC = readFileSync(join(process.cwd(), 'src/pages/Home.tsx'), 'utf-8')
 
 describe('the two ported routes now live in the v12 world', () => {
   it.each([
@@ -47,7 +52,6 @@ describe('the two ported routes now live in the v12 world', () => {
     ['Pricing', PRICING_SRC],
   ])('%s uses the V12 kit rather than hand-rolled chrome', (_name, src) => {
     expect(src).toContain("from '@/components/landing/v12/V12Kit'")
-    expect(src).toContain('PastoralBand')
   })
 
   it.each([
@@ -62,6 +66,23 @@ describe('the two ported routes now live in the v12 world', () => {
     expect(src).not.toMatch(/\bbg-green(-\d)?\b/)
     expect(src).not.toMatch(/\bbg-lime\b/)
     expect(src).not.toMatch(/\bfont-bricolage\b/)
+  })
+
+  // The hand-drawn pastoral SVGs were rejected by the operator twice. They regenerated the
+  // second time only because the component file still existed and reuse is the default
+  // reflex. The file is deleted; this gate is what stops a third time.
+  it.each([
+    ['ForEmployers', EMPLOYERS_SRC],
+    ['Pricing', PRICING_SRC],
+    ['V12Sections', SECTIONS_SRC],
+    ['Home', HOME_SRC],
+  ])('%s ships no hand-drawn scene illustration', (_name, src) => {
+    expect(src).not.toMatch(/<Pastoral(Hero|Band|Vignette)/)
+    expect(src).not.toContain("from '@/components/landing/PastoralScene'")
+  })
+
+  it('the PastoralScene component no longer exists', () => {
+    expect(existsSync(join(process.cwd(), 'src/components/landing/PastoralScene.tsx'))).toBe(false)
   })
 
   it('no eyebrow label survives above a heading (v12 §5)', () => {

@@ -1,7 +1,6 @@
 import { PublicShell } from '@/components/shell/PublicShell'
 import { usePageMeta } from '@/lib/usePageMeta'
 import { Container, Display, Btn } from '@/components/landing/v12/V12Kit'
-import { PastoralBand } from '@/components/landing/PastoralScene'
 
 // v12 port (docs/design/v12-DIRECTIVE.md §0 scope line). Costume change only: ONE route,
 // audience-switched view, and every price, band, boundary and sentence below is byte-for-byte
@@ -120,9 +119,10 @@ export function Pricing() {
   return (
     <PublicShell>
       {/* ── Hero. One h1; the audience strings swap inside it. ── */}
-      <section className="relative isolate overflow-hidden">
-        <PastoralBand className="absolute inset-0 h-full w-full" />
-        <div className="absolute inset-0 bg-white/45" aria-hidden="true" />
+      {/* The comp grounds this in photography. No photography exists yet, and inventing an
+          illustrated substitute is the failure this build exists to undo, so the ground stays
+          clean until real imagery is supplied. */}
+      <section className="border-rule relative isolate overflow-hidden border-b bg-white">
         <Container className="relative py-20 text-center sm:py-24">
           <Display as="h1" className="mx-auto max-w-[20ch] text-[clamp(2.2rem,5vw,3.6rem)] leading-[1.06]">
             <span className="emp-only">What it costs</span>
@@ -239,9 +239,7 @@ export function Pricing() {
 
       {/* ── Close ── */}
       <Container className="py-20 sm:py-24">
-        <div className="relative isolate overflow-hidden rounded-2xl">
-          <PastoralBand className="absolute inset-0 h-full w-full" />
-          <div className="absolute inset-0 bg-white/45" aria-hidden="true" />
+        <div className="bg-fern-100 border-rule relative isolate overflow-hidden rounded-2xl border">
           <div className="relative px-6 py-14 text-center sm:py-16">
             <Display className="mx-auto max-w-[20ch] text-[clamp(1.8rem,3.4vw,2.4rem)]">
               The whole job. The whole person.

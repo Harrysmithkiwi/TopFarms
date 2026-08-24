@@ -21,9 +21,15 @@ hardcode a hex.
 
 Clean, light, product-forward SaaS with a rural warmth. Calm and trustworthy over clever:
 the audience is farmers and farm workers, not design-conscious SaaS buyers. Generous
-white space, hairline borders instead of heavy shadows, one green used with intent. The
-illustrated NZ paddock survives from v12 only as grounding bands (under the hero, in
-the split cards, behind the close) — never as a full-bleed hero again.
+white space, hairline borders instead of heavy shadows, one green used with intent.
+
+**NO ILLUSTRATION. This is a hard rule, not a preference.** The hand-drawn pastoral SVGs
+were rejected by the operator twice (2026-08-20 and 2026-08-24) and regenerated the second
+time only because the component file still existed. `PastoralScene.tsx` is deleted and
+`tests/marketing-v12-port.test.tsx` fails if it returns. Where the comp shows
+**photography** (hero ground, closing band) and none exists, ship a clean ground and raise
+the gap as a question — never an invented substitute. Where the comp shows **product UI**
+(the two split cards), render the real product UI small, in real tokens.
 
 Dials (taste-skill): VARIANCE 5 · MOTION 3 · DENSITY 4. Trust-first audience overrides
 the landing default; the comp is symmetric and quiet on purpose.
@@ -64,6 +70,9 @@ One accent, locked page-wide. All ratios re-measured 2026-08-24 (comment block i
   primary = `fern-700` fill/white text, hover `fern-800`; outline = white fill,
   `rule` border, `bark` text; onScene = solid white (for buttons over illustration —
   transparent outlines over art are unmeasurable and banned). Trailing arrow on all.
+- **Product previews**: the hero's job-board preview and the two split-card dashboards are
+  real UI at small scale, never a pasted screenshot and never an illustration. Rows are
+  invented but NZ-plausible; never a real farm or a real lead. Whole preview `aria-hidden`.
 - **Cards**: white, `rounded-2xl`, `border-rule`, shadow tinted to brand ink
   (`rgba(11,31,16,…)` ≤ 0.07) — never pure-black shadows.
 - **Chips/tags**: `rounded-full`, `fern-100` + `fern-800` text for brand chips; `paper` +

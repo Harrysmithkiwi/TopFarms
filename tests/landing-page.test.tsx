@@ -82,10 +82,13 @@ describe('v12 landing — the fork', () => {
     expect(screen.getAllByRole('link', { name: /post a job/i }).length).toBeGreaterThan(0)
   })
 
-  it('asks which audience the visitor is before anything else', () => {
+  it('states the two-audience fork exactly ONCE', () => {
     renderHome()
-    expect(screen.getByRole('heading', { name: /looking for work\?/i })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: /looking for people\?/i })).toBeInTheDocument()
+    // The fork used to appear twice, in two card layouts saying the same thing. One
+    // section, one headline, two cards - a second fork is a regression, not a reinforcement.
+    expect(screen.getAllByRole('heading', { name: /two sides of the farming workforce/i })).toHaveLength(1)
+    expect(screen.getByRole('heading', { name: /find the people your farm needs/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /find work that fits your life/i })).toBeInTheDocument()
   })
 })
 

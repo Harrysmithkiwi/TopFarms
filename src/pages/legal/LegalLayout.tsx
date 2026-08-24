@@ -17,9 +17,8 @@ interface LegalLayoutProps {
  * dash with a comma is editing legal wording. /privacy carries 18 visible em dashes
  * and they stay until a lawyer revises the text.
  *
- * No PastoralBand here. Every other v12 route opens on the scene; a terms page that
- * does the same is the illustration arguing at a reader who came to check one clause.
- * The type and the fern ramp carry the world instead.
+ * The type and the fern ramp carry the world here; there is no scene work on any public
+ * route as of 2026-08-24.
  *
  * lining-nums on the h2 is not cosmetic. Cormorant Garamond ships old-style figures by
  * default, so /terms rendered "1. What TopFarms is" with the 1 hanging below the

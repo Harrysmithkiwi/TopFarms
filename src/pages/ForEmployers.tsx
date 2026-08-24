@@ -1,7 +1,6 @@
 import { PublicShell } from '@/components/shell/PublicShell'
 import { usePageMeta } from '@/lib/usePageMeta'
 import { Container, Display, Btn, TextLink, IconPlate } from '@/components/landing/v12/V12Kit'
-import { PastoralBand } from '@/components/landing/PastoralScene'
 import { IconCheck, IconLeaf, IconShield, IconTag } from '@/components/landing/LandingIcons'
 
 // v12 port (docs/design/v12-DIRECTIVE.md §0 scope line: this route was explicitly left on
@@ -24,10 +23,9 @@ import { IconCheck, IconLeaf, IconShield, IconTag } from '@/components/landing/L
 //      shape is introduced; if one were needed that would be a gap in V12Kit, not an
 //      exception to it.
 //
-// The scene work is deliberately quieter than Home's. PastoralHero is full-bleed and owns a
-// first viewport; an interior page that opens with the same weight competes with the landing
-// page it was reached from. PastoralBand behind a white wash gives the page its ground
-// without restating the argument.
+// Scene work removed 2026-08-24 with the rest of the hand-drawn SVG: the comp grounds these
+// pages in photography, none exists yet, and an illustrated substitute is the exact failure
+// being undone. Clean grounds until real imagery arrives.
 
 const SEQUENCE = [
   {
@@ -79,12 +77,10 @@ export function ForEmployers() {
   return (
     <PublicShell>
       {/* ── Hero ── */}
-      <section className="relative isolate overflow-hidden">
-        <PastoralBand className="absolute inset-0 h-full w-full" />
-        {/* The wash, not a haze on the scene itself: v12 §3 records that a 0.55 haze plus a
-            white top wash bleached the ranges into the sky on the first build. A flat overlay
-            above the finished scene keeps its internal contrast intact. */}
-        <div className="absolute inset-0 bg-white/45" aria-hidden="true" />
+      {/* The comp grounds this in photography. No photography exists yet, and inventing an
+          illustrated substitute is the failure this build exists to undo, so the ground stays
+          clean until real imagery is supplied. */}
+      <section className="border-rule relative isolate overflow-hidden border-b bg-white">
         <Container className="relative py-20 text-center sm:py-24">
           <Display as="h1" className="mx-auto max-w-[18ch] text-[clamp(2.2rem,5vw,3.6rem)] leading-[1.06]">
             What happens after you post.
@@ -164,13 +160,7 @@ export function ForEmployers() {
               <TextLink to="/pricing">See pricing</TextLink>
             </div>
           </div>
-          <div className="relative min-h-[13rem]">
-            <PastoralBand className="absolute inset-0 h-full w-full" />
-            <div
-              aria-hidden="true"
-              className="from-fern-100 absolute inset-y-0 left-0 hidden w-24 bg-gradient-to-r to-transparent md:block"
-            />
-          </div>
+          <div className="bg-fern-100 relative min-h-[13rem]" aria-hidden="true" />
         </div>
       </Container>
     </PublicShell>
