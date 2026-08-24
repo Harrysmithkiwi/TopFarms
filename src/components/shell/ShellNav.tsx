@@ -25,10 +25,12 @@ const publicLinks = [
   { to: '/pricing', label: 'Pricing' },
 ]
 
-// Preserved verbatim from Nav.tsx (see its comments for the removal history).
+// Preserved from Nav.tsx (see its comments for the removal history), with one change:
+// "Find Work" is now "Find work", so the seeker's signed-in nav uses the same label as
+// the rest of the site. One label per intent means one CASING per label too.
 const authedEmployerLinks = [{ to: '/dashboard/employer', label: 'Dashboard' }]
 const authedSeekerLinks = [
-  { to: '/jobs', label: 'Find Work' },
+  { to: '/jobs', label: 'Find work' },
   { to: '/dashboard/seeker/applications', label: 'My Applications' },
   { to: '/dashboard/seeker/documents', label: 'My Documents' },
 ]

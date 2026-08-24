@@ -19,6 +19,7 @@ import { PublicShell } from '@/components/shell/PublicShell'
 // dashboards, wizards, admin, or Stripe code to view the landing page.
 import { Home } from '@/pages/Home'
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
+import { PublicOnlyRoute } from '@/components/layout/PublicOnlyRoute'
 // Lazy-chunk recovery (LAUNCH.md O7): after a deploy, an old tab can request a
 // route chunk whose hashed filename no longer exists — the import rejects and
 // the user is stranded on the Suspense spinner. On failure, force one full
@@ -198,13 +199,15 @@ export function routeTable() {
       path: '/terms',
       element: s(<Terms />),
     },
+    // PublicOnlyRoute: an authenticated visitor is bounced to their dashboard rather
+    // than shown a signup form for the account they already have. See the component.
     {
       path: '/login',
-      element: s(<Login />),
+      element: <PublicOnlyRoute>{s(<Login />)}</PublicOnlyRoute>,
     },
     {
       path: '/signup',
-      element: s(<SignUp />),
+      element: <PublicOnlyRoute>{s(<SignUp />)}</PublicOnlyRoute>,
     },
     {
       path: '/auth/verify',
