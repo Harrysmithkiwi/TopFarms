@@ -298,41 +298,59 @@ export function EmployerDashboard() {
       <div className="space-y-6">
         {/* Onboarding prompt (only if not complete) */}
         {!isOnboardingComplete && (
-          <Card className="p-6">
-            <div className="flex flex-col gap-6 md:flex-row md:items-center">
-              <div
-                className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl"
-                style={{ backgroundColor: 'var(--color-warn-bg)' }}
+          <>
+            {/* The page-level h1. It used to live only in the onboarding-COMPLETE branch,
+                so a brand-new employer's dashboard rendered with zero h1 and a bare h2 -
+                a blocking heading-structure defect under docs/DESIGN.md §5, and the very
+                first screen a new farmer sees. Found by the pre-launch UAT design pass,
+                2026-08-24; SeekerDashboard already put an h1 in each branch. */}
+            <div>
+              <h1
+                className="font-display text-[36px] leading-[44px] font-semibold"
+                style={{ color: 'var(--color-brand-900)' }}
               >
-                <Wheat
-                  className="h-8 w-8"
-                  style={{ color: 'var(--color-brand-900)' }}
-                  aria-hidden="true"
-                />
-              </div>
-              <div className="min-w-0 flex-1">
-                <h2 className="mb-1 text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
-                  Complete your farm profile to start posting jobs
-                </h2>
-                <ProgressBar progress={onboardingProgress} className="mb-4 mt-3" />
-                <p className="text-xs" style={{ color: 'var(--color-text-subtle)' }}>
-                  {profile?.onboarding_step ?? 0} of {TOTAL_STEPS} steps completed
-                </p>
-              </div>
-              <div className="flex-shrink-0">
-                <Link
-                  to="/onboarding/employer"
-                  className={cn(
-                    'font-body inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
-                    'bg-brand-hover hover:bg-brand-900 text-white',
-                    'px-4 py-2 text-[13px]',
-                  )}
-                >
-                  {(profile?.onboarding_step ?? 0) > 0 ? 'Continue Setup' : 'Get Started'}
-                </Link>
-              </div>
+                Welcome to TopFarms
+              </h1>
+              <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                Your farm dashboard
+              </p>
             </div>
-          </Card>
+            <Card className="p-6">
+              <div className="flex flex-col gap-6 md:flex-row md:items-center">
+                <div
+                  className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl"
+                  style={{ backgroundColor: 'var(--color-warn-bg)' }}
+                >
+                  <Wheat
+                    className="h-8 w-8"
+                    style={{ color: 'var(--color-brand-900)' }}
+                    aria-hidden="true"
+                  />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h2 className="mb-1 text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
+                    Complete your farm profile to start posting jobs
+                  </h2>
+                  <ProgressBar progress={onboardingProgress} className="mt-3 mb-4" />
+                  <p className="text-xs" style={{ color: 'var(--color-text-subtle)' }}>
+                    {profile?.onboarding_step ?? 0} of {TOTAL_STEPS} steps completed
+                  </p>
+                </div>
+                <div className="flex-shrink-0">
+                  <Link
+                    to="/onboarding/employer"
+                    className={cn(
+                      'font-body inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
+                      'bg-brand-hover hover:bg-brand-900 text-white',
+                      'px-4 py-2 text-[13px]',
+                    )}
+                  >
+                    {(profile?.onboarding_step ?? 0) > 0 ? 'Continue Setup' : 'Get Started'}
+                  </Link>
+                </div>
+              </div>
+            </Card>
+          </>
         )}
 
         {/* Full dashboard (when onboarding complete) */}

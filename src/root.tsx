@@ -153,7 +153,25 @@ function Providers({ children }: { children: React.ReactNode }) {
             provider (directive 1.14). Must sit inside AuthProvider. */}
         <AudienceProvider>{children}</AudienceProvider>
       </AuthProvider>
-      <Toaster position="top-right" richColors />
+      {/* toastOptions, not bare richColors. sonner's richColors palette renders error
+          text at #e60000 on #fff0f0 = 4.34:1, under the 4.5:1 body floor in
+          docs/DESIGN.md §5 — and a toast is how this product delivers most of its
+          errors, so every one of them was below the floor. Found by the pre-launch UAT
+          design pass, 2026-08-24. These four pairs are the project's own semantic tokens
+          and are gated in scripts/contrast.mjs: danger 6.80, warn 6.37, success 6.35,
+          info 6.59. */}
+      <Toaster
+        position="top-right"
+        richColors
+        toastOptions={{
+          classNames: {
+            error: '!bg-danger-bg !text-danger-text-on-bg !border-danger/30',
+            warning: '!bg-warn-bg !text-warn-text-on-bg !border-warn/30',
+            success: '!bg-success-bg !text-success-text-on-bg !border-success/30',
+            info: '!bg-info-bg !text-info-text-on-bg !border-info/30',
+          },
+        }}
+      />
       <VercelAnalytics />
     </MotionConfig>
   )
