@@ -5,6 +5,53 @@ four off-roadmap stream directories, session memory, and 66 git branches.
 
 **Read this first, then the authority for whichever stream you're in.** If this file and a
 stream doc disagree, the stream doc wins and this file is out of date — fix it.
+**Which document is which: `docs/DOCUMENTATION.md`.** A document not listed there is history.
+
+---
+
+## 🟢 SESSION CLOSE — 2026-08-25. Engineering is done. The gap is market, not code.
+
+Everything below this block is still true. Three things changed today, all shipped to prod,
+all pushed, working tree clean.
+
+**1. Accessibility — the gate was pointed at the wrong screens.** Three remaining defects
+fixed (four unnamed file inputs, not one — `getInputProps` had the same bug in four places).
+Then the real fix: `tests/e2e/a11y.spec.ts` had been scanning a dashboard twice and a wizard
+never, because the CI accounts are already onboarded and it *logged* the redirect instead of
+failing on it. `tests/wizard-steps-a11y.test.tsx` now runs axe on **all 23 wizard steps** with
+no account and no prod state, on every commit. Proven by checking out `8461cbe` and watching
+it go red on three steps the browser sweep never reached.
+
+**2. Design system v2.1 — SHIPPED.** `src/index.css` held **three token worlds**; it now holds
+one. The v13 sand/lime/Archivo fork and the v14 marketing dictionary are both deleted.
+`--font-display` resolved to **Inter** until today — that one line is why the app and the
+landing page read as two products. Six gates hold it, each proven red first. Stylesheet
+85.0KB → 69.0KB. Full record: `docs/design/AUDIT.md`, canon: `docs/_canonical/`.
+
+**3. Documentation consolidated.** `.planning/` 424 → **59** live files (357 archived, nothing
+deleted). `docs/` root 30 → 11. Six conflicting readiness scores → **one**: `LAUNCH.md` used
+to open with 93/100 and correct itself to 53 four lines later. `PRE-LAUNCH-CHECKLIST.md` owns
+the number now. Survey and plan: `docs/DOC-AUDIT-2026-08-25.md`.
+
+### Where to pick up
+
+**Not in the codebase.** The score is 72 with an engineering ceiling of ~81, and the remaining
+points need a market. The live number is unchanged by any of today's work, and that is the
+point: design consistency was cheap to lock and buys nothing on its own.
+
+**The critical path is supply-first outreach**, unchanged since 2026-08-25 morning:
+`lead_staging` holds **167 employer leads and 1 seeker**. The seeker lane is built — same
+table, same admin screen, same RPCs — and empty. Contact ~200 seekers FIRST so an employer
+arrives to a populated pool. Two things to settle before sending, both in
+`.planning/prompts/NEXT-SLICE-PROMPT.md`: the **consent posture** under UEMA 2007 (a job ad
+invites contact; a Facebook post saying "looking for dairy work" does not), and **where the
+200 come from** (`docs/SEEKER-INSIGHTS.md` says NZ farming Facebook groups — manual capture or
+in-group posting, not a scraper).
+
+**Optional engineering, none of it blocking:** `--color-brand` and `--color-brand-hover` now
+hold the same value and the repo's token names sit one position out of phase with the spec —
+~154 renames for zero visual change, deliberately deferred. And 11 font-size literals remain
+off the ramp, pinned in the design gate, waiting on the open 14px ruling.
 
 ---
 
