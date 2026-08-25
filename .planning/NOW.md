@@ -50,6 +50,35 @@ homepage. None of them had found a product defect.
 - The onboarding **number fields** use `z.coerce.number()`, and `Number('')` is `0` — so an
   empty herd size or property size stores **0 rather than null**. No crash, wrong data.
 
+## ▶ START HERE 2026-08-25 — `.planning/NEXT-SLICE-PROMPT.md`
+
+**SEQUENCING CORRECTED BY THE OPERATOR: supply first.** Contact ~200 JOB SEEKERS, get them
+signed up, and only then approach employers — so an employer arrives to a populated pool
+instead of posting into silence. Every earlier note in this file saying "send employer
+tranche 1 first" is SUPERSEDED. The 9 employer drafts stay parked.
+
+**The blocker for that is inventory, not code.** Measured on prod 2026-08-25:
+`lead_staging` holds **167 employer leads pending and exactly 1 seeker**. The seeker lane
+is BUILT (same table, discriminated by `structured->>'kind'`, own `AdminSeekerStaging`
+screen, same dedupe and approval RPCs) — it is simply empty. Getting to ~200 seekers is a
+harvesting + consent problem and it is the real critical path. Two operator decisions
+first: the UEMA consent posture for individuals (an employer's ad invites contact; a
+person posting "looking for dairy work" in a FB group has not), and where the 200 come
+from (`docs/SEEKER-INSIGHTS.md` says NZ farming Facebook groups → manual capture or
+in-group posting, not a scraper).
+
+**Engineering left before launch — one slice, in `NEXT-SLICE-PROMPT.md`:** three remaining
+a11y defects, and the CI gate blind spot that let five of them through (the sweep hits
+`/onboarding/*` with ALREADY-ONBOARDED accounts, so it redirects to the dashboard and has
+never actually audited a wizard; `/jobs/new` is not swept at all). After that, stop.
+
+**UAT closed 2026-08-25.** Employer and seeker journeys both walked end to end on live
+prod, on an iPhone profile: signup → email → verification → onboarding → publish →
+apply → match → password reset. Blank optional numbers store NULL not 0 on BOTH sides;
+match scores blank salary 5/ experience 6 (neutral, the B3 bug); seeker never sees a
+numeric score ("Strong match"); password reset proven by logging in with the new password.
+All test data purged.
+
 ## ▶ 2026-08-24 (final) — minimal landing LIVE, illustrations deleted for good
 
 `b73367d` is on prod and verified by rendering the live site. No illustration, no

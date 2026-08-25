@@ -10,7 +10,24 @@ plus an employer compliance product only a lawyer-founder can ship.
 
 ---
 
-## 1 · The 48-hour launch plan
+## 0 · SEQUENCING CORRECTION (operator, 2026-08-25)
+
+**Supply first.** Contact ~200 job seekers and get them onto the platform BEFORE any
+employer outreach, so an employer who arrives finds people to match against. Section 1
+below was written employer-first and is WRONG on ordering; its individual steps (the phone
+walks, the warm-up discipline, the bounce ceiling) still hold, applied to the seeker lane
+first.
+
+Why this is the right call: an employer who posts into an empty pool churns immediately and
+does not come back. Seekers cost nothing to serve, the product is free to them forever, and
+a populated pool is the only thing that makes the first employer conversation worth having.
+
+**The gap:** `lead_staging` holds 167 employer leads and **1 seeker** (prod, 2026-08-25).
+The seeker lane is built and idle. Filling it is the critical path, and it needs a consent
+posture decision first — UEMA covers seekers too, and an individual posting in a Facebook
+group has not invited contact the way a job ad does.
+
+## 1 · The 48-hour launch plan (ordering superseded by §0 — apply to seekers first)
 
 ### Day 1, morning (90 min, phone in hand) — checklist B1–B4
 - Employer signup on a PHONE, all 8 steps, every optional number left blank. Publish.
