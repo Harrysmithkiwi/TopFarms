@@ -97,7 +97,7 @@ homepage. None of them had found a product defect.
 - The onboarding **number fields** use `z.coerce.number()`, and `Number('')` is `0` — so an
   empty herd size or property size stores **0 rather than null**. No crash, wrong data.
 
-## ▶ START HERE 2026-08-25 — `.planning/NEXT-SLICE-PROMPT.md`
+## 2026-08-25 morning — supply-first sequencing (still the plan; its engineering half is DONE)
 
 **SEQUENCING CORRECTED BY THE OPERATOR: supply first.** Contact ~200 JOB SEEKERS, get them
 signed up, and only then approach employers — so an employer arrives to a populated pool
@@ -114,10 +114,11 @@ person posting "looking for dairy work" in a FB group has not), and where the 20
 from (`docs/SEEKER-INSIGHTS.md` says NZ farming Facebook groups → manual capture or
 in-group posting, not a scraper).
 
-**Engineering left before launch — one slice, in `NEXT-SLICE-PROMPT.md`:** three remaining
-a11y defects, and the CI gate blind spot that let five of them through (the sweep hits
-`/onboarding/*` with ALREADY-ONBOARDED accounts, so it redirects to the dashboard and has
-never actually audited a wizard; `/jobs/new` is not swept at all). After that, stop.
+~~**Engineering left before launch — one slice:**~~ **DONE 2026-08-25**, see the session-close
+block at the top. The three a11y defects are fixed (four unnamed file inputs, not one) and the
+gate blind spot is closed — `tests/wizard-steps-a11y.test.tsx` runs axe on all 23 wizard steps
+with no account and no prod state. `/jobs/new` joined the browser sweep, and an unpredicted
+landing surface now FAILS instead of being logged. Nothing engineering-side is blocking.
 
 **UAT closed 2026-08-25.** Employer and seeker journeys both walked end to end on live
 prod, on an iPhone profile: signup → email → verification → onboarding → publish →
@@ -242,7 +243,7 @@ everyone, which is why the tranche cap is not negotiable.
 
 ---
 
-## ▶ Next session, start here — READ `.planning/UPLIFT-95-PROMPT.md`
+## ▶ Next session, start here — READ `.planning/prompts/_spent/UPLIFT-95-PROMPT.md`
 
 **That file is the paste-ready work order: six phases + M3 from the 46/100 audit to
 launch-ready, with gates, owners and the two operator decisions that block everything
@@ -250,7 +251,7 @@ launch-ready, with gates, owners and the two operator decisions that block every
 `NEXT-SESSION-PROMPT.md` below remains authoritative for the landing-page detail Phase 5
 references — it is superseded as the opener, not deleted.
 
-## ▶ Superseded opener — `.planning/NEXT-SESSION-PROMPT.md`
+## ▶ Superseded opener — `.planning/prompts/_spent/NEXT-SESSION-PROMPT.md`
 
 **That file is the paste-ready restart prompt. Next session is the LANDING PAGE / MARKETING
 UPLIFT.**
@@ -333,7 +334,7 @@ other than credit.
 ## ▶ Previous entry — updated 2026-08-17 (evening)
 
 **2026-08-18: the next batch is written up as a paste-ready work order —
-`.planning/NEXT-BATCH-PROMPT.md` (Phases B→C→D→E). Phase A, sending the first outreach batch, is
+`.planning/prompts/_spent/NEXT-BATCH-PROMPT.md` (Phases B→C→D→E). Phase A, sending the first outreach batch, is
 DEFERRED by operator decision; M3 is not the goal of that batch.**
 
 **⚠ BLOCKED, and it blocks B4: the Anthropic API key in `.env` returns 400 "Your credit balance
@@ -472,7 +473,7 @@ audience being contacted.
 **Sentry is LIVE** (project `topfarms-web`, EU region, errors only). One gap remains and it is
 not code: **post one real job listing.** It unblocks the payment path (never run in prod), the
 employer experience, and it is the live test of the match alert. Guide:
-`.planning/go-live/OPERATOR-GUIDES.md`.
+`.planning/_archive/go-live/OPERATOR-GUIDES.md`.
 
 **Deploy-trust caveat, 2026-08-16.** A push to `main` (`b93a9c5`) passed CI and produced NO
 git-sourced Vercel deployment — verified via the API: every other push that day has
@@ -486,7 +487,7 @@ connection. **Do not treat "pushed to main" as "live" — verify the deploy.** C
 Engineering work that is unblocked, in order:
 
 1. **Nothing is blocking launch that is mine to fix.** The one remaining gap is an operator act —
-   post a listing. Step-by-step guide in `.planning/go-live/OPERATOR-GUIDES.md`.
+   post a listing. Step-by-step guide in `.planning/_archive/go-live/OPERATOR-GUIDES.md`.
 2. **When the first listing exists, verify the match alert end to end.** The path has never
    fired: prod has zero jobs and is never seeded. Confirm the email lands at
    `admin.topfarms@gmail.com`, then confirm `match_scores` rows match what it listed.
@@ -650,7 +651,7 @@ a numeral. Mutation-checked. The fabricated blurred `78` teaser is gone.
   waiver is a change to the gate's shape (`CLAUDE.md` §10). Expect the hook to keep flagging
   these on any file you touch in the portals; that is the gate working, not a false positive.
 - **`ProtectedRoute`** — one guard, 24 routes, all three portals. Decides where admin-gate
-  Phase B starts. Detail in `.planning/admin-design-gate/STATE.md` § Open rulings.
+  Phase B starts. Detail in `.planning/_archive/admin-design-gate/STATE.md` § Open rulings.
 - **Employer-onboarding leftovers**, from `M1-EMPLOYER-ONBOARDING-GAP-ANALYSIS.md`: a `406`
   fires on every brand-new employer's first screen; `color-contrast` serious on wizard step 8.
   Filed, neither launch-blocking. **The a11y half of this bullet is CLOSED** — `ChipSelector`
@@ -666,9 +667,9 @@ a numeral. Mutation-checked. The fabricated blurred `78` teaser is gone.
 | Stream | Authority | State |
 |---|---|---|
 | GSD roadmap | `.planning/ROADMAP.md` | v2.2 current; Phase 28 closed; 24–26 sales-gated |
-| **Go-live (launch 2026-08-14)** | `.planning/go-live/map.md` (wayfinder) | **THE current map** — M1 ✅ done; M3 inventory is the long pole |
-| Design gate — decisions | `.planning/design-gate/map.md` (wayfinder) | 11 tickets, all closed — feeds go-live M5 |
-| Design gate — admin **execution** | `.planning/admin-design-gate/STATE.md` + `docs/ADMIN-DESIGN-PROMPT.md` | Gate A + B met for `AdminTable`; C–D open |
+| **Go-live (launch 2026-08-14)** | `.planning/_archive/go-live/map.md` (wayfinder) | **THE current map** — M1 ✅ done; M3 inventory is the long pole |
+| Design gate — decisions | `.planning/_archive/design-gate/map.md` (wayfinder) | 11 tickets, all closed — feeds go-live M5 |
+| Design gate — admin **execution** | `.planning/_archive/admin-design-gate/STATE.md` + `docs/_superseded/2026-08-25/prompts/ADMIN-DESIGN-PROMPT.md` | Gate A + B met for `AdminTable`; C–D open |
 | Gated-portal design canon | `docs/DESIGN.md` (+ `docs/PRODUCT.md`) | `src/index.css` wins on any hex. **`impeccable` is THE frontend design skill** (CLAUDE.md §10) |
 | Public marketing canon | `docs/design/v11-DIRECTIVE.md` | **Settled. Out of scope. Do not audit.** |
 | Pricing v3 | directive 1.19 | **Live in prod**, verified both audience lenses |
