@@ -14,7 +14,7 @@
     "start": "react-router-serve ./build/server/nodejs_*/index.js",
     "test": "vitest",
     "e2e": "playwright test",
-    "design-gate": "node scripts/design-gate.mjs --max 14"
+    "design-gate": "node scripts/design-gate.mjs --max 11"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",

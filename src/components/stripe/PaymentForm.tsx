@@ -85,7 +85,10 @@ export function PaymentForm({ clientSecret, onSuccess, onError }: PaymentFormPro
     appearance: {
       theme: 'stripe',
       variables: {
-        colorPrimary: '#16A34A', // brand
+        // Mirrors --color-brand, which moved to #15803D on 2026-08-25. Stripe Elements
+        // cannot read a CSS variable, so this is a literal by necessity and has to be
+        // updated by hand when the token moves.
+        colorPrimary: '#15803D', // brand
         colorBackground: '#FFFFFF', // surface
         colorText: '#0B1F10', // text
         colorDanger: '#DC2626', // danger

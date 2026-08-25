@@ -421,7 +421,7 @@ export function EmployerVerification() {
           </h3>
           <div className="space-y-1.5">
             {[
-              { level: 'Basic Verified', requirement: 'Email verified', color: 'text-[#2563eb]' },
+              { level: 'Basic Verified', requirement: 'Email verified', color: 'text-info-text-on-bg' },
               {
                 level: 'Verified',
                 requirement: 'Email + Business/Documents',
@@ -430,7 +430,7 @@ export function EmployerVerification() {
               {
                 level: 'Fully Verified',
                 requirement: 'Email + Business/Documents + Farm Photos',
-                color: 'text-[#b45309]',
+                color: 'text-warn-text-on-bg',
               },
             ].map(({ level, requirement, color }) => (
               <div key={level} className="flex items-center gap-2">

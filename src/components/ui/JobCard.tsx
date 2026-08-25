@@ -13,16 +13,18 @@ interface JobCardProps {
   className?: string
 }
 
+// Six hand-rolled status pills. Four tinted themselves with an alpha fill of a colour in no
+// token set — a retired fern, an ochre, a bootstrap red, a Tailwind blue — while three of them
+// already paired that with the correct *-text-on-bg partner, so the text was gated and the
+// background it sat on was not. Each row is now a semantic pair whose ratio is checked by
+// name: success 6.35, warn 6.37, danger 6.80, info 6.59. Draft and Archived are META CHIPS —
+// a draft is a fact, not a signal (Brand_and_Design.md, two badge families).
 const STATUS_CONFIG: Record<JobStatus, { label: string; bgClass: string; textClass: string }> = {
-  active: { label: 'Active', bgClass: 'bg-[rgba(74,124,47,0.12)]', textClass: 'text-success-text-on-bg' },
-  paused: {
-    label: 'Paused',
-    bgClass: 'bg-[rgba(217,150,45,0.12)]',
-    textClass: 'text-warn-text-on-bg',
-  },
+  active: { label: 'Active', bgClass: 'bg-success-bg', textClass: 'text-success-text-on-bg' },
+  paused: { label: 'Paused', bgClass: 'bg-warn-bg', textClass: 'text-warn-text-on-bg' },
   draft: { label: 'Draft', bgClass: 'bg-surface-2', textClass: 'text-text-muted' },
-  expired: { label: 'Expired', bgClass: 'bg-[rgba(220,53,69,0.10)]', textClass: 'text-danger-text-on-bg' },
-  filled: { label: 'Filled', bgClass: 'bg-[rgba(59,130,246,0.10)]', textClass: 'text-[#2563eb]' },
+  expired: { label: 'Expired', bgClass: 'bg-danger-bg', textClass: 'text-danger-text-on-bg' },
+  filled: { label: 'Filled', bgClass: 'bg-info-bg', textClass: 'text-info-text-on-bg' },
   archived: { label: 'Archived', bgClass: 'bg-surface-2', textClass: 'text-text-subtle' },
 }
 
