@@ -96,7 +96,7 @@ export function SeekerStep5LifeSituation({
 
       <div className="space-y-4">
         {/* Couples section */}
-        <div className="border-border bg-surface-2 space-y-3 rounded-[10px] border-[1.5px] p-4">
+        <div className="border-border bg-surface-2 space-y-3 rounded-12 border-[1.5px] p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="font-body text-text text-label font-semibold">
@@ -125,7 +125,7 @@ export function SeekerStep5LifeSituation({
         </div>
 
         {/* Accommodation section */}
-        <div className="border-border bg-surface-2 space-y-3 rounded-[10px] border-[1.5px] p-4">
+        <div className="border-border bg-surface-2 space-y-3 rounded-12 border-[1.5px] p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="font-body text-text text-label font-semibold">

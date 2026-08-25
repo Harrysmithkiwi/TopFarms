@@ -35,13 +35,13 @@ export function Step6Pricing({ onComplete, onBack }: Step6Props) {
       </div>
 
       <div
-        className="font-body rounded-[10px] p-3 text-center text-[13px] font-semibold"
+        className="font-body rounded-12 p-3 text-center text-[13px] font-semibold"
         style={{ backgroundColor: 'var(--color-brand-50)', color: 'var(--color-brand-900)' }}
       >
         Listing jobs is free. All of them, always. No card required.
       </div>
 
-      <div className="rounded-[12px] p-5" style={{ backgroundColor: 'var(--color-surface-2)' }}>
+      <div className="rounded-12 p-5" style={{ backgroundColor: 'var(--color-surface-2)' }}>
         <p className="text-label font-semibold" style={{ color: 'var(--color-text)' }}>
           You pay one fee, once, only if you hire
         </p>

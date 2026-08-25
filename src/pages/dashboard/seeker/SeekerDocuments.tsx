@@ -41,7 +41,7 @@ function formatDate(iso: string): string {
 
 function SkeletonRow() {
   return (
-    <div className="bg-surface border-border animate-pulse rounded-[12px] border-[1.5px] p-4">
+    <div className="bg-surface border-border animate-pulse rounded-12 border-[1.5px] p-4">
       <div className="flex items-center gap-3">
         <div className="bg-surface-2 h-5 w-5 flex-shrink-0 rounded" />
         <div className="flex-1 space-y-2">
@@ -183,7 +183,7 @@ export function SeekerDocuments() {
         {/* Hook-stuck-at-null fallback (no seeker_profiles row resolved in 5s) */}
         {showHookFallback && (
           <div
-            className="rounded-[12px] p-12 text-center bg-surface-2"
+            className="rounded-12 p-12 text-center bg-surface-2"
           >
             <p
               className="font-body mb-2 text-base font-semibold text-text"
@@ -205,7 +205,7 @@ export function SeekerDocuments() {
         {/* Error */}
         {showError && (
           <div
-            className="rounded-[12px] p-8 text-center bg-surface-2"
+            className="rounded-12 p-8 text-center bg-surface-2"
           >
             <p className="font-body text-text-muted text-sm">{errorState}</p>
           </div>
@@ -214,7 +214,7 @@ export function SeekerDocuments() {
         {/* Empty */}
         {showEmpty && (
           <div
-            className="rounded-[12px] p-12 text-center bg-surface-2"
+            className="rounded-12 p-12 text-center bg-surface-2"
           >
             <p
               className="font-body mb-2 text-base font-semibold text-text"
@@ -233,7 +233,7 @@ export function SeekerDocuments() {
             {docs!.map((doc) => (
               <li
                 key={doc.id}
-                className="bg-surface border-border flex items-center gap-3 rounded-[12px] border-[1.5px] p-4"
+                className="bg-surface border-border flex items-center gap-3 rounded-12 border-[1.5px] p-4"
               >
                 <FileText className="text-brand-hover h-5 w-5 flex-shrink-0" />
                 <div className="min-w-0 flex-1">

@@ -197,7 +197,7 @@ function OptOutControl({ row, onDone }: { row: SeekerStagingRow; onDone: () => v
   }
 
   return (
-    <div className="border-border space-y-2 rounded-[8px] border-[1.5px] p-3">
+    <div className="border-border space-y-2 rounded-8 border-[1.5px] p-3">
       <p className="text-[13px] leading-6" style={{ color: 'var(--color-text)' }}>
         Records the opt-out and removes them from the queue. Re-capturing this post — or the
         same post under a different handle — will be blocked from here on. This cannot be
@@ -317,7 +317,7 @@ export function AdminSeekerStaging() {
                 <button
                   type="button"
                   onClick={() => void copyOutreachLink(row.id, s.display_name)}
-                  className="border-border text-text hover:border-brand-hover focus-visible:outline-brand inline-flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-[8px] border-[1.5px] px-2.5 py-1.5 transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 md:min-h-[32px]"
+                  className="border-border text-text hover:border-brand-hover focus-visible:outline-brand inline-flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-8 border-[1.5px] px-2.5 py-1.5 transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 md:min-h-[32px]"
                 >
                   <Link2 size={13} aria-hidden="true" />
                   Copy link

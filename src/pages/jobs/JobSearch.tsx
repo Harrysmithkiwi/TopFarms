@@ -88,7 +88,7 @@ function computeTrustLevel(verifications: EmployerVerification[]): TrustLevel {
 
 function SkeletonCard() {
   return (
-    <div className="bg-surface border-border animate-pulse rounded-[12px] border p-4">
+    <div className="bg-surface border-border animate-pulse rounded-12 border p-4">
       <div className="flex items-start gap-4">
         <div className="flex-1 space-y-2">
           <div className="bg-surface-2 h-4 w-3/5 rounded" />
@@ -591,7 +591,7 @@ export function JobSearch() {
             <Dialog.Trigger asChild>
               <button
                 type="button"
-                className="border-border bg-surface text-text-muted hover:border-border flex items-center gap-2 rounded-[8px] border px-3 py-2 text-[13px] transition-colors"
+                className="border-border bg-surface text-text-muted hover:border-border flex items-center gap-2 rounded-8 border px-3 py-2 text-[13px] transition-colors"
               >
                 <SlidersHorizontal className="h-4 w-4" />
                 Filters
@@ -602,7 +602,7 @@ export function JobSearch() {
             <Dialog.Portal>
               <Dialog.Overlay className="fixed inset-0 z-40 bg-black/40" />
               <Dialog.Content
-                className="bg-surface fixed right-0 bottom-0 left-0 z-50 flex max-h-[85vh] flex-col overflow-hidden rounded-t-[16px]"
+                className="bg-surface fixed right-0 bottom-0 left-0 z-50 flex max-h-[85vh] flex-col overflow-hidden rounded-t-16"
                 aria-describedby={undefined}
               >
                 <Dialog.Title className="sr-only">Job Filters</Dialog.Title>
@@ -833,7 +833,7 @@ function ResultsArea({
             value={sortParam}
             aria-label="Sort results"
             onChange={(e) => onSortChange(e.target.value)}
-            className="text-text border-border bg-surface focus:border-brand cursor-pointer rounded-[6px] border px-2 py-1 text-[12px]"
+            className="text-text border-border bg-surface focus:border-brand cursor-pointer rounded-8 border px-2 py-1 text-[12px]"
           >
             {isLoggedIn && <option value="match">Match Score</option>}
             <option value="recent">Most Recent</option>

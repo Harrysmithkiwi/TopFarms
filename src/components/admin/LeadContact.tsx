@@ -31,7 +31,7 @@ export function LeadContactCard({ contact }: { contact?: LeadContact | null }) {
     )
   }
   return (
-    <div className="border-brand/40 bg-surface-2 mt-2 rounded-[8px] border p-3">
+    <div className="border-brand/40 bg-surface-2 mt-2 rounded-8 border p-3">
       <p
         className="text-xs font-semibold uppercase"
         style={{ color: 'var(--color-text-subtle)', letterSpacing: '0.04em' }}

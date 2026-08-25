@@ -64,7 +64,7 @@ export function SelectRole() {
             type="button"
             onClick={() => handleRoleSelect('employer')}
             disabled={isSubmitting}
-            className="border-border bg-surface hover:border-brand hover:bg-brand-50 flex flex-col items-center gap-2 rounded-xl border-2 p-4 text-left transition-all disabled:opacity-60"
+            className="border-border bg-surface hover:border-brand hover:bg-brand-50 flex flex-col items-center gap-2 rounded-12 border-2 p-4 text-left transition-all disabled:opacity-60"
           >
             <Building2 className="text-text-muted" size={28} />
             <div>
@@ -86,7 +86,7 @@ export function SelectRole() {
             type="button"
             onClick={() => handleRoleSelect('seeker')}
             disabled={isSubmitting}
-            className="border-border bg-surface hover:border-brand hover:bg-brand-50 flex flex-col items-center gap-2 rounded-xl border-2 p-4 text-left transition-all disabled:opacity-60"
+            className="border-border bg-surface hover:border-brand hover:bg-brand-50 flex flex-col items-center gap-2 rounded-12 border-2 p-4 text-left transition-all disabled:opacity-60"
           >
             <User className="text-text-muted" size={28} />
             <div>

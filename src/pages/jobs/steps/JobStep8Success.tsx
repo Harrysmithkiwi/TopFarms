@@ -78,7 +78,7 @@ export function JobStep8Success({ jobId }: JobStep8SuccessProps) {
           (see CountersSection, which uses the real get_platform_stats RPC). */}
 
       {/* What happens next — process, not statistics. */}
-      <div className="border-border bg-surface-2 w-full max-w-md rounded-[10px] border p-4 text-left">
+      <div className="border-border bg-surface-2 w-full max-w-md rounded-12 border p-4 text-left">
         <p className="font-body text-[13px] font-semibold" style={{ color: 'var(--color-text)' }}>
           What happens next
         </p>
@@ -96,7 +96,7 @@ export function JobStep8Success({ jobId }: JobStep8SuccessProps) {
       <div className="w-full max-w-xs space-y-3">
         <Link
           to={`/jobs/${jobId}`}
-          className="font-body flex w-full items-center justify-center gap-2 rounded-[8px] px-6 py-3 text-[14px] font-bold text-white transition-all duration-200 hover:opacity-90"
+          className="font-body flex w-full items-center justify-center gap-2 rounded-8 px-6 py-3 text-[14px] font-bold text-white transition-all duration-200 hover:opacity-90"
           style={{ backgroundColor: 'var(--color-brand)' }}
         >
           <Briefcase className="h-4 w-4" />
@@ -110,7 +110,7 @@ export function JobStep8Success({ jobId }: JobStep8SuccessProps) {
 
         <Link
           to="/jobs/new"
-          className="font-body border-border text-text-muted hover:border-border-strong flex w-full items-center justify-center gap-2 rounded-[8px] border px-6 py-3 text-[14px] font-bold transition-all duration-200"
+          className="font-body border-border text-text-muted hover:border-border-strong flex w-full items-center justify-center gap-2 rounded-8 border px-6 py-3 text-[14px] font-bold transition-all duration-200"
         >
           Post another job
         </Link>

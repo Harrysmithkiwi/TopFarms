@@ -111,7 +111,7 @@ export function AdminLoginPage() {
           {submitError && (
             <div
               role="alert"
-              className="font-body rounded-[8px] border p-3 text-sm"
+              className="font-body rounded-8 border p-3 text-sm"
               style={{
                 backgroundColor: 'var(--color-danger-bg)',
                 borderColor: 'var(--color-danger)',

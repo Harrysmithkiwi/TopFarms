@@ -170,7 +170,7 @@ export function JobStep4Compensation({ onComplete, onBack, defaultValues }: Step
         />
 
         {/* On-call allowance toggle */}
-        <div className="border-border bg-surface-2 flex items-center justify-between rounded-[10px] border-[1.5px] p-4">
+        <div className="border-border bg-surface-2 flex items-center justify-between rounded-12 border-[1.5px] p-4">
           <div>
             <p className="font-body text-text text-[13px] font-semibold">On-call allowance</p>
             <p className="mt-0.5 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>

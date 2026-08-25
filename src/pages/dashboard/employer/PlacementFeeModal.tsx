@@ -54,7 +54,7 @@ export function PlacementFeeModal({
       >
         <div
           ref={dialogRef}
-          className="bg-surface border-border w-full max-w-md rounded-[16px] border-[1.5px] shadow-xl"
+          className="bg-surface border-border w-full max-w-md rounded-16 border-[1.5px] shadow-xl"
           onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => {
             if (e.key === 'Escape') onCancel()

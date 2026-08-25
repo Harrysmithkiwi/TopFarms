@@ -54,7 +54,7 @@ export function AICandidateSummary({
 
   return (
     <div
-      className="mb-4 rounded-[12px] border p-4"
+      className="mb-4 rounded-12 border p-4"
       style={{ backgroundColor: 'var(--color-ai-bg)', borderColor: 'rgba(108, 52, 131, 0.2)' }}
     >
       <p

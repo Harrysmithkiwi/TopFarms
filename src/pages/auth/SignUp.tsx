@@ -220,7 +220,7 @@ export function SignUp() {
               aria-pressed={selectedRole === 'employer'}
               onClick={() => onRoleSelect('employer')}
               className={cn(
-                'flex flex-col items-center gap-2 rounded-xl border-2 p-4 text-left transition-all',
+                'flex flex-col items-center gap-2 rounded-12 border-2 p-4 text-left transition-all',
                 selectedRole === 'employer'
                   ? 'border-brand-900 bg-brand-50'
                   : 'border-border bg-surface',
@@ -253,7 +253,7 @@ export function SignUp() {
               aria-pressed={selectedRole === 'seeker'}
               onClick={() => onRoleSelect('seeker')}
               className={cn(
-                'flex flex-col items-center gap-2 rounded-xl border-2 p-4 text-left transition-all',
+                'flex flex-col items-center gap-2 rounded-12 border-2 p-4 text-left transition-all',
                 selectedRole === 'seeker'
                   ? 'border-brand-900 bg-brand-50'
                   : 'border-border bg-surface',
@@ -306,7 +306,7 @@ export function SignUp() {
                 autoComplete="email"
                 {...register('email')}
                 className={cn(
-                  'bg-surface text-text w-full rounded-lg border px-3.5 py-2.5 text-sm transition-colors',
+                  'bg-surface text-text w-full rounded-8 border px-3.5 py-2.5 text-sm transition-colors',
                   errors.email ? 'border-danger' : 'border-border',
                 )}
               />
@@ -332,7 +332,7 @@ export function SignUp() {
                   autoComplete="new-password"
                   {...register('password')}
                   className={cn(
-                    'bg-surface text-text w-full rounded-lg border px-3.5 py-2.5 pr-10 text-sm transition-colors',
+                    'bg-surface text-text w-full rounded-8 border px-3.5 py-2.5 pr-10 text-sm transition-colors',
                     errors.password ? 'border-danger' : 'border-border',
                   )}
                 />

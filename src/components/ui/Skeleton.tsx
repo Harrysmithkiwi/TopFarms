@@ -78,7 +78,7 @@ export function SectionSkeleton({
     <div className="space-y-3 py-8">
       <LoadingAnnouncement label={label} />
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="border-border bg-surface space-y-2 rounded-[12px] border p-4">
+        <div key={i} className="border-border bg-surface space-y-2 rounded-12 border p-4">
           <Shimmer className="h-4 w-1/3" />
           <Shimmer className="h-3.5 w-4/5" />
         </div>
@@ -157,7 +157,7 @@ export function DetailSkeleton() {
 /** Generic card/panel placeholder for dashboard loads (Daily Briefing, Analytics). */
 export function PanelSkeleton({ height = 120 }: { height?: number }) {
   return (
-    <div className="border-border bg-surface rounded-lg border p-5" aria-hidden="true">
+    <div className="border-border bg-surface rounded-8 border p-5" aria-hidden="true">
       <Shimmer className="mb-3 h-3 w-28" />
       <Shimmer style={{ height }} className="w-full" />
     </div>

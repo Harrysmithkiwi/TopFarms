@@ -110,7 +110,7 @@ function AdminNavContent({ onNavigate }: { onNavigate?: () => void }) {
         <NavLink
           to="/"
           onClick={onNavigate}
-          className="hover:bg-surface mx-2 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[15px] transition-all"
+          className="hover:bg-surface mx-2 flex items-center gap-3 rounded-8 px-3 py-2.5 text-[15px] transition-all"
           style={{ color: 'var(--color-text-muted)' }}
         >
           <ArrowLeft size={18} />
@@ -165,7 +165,7 @@ function AdminNavContent({ onNavigate }: { onNavigate?: () => void }) {
         <button
           type="button"
           onClick={() => signOut()}
-          className="hover:bg-surface flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all"
+          className="hover:bg-surface flex w-full items-center gap-3 rounded-8 px-3 py-2.5 text-sm transition-all"
           style={{ color: 'var(--color-text-muted)' }}
         >
           <LogOut size={18} />
@@ -240,7 +240,7 @@ export function AdminMobileNav() {
           onClick={() => setOpen(true)}
           aria-label="Open menu"
           aria-expanded={open}
-          className="hover:bg-surface-hover flex h-10 w-10 items-center justify-center rounded-md"
+          className="hover:bg-surface-hover flex h-10 w-10 items-center justify-center rounded-12"
           style={{ color: 'var(--color-text-muted)' }}
         >
           <Menu size={20} />
@@ -281,7 +281,7 @@ export function AdminMobileNav() {
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Close menu"
-                className="hover:bg-surface-hover flex h-10 w-10 items-center justify-center rounded-md"
+                className="hover:bg-surface-hover flex h-10 w-10 items-center justify-center rounded-12"
                 style={{ color: 'var(--color-text-muted)' }}
               >
                 <X size={18} />

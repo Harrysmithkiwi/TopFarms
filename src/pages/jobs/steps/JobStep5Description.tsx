@@ -89,7 +89,7 @@ function TextAreaField({
         maxLength={maxLength}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? `${errorId} ${countId}` : countId}
-        className="border-border font-body text-text bg-surface placeholder:text-text-subtle focus:border-brand-hover w-full resize-none rounded-[10px] border-[1.5px] px-3 py-2.5 text-[13px] transition-colors duration-150"
+        className="border-border font-body text-text bg-surface placeholder:text-text-subtle focus:border-brand-hover w-full resize-none rounded-12 border-[1.5px] px-3 py-2.5 text-[13px] transition-colors duration-150"
       />
       {error && (
         <p id={errorId} className="text-danger font-body text-[12px]">

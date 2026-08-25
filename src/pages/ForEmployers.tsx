@@ -131,7 +131,7 @@ export function ForEmployers() {
             {INCLUDED.map((item) => (
               <div
                 key={item.h}
-                className="border-rule rounded-2xl border bg-white p-7 shadow-[0_4px_24px_rgba(26,60,42,0.08)]"
+                className="border-rule rounded-16 border bg-white p-7 shadow-[0_4px_24px_rgba(26,60,42,0.08)]"
               >
                 <IconPlate>{item.icon}</IconPlate>
                 <h3 className="text-fern-900 mt-4 text-[1.0625rem] leading-snug font-semibold">
@@ -148,7 +148,7 @@ export function ForEmployers() {
 
       {/* ── Close ── the V12Banner idiom: fern-100 panel, scene bleeding off its right edge. */}
       <Container className="py-20 sm:py-24">
-        <div className="border-rule relative isolate grid overflow-hidden rounded-2xl border md:grid-cols-[1fr_1.1fr]">
+        <div className="border-rule relative isolate grid overflow-hidden rounded-16 border md:grid-cols-[1fr_1.1fr]">
           <div className="bg-fern-100 relative z-10 flex flex-col justify-center px-8 py-12 sm:px-11">
             <Display className="text-[clamp(1.6rem,3vw,2.1rem)] leading-[1.16]">
               Every listing free. Workers never pay.

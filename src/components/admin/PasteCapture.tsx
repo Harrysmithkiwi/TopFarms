@@ -18,7 +18,7 @@ import { supabase } from '@/lib/supabase'
  */
 
 export const inputCls =
-  'border-border bg-surface w-full rounded-[8px] border px-3 py-2 text-sm focus:border-brand'
+  'border-border bg-surface w-full rounded-8 border px-3 py-2 text-sm focus:border-brand'
 
 const MAX_IMAGES = 10 // lead-intake caps items at 50; keep vision-batch cost sane.
 
@@ -182,7 +182,7 @@ export function PasteCapture({
       {/* Screenshot dropzone — drag, click, or paste. Each image is its own lead. */}
       <div
         {...getRootProps()}
-        className="cursor-pointer rounded-[8px] border-2 border-dashed p-4 text-center text-[13px] transition-colors"
+        className="cursor-pointer rounded-8 border-2 border-dashed p-4 text-center text-[13px] transition-colors"
         style={{
           borderColor: isDragActive ? 'var(--color-brand)' : 'var(--color-border)',
           backgroundColor: isDragActive ? 'rgba(74,124,47,0.06)' : 'var(--color-surface-2)',

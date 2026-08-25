@@ -49,7 +49,7 @@ export function HireConfirmModal({
           onKeyDown={(e) => {
             if (e.key === 'Escape') onCancel()
           }}
-          className="bg-surface border-border w-full max-w-md rounded-[16px] border-[1.5px] shadow-xl"
+          className="bg-surface border-border w-full max-w-md rounded-16 border-[1.5px] shadow-xl"
         >
           {/* Header */}
           <div className="border-border flex items-center gap-2.5 border-b px-6 pt-6 pb-4">
@@ -88,7 +88,7 @@ export function HireConfirmModal({
 
             {/* Invoice warning box */}
             <div
-              className="rounded-[10px] border-[1.5px] p-4"
+              className="rounded-12 border-[1.5px] p-4"
               style={{ backgroundColor: 'rgba(245,158,11,0.1)', borderColor: 'var(--color-warn)' }}
             >
               <p className="font-body text-[13px]" style={{ color: 'var(--color-text-muted)' }}>

@@ -399,7 +399,7 @@ function StagingDrawer({
       {row.raw_excerpt && (
         <DrawerSection label="Original post">
           <p
-            className="bg-surface-2 max-h-40 overflow-y-auto rounded-[8px] p-3 text-[12px] leading-5 whitespace-pre-wrap"
+            className="bg-surface-2 max-h-40 overflow-y-auto rounded-8 p-3 text-[12px] leading-5 whitespace-pre-wrap"
             style={{ color: 'var(--color-text-muted)' }}
           >
             {row.raw_excerpt}
@@ -797,7 +797,7 @@ export function AdminLeadsStaging() {
       {/* Bulk action bar — sticky, appears once rows are selected. Clears on action. */}
       {selectedIds.size > 0 && (
         <div
-          className="sticky bottom-0 z-20 flex flex-wrap items-center gap-2 rounded-t-[10px] border-t px-4 py-3"
+          className="sticky bottom-0 z-20 flex flex-wrap items-center gap-2 rounded-t-12 border-t px-4 py-3"
           style={{
             backgroundColor: 'var(--color-surface)',
             borderColor: 'var(--color-border)',

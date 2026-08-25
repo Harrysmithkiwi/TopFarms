@@ -129,7 +129,7 @@ export function SavedSearchesDropdown() {
       {open && (
         <div
           role="menu"
-          className="bg-surface border-border absolute top-full right-0 z-30 mt-2 w-[280px] rounded-[10px] border shadow-lg"
+          className="bg-surface border-border absolute top-full right-0 z-30 mt-2 w-[280px] rounded-12 border shadow-lg"
         >
           {loading ? (
             <p className="font-body p-3 text-label text-text-subtle">

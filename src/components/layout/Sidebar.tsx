@@ -47,7 +47,7 @@ export function Sidebar() {
             end={item.to.includes('/dashboard')}
             className={({ isActive }) =>
               [
-                'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all',
+                'flex items-center gap-3 rounded-8 px-3 py-2.5 text-sm transition-all',
                 // Phase 5.0a — was --color-brand on an rgba(45,80,22,0.05) tint:
                 // 3.04:1, an AA failure on the primary navigation of every
                 // dashboard. Inline styles, so scripts/contrast.mjs could not see
@@ -69,7 +69,7 @@ export function Sidebar() {
         <button
           type="button"
           onClick={() => signOut()}
-          className="hover:bg-surface-2/50 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all"
+          className="hover:bg-surface-2/50 flex w-full items-center gap-3 rounded-8 px-3 py-2.5 text-sm transition-all"
           style={{ color: 'var(--color-text-muted)' }}
         >
           <LogOut size={18} />

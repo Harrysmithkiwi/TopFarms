@@ -118,7 +118,7 @@ const LegendItem = ({
       <button className="group inline-flex items-center gap-2">
         <span
           className={cn(
-            "size-2 shrink-0 rounded-sm",
+            "size-2 shrink-0 rounded-full",
             getColorClassName(color, "bg"),
             activeLegend && activeLegend !== name
               ? "opacity-40"
@@ -438,7 +438,7 @@ const ChartTooltipRow = ({ value, name, color }: ChartTooltipRowProps) => (
     <div className="flex items-center space-x-2">
       <span
         aria-hidden="true"
-        className={cn("size-2 shrink-0 rounded-sm", color)}
+        className={cn("size-2 shrink-0 rounded-full", color)}
       />
       <p
         className={cn(
@@ -486,7 +486,7 @@ const ChartTooltip = ({
       <div
         className={cn(
           // base
-          "rounded-md border text-sm shadow-md",
+          "rounded-12 border text-sm shadow-md",
           // border color
           "border-border dark:border-border-strong",
           // background color

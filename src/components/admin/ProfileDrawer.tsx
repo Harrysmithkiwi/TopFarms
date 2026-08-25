@@ -185,7 +185,7 @@ export function ProfileDrawer({
       {error && (
         <div
           role="alert"
-          className="rounded-md p-3 text-[14px]"
+          className="rounded-12 p-3 text-[14px]"
           style={{
             backgroundColor: 'var(--color-danger-bg)',
             color: 'var(--color-danger)',
@@ -293,7 +293,7 @@ export function ProfileDrawer({
           {/* Inline confirm row per UI-SPEC §"Suspend / reactivate UX" */}
           {pendingActive !== null && (
             <div
-              className="mt-3 rounded-lg p-4"
+              className="mt-3 rounded-8 p-4"
               style={{
                 backgroundColor: 'var(--color-surface-2)',
                 border: '1px solid var(--color-border)',

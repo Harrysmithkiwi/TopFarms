@@ -141,7 +141,7 @@ function DraftPanel({ row, onDone }: { row: OutreachRow; onDone: () => void }) {
         </p>
       )}
       <textarea
-        className="border-border bg-surface h-40 w-full rounded-[8px] border px-3 py-2 text-sm focus:border-brand"
+        className="border-border bg-surface h-40 w-full rounded-8 border px-3 py-2 text-sm focus:border-brand"
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
       />
@@ -259,7 +259,7 @@ function OutreachDrawer({ row, onDone, onClose }: { row: OutreachRow; onDone: ()
       {row.raw_excerpt && (
         <DrawerSection label="Original post">
           <p
-            className="bg-surface-2 max-h-40 overflow-y-auto rounded-[8px] p-3 text-[12px] leading-5 whitespace-pre-wrap"
+            className="bg-surface-2 max-h-40 overflow-y-auto rounded-8 p-3 text-[12px] leading-5 whitespace-pre-wrap"
             style={{ color: 'var(--color-text-muted)' }}
           >
             {row.raw_excerpt}

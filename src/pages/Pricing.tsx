@@ -157,7 +157,7 @@ export function Pricing() {
               {tiers.map((tier) => (
                 <div
                   key={tier.name}
-                  className={`rounded-2xl border p-7 shadow-[0_4px_24px_rgba(26,60,42,0.08)] ${
+                  className={`rounded-16 border p-7 shadow-[0_4px_24px_rgba(26,60,42,0.08)] ${
                     tier.highlight ? 'border-fern-700 bg-fern-100' : 'border-rule bg-white'
                   }`}
                 >
@@ -220,7 +220,7 @@ export function Pricing() {
               {SEEKER_FREE.map(([h, p]) => (
                 <div
                   key={h}
-                  className="border-rule rounded-2xl border bg-white p-7 shadow-[0_4px_24px_rgba(26,60,42,0.08)]"
+                  className="border-rule rounded-16 border bg-white p-7 shadow-[0_4px_24px_rgba(26,60,42,0.08)]"
                 >
                   <h3 className="text-fern-900 text-[1.0625rem] leading-snug font-semibold">{h}</h3>
                   <p className="text-sage mt-2.5 max-w-[46ch] text-[0.9375rem] leading-relaxed">
@@ -239,7 +239,7 @@ export function Pricing() {
 
       {/* ── Close ── */}
       <Container className="py-20 sm:py-24">
-        <div className="bg-fern-100 border-rule relative isolate overflow-hidden rounded-2xl border">
+        <div className="bg-fern-100 border-rule relative isolate overflow-hidden rounded-16 border">
           <div className="relative px-6 py-14 text-center sm:py-16">
             <Display className="mx-auto max-w-[20ch] text-[clamp(1.8rem,3.4vw,2.4rem)]">
               The whole job. The whole person.

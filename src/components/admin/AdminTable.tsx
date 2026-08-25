@@ -392,7 +392,7 @@ export function AdminTable<TRow extends Record<string, unknown>>({
       </div>
     ) : (
       <div
-        className="overflow-x-auto rounded-lg border"
+        className="overflow-x-auto rounded-8 border"
         tabIndex={focusable ? 0 : undefined}
         style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-surface)' }}
       >

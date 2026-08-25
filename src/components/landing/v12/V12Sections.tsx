@@ -129,25 +129,25 @@ export function V12Hero() {
         </div>
 
         <div className="lg:col-span-7" aria-hidden="true">
-          <div className="border-rule rounded-2xl border bg-white p-4 shadow-[0_10px_34px_rgba(11,31,16,0.05)] sm:p-5">
+          <div className="border-rule rounded-16 border bg-white p-4 shadow-[0_10px_34px_rgba(11,31,16,0.05)] sm:p-5">
             <div className="border-rule flex items-center justify-between border-b pb-3.5">
-              <span className="bg-paper border-rule text-sage rounded-md border px-2.5 py-1 text-xs font-medium">
+              <span className="bg-paper border-rule text-sage rounded-12 border px-2.5 py-1 text-xs font-medium">
                 topfarms.co.nz/jobs
               </span>
               <span className="text-sage text-xs font-medium">Newest first</span>
             </div>
             <div className="grid gap-3.5 pt-4 md:grid-cols-12">
               {/* Filter rail — static, illustrative */}
-              <div className="bg-paper/70 border-rule hidden space-y-3 rounded-xl border p-3 text-xs md:col-span-4 md:block">
+              <div className="bg-paper/70 border-rule hidden space-y-3 rounded-12 border p-3 text-xs md:col-span-4 md:block">
                 <div>
                   <span className="text-bark block font-semibold">Search jobs</span>
-                  <span className="border-rule text-sage mt-1 block rounded-lg border bg-white px-2.5 py-1.5">
+                  <span className="border-rule text-sage mt-1 block rounded-8 border bg-white px-2.5 py-1.5">
                     Dairy, shepherd, fencing
                   </span>
                 </div>
                 <div>
                   <span className="text-bark block font-semibold">Region</span>
-                  <span className="border-rule text-sage mt-1 block rounded-lg border bg-white px-2.5 py-1.5">
+                  <span className="border-rule text-sage mt-1 block rounded-8 border bg-white px-2.5 py-1.5">
                     All of New Zealand
                   </span>
                 </div>
@@ -155,13 +155,13 @@ export function V12Hero() {
                   <span className="text-bark block font-semibold">Sector</span>
                   <div className="text-sage mt-1 space-y-1">
                     <span className="flex items-center gap-1.5">
-                      <span className="bg-fern-600 h-3 w-3 rounded-sm" /> Dairy
+                      <span className="bg-fern-600 h-3 w-3 rounded-full" /> Dairy
                     </span>
                     <span className="flex items-center gap-1.5">
-                      <span className="bg-fern-600 h-3 w-3 rounded-sm" /> Sheep &amp; beef
+                      <span className="bg-fern-600 h-3 w-3 rounded-full" /> Sheep &amp; beef
                     </span>
                     <span className="flex items-center gap-1.5">
-                      <span className="border-rule h-3 w-3 rounded-sm border bg-white" /> Horticulture
+                      <span className="border-rule h-3 w-3 rounded-full border bg-white" /> Horticulture
                     </span>
                   </div>
                 </div>
@@ -171,7 +171,7 @@ export function V12Hero() {
                 {PREVIEW_ROWS.map((r) => (
                   <div
                     key={r.role}
-                    className="border-rule flex items-start justify-between gap-3 rounded-xl border bg-white p-3.5"
+                    className="border-rule flex items-start justify-between gap-3 rounded-12 border bg-white p-3.5"
                   >
                     <div className="flex gap-3">
                       <span className="bg-fern-50 text-fern-700 flex h-9 w-9 shrink-0 items-center justify-center rounded-full">
@@ -315,7 +315,7 @@ function EmployerPreview() {
         <span className="text-fern-700 text-[11px] font-semibold">View all</span>
       </div>
       {rows.map((r) => (
-        <div key={r.role} className="border-rule flex items-center justify-between rounded-lg border bg-white px-3 py-2">
+        <div key={r.role} className="border-rule flex items-center justify-between rounded-8 border bg-white px-3 py-2">
           <span>
             <span className="text-bark block text-xs font-semibold">{r.role}</span>
             <span className="text-sage text-[11px]">{r.meta}</span>
@@ -325,7 +325,7 @@ function EmployerPreview() {
           </span>
         </div>
       ))}
-      <div className="border-rule rounded-lg border bg-white px-3 py-2">
+      <div className="border-rule rounded-8 border bg-white px-3 py-2">
         <span className="text-bark block text-xs font-semibold">Recent applicants</span>
         <span className="text-sage mt-1 flex items-center gap-1.5 text-[11px]">
           <span className="bg-fern-600 h-4 w-4 shrink-0 rounded-full" />
@@ -347,7 +347,7 @@ function SeekerPreview() {
     <div className="space-y-2.5">
       <span className="text-bark block text-xs font-semibold">Recommended for you</span>
       {rows.map((r) => (
-        <div key={r.role} className="border-rule flex items-center gap-2.5 rounded-lg border bg-white px-3 py-2">
+        <div key={r.role} className="border-rule flex items-center gap-2.5 rounded-8 border bg-white px-3 py-2">
           <span className="bg-fern-50 text-fern-700 flex h-7 w-7 shrink-0 items-center justify-center rounded-full">
             <IconPin className="h-3.5 w-3.5" />
           </span>
@@ -357,7 +357,7 @@ function SeekerPreview() {
           </span>
         </div>
       ))}
-      <div className="border-rule rounded-lg border bg-white px-3 py-2.5">
+      <div className="border-rule rounded-8 border bg-white px-3 py-2.5">
         <span className="text-sage flex items-center justify-between text-[11px] font-medium">
           Profile strength <span className="text-fern-800 font-semibold">Strong</span>
         </span>
@@ -403,7 +403,7 @@ export function V12SplitCards() {
         {SPLIT.map((c) => (
           <div
             key={c.h}
-            className="border-rule grid overflow-hidden rounded-2xl border bg-white sm:grid-cols-2"
+            className="border-rule grid overflow-hidden rounded-16 border bg-white sm:grid-cols-2"
           >
             <div className="flex flex-col justify-center p-8">
               <IconPlate className="mb-4">{c.icon}</IconPlate>

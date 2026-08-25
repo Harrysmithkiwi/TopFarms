@@ -53,7 +53,7 @@ export function LeadsFunnel({ refreshKey }: { refreshKey?: number }) {
 
   return (
     <div
-      className="rounded-lg border p-4"
+      className="rounded-8 border p-4"
       style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-surface)' }}
     >
       <div className="mb-3 flex items-center justify-between">

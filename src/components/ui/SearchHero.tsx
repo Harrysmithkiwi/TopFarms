@@ -97,7 +97,7 @@ export function SearchHero({
         </h1>
 
         {/* Search bar */}
-        <div className="bg-surface mx-auto flex max-w-[680px] items-center gap-2 rounded-[12px] p-2 shadow-lg">
+        <div className="bg-surface mx-auto flex max-w-[680px] items-center gap-2 rounded-12 p-2 shadow-lg">
           <input
             type="search"
             aria-label="Search jobs, roles and farms"
@@ -128,7 +128,7 @@ export function SearchHero({
           <button
             type="button"
             onClick={handleSearch}
-            className="bg-brand-hover hover:bg-brand-900 rounded-[8px] px-4 py-2 text-[14px] font-semibold whitespace-nowrap text-white transition-colors"
+            className="bg-brand-hover hover:bg-brand-900 rounded-8 px-4 py-2 text-[14px] font-semibold whitespace-nowrap text-white transition-colors"
           >
             Search Jobs
           </button>

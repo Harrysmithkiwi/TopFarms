@@ -28,13 +28,13 @@ export function ApplicantDashboardSidebar({
   return (
     <aside className={cn('w-[260px] flex-shrink-0 space-y-4', className)}>
       {/* Farm header */}
-      <div className="overflow-hidden rounded-[12px]">
+      <div className="overflow-hidden rounded-12">
         <div className="bg-brand-900 px-4 py-3 text-white">
           {/* Card title at 16px — Inter 600, not the display face. See JobDetailSidebar. */}
           <h2 className="font-body text-[16px] font-semibold">{farmName}</h2>
         </div>
         {/* Listing selector */}
-        <div className="bg-surface border-border rounded-b-[12px] border border-t-0 p-3">
+        <div className="bg-surface border-border rounded-b-12 border border-t-0 p-3">
           <label
             htmlFor="applicant-dashboard-listing"
             className="font-body text-text-subtle mb-1.5 block text-[11px] font-semibold tracking-wide uppercase"
@@ -45,7 +45,7 @@ export function ApplicantDashboardSidebar({
             id="applicant-dashboard-listing"
             value={selectedJobId}
             onChange={(e) => onJobSelect(e.target.value)}
-            className="font-body text-text border-border bg-surface focus:border-brand w-full cursor-pointer rounded-[6px] border px-2 py-1.5 text-[13px]"
+            className="font-body text-text border-border bg-surface focus:border-brand w-full cursor-pointer rounded-8 border px-2 py-1.5 text-[13px]"
           >
             {jobs.map((job) => (
               <option key={job.id} value={job.id}>
@@ -57,7 +57,7 @@ export function ApplicantDashboardSidebar({
       </div>
 
       {/* Quick stats */}
-      <div className="bg-surface border-border rounded-[12px] border p-4">
+      <div className="bg-surface border-border rounded-12 border p-4">
         <h3 className="font-body text-text-subtle mb-3 text-[11px] font-semibold tracking-wide uppercase">
           Quick Stats
         </h3>

@@ -67,7 +67,7 @@ export function JobStep1Basics({ onComplete, defaultValues }: Step1Props) {
     <div className="grid min-h-[400px] grid-cols-1 md:grid-cols-[280px_1fr]">
       {/* Left panel — soil background with stats */}
       <div
-        className="hidden flex-col justify-center rounded-l-[16px] p-6 md:flex"
+        className="hidden flex-col justify-center rounded-l-16 p-6 md:flex"
         style={{ backgroundColor: 'var(--color-brand-900)' }}
       >
         {/* Honest value points — replaced fabricated 85%/500+/92% stats (TF-003 truth pass). */}

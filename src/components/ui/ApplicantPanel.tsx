@@ -193,7 +193,7 @@ export function ApplicantPanel({
   const highlights = matchScore ? getMatchHighlights(matchScore, seeker) : []
 
   return (
-    <div className="bg-surface border-border overflow-hidden rounded-[12px] border-[1.5px]">
+    <div className="bg-surface border-border overflow-hidden rounded-12 border-[1.5px]">
       {/* Collapsed row */}
       <button
         type="button"
@@ -530,7 +530,7 @@ export function ApplicantPanel({
                         placeholder="Optional note..."
                         value={transitionNote}
                         onChange={(e) => setTransitionNote(e.target.value)}
-                        className="border-border font-body text-text bg-surface-2 focus:border-brand-hover w-full resize-none rounded-[8px] border-[1.5px] px-3 py-2 text-[13px]"
+                        className="border-border font-body text-text bg-surface-2 focus:border-brand-hover w-full resize-none rounded-8 border-[1.5px] px-3 py-2 text-[13px]"
                       />
                     )}
 
@@ -539,7 +539,7 @@ export function ApplicantPanel({
                       onClick={handleUpdateStatus}
                       disabled={!selectedStatus}
                       className={cn(
-                        'font-body rounded-[8px] px-4 py-2 text-[13px] font-semibold transition-colors',
+                        'font-body rounded-8 px-4 py-2 text-[13px] font-semibold transition-colors',
                         selectedStatus
                           ? 'bg-brand-hover hover:bg-brand-900 text-white'
                           : 'bg-surface-2 text-text-subtle cursor-not-allowed',
@@ -579,7 +579,7 @@ export function ApplicantPanel({
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Add private notes about this applicant..."
                 rows={4}
-                className="border-border font-body text-text bg-surface focus:border-brand w-full resize-none rounded-[8px] border-[1.5px] px-3 py-2 text-[13px]"
+                className="border-border font-body text-text bg-surface focus:border-brand w-full resize-none rounded-8 border-[1.5px] px-3 py-2 text-[13px]"
               />
               <button
                 type="button"
@@ -594,7 +594,7 @@ export function ApplicantPanel({
                 }}
                 disabled={savingNotes}
                 className={cn(
-                  'font-body rounded-[8px] px-3 py-1.5 text-[12px] font-semibold transition-colors',
+                  'font-body rounded-8 px-3 py-1.5 text-[12px] font-semibold transition-colors',
                   'bg-brand-hover hover:bg-brand-900 text-white disabled:opacity-50',
                 )}
               >

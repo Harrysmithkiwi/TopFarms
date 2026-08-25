@@ -27,7 +27,7 @@ function VerificationCard({
   return (
     <div
       className={cn(
-        'flex items-start gap-4 rounded-[10px] border-[1.5px] p-4',
+        'flex items-start gap-4 rounded-12 border-[1.5px] p-4',
         isVerified ? 'border-brand bg-[rgba(74,124,47,0.04)]' : 'border-border bg-surface',
       )}
     >
@@ -140,7 +140,7 @@ export function Step5Verification({ onComplete, onBack }: Step5Props) {
       </div>
 
       <div
-        className="rounded-[10px] p-4 text-[12px]"
+        className="rounded-12 p-4 text-[12px]"
         style={{ backgroundColor: 'var(--color-warn-bg)', color: 'var(--color-brand-900)' }}
       >
         <strong>You can complete verification later</strong> — access verification settings anytime

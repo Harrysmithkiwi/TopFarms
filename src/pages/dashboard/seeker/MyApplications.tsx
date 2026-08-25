@@ -20,7 +20,7 @@ type ApplicationWithJob = Application & {
 
 function SkeletonCard() {
   return (
-    <div className="bg-surface border-border animate-pulse rounded-[12px] border-[1.5px] p-4">
+    <div className="bg-surface border-border animate-pulse rounded-12 border-[1.5px] p-4">
       <div className="flex gap-3">
         <div className="flex-1 space-y-2">
           <div className="bg-surface-2 h-4 w-3/4 rounded" />
@@ -254,7 +254,7 @@ export function MyApplications() {
                 <Dialog.Trigger asChild>
                   <button
                     type="button"
-                    className="border-border bg-surface font-body text-text-muted hover:border-border-strong flex min-h-11 items-center gap-2 rounded-[8px] border px-3 py-2 text-label transition-colors"
+                    className="border-border bg-surface font-body text-text-muted hover:border-border-strong flex min-h-11 items-center gap-2 rounded-8 border px-3 py-2 text-label transition-colors"
                   >
                     <SlidersHorizontal className="h-4 w-4" />
                     Filters &amp; saved
@@ -263,7 +263,7 @@ export function MyApplications() {
                 <Dialog.Portal>
                   <Dialog.Overlay className="fixed inset-0 z-40 bg-black/40" />
                   <Dialog.Content
-                    className="bg-surface fixed right-0 bottom-0 left-0 z-50 max-h-[85vh] overflow-y-auto rounded-t-[16px] p-4"
+                    className="bg-surface fixed right-0 bottom-0 left-0 z-50 max-h-[85vh] overflow-y-auto rounded-t-16 p-4"
                     aria-describedby={undefined}
                   >
                     <Dialog.Title className="sr-only">Filters and saved jobs</Dialog.Title>
@@ -308,7 +308,7 @@ export function MyApplications() {
 
           {!loading && !loadError && applications.length === 0 && (
             <div
-              className="rounded-[12px] p-12 text-center bg-surface-2"
+              className="rounded-12 p-12 text-center bg-surface-2"
             >
               <p
                 className="font-body mb-2 text-base font-semibold text-text"
@@ -346,7 +346,7 @@ export function MyApplications() {
           {/* Filtered empty state (when filter active but no matches) */}
           {!loading && !loadError && applications.length > 0 && filteredApplications.length === 0 && (
             <div
-              className="rounded-[12px] p-8 text-center bg-surface-2"
+              className="rounded-12 p-8 text-center bg-surface-2"
             >
               <p className="font-body text-text-muted text-sm">
                 No applications match this filter.

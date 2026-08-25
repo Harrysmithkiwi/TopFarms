@@ -318,7 +318,7 @@ export function EmployerDashboard() {
             <Card className="p-6">
               <div className="flex flex-col gap-6 md:flex-row md:items-center">
                 <div
-                  className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl"
+                  className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-16"
                   style={{ backgroundColor: 'var(--color-warn-bg)' }}
                 >
                   <Wheat
@@ -340,7 +340,7 @@ export function EmployerDashboard() {
                   <Link
                     to="/onboarding/employer"
                     className={cn(
-                      'font-body inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
+                      'font-body inline-flex items-center justify-center rounded-8 font-bold transition-all duration-200',
                       'bg-brand-hover hover:bg-brand-900 text-white',
                       'px-4 py-2 text-[13px]',
                     )}
@@ -372,7 +372,7 @@ export function EmployerDashboard() {
               <Link
                 to="/jobs/new"
                 className={cn(
-                  'font-body inline-flex items-center justify-center gap-1.5 rounded-[8px] font-bold transition-all duration-200',
+                  'font-body inline-flex items-center justify-center gap-1.5 rounded-8 font-bold transition-all duration-200',
                   'bg-brand-hover hover:bg-brand-900 text-white',
                   'flex-shrink-0 px-4 py-2 text-[13px]',
                 )}
@@ -413,7 +413,7 @@ export function EmployerDashboard() {
                   <Link
                     to="/dashboard/employer/verification"
                     className={cn(
-                      'font-body inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
+                      'font-body inline-flex items-center justify-center rounded-8 font-bold transition-all duration-200',
                       'bg-surface border-brand text-brand-hover hover:bg-surface-2 border',
                       'flex-shrink-0 px-4 py-2 text-[13px]',
                     )}
@@ -510,7 +510,7 @@ export function EmployerDashboard() {
                 // Empty state — no jobs at all
                 <Card className="p-10 text-center">
                   <div
-                    className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl"
+                    className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-16"
                     style={{ backgroundColor: 'var(--color-warn-bg)' }}
                   >
                     <Pin
@@ -531,7 +531,7 @@ export function EmployerDashboard() {
                   <Link
                     to="/jobs/new"
                     className={cn(
-                      'font-body inline-flex items-center justify-center gap-1.5 rounded-[8px] font-bold transition-all duration-200',
+                      'font-body inline-flex items-center justify-center gap-1.5 rounded-8 font-bold transition-all duration-200',
                       'bg-brand-hover hover:bg-brand-900 text-white',
                       'px-4 py-2 text-[13px]',
                     )}
@@ -544,7 +544,7 @@ export function EmployerDashboard() {
                 activeTab !== 'drafts' ? (
                 // Empty state for current filter
                 <div
-                  className="rounded-[12px] py-10 text-center"
+                  className="rounded-12 py-10 text-center"
                   style={{ backgroundColor: 'var(--color-surface-2)' }}
                 >
                   <p className="text-sm" style={{ color: 'var(--color-text-subtle)' }}>
@@ -598,7 +598,7 @@ export function EmployerDashboard() {
                   {draftJobs.map((job) => (
                     <div
                       key={job.id}
-                      className="bg-surface border-border flex items-center justify-between gap-4 rounded-[12px] border-[1.5px] p-5"
+                      className="bg-surface border-border flex items-center justify-between gap-4 rounded-12 border-[1.5px] p-5"
                     >
                       <div className="min-w-0 flex-1">
                         <h3 className="font-body text-text truncate text-[15px] font-bold">
@@ -611,7 +611,7 @@ export function EmployerDashboard() {
                       <Link
                         to={`/jobs/${job.id}/edit`}
                         className={cn(
-                          'font-body inline-flex flex-shrink-0 items-center justify-center rounded-[8px] font-bold transition-all duration-200',
+                          'font-body inline-flex flex-shrink-0 items-center justify-center rounded-8 font-bold transition-all duration-200',
                           'bg-surface border-brand text-brand-hover hover:bg-surface-2 border',
                           'px-3 py-1.5 text-[12px]',
                         )}
@@ -637,7 +637,7 @@ export function EmployerDashboard() {
           />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div
-              className="bg-surface border-border w-full max-w-sm rounded-[16px] border-[1.5px] p-6 shadow-xl"
+              className="bg-surface border-border w-full max-w-sm rounded-16 border-[1.5px] p-6 shadow-xl"
               onClick={(e) => e.stopPropagation()}
             >
               <h3

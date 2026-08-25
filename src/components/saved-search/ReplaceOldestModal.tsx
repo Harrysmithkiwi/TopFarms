@@ -117,7 +117,7 @@ export function ReplaceOldestModal({
       >
         <div
           ref={dialogRef}
-          className="bg-surface border-border w-full max-w-md rounded-[16px] border-[1.5px] shadow-xl"
+          className="bg-surface border-border w-full max-w-md rounded-16 border-[1.5px] shadow-xl"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="border-border flex items-center justify-between border-b px-6 pt-5 pb-4">

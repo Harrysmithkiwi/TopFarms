@@ -85,7 +85,7 @@ export function MatchBreakdown({ score, className, audience = 'worker' }: MatchB
     .filter(([, blocked]) => blocked)
     .map(([name]) => name)
   const content = (
-    <div className="bg-surface border-border space-y-4 rounded-[12px] border p-6">
+    <div className="bg-surface border-border space-y-4 rounded-12 border p-6">
       {/* Total score circle */}
       <div className="mb-2 flex flex-col items-center">
         {showNumbers ? (
@@ -104,7 +104,7 @@ export function MatchBreakdown({ score, className, audience = 'worker' }: MatchB
       {/* Blockers first: a gate changes whether the role is possible at all, so it belongs
           above the gradient, not buried among the bars. */}
       {blockers.length > 0 && (
-        <div className="border-warn-border bg-warn-bg space-y-1 rounded-[10px] border p-3">
+        <div className="border-warn-border bg-warn-bg space-y-1 rounded-12 border p-3">
           <p className="font-body text-[11px] font-semibold tracking-wide uppercase text-warn-text-on-bg">
             {blockers.length === 1 ? 'Blocker' : 'Blockers'}
           </p>

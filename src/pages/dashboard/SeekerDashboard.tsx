@@ -203,7 +203,7 @@ export function SeekerDashboard() {
               <Link
                 to="/onboarding/seeker"
                 className={cn(
-                  'font-body mt-4 inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
+                  'font-body mt-4 inline-flex items-center justify-center rounded-8 font-bold transition-all duration-200',
                   'bg-brand-hover hover:bg-brand-900 text-white',
                   'min-h-[44px] px-4 py-2 text-label',
                 )}
@@ -231,7 +231,7 @@ export function SeekerDashboard() {
             <Card className="p-6">
               <div className="flex flex-col gap-6 md:flex-row md:items-center">
                 <div
-                  className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl bg-brand-50"
+                  className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-16 bg-brand-50"
                 >
                   <UserRound
                     className="h-8 w-8 text-brand"
@@ -251,7 +251,7 @@ export function SeekerDashboard() {
                   <Link
                     to="/onboarding/seeker"
                     className={cn(
-                      'font-body inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
+                      'font-body inline-flex items-center justify-center rounded-8 font-bold transition-all duration-200',
                       'bg-brand-hover hover:bg-brand-900 text-white',
                       'px-4 py-2 text-label',
                     )}
@@ -436,7 +436,7 @@ export function SeekerDashboard() {
                     <Link
                       to="/jobs"
                       className={cn(
-                        'font-body inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
+                        'font-body inline-flex items-center justify-center rounded-8 font-bold transition-all duration-200',
                         'bg-brand-hover hover:bg-brand-900 text-white',
                         'min-h-[44px] px-4 py-2 text-label',
                       )}

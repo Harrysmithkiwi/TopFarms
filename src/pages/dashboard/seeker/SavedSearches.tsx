@@ -3,8 +3,8 @@
  *
  * Mirrors MyApplications.tsx card-row layout:
  *   - DashboardLayout hideSidebar wrapper
- *   - rounded-[12px] empty state with Link to /jobs
- *   - bg-surface border-[1.5px] border-border rounded-[12px] card rows
+ *   - rounded-12 empty state with Link to /jobs
+ *   - bg-surface border-[1.5px] border-border rounded-12 card rows
  *
  * Introduces the FIRST sonner action-bearing toast in the project:
  *   delete → optimistic hide → 5s undo toast → onAutoClose fires hard DELETE
@@ -48,7 +48,7 @@ function summarizeFilters(searchParamsStr: string): string {
 
 function SkeletonCard() {
   return (
-    <div className="bg-surface border-border animate-pulse rounded-[12px] border-[1.5px] p-4">
+    <div className="bg-surface border-border animate-pulse rounded-12 border-[1.5px] p-4">
       <div className="space-y-2">
         <div className="bg-surface-2 h-4 w-1/2 rounded" />
         <div className="bg-surface-2 h-3 w-3/4 rounded" />
@@ -102,7 +102,7 @@ function SavedSearchRow({ row, onLoad, onDelete, onRename }: SavedSearchRowProps
   }
 
   return (
-    <div className="bg-surface border-border flex items-center gap-3 rounded-[12px] border-[1.5px] p-4">
+    <div className="bg-surface border-border flex items-center gap-3 rounded-12 border-[1.5px] p-4">
       <div className="min-w-0 flex-1 space-y-1">
         {editing ? (
           <Input
@@ -147,7 +147,7 @@ function SavedSearchRow({ row, onLoad, onDelete, onRename }: SavedSearchRowProps
         <button
           type="button"
           onClick={() => onDelete(row)}
-          className="hover:bg-surface-2 flex h-9 w-9 items-center justify-center rounded-[8px] transition-colors"
+          className="hover:bg-surface-2 flex h-9 w-9 items-center justify-center rounded-8 transition-colors"
           aria-label={`Delete ${row.name}`}
         >
           <Trash2 className="text-text-muted h-4 w-4" />
@@ -283,7 +283,7 @@ export function SavedSearches() {
 
         {!loading && rows.length === 0 && (
           <div
-            className="rounded-[12px] p-12 text-center bg-surface-2"
+            className="rounded-12 p-12 text-center bg-surface-2"
           >
             <p
               className="font-body mb-2 text-base font-semibold text-text"

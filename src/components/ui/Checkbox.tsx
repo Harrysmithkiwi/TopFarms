@@ -35,7 +35,7 @@ export function Checkbox({
         disabled={disabled}
         aria-label={ariaLabel}
         className={cn(
-          'flex h-[15px] w-[15px] items-center justify-center rounded-[3px] border-[1.5px]',
+          'flex h-[15px] w-[15px] items-center justify-center rounded-8 border-[1.5px]',
           'cursor-pointer transition-colors duration-150',
           'focus-visible:outline-brand focus-visible:outline-2 focus-visible:outline-offset-2',
           'disabled:cursor-not-allowed disabled:opacity-50',

@@ -83,7 +83,7 @@ export function SearchJobCard({
   return (
     <div
       className={cn(
-        'bg-surface border-border rounded-[12px] border',
+        'bg-surface border-border rounded-12 border',
         'hover:border-brand/30 transition-colors',
         isExpanded && 'border-brand/30',
       )}
@@ -103,7 +103,7 @@ export function SearchJobCard({
                 type="button"
                 onClick={onToggle}
                 aria-expanded={isExpanded}
-                className="focus-visible:ring-brand block max-w-full truncate text-left after:absolute after:inset-0 after:rounded-[12px] after:content-[''] focus:outline-none focus-visible:ring-2"
+                className="focus-visible:ring-brand block max-w-full truncate text-left after:absolute after:inset-0 after:rounded-12 after:content-[''] focus:outline-none focus-visible:ring-2"
               >
                 {job.title}
               </button>

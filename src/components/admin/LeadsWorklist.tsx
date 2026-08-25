@@ -68,7 +68,7 @@ export function LeadsWorklist() {
               key={t.key}
               type="button"
               onClick={() => navigate(t.to)}
-              className="hover:border-border-strong flex items-center gap-3 rounded-lg border p-4 text-left transition-colors"
+              className="hover:border-border-strong flex items-center gap-3 rounded-8 border p-4 text-left transition-colors"
               style={{
                 borderColor: 'var(--color-border)',
                 backgroundColor: 'var(--color-surface)',
@@ -94,7 +94,7 @@ export function LeadsWorklist() {
 
       {data.followups.length > 0 && (
         <div
-          className="rounded-lg border p-3"
+          className="rounded-8 border p-3"
           style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-surface)' }}
         >
           <div

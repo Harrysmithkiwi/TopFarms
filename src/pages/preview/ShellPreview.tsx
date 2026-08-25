@@ -30,7 +30,7 @@ export function ShellPreview() {
             above: the nav links swap, and the Join link carries the matching role. Sign in
             and the bar disappears, because a session outranks the toggle.
           </p>
-          <div className="v13-dark bg-brand-900 mt-10 max-w-[60ch] rounded-3xl p-8 text-white">
+          <div className="v13-dark bg-brand-900 mt-10 max-w-[60ch] rounded-16 p-8 text-white">
             <p className="font-semibold">Dark panel focus check</p>
             <p className="mt-2 text-sm text-white/80">
               Tab through: the focus ring is ink on cream and white in here.

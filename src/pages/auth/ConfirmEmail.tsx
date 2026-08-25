@@ -178,7 +178,7 @@ export function ConfirmEmail() {
                   required
                   value={resendEmail}
                   onChange={(e) => setResendEmail(e.target.value)}
-                  className="bg-surface text-text border-border w-full rounded-lg border px-3.5 py-2.5 text-sm transition-colors"
+                  className="bg-surface text-text border-border w-full rounded-8 border px-3.5 py-2.5 text-sm transition-colors"
                 />
               </div>
               <button

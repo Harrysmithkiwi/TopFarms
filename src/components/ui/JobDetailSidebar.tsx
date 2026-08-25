@@ -67,7 +67,7 @@ export function JobDetailSidebar({
   return (
     <div className="space-y-4">
       {/* Section 1: Quick Facts card */}
-      <div className="bg-surface border-border rounded-[12px] border p-4">
+      <div className="bg-surface border-border rounded-12 border p-4">
         <h3 className="font-body text-text mb-3 text-[13px] font-semibold">Quick Facts</h3>
         <ul className="mb-4 space-y-2.5">
           {job.contract_type && (
@@ -133,7 +133,7 @@ export function JobDetailSidebar({
 
       {/* Section 2: Deadline notice */}
       {job.expires_at && (
-        <div className="bg-warn-bg flex items-center gap-2 rounded-[12px] p-3">
+        <div className="bg-warn-bg flex items-center gap-2 rounded-12 p-3">
           <Clock className="text-warn h-4 w-4 flex-shrink-0" />
           <span className="font-body text-text text-[13px]">
             Applications close {formatDateShort(job.expires_at)}
@@ -143,7 +143,7 @@ export function JobDetailSidebar({
 
       {/* Section 3: Similar Jobs card */}
       {similarJobs.length > 0 && (
-        <div className="bg-surface border-border rounded-[12px] border p-4">
+        <div className="bg-surface border-border rounded-12 border p-4">
           <h3 className="font-body text-text mb-3 text-[13px] font-semibold">Similar Jobs</h3>
           <ul className="space-y-3">
             {similarJobs.slice(0, 3).map((sj) => (
@@ -179,9 +179,9 @@ export function JobDetailSidebar({
       )}
 
       {/* Section 4: Farm Profile card */}
-      <div className="border-border overflow-hidden rounded-[12px] border">
+      <div className="border-border overflow-hidden rounded-12 border">
         {/* Header */}
-        <div className="bg-brand-900 rounded-t-[12px] px-4 py-3">
+        <div className="bg-brand-900 rounded-t-12 px-4 py-3">
           {/* 16px is below the 20px display floor, and a farm name in a sidebar card is a
               CARD TITLE: Inter 600 on every surface (Brand_and_Design.md, Typography). */}
           <h3 className="font-body text-[16px] leading-snug font-semibold text-white">

@@ -84,7 +84,7 @@ export function ApplicationCard({
   return (
     <div
       className={cn(
-        'bg-surface border-border overflow-hidden rounded-[12px] border-[1.5px]',
+        'bg-surface border-border overflow-hidden rounded-12 border-[1.5px]',
         !isActive && 'opacity-75',
       )}
     >

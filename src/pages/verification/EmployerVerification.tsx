@@ -60,7 +60,7 @@ function VerificationCard({
         {/* Icon */}
         <div
           className={cn(
-            'flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg',
+            'flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-8',
             isVerified ? 'bg-brand/10' : 'bg-surface-2',
           )}
         >
@@ -111,7 +111,7 @@ function VerificationCard({
 
           {/* Inline expanded content */}
           {isExpanded && expandContent && (
-            <div className="bg-surface-2 mt-2 mb-3 rounded-[8px] p-3">{expandContent}</div>
+            <div className="bg-surface-2 mt-2 mb-3 rounded-8 p-3">{expandContent}</div>
           )}
 
           {/* Action */}
@@ -316,7 +316,7 @@ export function EmployerVerification() {
             <div className="flex items-start gap-3">
               <div
                 className={cn(
-                  'flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg',
+                  'flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-8',
                   verificationMap.get('document')?.status === 'verified'
                     ? 'bg-brand/10'
                     : 'bg-surface-2',
@@ -368,7 +368,7 @@ export function EmployerVerification() {
             <div className="flex items-start gap-3">
               <div
                 className={cn(
-                  'flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg',
+                  'flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-8',
                   verificationMap.get('farm_photo')?.status === 'verified'
                     ? 'bg-brand/10'
                     : 'bg-surface-2',

@@ -229,7 +229,7 @@ export function FileDropzone({
         {isAtMaxFiles ? (
           <div
             className={cn(
-              'rounded-[10px] border-2 border-dashed p-4 text-center',
+              'rounded-12 border-2 border-dashed p-4 text-center',
               'border-border bg-surface-2 cursor-not-allowed opacity-60',
             )}
           >
@@ -241,7 +241,7 @@ export function FileDropzone({
           <div
             {...getRootProps()}
             className={cn(
-              'cursor-pointer rounded-[10px] border-2 border-dashed p-6 text-center transition-all duration-200',
+              'cursor-pointer rounded-12 border-2 border-dashed p-6 text-center transition-all duration-200',
               'flex min-h-[120px] flex-col items-center justify-center gap-3',
               isDragActive
                 ? 'border-brand-hover bg-[rgba(74,124,47,0.06)]'
@@ -312,7 +312,7 @@ export function FileDropzone({
       <div
         {...getRootProps()}
         className={cn(
-          'cursor-pointer rounded-[10px] border-2 border-dashed p-6 text-center transition-all duration-200',
+          'cursor-pointer rounded-12 border-2 border-dashed p-6 text-center transition-all duration-200',
           'flex min-h-[120px] flex-col items-center justify-center gap-3',
           isDragActive
             ? 'border-brand-hover bg-[rgba(74,124,47,0.06)]'
@@ -335,7 +335,7 @@ export function FileDropzone({
               <img
                 src={preview}
                 alt="Preview"
-                className="max-h-40 max-w-full rounded-[6px] object-contain"
+                className="max-h-40 max-w-full rounded-8 object-contain"
               />
             )}
             {!preview && fileName && (

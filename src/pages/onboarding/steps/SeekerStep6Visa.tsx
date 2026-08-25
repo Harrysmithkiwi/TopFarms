@@ -64,7 +64,7 @@ export function SeekerStep6Visa({
       />
 
       {/* Info box */}
-      <div className="border-info/30 bg-info-bg flex items-start gap-3 rounded-[8px] border-[1.5px] p-4">
+      <div className="border-info/30 bg-info-bg flex items-start gap-3 rounded-8 border-[1.5px] p-4">
         <svg className="text-info mt-0.5 h-4 w-4 flex-shrink-0" viewBox="0 0 16 16" fill="none">
           <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
           <path d="M8 7v4M8 5.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />

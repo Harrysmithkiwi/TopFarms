@@ -72,7 +72,7 @@ export function JobCard({
   return (
     <div
       className={cn(
-        'bg-surface border-border flex flex-col gap-4 rounded-[12px] border-[1.5px] p-5',
+        'bg-surface border-border flex flex-col gap-4 rounded-12 border-[1.5px] p-5',
         className,
       )}
     >

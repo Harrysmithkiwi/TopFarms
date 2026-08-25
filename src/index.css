@@ -149,9 +149,19 @@
   --shadow-2xl: var(--shadow-overlay);
   --shadow-inner: inset 0 2px 4px rgb(11 31 16 / 0.05);
 
-  /* Radius tokens — additive, numeric-keyed to avoid clobbering Tailwind's default
-     rounded-sm/md/lg. Existing rounded-[8px]/[12px]/[16px] literals keep working;
-     new components use rounded-8 / rounded-12 / rounded-16. */
+  /* Radius — three numeric steps plus the pill, and nothing else (Brand_and_Design.md).
+     8 inputs and in-card chips · 12 cards and callouts · 16 large panels and modals ·
+     rounded-full buttons, badges, chips.
+
+     These were "additive" tokens until 2026-08-25, sitting alongside Tailwind's own scale
+     and arbitrary px literals. That coexistence WAS the problem: Tailwind's step names are
+     2 / 6 / 8 / 12 / 16 / 24 px in a sequence that reads as a scale, so a 6px corner looked
+     like a sibling of an 8px one and 116 off-scale uses accumulated across 101 files with
+     nothing anywhere failing. The design gate checks colour and font-size, never radius.
+     Every call site now spells the token, and tests/radius-scale.test.ts is what holds it.
+
+     That test greps for the retired class names, so do not write one in a comment in src/
+     — including this one. It is the fourth gate in this repo to trip on its own prose. */
   --radius-8: 8px;
   --radius-12: 12px;
   --radius-16: 16px;

@@ -123,8 +123,8 @@ export function ApplicantDocuments({ applicationId, seekerId, cvUnlocked }: Appl
           Documents
         </p>
         <div className="space-y-1.5">
-          <div className="bg-surface-2 h-9 animate-pulse rounded-md" />
-          <div className="bg-surface-2 h-9 animate-pulse rounded-md" />
+          <div className="bg-surface-2 h-9 animate-pulse rounded-12" />
+          <div className="bg-surface-2 h-9 animate-pulse rounded-12" />
         </div>
       </div>
     )
@@ -158,7 +158,7 @@ export function ApplicantDocuments({ applicationId, seekerId, cvUnlocked }: Appl
       >
         {DOCUMENT_TYPE_LABELS.cv}
       </p>
-      <div className="border-border bg-surface-2 flex items-center gap-3 rounded-md border border-dashed p-2">
+      <div className="border-border bg-surface-2 flex items-center gap-3 rounded-12 border border-dashed p-2">
         <Lock className="text-text-subtle h-4 w-4 flex-shrink-0" />
         <p className="font-body text-text-subtle text-[12px]">
           The CV unlocks when you shortlist this candidate (placement fee applies). Their
@@ -211,7 +211,7 @@ export function ApplicantDocuments({ applicationId, seekerId, cvUnlocked }: Appl
                 {sectionDocs.map((doc) => (
                   <li
                     key={doc.id}
-                    className="border-border bg-surface flex items-center gap-3 rounded-md border p-2"
+                    className="border-border bg-surface flex items-center gap-3 rounded-12 border p-2"
                   >
                     <FileText className="text-brand-hover h-4 w-4 flex-shrink-0" />
                     <div className="min-w-0 flex-1">

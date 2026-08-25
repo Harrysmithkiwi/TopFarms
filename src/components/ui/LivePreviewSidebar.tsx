@@ -151,7 +151,7 @@ function MatchPoolEstimate({ criteria }: { criteria?: MatchCriteria }) {
 function AITipBox() {
   return (
     <div className="p-4">
-      <div className="bg-ai-bg rounded-[8px] p-3">
+      <div className="bg-ai-bg rounded-8 p-3">
         <p className="text-text font-body text-[13px]">
           Tip: accommodation details are one of the first things seekers look for
         </p>
@@ -176,7 +176,7 @@ export function LivePreviewSidebar({
   return (
     <aside
       className={cn(
-        'bg-surface border-border sticky top-6 w-[320px] overflow-hidden rounded-[14px] border',
+        'bg-surface border-border sticky top-6 w-[320px] overflow-hidden rounded-12 border',
         className,
       )}
     >

@@ -256,7 +256,7 @@ export function JobStep2FarmDetails({ onComplete, onBack, defaultValues, sector 
         </div>
 
         {/* Visa sponsorship toggle */}
-        <div className="border-border bg-surface-2 flex items-center justify-between rounded-[10px] border-[1.5px] p-4">
+        <div className="border-border bg-surface-2 flex items-center justify-between rounded-12 border-[1.5px] p-4">
           <div>
             <p className="font-body text-text text-[13px] font-semibold">
               Visa sponsorship available
@@ -275,7 +275,7 @@ export function JobStep2FarmDetails({ onComplete, onBack, defaultValues, sector 
         </div>
 
         {/* Couples welcome toggle */}
-        <div className="border-border bg-surface-2 flex items-center justify-between rounded-[10px] border-[1.5px] p-4">
+        <div className="border-border bg-surface-2 flex items-center justify-between rounded-12 border-[1.5px] p-4">
           <div>
             <p className="font-body text-text text-[13px] font-semibold">Couples welcome</p>
             <p className="mt-0.5 text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
@@ -293,7 +293,7 @@ export function JobStep2FarmDetails({ onComplete, onBack, defaultValues, sector 
 
         {/* Accommodation */}
         <div>
-          <div className="border-border bg-surface-2 flex items-center justify-between rounded-[10px] border-[1.5px] p-4">
+          <div className="border-border bg-surface-2 flex items-center justify-between rounded-12 border-[1.5px] p-4">
             <div>
               <p className="font-body text-text text-[13px] font-semibold">
                 Accommodation available

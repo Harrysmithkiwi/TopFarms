@@ -35,7 +35,7 @@ export function ErrorState({ message, onRetry, compact = false, className }: Err
       <div
         role="alert"
         className={cn(
-          'bg-danger-bg text-danger-text-on-bg flex items-center gap-2 rounded-[8px] px-3 py-2',
+          'bg-danger-bg text-danger-text-on-bg flex items-center gap-2 rounded-8 px-3 py-2',
           className,
         )}
       >
@@ -70,7 +70,7 @@ export function ErrorState({ message, onRetry, compact = false, className }: Err
       <button
         type="button"
         onClick={onRetry}
-        className="bg-brand-hover text-text-on-brand hover:bg-brand-900 font-body focus-visible:outline-brand mt-5 inline-flex h-11 items-center gap-2 rounded-[8px] px-4 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2"
+        className="bg-brand-hover text-text-on-brand hover:bg-brand-900 font-body focus-visible:outline-brand mt-5 inline-flex h-11 items-center gap-2 rounded-8 px-4 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2"
       >
         <RotateCw className="h-4 w-4" aria-hidden="true" />
         Try again

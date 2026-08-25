@@ -158,7 +158,7 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
         </div>
 
         {/* Your matches — polling state */}
-        <div className="border-border bg-surface-2 rounded-[10px] border p-4">
+        <div className="border-border bg-surface-2 rounded-12 border p-4">
           <p className="font-body text-[16px] font-semibold text-text">
             Your matches
           </p>
@@ -190,7 +190,7 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
               {matches.map((match) => (
                 <li
                   key={match.jobs.id}
-                  className="bg-surface border-border hover:border-brand flex cursor-pointer items-center gap-3 rounded-[10px] border p-3 transition-colors"
+                  className="bg-surface border-border hover:border-brand flex cursor-pointer items-center gap-3 rounded-12 border p-3 transition-colors"
                   onClick={() => navigate(`/jobs/${match.jobs.id}`)}
                 >
                   <MatchBand score={match.total_score} />
@@ -254,7 +254,7 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
 
       {/* Right column — mini candidate card preview */}
       <div className="hidden md:block">
-        <div className="border-border bg-surface overflow-hidden rounded-[14px] border">
+        <div className="border-border bg-surface overflow-hidden rounded-12 border">
           <div className="space-y-3 p-4">
             <div className="flex items-center gap-3">
               <div

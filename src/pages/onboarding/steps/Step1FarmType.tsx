@@ -117,7 +117,7 @@ export function Step1FarmType({ onComplete, defaultValues }: Step1Props) {
             aria-checked={selectedType === type.value}
             onClick={() => setValue('farm_type', type.value, { shouldValidate: true })}
             className={cn(
-              'relative w-full cursor-pointer rounded-[12px] border-[2px] p-5 text-left transition-all duration-200',
+              'relative w-full cursor-pointer rounded-12 border-[2px] p-5 text-left transition-all duration-200',
               'flex flex-col items-center gap-3 text-center',
               selectedType === type.value
                 ? 'border-brand-hover bg-[rgba(74,124,47,0.06)]'

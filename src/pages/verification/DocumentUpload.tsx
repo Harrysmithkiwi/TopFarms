@@ -166,8 +166,8 @@ export function DocumentUpload() {
             <h3 className="font-body text-text mb-3 text-[13px] font-semibold">
               Uploaded Document
             </h3>
-            <div className="bg-surface-2 flex items-center gap-3 rounded-[8px] p-3">
-              <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[rgba(74,124,47,0.10)]">
+            <div className="bg-surface-2 flex items-center gap-3 rounded-8 p-3">
+              <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-8 bg-[rgba(74,124,47,0.10)]">
                 <FileText className="text-brand h-4 w-4" />
               </div>
               <div className="min-w-0 flex-1">

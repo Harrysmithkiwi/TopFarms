@@ -173,7 +173,7 @@ export function ResetPassword() {
               autoComplete="new-password"
               {...register('password')}
               className={cn(
-                'bg-surface text-text w-full rounded-lg border px-3.5 py-2.5 pr-10 text-sm transition-colors',
+                'bg-surface text-text w-full rounded-8 border px-3.5 py-2.5 pr-10 text-sm transition-colors',
                 errors.password ? 'border-danger' : 'border-border',
               )}
             />
@@ -208,7 +208,7 @@ export function ResetPassword() {
               autoComplete="new-password"
               {...register('confirmPassword')}
               className={cn(
-                'bg-surface text-text w-full rounded-lg border px-3.5 py-2.5 pr-10 text-sm transition-colors',
+                'bg-surface text-text w-full rounded-8 border px-3.5 py-2.5 pr-10 text-sm transition-colors',
                 errors.confirmPassword ? 'border-danger' : 'border-border',
               )}
             />

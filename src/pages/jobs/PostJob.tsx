@@ -414,7 +414,7 @@ export function PostJob() {
             showSidebar ? 'grid grid-cols-1 items-start gap-8 lg:grid-cols-[1fr_320px]' : ''
           }
         >
-          <div className="bg-surface border-border rounded-[16px] border p-6 shadow-sm">
+          <div className="bg-surface border-border rounded-16 border p-6 shadow-sm">
             {saving && (
               <div
                 className="mb-4 flex items-center gap-2 text-sm"

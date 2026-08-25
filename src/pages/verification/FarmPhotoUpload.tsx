@@ -231,7 +231,7 @@ export function FarmPhotoUpload() {
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-surface-2 block aspect-square overflow-hidden rounded-[8px] transition-opacity hover:opacity-90"
+                    className="bg-surface-2 block aspect-square overflow-hidden rounded-8 transition-opacity hover:opacity-90"
                   >
                     <img
                       src={url}
@@ -242,7 +242,7 @@ export function FarmPhotoUpload() {
                 ))}
               </div>
             ) : (
-              <div className="bg-surface-2 flex flex-col items-center justify-center rounded-[8px] py-8">
+              <div className="bg-surface-2 flex flex-col items-center justify-center rounded-8 py-8">
                 <ImageIcon className="text-text-subtle mb-2 h-8 w-8" />
                 <p className="font-body text-text-subtle text-[12px]">No photos uploaded yet</p>
               </div>

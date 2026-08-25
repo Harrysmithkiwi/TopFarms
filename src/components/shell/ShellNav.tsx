@@ -92,7 +92,7 @@ export function ShellNav() {
             {userMenuOpen && (
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setUserMenuOpen(false)} />
-                <div className="bg-white border-rule absolute top-11 right-0 z-20 w-48 rounded-2xl border py-1 shadow-lg">
+                <div className="bg-white border-rule absolute top-11 right-0 z-20 w-48 rounded-16 border py-1 shadow-lg">
                   {role && (
                     <Link
                       to={dashboardPathFor(role)}

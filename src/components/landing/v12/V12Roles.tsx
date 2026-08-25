@@ -40,7 +40,7 @@ function chips(r: Role): string[] {
 
 function CardShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="border-rule rounded-xl border bg-white p-5 transition-shadow duration-200 hover:shadow-[0_4px_24px_rgba(26,60,42,0.08)]">
+    <div className="border-rule rounded-12 border bg-white p-5 transition-shadow duration-200 hover:shadow-[0_4px_24px_rgba(26,60,42,0.08)]">
       {children}
     </div>
   )
@@ -97,7 +97,7 @@ export function V12Roles() {
         )}
 
         {roles !== null && roles.length === 0 && (
-          <div className="border-rule mt-8 rounded-xl border border-dashed bg-white px-6 py-12 text-center">
+          <div className="border-rule mt-8 rounded-12 border border-dashed bg-white px-6 py-12 text-center">
             <p className="text-fern-900 font-serif text-[clamp(1.35rem,2.2vw,1.6rem)] font-semibold">
               {failed ? 'Roles could not be loaded' : 'No roles listed right now'}
             </p>

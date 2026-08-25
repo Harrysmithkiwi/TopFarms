@@ -102,7 +102,7 @@ export function VerificationBadge({
           <div
             className={cn(
               'absolute top-full left-0 z-20 mt-1.5 min-w-[220px]',
-              'bg-surface border-border rounded-[10px] border py-2 shadow-md',
+              'bg-surface border-border rounded-12 border py-2 shadow-md',
             )}
             role="listbox"
             aria-label="Verification details"

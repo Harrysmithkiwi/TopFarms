@@ -82,7 +82,7 @@ export function DrawerShell({
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="hover:bg-surface-hover flex h-10 w-10 items-center justify-center rounded-md"
+            className="hover:bg-surface-hover flex h-10 w-10 items-center justify-center rounded-12"
             style={{ color: 'var(--color-text-muted)' }}
           >
             <X size={18} />

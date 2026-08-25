@@ -58,14 +58,14 @@ export function AppErrorBoundary() {
         <button
           type="button"
           onClick={() => window.location.reload()}
-          className="font-body rounded-[8px] px-5 py-2.5 text-[14px] font-bold text-white transition-opacity hover:opacity-90"
+          className="font-body rounded-8 px-5 py-2.5 text-[14px] font-bold text-white transition-opacity hover:opacity-90"
           style={{ backgroundColor: 'var(--color-brand)' }}
         >
           Try again
         </button>
         <Link
           to="/"
-          className="font-body border-border hover:border-border-strong rounded-[8px] border px-5 py-2.5 text-[14px] font-bold transition-colors"
+          className="font-body border-border hover:border-border-strong rounded-8 border px-5 py-2.5 text-[14px] font-bold transition-colors"
           style={{ color: 'var(--color-text-muted)' }}
         >
           Back to home

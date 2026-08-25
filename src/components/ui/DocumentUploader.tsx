@@ -183,7 +183,7 @@ export function DocumentUploader({
       {isAtMax ? (
         <div
           className={cn(
-            'rounded-[10px] border-2 border-dashed p-4 text-center',
+            'rounded-12 border-2 border-dashed p-4 text-center',
             'border-border bg-surface-2 cursor-not-allowed opacity-60',
           )}
         >
@@ -195,7 +195,7 @@ export function DocumentUploader({
         <div
           {...getRootProps()}
           className={cn(
-            'cursor-pointer rounded-[10px] border-2 border-dashed p-6 text-center transition-all duration-200',
+            'cursor-pointer rounded-12 border-2 border-dashed p-6 text-center transition-all duration-200',
             'flex min-h-[120px] flex-col items-center justify-center gap-3',
             isDragActive
               ? 'border-brand-hover bg-[rgba(74,124,47,0.06)]'
@@ -230,7 +230,7 @@ export function DocumentUploader({
             <li
               key={row.id}
               className={cn(
-                'bg-surface flex items-center gap-3 rounded-[8px] border p-2',
+                'bg-surface flex items-center gap-3 rounded-8 border p-2',
                 row.status === 'error' ? 'border-danger' : 'border-border',
               )}
             >
@@ -295,7 +295,7 @@ export function DocumentUploader({
             onClick={uploadAllPending}
             disabled={uploadDisabled}
             className={cn(
-              'font-body flex-shrink-0 rounded-[8px] px-4 py-2 text-[13px] font-medium',
+              'font-body flex-shrink-0 rounded-8 px-4 py-2 text-[13px] font-medium',
               'bg-brand-hover text-white',
               'hover:bg-brand-hover/90 transition-colors',
               'disabled:hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50',

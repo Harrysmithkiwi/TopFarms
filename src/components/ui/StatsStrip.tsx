@@ -15,7 +15,7 @@ export function StatsStrip({ stats, className, ...props }: StatsStripProps) {
   return (
     <div
       className={cn(
-        'border-border bg-surface grid grid-cols-4 gap-0 overflow-hidden rounded-[12px] border max-[860px]:grid-cols-2',
+        'border-border bg-surface grid grid-cols-4 gap-0 overflow-hidden rounded-12 border max-[860px]:grid-cols-2',
         className,
       )}
       {...props}

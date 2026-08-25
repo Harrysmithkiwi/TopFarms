@@ -34,7 +34,7 @@ export function InfoBox({ variant, title, className, children, ...props }: InfoB
 
   return (
     <div
-      className={cn('rounded-[12px] border-[1.5px] p-4', classes.container, className)}
+      className={cn('rounded-12 border-[1.5px] p-4', classes.container, className)}
       {...props}
     >
       {title && (

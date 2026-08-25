@@ -48,7 +48,7 @@ interface LeadRow extends Record<string, unknown> {
 }
 
 const inputCls =
-  'border-border bg-surface rounded-[8px] border px-2 py-1 text-sm focus:border-brand'
+  'border-border bg-surface rounded-8 border px-2 py-1 text-sm focus:border-brand'
 
 // Quick lifecycle buttons. follow_up is set via the categorise form (it needs a
 // date), so it's not a one-click button here.

@@ -104,7 +104,7 @@ export function ForgotPassword() {
             autoComplete="email"
             {...register('email')}
             className={cn(
-              'bg-surface text-text w-full rounded-lg border px-3.5 py-2.5 text-sm transition-colors',
+              'bg-surface text-text w-full rounded-8 border px-3.5 py-2.5 text-sm transition-colors',
               errors.email ? 'border-danger' : 'border-border',
             )}
           />

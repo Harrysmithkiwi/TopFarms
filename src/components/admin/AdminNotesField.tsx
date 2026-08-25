@@ -67,7 +67,7 @@ export function AdminNotesField({ targetUserId, initialNotes }: AdminNotesFieldP
           {notes.map((n) => (
             <li
               key={n.id}
-              className="rounded-md p-3"
+              className="rounded-12 p-3"
               style={{
                 backgroundColor: 'var(--color-surface-2)',
                 border: '1px solid var(--color-border)',
@@ -89,7 +89,7 @@ export function AdminNotesField({ targetUserId, initialNotes }: AdminNotesFieldP
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
         placeholder="Add a note… (visible to admins only)"
-        className="bg-surface-2 border-border focus:border-brand max-h-[160px] min-h-[44px] w-full resize-none rounded-md border-[1.5px] px-[14px] py-3 text-[15px] leading-6 focus:border-2"
+        className="bg-surface-2 border-border focus:border-brand max-h-[160px] min-h-[44px] w-full resize-none rounded-12 border-[1.5px] px-[14px] py-3 text-[15px] leading-6 focus:border-2"
         rows={2}
       />
 

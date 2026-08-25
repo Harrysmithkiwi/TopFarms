@@ -44,7 +44,7 @@ function getPageNumbers(currentPage: number, totalPages: number): (number | '...
 }
 
 const pageButtonBase = cn(
-  'w-11 h-11 md:w-[34px] md:h-[34px] flex items-center justify-center rounded-[6px] border-[1.5px] font-body text-[13px] transition-colors',
+  'w-11 h-11 md:w-[34px] md:h-[34px] flex items-center justify-center rounded-8 border-[1.5px] font-body text-[13px] transition-colors',
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
 )
 

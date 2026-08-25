@@ -93,7 +93,7 @@ interface JobDetailData extends JobListing {
  */
 function MatchTeaser() {
   return (
-    <div className="bg-surface border-border flex flex-col items-center rounded-[12px] border p-6 text-center">
+    <div className="bg-surface border-border flex flex-col items-center rounded-12 border p-6 text-center">
       <p className="font-body text-[15px] font-semibold" style={{ color: 'var(--color-text)' }}>
         See how you match
       </p>
@@ -106,7 +106,7 @@ function MatchTeaser() {
       </p>
       <Link
         to="/signup"
-        className="font-body bg-brand-hover text-text-on-brand hover:bg-brand-900 focus-visible:outline-brand mt-4 inline-flex items-center justify-center rounded-[8px] px-4 py-2 text-[13px] font-medium transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2"
+        className="font-body bg-brand-hover text-text-on-brand hover:bg-brand-900 focus-visible:outline-brand mt-4 inline-flex items-center justify-center rounded-8 px-4 py-2 text-[13px] font-medium transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2"
       >
         Sign up free
       </Link>
@@ -407,7 +407,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
       >
         <div className="max-w-md px-4 text-center">
           <div
-            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-border"
+            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-16 bg-border"
           >
             <ClipboardList
               className="h-8 w-8 text-text-muted"
@@ -425,7 +425,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
           <Link
             to="/jobs"
             className={cn(
-              'inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
+              'inline-flex items-center justify-center rounded-8 font-bold transition-all duration-200',
               'bg-brand-hover hover:bg-brand-900 text-white',
               'px-4 py-2 text-label',
             )}
@@ -608,7 +608,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
               job.description_offer ||
               job.description_ideal) && (
               <section>
-                <div className="bg-surface border-border space-y-6 rounded-[12px] border-[1.5px] p-6">
+                <div className="bg-surface border-border space-y-6 rounded-12 border-[1.5px] p-6">
                   {job.description_overview && (
                     <div>
                       <h2
@@ -695,7 +695,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
                   {preferredCount > 0 && `${preferredCount} preferred`}
                 </p>
 
-                <div className="bg-surface border-border rounded-[12px] border-[1.5px] p-6">
+                <div className="bg-surface border-border rounded-12 border-[1.5px] p-6">
                   {/* Legend row (JDET-04) */}
                   <div className="border-border mb-4 flex items-center gap-4 border-b pb-3">
                     <span className="inline-flex items-center gap-1.5 text-xs">
@@ -786,7 +786,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
                 >
                   Compensation &amp; Benefits
                 </h2>
-                <div className="bg-surface border-border space-y-3 rounded-[12px] border-[1.5px] p-6">
+                <div className="bg-surface border-border space-y-3 rounded-12 border-[1.5px] p-6">
                   <div className="flex items-center gap-2">
                     <DollarSign
                       className="h-4 w-4 flex-shrink-0 text-text-muted"
@@ -822,7 +822,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
                 >
                   Accommodation
                 </h2>
-                <div className="bg-surface border-border space-y-3 rounded-[12px] border-[1.5px] p-6">
+                <div className="bg-surface border-border space-y-3 rounded-12 border-[1.5px] p-6">
                   {employer.accommodation_type && (
                     <div className="flex items-center gap-2">
                       <Home
@@ -871,7 +871,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
                   >
                     Farm Details
                   </h2>
-                  <div className="bg-surface border-border space-y-4 rounded-[12px] border-[1.5px] p-6">
+                  <div className="bg-surface border-border space-y-4 rounded-12 border-[1.5px] p-6">
                     <div className="grid grid-cols-2 gap-4">
                       {employer.farm_type && (
                         <div>
@@ -996,7 +996,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
               <Link
                 to="/login"
                 className={cn(
-                  'inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
+                  'inline-flex items-center justify-center rounded-8 font-bold transition-all duration-200',
                   'bg-surface border-brand text-brand-900 hover:bg-surface-2 border',
                   'px-3 py-2 text-label',
                 )}
@@ -1006,7 +1006,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
               <Link
                 to="/signup"
                 className={cn(
-                  'inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
+                  'inline-flex items-center justify-center rounded-8 font-bold transition-all duration-200',
                   'bg-brand-hover hover:bg-brand-900 text-white',
                   'px-4 py-2 text-label',
                 )}
@@ -1043,7 +1043,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
                 setApplyModalOpen(true)
               }}
               className={cn(
-                'ml-auto inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
+                'ml-auto inline-flex items-center justify-center rounded-8 font-bold transition-all duration-200',
                 hasApplied || !seekerProfileId
                   ? 'bg-surface-2 text-text-muted cursor-not-allowed'
                   : 'bg-brand-hover hover:bg-brand-900 text-white',
@@ -1060,7 +1060,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
       <Dialog.Root open={applyModalOpen} onOpenChange={setApplyModalOpen}>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 z-40 bg-black/40" />
-          <Dialog.Content className="bg-surface fixed top-1/2 left-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-[16px] p-6 shadow-xl">
+          <Dialog.Content className="bg-surface fixed top-1/2 left-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-16 p-6 shadow-xl">
             <Dialog.Title
               className="mb-1 text-xl font-semibold text-brand-900"
             >
@@ -1085,7 +1085,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
               rows={4}
               maxLength={500}
               aria-describedby={coverNoteCountId}
-              className="border-border focus:border-brand w-full resize-none rounded-[8px] border p-3 text-sm"
+              className="border-border focus:border-brand w-full resize-none rounded-8 border p-3 text-sm"
             />
             <p
               id={coverNoteCountId}
@@ -1096,7 +1096,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
             <div className="mt-4 flex gap-3">
               <Dialog.Close asChild>
                 <button
-                  className="border-border hover:bg-surface-2 flex-1 rounded-[8px] border px-4 py-2 text-label font-bold transition-colors text-text-muted"
+                  className="border-border hover:bg-surface-2 flex-1 rounded-8 border px-4 py-2 text-label font-bold transition-colors text-text-muted"
                 >
                   Cancel
                 </button>
@@ -1104,7 +1104,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
               <button
                 onClick={handleApply}
                 disabled={applying}
-                className="bg-brand-hover hover:bg-brand-900 flex-1 rounded-[8px] px-4 py-2 text-label font-bold text-white transition-colors disabled:opacity-50"
+                className="bg-brand-hover hover:bg-brand-900 flex-1 rounded-8 px-4 py-2 text-label font-bold text-white transition-colors disabled:opacity-50"
               >
                 {applying ? 'Submitting...' : 'Confirm Application'}
               </button>

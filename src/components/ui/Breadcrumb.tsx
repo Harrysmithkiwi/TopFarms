@@ -38,7 +38,7 @@ export function Breadcrumb({ items, onSave, onShare, className, ...props }: Brea
                 <a
                   href={item.href}
                   className={cn(
-                    'font-body text-text-subtle hover:text-text rounded-[4px] text-[13px] hover:underline',
+                    'font-body text-text-subtle hover:text-text rounded-8 text-[13px] hover:underline',
                     'focus-visible:outline-brand focus-visible:outline-2 focus-visible:outline-offset-2',
                   )}
                 >
@@ -56,7 +56,7 @@ export function Breadcrumb({ items, onSave, onShare, className, ...props }: Brea
             type="button"
             onClick={onSave}
             className={cn(
-              'inline-flex h-11 w-11 items-center justify-center rounded-[6px] md:h-9 md:w-9',
+              'inline-flex h-11 w-11 items-center justify-center rounded-8 md:h-9 md:w-9',
               'text-text-muted hover:text-text hover:bg-surface-2 transition-colors',
               'focus-visible:outline-brand focus-visible:outline-2 focus-visible:outline-offset-2',
             )}
@@ -70,7 +70,7 @@ export function Breadcrumb({ items, onSave, onShare, className, ...props }: Brea
             type="button"
             onClick={onShare}
             className={cn(
-              'inline-flex h-11 w-11 items-center justify-center rounded-[6px] md:h-9 md:w-9',
+              'inline-flex h-11 w-11 items-center justify-center rounded-8 md:h-9 md:w-9',
               'text-text-muted hover:text-text hover:bg-surface-2 transition-colors',
               'focus-visible:outline-brand focus-visible:outline-2 focus-visible:outline-offset-2',
             )}

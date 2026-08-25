@@ -114,7 +114,7 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
       >
         <div
           ref={dialogRef}
-          className="bg-surface border-border w-full max-w-md rounded-[16px] border-[1.5px] shadow-xl"
+          className="bg-surface border-border w-full max-w-md rounded-16 border-[1.5px] shadow-xl"
           onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => {
             if (e.key === 'Escape') onClose()
@@ -168,7 +168,7 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
                 />
               ) : applicants.length === 0 ? (
                 <div
-                  className="rounded-[10px] p-4 text-center"
+                  className="rounded-12 p-4 text-center"
                   style={{ backgroundColor: 'var(--color-surface-2)' }}
                 >
                   <UserCircle
@@ -190,7 +190,7 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
                   {/* "Hired externally" option */}
                   <label
                     className={cn(
-                      'flex cursor-pointer items-center gap-3 rounded-[8px] border-[1.5px] p-3 transition-all duration-150',
+                      'flex cursor-pointer items-center gap-3 rounded-8 border-[1.5px] p-3 transition-all duration-150',
                       selectedApplicantId === null
                         ? 'border-brand bg-[rgba(74,124,47,0.04)]'
                         : 'border-border hover:border-brand-hover',
@@ -213,7 +213,7 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
                     <label
                       key={applicant.id}
                       className={cn(
-                        'flex cursor-pointer items-center gap-3 rounded-[8px] border-[1.5px] p-3 transition-all duration-150',
+                        'flex cursor-pointer items-center gap-3 rounded-8 border-[1.5px] p-3 transition-all duration-150',
                         selectedApplicantId === applicant.id
                           ? 'border-brand bg-[rgba(74,124,47,0.04)]'
                           : 'border-border hover:border-brand-hover',
@@ -256,7 +256,7 @@ export function MarkFilledModal({ jobId, isOpen, onClose, onFilled }: MarkFilled
                 value={hireDate}
                 onChange={(e) => setHireDate(e.target.value)}
                 className={cn(
-                  'border-border font-body w-full rounded-[8px] border-[1.5px] px-3 py-2 text-sm',
+                  'border-border font-body w-full rounded-8 border-[1.5px] px-3 py-2 text-sm',
                   'text-text bg-surface focus:border-brand transition-colors',
                 )}
                 style={{ color: 'var(--color-text)' }}

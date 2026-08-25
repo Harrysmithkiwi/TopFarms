@@ -41,7 +41,7 @@ export function MyApplicationsSidebar({
   return (
     <aside className={cn('w-[260px] flex-shrink-0 space-y-4', className)}>
       {/* Status Summary */}
-      <div className="bg-surface border-border rounded-[12px] border p-4">
+      <div className="bg-surface border-border rounded-12 border p-4">
         <h3 className="font-body text-text mb-3 text-[13px] font-semibold">Application Status</h3>
         <div className="space-y-2">
           {[
@@ -81,7 +81,7 @@ export function MyApplicationsSidebar({
       </div>
 
       {/* Filter tabs */}
-      <div className="bg-surface border-border rounded-[12px] border p-3">
+      <div className="bg-surface border-border rounded-12 border p-3">
         <div className="flex flex-wrap gap-1.5">
           {FILTER_TABS.map((tab) => (
             <button
@@ -102,7 +102,7 @@ export function MyApplicationsSidebar({
       </div>
 
       {/* Saved Jobs */}
-      <div className="bg-surface border-border rounded-[12px] border p-4">
+      <div className="bg-surface border-border rounded-12 border p-4">
         <h3 className="font-body text-text mb-3 flex items-center gap-1.5 text-[13px] font-semibold">
           <Bookmark className="text-warn h-3.5 w-3.5" />
           Saved Jobs
@@ -143,7 +143,7 @@ export function MyApplicationsSidebar({
       </div>
 
       {/* Profile Strength Nudge */}
-      <div className="bg-surface border-border rounded-[12px] border p-4">
+      <div className="bg-surface border-border rounded-12 border p-4">
         <h3 className="font-body text-text mb-2 text-[13px] font-semibold">Profile Strength</h3>
         <div className="bg-border mb-2 h-2 w-full overflow-hidden rounded-full">
           <div

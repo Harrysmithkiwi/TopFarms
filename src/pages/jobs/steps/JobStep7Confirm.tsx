@@ -79,7 +79,7 @@ export function JobStep7Confirm({ jobId, onComplete, onBack }: JobStep7ConfirmPr
       </div>
 
       <div
-        className="space-y-4 rounded-[12px] p-5"
+        className="space-y-4 rounded-12 p-5"
         style={{ backgroundColor: 'var(--color-surface-2)' }}
       >
         <div>

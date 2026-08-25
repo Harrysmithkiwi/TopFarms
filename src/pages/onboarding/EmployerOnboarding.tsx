@@ -238,7 +238,7 @@ export function EmployerOnboarding() {
         <StepIndicator currentStep={currentStep} totalSteps={TOTAL_STEPS} labels={STEP_LABELS} />
 
         {/* Step content */}
-        <div className="bg-surface border-border rounded-[16px] border p-6 shadow-sm">
+        <div className="bg-surface border-border rounded-16 border p-6 shadow-sm">
           {saving && (
             <div
               // brand-hover (5.02:1), not brand (3.30:1, retired as text in

@@ -231,7 +231,7 @@ export function TrainingDemandCard({
             maxLength={500}
             rows={2}
             placeholder="A course, ticket or qualification you have in mind"
-            className="font-body border-border bg-surface-2 text-text focus-visible:outline-brand mt-1 w-full rounded-[8px] border-[1.5px] p-2.5 text-[15px] focus-visible:outline-2"
+            className="font-body border-border bg-surface-2 text-text focus-visible:outline-brand mt-1 w-full rounded-8 border-[1.5px] p-2.5 text-[15px] focus-visible:outline-2"
           />
 
           {phase === 'submitError' && (

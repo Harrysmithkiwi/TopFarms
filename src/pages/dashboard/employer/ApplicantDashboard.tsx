@@ -74,7 +74,7 @@ function buildSeekerLabel(app: Applicant): string {
 
 function SkeletonRow() {
   return (
-    <div className="bg-surface border-border animate-pulse rounded-[12px] border-[1.5px] p-4">
+    <div className="bg-surface border-border animate-pulse rounded-12 border-[1.5px] p-4">
       <div className="flex items-center gap-4">
         <div className="bg-surface-2 h-4 flex-1 rounded" />
         <div className="bg-surface-2 h-9 w-9 rounded-full" />
@@ -561,7 +561,7 @@ export function ApplicantDashboard() {
             <Dialog.Trigger asChild>
               <button
                 type="button"
-                className="border-border bg-surface font-body text-text-muted hover:border-border-strong flex min-h-11 items-center gap-2 rounded-[8px] border px-3 py-2 text-[13px] transition-colors"
+                className="border-border bg-surface font-body text-text-muted hover:border-border-strong flex min-h-11 items-center gap-2 rounded-8 border px-3 py-2 text-[13px] transition-colors"
               >
                 <SlidersHorizontal className="h-4 w-4" />
                 Listing &amp; stats
@@ -570,7 +570,7 @@ export function ApplicantDashboard() {
             <Dialog.Portal>
               <Dialog.Overlay className="fixed inset-0 z-40 bg-black/40" />
               <Dialog.Content
-                className="bg-surface fixed right-0 bottom-0 left-0 z-50 max-h-[85vh] overflow-y-auto rounded-t-[16px] p-4"
+                className="bg-surface fixed right-0 bottom-0 left-0 z-50 max-h-[85vh] overflow-y-auto rounded-t-16 p-4"
                 aria-describedby={undefined}
               >
                 <Dialog.Title className="sr-only">Listing and stats</Dialog.Title>
@@ -612,7 +612,7 @@ export function ApplicantDashboard() {
                 placeholder="Search applicants..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="border-border font-body text-text bg-surface focus:border-brand w-48 rounded-[8px] border px-3 py-1.5 text-[13px]"
+                className="border-border font-body text-text bg-surface focus:border-brand w-48 rounded-8 border px-3 py-1.5 text-[13px]"
               />
 
               {/* Status filter chips — use STATUS_LABELS for display text */}
@@ -641,14 +641,14 @@ export function ApplicantDashboard() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as 'newest' | 'match')}
-                className="border-border font-body text-text bg-surface focus:border-brand cursor-pointer rounded-[8px] border px-2 py-1.5 text-[12px]"
+                className="border-border font-body text-text bg-surface focus:border-brand cursor-pointer rounded-8 border px-2 py-1.5 text-[12px]"
               >
                 <option value="newest">Newest first</option>
                 <option value="match">Match score</option>
               </select>
 
               {/* View toggle (list/grid) */}
-              <div className="border-border flex overflow-hidden rounded-[8px] border">
+              <div className="border-border flex overflow-hidden rounded-8 border">
                 <button
                   type="button"
                   onClick={() => setViewMode('list')}
@@ -694,13 +694,13 @@ export function ApplicantDashboard() {
               <ErrorState
                 message="We could not load your applicants"
                 onRetry={() => setReloadNonce((n) => n + 1)}
-                className="bg-surface-2 rounded-[12px]"
+                className="bg-surface-2 rounded-12"
               />
             )}
 
             {/* Empty — verified zero, not unknown */}
             {!loading && !loadError && applicants.length === 0 && (
-              <div className="bg-surface-2 rounded-[12px] p-12 text-center">
+              <div className="bg-surface-2 rounded-12 p-12 text-center">
                 <p className="font-body mb-1 text-base font-semibold">No applicants yet.</p>
                 <p className="text-text-muted text-sm">Share your listing to attract candidates.</p>
               </div>
@@ -709,7 +709,7 @@ export function ApplicantDashboard() {
             {/* No results after filter */}
             {!loading && !loadError && applicants.length > 0 && filteredApplicants.length === 0 && (
               <div
-                className="rounded-[12px] p-8 text-center"
+                className="rounded-12 p-8 text-center"
                 style={{ backgroundColor: 'var(--color-surface-2)' }}
               >
                 <p

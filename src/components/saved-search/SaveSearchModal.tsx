@@ -115,7 +115,7 @@ export function SaveSearchModal({
       >
         <div
           ref={dialogRef}
-          className="bg-surface border-border w-full max-w-md rounded-[16px] border-[1.5px] shadow-xl"
+          className="bg-surface border-border w-full max-w-md rounded-16 border-[1.5px] shadow-xl"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="border-border flex items-center justify-between border-b px-6 pt-5 pb-4">
@@ -150,7 +150,7 @@ export function SaveSearchModal({
             {errors.root?.message && (
               <div
                 role="alert"
-                className="font-body bg-danger-bg text-danger-text-on-bg rounded-[8px] px-3 py-2 text-label"
+                className="font-body bg-danger-bg text-danger-text-on-bg rounded-8 px-3 py-2 text-label"
               >
                 {errors.root.message}
               </div>

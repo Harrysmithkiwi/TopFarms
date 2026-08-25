@@ -68,7 +68,7 @@ export function Select({
           aria-describedby={error ? errorId : undefined}
           className={cn(
             'flex w-full items-center justify-between',
-            'font-body bg-surface-2 min-h-[44px] rounded-[8px] border-[1.5px] px-3 py-2 text-[15px]',
+            'font-body bg-surface-2 min-h-[44px] rounded-8 border-[1.5px] px-3 py-2 text-[15px]',
             'focus-visible:outline-brand focus-visible:outline-2 focus-visible:outline-offset-2',
             'cursor-pointer transition-colors duration-150',
             'disabled:cursor-not-allowed disabled:opacity-50',
@@ -87,7 +87,7 @@ export function Select({
         <SelectPrimitive.Portal>
           <SelectPrimitive.Content
             className={cn(
-              'bg-surface border-border rounded-[8px] border shadow-md',
+              'bg-surface border-border rounded-8 border shadow-md',
               'z-50 max-h-[280px] overflow-hidden',
             )}
             position="popper"
@@ -103,7 +103,7 @@ export function Select({
                   key={option.value}
                   value={option.value}
                   className={cn(
-                    'font-body cursor-pointer rounded-[4px] px-3 py-2 text-[15px]',
+                    'font-body cursor-pointer rounded-8 px-3 py-2 text-[15px]',
                     'focus:bg-surface-2 outline-none',
                     'data-[state=checked]:bg-brand-50 data-[state=checked]:text-success-text-on-bg',
                     'data-[highlighted]:bg-surface-2',

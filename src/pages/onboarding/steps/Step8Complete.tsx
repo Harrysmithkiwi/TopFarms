@@ -134,7 +134,7 @@ export function Step8Complete({ profileData, onComplete }: Step8CompleteProps) {
 
       {/* Right column — mini farm profile preview */}
       <div className="hidden md:block">
-        <div className="border-border bg-surface overflow-hidden rounded-[14px] border">
+        <div className="border-border bg-surface overflow-hidden rounded-12 border">
           <div
             className="flex h-16 items-end px-4 pb-2"
             style={{ backgroundColor: 'var(--color-brand-900)' }}

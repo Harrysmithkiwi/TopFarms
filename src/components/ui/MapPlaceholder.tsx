@@ -7,7 +7,7 @@ interface MapPlaceholderProps {
 
 export function MapPlaceholder({ region, distance }: MapPlaceholderProps) {
   return (
-    <div className="bg-surface-2 relative flex h-[160px] flex-col items-center justify-center rounded-[12px]">
+    <div className="bg-surface-2 relative flex h-[160px] flex-col items-center justify-center rounded-12">
       <MapPin className="text-text-subtle mb-1 h-6 w-6" />
       <span className="font-body text-text-subtle text-[12px]">Map coming soon</span>
       {(distance || region) && (

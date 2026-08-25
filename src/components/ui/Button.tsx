@@ -32,7 +32,7 @@ export function Button({
   return (
     <button
       className={cn(
-        'font-body cursor-pointer rounded-[8px] font-medium transition-colors duration-150',
+        'font-body cursor-pointer rounded-8 font-medium transition-colors duration-150',
         'inline-flex items-center justify-center',
         'disabled:cursor-not-allowed disabled:opacity-50',
         'focus-visible:outline-brand focus-visible:outline-2 focus-visible:outline-offset-2',

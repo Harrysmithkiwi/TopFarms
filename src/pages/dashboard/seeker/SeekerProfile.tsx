@@ -298,7 +298,7 @@ export function SeekerProfile() {
     return (
       <DashboardLayout>
         <div className="mx-auto max-w-2xl">
-          <div className="bg-surface border-border rounded-[16px] border p-6 text-center shadow-sm">
+          <div className="bg-surface border-border rounded-16 border p-6 text-center shadow-sm">
             <h1 className="font-display text-brand-900 text-[20px] leading-7 font-semibold">
               You haven't set up your profile yet
             </h1>
@@ -334,7 +334,7 @@ export function SeekerProfile() {
           return (
             <section
               key={section.key}
-              className="bg-surface border-border rounded-[16px] border p-6 shadow-sm"
+              className="bg-surface border-border rounded-16 border p-6 shadow-sm"
             >
               <div className="flex items-start justify-between gap-4">
                 <h2 className="text-text text-lg font-semibold">{section.title}</h2>

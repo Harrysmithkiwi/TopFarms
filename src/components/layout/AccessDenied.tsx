@@ -25,7 +25,7 @@ export function AccessDenied({
       <div className="flex w-full max-w-md flex-col gap-4">
         <div
           role="alert"
-          className="rounded-[12px] border-[1.5px] p-4"
+          className="rounded-12 border-[1.5px] p-4"
           style={{
             backgroundColor: 'var(--color-danger-bg)',
             borderColor: 'var(--color-danger)',
@@ -44,7 +44,7 @@ export function AccessDenied({
         </div>
         <Link
           to={dashboardPathFor(role)}
-          className="font-body inline-flex items-center justify-center rounded-[8px] px-4 py-2 text-sm font-medium"
+          className="font-body inline-flex items-center justify-center rounded-8 px-4 py-2 text-sm font-medium"
           style={{
             backgroundColor: 'var(--color-brand)',
             color: 'var(--color-bg)',

@@ -89,7 +89,7 @@ export function SeekerStep3Qualifications({
         {/* Description of selected level */}
         {selectedLevelInfo && (
           <div
-            className="border-brand-hover bg-brand-50/40 text-text flex items-start gap-2 rounded-[8px] border-[1.5px] p-3 text-label"
+            className="border-brand-hover bg-brand-50/40 text-text flex items-start gap-2 rounded-8 border-[1.5px] p-3 text-label"
           >
             <svg
               className="mt-0.5 h-4 w-4 flex-shrink-0 text-brand-hover"
@@ -112,7 +112,7 @@ export function SeekerStep3Qualifications({
       </div>
 
       {/* DairyNZ levels overview */}
-      <div className="border-border space-y-2 rounded-[8px] border-[1.5px] p-4">
+      <div className="border-border space-y-2 rounded-8 border-[1.5px] p-4">
         <p className="font-body text-text-muted text-xs font-semibold tracking-wide uppercase">
           DairyNZ Levels Overview
         </p>
