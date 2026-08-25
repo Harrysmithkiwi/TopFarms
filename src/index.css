@@ -78,6 +78,14 @@
   --color-brand-hover: #15803d;
   --color-brand-900: #14532d;
   --color-brand-50: #e8f5ec;
+  /* The bright green, non-text ONLY: icons, focus rings, the logo, decorative fills.
+     3.30:1 on white and 3.18:1 on bg — it clears the 3:1 non-text threshold and fails the
+     4.5:1 text one, which is exactly why --color-brand moved off it in row 11. It had no
+     name of its own until the marketing tokens folded in (row 8) and eleven fern-600 uses
+     needed somewhere to land. scripts/contrast.mjs polices the text/non-text line.
+     Brand_and_Design.md calls this --color-brand-accent; so does this file. */
+  --color-brand-accent: #16a34a;
+
   /* The light green that reads on a dark green panel. Replaces v13's lime #8cc63f, which
      measured 2.05:1 on white — the worst contrast in the product. 6.49:1 on brand-900. */
   --color-brand-lite: #86efac;
@@ -247,42 +255,21 @@
      focus-ring override and the per-audience copy swap — and the shells that apply them are
      still the right shells. */
 
-  /* === v14 marketing world (docs/design/MARKETING-DESIGN.md, 2026-08-24) ===
-     The token NAMES are v12's (every marketing surface consumes them); the VALUES are the
-     operator's 2026-08-24 comp, which deliberately adopts the PORTAL palette: one green
-     family around #16A34A, Inter body, near-white canvas. Changing values here rethemes
-     Home, ForEmployers, Pricing and legal/ in one move, and ends the two-design-worlds
-     split — marketing and product now share one material. Portals stay owned by
-     docs/DESIGN.md; these tokens simply agree with it now.
+  /* === v14 marketing tokens — DELETED 2026-08-25, design-system sync row 8 ===
+     fern-900/800/700/600/500/lite/100/50 · bark · sage · paper · linen · rule.
 
-     Every pairing below was measured, not assumed (WCAG AA on the real hexes):
-       bark on paper 16.19   ·  bark on white 17.25  ·  sage on paper 5.31
-       sage on white 5.66    ·  sage on fern-50 5.24 ·  sage on fern-100 5.04
-       white on fern-700 5.02 (primary button)       ·  white on fern-800 7.13 (hover)
-       fern-700 on paper 4.71 (link)                 ·  fern-700 on white 5.02
-       fern-900 on paper 8.55 (display)              ·  fern-900 on fern-100 8.11
-     fern-600 (#16A34A, the brand green) measures 3.30 with white and so is BANNED as a
-     text-bearing fill or as small text; it is legal for icons, large display accents and
-     decorative fills. fern-700 is the text-bearing green. */
-  --color-fern-900: #14532d;
-  --color-fern-800: #166534;
-  --color-fern-700: #15803d;
-  --color-fern-600: #16a34a;
-  --color-fern-500: #22c55e;
-  --color-fern-lite: #86efac;
-  --color-fern-100: #e8f5ec;
-  /* #f1f8f3 retired 2026-08-25 — duplicate of --color-brand-50 / green-50. */
-  --color-fern-50: #e8f5ec;
-  --color-bark: #0b1f10;
-  --color-sage: #5b6b5f;
-  /* #f7f8f6 retired 2026-08-25 — a 1% duplicate of --color-surface-2. Two near-identical
-     greys is the drift the sync exists to end; paper now IS surface-2. */
-  --color-paper: #f3f5f0;
-  --color-linen: #ffffff;
-  --color-rule: #e5e8e2;
+     The third and last of the token worlds this file carried, and the one that was never a
+     different PALETTE — only a different vocabulary. The 2026-08-24 v14 change had already
+     pointed every marketing token at the portal's hexes: fern-900 WAS #14532D, bark WAS
+     #0B1F10, rule WAS #E5E8E2. Two names for one colour is not a second design system, it
+     is a second dictionary, and it is how a reader ends up believing there are two.
 
-  /* The marketing world's name for the same face. One definition, so the two can never
-     drift apart; the alias itself goes when the marketing tokens are collapsed. */
+     174 uses across nine files renamed. Values moved in exactly two places, both upward:
+     fern-800 #166534 was the button and link hover and now resolves to brand-900 #14532D
+     (white-on-hover 7.13:1 -> 9.11:1), and fern-500 #22c55e was a single decorative dot
+     that v12's own directive already banned as a fill. Everything else is byte-identical
+     to what shipped, which is the evidence that this was a dictionary problem. */
+
   --font-serif: var(--font-display);
 }
 

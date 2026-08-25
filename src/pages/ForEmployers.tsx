@@ -80,12 +80,12 @@ export function ForEmployers() {
       {/* The comp grounds this in photography. No photography exists yet, and inventing an
           illustrated substitute is the failure this build exists to undo, so the ground stays
           clean until real imagery is supplied. */}
-      <section className="border-rule relative isolate overflow-hidden border-b bg-white">
+      <section className="border-border relative isolate overflow-hidden border-b bg-white">
         <Container className="relative py-20 text-center sm:py-24">
           <Display as="h1" className="mx-auto max-w-[18ch] text-[clamp(2.2rem,5vw,3.6rem)] leading-[1.06]">
             What happens after you post.
           </Display>
-          <p className="text-bark/80 mx-auto mt-5 max-w-[44ch] text-[1.0625rem] leading-relaxed sm:text-[1.1875rem]">
+          <p className="text-text/80 mx-auto mt-5 max-w-[44ch] text-[1.0625rem] leading-relaxed sm:text-[1.1875rem]">
             Three steps, and the list stays yours the whole way through.
           </p>
           <div className="mt-9 flex flex-col items-center justify-center gap-3.5 sm:flex-row">
@@ -109,10 +109,10 @@ export function ForEmployers() {
             {SEQUENCE.map((s) => (
               <div key={s.n}>
                 <IconPlate className="font-semibold">{s.n}</IconPlate>
-                <h3 className="text-fern-900 mt-4 text-[1.0625rem] leading-snug font-semibold">
+                <h3 className="text-brand-900 mt-4 text-[1.0625rem] leading-snug font-semibold">
                   {s.h}
                 </h3>
-                <p className="text-sage mt-2.5 max-w-[42ch] text-[0.9375rem] leading-relaxed">
+                <p className="text-text-muted mt-2.5 max-w-[42ch] text-[0.9375rem] leading-relaxed">
                   {s.p}
                 </p>
               </div>
@@ -122,7 +122,7 @@ export function ForEmployers() {
       </section>
 
       {/* ── What a listing includes ── */}
-      <section aria-labelledby="incl-h2" className="bg-linen py-20 sm:py-24">
+      <section aria-labelledby="incl-h2" className="bg-surface py-20 sm:py-24">
         <Container>
           <Display className="text-[clamp(1.7rem,3.2vw,2.3rem)]">
             <span id="incl-h2">What a listing includes</span>
@@ -131,13 +131,13 @@ export function ForEmployers() {
             {INCLUDED.map((item) => (
               <div
                 key={item.h}
-                className="border-rule rounded-16 border bg-white p-7 shadow-[0_4px_24px_rgba(26,60,42,0.08)]"
+                className="border-border rounded-16 border bg-white p-7 shadow-lg"
               >
                 <IconPlate>{item.icon}</IconPlate>
-                <h3 className="text-fern-900 mt-4 text-[1.0625rem] leading-snug font-semibold">
+                <h3 className="text-brand-900 mt-4 text-[1.0625rem] leading-snug font-semibold">
                   {item.h}
                 </h3>
-                <p className="text-sage mt-2.5 max-w-[46ch] text-[0.9375rem] leading-relaxed">
+                <p className="text-text-muted mt-2.5 max-w-[46ch] text-[0.9375rem] leading-relaxed">
                   {item.p}
                 </p>
               </div>
@@ -148,19 +148,19 @@ export function ForEmployers() {
 
       {/* ── Close ── the V12Banner idiom: fern-100 panel, scene bleeding off its right edge. */}
       <Container className="py-20 sm:py-24">
-        <div className="border-rule relative isolate grid overflow-hidden rounded-16 border md:grid-cols-[1fr_1.1fr]">
-          <div className="bg-fern-100 relative z-10 flex flex-col justify-center px-8 py-12 sm:px-11">
+        <div className="border-border relative isolate grid overflow-hidden rounded-16 border md:grid-cols-[1fr_1.1fr]">
+          <div className="bg-brand-50 relative z-10 flex flex-col justify-center px-8 py-12 sm:px-11">
             <Display className="text-[clamp(1.6rem,3vw,2.1rem)] leading-[1.16]">
               Every listing free. Workers never pay.
             </Display>
-            <p className="text-sage mt-4 max-w-[24rem] text-[1.0625rem] leading-relaxed">
+            <p className="text-text-muted mt-4 max-w-[24rem] text-[1.0625rem] leading-relaxed">
               Prices published, no calls, no quotes.
             </p>
             <div className="mt-6">
               <TextLink to="/pricing">See pricing</TextLink>
             </div>
           </div>
-          <div className="bg-fern-100 relative min-h-[13rem]" aria-hidden="true" />
+          <div className="bg-brand-50 relative min-h-[13rem]" aria-hidden="true" />
         </div>
       </Container>
     </PublicShell>

@@ -33,30 +33,30 @@ const COLUMNS: { h: string; links: { to: string; label: string }[] }[] = [
 
 export function ShellFooter() {
   return (
-    <footer className="border-rule border-t bg-white px-5 py-12">
+    <footer className="border-border border-t bg-white px-5 py-12">
       <div className="mx-auto grid max-w-[1200px] gap-10 md:grid-cols-5 md:gap-8">
         <div className="space-y-3 md:col-span-2">
-          <Link to="/" className="text-bark inline-flex min-h-11 items-center text-xl font-extrabold tracking-tight">
-            TopFarms<span className="text-fern-600">.</span>
+          <Link to="/" className="text-text inline-flex min-h-11 items-center text-xl font-extrabold tracking-tight">
+            TopFarms<span className="text-brand-accent">.</span>
           </Link>
-          <p className="text-sage max-w-[36ch] text-sm leading-relaxed">
+          <p className="text-text-muted max-w-[36ch] text-sm leading-relaxed">
             Connecting agricultural employers with people looking for work across New Zealand.
           </p>
-          <p className="text-sage text-xs">
+          <p className="text-text-muted text-xs">
             &copy; 2026 TopFarms &middot;{' '}
-            <a className="hover:text-bark underline underline-offset-4" href="mailto:hello@topfarms.co.nz">
+            <a className="hover:text-text underline underline-offset-4" href="mailto:hello@topfarms.co.nz">
               hello@topfarms.co.nz
             </a>
           </p>
         </div>
         {COLUMNS.map((col) => (
           <div key={col.h}>
-            <h2 className="text-bark text-xs font-semibold tracking-wider uppercase">{col.h}</h2>
+            <h2 className="text-text text-xs font-semibold tracking-wider uppercase">{col.h}</h2>
             <ul className="mt-3 space-y-0.5">
               {col.links.map((l) => (
                 <li key={l.to + l.label}>
                   <Link
-                    className="text-sage hover:text-bark inline-flex min-h-9 items-center text-sm transition-colors"
+                    className="text-text-muted hover:text-text inline-flex min-h-9 items-center text-sm transition-colors"
                     to={l.to}
                   >
                     {l.label}

@@ -40,7 +40,7 @@ function chips(r: Role): string[] {
 
 function CardShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="border-rule rounded-12 border bg-white p-5 transition-shadow duration-200 hover:shadow-[0_4px_24px_rgba(26,60,42,0.08)]">
+    <div className="border-border rounded-12 border bg-white p-5 transition-shadow duration-200 hover:shadow-lg">
       {children}
     </div>
   )
@@ -74,7 +74,7 @@ export function V12Roles() {
   }, [])
 
   return (
-    <section className="bg-linen border-rule border-y py-16 sm:py-20">
+    <section className="bg-surface border-border border-y py-16 sm:py-20">
       <Container>
         <div className="flex flex-wrap items-baseline justify-between gap-3">
           <Display className="text-[clamp(1.5rem,2.6vw,1.9rem)]">
@@ -88,20 +88,20 @@ export function V12Roles() {
             <span className="sr-only">Loading open roles</span>
             {[0, 1, 2, 3].map((i) => (
               <CardShell key={i}>
-                <div className="bg-fern-50 h-10 w-10 animate-pulse rounded-full motion-reduce:animate-none" />
-                <div className="bg-fern-50 mt-4 h-4 w-3/4 animate-pulse rounded motion-reduce:animate-none" />
-                <div className="bg-fern-50 mt-2 h-3 w-1/2 animate-pulse rounded motion-reduce:animate-none" />
+                <div className="bg-brand-50 h-10 w-10 animate-pulse rounded-full motion-reduce:animate-none" />
+                <div className="bg-brand-50 mt-4 h-4 w-3/4 animate-pulse rounded motion-reduce:animate-none" />
+                <div className="bg-brand-50 mt-2 h-3 w-1/2 animate-pulse rounded motion-reduce:animate-none" />
               </CardShell>
             ))}
           </div>
         )}
 
         {roles !== null && roles.length === 0 && (
-          <div className="border-rule mt-8 rounded-12 border border-dashed bg-white px-6 py-12 text-center">
-            <p className="text-fern-900 font-serif text-[clamp(1.35rem,2.2vw,1.6rem)] font-semibold">
+          <div className="border-border mt-8 rounded-12 border border-dashed bg-white px-6 py-12 text-center">
+            <p className="text-brand-900 font-serif text-[clamp(1.35rem,2.2vw,1.6rem)] font-semibold">
               {failed ? 'Roles could not be loaded' : 'No roles listed right now'}
             </p>
-            <p className="text-sage mx-auto mt-2 max-w-[30rem] text-[0.9375rem] leading-relaxed">
+            <p className="text-text-muted mx-auto mt-2 max-w-[30rem] text-[0.9375rem] leading-relaxed">
               {failed
                 ? 'Something went wrong at our end. The full list is still available.'
                 : 'New farm roles appear here as employers join. If you are the one hiring, listing is free.'}
@@ -119,14 +119,14 @@ export function V12Roles() {
               <li key={r.id}>
                 <CardShell>
                   <Link to={`/jobs/${r.id}`} className="block">
-                    <h3 className="text-bark text-[1.0625rem] leading-snug font-semibold">{r.title}</h3>
+                    <h3 className="text-text text-[1.0625rem] leading-snug font-semibold">{r.title}</h3>
                     {r.employer_profiles?.farm_name && (
-                      <p className="text-sage mt-1 text-[0.875rem]">
+                      <p className="text-text-muted mt-1 text-[0.875rem]">
                         {r.employer_profiles.farm_name}
                       </p>
                     )}
-                    <p className="text-sage mt-2 flex items-center gap-1.5 text-[0.875rem]">
-                      <IconPin className="text-fern-600 h-4 w-4" />
+                    <p className="text-text-muted mt-2 flex items-center gap-1.5 text-[0.875rem]">
+                      <IconPin className="text-brand-accent h-4 w-4" />
                       {r.region}
                     </p>
                     {chips(r).length > 0 && (
@@ -134,7 +134,7 @@ export function V12Roles() {
                         {chips(r).map((c) => (
                           <span
                             key={c}
-                            className="bg-fern-50 text-fern-800 rounded-full px-2.5 py-1 text-[0.875rem] font-medium"
+                            className="bg-brand-50 text-brand-900 rounded-full px-2.5 py-1 text-[0.875rem] font-medium"
                           >
                             {c}
                           </span>

@@ -21,7 +21,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
   const { audience } = useAudience()
   return (
     <div
-      className="v13-shell bg-paper text-bark font-body min-h-screen [font-variant-numeric:tabular-nums]"
+      className="v13-shell bg-surface-2 text-text font-body min-h-screen [font-variant-numeric:tabular-nums]"
       data-aud={audience}
     >
       <ShellNav />

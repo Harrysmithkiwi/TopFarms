@@ -58,7 +58,10 @@ const PAIRS = [
   // v13 token world in the design-system sync (row 7, 2026-08-25). Their tokens no longer
   // exist, and this script throws rather than skips on an unknown name: an ungated pair is
   // an unmeasured pair, so a typo must not quietly reduce coverage.
-  ['text-subtle', 'paper', 'text', 'tertiary text on the v14 marketing canvas'],
+  // `paper` was the v14 marketing name for surface-2 and went with the marketing vocabulary
+  // in row 8. The PAIR is not lost — text-subtle on surface-2 is gated three lines above,
+  // and it is the same two hexes. Deleting the row rather than renaming it, because a
+  // duplicate row would imply two surfaces where there is one.
   ['text-subtle', 'danger-bg', 'text', 'tertiary text on error panels'],
   ['text-subtle', 'info-bg', 'text', 'tertiary text on info panels'],
   ['text-subtle', 'warn-bg', 'text', 'tertiary text on warning panels'],

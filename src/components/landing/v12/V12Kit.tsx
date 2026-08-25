@@ -37,7 +37,7 @@ export function Display({
 }) {
   return (
     <Tag
-      className={`font-serif text-fern-900 font-medium tracking-[-0.01em] text-balance ${className}`}
+      className={`font-serif text-brand-900 font-medium tracking-[-0.01em] text-balance ${className}`}
     >
       {children}
     </Tag>
@@ -57,9 +57,10 @@ type BtnProps = {
  *
  * `onScene` is the outline variant sitting on the illustration: it takes a solid white fill
  * rather than a transparent one, because a transparent outline button over a painted sky
- * fails contrast against whichever cloud happens to be behind it. v14 hexes measured:
- * white-on-fern-700 5.02:1 and white-on-fern-800 7.13:1 (hover); the transparent version
- * was unmeasurable by definition, which is the reason it does not exist.
+ * fails contrast against whichever cloud happens to be behind it. Measured: white-on-brand
+ * 5.02:1, and white-on-brand-900 9.11:1 on hover — the hover was 7.13:1 while it pointed at
+ * the v14 fern-800, and the token rename moved it up. The transparent version was
+ * unmeasurable by definition, which is the reason it does not exist.
  *
  * `outline` is the comp's quiet secondary: a white surface with the hairline border, not a
  * green-outlined button, so the primary is the only green object in a CTA pair.
@@ -70,10 +71,10 @@ export function Btn({ to, children, variant = 'primary', size = 'md', className 
   const sizing = size === 'lg' ? 'px-7 py-3.5 text-base' : 'px-5 py-2.5 text-[0.9375rem]'
   const skin =
     variant === 'primary'
-      ? 'bg-fern-700 border-fern-700 text-white hover:bg-fern-800 hover:border-fern-800'
+      ? 'bg-brand border-brand text-white hover:bg-brand-900 hover:border-brand-900'
       : variant === 'onScene'
-        ? 'bg-white border-white text-fern-800 hover:bg-fern-50 hover:border-fern-50'
-        : 'bg-white border-rule text-bark hover:bg-fern-50 hover:border-fern-600/40'
+        ? 'bg-white border-white text-brand-900 hover:bg-brand-50 hover:border-brand-50'
+        : 'bg-white border-border text-text hover:bg-brand-50 hover:border-brand-accent/40'
 
   return (
     <Link to={to} className={`${base} ${sizing} ${skin} ${className}`}>
@@ -96,7 +97,7 @@ export function TextLink({
   return (
     <Link
       to={to}
-      className={`group inline-flex min-h-11 -my-2.5 items-center gap-1.5 py-2.5 text-[0.9375rem] font-semibold text-fern-700 underline-offset-4 hover:text-fern-800 hover:underline ${className}`}
+      className={`group inline-flex min-h-11 -my-2.5 items-center gap-1.5 py-2.5 text-[0.9375rem] font-semibold text-brand underline-offset-4 hover:text-brand-900 hover:underline ${className}`}
     >
       {children}
       <IconArrowRight className="h-[1em] w-[1em] transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transform-none" />
@@ -108,7 +109,7 @@ export function TextLink({
 export function IconPlate({ children, className = '' }: { children: ReactNode; className?: string }) {
   return (
     <span
-      className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-fern-100 text-fern-700 ${className}`}
+      className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-50 text-success-text-on-bg ${className}`}
     >
       {children}
     </span>

@@ -17,7 +17,6 @@ Rows marked `n/a (not text)` are fills/borders recorded for the audit trail — 
 | `text-subtle` #5c6a60 | `surface` #ffffff | 5.70 | 4.5 | PASS | tertiary text on cards (darkened Phase 4.1) |
 | `text-subtle` #5c6a60 | `bg` #fafbf9 | 5.49 | 4.5 | PASS | tertiary text on page bg |
 | `text-subtle` #5c6a60 | `surface-2` #f3f5f0 | 5.19 | 4.5 | PASS | tertiary text on tinted panels |
-| `text-subtle` #5c6a60 | `paper` #f3f5f0 | 5.19 | 4.5 | PASS | tertiary text on the v14 marketing canvas |
 | `text-subtle` #5c6a60 | `danger-bg` #fee2e2 | 4.66 | 4.5 | PASS | tertiary text on error panels |
 | `text-subtle` #5c6a60 | `info-bg` #e0f2fe | 4.97 | 4.5 | PASS | tertiary text on info panels |
 | `text-subtle` #5c6a60 | `warn-bg` #fef3c7 | 5.12 | 4.5 | PASS | tertiary text on warning panels |

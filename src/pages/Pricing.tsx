@@ -122,17 +122,17 @@ export function Pricing() {
       {/* The comp grounds this in photography. No photography exists yet, and inventing an
           illustrated substitute is the failure this build exists to undo, so the ground stays
           clean until real imagery is supplied. */}
-      <section className="border-rule relative isolate overflow-hidden border-b bg-white">
+      <section className="border-border relative isolate overflow-hidden border-b bg-white">
         <Container className="relative py-20 text-center sm:py-24">
           <Display as="h1" className="mx-auto max-w-[20ch] text-[clamp(2.2rem,5vw,3.6rem)] leading-[1.06]">
             <span className="emp-only">What it costs</span>
             <span className="seek-only">Free, always. Workers never pay.</span>
           </Display>
-          <p className="emp-only text-bark/80 mx-auto mt-5 max-w-[46ch] text-[1.0625rem] leading-relaxed sm:text-[1.1875rem]">
+          <p className="emp-only text-text/80 mx-auto mt-5 max-w-[46ch] text-[1.0625rem] leading-relaxed sm:text-[1.1875rem]">
             Published in the open. No calls, no quotes. Every listing is free, you pay once only
             if you hire, and workers never pay.
           </p>
-          <p className="seek-only text-bark/80 mx-auto mt-5 max-w-[46ch] text-[1.0625rem] leading-relaxed sm:text-[1.1875rem]">
+          <p className="seek-only text-text/80 mx-auto mt-5 max-w-[46ch] text-[1.0625rem] leading-relaxed sm:text-[1.1875rem]">
             Not to apply, not to match, not ever. Employers pay to list a job. You do not pay to
             find one.
           </p>
@@ -157,24 +157,24 @@ export function Pricing() {
               {tiers.map((tier) => (
                 <div
                   key={tier.name}
-                  className={`rounded-16 border p-7 shadow-[0_4px_24px_rgba(26,60,42,0.08)] ${
-                    tier.highlight ? 'border-fern-700 bg-fern-100' : 'border-rule bg-white'
+                  className={`rounded-16 border p-7 shadow-lg ${
+                    tier.highlight ? 'border-brand bg-brand-50' : 'border-border bg-white'
                   }`}
                 >
-                  <p className="text-fern-800 text-[0.875rem] font-semibold">{tier.name}</p>
+                  <p className="text-brand-900 text-[0.875rem] font-semibold">{tier.name}</p>
                   {/* clamp(), not a fixed size: v12 §2 is "display sizes are clamp()
                       throughout", and "$200-800" is the longest string of the three — at a
                       fixed 2.6rem it is the one that would wrap on a narrow card. */}
-                  <p className="font-serif text-fern-900 mt-3 text-[clamp(2.1rem,3.6vw,2.6rem)] leading-none font-semibold tracking-[-0.02em]">
+                  <p className="font-serif text-brand-900 mt-3 text-[clamp(2.1rem,3.6vw,2.6rem)] leading-none font-semibold tracking-[-0.02em]">
                     {tier.price}
                   </p>
-                  <p className="text-sage mt-2 text-[0.875rem]">{tier.period}</p>
-                  <p className="text-sage mt-4 text-[0.9375rem] leading-relaxed">
+                  <p className="text-text-muted mt-2 text-[0.875rem]">{tier.period}</p>
+                  <p className="text-text-muted mt-4 text-[0.9375rem] leading-relaxed">
                     {tier.description}
                   </p>
                   <ul className="mt-5 flex flex-col gap-2.5">
                     {tier.features.map((f) => (
-                      <li key={f} className="text-bark/85 text-[0.9375rem] leading-relaxed">
+                      <li key={f} className="text-text/85 text-[0.9375rem] leading-relaxed">
                         {f}
                       </li>
                     ))}
@@ -182,13 +182,13 @@ export function Pricing() {
                 </div>
               ))}
             </div>
-            <p className="text-sage mt-6 text-[0.875rem]">
+            <p className="text-text-muted mt-6 text-[0.875rem]">
               All prices in NZD. Workers never pay: not to apply, not to match, not ever.
             </p>
           </Container>
         </section>
 
-        <section aria-labelledby="faq-h2" className="bg-linen py-20 sm:py-24">
+        <section aria-labelledby="faq-h2" className="bg-surface py-20 sm:py-24">
           <Container>
             <Display className="text-[clamp(1.7rem,3.2vw,2.3rem)]">
               <span id="faq-h2">Questions</span>
@@ -196,10 +196,10 @@ export function Pricing() {
             <div className="mt-10 grid gap-x-12 gap-y-9 md:grid-cols-2">
               {faqs.map((faq) => (
                 <div key={faq.q}>
-                  <h3 className="text-fern-900 text-[1.0625rem] leading-snug font-semibold">
+                  <h3 className="text-brand-900 text-[1.0625rem] leading-snug font-semibold">
                     {faq.q}
                   </h3>
-                  <p className="text-sage mt-2.5 max-w-[60ch] text-[0.9375rem] leading-relaxed">
+                  <p className="text-text-muted mt-2.5 max-w-[60ch] text-[0.9375rem] leading-relaxed">
                     {faq.a}
                   </p>
                 </div>
@@ -211,7 +211,7 @@ export function Pricing() {
 
       {/* ── Seeker view: stated plainly, never an empty page (directive 1.17c). ── */}
       <div className="seek-only">
-        <section aria-labelledby="free-h2" className="bg-linen py-20 sm:py-24">
+        <section aria-labelledby="free-h2" className="bg-surface py-20 sm:py-24">
           <Container>
             <Display className="text-[clamp(1.7rem,3.2vw,2.3rem)]">
               <span id="free-h2">What free actually covers</span>
@@ -220,16 +220,16 @@ export function Pricing() {
               {SEEKER_FREE.map(([h, p]) => (
                 <div
                   key={h}
-                  className="border-rule rounded-16 border bg-white p-7 shadow-[0_4px_24px_rgba(26,60,42,0.08)]"
+                  className="border-border rounded-16 border bg-white p-7 shadow-lg"
                 >
-                  <h3 className="text-fern-900 text-[1.0625rem] leading-snug font-semibold">{h}</h3>
-                  <p className="text-sage mt-2.5 max-w-[46ch] text-[0.9375rem] leading-relaxed">
+                  <h3 className="text-brand-900 text-[1.0625rem] leading-snug font-semibold">{h}</h3>
+                  <p className="text-text-muted mt-2.5 max-w-[46ch] text-[0.9375rem] leading-relaxed">
                     {p}
                   </p>
                 </div>
               ))}
             </div>
-            <p className="text-sage mt-6 text-[0.875rem]">
+            <p className="text-text-muted mt-6 text-[0.875rem]">
               Employers pay per listing, published on this page when you switch to the employer
               view.
             </p>
@@ -239,7 +239,7 @@ export function Pricing() {
 
       {/* ── Close ── */}
       <Container className="py-20 sm:py-24">
-        <div className="bg-fern-100 border-rule relative isolate overflow-hidden rounded-16 border">
+        <div className="bg-brand-50 border-border relative isolate overflow-hidden rounded-16 border">
           <div className="relative px-6 py-14 text-center sm:py-16">
             <Display className="mx-auto max-w-[20ch] text-[clamp(1.8rem,3.4vw,2.4rem)]">
               The whole job. The whole person.

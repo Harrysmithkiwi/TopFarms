@@ -104,7 +104,7 @@ export function V12Hero() {
         <div className="lg:col-span-5">
           {/* The page's ONE eyebrow, and it is plain text: the pill, tint, border and icon
               were four pieces of chrome carrying one short line. */}
-          <span className="text-sage block text-xs font-semibold tracking-[0.14em] uppercase">
+          <span className="text-text-muted block text-xs font-semibold tracking-[0.14em] uppercase">
             NZ agricultural recruitment
           </span>
           <Display
@@ -112,9 +112,9 @@ export function V12Hero() {
             className="mt-5 text-[clamp(2.4rem,4.2vw,3.25rem)] leading-[1.12] tracking-[-0.02em]"
           >
             <span className="block">The right people.</span>
-            <span className="text-sage block pb-1 italic">The right farm.</span>
+            <span className="text-text-muted block pb-1 italic">The right farm.</span>
           </Display>
-          <p className="text-sage mt-5 max-w-[27rem] text-[1.0625rem] leading-relaxed sm:text-[1.125rem]">
+          <p className="text-text-muted mt-5 max-w-[27rem] text-[1.0625rem] leading-relaxed sm:text-[1.125rem]">
             TopFarms connects agricultural employers with people looking for their next
             opportunity across New Zealand.
           </p>
@@ -129,39 +129,39 @@ export function V12Hero() {
         </div>
 
         <div className="lg:col-span-7" aria-hidden="true">
-          <div className="border-rule rounded-16 border bg-white p-4 shadow-[0_10px_34px_rgba(11,31,16,0.05)] sm:p-5">
-            <div className="border-rule flex items-center justify-between border-b pb-3.5">
-              <span className="bg-paper border-rule text-sage rounded-12 border px-2.5 py-1 text-xs font-medium">
+          <div className="border-border rounded-16 border bg-white p-4 shadow-lg sm:p-5">
+            <div className="border-border flex items-center justify-between border-b pb-3.5">
+              <span className="bg-surface-2 border-border text-text-muted rounded-12 border px-2.5 py-1 text-xs font-medium">
                 topfarms.co.nz/jobs
               </span>
-              <span className="text-sage text-xs font-medium">Newest first</span>
+              <span className="text-text-muted text-xs font-medium">Newest first</span>
             </div>
             <div className="grid gap-3.5 pt-4 md:grid-cols-12">
               {/* Filter rail — static, illustrative */}
-              <div className="bg-paper/70 border-rule hidden space-y-3 rounded-12 border p-3 text-xs md:col-span-4 md:block">
+              <div className="bg-surface-2/70 border-border hidden space-y-3 rounded-12 border p-3 text-xs md:col-span-4 md:block">
                 <div>
-                  <span className="text-bark block font-semibold">Search jobs</span>
-                  <span className="border-rule text-sage mt-1 block rounded-8 border bg-white px-2.5 py-1.5">
+                  <span className="text-text block font-semibold">Search jobs</span>
+                  <span className="border-border text-text-muted mt-1 block rounded-8 border bg-white px-2.5 py-1.5">
                     Dairy, shepherd, fencing
                   </span>
                 </div>
                 <div>
-                  <span className="text-bark block font-semibold">Region</span>
-                  <span className="border-rule text-sage mt-1 block rounded-8 border bg-white px-2.5 py-1.5">
+                  <span className="text-text block font-semibold">Region</span>
+                  <span className="border-border text-text-muted mt-1 block rounded-8 border bg-white px-2.5 py-1.5">
                     All of New Zealand
                   </span>
                 </div>
                 <div>
-                  <span className="text-bark block font-semibold">Sector</span>
-                  <div className="text-sage mt-1 space-y-1">
+                  <span className="text-text block font-semibold">Sector</span>
+                  <div className="text-text-muted mt-1 space-y-1">
                     <span className="flex items-center gap-1.5">
-                      <span className="bg-fern-600 h-3 w-3 rounded-full" /> Dairy
+                      <span className="bg-brand-accent h-3 w-3 rounded-full" /> Dairy
                     </span>
                     <span className="flex items-center gap-1.5">
-                      <span className="bg-fern-600 h-3 w-3 rounded-full" /> Sheep &amp; beef
+                      <span className="bg-brand-accent h-3 w-3 rounded-full" /> Sheep &amp; beef
                     </span>
                     <span className="flex items-center gap-1.5">
-                      <span className="border-rule h-3 w-3 rounded-full border bg-white" /> Horticulture
+                      <span className="border-border h-3 w-3 rounded-full border bg-white" /> Horticulture
                     </span>
                   </div>
                 </div>
@@ -171,15 +171,15 @@ export function V12Hero() {
                 {PREVIEW_ROWS.map((r) => (
                   <div
                     key={r.role}
-                    className="border-rule flex items-start justify-between gap-3 rounded-12 border bg-white p-3.5"
+                    className="border-border flex items-start justify-between gap-3 rounded-12 border bg-white p-3.5"
                   >
                     <div className="flex gap-3">
-                      <span className="bg-fern-50 text-fern-700 flex h-9 w-9 shrink-0 items-center justify-center rounded-full">
+                      <span className="bg-brand-50 text-success-text-on-bg flex h-9 w-9 shrink-0 items-center justify-center rounded-full">
                         {r.icon}
                       </span>
                       <div>
-                        <span className="text-bark block text-sm font-semibold">{r.role}</span>
-                        <span className="text-sage flex items-center gap-1 text-xs">
+                        <span className="text-text block text-sm font-semibold">{r.role}</span>
+                        <span className="text-text-muted flex items-center gap-1 text-xs">
                           <IconPin className="h-3 w-3" />
                           {r.farm}, {r.region}
                         </span>
@@ -187,7 +187,7 @@ export function V12Hero() {
                           {r.tags.map((t) => (
                             <span
                               key={t}
-                              className="bg-paper border-rule text-sage rounded-full border px-2 py-0.5 text-[11px] font-medium"
+                              className="bg-surface-2 border-border text-text-muted rounded-full border px-2 py-0.5 text-[11px] font-medium"
                             >
                               {t}
                             </span>
@@ -196,7 +196,7 @@ export function V12Hero() {
                       </div>
                     </div>
                     {r.match && (
-                      <span className="bg-fern-100 text-fern-800 shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold">
+                      <span className="bg-brand-50 text-brand-900 shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold">
                         {r.match}
                       </span>
                     )}
@@ -224,13 +224,13 @@ const STRIP = [
 
 export function V14FeatureStrip() {
   return (
-    <section className="border-rule border-y py-5">
+    <section className="border-border border-y py-5">
       <Container>
         <ul className="grid grid-cols-2 gap-x-6 gap-y-4 md:grid-cols-4">
           {STRIP.map((s) => (
             <li key={s.label} className="flex items-center justify-center gap-2.5 md:justify-start">
-              <span className="text-fern-600 shrink-0">{s.icon}</span>
-              <span className="text-bark text-sm font-medium">{s.label}</span>
+              <span className="text-brand-accent shrink-0">{s.icon}</span>
+              <span className="text-text text-sm font-medium">{s.label}</span>
             </li>
           ))}
         </ul>
@@ -272,7 +272,7 @@ export function V12Recruitment() {
               <br />
               built for agriculture.
             </Display>
-            <p className="text-sage mt-5 max-w-[26rem] text-[1.0625rem] leading-relaxed">
+            <p className="text-text-muted mt-5 max-w-[26rem] text-[1.0625rem] leading-relaxed">
               TopFarms is designed around the way farms and growers actually work. Practical,
               specific, and focused on the details that decide a hire.
             </p>
@@ -283,9 +283,9 @@ export function V12Recruitment() {
           <div className="grid gap-9 sm:grid-cols-3">
             {BUILT.map((f) => (
               <div key={f.h}>
-                <span className="text-fern-600 block">{f.icon}</span>
-                <h3 className="text-fern-900 mt-4 text-[1.0625rem] font-semibold text-balance">{f.h}</h3>
-                <p className="text-sage mt-2 text-[0.875rem] leading-relaxed">{f.p}</p>
+                <span className="text-brand-accent block">{f.icon}</span>
+                <h3 className="text-brand-900 mt-4 text-[1.0625rem] font-semibold text-balance">{f.h}</h3>
+                <p className="text-text-muted mt-2 text-[0.875rem] leading-relaxed">{f.p}</p>
               </div>
             ))}
           </div>
@@ -311,26 +311,26 @@ function EmployerPreview() {
   return (
     <div className="space-y-2.5">
       <div className="flex items-center justify-between">
-        <span className="text-bark text-xs font-semibold">Open roles</span>
-        <span className="text-fern-700 text-[11px] font-semibold">View all</span>
+        <span className="text-text text-xs font-semibold">Open roles</span>
+        <span className="text-brand text-[11px] font-semibold">View all</span>
       </div>
       {rows.map((r) => (
-        <div key={r.role} className="border-rule flex items-center justify-between rounded-8 border bg-white px-3 py-2">
+        <div key={r.role} className="border-border flex items-center justify-between rounded-8 border bg-white px-3 py-2">
           <span>
-            <span className="text-bark block text-xs font-semibold">{r.role}</span>
-            <span className="text-sage text-[11px]">{r.meta}</span>
+            <span className="text-text block text-xs font-semibold">{r.role}</span>
+            <span className="text-text-muted text-[11px]">{r.meta}</span>
           </span>
-          <span className="bg-fern-100 text-fern-800 rounded-full px-2 py-0.5 text-[11px] font-semibold">
+          <span className="bg-brand-50 text-brand-900 rounded-full px-2 py-0.5 text-[11px] font-semibold">
             {r.state}
           </span>
         </div>
       ))}
-      <div className="border-rule rounded-8 border bg-white px-3 py-2">
-        <span className="text-bark block text-xs font-semibold">Recent applicants</span>
-        <span className="text-sage mt-1 flex items-center gap-1.5 text-[11px]">
-          <span className="bg-fern-600 h-4 w-4 shrink-0 rounded-full" />
-          <span className="bg-fern-500 h-4 w-4 shrink-0 rounded-full" />
-          <span className="bg-fern-lite h-4 w-4 shrink-0 rounded-full" />
+      <div className="border-border rounded-8 border bg-white px-3 py-2">
+        <span className="text-text block text-xs font-semibold">Recent applicants</span>
+        <span className="text-text-muted mt-1 flex items-center gap-1.5 text-[11px]">
+          <span className="bg-brand-accent h-4 w-4 shrink-0 rounded-full" />
+          <span className="bg-brand-accent h-4 w-4 shrink-0 rounded-full" />
+          <span className="bg-brand-lite h-4 w-4 shrink-0 rounded-full" />
           3 shortlisted, 2 interviewing
         </span>
       </div>
@@ -345,24 +345,24 @@ function SeekerPreview() {
   ]
   return (
     <div className="space-y-2.5">
-      <span className="text-bark block text-xs font-semibold">Recommended for you</span>
+      <span className="text-text block text-xs font-semibold">Recommended for you</span>
       {rows.map((r) => (
-        <div key={r.role} className="border-rule flex items-center gap-2.5 rounded-8 border bg-white px-3 py-2">
-          <span className="bg-fern-50 text-fern-700 flex h-7 w-7 shrink-0 items-center justify-center rounded-full">
+        <div key={r.role} className="border-border flex items-center gap-2.5 rounded-8 border bg-white px-3 py-2">
+          <span className="bg-brand-50 text-success-text-on-bg flex h-7 w-7 shrink-0 items-center justify-center rounded-full">
             <IconPin className="h-3.5 w-3.5" />
           </span>
           <span>
-            <span className="text-bark block text-xs font-semibold">{r.role}</span>
-            <span className="text-sage text-[11px]">{r.meta}</span>
+            <span className="text-text block text-xs font-semibold">{r.role}</span>
+            <span className="text-text-muted text-[11px]">{r.meta}</span>
           </span>
         </div>
       ))}
-      <div className="border-rule rounded-8 border bg-white px-3 py-2.5">
-        <span className="text-sage flex items-center justify-between text-[11px] font-medium">
-          Profile strength <span className="text-fern-800 font-semibold">Strong</span>
+      <div className="border-border rounded-8 border bg-white px-3 py-2.5">
+        <span className="text-text-muted flex items-center justify-between text-[11px] font-medium">
+          Profile strength <span className="text-brand-900 font-semibold">Strong</span>
         </span>
-        <span className="bg-fern-100 mt-1.5 block h-1.5 w-full overflow-hidden rounded-full">
-          <span className="bg-fern-600 block h-full w-4/5 rounded-full" />
+        <span className="bg-brand-50 mt-1.5 block h-1.5 w-full overflow-hidden rounded-full">
+          <span className="bg-brand-accent block h-full w-4/5 rounded-full" />
         </span>
       </div>
     </div>
@@ -403,17 +403,17 @@ export function V12SplitCards() {
         {SPLIT.map((c) => (
           <div
             key={c.h}
-            className="border-rule grid overflow-hidden rounded-16 border bg-white sm:grid-cols-2"
+            className="border-border grid overflow-hidden rounded-16 border bg-white sm:grid-cols-2"
           >
             <div className="flex flex-col justify-center p-8">
               <IconPlate className="mb-4">{c.icon}</IconPlate>
-              <h3 className="text-fern-900 text-[1.1875rem] leading-snug font-semibold">{c.h}</h3>
-              <p className="text-sage mt-2.5 text-[0.9375rem] leading-relaxed">{c.p}</p>
+              <h3 className="text-brand-900 text-[1.1875rem] leading-snug font-semibold">{c.h}</h3>
+              <p className="text-text-muted mt-2.5 text-[0.9375rem] leading-relaxed">{c.p}</p>
               <div className="mt-5">
                 <Btn to={c.to}>{c.cta}</Btn>
               </div>
             </div>
-            <div className="bg-paper border-rule flex flex-col justify-center border-t p-5 sm:border-t-0 sm:border-l" aria-hidden="true">
+            <div className="bg-surface-2 border-border flex flex-col justify-center border-t p-5 sm:border-t-0 sm:border-l" aria-hidden="true">
               {c.preview}
             </div>
           </div>
@@ -442,10 +442,10 @@ export function V12Sectors() {
         <ul className="mt-10 flex flex-wrap justify-center gap-x-12 gap-y-9">
           {SECTORS.map((s) => (
             <li key={s.label} className="flex w-24 flex-col items-center gap-2.5">
-              <span className="bg-fern-50 text-fern-700 flex h-14 w-14 items-center justify-center rounded-full">
+              <span className="bg-brand-50 text-success-text-on-bg flex h-14 w-14 items-center justify-center rounded-full">
                 {s.icon}
               </span>
-              <span className="text-fern-800 text-[0.875rem] font-medium">{s.label}</span>
+              <span className="text-brand-900 text-[0.875rem] font-medium">{s.label}</span>
             </li>
           ))}
         </ul>
@@ -461,10 +461,10 @@ export function V12Close() {
     <Container className="pb-20 sm:pb-24">
       {/* No panel and no ground treatment. The close is type and two actions on the page's
           own canvas, separated by a hairline. */}
-      <div className="border-rule border-t">
+      <div className="border-border border-t">
         <div className="px-6 py-16 text-center sm:py-20">
           <Display className="text-[clamp(1.8rem,3.4vw,2.4rem)]">Ready for what&rsquo;s next?</Display>
-          <p className="text-bark/80 mx-auto mt-4 max-w-[34rem] text-[1.0625rem] leading-relaxed">
+          <p className="text-text/80 mx-auto mt-4 max-w-[34rem] text-[1.0625rem] leading-relaxed">
             Whether you&rsquo;re looking for your next role or the people your farm needs,
             TopFarms makes it easier to connect.
           </p>

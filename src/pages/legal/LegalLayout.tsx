@@ -34,8 +34,8 @@ export function LegalLayout({ title, updated, children }: LegalLayoutProps) {
         <Display as="h1" className="text-[clamp(2rem,4.4vw,2.9rem)] leading-[1.08]">
           {title}
         </Display>
-        <p className="text-bark/60 mt-3 text-[0.9375rem] font-medium">Last updated: {updated}</p>
-        <div className="text-bark/85 mt-9 space-y-6 text-[1.0625rem] leading-relaxed [&_a]:text-fern-700 [&_a]:underline [&_a]:underline-offset-4 [&_a:hover]:text-fern-800 [&_h2]:font-serif [&_h2]:[font-variant-numeric:lining-nums] [&_h2]:text-fern-900 [&_h2]:mt-11 [&_h2]:mb-3 [&_h2]:text-[clamp(1.35rem,2.2vw,1.6rem)] [&_h2]:font-semibold [&_h2]:tracking-[-0.02em] [&_li]:ml-5 [&_li]:list-disc [&_p]:text-bark/85 [&_ul]:space-y-1.5">
+        <p className="text-text/60 mt-3 text-[0.9375rem] font-medium">Last updated: {updated}</p>
+        <div className="text-text/85 mt-9 space-y-6 text-[1.0625rem] leading-relaxed [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_a:hover]:text-brand-900 [&_h2]:font-serif [&_h2]:[font-variant-numeric:lining-nums] [&_h2]:text-brand-900 [&_h2]:mt-11 [&_h2]:mb-3 [&_h2]:text-[clamp(1.35rem,2.2vw,1.6rem)] [&_h2]:font-semibold [&_h2]:tracking-[-0.02em] [&_li]:ml-5 [&_li]:list-disc [&_p]:text-text/85 [&_ul]:space-y-1.5">
           {children}
         </div>
       </article>

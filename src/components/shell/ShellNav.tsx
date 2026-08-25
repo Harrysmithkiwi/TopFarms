@@ -50,26 +50,26 @@ export function ShellNav() {
   const linkClass = (isActive: boolean) =>
     [
       'inline-flex min-h-11 flex-none items-center rounded-full px-3.5 text-sm font-medium transition-colors md:min-h-9',
-      isActive ? 'bg-fern-50 text-bark' : 'text-sage hover:text-bark',
+      isActive ? 'bg-brand-50 text-text' : 'text-text-muted hover:text-text',
     ].join(' ')
 
   return (
-    <nav className="border-rule bg-paper border-b" aria-label="Main">
+    <nav className="border-border bg-surface-2 border-b" aria-label="Main">
       <div className="mx-auto flex max-w-[1200px] flex-wrap items-center gap-x-2 gap-y-0 px-5 py-3">
         <Link
           to="/"
           className="inline-flex min-h-11 items-center gap-1.5 text-xl font-extrabold tracking-tight"
           aria-label="TopFarms"
         >
-          <IconLeaf className="text-fern-600 h-5 w-5" aria-hidden="true" />
+          <IconLeaf className="text-brand-accent h-5 w-5" aria-hidden="true" />
           <span>
-            TopFarms<span className="text-fern-600">.</span>
+            TopFarms<span className="text-brand-accent">.</span>
           </span>
         </Link>
 
         {/* Section links. One row on md+; below md they wrap to a scrollable second row
             with an edge fade so a clipped link reads as scrollable, not broken. */}
-        <div className="border-rule order-last -mx-1 flex w-full basis-full items-center gap-1 overflow-x-auto border-t px-1 pt-1.5 [mask-image:linear-gradient(90deg,#000_calc(100%-28px),transparent)] [scrollbar-width:none] md:order-none md:mx-0 md:ml-6 md:w-auto md:flex-none md:basis-auto md:border-t-0 md:px-0 md:pt-0 md:[mask-image:none]">
+        <div className="border-border order-last -mx-1 flex w-full basis-full items-center gap-1 overflow-x-auto border-t px-1 pt-1.5 [mask-image:linear-gradient(90deg,#000_calc(100%-28px),transparent)] [scrollbar-width:none] md:order-none md:mx-0 md:ml-6 md:w-auto md:flex-none md:basis-auto md:border-t-0 md:px-0 md:pt-0 md:[mask-image:none]">
           {navLinks.map((link) => (
             <NavLink key={link.to} to={link.to} className={({ isActive }) => linkClass(isActive)}>
               {link.label}
@@ -83,7 +83,7 @@ export function ShellNav() {
           <div className="relative ml-auto">
             <button
               onClick={() => setUserMenuOpen(!userMenuOpen)}
-              className="bg-fern-700 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-sm font-semibold text-white transition-opacity hover:opacity-85"
+              className="bg-brand flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-sm font-semibold text-white transition-opacity hover:opacity-85"
               aria-label="User menu"
               aria-expanded={userMenuOpen}
             >
@@ -92,23 +92,23 @@ export function ShellNav() {
             {userMenuOpen && (
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setUserMenuOpen(false)} />
-                <div className="bg-white border-rule absolute top-11 right-0 z-20 w-48 rounded-16 border py-1 shadow-lg">
+                <div className="bg-white border-border absolute top-11 right-0 z-20 w-48 rounded-16 border py-1 shadow-lg">
                   {role && (
                     <Link
                       to={dashboardPathFor(role)}
                       onClick={() => setUserMenuOpen(false)}
-                      className="text-bark hover:bg-paper block px-4 py-2.5 text-sm transition-colors"
+                      className="text-text hover:bg-surface-2 block px-4 py-2.5 text-sm transition-colors"
                     >
                       Dashboard
                     </Link>
                   )}
-                  {role && <hr className="border-rule my-1" />}
+                  {role && <hr className="border-border my-1" />}
                   <button
                     onClick={() => {
                       setUserMenuOpen(false)
                       signOut()
                     }}
-                    className="text-danger-text-on-bg hover:bg-paper w-full cursor-pointer px-4 py-2.5 text-left text-sm transition-colors"
+                    className="text-danger-text-on-bg hover:bg-surface-2 w-full cursor-pointer px-4 py-2.5 text-left text-sm transition-colors"
                   >
                     Sign Out
                   </button>
@@ -120,13 +120,13 @@ export function ShellNav() {
           <div className="ml-auto flex items-center gap-1">
             <Link
               to="/login"
-              className="text-bark hover:text-fern-800 inline-flex min-h-11 items-center px-3 text-sm font-semibold underline decoration-[1.5px] underline-offset-4"
+              className="text-text hover:text-brand-900 inline-flex min-h-11 items-center px-3 text-sm font-semibold underline decoration-[1.5px] underline-offset-4"
             >
               Sign in
             </Link>
             <Link
               to="/signup?role=employer"
-              className="bg-fern-700 hover:bg-fern-800 inline-flex min-h-11 items-center rounded-full px-4.5 text-sm font-semibold text-white transition-colors"
+              className="bg-brand hover:bg-brand-900 inline-flex min-h-11 items-center rounded-full px-4.5 text-sm font-semibold text-white transition-colors"
             >
               Post a job
             </Link>
