@@ -21,11 +21,18 @@
    planning documents describing a landing page built in 2026. A grep of src/ could never
    have found them. Found while verifying row 2 of the design-system sync, 2026-08-25.
 
+   `tests/` joined the list on 2026-08-25. tests/radius-scale.test.ts names the retired
+   corner steps in its own prose, and that alone kept two of them alive in the production
+   stylesheet after every call site had stopped using them. A test file describing a rule
+   should not be able to ship the thing the rule forbids — and this note is the fifth time
+   in this migration that explaining a rule in a scanned file broke it.
+
    Do not name a Tailwind utility class literally in a comment in a scanned file — that is
    enough to emit it. */
 @source not "../marketing";
 @source not "../docs";
 @source not "../.planning";
+@source not "../tests";
 
 @theme {
   /* === v2 canonical tokens (TopFarms_Brand_Spec_v2.md §3) === */
