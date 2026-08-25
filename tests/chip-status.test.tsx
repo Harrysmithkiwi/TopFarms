@@ -90,7 +90,12 @@ describe('ChipSelector', () => {
     expect(screen.getByRole('group').className).toMatch(/flex-wrap/)
   })
 
-  it('names the group, marks required and wires the error — the three a11y gaps', () => {
+  // Amended 2026-08-25. This test used to assert aria-required="true" on the group, which
+  // is INVALID on role="group" — axe rates it critical and the browser drops it. The
+  // original a11y fix was written and locked in by this test without a sweep ever reaching
+  // the screen to check it. Requirement is now carried in the group's accessible name; see
+  // tests/chip-selector-required-a11y.test.tsx.
+  it('names the group, carries required in its name, and wires the error', () => {
     render(
       <ChipSelector
         label="Shed type"
@@ -102,8 +107,8 @@ describe('ChipSelector', () => {
         mode="multi"
       />,
     )
-    const group = screen.getByRole('group', { name: 'Shed type' })
-    expect(group).toHaveAttribute('aria-required', 'true')
+    const group = screen.getByRole('group', { name: /Shed type.*required/i })
+    expect(group).not.toHaveAttribute('aria-required')
     expect(group).toHaveAttribute('aria-invalid', 'true')
     // The error must be reachable from the group, not just rendered near it.
     const describedBy = group.getAttribute('aria-describedby')

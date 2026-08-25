@@ -74,11 +74,19 @@ export function ChipSelector({
       {label && (
         <p id={labelId} className="font-body text-text text-label mb-2 font-semibold">
           {label}
-          {/* aria-hidden: aria-required on the group carries this to assistive tech. */}
+          {/* The asterisk stays decorative, but the requirement is now spoken. It used to
+              rely on aria-required on the group below - which axe flags CRITICAL, because
+              aria-required is not permitted on role="group" and is simply dropped. The
+              marker was aria-hidden and the attribute was inert, so a screen-reader user
+              got NO indication the field was required at all. Found by the pre-launch UAT
+              design pass, 2026-08-25. */}
           {required && (
-            <span className="text-danger ml-0.5" aria-hidden="true">
-              *
-            </span>
+            <>
+              <span className="text-danger ml-0.5" aria-hidden="true">
+                *
+              </span>
+              <span className="sr-only"> (required)</span>
+            </>
           )}
         </p>
       )}
@@ -86,7 +94,6 @@ export function ChipSelector({
         role="group"
         aria-labelledby={label ? labelId : undefined}
         aria-label={ariaLabel}
-        aria-required={required || undefined}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}
         className={cn(gridClasses[columns], className)}
