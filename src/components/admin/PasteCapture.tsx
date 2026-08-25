@@ -189,7 +189,7 @@ export function PasteCapture({
           color: 'var(--color-text-muted)',
         }}
       >
-        <input {...getInputProps()} />
+        <input {...getInputProps()} aria-label="Upload screenshots" />
         <span className="inline-flex items-center gap-1.5">
           <UploadCloud size={15} />
           {isDragActive

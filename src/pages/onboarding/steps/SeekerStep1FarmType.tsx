@@ -109,21 +109,21 @@ export function SeekerStep1FarmType({
         </p>
       </div>
 
-      {/* ariaLabel, not label: the h2 above already asks the question visibly. */}
+      {/* ariaLabel, not label: the h2 above already asks the question visibly.
+          `hint`, not the loose <p> that used to sit below the chips: this is the one group
+          on the step that disables Continue while it is empty, and the sentence saying so
+          was an unassociated paragraph AFTER the control - nothing tied it to the group,
+          and it was the only signal that the field was required at all. Found by the
+          pre-launch UAT design pass, 2026-08-25. */}
       <ChipSelector
         ariaLabel="Farm types you are looking for"
+        hint="Required — select at least one to continue."
         options={FARM_TYPE_OPTIONS}
         value={selectedTypes}
         onChange={setSelectedTypes}
         mode="multi"
         columns={2}
       />
-
-      {selectedTypes.length === 0 && (
-        <p className="font-body text-xs text-text-muted">
-          Please select at least one farm type to continue
-        </p>
-      )}
 
       {/* Region and role complete the matchable core. Region carries real weight in the
           score; role sharpens it. Both sit here so a visitor who stops after this screen

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { useParams, Link } from 'react-router'
 import { track } from '@vercel/analytics'
 import * as Dialog from '@radix-ui/react-dialog'
@@ -193,6 +193,8 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
   const [hasApplied, setHasApplied] = useState(false)
   const [applyModalOpen, setApplyModalOpen] = useState(false)
   const [coverNote, setCoverNote] = useState('')
+  const coverNoteId = useId()
+  const coverNoteCountId = `${coverNoteId}-count`
   const [applying, setApplying] = useState(false)
 
   // New: similar jobs and application count
@@ -1066,15 +1068,24 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
             >
               Your profile will be shared with {employer?.farm_name}. Add an optional note below.
             </Dialog.Description>
+            {/* The only thing naming this box was its placeholder, which vanishes on the
+                first keystroke - the apply form's one input announced as unlabelled.
+                Found by the pre-launch UAT design pass, 2026-08-25 (axe: label). */}
+            <label htmlFor={coverNoteId} className="mb-1 block text-sm font-medium text-ink-60">
+              Cover note (optional)
+            </label>
             <textarea
+              id={coverNoteId}
               value={coverNote}
               onChange={(e) => setCoverNote(e.target.value)}
               placeholder="Add a cover note (optional)..."
               rows={4}
               maxLength={500}
+              aria-describedby={coverNoteCountId}
               className="border-line focus:border-green w-full resize-none rounded-[8px] border p-3 text-sm"
             />
             <p
+              id={coverNoteCountId}
               className="mt-1 text-right text-micro text-ink-40"
             >
               {coverNote.length}/500

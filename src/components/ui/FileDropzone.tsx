@@ -249,7 +249,7 @@ export function FileDropzone({
               (multiErrorMessage || hasRejections) && 'border-danger',
             )}
           >
-            <input {...getInputProps()} />
+            <input {...getInputProps()} aria-label={label} />
             <div className="flex flex-col items-center gap-2">
               <UploadCloud
                 className={cn('h-8 w-8', isDragActive ? 'text-brand-hover' : 'text-text-muted')}
@@ -321,7 +321,7 @@ export function FileDropzone({
           (errorMessage || hasRejections) && 'border-danger',
         )}
       >
-        <input {...getInputProps()} />
+        <input {...getInputProps()} aria-label={label} />
 
         {/* Preview / uploading / idle state */}
         {isUploading ? (

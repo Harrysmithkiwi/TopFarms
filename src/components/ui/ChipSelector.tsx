@@ -17,6 +17,13 @@ interface ChipSelectorBase {
   className?: string
   /** Validation message. Rendered here so it can be wired to the group with aria-describedby. */
   error?: string
+  /**
+   * Standing guidance ("Required - select at least one"), as opposed to `error`, which is a
+   * response to something the user did. A group whose emptiness disables the submit button
+   * needs this: `required` only renders a marker beside a visible `label`, so an
+   * `ariaLabel`-only group had no way to say it was required at all.
+   */
+  hint?: string
   required?: boolean
 }
 
@@ -47,11 +54,14 @@ export function ChipSelector({
   label,
   ariaLabel,
   error,
+  hint,
   required,
 }: ChipSelectorProps) {
   const groupId = useId()
   const labelId = `${groupId}-label`
   const errorId = `${groupId}-error`
+  const hintId = `${groupId}-hint`
+  const describedBy = [hint ? hintId : null, error ? errorId : null].filter(Boolean).join(' ')
 
   function handleClick(optionValue: string) {
     if (mode === 'single') {
@@ -90,12 +100,17 @@ export function ChipSelector({
           )}
         </p>
       )}
+      {hint && (
+        <p id={hintId} className="font-body text-text-muted mb-2 text-xs">
+          {hint}
+        </p>
+      )}
       <div
         role="group"
         aria-labelledby={label ? labelId : undefined}
         aria-label={ariaLabel}
         aria-invalid={error ? true : undefined}
-        aria-describedby={error ? errorId : undefined}
+        aria-describedby={describedBy || undefined}
         className={cn(gridClasses[columns], className)}
       >
         {options.map((option) => {

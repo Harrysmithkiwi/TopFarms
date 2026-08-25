@@ -203,7 +203,10 @@ export function DocumentUploader({
             anyUploading && 'pointer-events-none opacity-60',
           )}
         >
-          <input {...getInputProps()} />
+          {/* react-dropzone's input is visually hidden (clip-path) but stays in the a11y
+              tree, so it announced as an unlabelled file input. axe: label, CRITICAL.
+              Found by the pre-launch UAT design pass, 2026-08-25. */}
+          <input {...getInputProps()} aria-label="Upload documents" />
           <UploadCloud
             className={cn('h-8 w-8', isDragActive ? 'text-brand-hover' : 'text-text-muted')}
           />
