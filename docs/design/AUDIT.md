@@ -1,9 +1,22 @@
 # Design system audit — codebase vs `Brand_and_Design.md` v2.1
 
 > **Phase 1 output.** Produced 2026-08-25 against `main` @ `e682225`.
-> **Status: all nine §9 decisions RULED, §11 executed (row 0).** The ruling and the
-> execution order live in `.planning/DESIGN-SYNC-PROMPT.md`; §9 below records what was
-> decided. Counts re-verified at the start of row 0 and unchanged except where noted.
+> **Status: COMPLETE. All thirteen rows shipped 2026-08-25, zero unresolved items.**
+> The ruling and the execution order live in `.planning/DESIGN-SYNC-PROMPT.md`; §9 below
+> records what was decided.
+>
+> Verified at close, by running the checks rather than asserting them:
+> `src/index.css` is the only file in `src/` with an unallowlisted hex · zero font-family
+> declarations outside it · zero off-scale radii · zero black shadows in the built CSS ·
+> zero references to an undefined `var(--*)` · zero retired token names, checked in both the
+> declaration and the utility-class form. Production stylesheet 85.0KB → 69.2KB.
+>
+> **What the audit got wrong, recorded because the method is the point.** It sized the work
+> by grepping utility-class names, and three things were invisible to that: two live token
+> references sat in inline `style` attributes (row 7), a fifth palette of raw Tailwind ramp
+> colours never appeared at all (row 7), and the marketing surface hid a 4.47:1 pair that
+> only became visible once both halves shared a vocabulary (row 8). Each was found by
+> sweeping differently at the end of a row, not by trusting the survey that opened it.
 > Spec: `docs/_canonical/Brand_and_Design.md` (v2.1) · Tokens: `docs/_canonical/topfarms-tokens.css`
 > (both moved out of `docs/design/` in row 0)
 > Live source under audit: `src/index.css` (260 lines) + 269 `.tsx` files under `src/`.
