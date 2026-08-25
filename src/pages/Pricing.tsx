@@ -165,7 +165,7 @@ export function Pricing() {
                   {/* clamp(), not a fixed size: v12 §2 is "display sizes are clamp()
                       throughout", and "$200-800" is the longest string of the three — at a
                       fixed 2.6rem it is the one that would wrap on a narrow card. */}
-                  <p className="font-serif text-brand-900 mt-3 text-[clamp(2.1rem,3.6vw,2.6rem)] leading-none font-semibold tracking-[-0.02em]">
+                  <p className="font-serif text-brand-900 mt-3 text-[clamp(2.1rem,3.6vw,2.6rem)] leading-none font-medium tracking-[-0.02em]">
                     {tier.price}
                   </p>
                   <p className="text-text-muted mt-2 text-[0.875rem]">{tier.period}</p>

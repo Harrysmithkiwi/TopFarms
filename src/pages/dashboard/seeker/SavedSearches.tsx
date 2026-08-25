@@ -261,7 +261,7 @@ export function SavedSearches() {
       <div className="space-y-6">
         <div className="flex items-center gap-3">
           <h1
-            className="font-display text-[36px] leading-[44px] font-semibold text-brand-900"
+            className="font-display text-[36px] leading-[44px] font-medium text-brand-900"
           >
             Saved searches
           </h1>

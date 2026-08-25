@@ -98,7 +98,7 @@ export function V12Roles() {
 
         {roles !== null && roles.length === 0 && (
           <div className="border-border mt-8 rounded-12 border border-dashed bg-white px-6 py-12 text-center">
-            <p className="text-brand-900 font-serif text-[clamp(1.35rem,2.2vw,1.6rem)] font-semibold">
+            <p className="text-brand-900 font-serif text-[clamp(1.35rem,2.2vw,1.6rem)] font-medium">
               {failed ? 'Roles could not be loaded' : 'No roles listed right now'}
             </p>
             <p className="text-text-muted mx-auto mt-2 max-w-[30rem] text-[0.9375rem] leading-relaxed">

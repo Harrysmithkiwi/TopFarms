@@ -73,7 +73,7 @@ export function AdminLoginPage() {
             Admin login
           </p>
           <h1
-            className="font-display text-2xl font-semibold"
+            className="font-display text-2xl font-medium"
             style={{ color: 'var(--color-text)' }}
           >
             Sign in to TopFarms admin

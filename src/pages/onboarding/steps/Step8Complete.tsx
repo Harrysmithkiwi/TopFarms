@@ -57,7 +57,7 @@ export function Step8Complete({ profileData, onComplete }: Step8CompleteProps) {
           </div>
           <div>
             <h2
-              className="font-display text-2xl font-semibold"
+              className="font-display text-2xl font-medium"
               style={{ color: 'var(--color-brand-900)' }}
             >
               Your farm profile is complete!

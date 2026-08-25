@@ -57,6 +57,18 @@ describe('the display face stays above its 20px floor', () => {
     expect(offenders, `display face below 20px:\n${offenders.join('\n')}`).toEqual([])
   })
 
+  it('is set at weight 500, the only weight the spec allows it', () => {
+    // Newsreader is loaded at 400/500/600. 600 rendered a real weight, so nothing looked
+    // broken while 30 sites carried it — which is exactly why this needs a gate rather than
+    // an eye. Brand_and_Design.md: "Newsreader 500", full stop.
+    const offenders = displaySites().filter((l) =>
+      /\bfont-(thin|light|normal|semibold|bold|extrabold|black)\b/.test(l),
+    )
+    expect(offenders, `display face at a weight other than 500:\n${offenders.join('\n')}`).toEqual(
+      [],
+    )
+  })
+
   it('the match score is never set in the display face', () => {
     // A serif number with tabular-nums is the one thing a display face must never render.
     const offenders = displaySites().filter((l) => l.includes('MatchCircle.tsx'))

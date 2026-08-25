@@ -56,7 +56,7 @@ export function JobStep8Success({ jobId }: JobStep8SuccessProps) {
       {/* Heading */}
       <div className="space-y-2">
         <h2
-          className="font-display text-2xl font-semibold"
+          className="font-display text-2xl font-medium"
           style={{ color: 'var(--color-brand-900)' }}
         >
           Your job is now live!

@@ -306,7 +306,7 @@ export function EmployerDashboard() {
                 2026-08-24; SeekerDashboard already put an h1 in each branch. */}
             <div>
               <h1
-                className="font-display text-[36px] leading-[44px] font-semibold"
+                className="font-display text-[36px] leading-[44px] font-medium"
                 style={{ color: 'var(--color-brand-900)' }}
               >
                 Welcome to TopFarms
@@ -360,7 +360,7 @@ export function EmployerDashboard() {
             <div className="flex items-center justify-between gap-4">
               <div>
                 <h1
-                  className="font-display text-[36px] leading-[44px] font-semibold"
+                  className="font-display text-[36px] leading-[44px] font-medium"
                   style={{ color: 'var(--color-brand-900)' }}
                 >
                   Welcome back, {profile?.farm_name || 'Your Farm'}
@@ -434,7 +434,7 @@ export function EmployerDashboard() {
                   Active Listings
                 </p>
                 <p
-                  className="font-display text-[24px] leading-7 font-semibold"
+                  className="font-display text-[24px] leading-7 font-medium"
                   style={{ color: 'var(--color-brand-900)' }}
                 >
                   {activeCount}
@@ -448,7 +448,7 @@ export function EmployerDashboard() {
                   Draft Listings
                 </p>
                 <p
-                  className="font-display text-[24px] leading-7 font-semibold"
+                  className="font-display text-[24px] leading-7 font-medium"
                   style={{ color: 'var(--color-brand-900)' }}
                 >
                   {draftCount}
@@ -462,7 +462,7 @@ export function EmployerDashboard() {
                   Total Views
                 </p>
                 <p
-                  className="font-display text-[24px] leading-7 font-semibold"
+                  className="font-display text-[24px] leading-7 font-medium"
                   style={{ color: 'var(--color-brand-900)' }}
                 >
                   {totalViews}

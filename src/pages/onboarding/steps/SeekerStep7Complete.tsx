@@ -116,7 +116,7 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
           </div>
           <div>
             <h2
-              className="font-display text-2xl font-semibold text-brand-900"
+              className="font-display text-2xl font-medium text-brand-900"
             >
               Your profile is ready!
             </h2>

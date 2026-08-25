@@ -40,7 +40,7 @@ export function AppErrorBoundary() {
       </div>
 
       <h1
-        className="font-display mt-5 text-2xl font-semibold"
+        className="font-display mt-5 text-2xl font-medium"
         style={{ color: 'var(--color-brand-900)' }}
       >
         Something went wrong

@@ -299,7 +299,7 @@ export function SeekerProfile() {
       <DashboardLayout>
         <div className="mx-auto max-w-2xl">
           <div className="bg-surface border-border rounded-16 border p-6 text-center shadow-sm">
-            <h1 className="font-display text-brand-900 text-[20px] leading-7 font-semibold">
+            <h1 className="font-display text-brand-900 text-[20px] leading-7 font-medium">
               You haven't set up your profile yet
             </h1>
             <p className="text-text-muted mt-2 text-sm">
@@ -320,7 +320,7 @@ export function SeekerProfile() {
     <DashboardLayout>
       <div className="mx-auto max-w-2xl space-y-6">
         <div>
-          <h1 className="font-display text-brand-900 text-[20px] leading-7 font-semibold">
+          <h1 className="font-display text-brand-900 text-[20px] leading-7 font-medium">
             Your profile
           </h1>
           <p className="text-text-muted mt-1 text-sm">
