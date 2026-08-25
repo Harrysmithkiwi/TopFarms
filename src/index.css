@@ -9,6 +9,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap');
 @import 'tailwindcss';
 
+/* Tailwind v4 auto-detects sources from the whole project root, minus .gitignore — and it
+   scans Markdown, not just code. Three tracked directories were being scanned that the app
+   never renders: `marketing/` (design exports and a 1,200-line landing-page HTML dump),
+   `docs/` and `.planning/` (prose that happens to quote utility class names).
+
+   The cost was not only bundle size. After the elevation tokens above were tinted, the built
+   CSS still contained black box-shadows — emitted for two Tailwind elevation utilities that
+   appear in NO file under src/. They came from an HTML dump in marketing/ and from two
+   planning documents describing a landing page built in 2026. A grep of src/ could never
+   have found them. Found while verifying row 2 of the design-system sync, 2026-08-25.
+
+   Do not name a Tailwind utility class literally in a comment in a scanned file — that is
+   enough to emit it. */
+@source not "../marketing";
+@source not "../docs";
+@source not "../.planning";
+
 @theme {
   /* === v2 canonical tokens (TopFarms_Brand_Spec_v2.md §3) === */
 
@@ -73,6 +90,42 @@
   /* Card elevation — soft, low, tinted-neutral (brand ink at low alpha, no gloss).
      Pairs with the existing 1px --color-border; not a heavy drop shadow. */
   --shadow-card: 0 1px 2px 0 rgb(11 31 16 / 0.04), 0 1px 2px -1px rgb(11 31 16 / 0.05);
+
+  /* === Elevation, tinted (design-system sync row 2, 2026-08-25) ===
+     Brand_and_Design.md v2.1: four levels, all tinted #0B1F10, never black. Grepping src/
+     for rgba(0,0,0,*) finds NOTHING and always did — the black is inside Tailwind. Its
+     DEFAULT --shadow-sm/-md/-lg/-xl are rgb(0 0 0 / .1), and 28 call sites across 23 files
+     use them. Redefining the four tokens fixes all 28 without touching a component; editing
+     28 classes would have been a bigger diff and would not have stopped the 29th.
+
+     Geometry follows the spec's raise/float/overlay. `md` has no spec counterpart and is
+     interpolated between raise and float rather than collapsed onto one of them — four
+     Tailwind steps flattened to three would be a visible change on the four md sites, and
+     this row is a migration, not a redesign. Same tint, no new colour.
+
+     The named aliases below are what new code should use; the numbered ones exist so the
+     existing call sites are correct without being rewritten. */
+  --shadow-raise: 0 1px 2px rgb(11 31 16 / 0.04);
+  --shadow-float: 0 10px 34px rgb(11 31 16 / 0.05);
+  --shadow-overlay: 0 20px 50px rgb(11 31 16 / 0.1);
+
+  --shadow-sm: var(--shadow-raise);
+  --shadow-md: 0 4px 10px rgb(11 31 16 / 0.05);
+  --shadow-lg: var(--shadow-float);
+  --shadow-xl: var(--shadow-overlay);
+
+  /* The rest of the scale is defined for one reason: Tailwind's scanner treats any bare word
+     in any scanned file as a candidate class, and the word "shadow" appears in ordinary prose
+     comments in src/. That was enough to emit the unsuffixed elevation utility with Tailwind's
+     black default into production CSS. Rewording two comments would have fixed today and
+     nothing else. Defining every step means an accidental emission is TINTED, which is what
+     "no black shadow anywhere" has to mean if it is a property of the system rather than of
+     everyone remembering. Nothing in src/ uses these deliberately. */
+  --shadow: var(--shadow-raise);
+  --shadow-2xs: var(--shadow-raise);
+  --shadow-xs: var(--shadow-raise);
+  --shadow-2xl: var(--shadow-overlay);
+  --shadow-inner: inset 0 2px 4px rgb(11 31 16 / 0.05);
 
   /* Radius tokens — additive, numeric-keyed to avoid clobbering Tailwind's default
      rounded-sm/md/lg. Existing rounded-[8px]/[12px]/[16px] literals keep working;
@@ -190,10 +243,13 @@
   --color-fern-500: #22c55e;
   --color-fern-lite: #86efac;
   --color-fern-100: #e8f5ec;
-  --color-fern-50: #f1f8f3;
+  /* #f1f8f3 retired 2026-08-25 — duplicate of --color-brand-50 / green-50. */
+  --color-fern-50: #e8f5ec;
   --color-bark: #0b1f10;
   --color-sage: #5b6b5f;
-  --color-paper: #f7f8f6;
+  /* #f7f8f6 retired 2026-08-25 — a 1% duplicate of --color-surface-2. Two near-identical
+     greys is the drift the sync exists to end; paper now IS surface-2. */
+  --color-paper: #f3f5f0;
   --color-linen: #ffffff;
   --color-rule: #e5e8e2;
 

@@ -69,7 +69,14 @@ function TextAreaField({
         <span
           id={countId}
           className="font-body text-[11px]"
-          style={{ color: isNearLimit ? 'var(--color-clay)' : 'var(--color-text-subtle)' }}
+          // --color-clay was removed with the v1 earth-tone palette but this reference
+          // survived, so the near-limit warning has been rendering as inherited colour --
+          // the counter turned no colour at all as you approached the cap. The warn text
+          // token is the one meant for a caution on a light surface (6.37:1 on warn-bg,
+          // 7.55:1 on white). Found by the design-system audit, 2026-08-25.
+          style={{
+            color: isNearLimit ? 'var(--color-warn-text-on-bg)' : 'var(--color-text-subtle)',
+          }}
         >
           {charCount} / {maxLength}
         </span>
