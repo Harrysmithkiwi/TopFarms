@@ -62,7 +62,9 @@ export function Nav() {
         {/* Logo */}
         <Link
           to="/"
-          className="font-display mr-8 inline-flex flex-shrink-0 items-center gap-1.5 text-[20px] font-semibold"
+          // The wordmark is Inter 700 title case, per the Logo section — not the display
+          // face. It read as Inter until --font-display moved to Newsreader; this pins it.
+          className="font-body mr-8 inline-flex flex-shrink-0 items-center gap-1.5 text-[20px] font-semibold"
           style={{ color: 'var(--color-text-on-brand)' }}
           aria-label="TopFarms"
         >

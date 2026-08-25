@@ -30,7 +30,8 @@ export function ApplicantDashboardSidebar({
       {/* Farm header */}
       <div className="overflow-hidden rounded-[12px]">
         <div className="bg-brand-900 px-4 py-3 text-white">
-          <h2 className="font-display text-[16px] font-semibold">{farmName}</h2>
+          {/* Card title at 16px — Inter 600, not the display face. See JobDetailSidebar. */}
+          <h2 className="font-body text-[16px] font-semibold">{farmName}</h2>
         </div>
         {/* Listing selector */}
         <div className="bg-surface border-border rounded-b-[12px] border border-t-0 p-3">

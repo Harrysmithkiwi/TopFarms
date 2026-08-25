@@ -60,7 +60,9 @@ export function ErrorState({ message, onRetry, compact = false, className }: Err
       <div className="bg-danger-bg mb-4 flex h-12 w-12 items-center justify-center rounded-full">
         <AlertCircle className="text-danger-text-on-bg h-6 w-6" aria-hidden="true" />
       </div>
-      <p className="font-display text-text text-base font-semibold">{text}</p>
+      {/* A paragraph, not a headline. The spec allows the display face on an empty-state
+          HEADLINE; this is the body of an error message at 16px. */}
+      <p className="font-body text-text text-base font-semibold">{text}</p>
       {/* Named cause, not blame. Mirrors AppErrorBoundary's voice. */}
       <p className="font-body text-text-muted mt-1 max-w-sm text-sm">
         This one&rsquo;s on us, not you — it usually means the connection dropped. Try again.

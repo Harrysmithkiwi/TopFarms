@@ -71,7 +71,9 @@ export function JobStep1Basics({ onComplete, defaultValues }: Step1Props) {
         style={{ backgroundColor: 'var(--color-brand-900)' }}
       >
         {/* Honest value points — replaced fabricated 85%/500+/92% stats (TF-003 truth pass). */}
-        <h3 className="font-display mb-4 text-lg font-semibold text-white">Why TopFarms?</h3>
+        {/* text-lg is 18px — under the display floor. Not in the audit's list of five;
+            found by re-listing every font-display site WITH its size before the flip. */}
+        <h3 className="font-body mb-4 text-lg font-semibold text-white">Why TopFarms?</h3>
         <div className="space-y-4">
           <div>
             <p className="text-2xl font-semibold text-white">Free</p>

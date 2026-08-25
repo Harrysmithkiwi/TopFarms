@@ -58,7 +58,10 @@ export function MatchCircle({ score, size = 'md', className }: MatchCircleProps)
     >
       <span
         className={cn(
-          'font-display leading-none font-semibold tabular-nums',
+          // font-body, not font-display. This is a NUMBER — the match score — and
+          // --font-display now resolves to Newsreader. A serif score with tabular-nums
+          // is the one thing a display face must never be asked to do.
+          'font-body leading-none font-semibold tabular-nums',
           sizes.text,
           colours.text,
         )}

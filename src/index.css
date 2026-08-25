@@ -188,11 +188,23 @@
   --text-label: 13px;
   --text-label--line-height: 16px;
 
-  /* Typography — both --font-display and --font-body point at Inter
-     (Migration Audit Decision 2: keep two CSS variables to avoid font find/replace
-     during Phase 19; collapse to single --font-sans in post-migration cleanup) */
-  --font-display:
-    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+  /* Typography.
+     --font-display resolved to INTER until 2026-08-25, which meant the product had no
+     display face at all: the landing page shipped Newsreader through --font-serif while
+     every app page title asked for --font-display and got Inter. Moving this one line is
+     what puts the two halves of the product on the same typography.
+
+     It is also the highest-blast-radius line in the whole sync: 33 call sites change face
+     at once. Six of them were BELOW the 20px floor Brand_and_Design.md sets for the display
+     face, plus a numeric match score, and all seven were repointed at --font-body in the
+     same commit — shipping the flip alone would have put a serif on a card title, an error
+     paragraph, a wordmark and a number.
+
+     Known deviation, deliberately not fixed here: the spec sets display weight at 500 and
+     the 26 surviving sites ship 600. Newsreader is loaded at 400/500/600, so 600 renders a
+     real weight rather than a synthesised one. Changing it is 26 edits across 15 files for
+     a weight difference, which belongs in its own pass. */
+  --font-display: 'Newsreader', 'Iowan Old Style', Georgia, serif;
   --font-body:
     'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'DM Mono', Menlo, Consolas, monospace;
@@ -246,7 +258,9 @@
   --color-linen: #ffffff;
   --color-rule: #e5e8e2;
 
-  --font-serif: 'Newsreader', 'Iowan Old Style', Georgia, serif;
+  /* The marketing world's name for the same face. One definition, so the two can never
+     drift apart; the alias itself goes when the marketing tokens are collapsed. */
+  --font-serif: var(--font-display);
 }
 
 /* Phase 4.4 — global keyboard-focus ring. Lives in the base layer so Tailwind

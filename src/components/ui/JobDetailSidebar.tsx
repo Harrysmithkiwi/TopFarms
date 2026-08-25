@@ -180,7 +180,9 @@ export function JobDetailSidebar({
       <div className="border-border overflow-hidden rounded-[12px] border">
         {/* Header */}
         <div className="bg-brand-900 rounded-t-[12px] px-4 py-3">
-          <h3 className="font-display text-[16px] leading-snug font-semibold text-white">
+          {/* 16px is below the 20px display floor, and a farm name in a sidebar card is a
+              CARD TITLE: Inter 600 on every surface (Brand_and_Design.md, Typography). */}
+          <h3 className="font-body text-[16px] leading-snug font-semibold text-white">
             {farm.farm_name}
           </h3>
           {farm.region && (
