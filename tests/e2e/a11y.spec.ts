@@ -42,6 +42,45 @@ async function assertNoHorizontalScroll(page: Page, label: string) {
   expect(scrollWidth, `${label}: horizontal overflow (${scrollWidth} > ${clientWidth})`).toBeLessThanOrEqual(clientWidth)
 }
 
+/**
+ * Record which surface axe is ABOUT to scan, and fail if it is one nobody predicted.
+ *
+ * This replaces a pair of `console.warn`s that wrote "redirected to X — scanned that
+ * surface" into a CI log nobody reads. That is how five real accessibility defects lived
+ * on the employer and seeker cold-start paths while this spec stayed green: the CI
+ * accounts are already onboarded, both wizard routes bounce, and the sweep has been
+ * scanning a dashboard twice and a wizard never (verified 2026-08-25).
+ *
+ * Two things change. The redirect is now an ANNOTATION on the test — visible in the
+ * report, not buried in stdout. And an UNEXPECTED landing surface is a failure: a stale
+ * storage state drops the sweep on /login, which passes axe cleanly and proves nothing
+ * about the route named in the test title.
+ *
+ * The wizard markup itself is covered per step, on every commit and with no prod account
+ * to seed, by tests/wizard-steps-a11y.test.tsx. This spec keeps what only a real browser
+ * can judge: layout, contrast, overflow, focus.
+ */
+async function assertScannedSurface(
+  page: Page,
+  testInfo: import('@playwright/test').TestInfo,
+  intended: string,
+  allowedRedirects: string[],
+) {
+  const url = new URL(page.url()).pathname
+  if (url.startsWith(intended)) return
+  testInfo.annotations.push({
+    type: 'surface-redirected',
+    description: `${intended} redirected to ${url} — axe scanned THAT surface, not ${intended}`,
+  })
+  expect(
+    allowedRedirects.some((r) => url.startsWith(r)),
+    `${intended} landed on ${url}, which is neither the route under test nor a known ` +
+      `redirect (${allowedRedirects.join(', ') || 'none'}). A sweep that scans an ` +
+      `unexpected page passes while testing nothing — most often a stale session ` +
+      `dropping it on /login.`,
+  ).toBe(true)
+}
+
 /** Discover a public job id from the marketplace's own REST query. */
 async function findJobId(page: Page): Promise<string | null> {
   const responsePromise = page
@@ -95,15 +134,13 @@ for (const viewport of [DESKTOP, MOBILE]) {
       if (viewport === MOBILE) await assertNoHorizontalScroll(page, `/dashboard/seeker @ ${vp}`)
     })
 
-    test(`/onboarding/seeker passes axe @ ${vp}`, async ({ page }) => {
+    test(`/onboarding/seeker passes axe @ ${vp}`, async ({ page }, testInfo) => {
       await page.goto('/onboarding/seeker')
       await page.waitForLoadState('networkidle')
-      // An onboarded test seeker bounces to /dashboard/seeker (by design).
-      // No silent caps: say which surface actually got scanned.
-      const finalUrl = page.url()
-      if (!finalUrl.includes('/onboarding/seeker')) {
-        console.warn(`[a11y] /onboarding/seeker redirected to ${finalUrl} — scanned that surface`)
-      }
+      await assertScannedSurface(page, testInfo, '/onboarding/seeker', [
+        '/dashboard/seeker/profile',
+        '/dashboard/seeker',
+      ])
       await runAxe(page, `/onboarding/seeker @ ${vp}`)
       if (viewport === MOBILE) await assertNoHorizontalScroll(page, `/onboarding/seeker @ ${vp}`)
     })
@@ -162,15 +199,25 @@ for (const viewport of [DESKTOP, MOBILE]) {
     // /onboarding/seeker was covered and /onboarding/employer never was. Five
     // unnamed switches (axe button-name, CRITICAL) sat on the employer
     // cold-start path unseen the whole time. That is the gap, not the switches.
-    test(`/onboarding/employer passes axe @ ${vp}`, async ({ page }) => {
+    test(`/onboarding/employer passes axe @ ${vp}`, async ({ page }, testInfo) => {
       await page.goto('/onboarding/employer')
       await page.waitForLoadState('networkidle')
-      // A completed employer bounces to the dashboard. Say what got scanned.
-      if (!page.url().includes('/onboarding/employer')) {
-        console.warn(`[a11y] /onboarding/employer redirected to ${page.url()} — scanned that`)
-      }
+      await assertScannedSurface(page, testInfo, '/onboarding/employer', ['/dashboard/employer'])
       await runAxe(page, `/onboarding/employer @ ${vp}`)
       if (viewport === MOBILE) await assertNoHorizontalScroll(page, `/onboarding/employer @ ${vp}`)
+    })
+
+    // /jobs/new — the 8-step job wizard — was not in this sweep at all until
+    // 2026-08-25, and it is the surface the employer reaches straight after
+    // onboarding. Step 1 is what an unauthenticated-to-authenticated employer
+    // renders here; steps 2-8 need a draft, and are gated per step by
+    // tests/wizard-steps-a11y.test.tsx instead.
+    test(`/jobs/new passes axe @ ${vp}`, async ({ page }, testInfo) => {
+      await page.goto('/jobs/new')
+      await page.waitForLoadState('networkidle')
+      await assertScannedSurface(page, testInfo, '/jobs/new', [])
+      await runAxe(page, `/jobs/new @ ${vp}`)
+      if (viewport === MOBILE) await assertNoHorizontalScroll(page, `/jobs/new @ ${vp}`)
     })
 
     test(`applicant dashboard passes axe @ ${vp}`, async ({ page }) => {
