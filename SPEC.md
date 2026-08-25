@@ -1,5 +1,19 @@
 # TopFarms — Product Requirements Document v3.0
 
+> ## ⚠️ HISTORICAL — do not build from this
+>
+> Written **2026-03-17** for `/gsd:new-project`, and accurate for the v1.0 MVP it scoped.
+> It has been superseded on every axis that matters since:
+>
+> - The **brand** it describes (Fraunces / DM Sans / earth tones) was retired in June 2026.
+>   Canon is `docs/_canonical/Brand_and_Design.md`.
+> - The **product** shipped, launched, and changed. Current state is `.planning/NOW.md`.
+> - The **pricing, matching and immigration** models have all moved.
+>
+> Kept because it is the founding decision record and 59 documents cite it. Read it to
+> understand *why* something was built, never to decide what to build.
+
+
 **GSD-Compatible SPEC** · NZ Agricultural Job Marketplace
 
 | Field | Value |

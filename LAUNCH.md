@@ -1,10 +1,25 @@
 # LAUNCH.md — TopFarms Launch Readiness Backlog
 
-Source of truth for launch readiness. An item is ticked ONLY when fixed **and** independently verified on production (evidence linked). Findings reference `UAT_MASTER_REPORT.md`.
+> ## ⚠️ NOT the source of truth for launch readiness. Two banners below say so.
+>
+> **The live figure is 72/100, engineering ceiling ~81**, and it lives in
+> **`.planning/PRE-LAUNCH-CHECKLIST.md`** — the honest eight-dimension re-walk of
+> 2026-08-21. That file owns the number; this one is a closed backlog.
+>
+> This header used to open with **93/100** and then correct itself four lines later, so a
+> reader who stopped at the top left with a figure 21 points optimistic and five weeks old.
+> Six different scores appear across this repo's live documents. That is the defect the
+> documentation audit (`docs/DOC-AUDIT-2026-08-25.md` §1) exists to end: **one score, one
+> file, everywhere else cites it.**
+>
+> Kept as a decision record — the item-by-item evidence below is real and 25 documents cite
+> it. Read it for *what was fixed and how it was proved*, never for *where we are*.
 
-**Score: 62/100 → 93/100 (verified on production 2026-07-23; hardening batch PRs #48–#49 + migrations 059/060).**
+Historical backlog. An item is ticked ONLY when fixed **and** independently verified on production (evidence linked). Findings reference `UAT_MASTER_REPORT.md`.
 
-> ### ⚠️ SUPERSEDED 2026-07-30 — read this before trusting the 93 above
+**Checklist score at close: 62/100 → 93/100** (verified on production 2026-07-23; hardening batch PRs #48–#49 + migrations 059/060). See the correction immediately below — this measured the checklist, not the product.
+
+> ### ⚠️ SUPERSEDED 2026-07-30 — why the 93 above is not a readiness score
 >
 > An adversarial four-domain audit at commit `8f5b860` scored TopFarms **53/100**
 > (Security 55 · Architecture 52 · Product 47 · Design 57) — see

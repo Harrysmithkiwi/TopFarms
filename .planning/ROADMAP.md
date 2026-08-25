@@ -1,5 +1,10 @@
 # Roadmap: TopFarms
 
+> **HISTORICAL.** Last true 2026-06-29. The roadmap stops at v2.2 and the work since has run
+> off-roadmap in named streams. Current state is `.planning/NOW.md`. Kept as the decision
+> record of phases 1-28. Its design references (Fraunces, DM Sans) are v1 and retired.
+
+
 ## Milestones
 
 <details>

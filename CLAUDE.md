@@ -1,5 +1,13 @@
 # TopFarms — Claude house rules
 
+> **Which document to read: `docs/DOCUMENTATION.md`.** It is the map — what is canon, what is
+> current state, and what is history. The rule it sets: *a document not listed there is
+> history*. This repo has 500+ Markdown files and most of them describe a product that has
+> since changed; the map is what stops you acting on one.
+>
+> Shortest possible version: **`.planning/NOW.md`** for where the work is,
+> **`docs/_canonical/Brand_and_Design.md`** for how it must look, **this file** for how to work.
+
 These rules apply to every Claude session in this repo. They are codified from the multi-session AUTH + Phase 14 BFIX work and are designed to survive `/clear`.
 
 The full prose (incident chain, why each rule exists) lives in `.planning/retros/AUTH-RETRO.md`. This file is the operational checklist.

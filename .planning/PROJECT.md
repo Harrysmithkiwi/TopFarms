@@ -1,5 +1,9 @@
 # TopFarms
 
+> **HISTORICAL.** Last true 2026-06-22. The product description still holds; "full SPEC v3.0
+> compliant UI" does not — see the banner on `SPEC.md`. Current state is `.planning/NOW.md`.
+
+
 ## What This Is
 
 TopFarms is a New Zealand agricultural job marketplace connecting farm employers with skilled workers. It replaces informal hiring via Facebook groups with a structured platform featuring agriculture-specific filters (shed type, accommodation, DairyNZ qualifications), AI-powered match scoring, verified employer profiles, and full SPEC v3.0 compliant UI — purpose-built for the NZ ag sector.
