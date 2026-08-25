@@ -38,11 +38,11 @@ export function Suspended() {
   return (
     <AuthLayout title="Account suspended">
       <div className="space-y-6">
-        <p className="text-base text-ink-60">
+        <p className="text-base text-text-muted">
           Your account has been suspended. If you think this is an error, contact{' '}
           <a
             href="mailto:hello@topfarms.co.nz"
-            className="underline text-green"
+            className="underline text-brand-hover"
           >
             hello@topfarms.co.nz
           </a>

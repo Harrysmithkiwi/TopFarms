@@ -22,16 +22,16 @@ interface AuthLayoutProps {
 
 export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
   return (
-    <div className="v13-shell bg-cream text-ink flex min-h-screen [font-variant-numeric:tabular-nums]">
+    <div className="v13-shell bg-bg text-text flex min-h-screen [font-variant-numeric:tabular-nums]">
       {/* Left panel: brand surface, hidden on mobile */}
-      <div className="v13-dark bg-green relative hidden flex-col justify-between overflow-hidden p-12 md:flex md:w-1/2 lg:w-3/5">
+      <div className="v13-dark bg-brand-900 relative hidden flex-col justify-between overflow-hidden p-12 md:flex md:w-1/2 lg:w-3/5">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 opacity-50 [background:repeating-linear-gradient(96deg,rgba(255,255,255,.035)_0_1px,transparent_1px_54px)]"
         />
         <div className="relative z-10">
           <span className="text-2xl font-bold tracking-tight text-white">
-            TopFarms<span className="text-lime">.</span>
+            TopFarms<span className="text-brand-lite">.</span>
           </span>
         </div>
 
@@ -48,29 +48,34 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
         {/* Honest value points. Replaced fabricated stats in the TF-003 truth pass. */}
         <div className="relative z-10 flex gap-10">
           <div>
-            <p className="text-lime text-3xl font-extrabold tracking-[-.03em]">16</p>
+            <p className="text-brand-lite text-3xl font-extrabold tracking-[-.03em]">16</p>
             <p className="mt-1 text-sm text-white/80">NZ regions covered</p>
           </div>
           <div>
-            <p className="text-lime text-3xl font-extrabold tracking-[-.03em]">5</p>
+            <p className="text-brand-lite text-3xl font-extrabold tracking-[-.03em]">5</p>
             <p className="mt-1 text-sm text-white/80">Farm sectors</p>
           </div>
           <div>
-            <p className="text-lime text-3xl font-extrabold tracking-[-.03em]">Free</p>
+            <p className="text-brand-lite text-3xl font-extrabold tracking-[-.03em]">Free</p>
             <p className="mt-1 text-sm text-white/80">To join as a worker</p>
           </div>
         </div>
       </div>
 
       {/* Right panel: form area */}
-      <div className="bg-cream flex flex-1 flex-col items-center justify-center px-6 py-12">
+      <div className="bg-bg flex flex-1 flex-col items-center justify-center px-6 py-12">
         {/* <main>, not a div: this layout has no shell around it, so /login and
             /signup had no main landmark at all — nothing for a screen-reader
             user to skip to. DashboardLayout and AdminLayout both provide one. */}
         <main className="w-full max-w-md">
           <div className="mb-8 text-center md:hidden">
             <span className="text-3xl font-bold tracking-tight">
-              TopFarms<span className="text-ochre-ink">.</span>
+              {/* brand-hover, not brand. The lockup in Brand_and_Design.md puts the full
+                  stop on the accent green #16A34A, but this one is a text glyph and #16A34A
+                  is 3.30:1 on white — scripts/contrast.mjs rejected it by name. Same ruling
+                  as the five spec values that lost to the shipped ones: contrast wins.
+                  #15803D is 5.02:1 and the same hue. */}
+              TopFarms<span className="text-brand-hover">.</span>
             </span>
           </div>
 
@@ -79,7 +84,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
               {title && (
                 <h1 className="font-serif mb-2 text-2xl font-medium tracking-[-.01em]">{title}</h1>
               )}
-              {subtitle && <p className="text-ink-60 text-base">{subtitle}</p>}
+              {subtitle && <p className="text-text-muted text-base">{subtitle}</p>}
             </div>
           )}
 

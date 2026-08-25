@@ -152,7 +152,7 @@ export function ConfirmEmail() {
             </div>
           </div>
 
-          <p className="text-ink-60 text-center text-sm">
+          <p className="text-text-muted text-center text-sm">
             {type === 'recovery'
               ? 'This password reset link has expired or has already been used. Request a new one below.'
               : 'This verification link has expired or has already been used. Enter your email and we will send a fresh one.'}
@@ -161,14 +161,14 @@ export function ConfirmEmail() {
           {type === 'recovery' ? (
             <Link
               to="/forgot-password"
-              className="min-h-11 bg-green flex w-full items-center justify-center rounded-full px-4 py-2.5 text-sm font-semibold text-white"
+              className="min-h-11 bg-brand-hover flex w-full items-center justify-center rounded-full px-4 py-2.5 text-sm font-semibold text-white"
             >
               Request a new reset link
             </Link>
           ) : (
             <form onSubmit={handleResend} className="space-y-4">
               <div>
-                <label htmlFor="resend-email" className="text-ink mb-1.5 block text-sm font-medium">
+                <label htmlFor="resend-email" className="text-text mb-1.5 block text-sm font-medium">
                   Email address
                 </label>
                 <input
@@ -178,13 +178,13 @@ export function ConfirmEmail() {
                   required
                   value={resendEmail}
                   onChange={(e) => setResendEmail(e.target.value)}
-                  className="bg-card text-ink border-line w-full rounded-lg border px-3.5 py-2.5 text-sm transition-colors"
+                  className="bg-surface text-text border-border w-full rounded-lg border px-3.5 py-2.5 text-sm transition-colors"
                 />
               </div>
               <button
                 type="submit"
                 disabled={isResending}
-                className="min-h-11 bg-green flex w-full items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-white transition-opacity disabled:opacity-60"
+                className="min-h-11 bg-brand-hover flex w-full items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-white transition-opacity disabled:opacity-60"
               >
                 <RefreshCw size={15} className={isResending ? 'animate-spin' : ''} />
                 {isResending ? 'Sending...' : 'Send a new verification email'}
@@ -194,7 +194,7 @@ export function ConfirmEmail() {
 
           <Link
             to="/login"
-            className="text-green flex items-center justify-center gap-2 text-sm font-medium underline"
+            className="text-brand-hover flex items-center justify-center gap-2 text-sm font-medium underline"
           >
             <ArrowLeft size={14} />
             Back to login
@@ -207,8 +207,8 @@ export function ConfirmEmail() {
   return (
     <AuthLayout title="Verifying your email...">
       <div className="flex flex-col items-center gap-4 py-8">
-        <Loader2 size={40} className="text-green animate-spin" />
-        <p className="text-ink-60 text-center text-sm">
+        <Loader2 size={40} className="text-brand-hover animate-spin" />
+        <p className="text-text-muted text-center text-sm">
           Please wait while we verify your email address and set up your account.
         </p>
       </div>

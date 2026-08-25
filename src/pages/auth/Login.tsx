@@ -81,7 +81,7 @@ export function Login() {
             type="button"
             onClick={() => handleOAuth('google')}
             disabled={oauthLoading}
-            className="min-h-11 border-line bg-card text-ink flex w-full items-center justify-center gap-3 rounded-full border px-4 py-2.5 text-sm font-medium transition-colors disabled:opacity-60"
+            className="min-h-11 border-border bg-surface text-text flex w-full items-center justify-center gap-3 rounded-full border px-4 py-2.5 text-sm font-medium transition-colors disabled:opacity-60"
           >
             <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -108,7 +108,7 @@ export function Login() {
         {/* OR divider */}
         <div className="relative flex items-center gap-3">
           <div className="h-px flex-1 bg-border" />
-          <span className="text-xs text-ink-40">
+          <span className="text-xs text-text-muted">
             or
           </span>
           <div className="h-px flex-1 bg-border" />
@@ -118,7 +118,7 @@ export function Login() {
         <div>
           <label
             htmlFor="email"
-            className="mb-1.5 block text-sm font-medium text-ink"
+            className="mb-1.5 block text-sm font-medium text-text"
           >
             Email address
           </label>
@@ -128,12 +128,12 @@ export function Login() {
             autoComplete="email"
             {...register('email')}
             className={cn(
-              'bg-card text-ink w-full rounded-lg border px-3.5 py-2.5 text-sm transition-colors',
-              errors.email ? 'border-danger-ink' : 'border-line',
+              'bg-surface text-text w-full rounded-lg border px-3.5 py-2.5 text-sm transition-colors',
+              errors.email ? 'border-danger' : 'border-border',
             )}
           />
           {errors.email && (
-            <p className="mt-1 text-xs text-danger-ink">
+            <p className="mt-1 text-xs text-danger-text-on-bg">
               {errors.email.message}
             </p>
           )}
@@ -144,14 +144,14 @@ export function Login() {
           <div className="mb-1.5 flex items-center justify-between">
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-ink"
+              className="block text-sm font-medium text-text"
             >
               Password
             </label>
             <Link
               to="/forgot-password"
               // min-h-11 + negative margin: 44px target without moving the label row
-              className="text-green -my-3 inline-flex min-h-11 items-center text-xs underline underline-offset-2"
+              className="text-brand-hover -my-3 inline-flex min-h-11 items-center text-xs underline underline-offset-2"
             >
               Forgot password?
             </Link>
@@ -163,21 +163,21 @@ export function Login() {
               autoComplete="current-password"
               {...register('password')}
               className={cn(
-                'bg-card text-ink w-full rounded-lg border px-3.5 py-2.5 pr-10 text-sm transition-colors',
-                errors.password ? 'border-danger-ink' : 'border-line',
+                'bg-surface text-text w-full rounded-lg border px-3.5 py-2.5 pr-10 text-sm transition-colors',
+                errors.password ? 'border-danger' : 'border-border',
               )}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="min-h-11 min-w-11 absolute top-1/2 right-3 -translate-y-1/2 text-ink-40"
+              className="min-h-11 min-w-11 absolute top-1/2 right-3 -translate-y-1/2 text-text-muted"
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
           {errors.password && (
-            <p className="mt-1 text-xs text-danger-ink">
+            <p className="mt-1 text-xs text-danger-text-on-bg">
               {errors.password.message}
             </p>
           )}
@@ -187,17 +187,17 @@ export function Login() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="min-h-11 bg-green text-white w-full rounded-full px-4 py-2.5 text-sm font-semibold transition-opacity disabled:opacity-60"
+          className="min-h-11 bg-brand-hover text-white w-full rounded-full px-4 py-2.5 text-sm font-semibold transition-opacity disabled:opacity-60"
         >
           {isSubmitting ? 'Logging in...' : 'Log in'}
         </button>
 
         {/* Signup link */}
-        <p className="text-center text-sm text-ink-60">
+        <p className="text-center text-sm text-text-muted">
           Don't have an account?{' '}
           <Link
             to="/signup"
-            className="font-medium underline text-green"
+            className="font-medium underline text-brand-hover"
           >
             Sign up
           </Link>

@@ -55,11 +55,19 @@
   --color-text-subtle: #5c6a60;
   --color-text-on-brand: #ffffff;
 
-  /* Brand — one green, three shades */
+  /* Brand — one green, four tonal steps (Brand_and_Design.md v2.1).
+     brand-900 moved #0f3d22 -> #14532d on 2026-08-25. #0f3d22 is on the retirement list and
+     no migration row owned it: the rows move --color-brand and the v13 panel green, and this
+     one sat between them. Found while migrating the auth panel, which needs the spec's
+     #14532D and would otherwise have landed on a retired value.
+     9.11:1 with white (the panel), 8.11:1 on brand-50 (selected cards), 8.78:1 on bg. */
   --color-brand: #16a34a;
   --color-brand-hover: #15803d;
-  --color-brand-900: #0f3d22;
+  --color-brand-900: #14532d;
   --color-brand-50: #e8f5ec;
+  /* The light green that reads on a dark green panel. Replaces v13's lime #8cc63f, which
+     measured 2.05:1 on white — the worst contrast in the product. 6.49:1 on brand-900. */
+  --color-brand-lite: #86efac;
 
   /* Brand ramp completion — additive shades for multi-series charts (Phase 0).
      One-Green: greens carry the primary series. brand-700 references

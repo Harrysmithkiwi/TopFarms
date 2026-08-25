@@ -117,19 +117,19 @@ export function ResetPassword() {
         <div className="space-y-6">
           <div className="flex justify-center">
             <div
-              className="flex h-16 w-16 items-center justify-center rounded-full bg-danger-ink/10"
+              className="flex h-16 w-16 items-center justify-center rounded-full bg-danger-bg"
             >
-              <AlertCircle className="text-danger-ink" size={32} />
+              <AlertCircle className="text-danger-text-on-bg" size={32} />
             </div>
           </div>
 
-          <p className="text-center text-sm text-ink-60">
+          <p className="text-center text-sm text-text-muted">
             This password reset link is invalid or has expired. Reset links are valid for 1 hour.
           </p>
 
           <Link
             to="/forgot-password"
-            className="min-h-11 bg-green text-white block w-full rounded-full px-4 py-2.5 text-center text-sm font-semibold"
+            className="min-h-11 bg-brand-hover text-white block w-full rounded-full px-4 py-2.5 text-center text-sm font-semibold"
           >
             Request a new reset link
           </Link>
@@ -146,7 +146,7 @@ export function ResetPassword() {
           <div
             className="h-10 w-10 animate-spin rounded-full border-2 border-t-transparent border-green"
           />
-          <p className="text-center text-sm text-ink-60">
+          <p className="text-center text-sm text-text-muted">
             Verifying your reset link...
           </p>
         </div>
@@ -162,7 +162,7 @@ export function ResetPassword() {
         <div>
           <label
             htmlFor="password"
-            className="mb-1.5 block text-sm font-medium text-ink"
+            className="mb-1.5 block text-sm font-medium text-text"
           >
             New password
           </label>
@@ -173,21 +173,21 @@ export function ResetPassword() {
               autoComplete="new-password"
               {...register('password')}
               className={cn(
-                'bg-card text-ink w-full rounded-lg border px-3.5 py-2.5 pr-10 text-sm transition-colors',
-                errors.password ? 'border-danger-ink' : 'border-line',
+                'bg-surface text-text w-full rounded-lg border px-3.5 py-2.5 pr-10 text-sm transition-colors',
+                errors.password ? 'border-danger' : 'border-border',
               )}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="min-h-11 min-w-11 absolute top-1/2 right-3 -translate-y-1/2 text-ink-40"
+              className="min-h-11 min-w-11 absolute top-1/2 right-3 -translate-y-1/2 text-text-muted"
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
           {errors.password && (
-            <p className="mt-1 text-xs text-danger-ink">
+            <p className="mt-1 text-xs text-danger-text-on-bg">
               {errors.password.message}
             </p>
           )}
@@ -197,7 +197,7 @@ export function ResetPassword() {
         <div>
           <label
             htmlFor="confirmPassword"
-            className="mb-1.5 block text-sm font-medium text-ink"
+            className="mb-1.5 block text-sm font-medium text-text"
           >
             Confirm new password
           </label>
@@ -208,21 +208,21 @@ export function ResetPassword() {
               autoComplete="new-password"
               {...register('confirmPassword')}
               className={cn(
-                'bg-card text-ink w-full rounded-lg border px-3.5 py-2.5 pr-10 text-sm transition-colors',
-                errors.confirmPassword ? 'border-danger-ink' : 'border-line',
+                'bg-surface text-text w-full rounded-lg border px-3.5 py-2.5 pr-10 text-sm transition-colors',
+                errors.confirmPassword ? 'border-danger' : 'border-border',
               )}
             />
             <button
               type="button"
               onClick={() => setShowConfirm(!showConfirm)}
-              className="min-h-11 min-w-11 absolute top-1/2 right-3 -translate-y-1/2 text-ink-40"
+              className="min-h-11 min-w-11 absolute top-1/2 right-3 -translate-y-1/2 text-text-muted"
               aria-label={showConfirm ? 'Hide password' : 'Show password'}
             >
               {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
           {errors.confirmPassword && (
-            <p className="mt-1 text-xs text-danger-ink">
+            <p className="mt-1 text-xs text-danger-text-on-bg">
               {errors.confirmPassword.message}
             </p>
           )}
@@ -232,7 +232,7 @@ export function ResetPassword() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="min-h-11 bg-green text-white w-full rounded-full px-4 py-2.5 text-sm font-semibold transition-opacity disabled:opacity-60"
+          className="min-h-11 bg-brand-hover text-white w-full rounded-full px-4 py-2.5 text-sm font-semibold transition-opacity disabled:opacity-60"
         >
           {isSubmitting ? 'Updating password...' : 'Update password'}
         </button>

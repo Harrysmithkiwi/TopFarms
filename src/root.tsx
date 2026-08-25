@@ -104,7 +104,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="theme-color" content="#0f3d22" />
+        {/* A meta tag cannot read a CSS variable, so this is a literal by necessity — it
+            mirrors --color-brand-900 and has to be updated with it. It held the retired
+            v1 deep green until 2026-08-25; the design gate caught it the moment the token
+            moved, because the literal stopped matching anything in index.css. Do not write
+            a retired hex into this comment — the gate scans comments too, which is how the
+            first attempt at this note failed its own check. */}
+        <meta name="theme-color" content="#14532d" />
         <Meta />
         <Links />
       </head>
