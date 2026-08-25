@@ -62,6 +62,10 @@ const jobRow = {
   status: 'active',
   region: 'Waikato',
   contract_type: 'permanent',
+  // listing_tier 3 so the PREMIUM tier badge renders. Left unset, the badge branch never
+  // executed and the arbitrary-colour assertion below passed while covering nothing — it
+  // stayed green against the pre-migration source, which is how a vacuous test looks.
+  listing_tier: 3,
   salary_min: null,
   salary_max: null,
   expires_at: null,
@@ -75,7 +79,17 @@ const jobRow = {
 // fetch (.single()) and the similar-jobs fetch (.limit(3)).
 const TABLES: Record<string, { row?: unknown; list?: unknown; count?: number }> = {
   jobs: { row: jobRow, list: [] },
-  job_skills: { list: [] },
+  // One REQUIRED skill, so the skill-chip branch renders too. That chip was the third
+  // hand-rolled pill in this file and carried its own untokenised fill.
+  job_skills: {
+    list: [
+      {
+        skill_id: 'sk-1',
+        requirement_level: 'required',
+        skills: { id: 'sk-1', name: 'Milking', category: 'Dairy' },
+      },
+    ],
+  },
   employer_verifications: { list: [] },
   applications: { row: null, list: [], count: 0 },
   seeker_profiles: { row: { id: 'sp-1' } },
@@ -135,6 +149,35 @@ describe('apply form cover note has an accessible name', () => {
       return !byId && !t.getAttribute('aria-label') && !t.getAttribute('aria-labelledby')
     })
     expect(orphans).toHaveLength(0)
+  })
+})
+
+describe('JobDetail renders no retired design tokens', () => {
+  // /jobs/:id cannot be checked in a browser: production holds zero active jobs, so the e2e
+  // sweep skips it and always has. This renders the real page against the same mocks and
+  // reads the classes that actually reach the DOM — the migration's own grep only proves the
+  // source is clean, not that a conditional branch does not still carry one.
+  const RETIRED =
+    /\b(bg|text|border|from|to|via|fill|stroke|ring|divide|placeholder)-(cream|cream-2|card|ink|ink-60|ink-40|green|green-2|green-3|lime|lime-2|ochre|ochre-ink|line|danger-ink)\b/
+
+  it('no rendered element carries a v13 token class', async () => {
+    const { baseElement } = renderJobDetail()
+    await screen.findByRole('button', { name: /apply now/i })
+    const offenders = [...baseElement.querySelectorAll('[class]')]
+      .map((el) => el.getAttribute('class') ?? '')
+      .flatMap((c) => c.split(/\s+/))
+      .filter((c) => RETIRED.test(c))
+    expect([...new Set(offenders)], 'retired v13 token classes still rendering').toEqual([])
+  })
+
+  it('no rendered element carries an arbitrary colour literal', async () => {
+    const { baseElement } = renderJobDetail()
+    await screen.findByRole('button', { name: /apply now/i })
+    const offenders = [...baseElement.querySelectorAll('[class]')]
+      .map((el) => el.getAttribute('class') ?? '')
+      .flatMap((c) => c.split(/\s+/))
+      .filter((c) => /-\[(#|rgba?\()/.test(c))
+    expect([...new Set(offenders)], 'arbitrary colour values still rendering').toEqual([])
   })
 })
 

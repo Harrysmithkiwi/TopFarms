@@ -20,6 +20,9 @@ import { cn } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
 import { reportError } from '@/lib/observability'
 import { useAuth } from '@/hooks/useAuth'
+// Aliased: lucide-react also exports a `Tag`, used at the bottom of this file as the
+// fallback chip icon. Both are wanted, so the component takes the qualified name.
+import { Tag as StatusTag } from '@/components/ui/Tag'
 import { VerificationBadge } from '@/components/ui/VerificationBadge'
 import { MatchBreakdown } from '@/components/ui/MatchBreakdown'
 import { MatchBand } from '@/components/ui/MatchBand'
@@ -378,7 +381,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
   // navigation is unseeded and behaves exactly as before.
   if (!seed?.job && (loading || authLoading)) {
     return (
-      <div className="bg-cream">
+      <div className="bg-bg">
         <RouteSkeleton label="Loading listing" />
       </div>
     )
@@ -387,7 +390,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
   // Failed — checked BEFORE notFound, which is a dead end with no retry.
   if (loadError) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center bg-cream">
+      <div className="flex min-h-[60vh] items-center justify-center bg-bg">
         <ErrorState
           message="We could not load this listing"
           onRetry={() => setReloadNonce((n) => n + 1)}
@@ -400,30 +403,30 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
   if (notFound || !job) {
     return (
       <div
-        className="flex min-h-[60vh] items-center justify-center bg-cream"
+        className="flex min-h-[60vh] items-center justify-center bg-bg"
       >
         <div className="max-w-md px-4 text-center">
           <div
             className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-border"
           >
             <ClipboardList
-              className="h-8 w-8 text-ink-60"
+              className="h-8 w-8 text-text-muted"
               aria-hidden="true"
             />
           </div>
           <h1
-            className="mb-2 text-2xl font-semibold text-green"
+            className="mb-2 text-2xl font-semibold text-brand-900"
           >
             Listing not available
           </h1>
-          <p className="mb-6 text-sm text-ink-60">
+          <p className="mb-6 text-sm text-text-muted">
             This job listing is no longer available. It may have been filled, expired, or removed.
           </p>
           <Link
             to="/jobs"
             className={cn(
               'inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
-              'bg-green-2 hover:bg-green text-white',
+              'bg-brand-hover hover:bg-brand-900 text-white',
               'px-4 py-2 text-label',
             )}
           >
@@ -440,15 +443,15 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
     if (!session || role !== 'employer') {
       return (
         <div
-          className="flex min-h-[60vh] items-center justify-center bg-cream"
+          className="flex min-h-[60vh] items-center justify-center bg-bg"
         >
           <div className="max-w-md px-4 text-center">
             <h1
-              className="mb-2 text-2xl font-semibold text-green"
+              className="mb-2 text-2xl font-semibold text-brand-900"
             >
               Listing not available
             </h1>
-            <p className="text-sm text-ink-60">
+            <p className="text-sm text-text-muted">
               This job listing is no longer available.
             </p>
           </div>
@@ -502,7 +505,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
   // ─── Main render ────────────────────────────────────────────────────────────
 
   return (
-    <div className="pb-24 bg-cream">
+    <div className="pb-24 bg-bg">
       {/* Breadcrumb bar — replaces old minimal nav */}
       <div className="sticky top-0 z-30">
         <Breadcrumb
@@ -528,22 +531,22 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
               {/* Tier badge */}
               {(isFeatured || isPremium) && (
                 <div className="mb-3">
-                  <span
-                    className={cn(
-                      'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-micro font-semibold',
-                      isPremium
-                        ? 'bg-[rgba(180,83,9,0.10)] text-[#b45309]'
-                        : 'bg-[rgba(59,130,246,0.10)] text-[#2563eb]',
-                    )}
-                  >
+                  {/* Was two hand-rolled pills built from arbitrary Tailwind values: an
+                      amber-700 and a blue-600 over 10%-alpha fills of the same hues. Neither
+                      colour is in any token set, and neither pairing had ever been through
+                      scripts/contrast.mjs. Tag carries the same two roles with tints whose
+                      text partners are gated by name — warn 6.37:1, info 6.59:1. Hand-rolling
+                      a pill is how the 1.93:1 `orange` variant shipped and had to be deleted
+                      in July (Brand_and_Design.md, two badge families). */}
+                  <StatusTag variant={isPremium ? 'warn' : 'blue'} className="gap-1.5">
                     <Star className="h-3 w-3" />
                     {isPremium ? 'Premium Listing' : 'Featured Listing'}
-                  </span>
+                  </StatusTag>
                 </div>
               )}
 
               <h1
-                className="mb-3 text-3xl leading-tight font-semibold text-green"
+                className="mb-3 text-3xl leading-tight font-semibold text-brand-900"
               >
                 {job.title}
               </h1>
@@ -551,7 +554,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
               {/* Farm name + trust badge */}
               <div className="mb-3 flex flex-wrap items-center gap-2">
                 <span
-                  className="text-base font-semibold text-ink"
+                  className="text-base font-semibold text-text"
                 >
                   {employer?.farm_name}
                 </span>
@@ -564,7 +567,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
 
               {/* Key metadata */}
               <div
-                className="flex flex-wrap gap-3 text-sm text-ink-60"
+                className="flex flex-wrap gap-3 text-sm text-text-muted"
               >
                 {employer?.region && (
                   <span className="flex items-center gap-1.5">
@@ -605,16 +608,16 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
               job.description_offer ||
               job.description_ideal) && (
               <section>
-                <div className="bg-card border-line space-y-6 rounded-[12px] border-[1.5px] p-6">
+                <div className="bg-surface border-border space-y-6 rounded-[12px] border-[1.5px] p-6">
                   {job.description_overview && (
                     <div>
                       <h2
-                        className="mb-2 text-base font-bold text-ink"
+                        className="mb-2 text-base font-bold text-text"
                       >
                         Role Overview
                       </h2>
                       <p
-                        className="text-sm leading-relaxed whitespace-pre-line text-ink-60"
+                        className="text-sm leading-relaxed whitespace-pre-line text-text-muted"
                       >
                         {job.description_overview}
                       </p>
@@ -624,7 +627,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
                   {job.description_daytoday && (
                     <div>
                       <h2
-                        className="mb-2 text-base font-bold text-ink"
+                        className="mb-2 text-base font-bold text-text"
                       >
                         Day-to-Day
                       </h2>
@@ -635,10 +638,10 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
                           .map((line, i) => (
                             <li
                               key={i}
-                              className="flex items-start gap-2 text-sm leading-relaxed text-ink-60"
+                              className="flex items-start gap-2 text-sm leading-relaxed text-text-muted"
                             >
                               <span
-                                className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-green"
+                                className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-brand"
                               />
                               {line.replace(/^[-*]\s*/, '')}
                             </li>
@@ -649,12 +652,12 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
                   {job.description_offer && (
                     <div>
                       <h2
-                        className="mb-2 text-base font-bold text-ink"
+                        className="mb-2 text-base font-bold text-text"
                       >
                         What We Offer
                       </h2>
                       <p
-                        className="text-sm leading-relaxed whitespace-pre-line text-ink-60"
+                        className="text-sm leading-relaxed whitespace-pre-line text-text-muted"
                       >
                         {job.description_offer}
                       </p>
@@ -663,12 +666,12 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
                   {job.description_ideal && (
                     <div>
                       <h2
-                        className="mb-2 text-base font-bold text-ink"
+                        className="mb-2 text-base font-bold text-text"
                       >
                         Ideal Candidate
                       </h2>
                       <p
-                        className="text-sm leading-relaxed whitespace-pre-line text-ink-60"
+                        className="text-sm leading-relaxed whitespace-pre-line text-text-muted"
                       >
                         {job.description_ideal}
                       </p>
@@ -682,24 +685,24 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
             {skills.length > 0 && (
               <section>
                 <h2
-                  className="mb-1 text-lg font-bold text-ink"
+                  className="mb-1 text-lg font-bold text-text"
                 >
                   Skills
                 </h2>
-                <p className="mb-4 text-xs text-ink-40">
+                <p className="mb-4 text-xs text-text-muted">
                   {requiredCount > 0 && `${requiredCount} required`}
                   {requiredCount > 0 && preferredCount > 0 && ', '}
                   {preferredCount > 0 && `${preferredCount} preferred`}
                 </p>
 
-                <div className="bg-card border-line rounded-[12px] border-[1.5px] p-6">
+                <div className="bg-surface border-border rounded-[12px] border-[1.5px] p-6">
                   {/* Legend row (JDET-04) */}
-                  <div className="border-line mb-4 flex items-center gap-4 border-b pb-3">
+                  <div className="border-border mb-4 flex items-center gap-4 border-b pb-3">
                     <span className="inline-flex items-center gap-1.5 text-xs">
-                      <span className="bg-green h-2 w-2 rounded-full" /> Required
+                      <span className="bg-brand h-2 w-2 rounded-full" /> Required
                     </span>
                     <span className="inline-flex items-center gap-1.5 text-xs">
-                      <span className="bg-cream-2 h-2 w-2 rounded-full" /> Preferred
+                      <span className="bg-surface-2 h-2 w-2 rounded-full" /> Preferred
                     </span>
                     <span className="inline-flex items-center gap-1.5 text-xs">
                       <span className="bg-warn h-2 w-2 rounded-full" /> Bonus
@@ -711,7 +714,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
                     {Object.entries(skillsByCategory).map(([category, categorySkills]) => (
                       <div key={category}>
                         <p
-                          className="mb-2 text-micro font-semibold tracking-wide uppercase text-ink-40"
+                          className="mb-2 text-micro font-semibold tracking-wide uppercase text-text-muted"
                         >
                           {category}
                         </p>
@@ -722,8 +725,8 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
                               className={cn(
                                 'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold',
                                 s.requirement_level === 'required'
-                                  ? 'text-success-text-on-bg bg-[rgba(74,124,47,0.12)]'
-                                  : 'bg-cream-2 text-ink-60',
+                                  ? 'text-success-text-on-bg bg-success-bg'
+                                  : 'bg-surface-2 text-text-muted',
                               )}
                             >
                               {s.skills?.name}
@@ -732,7 +735,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
                                   'text-micro',
                                   s.requirement_level === 'required'
                                     ? 'text-success-text-on-bg'
-                                    : 'text-ink-40',
+                                    : 'text-text-muted',
                                 )}
                               >
                                 {s.requirement_level === 'required' ? 'required' : 'preferred'}
@@ -750,7 +753,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
             {/* Application Timeline (JDET-05) */}
             <section>
               <h2
-                className="mb-4 text-lg font-bold text-ink"
+                className="mb-4 text-lg font-bold text-text"
               >
                 Application Timeline
               </h2>
@@ -768,7 +771,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
             {/* Location / Map (JDET-06) */}
             <section>
               <h2
-                className="mb-4 text-lg font-bold text-ink"
+                className="mb-4 text-lg font-bold text-text"
               >
                 Location
               </h2>
@@ -779,17 +782,17 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
             {(job.salary_min || job.salary_max || (job.benefits && job.benefits.length > 0)) && (
               <section>
                 <h2
-                  className="mb-4 text-lg font-bold text-ink"
+                  className="mb-4 text-lg font-bold text-text"
                 >
                   Compensation &amp; Benefits
                 </h2>
-                <div className="bg-card border-line space-y-3 rounded-[12px] border-[1.5px] p-6">
+                <div className="bg-surface border-border space-y-3 rounded-[12px] border-[1.5px] p-6">
                   <div className="flex items-center gap-2">
                     <DollarSign
-                      className="h-4 w-4 flex-shrink-0 text-ink-60"
+                      className="h-4 w-4 flex-shrink-0 text-text-muted"
                     />
                     <span
-                      className="text-sm font-semibold text-ink"
+                      className="text-sm font-semibold text-text"
                     >
                       {formatSalary(job.salary_min, job.salary_max)}
                     </span>
@@ -799,9 +802,9 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
                       {job.benefits.map((benefit, i) => (
                         <li
                           key={i}
-                          className="flex items-start gap-2 text-sm text-ink-60"
+                          className="flex items-start gap-2 text-sm text-text-muted"
                         >
-                          <span className="text-green-2 mt-0.5">•</span>
+                          <span className="text-brand-900 mt-0.5">•</span>
                           {benefit}
                         </li>
                       ))}
@@ -815,17 +818,17 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
             {employer?.accommodation_available && (
               <section>
                 <h2
-                  className="mb-4 text-lg font-bold text-ink"
+                  className="mb-4 text-lg font-bold text-text"
                 >
                   Accommodation
                 </h2>
-                <div className="bg-card border-line space-y-3 rounded-[12px] border-[1.5px] p-6">
+                <div className="bg-surface border-border space-y-3 rounded-[12px] border-[1.5px] p-6">
                   {employer.accommodation_type && (
                     <div className="flex items-center gap-2">
                       <Home
-                        className="h-4 w-4 flex-shrink-0 text-ink-60"
+                        className="h-4 w-4 flex-shrink-0 text-text-muted"
                       />
-                      <span className="text-sm text-ink">
+                      <span className="text-sm text-text">
                         {employer.accommodation_type}
                       </span>
                     </div>
@@ -843,7 +846,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
                         return (
                           <span
                             key={chip}
-                            className="flex items-center gap-1.5 text-sm text-ink-60"
+                            className="flex items-center gap-1.5 text-sm text-text-muted"
                           >
                             <Icon className="h-4 w-4" />
                             {chip}
@@ -864,20 +867,20 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
                 employer.culture_description) && (
                 <section>
                   <h2
-                    className="mb-4 text-lg font-bold text-ink"
+                    className="mb-4 text-lg font-bold text-text"
                   >
                     Farm Details
                   </h2>
-                  <div className="bg-card border-line space-y-4 rounded-[12px] border-[1.5px] p-6">
+                  <div className="bg-surface border-border space-y-4 rounded-[12px] border-[1.5px] p-6">
                     <div className="grid grid-cols-2 gap-4">
                       {employer.farm_type && (
                         <div>
                           <p
-                            className="mb-0.5 text-micro font-semibold tracking-wide uppercase text-ink-40"
+                            className="mb-0.5 text-micro font-semibold tracking-wide uppercase text-text-muted"
                           >
                             Farm Type
                           </p>
-                          <p className="text-sm capitalize text-ink">
+                          <p className="text-sm capitalize text-text">
                             {employer.farm_type}
                           </p>
                         </div>
@@ -885,11 +888,11 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
                       {employer.shed_type && (
                         <div>
                           <p
-                            className="mb-0.5 text-micro font-semibold tracking-wide uppercase text-ink-40"
+                            className="mb-0.5 text-micro font-semibold tracking-wide uppercase text-text-muted"
                           >
                             Shed Type
                           </p>
-                          <p className="text-sm text-ink">
+                          <p className="text-sm text-text">
                             {employer.shed_type}
                           </p>
                         </div>
@@ -897,11 +900,11 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
                       {employer.herd_size && (
                         <div>
                           <p
-                            className="mb-0.5 text-micro font-semibold tracking-wide uppercase text-ink-40"
+                            className="mb-0.5 text-micro font-semibold tracking-wide uppercase text-text-muted"
                           >
                             Herd Size
                           </p>
-                          <p className="text-sm text-ink">
+                          <p className="text-sm text-text">
                             {employer.herd_size.toLocaleString()} head
                           </p>
                         </div>
@@ -909,11 +912,11 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
                       {employer.region && (
                         <div>
                           <p
-                            className="mb-0.5 text-micro font-semibold tracking-wide uppercase text-ink-40"
+                            className="mb-0.5 text-micro font-semibold tracking-wide uppercase text-text-muted"
                           >
                             Region
                           </p>
-                          <p className="text-sm text-ink">
+                          <p className="text-sm text-text">
                             {employer.region}
                           </p>
                         </div>
@@ -922,12 +925,12 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
                     {employer.culture_description && (
                       <div>
                         <p
-                          className="mb-1 text-micro font-semibold tracking-wide uppercase text-ink-40"
+                          className="mb-1 text-micro font-semibold tracking-wide uppercase text-text-muted"
                         >
                           Culture &amp; Team
                         </p>
                         <p
-                          className="text-sm leading-relaxed whitespace-pre-line text-ink-60"
+                          className="text-sm leading-relaxed whitespace-pre-line text-text-muted"
                         >
                           {employer.culture_description}
                         </p>
@@ -983,10 +986,10 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
       {/* Sticky CTA bar — visitor */}
       {isVisitor && (
         <div
-          className="border-line fixed right-0 bottom-0 left-0 z-30 border-t shadow-lg bg-white"
+          className="border-border fixed right-0 bottom-0 left-0 z-30 border-t shadow-lg bg-white"
         >
           <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4">
-            <p className="text-sm font-semibold text-ink">
+            <p className="text-sm font-semibold text-text">
               Sign up to see how you match and apply
             </p>
             <div className="flex flex-shrink-0 items-center gap-2">
@@ -994,7 +997,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
                 to="/login"
                 className={cn(
                   'inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
-                  'bg-card border-green text-green-2 hover:bg-cream-2 border',
+                  'bg-surface border-brand text-brand-900 hover:bg-surface-2 border',
                   'px-3 py-2 text-label',
                 )}
               >
@@ -1004,7 +1007,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
                 to="/signup"
                 className={cn(
                   'inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
-                  'bg-green-2 hover:bg-green text-white',
+                  'bg-brand-hover hover:bg-brand-900 text-white',
                   'px-4 py-2 text-label',
                 )}
               >
@@ -1018,13 +1021,13 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
       {/* Sticky CTA bar — seeker */}
       {isSeeker && (
         <div
-          className="border-line fixed right-0 bottom-0 left-0 z-30 border-t shadow-lg bg-white"
+          className="border-border fixed right-0 bottom-0 left-0 z-30 border-t shadow-lg bg-white"
         >
           <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4">
             {matchScore && (
               <div className="flex items-center gap-2 lg:hidden">
                 <MatchBand score={matchScore.total_score} />
-                <span className="text-sm font-semibold text-ink">
+                <span className="text-sm font-semibold text-text">
                   Match
                 </span>
               </div>
@@ -1042,8 +1045,8 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
               className={cn(
                 'ml-auto inline-flex items-center justify-center rounded-[8px] font-bold transition-all duration-200',
                 hasApplied || !seekerProfileId
-                  ? 'bg-cream-2 text-ink-60 cursor-not-allowed'
-                  : 'bg-green-2 hover:bg-green text-white',
+                  ? 'bg-surface-2 text-text-muted cursor-not-allowed'
+                  : 'bg-brand-hover hover:bg-brand-900 text-white',
                 'px-6 py-2.5 text-sm',
               )}
             >
@@ -1057,21 +1060,21 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
       <Dialog.Root open={applyModalOpen} onOpenChange={setApplyModalOpen}>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 z-40 bg-black/40" />
-          <Dialog.Content className="bg-card fixed top-1/2 left-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-[16px] p-6 shadow-xl">
+          <Dialog.Content className="bg-surface fixed top-1/2 left-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-[16px] p-6 shadow-xl">
             <Dialog.Title
-              className="mb-1 text-xl font-semibold text-green"
+              className="mb-1 text-xl font-semibold text-brand-900"
             >
               Apply to {job.title}
             </Dialog.Title>
             <Dialog.Description
-              className="mb-4 text-sm text-ink-60"
+              className="mb-4 text-sm text-text-muted"
             >
               Your profile will be shared with {employer?.farm_name}. Add an optional note below.
             </Dialog.Description>
             {/* The only thing naming this box was its placeholder, which vanishes on the
                 first keystroke - the apply form's one input announced as unlabelled.
                 Found by the pre-launch UAT design pass, 2026-08-25 (axe: label). */}
-            <label htmlFor={coverNoteId} className="mb-1 block text-sm font-medium text-ink-60">
+            <label htmlFor={coverNoteId} className="mb-1 block text-sm font-medium text-text-muted">
               Cover note (optional)
             </label>
             <textarea
@@ -1082,18 +1085,18 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
               rows={4}
               maxLength={500}
               aria-describedby={coverNoteCountId}
-              className="border-line focus:border-green w-full resize-none rounded-[8px] border p-3 text-sm"
+              className="border-border focus:border-brand w-full resize-none rounded-[8px] border p-3 text-sm"
             />
             <p
               id={coverNoteCountId}
-              className="mt-1 text-right text-micro text-ink-40"
+              className="mt-1 text-right text-micro text-text-muted"
             >
               {coverNote.length}/500
             </p>
             <div className="mt-4 flex gap-3">
               <Dialog.Close asChild>
                 <button
-                  className="border-line hover:bg-cream-2 flex-1 rounded-[8px] border px-4 py-2 text-label font-bold transition-colors text-ink-60"
+                  className="border-border hover:bg-surface-2 flex-1 rounded-[8px] border px-4 py-2 text-label font-bold transition-colors text-text-muted"
                 >
                   Cancel
                 </button>
@@ -1101,7 +1104,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
               <button
                 onClick={handleApply}
                 disabled={applying}
-                className="bg-green-2 hover:bg-green flex-1 rounded-[8px] px-4 py-2 text-label font-bold text-white transition-colors disabled:opacity-50"
+                className="bg-brand-hover hover:bg-brand-900 flex-1 rounded-[8px] px-4 py-2 text-label font-bold text-white transition-colors disabled:opacity-50"
               >
                 {applying ? 'Submitting...' : 'Confirm Application'}
               </button>

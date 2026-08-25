@@ -144,7 +144,7 @@ export function ResetPassword() {
       <AuthLayout title="Verifying reset link...">
         <div className="flex flex-col items-center gap-4 py-8">
           <div
-            className="h-10 w-10 animate-spin rounded-full border-2 border-t-transparent border-green"
+            className="h-10 w-10 animate-spin rounded-full border-2 border-t-transparent border-brand"
           />
           <p className="text-center text-sm text-text-muted">
             Verifying your reset link...
