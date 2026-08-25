@@ -1,5 +1,15 @@
 # MARKETING-DESIGN.md — TopFarms public marketing surface (v14)
 
+> **Demoted from canon to guide, 2026-08-25.** This file no longer owns colour, type, radius
+> or elevation — **`docs/_canonical/Brand_and_Design.md`** (v2.1) does, for every surface.
+> What stays here is what is genuinely marketing-specific: layout, section rhythm, hero
+> composition, voice, and the one-label-per-intent rule.
+>
+> The `fern-*` / `bark` / `sage` / `paper` / `rule` token names are **aliases** of the portal
+> tokens, not a second palette — `fern-900` *is* `#14532D`, `bark` *is* `#0B1F10`. The v14
+> change on 2026-08-24 already made marketing and portal the same material; the sync finishes
+> the job by collapsing the names. Do not add a marketing-only colour.
+
 Adopted 2026-08-24 from the operator's comp `design-reference/Landing pages /TopFarms
 landing page final draft.png`. Supersedes `v12-DIRECTIVE.md` as the marketing canon.
 Format follows the design.md convention (awesome-design-md): one file an agent can read

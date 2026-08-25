@@ -93,55 +93,83 @@ my own work. **Care is not a control. Gates are.** So the rules are mechanical, 
 7. **Correct yourself out loud.** A false finding costs more than no finding; when an earlier
    claim proves wrong, say so and downgrade it.
 
-## 10. Design canon — two worlds, one is closed
+## 10. Design canon — one system, one token set
 
 **`impeccable` is the frontend design skill for this project — the default, not an option.**
 (https://github.com/pbakaus/impeccable.) Any work on a frontend surface goes through it:
 building, reviewing, auditing, polishing. Its PostToolUse hook already runs on every edit and
 its config lives at `.impeccable/`; `docs/DESIGN.md` and `docs/PRODUCT.md` are auto-discovered
-from `docs/`. Do not reach for a different design skill, and do not hand-roll a design pass
-that `impeccable` covers.
+from `docs/` — **do not move them**, moving `DESIGN.md` switches the design gate off silently.
 
-Hook findings are not automatically defects. Judge each against the two canons below: a
-**visual** finding on a marketing surface is discarded (that world is settled), and a finding
-on a gated portal is real. Never silence one with an ignore command without the operator
-saying so — the waiver is a change to the gate's shape.
+**There is now ONE design system.** Ruled 2026-08-25, superseding the "two worlds, one is
+closed" split that stood from 2026-08-07. Marketing and the gated portals share one ground,
+one green ramp, one typeface pairing, one radius scale, one shadow model and two badge
+families. The v14 change on 2026-08-24 had already put both worlds on the same hexes under
+different names; the design-system sync collapses the names.
 
-Two design systems ship here on purpose. Applying one to the other's surface is the failure
-mode this rule exists to prevent.
+### The authority chain
 
-- **Gated portals — admin, employer, seeker.** Canon is `docs/DESIGN.md` (one green `#16A34A`,
-  Inter, near-white `#FAFBF9`). `src/index.css` wins on any hex. This is the surface the
-  impeccable skill audits; `docs/PRODUCT.md` sits beside it and both are auto-discovered from
-  `docs/` — do not move them.
-- **Public marketing — `Home`, `ForEmployers`, `Pricing`, `legal/`, `src/components/landing/`.**
-  Canon is `docs/design/MARKETING-DESIGN.md` (v14) as of 2026-08-24: the marketing surface
-  adopted the PORTAL material (one green family around `#16A34A`, Inter body, Newsreader
-  display, near-white canvas), so the two worlds now share one palette while keeping separate
-  canon documents. It supersedes `v12-DIRECTIVE.md` (illustrated paddock hero, Cormorant),
-  which keeps a banner and stays readable for its decision history. The product principles
-  carried forward from v11 (§1.3, §1.4, §1.5, 1.15, 1.17b) remain binding and are restated in
-  MARKETING-DESIGN.md §9. `PRODUCT.md`'s anti-reference amendment stands; do not "restore" it.
-  One label per intent sitewide: "Find work" and "Post a job" are the only action labels.
-  A **visual** finding on a marketing surface is still discarded, not filed.
+`src/index.css` (live `@theme` tokens — wins on any hex)
+→ `docs/_canonical/topfarms-tokens.css` (the `@theme` block `index.css` must contain)
+→ `docs/_canonical/Brand_and_Design.md` (v2.1 — the spec)
+→ `docs/DESIGN.md` (portal implementation contract: states, authorisation, §5 Accessibility)
+→ `docs/design/MARKETING-DESIGN.md` (marketing layout, rhythm, voice)
 
-**The split is by dimension, not only by route** (ruled 2026-08-07, design-gate ticket 10).
-Three kinds of finding are filed wherever they are found, on any surface, in either canon:
+The last two **defer on every colour, type, radius and elevation value**. They own behaviour
+and layout, not material. `docs/design/AUDIT.md` is the codebase survey the sync was sized
+from. `docs/_superseded/2026-08-25/` holds v2.0 and `v12-DIRECTIVE.md`; `v11-DIRECTIVE.md`
+stays in `docs/design/` because §1.3/§1.4/§1.5 are product principles, not styling.
 
-- **Accessibility** — a screen reader does not know which design system a page belongs to.
-  See `docs/DESIGN.md` §5 Accessibility.
+### What this changes about findings
+
+**The old rule "a visual finding on a marketing surface is discarded" is REVOKED.** It existed
+because the marketing world was settled under a different canon. There is no separate
+marketing canon now, so a visual finding on `Home`, `ForEmployers`, `Pricing`, `legal/` or
+`src/components/landing/` is a finding like any other — judged against
+`Brand_and_Design.md`, not discarded.
+
+One thing survives from the old rule, for a different reason: **the landing page is the
+reference implementation.** It is the surface already on the v2.1 values, so other surfaces
+move toward it and it moves last and least. If a landing value disagrees with the token file,
+**flag it — do not silently change either.**
+
+Hook findings are still not automatically defects. Judge each against the canon above. Never
+silence one with an ignore command without the operator saying so — the waiver is a change to
+the gate's shape.
+
+### The non-negotiables
+
+- **One green hue, four tonal steps.** `#14532D` display, dark bands, primary:hover ·
+  `#15803D` primary fill, links, all green text · `#16A34A` icons, focus rings, logo, fills —
+  **non-text only**, it is 3.30:1 on white · `#E8F5EC` tints and selected states.
+- **Four radii only:** `8` `12` `16` `pill`.
+- **Four elevations, all tinted `rgba(11,31,16,*)`.** No black shadow anywhere — and note
+  Tailwind's default `shadow-sm/md/lg/xl` ARE black, so the tokens are redefined rather than
+  the call sites edited.
+- **Newsreader is display-only.** Marketing H1/H2, app page titles, empty-state headlines.
+  Never under 20px, never a card title, label, table header, chip or button. Card titles are
+  Inter 600 / 17px on every surface.
+- **Two badge families.** Status pills carry a semantic tint plus its AA-safe
+  `*-text-on-bg` partner. Meta chips are always `#F3F5F0` on `#5B6B5F` — job attributes are
+  facts, not signals.
+- **Every hex literal outside `src/index.css` is a bug.** Six sanctioned exceptions, each
+  named with a reason in `scripts/design-gate.mjs`: the Stripe Elements block in
+  `PaymentForm.tsx` (Stripe cannot read CSS variables), the Google logo SVGs in `Login.tsx`
+  and `SignUp.tsx` (Google's brand mark), and `root.tsx`'s `theme-color` meta.
+
+### Still true, and still by dimension not by route
+
+Three kinds of finding are filed wherever they are found, on any surface (ruled 2026-08-07,
+design-gate ticket 10):
+
+- **Accessibility** — a screen reader does not know which surface it is on. `docs/DESIGN.md` §5.
 - **States and authorisation** — the four required states apply to anything that fetches,
   submits, or depends on a session, whatever route it sits on.
-- **The product principles in `v11-DIRECTIVE` §1.3, §1.4 and §1.5.** These are not
-  marketing-page layout rules. §1.4 — *"Employers see numeric match scores… It never shows the
-  worker a score for themselves"* — describes the worker-facing profile panel and the employer
-  view, so it binds the portals, not the landing page. §1.3 says the mechanic is deliberately
-  underplayed in marketing and **prominent in the portal**.
-
-Why this exists: `/jobs` and `/jobs/:id` are public routes that branch on session and role and
-render per-seeker data. Scoping by route alone put them out of scope for states, authorisation
-and product-principle findings, which is wrong; their *visual* treatment is still settled under
-the marketing canon and stays out of scope.
+- **The product principles in `v11-DIRECTIVE` §1.3, §1.4 and §1.5.** §1.4 — *"Employers see
+  numeric match scores… It never shows the worker a score for themselves"* — binds the
+  portals. §1.3 says the mechanic is underplayed in marketing and **prominent in the portal**.
+  `PRODUCT.md`'s anti-reference amendment stands; do not "restore" it. One label per intent
+  sitewide: "Find work" and "Post a job" are the only action labels.
 
 **The gate is not only visual.** A screen that renders perfectly and leaks data fails. Every
 component that fetches, submits, or depends on a session ships loading, empty, error and

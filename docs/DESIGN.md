@@ -1,6 +1,6 @@
 ---
 name: TopFarms
-description: NZ farm labour marketplace — modern Kiwi trade tool aesthetic, single-green palette, Inter throughout
+description: NZ farm labour marketplace — modern Kiwi trade tool aesthetic, one green ramp, Newsreader display + Inter interface
 colors:
   bg: "#FAFBF9"
   surface: "#FFFFFF"
@@ -10,11 +10,11 @@ colors:
   border-strong: "#D0D5CC"
   text: "#0B1F10"
   text-muted: "#5B6B5F"
-  text-subtle: "#8A968D"
+  text-subtle: "#5C6A60"   # was #8A968D here while src/index.css shipped #5C6A60 — doc drift, corrected 2026-08-25
   text-on-brand: "#FFFFFF"
   brand: "#16A34A"
   brand-hover: "#15803D"
-  brand-900: "#0F3D22"
+  brand-900: "#0F3D22"     # -> #14532D when the sync reaches its token row; #0F3D22 is retired
   brand-50: "#E8F5EC"
   success: "#16A34A"
   success-bg: "#E8F5EC"
@@ -172,6 +172,21 @@ components:
     padding: "0 10px"
     height: "24px"
 ---
+
+> **This file is the portal IMPLEMENTATION contract**, not the brand.
+>
+> Colour, typography, radius, elevation and badge values come from
+> **`docs/_canonical/Brand_and_Design.md`** (v2.1) and its token file
+> `docs/_canonical/topfarms-tokens.css`. `src/index.css` is the live source and wins on any
+> hex. Where this file states a value, it is quoting them — if it disagrees, they are right
+> and this file is stale.
+>
+> What lives HERE and nowhere else: the four required states, the authorisation boundary,
+> §5 Accessibility, and the component contracts the `impeccable` skill audits.
+>
+> This file stays at `docs/DESIGN.md`. The `impeccable` skill auto-discovers it from `docs/`
+> (CLAUDE.md §10), so moving it into `docs/_canonical/` would silently switch the design gate
+> off. That was considered and rejected on 2026-08-25 — see `docs/design/AUDIT.md` §11.
 
 # Design System: TopFarms
 

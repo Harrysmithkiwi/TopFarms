@@ -69,10 +69,11 @@ docs/design/*
 !docs/design/phase-5-ledger.md
 # v13: the directive governs the port and is the decision record. Tracked, not scratch.
 !docs/design/v11-DIRECTIVE.md
-# v12: supersedes v11 for the marketing surface, and is cited by CLAUDE.md section 10. The
-# approved comp travels with it — a directive that cites a reference nobody can open is half
-# a record, and this one is the authority the build was reproduced against.
-!docs/design/v12-DIRECTIVE.md
+# v2.1 (2026-08-25): the audit that sized the design-system migration. The canonical brand
+# doc and token file live in docs/_canonical/ (tracked by default); this is the survey they
+# were written against. `docs/design/*` would swallow it silently, which is how a document
+# the whole migration cites ends up untracked and invisible to review.
+!docs/design/AUDIT.md
 !docs/design/design-reference/
 docs/design/design-reference/*
 # v14 (2026-08-24): the operator moved the comps into "Landing pages /" (trailing space is

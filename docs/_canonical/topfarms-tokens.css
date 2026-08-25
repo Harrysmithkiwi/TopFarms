@@ -1,0 +1,201 @@
+/* ============================================================
+   TopFarms Design System v2.1 — canonical tokens
+   Compiled 25 Aug 2026 from computed styles on topfarms.co.nz
+   Supersedes: the "DESIGN SYSTEM v1.0" board (Satoshi/#FFFFFF)
+   Amends:     Brand_and_Design.md (20 Jun 2026)
+
+   Tailwind v4: paste the @theme block into src/index.css.
+   Plain CSS:   use the :root block.
+   ============================================================ */
+
+@theme {
+  /* ---- ground & neutrals ---------------------------------- */
+  --color-bg:            #FAFBF9;  /* page ground, every screen        */
+  --color-surface:       #FFFFFF;  /* cards, panels, sheets, popovers  */
+  --color-surface-2:     #F3F5F0;  /* inputs at rest, th, meta chips   */
+  --color-border:        #E5E8E2;  /* every 1px rule. one only.        */
+  --color-border-strong: #D0D5CC;  /* hover borders on interactive.
+                                      AMENDED from #D3DAD3 (AUDIT.md §9.6);
+                                      decorative, so 3:1 does not apply. */
+  --color-text:          #0B1F10;  /* 16.6:1 on bg                     */
+  --color-text-muted:    #5B6B5F;  /*  5.5:1 on bg                     */
+  --color-text-subtle:   #5C6A60;  /*  5.5:1 on bg. AMENDED from #8A968D
+                                       (2.96 on bg, 2.80 on surface-2),
+                                       which regressed a bug fixed twice —
+                                       see AUDIT.md §9.1. Placeholder and
+                                       disabled by intent, but it is the
+                                       value that survives real prose.    */
+
+  /* ---- green ramp (one hue, four steps) -------------------- */
+  --color-green-900:     #14532D;  /* display headings, dark bands,
+                                       primary:hover. 8.8:1 on bg      */
+  --color-green-700:     #15803D;  /* primary fill, links, green text
+                                       5.0:1 on white                  */
+  --color-green-600:     #16A34A;  /* icons, focus rings, logo, fills.
+                                       NON-TEXT ONLY — 3.3:1 fails AA  */
+  --color-green-50:      #E8F5EC;  /* selected state, success tint     */
+
+  /* aliases matching the old canonical names */
+  --color-brand:         #15803D;  /* CHANGED from #16A34A — see note  */
+  --color-brand-accent:  #16A34A;
+  --color-brand-900:     #14532D;  /* CHANGED from #0F3D22             */
+  --color-brand-tint:    #E8F5EC;
+
+  /* ---- semantic: fill + AA-safe text pair ------------------ */
+  /* AMENDED (AUDIT.md §9.3-§9.5). The suffixes are the repo's, not this
+     file's original -tint/-text: `-text-on-bg` states the ONE surface the
+     value is legal on, and scripts/contrast.mjs gates the pairs BY NAME.
+     That suffix is what stopped a 1.93:1 `orange` variant re-shipping in
+     July. The values are the repo's too — every one is higher-contrast
+     than this file first proposed, and a migration must not spend
+     contrast it does not have to.                                     */
+  --color-warn:    #F59E0B;  --color-warn-bg:   #FEF3C7;
+  --color-warn-text-on-bg:   #92400E;  /* 6.37 (was #B45309, 4.51)     */
+  --color-danger:  #DC2626;  --color-danger-bg: #FEE2E2;
+  --color-danger-text-on-bg: #991B1B;  /* 6.80 (was #B91C1C, 5.30)     */
+  --color-info:    #0EA5E9;  --color-info-bg:   #E0F2FE;
+  --color-info-text-on-bg:   #075985;  /* 6.59 (was #0369A1, 5.17)     */
+  --color-ai:      #8B5CF6;  --color-ai-bg:     #F5F3FF;
+  --color-ai-text-on-bg:     #5B21B6;  /* 8.19 (was #6D28D9 on
+                                          #EDE9FE, 5.98)               */
+  --color-success: #16A34A;  --color-success-bg: #E8F5EC;
+  --color-success-text-on-bg: #166534; /* 6.35 — the fifth pair, absent
+                                          from this file's first draft */
+
+  /* ---- type ------------------------------------------------ */
+  --font-display: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --font-body:    "Inter", -apple-system, "Segoe UI", Roboto, system-ui, sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* ---- radius (four. nothing else.) ------------------------ */
+  --radius-sm:   8px;    /* inputs, chips inside cards               */
+  --radius-md:  12px;    /* cards, callouts                          */
+  --radius-lg:  16px;    /* large panels, modals                     */
+  --radius-pill: 9999px; /* buttons, badges, chips                   */
+
+  /* ---- elevation (tinted with #0B1F10, never black) -------- */
+  --shadow-raise:   0 1px 2px rgba(11, 31, 16, .04);
+  --shadow-float:   0 10px 34px rgba(11, 31, 16, .05);
+  --shadow-overlay: 0 20px 50px rgba(11, 31, 16, .10);
+
+  /* ---- space (4pt) ----------------------------------------- */
+  --space-1:  4px;  --space-2:  8px;  --space-3: 12px;  --space-4: 16px;
+  --space-5: 20px;  --space-6: 24px;  --space-8: 32px;  --space-10: 40px;
+  --space-12: 48px; --space-16: 64px; --space-20: 80px; --space-24: 96px;
+
+  --container-max: 1280px;
+  --container-gutter: 24px;
+}
+
+/* ============================================================
+   TYPE SCALE
+   Display = Newsreader 500. Marketing H1/H2 and app page titles
+   only — never under 20px, never in a dense list, never a label.
+   ============================================================ */
+.t-display-xl { font: 500 60px/1.04 var(--font-display); letter-spacing: -.015em; color: var(--color-green-900); }
+.t-display-l  { font: 500 38px/1.12 var(--font-display); letter-spacing: -.012em; color: var(--color-green-900); }
+.t-display-m  { font: 500 25px/1.24 var(--font-display); letter-spacing: -.010em; color: var(--color-green-900); }
+.t-display-i  { font: 400 italic 25px/1.24 var(--font-display); color: var(--color-green-900); }
+.t-heading    { font: 600 17px/1.35 var(--font-body); letter-spacing: -.005em; }
+.t-body-l     { font: 400 18px/1.62 var(--font-body); }
+.t-body       { font: 400 16px/1.55 var(--font-body); }
+.t-body-s     { font: 400 14px/1.50 var(--font-body); color: var(--color-text-muted); }
+.t-label      { font: 500 14px/1.20 var(--font-body); }
+.t-eyebrow    { font: 600 11px/1.20 var(--font-body); letter-spacing: .13em;
+                text-transform: uppercase; color: var(--color-text-muted); }
+.t-data       { font: 400 13px/1.55 var(--font-mono); font-variant-numeric: tabular-nums; }
+
+/* ============================================================
+   BUTTONS — all pill. Heights match what topfarms.co.nz ships.
+   ============================================================ */
+.btn      { display: inline-flex; align-items: center; justify-content: center;
+            border-radius: var(--radius-pill); border: 1px solid transparent;
+            font-family: var(--font-body); cursor: pointer;
+            transition: background .15s ease, border-color .15s ease; }
+.btn:focus-visible { outline: 2px solid var(--color-green-600); outline-offset: 2px; }
+
+.btn--lg  { height: 54px; padding: 0 28px; font: 600 16px/1 var(--font-body); }
+.btn--md  { height: 44px; padding: 0 18px; font: 600 14px/1 var(--font-body); }
+.btn--sm  { height: 36px; padding: 0 14px; font: 500 14px/1 var(--font-body); }
+
+.btn--primary          { background: var(--color-green-700); color: #FFFFFF; }
+.btn--primary:hover    { background: var(--color-green-900); }
+.btn--secondary        { background: var(--color-surface); color: var(--color-text);
+                         border-color: var(--color-border); }
+.btn--secondary:hover  { background: var(--color-surface-2); border-color: var(--color-border-strong); }
+.btn--tertiary         { background: transparent; color: var(--color-green-700); padding-inline: 6px; }
+.btn--tertiary:hover   { color: var(--color-green-900); text-decoration: underline; text-underline-offset: 3px; }
+.btn[disabled]         { background: var(--color-surface-2); color: var(--color-text-subtle); cursor: not-allowed; }
+
+/* Touch: keep a 44x44 hit area even on .btn--sm */
+@media (pointer: coarse) { .btn--sm { min-height: 44px; } }
+
+/* ============================================================
+   INPUTS
+   ============================================================ */
+.input { height: 46px; padding: 0 14px; font: 400 15px/1 var(--font-body);
+         background: var(--color-surface); color: var(--color-text);
+         border: 1px solid var(--color-border); border-radius: var(--radius-sm); }
+.input::placeholder { color: var(--color-text-subtle); }
+.input:focus { outline: 2px solid var(--color-green-600); outline-offset: 1px;
+               border-color: var(--color-green-600); }
+
+/* ============================================================
+   BADGES — two families only.
+   Status pill = semantic tint + its AA-safe text pair.
+   Meta chip   = always neutral. Job attributes are facts, not
+                 signals; colouring them costs you the ability
+                 to signal anything.
+   ============================================================ */
+.pill      { display: inline-flex; align-items: center; gap: 5px;
+             border-radius: var(--radius-pill); padding: 3px 10px;
+             font: 600 11.5px/1.5 var(--font-body); white-space: nowrap; }
+.pill--success { background: var(--color-success-bg); color: var(--color-success-text-on-bg); }
+.pill--warn    { background: var(--color-warn-bg);   color: var(--color-warn-text-on-bg); }
+.pill--stop    { background: var(--color-danger-bg); color: var(--color-danger-text-on-bg); }
+.pill--info    { background: var(--color-info-bg);   color: var(--color-info-text-on-bg); }
+.pill--ai      { background: var(--color-ai-bg);     color: var(--color-ai-text-on-bg); }
+
+.metachip  { display: inline-flex; align-items: center;
+             background: var(--color-surface-2); color: var(--color-text-muted);
+             border-radius: var(--radius-pill); padding: 4px 11px;
+             font: 500 12px/1.5 var(--font-body); }
+
+/* ============================================================
+   CARD — flat by default; hover promotes flat to floating.
+   ============================================================ */
+.card       { background: var(--color-surface); border: 1px solid var(--color-border);
+              border-radius: var(--radius-md); padding: var(--space-5); }
+.card--interactive:hover { box-shadow: var(--shadow-float);
+                           border-color: var(--color-border-strong); }
+
+/* ============================================================
+   SELECTED STATE — brand tint, never amber.
+   (Replaces the #FEF3C7 selected card on /signup.)
+   ============================================================ */
+.is-selected { background: var(--color-green-50); border-color: var(--color-green-600); }
+
+/* ============================================================
+   RETIRED — delete on sight. All of these are live today.
+
+   Colour  #8CC63F  #F2EDE1  #FBF9F3  #EBE5D6  #DCD5C4
+           #123324  #0F3D22  #141812  #585E51  #61675A
+           #F7F8F6  #F1F8F3
+   Type    Archivo  Satoshi  Fraunces  DM Sans
+   Radius  3px  4px  6px  10px  14px  24px  32px
+   Shadow  any rgba(0,0,0,*) — shadows are tinted #0B1F10.
+           Tailwind's DEFAULT shadow-sm/md/lg/xl are black rgba, so
+           the tokens are redefined rather than the 28 call sites.
+   Token   --color-clay — referenced by JobStep5Description.tsx and
+           defined nowhere. Renders as nothing today.
+
+   STRUCK 2026-08-25: `border-t-moss and other v1 soil/cream utilities
+   surviving in ~10 components`. They do not survive — grep for
+   moss|soil|meadow|hay|sand|clay|wheat as a utility returns ZERO hits
+   in src/, and none are in index.css. That sweep was already done.
+
+   Every hex literal outside this file is a bug. The one
+   sanctioned exception is the Stripe Elements hardcode in
+   PaymentForm.tsx (Stripe cannot read CSS variables) — update
+   it to #15803D to match --color-brand.
+   ============================================================ */
