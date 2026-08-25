@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -43,15 +44,30 @@ function TextAreaField({
 }: TextAreaFieldProps) {
   const charCount = value?.length ?? 0
   const isNearLimit = charCount > maxLength * 0.85
+  // The label was not associated with the textarea: no htmlFor, no id. Four boxes on the
+  // job-description step announced as unlabelled, with only a placeholder to go on - and a
+  // placeholder is not a label, it disappears the moment you type. Found by the
+  // pre-launch UAT design pass, 2026-08-25 (DESIGN.md §5, accessible name, blocking).
+  const id = useId()
+  const countId = `${id}-count`
+  const errorId = `${id}-error`
 
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between">
-        <label className="font-body text-text text-[13px] font-medium">
+        <label htmlFor={id} className="font-body text-text text-[13px] font-medium">
           {label}
-          {required && <span className="text-danger ml-0.5">*</span>}
+          {required && (
+            <>
+              <span className="text-danger ml-0.5" aria-hidden="true">
+                *
+              </span>
+              <span className="sr-only"> (required)</span>
+            </>
+          )}
         </label>
         <span
+          id={countId}
           className="font-body text-[11px]"
           style={{ color: isNearLimit ? 'var(--color-clay)' : 'var(--color-text-subtle)' }}
         >
@@ -60,12 +76,19 @@ function TextAreaField({
       </div>
       <textarea
         {...registration}
+        id={id}
         placeholder={placeholder}
         rows={5}
         maxLength={maxLength}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? `${errorId} ${countId}` : countId}
         className="border-border font-body text-text bg-surface placeholder:text-text-subtle focus:border-brand-hover w-full resize-none rounded-[10px] border-[1.5px] px-3 py-2.5 text-[13px] transition-colors duration-150"
       />
-      {error && <p className="text-danger font-body text-[12px]">{error}</p>}
+      {error && (
+        <p id={errorId} className="text-danger font-body text-[12px]">
+          {error}
+        </p>
+      )}
     </div>
   )
 }
