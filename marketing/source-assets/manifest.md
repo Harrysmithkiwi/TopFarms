@@ -9,9 +9,12 @@ no router, no auth, no external CSS, no external images.
 **Targeting convention:** every element the film moves carries a stable `data-anim`
 attribute (same naming as app PR #3). Select with `[data-anim="…"]`.
 
-**Brand invariants (do not substitute):** one green `#16A34A` (hover `#15803D`, dark
-`#0F3D22`, tint `#E8F5EC`); match-score accent purple `#8B5CF6` (rings + AI moments
-only); surfaces `#FAFBF9`/`#FFFFFF`/`#F3F5F0`; text `#0B1F10`. No gradients, no shadows.
+**Brand invariants (do not substitute), updated 2026-08-25:** one green in four steps —
+`#15803D` fill, links and any green text · `#16A34A` icons and decorative fills, **never
+text** · `#14532D` dark surfaces and hover (was `#0F3D22`, retired) · `#E8F5EC` tint.
+Match-score accent purple `#8B5CF6` (rings and AI moments only); surfaces
+`#FAFBF9`/`#FFFFFF`/`#F3F5F0`; text `#0B1F10`. No gradients. Shadows only if tinted
+`#0B1F10` — never black.
 
 ---
 

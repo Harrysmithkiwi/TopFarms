@@ -46,22 +46,28 @@ the landing default; the comp is symmetric and quiet on purpose.
 
 ## 2. Color palette & roles
 
-| Token | Hex | Role |
-|---|---|---|
-| `paper` | `#F7F8F6` | page canvas |
-| `linen` | `#FFFFFF` | raised band / card surface |
-| `rule` | `#E5E8E2` | every border |
-| `bark` | `#0B1F10` | primary text |
-| `sage` | `#5B6B5F` | secondary text (5.31:1 on paper) |
-| `fern-600` | `#16A34A` | THE brand green: icons, accents, decorative fills. **Never a text-bearing fill** (3.30:1 with white) |
-| `fern-700` | `#15803D` | text-bearing green: button fill (white on it 5.02:1), links (4.71:1 on paper) |
-| `fern-800` | `#166534` | hover state (7.13:1 with white) |
-| `fern-900` | `#14532D` | display headings (8.55:1 on paper) |
-| `fern-100` | `#E8F5EC` | green tint: chips, eyebrow pill, icon plates |
-| `fern-50` | `#F1F8F3` | faintest green tint |
+**The `fern` / `bark` / `sage` / `paper` / `rule` names were retired on 2026-08-25.** They were
+never a second palette — every one of them already held the portal's hex under a different
+name, which is how a reader ends up believing there are two design systems. The marketing
+surface uses the platform tokens, and this table is now a translation for anyone reading an
+older commit.
 
-One accent, locked page-wide. All ratios re-measured 2026-08-24 (comment block in
-`src/index.css` is the authority).
+| Was | Now | Hex | Role |
+|---|---|---|---|
+| `paper` | `surface-2` | `#F3F5F0` | page canvas · **was `#F7F8F6`, a 1% duplicate, retired** |
+| `linen` | `surface` | `#FFFFFF` | raised band / card surface |
+| `rule` | `border` | `#E5E8E2` | every border |
+| `bark` | `text` | `#0B1F10` | primary text |
+| `sage` | `text-muted` | `#5B6B5F` | secondary text (5.19:1 on the canvas) |
+| `fern-600` | `brand-accent` | `#16A34A` | icons, focus rings, decorative fills. **Never text** (3.30:1 with white) |
+| `fern-700` | `brand` | `#15803D` | button fill (white on it 5.02:1) and every green word |
+| `fern-800` | `brand-900` | `#14532D` | hover — **was `#166534`; white-on-hover moved 7.13:1 → 9.11:1** |
+| `fern-900` | `brand-900` | `#14532D` | display headings (8.78:1 on the canvas) |
+| `fern-100` | `brand-50` | `#E8F5EC` | green tint: chips, eyebrow pill, icon plates |
+| `fern-50` | `brand-50` | `#E8F5EC` | **was `#F1F8F3`, a duplicate of the tint, retired** |
+
+One accent, locked site-wide. `docs/_canonical/Brand_and_Design.md` is the authority for
+every value here; `src/index.css` is the live implementation and wins on any hex.
 
 ## 3. Typography rules
 

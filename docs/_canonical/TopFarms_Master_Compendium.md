@@ -61,7 +61,7 @@ These were the live contradictions across the pre-consolidation document set. Th
 | **Data scraping** | Apify scraping as MVP-core pillar | **Out of the marketplace MVP.** Separate admin track, Firecrawl-based. |
 | **Training marketplace** | full third side (Courses/Enrollments, provider dashboard "complete") | **Rejected.** Admin-curated content only. |
 | **AI matching** | "❌ not in MVP" (one cut list) | **Kept — core.** Deterministic seven-dimension scoring; Claude generates the plain-language explanation, not the number. |
-| **Brand** | v1 soil/moss earth-tones + Fraunces/DM Sans (`docs/design-system.md`) | **v2: single green `#16A34A` + Inter.** v1 fully retired. |
+| **Brand** | v1 soil/moss earth-tones + Fraunces/DM Sans (`docs/design-system.md`) | **v2.1: one green hue in four steps (`#14532D` / `#15803D` / `#16A34A` / `#E8F5EC`), Newsreader 500 for display, Inter for the interface.** v1 and the v13/v14 forks fully retired — see `Brand_and_Design.md`. |
 | **Schema / ingestion** | `raw_posts`/`parsed_jobs` + Apify (Data_Architecture.html, eng-spec) | **`lead_staging`/`leads`/`lead_suppression` + Firecrawl**, gated via SECURITY DEFINER RPCs (migrations 041–046). |
 | **Messaging** | core MVP epic (Sprint 4) | **Growth Phase** — tables only, no MVP UI. |
 | **Auth** | email/password only | **email/password + Google + Facebook OAuth.** |

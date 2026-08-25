@@ -27,7 +27,7 @@ gradients, no shadows. Ease-out only — calm and confident, never bouncy/elasti
 |---|---|---|
 | brand green | `#16A34A` | the one green: match badges, the "3", brand accents |
 | brand-hover | `#15803D` | match-badge text on light |
-| brand-900 | `#0F3D22` | dark surfaces |
+| brand-900 | `#14532D` | dark surfaces · was `#0F3D22`, retired 2026-08-25 |
 | brand-50 | `#E8F5EC` | match-badge fill, subtle tints |
 | **brand-bright** | `#6FCB92` | the one green made legible **on dark** (e.g. the "3" on the dark frame) |
 | **--ai (match purple)** | `#8B5CF6` | match-score ring + match moments ONLY. Never decorative. |

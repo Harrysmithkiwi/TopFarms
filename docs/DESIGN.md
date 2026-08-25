@@ -12,9 +12,10 @@ colors:
   text-muted: "#5B6B5F"
   text-subtle: "#5C6A60"   # was #8A968D here while src/index.css shipped #5C6A60 — doc drift, corrected 2026-08-25
   text-on-brand: "#FFFFFF"
-  brand: "#16A34A"
+  brand: "#15803D"
+  brand-accent: "#16A34A"
   brand-hover: "#15803D"
-  brand-900: "#0F3D22"     # -> #14532D when the sync reaches its token row; #0F3D22 is retired
+  brand-900: "#14532D"
   brand-50: "#E8F5EC"
   success: "#16A34A"
   success-bg: "#E8F5EC"
@@ -216,9 +217,20 @@ This system explicitly rejects the craft-magazine, sepia, cream-background regis
 A disciplined single-accent palette: one green, three shades, tinted neutrals around it.
 
 ### Primary
-- **Brand Green** (`#16A34A`): The single accent doing all brand work. Primary buttons, links, active states, match-score highlights, the leaf in the logomark, live indicators, "applied" badges, success states. Never used as a background block — always as an accent.
-- **Brand Hover** (`#15803D`): Pressed/hover state for `Brand Green`. Same hue, deeper. Also used as the form-focus value the Stripe Elements component needs.
-- **Brand 900** (`#0F3D22`): Deep forest green. Replaces v1 soil brown for dark surfaces — dark nav (when used), hero-on-dark sections, the AuthLayout left panel gradient, occasional heading emphasis.
+One green **hue**, four tonal steps. Which step you reach for is decided by whether the thing
+is TEXT, because the brightest step fails AA as text and always did.
+
+- **Brand** (`#15803D`): primary button fill, links, and **any green text**. 5.02:1 on white,
+  4.83:1 on the page background. This token held `#16A34A` until 2026-08-25 and the codebase
+  worked around it by filling every CTA from `brand-hover` instead — the right rule under the
+  wrong name.
+- **Brand Accent** (`#16A34A`): icons, focus rings, the leaf in the logomark, decorative
+  fills. **Non-text only** — 3.30:1 on white, which clears the 3:1 non-text threshold and
+  fails the 4.5:1 text one. `scripts/contrast.mjs` polices that line by name and will reject
+  it on anything it cannot identify as an icon.
+- **Brand 900** (`#14532D`): display headings, dark bands, and the hover for `Brand`. Dark
+  nav, hero-on-dark sections, the AuthLayout left panel. 8.78:1 on the page background. This
+  was `#0F3D22`, which is retired.
 - **Brand 50** (`#E8F5EC`): Subtle brand fill. Selected row highlight, chip background, hover background for branded list rows.
 
 ### Neutral
@@ -335,11 +347,19 @@ type specimen.
 
 **The One-Family Rule.** Inter is the only typeface in product UI. JetBrains Mono is permitted only for code snippets and schema references. No serif. No display font experiments. No italic-for-emphasis — use weight (400 → 600), not slant.
 
-**The Second-Canon Rule.** `src/index.css` also loads **Archivo** and **Bricolage Grotesque**. They are not undeclared and they are not available here: they belong to the public marketing canon in `docs/design/v11-DIRECTIVE.md`, which governs `Home`, `ForEmployers`, `Pricing`, `legal/` and `src/components/landing/` and is settled and out of scope (`CLAUDE.md` §10). One stylesheet serves both worlds, so seeing a face in `index.css` says nothing about whether it is permitted on the surface you are working on.
+~~**The Second-Canon Rule.**~~ **Struck 2026-08-25.** It described `src/index.css` loading
+Archivo and Bricolage Grotesque for a separate marketing canon, and fenced them out of the
+portals. Both faces are gone from the codebase and there is no second canon: the design-system
+sync put marketing and the portals on one token set, and `CLAUDE.md` §10 was rewritten to say
+so. Nothing to fence.
 
-This rule exists as a fence, not a permission. **Archivo and Bricolage Grotesque must not appear in a gated portal** — admin, employer, seeker — and Inter must not appear on a marketing surface. A tool reading this file as the whole type system will flag the marketing faces as undeclared; that finding is discarded under §10, and the fix is never to reach for the other canon's font. If you find yourself wanting one in the portal, the answer is a weight or a size, not a typeface.
-
-**The Two-Variables Rule.** The codebase keeps `--font-display` AND `--font-body` as separate CSS variables (legacy from v1) but both point at Inter (per Migration Audit Decision 2). Components using `font-display` class will pick up Inter automatically. Variable collapse is a post-migration cleanup, not a Phase 19 task.
+**The Display Rule.** `--font-display` resolves to **Newsreader**, and it did not until
+2026-08-25 — it pointed at Inter, so the product had a display face on the landing page and
+none in the app. Newsreader is display **only**: marketing H1/H2, app page titles, empty-state
+headlines. Weight 500. **Never under 20px, never a card title, label, table header, chip or
+button** — card titles are Inter 600 / 17px on every surface. `tests/display-face-floor.test.ts`
+enforces the floor and the weight, because the rule was unenforceable while the token pointed
+at Inter and was violated seven times the moment it started applying.
 
 **The Tabular-Numbers Rule.** Numbers in tables, match scores, salary bands, and counters use `font-variant-numeric: tabular-nums`. Variable-width digits in dense data displays look amateur.
 
@@ -548,7 +568,7 @@ The 4 hardcoded hex values are unavoidable until Stripe Elements supports CSS va
 ### Don't:
 - **Don't** use brown. If a surface reads as brown / warm-earth instead of green, a v1 alias is leaking — track it down.
 - **Don't** use cream backgrounds. `Page Background` is `#FAFBF9` (near-white with green whisper), not warm cream. Cream is the v1 register and is fully retired.
-- **Don't** use Fraunces or DM Sans — both retired. Inter is the only family in product UI; JetBrains Mono only in code snippets.
+- **Don't** use Fraunces, DM Sans, Satoshi, Archivo or Bricolage Grotesque — all retired. Inter carries the interface, Newsreader the display line, JetBrains Mono the data and code.
 - **Don't** use italics for emphasis in UI. Use weight (400 → 600).
 - **Don't** use sepia, rolling-hills-at-sunset gradients, smiling-farmer-with-arms-crossed stock photography, drone-overhead-of-paddock cliches, or any other stock agricultural branding tells.
 - **Don't** use glassmorphism, purple-blue gradients, or any other generic B2B SaaS register (Salesforce / Monday / HubSpot direction).
