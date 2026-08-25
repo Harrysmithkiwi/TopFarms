@@ -1,7 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-/* v13 port fonts (directive section 2). Loaded separately so the unported
-   surfaces' Inter request is untouched; collapse to one import post-port. */
-@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,400..800;1,62..125,400..700&family=Bricolage+Grotesque:opsz,wght@12..96,400..700&display=swap');
+/* The v13 port's two faces, Archivo and Bricolage Grotesque, were removed on 2026-08-25
+   (design-system sync row 3). Bricolage went with the eleven orphaned landing components;
+   Archivo was one className on AuthLayout and nothing else. Both were a whole extra font
+   request on the auth screens — the first authenticated page most users ever see. */
 /* v14 marketing font (docs/design/MARKETING-DESIGN.md). Newsreader is pinned by the
    operator's 2026-08-24 comp ("TopFarms landing page final draft.png"); it replaces
    Cormorant Garamond as the display voice of the marketing world and is never used in
@@ -216,8 +217,6 @@
   --color-ochre-ink: #8a5e12;
   --color-line: #dcd5c4;
   --color-danger-ink: #b3261e;
-  --font-archivo: 'Archivo', system-ui, sans-serif;
-  --font-bricolage: 'Bricolage Grotesque', system-ui, sans-serif;
 
   /* === v14 marketing world (docs/design/MARKETING-DESIGN.md, 2026-08-24) ===
      The token NAMES are v12's (every marketing surface consumes them); the VALUES are the
