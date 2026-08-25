@@ -70,16 +70,23 @@ export function SearchHero({
   return (
     <div
       className={cn('relative overflow-hidden px-4 py-12', className)}
-      style={{
-        background: 'linear-gradient(135deg, var(--color-green) 0%, var(--color-green-2) 100%)',
-      }}
+      // ponytail: flat, not a gradient. The v13 original ran #123324 -> #0c2419, a
+      // luminance delta of 0.012 — below what anyone sees on a hero panel — and those were
+      // the last two references to the retired v13 green tokens anywhere in the product.
+      // Deriving a second stop to preserve an invisible gradient would have cost a
+      // color-mix() and bought nothing. If a real gradient is wanted here, add a
+      // --color-brand-950 to the token file first; do not reach for a literal.
+      style={{ background: 'var(--color-brand-900)' }}
     >
       {/* Radial glow overlay */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
+          // The glow was a 25%-alpha fill of the retired v13 fern, a colour in no token
+          // set. color-mix keeps the token as the source rather than re-spelling it as a
+          // literal with an alpha baked in.
           background:
-            'radial-gradient(ellipse at 30% 50%, rgba(74,124,47,0.25) 0%, transparent 60%)',
+            'radial-gradient(ellipse at 30% 50%, color-mix(in srgb, var(--color-brand) 25%, transparent) 0%, transparent 60%)',
         }}
       />
 
@@ -90,7 +97,7 @@ export function SearchHero({
         </h1>
 
         {/* Search bar */}
-        <div className="bg-card mx-auto flex max-w-[680px] items-center gap-2 rounded-[12px] p-2 shadow-lg">
+        <div className="bg-surface mx-auto flex max-w-[680px] items-center gap-2 rounded-[12px] p-2 shadow-lg">
           <input
             type="search"
             aria-label="Search jobs, roles and farms"
@@ -107,7 +114,7 @@ export function SearchHero({
               }
             }}
             className={cn(
-              'text-ink placeholder:text-ink-40 min-w-0 flex-1 border-0 bg-transparent px-3 py-2 text-[14px]',
+              'text-text placeholder:text-text-muted min-w-0 flex-1 border-0 bg-transparent px-3 py-2 text-[14px]',
             )}
           />
           <Select
@@ -121,7 +128,7 @@ export function SearchHero({
           <button
             type="button"
             onClick={handleSearch}
-            className="bg-green hover:bg-green-2 rounded-[8px] px-4 py-2 text-[14px] font-semibold whitespace-nowrap text-white transition-colors"
+            className="bg-brand-hover hover:bg-brand-900 rounded-[8px] px-4 py-2 text-[14px] font-semibold whitespace-nowrap text-white transition-colors"
           >
             Search Jobs
           </button>

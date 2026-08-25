@@ -95,11 +95,11 @@ export function NzbnVerification({ existingVerification, onSuccess }: NzbnVerifi
   if ((status === 'pending' && submittedNzbn) || submitted) {
     return (
       <div className="flex items-start gap-2 py-1">
-        <div className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-amber-100">
-          <Clock className="h-3 w-3 text-amber-700" />
+        <div className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-warn-bg">
+          <Clock className="h-3 w-3 text-warn-text-on-bg" />
         </div>
         <div>
-          <p className="font-body text-[13px] font-semibold text-amber-700">Pending Review</p>
+          <p className="font-body text-[13px] font-semibold text-warn-text-on-bg">Pending Review</p>
           <p className="font-body text-text-subtle mt-0.5 text-[11px]">
             NZBN {submittedNzbn} submitted — our team will review within 2 business days
           </p>
@@ -113,7 +113,7 @@ export function NzbnVerification({ existingVerification, onSuccess }: NzbnVerifi
     return (
       <div className="space-y-3">
         <div className="flex items-center gap-2 py-1">
-          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-red-100">
+          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-danger-bg">
             <X className="text-danger h-3 w-3" />
           </div>
           <span className="font-body text-danger text-[13px]">

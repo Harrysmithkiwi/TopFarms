@@ -88,18 +88,18 @@ function computeTrustLevel(verifications: EmployerVerification[]): TrustLevel {
 
 function SkeletonCard() {
   return (
-    <div className="bg-card border-line animate-pulse rounded-[12px] border p-4">
+    <div className="bg-surface border-border animate-pulse rounded-[12px] border p-4">
       <div className="flex items-start gap-4">
         <div className="flex-1 space-y-2">
-          <div className="bg-cream-2 h-4 w-3/5 rounded" />
-          <div className="bg-cream-2 h-3 w-2/5 rounded" />
+          <div className="bg-surface-2 h-4 w-3/5 rounded" />
+          <div className="bg-surface-2 h-3 w-2/5 rounded" />
           <div className="mt-2 flex gap-2">
-            <div className="bg-cream-2 h-5 w-16 rounded-full" />
-            <div className="bg-cream-2 h-5 w-20 rounded-full" />
+            <div className="bg-surface-2 h-5 w-16 rounded-full" />
+            <div className="bg-surface-2 h-5 w-20 rounded-full" />
           </div>
-          <div className="bg-cream-2 mt-2 h-3 w-1/4 rounded" />
+          <div className="bg-surface-2 mt-2 h-3 w-1/4 rounded" />
         </div>
-        <div className="bg-cream-2 h-[50px] w-[50px] flex-shrink-0 rounded-full" />
+        <div className="bg-surface-2 h-[50px] w-[50px] flex-shrink-0 rounded-full" />
       </div>
     </div>
   )
@@ -574,7 +574,7 @@ export function JobSearch() {
   }
 
   return (
-    <div className="bg-cream-2">
+    <div className="bg-bg">
       <SearchHero
         onSearch={(q) => handleFilterChange('q', q || null)}
         region={heroRegion}
@@ -584,14 +584,14 @@ export function JobSearch() {
 
       <div className="mx-auto max-w-[1200px] px-4 py-6">
         {/* Mobile: sticky header with filter icon */}
-        <div className="bg-cream-2 sticky top-0 z-10 mb-4 flex items-center justify-between py-2 md:hidden">
+        <div className="bg-bg sticky top-0 z-10 mb-4 flex items-center justify-between py-2 md:hidden">
           {/* h2, not h1: SearchHero above already owns the page h1. */}
-          <h2 className="text-ink text-[18px] font-bold">Find Farm Jobs</h2>
+          <h2 className="text-text text-[18px] font-bold">Find Farm Jobs</h2>
           <Dialog.Root open={drawerOpen} onOpenChange={setDrawerOpen}>
             <Dialog.Trigger asChild>
               <button
                 type="button"
-                className="border-line bg-card text-ink-60 hover:border-line flex items-center gap-2 rounded-[8px] border px-3 py-2 text-[13px] transition-colors"
+                className="border-border bg-surface text-text-muted hover:border-border flex items-center gap-2 rounded-[8px] border px-3 py-2 text-[13px] transition-colors"
               >
                 <SlidersHorizontal className="h-4 w-4" />
                 Filters
@@ -602,7 +602,7 @@ export function JobSearch() {
             <Dialog.Portal>
               <Dialog.Overlay className="fixed inset-0 z-40 bg-black/40" />
               <Dialog.Content
-                className="bg-card fixed right-0 bottom-0 left-0 z-50 flex max-h-[85vh] flex-col overflow-hidden rounded-t-[16px]"
+                className="bg-surface fixed right-0 bottom-0 left-0 z-50 flex max-h-[85vh] flex-col overflow-hidden rounded-t-[16px]"
                 aria-describedby={undefined}
               >
                 <Dialog.Title className="sr-only">Job Filters</Dialog.Title>
@@ -790,12 +790,12 @@ function ResultsArea({
       {/* Header: count + sort */}
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <p className="text-ink-60 text-[14px]">
+          <p className="text-text-muted text-[14px]">
             {loading && jobs.length === 0 ? (
-              <span className="bg-cream-2 inline-block h-4 w-20 animate-pulse rounded" />
+              <span className="bg-surface-2 inline-block h-4 w-20 animate-pulse rounded" />
             ) : (
               <span>
-                <strong className="text-ink">{jobs.length}</strong> job
+                <strong className="text-text">{jobs.length}</strong> job
                 {jobs.length !== 1 ? 's' : ''} found
               </span>
             )}
@@ -806,11 +806,11 @@ function ResultsArea({
               ReplaceOldestModal if at 10-cap). */}
           {canSave && (
             <>
-              <span className="text-ink-40">·</span>
+              <span className="text-text-muted">·</span>
               <button
                 type="button"
                 onClick={onSaveClick}
-                className="text-green-2 cursor-pointer text-[13px] hover:underline"
+                className="text-brand-hover cursor-pointer text-[13px] hover:underline"
               >
                 Save search
               </button>
@@ -828,12 +828,12 @@ function ResultsArea({
 
         {/* Sort selector */}
         <div className="flex items-center gap-2">
-          <span className="text-ink-40 text-[12px]">Sort:</span>
+          <span className="text-text-muted text-[12px]">Sort:</span>
           <select
             value={sortParam}
             aria-label="Sort results"
             onChange={(e) => onSortChange(e.target.value)}
-            className="text-ink border-line bg-card focus:border-green cursor-pointer rounded-[6px] border px-2 py-1 text-[12px]"
+            className="text-text border-border bg-surface focus:border-brand cursor-pointer rounded-[6px] border px-2 py-1 text-[12px]"
           >
             {isLoggedIn && <option value="match">Match Score</option>}
             <option value="recent">Most Recent</option>
@@ -864,25 +864,25 @@ function ResultsArea({
         jobs.length === 0 &&
         (hasActiveFilters(searchParams) ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="bg-cream-2 mb-4 flex h-[72px] w-[72px] items-center justify-center rounded-full">
-              <X className="text-ink-40 h-8 w-8" />
+            <div className="bg-surface-2 mb-4 flex h-[72px] w-[72px] items-center justify-center rounded-full">
+              <X className="text-text-muted h-8 w-8" />
             </div>
-            <h3 className="text-ink mb-2 text-[17px] font-semibold">
+            <h3 className="text-text mb-2 text-[17px] font-semibold">
               No jobs match your filters.
             </h3>
-            <p className="text-ink-60 max-w-[280px] text-[14px]">
+            <p className="text-text-muted max-w-[280px] text-[14px]">
               Try broadening your search or removing a filter.
             </p>
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <Sprout className="text-green mb-4 h-9 w-9" aria-hidden="true" />
-            <h3 className="text-ink mb-2 text-[17px] font-semibold">
+            <Sprout className="text-brand mb-4 h-9 w-9" aria-hidden="true" />
+            <h3 className="text-text mb-2 text-[17px] font-semibold">
               No jobs listed right now
             </h3>
-            <p className="text-ink-60 max-w-[320px] text-[14px]">
+            <p className="text-text-muted max-w-[320px] text-[14px]">
               New farm roles are posted as employers join. Check back soon. Or if you're hiring,{' '}
-              <Link to="/signup?role=employer" className="text-green-2 underline">
+              <Link to="/signup?role=employer" className="text-brand-hover underline">
                 post the first job free
               </Link>
               .
@@ -929,7 +929,7 @@ function ResultsArea({
       {/* Loading more indicator */}
       {loading && jobs.length > 0 && (
         <div className="mt-6 flex justify-center">
-          <div className="border-green h-6 w-6 animate-spin rounded-full border-2 border-t-transparent" />
+          <div className="border-brand h-6 w-6 animate-spin rounded-full border-2 border-t-transparent" />
         </div>
       )}
     </div>

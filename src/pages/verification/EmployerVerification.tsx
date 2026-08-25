@@ -82,7 +82,7 @@ function VerificationCard({
               </span>
             )}
             {isPending && (
-              <span className="font-body flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700">
+              <span className="font-body flex items-center gap-1 rounded-full bg-warn-bg px-2 py-0.5 text-[11px] font-semibold text-warn-text-on-bg">
                 <Clock className="h-3 w-3" />
                 Pending Review
               </span>
@@ -95,7 +95,7 @@ function VerificationCard({
                 one state that REQUIRES the employer to do something, so it was the worst
                 one to leave silent. Found on prod 2026-08-17. */}
             {isRejected && (
-              <span className="font-body text-danger flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-semibold">
+              <span className="font-body text-danger-text-on-bg flex items-center gap-1 rounded-full bg-danger-bg px-2 py-0.5 text-[11px] font-semibold">
                 <X className="h-3 w-3 stroke-[3]" />
                 Action needed
               </span>

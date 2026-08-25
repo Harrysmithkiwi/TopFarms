@@ -108,7 +108,7 @@ export function ShellNav() {
                       setUserMenuOpen(false)
                       signOut()
                     }}
-                    className="text-danger-ink hover:bg-paper w-full cursor-pointer px-4 py-2.5 text-left text-sm transition-colors"
+                    className="text-danger-text-on-bg hover:bg-paper w-full cursor-pointer px-4 py-2.5 text-left text-sm transition-colors"
                   >
                     Sign Out
                   </button>

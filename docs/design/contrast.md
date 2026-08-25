@@ -17,15 +17,12 @@ Rows marked `n/a (not text)` are fills/borders recorded for the audit trail — 
 | `text-subtle` #5c6a60 | `surface` #ffffff | 5.70 | 4.5 | PASS | tertiary text on cards (darkened Phase 4.1) |
 | `text-subtle` #5c6a60 | `bg` #fafbf9 | 5.49 | 4.5 | PASS | tertiary text on page bg |
 | `text-subtle` #5c6a60 | `surface-2` #f3f5f0 | 5.19 | 4.5 | PASS | tertiary text on tinted panels |
-| `text-subtle` #5c6a60 | `cream` #f2ede1 | 4.88 | 4.5 | PASS | tertiary text on the v13 cream surface |
-| `text-subtle` #5c6a60 | `cream-2` #ebe5d6 | 4.53 | 4.5 | PASS | tertiary text on the deeper cream surface |
-| `text-subtle` #5c6a60 | `card` #fbf9f3 | 5.41 | 4.5 | PASS | tertiary text on v13 cards |
 | `text-subtle` #5c6a60 | `paper` #f3f5f0 | 5.19 | 4.5 | PASS | tertiary text on the v14 marketing canvas |
 | `text-subtle` #5c6a60 | `danger-bg` #fee2e2 | 4.66 | 4.5 | PASS | tertiary text on error panels |
 | `text-subtle` #5c6a60 | `info-bg` #e0f2fe | 4.97 | 4.5 | PASS | tertiary text on info panels |
 | `text-subtle` #5c6a60 | `warn-bg` #fef3c7 | 5.12 | 4.5 | PASS | tertiary text on warning panels |
 | `text-on-brand` #ffffff | `brand-hover` #15803d | 5.02 | 4.5 | PASS | primary Button default (Phase 4.1 demotion) |
-| `text-on-brand` #ffffff | `brand-900` #0f3d22 | 12.27 | 4.5 | PASS | primary Button hover state |
+| `text-on-brand` #ffffff | `brand-900` #14532d | 9.11 | 4.5 | PASS | primary Button hover state |
 | `brand-hover` #15803d | `surface` #ffffff | 5.02 | 4.5 | PASS | brand-coloured links / labels on white |
 | `brand-hover` #15803d | `bg` #fafbf9 | 4.83 | 4.5 | PASS | brand-coloured links on page bg |
 | `brand-hover` #15803d | `surface-2` #f3f5f0 | 4.57 | 4.5 | PASS | brand-coloured links on tinted panels |

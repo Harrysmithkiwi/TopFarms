@@ -19,25 +19,25 @@ export function ShellPreview() {
     <PublicShell>
       <section className="px-5 py-16">
         <div className="mx-auto max-w-[1440px]">
-          <p className="text-ink-40 text-xs font-semibold tracking-wide uppercase">
+          <p className="text-text-muted text-xs font-semibold tracking-wide uppercase">
             v13 stage 1 preview
           </p>
           <h1 className="mt-4 text-4xl font-extrabold tracking-tight">
             Shared shell: utility bar, nav, footer.
           </h1>
-          <p className="text-ink-60 mt-4 max-w-[60ch]">
+          <p className="text-text-muted mt-4 max-w-[60ch]">
             This page exists so the shell can be reviewed in isolation. Toggle the audience
             above: the nav links swap, and the Join link carries the matching role. Sign in
             and the bar disappears, because a session outranks the toggle.
           </p>
-          <div className="v13-dark bg-green mt-10 max-w-[60ch] rounded-3xl p-8 text-white">
+          <div className="v13-dark bg-brand-900 mt-10 max-w-[60ch] rounded-3xl p-8 text-white">
             <p className="font-semibold">Dark panel focus check</p>
             <p className="mt-2 text-sm text-white/80">
               Tab through: the focus ring is ink on cream and white in here.
             </p>
             <a
               href="/jobs"
-              className="bg-lime text-green-2 mt-5 inline-flex min-h-11 items-center rounded-full px-5 text-sm font-semibold"
+              className="bg-brand-lite text-brand-hover mt-5 inline-flex min-h-11 items-center rounded-full px-5 text-sm font-semibold"
             >
               Sample lime action
             </a>

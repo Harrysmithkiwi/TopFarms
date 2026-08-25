@@ -68,10 +68,17 @@ describe('SearchHero', () => {
     expect(screen.getAllByLabelText('Filter by region')[1]).toHaveTextContent('All Regions')
   })
 
-  it('renders with a gradient background via inline style', () => {
+  it('paints its panel from a token, never a literal', () => {
+    // Was: expects `linear-gradient`. The v13 hero ran #123324 -> #0c2419, a luminance
+    // delta of 0.012 that nobody could see, and those two stops were the last references
+    // to the retired v13 green tokens in the product. The gradient was flattened in the
+    // design-system sync rather than re-derived (row 7, 2026-08-25). The property worth
+    // asserting was never "is it a gradient" — it is "does the colour come from the token
+    // file", which is what actually stops a literal reappearing here.
     const { container } = render(<SearchHero />)
-    const gradientEl = container.firstElementChild as HTMLElement
-    expect(gradientEl.style.background).toContain('linear-gradient')
+    const panel = container.firstElementChild as HTMLElement
+    expect(panel.style.background).toContain('var(--color-')
+    expect(panel.style.background).not.toMatch(/#[0-9a-f]{3,8}|rgba?\(/i)
   })
 
   it('renders custom pills when provided', () => {

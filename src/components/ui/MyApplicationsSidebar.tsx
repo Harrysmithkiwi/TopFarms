@@ -45,10 +45,25 @@ export function MyApplicationsSidebar({
         <h3 className="font-body text-text mb-3 text-[13px] font-semibold">Application Status</h3>
         <div className="space-y-2">
           {[
-            { label: 'Applied', key: 'applied', color: 'bg-blue-500' },
-            { label: 'Shortlisted', key: 'shortlisted', color: 'bg-purple-500' },
-            { label: 'Interview', key: 'interview', color: 'bg-orange-500' },
-            { label: 'Offered', key: 'offered', color: 'bg-green-500' },
+            // Was Tailwind's raw numbered ramp — blue-500, purple-500, orange-500,
+            // green-500. Four colours from no token set, a fifth palette hiding behind a
+            // grep that only ever matched the green one, and matched it by accident: a
+            // word boundary sits between "green" and the numeric suffix, so the v13 token
+            // pattern hit a Tailwind class it was never looking for. They map onto the
+            // semantic roles the rest of the product already uses for these states.
+            //
+            // The -text-on-bg values rather than the base fills, deliberately. As base
+            // fills two of the four would have come out WORSE than the Tailwind colours
+            // they replace — info 2.77 against blue-500's 3.68, warn 2.15 against
+            // orange-500's 2.80. These are 8px dots beside a visible text label, so the
+            // colour is redundant and 1.4.11 does not bite either way; but a migration
+            // that quietly loses contrast is still a migration that lost contrast. The
+            // darker partners are 6.59, 8.19, 6.37 and 6.35 on white, and small dots read
+            // better dark regardless.
+            { label: 'Applied', key: 'applied', color: 'bg-info-text-on-bg' },
+            { label: 'Shortlisted', key: 'shortlisted', color: 'bg-ai-text-on-bg' },
+            { label: 'Interview', key: 'interview', color: 'bg-warn-text-on-bg' },
+            { label: 'Offered', key: 'offered', color: 'bg-success-text-on-bg' },
           ].map((item) => (
             <div key={item.key} className="font-body flex items-center justify-between text-[13px]">
               <div className="flex items-center gap-2">

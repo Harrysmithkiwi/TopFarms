@@ -197,34 +197,20 @@
     'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'DM Mono', Menlo, Consolas, monospace;
 
-  /* === v13 port tokens (docs/design/v11-DIRECTIVE.md section 2) ===
-     The public-surface system. Product surfaces (dashboards, onboarding,
-     verification, admin) keep the v2 tokens above until their own port phase.
-     Rules that are load-bearing, not stylistic:
-       - --color-ochre never appears on a light surface; --color-ochre-ink never
-         on a dark one (directive section 2, computed ratios in the table there).
-       - --color-danger-ink is the v13 addition the comps never needed: an error
-         red for cream/card surfaces. #B3261E measures 5.60:1 on cream, 6.21:1
-         on card, 5.20:1 on cream-2.
-     Naming: bare --color-green and --color-lime coexist with Tailwind's numbered
-     green and lime scales (bg-green is the brand deep green, bg-green-500 is
-     Tailwind's). One pre-existing bg-green-500 call site exists; do not add
-     more numbered-scale uses on v13 surfaces. */
-  --color-cream: #f2ede1;
-  --color-cream-2: #ebe5d6;
-  --color-card: #fbf9f3;
-  --color-ink: #141812;
-  --color-ink-60: #585e51;
-  --color-ink-40: #61675a;
-  --color-green: #123324;
-  --color-green-2: #0c2419;
-  --color-green-3: #164029;
-  --color-lime: #8cc63f;
-  --color-lime-2: #a6d95c;
-  --color-ochre: #d9a441;
-  --color-ochre-ink: #8a5e12;
-  --color-line: #dcd5c4;
-  --color-danger-ink: #b3261e;
+  /* === v13 port tokens — DELETED 2026-08-25, design-system sync row 7 ===
+     cream · cream-2 · card · ink · ink-60 · ink-40 · green · green-2 · green-3 · lime ·
+     lime-2 · ochre · ochre-ink · line · danger-ink.
+
+     One of the three token worlds this file carried. It shipped the sand palette, the lime,
+     the near-miss greys and a bespoke error red, and it is what made /signup and /jobs look
+     like a different product from the landing page. Every consumer is migrated: rows 3-7
+     moved 285 uses across sixteen live files, and row 1 deleted eleven more that nothing
+     imported. Verified by grep for the class names AND for var(--color-*), because two of
+     the last references were in inline style attributes that a class-name sweep cannot see.
+
+     The v13-shell and v13-dark CLASSES survive below. They are structure, not palette — a
+     focus-ring override and the per-audience copy swap — and the shells that apply them are
+     still the right shells. */
 
   /* === v14 marketing world (docs/design/MARKETING-DESIGN.md, 2026-08-24) ===
      The token NAMES are v12's (every marketing surface consumes them); the VALUES are the
@@ -278,7 +264,7 @@
      legal for a ring (3:1) but visually thin there. NEVER pair either rule with
      outline-none: in Tailwind v4 that combination never paints (directive 1.10). */
   .v13-shell :focus-visible {
-    outline: 3px solid var(--color-ink);
+    outline: 3px solid var(--color-text);
     outline-offset: 2px;
   }
   .v13-dark :focus-visible {

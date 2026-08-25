@@ -54,9 +54,10 @@ const PAIRS = [
   // Added 2026-08-24. These pairs render on real pages and were never gated; the
   // token failed all four and axe caught it on /jobs/:id the first time that sweep
   // had a job to visit. An ungated pair is an unmeasured pair.
-  ['text-subtle', 'cream', 'text', 'tertiary text on the v13 cream surface'],
-  ['text-subtle', 'cream-2', 'text', 'tertiary text on the deeper cream surface'],
-  ['text-subtle', 'card', 'text', 'tertiary text on v13 cards'],
+  // The three v13 surfaces that used to sit here — cream, cream-2 and card — went with the
+  // v13 token world in the design-system sync (row 7, 2026-08-25). Their tokens no longer
+  // exist, and this script throws rather than skips on an unknown name: an ungated pair is
+  // an unmeasured pair, so a typo must not quietly reduce coverage.
   ['text-subtle', 'paper', 'text', 'tertiary text on the v14 marketing canvas'],
   ['text-subtle', 'danger-bg', 'text', 'tertiary text on error panels'],
   ['text-subtle', 'info-bg', 'text', 'tertiary text on info panels'],

@@ -34,7 +34,7 @@ export function NotFound({ error }: { error?: unknown } = {}) {
         <h1 className="text-4xl font-extrabold tracking-[-.04em] md:text-5xl">
           {is404 ? "This paddock's empty" : 'Something went wrong'}
         </h1>
-        <p className="text-ink-60 mt-4 text-base">
+        <p className="text-text-muted mt-4 text-base">
           {is404
             ? "The page you're looking for doesn't exist or has moved."
             : 'An unexpected error occurred. Please try again. If it keeps happening, contact hello@topfarms.co.nz.'}
@@ -42,13 +42,13 @@ export function NotFound({ error }: { error?: unknown } = {}) {
         <div className="mt-8 flex flex-wrap justify-center gap-2.5">
           <Link
             to="/"
-            className="bg-green hover:bg-green-2 inline-flex min-h-11 items-center rounded-full px-5 text-[15px] font-semibold text-white transition-colors"
+            className="bg-brand-hover hover:bg-brand-900 inline-flex min-h-11 items-center rounded-full px-5 text-[15px] font-semibold text-white transition-colors"
           >
             Go home
           </Link>
           <Link
             to="/jobs"
-            className="border-ink hover:bg-ink hover:text-cream inline-flex min-h-11 items-center rounded-full border-[1.5px] px-5 text-[15px] font-semibold transition-colors"
+            className="border-text hover:bg-text hover:text-bg inline-flex min-h-11 items-center rounded-full border-[1.5px] px-5 text-[15px] font-semibold transition-colors"
           >
             Open roles
           </Link>
