@@ -164,7 +164,8 @@ describe('StarRating', () => {
     expect(onChange).toHaveBeenCalledWith(3)
   })
 
-  it('uses the same SVG path as TestimonialsSection', () => {
+  // Named for TestimonialsSection, which is deleted; the path literal is the point.
+  it('uses the canonical five-point star path', () => {
     const { container } = render(<StarRating value={1} />)
     const path = container.querySelector('path')
     expect(path?.getAttribute('d')).toContain('M8 1.5l1.854')
