@@ -110,6 +110,8 @@ export function JobDetailSidebar({
             aria-label={isSaved ? 'Job saved' : 'Save this job'}
             className={cn(
               'font-body flex min-h-11 items-center gap-1.5 text-[13px] font-medium transition-colors',
+              // contrast-exempt-non-text: an icon-only button. The colour reaches the
+              // Bookmark glyph below; the accessible name comes from aria-label, not a word.
               isSaved ? 'text-warn' : 'text-text-muted hover:text-warn',
             )}
             aria-pressed={isSaved}

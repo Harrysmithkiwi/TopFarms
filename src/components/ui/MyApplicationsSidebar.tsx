@@ -130,6 +130,7 @@ export function MyApplicationsSidebar({
                 <button
                   type="button"
                   onClick={() => onRemoveSavedJob(sj.job_id)}
+                  // contrast-exempt-non-text: icon-only button.
                   className="text-warn hover:text-danger -m-3 flex h-11 w-11 flex-shrink-0 items-center justify-center"
                   aria-label="Remove saved job"
                 >

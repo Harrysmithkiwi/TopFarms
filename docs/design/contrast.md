@@ -33,8 +33,9 @@ Rows marked `n/a (not text)` are fills/borders recorded for the audit trail — 
 | `danger-text-on-bg` #991b1b | `danger-bg` #fee2e2 | 6.80 | 4.5 | PASS | red Tag / error boxes |
 | `danger` #dc2626 | `surface` #ffffff | 4.83 | 4.5 | PASS | inline error text on white |
 | `danger` #dc2626 | `bg` #fafbf9 | 4.65 | 4.5 | PASS | inline error text on page bg |
-| `brand` #16a34a | `surface` #ffffff | 3.30 | — | n/a (not text) | RETIRED as text: was every primary CTA (white on brand 3.30) |
-| `text-on-brand` #ffffff | `brand` #16a34a | 3.30 | — | n/a (not text) | RETIRED: old primary Button default |
+| `brand` #15803d | `surface` #ffffff | 5.02 | 4.5 | PASS | brand as text — legal since brand moved to #15803D |
+| `brand` #15803d | `bg` #fafbf9 | 4.83 | 4.5 | PASS | brand as text on the page ground |
+| `text-on-brand` #ffffff | `brand` #15803d | 5.02 | — | n/a (not text) | RETIRED: old primary Button default |
 | `warn` #f59e0b | `surface` #ffffff | 2.15 | — | n/a (not text) | fill/icon only — never text |
 | `info` #0ea5e9 | `surface` #ffffff | 2.77 | — | n/a (not text) | fill/icon only — never text |
 | `ai` #8b5cf6 | `surface` #ffffff | 4.23 | — | n/a (not text) | fill/icon only — never text |

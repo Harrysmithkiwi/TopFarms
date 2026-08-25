@@ -78,7 +78,8 @@ const PAIRS = [
   ['danger', 'surface', 'text', 'inline error text on white'],
   ['danger', 'bg', 'text', 'inline error text on page bg'],
   // Retired-as-text pairs, kept in the table as the record of WHY (all fail)
-  ['brand', 'surface', 'info', 'RETIRED as text: was every primary CTA (white on brand 3.30)'],
+  ['brand', 'surface', 'text', 'brand as text — legal since brand moved to #15803D'],
+  ['brand', 'bg', 'text', 'brand as text on the page ground'],
   ['text-on-brand', 'brand', 'info', 'RETIRED: old primary Button default'],
   ['warn', 'surface', 'info', 'fill/icon only — never text'],
   ['info', 'surface', 'info', 'fill/icon only — never text'],
@@ -153,16 +154,24 @@ const walk = (d) =>
   })
 
 const SVG_TAGS = /^(svg|path|circle|rect|line|polyline|ellipse|polygon)$/
+
+// Which tokens this scan polices. It was `text-brand` alone, back when --color-brand was
+// #16A34A at 3.30:1. That token moved to #15803D on 2026-08-25 and is now legal as text, so
+// the check had no subject left — but the SHAPE of it is the only thing in this repo that
+// can tell an icon from a word. Repointed at the tokens the table above still labels
+// "fill/icon only": each one is a base semantic colour whose readable partner is *-text-on-bg.
+const FILL_ONLY = ['warn', 'info', 'ai', 'success']
+const FILL_ONLY_RE = new RegExp(`text-(${FILL_ONLY.join('|')})(?![-a-zA-Z0-9])`)
 const offenders = []
 for (const file of walk(join(ROOT, 'src'))) {
   const src = rf(file, 'utf8')
-  if (!/text-brand(?![-a-zA-Z0-9])/.test(src)) continue
+  if (!FILL_ONLY_RE.test(src)) continue
   const icons = new Set()
   for (const m of src.matchAll(/import\s*\{([^}]+)\}\s*from\s*['"]lucide-react['"]/g))
     m[1].split(',').forEach((n) => icons.add(n.trim().split(' as ').pop().trim()))
   const lines = src.split('\n')
   lines.forEach((ln, i) => {
-    if (!/text-brand(?![-a-zA-Z0-9])/.test(ln)) return
+    if (!FILL_ONLY_RE.test(ln)) return
     // Skip comment lines: prose ABOUT the rule is not a use of it.
     if (/^\s*(\/\/|\*|\{?\/\*)/.test(ln)) return
     // The exemption may sit a few lines above the element it describes (JSX
@@ -179,8 +188,9 @@ for (const file of walk(join(ROOT, 'src'))) {
 }
 if (offenders.length) {
   console.log()
-  console.log('`text-brand` on a non-icon element — 3.30:1, fails AA for text.')
-  console.log('Use `text-brand-hover` (5.02:1), or add `contrast-exempt-non-text` if it really is non-text:')
+  console.log(`A fill-only token (${FILL_ONLY.join(', ')}) used as TEXT on a non-icon element.`)
+  console.log('These are fills, borders and icons. For words on a tint use the matching')
+  console.log('*-text-on-bg partner; add `contrast-exempt-non-text` only if it really is non-text:')
   offenders.forEach((o) => console.log(`  ${o}`))
   process.exit(1)
 }

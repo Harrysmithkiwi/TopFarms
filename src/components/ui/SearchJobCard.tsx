@@ -182,7 +182,8 @@ export function SearchJobCard({
               onClick={() => onSaveToggle?.()}
               className={cn(
                 'relative z-10 -m-3.5 flex h-11 w-11 flex-shrink-0 items-center justify-center',
-                isSaved ? 'text-warn' : 'text-text-muted hover:text-warn',
+                // contrast-exempt-non-text: icon-only save button, same as JobDetailSidebar.
+              isSaved ? 'text-warn' : 'text-text-muted hover:text-warn',
               )}
               aria-label={isSaved ? 'Job saved' : 'Save this job'}
               aria-pressed={isSaved}

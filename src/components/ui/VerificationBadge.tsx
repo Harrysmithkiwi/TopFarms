@@ -20,6 +20,7 @@ const TRUST_CONFIG: Record<TrustLevel, { label: string; shieldClass: string; bad
     },
     basic: {
       label: 'Basic Verified',
+      // contrast-exempt-non-text: shieldClass paints the Shield ICON (line ~87), never a word.
       shieldClass: 'text-info',
       badgeClass: 'bg-info-bg text-info-text-on-bg border-info/30',
     },

@@ -25,18 +25,23 @@ export const chartColors = {
     fill: "fill-brand-300",
     text: "text-brand-300",
   },
+  // contrast-exempt-non-text: every `text-*` in this map colours a chart MARK — a series
+  // swatch, a dot, an axis tick — not readable prose. Chart labels take --color-text-muted
+  // from the Tremor components themselves.
   info: {
     bg: "bg-info",
     stroke: "stroke-info",
     fill: "fill-info",
     text: "text-info",
   },
+  // contrast-exempt-non-text: chart mark, not prose. See the info entry above.
   warn: {
     bg: "bg-warn",
     stroke: "stroke-warn",
     fill: "fill-warn",
     text: "text-warn",
   },
+  // contrast-exempt-non-text: chart mark, not prose. See the info entry above.
   ai: {
     bg: "bg-ai",
     stroke: "stroke-ai",

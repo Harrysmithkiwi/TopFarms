@@ -61,7 +61,20 @@
      one sat between them. Found while migrating the auth panel, which needs the spec's
      #14532D and would otherwise have landed on a retired value.
      9.11:1 with white (the panel), 8.11:1 on brand-50 (selected cards), 8.78:1 on bg. */
-  --color-brand: #16a34a;
+  /* --color-brand moved #16a34a -> #15803d on 2026-08-25 (Brand_and_Design.md v2.1).
+     #16A34A measures 3.30:1 on white and 3.18:1 on bg: legal as a fill, an icon or a focus
+     ring, illegal as text. The repo had already worked around that in Phase 4.1 by filling
+     every CTA from --color-brand-hover and leaving --color-brand for non-text — the right
+     RULE under the wrong NAMES, which is why `text-brand` had 141 call sites that a reader
+     could reasonably assume were text and a checker had to police one at a time.
+
+     After this move the two tokens hold the same value. That is not a mistake and it is not
+     the end state: the spec's four steps are 900 / brand / accent / 50, and this repo's
+     names are one position out of phase with them. Realigning is ~500 class renames for
+     zero visual change and it belongs in its own pass. What this line buys now is that the
+     name `brand` finally means what the spec says it means, and 141 call sites stop being
+     one contrast-checker exception away from a real failure. */
+  --color-brand: #15803d;
   --color-brand-hover: #15803d;
   --color-brand-900: #14532d;
   --color-brand-50: #e8f5ec;
