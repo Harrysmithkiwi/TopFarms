@@ -10,6 +10,7 @@ import { supabase } from '@/lib/supabase'
 import { reportError } from '@/lib/observability'
 import { useAuth } from '@/hooks/useAuth'
 import { useSavedJobs } from '@/hooks/useSavedJobs'
+import { computeProfileStrength, PROFILE_STRENGTH_SELECT } from '@/lib/profileStrength'
 import type { Application, ApplicationStatus, MatchScore, JobListing } from '@/types/domain'
 import { ACTIVE_STATUSES, COMPLETED_STATUSES } from '@/types/domain'
 import { ErrorState } from '@/components/ui/ErrorState'
@@ -133,33 +134,16 @@ export function MyApplications() {
         })),
       )
 
-      // Profile strength: count non-null key fields on seeker_profiles
+      // Profile strength: shared formula (src/lib/profileStrength.ts). This page
+      // used to count 6 fields while the dashboard counted 8, so the same seeker
+      // read two different percentages on two screens.
       const { data: profileRow } = await supabase
         .from('seeker_profiles')
-        .select(
-          'region, years_experience, dairynz_level, sector_pref, shed_types_experienced, accommodation_needed',
-        )
+        .select(PROFILE_STRENGTH_SELECT)
         .eq('user_id', session.user.id)
         .single()
       if (profileRow) {
-        const fields = [
-          'region',
-          'years_experience',
-          'dairynz_level',
-          'sector_pref',
-          'shed_types_experienced',
-          'accommodation_needed',
-        ]
-        const filled = fields.filter((f) => {
-          const val = (profileRow as Record<string, unknown>)[f]
-          return (
-            val !== null &&
-            val !== undefined &&
-            val !== '' &&
-            !(Array.isArray(val) && val.length === 0)
-          )
-        }).length
-        setProfileStrength(Math.round((filled / fields.length) * 100))
+        setProfileStrength(computeProfileStrength(profileRow as unknown as Record<string, unknown>))
       }
 
       setLoading(false)
