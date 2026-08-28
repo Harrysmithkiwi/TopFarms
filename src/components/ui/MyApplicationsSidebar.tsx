@@ -103,10 +103,18 @@ export function MyApplicationsSidebar({
 
       {/* Saved Jobs */}
       <div className="bg-surface border-border rounded-12 border p-4">
-        <h3 className="font-body text-text mb-3 flex items-center gap-1.5 text-[13px] font-semibold">
-          <Bookmark className="text-warn h-3.5 w-3.5" />
-          Saved Jobs
-        </h3>
+        <div className="mb-3 flex items-center justify-between">
+          <h3 className="font-body text-text flex items-center gap-1.5 text-[13px] font-semibold">
+            <Bookmark className="text-warn h-3.5 w-3.5" />
+            Saved Jobs
+          </h3>
+          <Link
+            to="/dashboard/seeker/saved"
+            className="font-body text-brand-hover text-[12px] font-semibold"
+          >
+            View all
+          </Link>
+        </div>
         {savedJobs.length === 0 ? (
           <div>
             <p className="font-body text-text-muted text-[13px]">No saved jobs.</p>

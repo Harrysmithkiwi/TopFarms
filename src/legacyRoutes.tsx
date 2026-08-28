@@ -105,6 +105,9 @@ const MyApplications = lazy(() =>
 const SavedSearches = lazy(() =>
   import('@/pages/dashboard/seeker/SavedSearches').then((m) => ({ default: m.SavedSearches })),
 )
+const SavedJobs = lazy(() =>
+  import('@/pages/dashboard/seeker/SavedJobs').then((m) => ({ default: m.SavedJobs })),
+)
 const SeekerDocuments = lazy(() =>
   import('@/pages/dashboard/seeker/SeekerDocuments').then((m) => ({ default: m.SeekerDocuments })),
 )
@@ -321,6 +324,10 @@ export function routeTable() {
     {
       path: '/dashboard/seeker/saved-searches',
       element: <ProtectedRoute requiredRole="seeker">{s(<SavedSearches />)}</ProtectedRoute>,
+    },
+    {
+      path: '/dashboard/seeker/saved',
+      element: <ProtectedRoute requiredRole="seeker">{s(<SavedJobs />)}</ProtectedRoute>,
     },
     {
       path: '/dashboard/seeker/documents',

@@ -23,6 +23,7 @@ import { Link, useNavigate } from 'react-router'
 import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
+import { SavedTabs } from '@/components/ui/SavedTabs'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { supabase } from '@/lib/supabase'
@@ -273,6 +274,8 @@ export function SavedSearches() {
             </span>
           )}
         </div>
+
+        <SavedTabs />
 
         {loading && (
           <div className="space-y-3">
