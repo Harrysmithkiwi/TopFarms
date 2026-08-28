@@ -19,12 +19,13 @@ interface JobSearchLayoutProps {
  */
 export function JobSearchLayout({ children }: JobSearchLayoutProps) {
   // MobileBottomNav self-guards (seeker session only), so visitors and
-  // employers see plain PublicShell. The wrapper padding keeps the results
-  // list from ending underneath the bar on phones.
+  // employers see plain PublicShell. It sits AFTER the shell — outside
+  // <main>, below the footer — so its in-flow spacer lets the footer's last
+  // rows scroll clear of the fixed bar instead of being covered by it.
   return (
-    <PublicShell>
-      <div className="pb-20 md:pb-0">{children}</div>
+    <>
+      <PublicShell>{children}</PublicShell>
       <MobileBottomNav />
-    </PublicShell>
+    </>
   )
 }

@@ -24,7 +24,9 @@ const MAX_AGE_MS = 60 * 60 * 1000 // 1h — stale intent is worse than no intent
 
 export function sanitizeReturnTo(path: string | null | undefined): string | null {
   if (!path) return null
-  if (!path.startsWith('/') || path.startsWith('//')) return null
+  // '/\\' guards a future consumer that assigns location.href directly:
+  // browsers normalise backslashes, turning '/\\evil.com' protocol-relative.
+  if (!path.startsWith('/') || path.startsWith('//') || path.startsWith('/\\')) return null
   return path
 }
 

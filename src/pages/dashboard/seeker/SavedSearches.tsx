@@ -164,7 +164,6 @@ export function SavedSearches() {
   const [rows, setRows] = useState<SavedSearch[]>([])
   const [loading, setLoading] = useState(true)
   /** Holds rows soft-deleted client-side; restored on Undo. Keyed by id. */
-  const pendingDeletes = useRef<Map<string, SavedSearch>>(new Map())
 
   useEffect(() => {
     if (!session?.user?.id) {
@@ -200,46 +199,55 @@ export function SavedSearches() {
     [navigate],
   )
 
+  // Delete-first with an undo that re-inserts (2026-08-29, design-critic
+  // finding 8). The original committed the DELETE in onAutoClose only, so a
+  // toast dismissed any other way — manual close, pushed out by a newer toast,
+  // page refresh — never ran it: the row was gone from the UI but alive in the
+  // DB, reappearing on the next load.
   const handleDelete = useCallback((row: SavedSearch) => {
-    // Sentinel — flipped if user clicks Undo within the toast window
-    let cancelled = false
-
-    // Optimistic UI: hide row immediately
     setRows((prev) => prev.filter((r) => r.id !== row.id))
-    pendingDeletes.current.set(row.id, row)
 
-    toast.success(`"${row.name}" deleted`, {
-      duration: 5000,
-      action: {
-        label: 'Undo',
-        onClick: () => {
-          cancelled = true
-          const restored = pendingDeletes.current.get(row.id)
-          pendingDeletes.current.delete(row.id)
-          if (restored) {
-            setRows((prev) =>
-              [restored, ...prev].sort(
-                (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-              ),
-            )
-          }
-        },
-      },
-      onAutoClose: async () => {
-        if (cancelled) return
-        pendingDeletes.current.delete(row.id)
-        const { error } = await supabase.from('saved_searches').delete().eq('id', row.id)
+    const restore = () =>
+      setRows((prev) =>
+        [row, ...prev].sort(
+          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+        ),
+      )
+
+    supabase
+      .from('saved_searches')
+      .delete()
+      .eq('id', row.id)
+      .then(({ error }) => {
         if (error) {
           toast.error('Could not delete saved search')
-          // Restore — DB rejected our optimistic remove
-          setRows((prev) =>
-            [row, ...prev].sort(
-              (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-            ),
-          )
+          restore()
+          return
         }
-      },
-    })
+        toast.success(`"${row.name}" deleted`, {
+          duration: 5000,
+          action: {
+            label: 'Undo',
+            onClick: async () => {
+              // Re-insert with the original id and timestamps — RLS scopes the
+              // insert to the owner, and the id was just freed by the delete.
+              const { error: undoError } = await supabase.from('saved_searches').insert({
+                id: row.id,
+                user_id: row.user_id,
+                name: row.name,
+                search_params: row.search_params,
+                created_at: row.created_at,
+                updated_at: row.updated_at,
+              })
+              if (undoError) {
+                toast.error('Could not restore saved search')
+                return
+              }
+              restore()
+            },
+          },
+        })
+      })
   }, [])
 
   const handleRename = useCallback(async (id: string, newName: string) => {
@@ -268,7 +276,7 @@ export function SavedSearches() {
           </h1>
           {!loading && rows.length > 0 && (
             <span
-              className="font-body bg-border text-text-muted rounded-full px-2.5 py-1 text-xs font-semibold"
+              className="font-body bg-surface-2 text-text-muted rounded-full px-2.5 py-1 text-xs font-semibold"
             >
               {rows.length}
             </span>

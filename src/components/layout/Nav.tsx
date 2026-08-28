@@ -22,7 +22,7 @@ const employerLinks = [
 const seekerLinks = SEEKER_NAV.map(({ to, label }) => ({ to, label }))
 
 const publicLinks = [
-  { to: '/jobs', label: 'Find Work' },
+  { to: '/jobs', label: 'Find work' },
   { to: '/for-employers', label: 'For Employers' },
   { to: '/pricing', label: 'Pricing' },
 ]

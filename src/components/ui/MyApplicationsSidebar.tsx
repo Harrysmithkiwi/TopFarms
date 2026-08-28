@@ -110,7 +110,7 @@ export function MyApplicationsSidebar({
           </h3>
           <Link
             to="/dashboard/seeker/saved"
-            className="font-body text-brand-hover text-[12px] font-semibold"
+            className="font-body text-brand-hover text-xs font-semibold"
           >
             View all
           </Link>

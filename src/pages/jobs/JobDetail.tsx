@@ -996,7 +996,11 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
         </div>
       </div>
 
-      {/* Sticky CTA bar — visitor */}
+      {/* Sticky CTA bar — visitor. DELIBERATE: /jobs/:id renders in bare
+          PublicShell (no MobileBottomNav) because the fixed apply/signup CTA
+          owns the bottom edge on this route. If anyone swaps in
+          JobSearchLayout, the z-40 bottom nav will sit on top of this z-30
+          bar for signed-in seekers — don't. */}
       {isVisitor && (
         <div
           className="border-border fixed right-0 bottom-0 left-0 z-30 border-t shadow-lg bg-white"

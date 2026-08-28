@@ -103,11 +103,11 @@ function JobRow({
       <div className="min-w-0">
         <Link
           to={to}
-          className="font-body text-text hover:text-brand-hover text-[15px] font-semibold"
+          className="font-body text-text hover:text-brand-hover text-base font-semibold"
         >
           {title}
         </Link>
-        <p className="text-text-muted mt-0.5 truncate text-[13px]">{subtitle}</p>
+        <p className="text-text-muted mt-0.5 truncate text-label">{subtitle}</p>
       </div>
       {right && <div className="flex-shrink-0">{right}</div>}
     </li>
@@ -132,6 +132,8 @@ export function SeekerDashboard() {
   )
   const [recommended, setRecommended] = useState<RecommendedJob[]>([])
   const [savedJobs, setSavedJobs] = useState<SavedJobEntry[]>([])
+  const [savedTotal, setSavedTotal] = useState(0)
+  const [tabLoadError, setTabLoadError] = useState(false)
 
   const [tab, setTab] = useState<HomeTab>('foryou')
   const [searchQ, setSearchQ] = useState('')
@@ -148,11 +150,13 @@ export function SeekerDashboard() {
       // stops appearing by itself the day real inventory lands — no second deploy, and no
       // flag left switched on by accident. Until then a seeker who was told "jobs are
       // coming" must not be handed an empty board and a "Browse jobs" button.
-      const { count: liveJobs } = await supabase
+      const { count: liveJobs, error: liveJobsError } = await supabase
         .from('jobs')
         .select('id', { count: 'exact', head: true })
         .eq('status', 'active')
-      setLiveJobCount(liveJobs ?? 0)
+      // A failed count must stay null (unresolved), never become 0 — otherwise a
+      // transient network error shows an onboarded seeker the waitlist screen.
+      setLiveJobCount(liveJobsError ? null : (liveJobs ?? 0))
 
       const { data: profileData, error: profileError } = await supabase
         .from('seeker_profiles')
@@ -176,7 +180,7 @@ export function SeekerDashboard() {
         if (profileData.onboarding_complete) {
           // The three tab data sets load together — each is capped small, and
           // the queries are all RLS-scoped to this user.
-          const [appsRes, allAppsRes, recRes, savedRes] = await Promise.all([
+          const [appsRes, allAppsRes, recRes, savedRes, savedCountRes] = await Promise.all([
             supabase
               .from('applications')
               .select(
@@ -207,8 +211,19 @@ export function SeekerDashboard() {
               .eq('user_id', session.user.id)
               .order('created_at', { ascending: false })
               .limit(5),
+            // True total — the list above is capped at 5, and a capped length
+            // must not masquerade as the count on the tab label.
+            supabase
+              .from('saved_jobs')
+              .select('job_id', { count: 'exact', head: true })
+              .eq('user_id', session.user.id),
           ])
 
+          // §5: a failed fetch must not render as an empty state ("No matches
+          // yet" would be a false statement about the seeker's data).
+          setTabLoadError(
+            !!(appsRes.error || allAppsRes.error || recRes.error || savedRes.error),
+          )
           if (appsRes.data) setRecentApplications(appsRes.data as ApplicationWithJob[])
           if (allAppsRes.data) {
             const counts = allAppsRes.data.reduce(
@@ -223,6 +238,7 @@ export function SeekerDashboard() {
           }
           if (recRes.data) setRecommended(recRes.data as unknown as RecommendedJob[])
           if (savedRes.data) setSavedJobs(savedRes.data as unknown as SavedJobEntry[])
+          if (!savedCountRes.error) setSavedTotal(savedCountRes.count ?? 0)
         }
       }
 
@@ -280,7 +296,7 @@ export function SeekerDashboard() {
   // Waiting, not empty. `null` means the count has not resolved — do not guess.
   const isWaitlisted = liveJobCount === 0
 
-  const savedCount = savedJobs.length
+  const savedCount = savedTotal
 
   const tabs: { key: HomeTab; label: string }[] = [
     { key: 'foryou', label: 'For you' },
@@ -356,7 +372,7 @@ export function SeekerDashboard() {
                       'px-4 py-2 text-label',
                     )}
                   >
-                    {onboardingStep > 0 ? 'Continue Setup' : 'Get Started'}
+                    {onboardingStep > 0 ? 'Finish your profile' : 'Complete your profile'}
                   </Link>
                 </div>
               </div>
@@ -449,7 +465,7 @@ export function SeekerDashboard() {
                       to="/dashboard/seeker/profile"
                       className="font-body text-brand-hover text-sm font-semibold"
                     >
-                      Edit Profile
+                      Edit profile
                     </Link>
                   </div>
                   <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -512,20 +528,19 @@ export function SeekerDashboard() {
                 Buttons + conditional panels, not routes — each tab has a
                 "View all" link into its full page. */}
             <Card className="p-6">
-              <div
-                role="tablist"
-                aria-label="Your jobs"
-                className="border-border mb-4 flex gap-1.5 border-b pb-3"
-              >
+              {/* Toggle buttons, not role="tab": the full WAI-ARIA tabs pattern
+                  needs aria-controls, tabpanels and arrow-key roving focus;
+                  claiming the roles without the behaviour promises keyboard
+                  interactions that don't exist. aria-pressed states the truth. */}
+              <div aria-label="Your jobs" className="border-border mb-4 flex gap-1.5 border-b pb-3">
                 {tabs.map((t) => (
                   <button
                     key={t.key}
                     type="button"
-                    role="tab"
-                    aria-selected={tab === t.key}
+                    aria-pressed={tab === t.key}
                     onClick={() => setTab(t.key)}
                     className={cn(
-                      'font-body inline-flex min-h-9 items-center rounded-full px-3.5 text-[13px] font-semibold transition-colors',
+                      'font-body inline-flex min-h-9 items-center rounded-full px-3.5 text-label font-semibold transition-colors',
                       tab === t.key
                         ? 'bg-brand-50 text-brand-900'
                         : 'text-text-muted hover:bg-surface-2 hover:text-text',
@@ -536,8 +551,23 @@ export function SeekerDashboard() {
                 ))}
               </div>
 
+              {tabLoadError && (
+                <div className="py-8 text-center">
+                  <p className="text-text mb-1 text-sm font-semibold">
+                    We couldn't load your jobs
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setReloadNonce((n) => n + 1)}
+                    className="font-body text-brand-hover text-sm font-semibold"
+                  >
+                    Try again
+                  </button>
+                </div>
+              )}
+
               {/* For you */}
-              {tab === 'foryou' && (
+              {!tabLoadError && tab === 'foryou' && (
                 <div>
                   {isWaitlisted ? (
                     <div className="py-8 text-center">
@@ -596,7 +626,7 @@ export function SeekerDashboard() {
               )}
 
               {/* Saved */}
-              {tab === 'saved' && (
+              {!tabLoadError && tab === 'saved' && (
                 <div>
                   {savedJobs.length === 0 ? (
                     <div className="py-8 text-center">
@@ -648,7 +678,7 @@ export function SeekerDashboard() {
               )}
 
               {/* Applied */}
-              {tab === 'applied' && (
+              {!tabLoadError && tab === 'applied' && (
                 <div>
                   {recentApplications.length === 0 ? (
                     <div className="py-8 text-center">

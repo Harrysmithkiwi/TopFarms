@@ -17,7 +17,7 @@
  * silently dropped, so the seeker learns the fate of a job they were
  * watching instead of wondering where it went.
  */
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -65,7 +65,6 @@ export function SavedJobs() {
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState(false)
   const [reloadNonce, setReloadNonce] = useState(0)
-  const pendingDeletes = useRef<Map<string, SavedJobRow>>(new Map())
 
   useEffect(() => {
     const userId = session?.user?.id
@@ -95,66 +94,54 @@ export function SavedJobs() {
     load()
   }, [session?.user?.id, reloadNonce])
 
-  // Same optimistic-remove + 5s undo pattern as SavedSearches.handleDelete —
-  // one interaction language for both "Saved" surfaces.
+  // Delete-first with an undo that re-inserts. The commit-on-onAutoClose
+  // pattern (SavedSearches' original) silently loses the delete whenever the
+  // toast ends any way other than timing out — manual close, another toast
+  // pushing it past sonner's visible cap, a refresh — leaving a row the UI
+  // says is gone alive in the DB.
   const handleRemove = useCallback(
-    (row: SavedJobRow) => {
-      let cancelled = false
+    async (row: SavedJobRow) => {
+      const userId = session?.user?.id
+      if (!userId) return
       setRows((prev) => prev.filter((r) => r.job_id !== row.job_id))
-      pendingDeletes.current.set(row.job_id, row)
+
+      const restore = () =>
+        setRows((prev) =>
+          [row, ...prev].sort(
+            (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+          ),
+        )
+
+      const { error } = await supabase
+        .from('saved_jobs')
+        .delete()
+        .eq('user_id', userId)
+        .eq('job_id', row.job_id)
+      if (error) {
+        toast.error('Could not remove saved job')
+        restore()
+        return
+      }
 
       toast.success(`"${row.jobs?.title ?? 'Saved job'}" removed`, {
         duration: 5000,
         action: {
           label: 'Undo',
-          onClick: () => {
-            cancelled = true
-            const restored = pendingDeletes.current.get(row.job_id)
-            pendingDeletes.current.delete(row.job_id)
-            if (restored) {
-              setRows((prev) =>
-                [restored, ...prev].sort(
-                  (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-                ),
-              )
+          onClick: async () => {
+            const { error: undoError } = await supabase
+              .from('saved_jobs')
+              .insert({ user_id: userId, job_id: row.job_id })
+            if (undoError) {
+              toast.error('Could not restore saved job')
+              return
             }
+            restore()
           },
-        },
-        onAutoClose: async () => {
-          if (cancelled) return
-          pendingDeletes.current.delete(row.job_id)
-          const { error } = await supabase
-            .from('saved_jobs')
-            .delete()
-            .eq('user_id', session?.user?.id ?? '')
-            .eq('job_id', row.job_id)
-          if (error) {
-            toast.error('Could not remove saved job')
-            setRows((prev) =>
-              [row, ...prev].sort(
-                (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-              ),
-            )
-          }
         },
       })
     },
     [session?.user?.id],
   )
-
-  if (loadError) {
-    return (
-      <DashboardLayout hideSidebar>
-        <ErrorState
-          message="We could not load your saved jobs"
-          onRetry={() => {
-            setLoadError(false)
-            setReloadNonce((n) => n + 1)
-          }}
-        />
-      </DashboardLayout>
-    )
-  }
 
   return (
     <DashboardLayout hideSidebar>
@@ -163,8 +150,8 @@ export function SavedJobs() {
           <h1 className="font-display text-brand-900 text-[36px] leading-[44px] font-medium">
             Saved jobs
           </h1>
-          {!loading && rows.length > 0 && (
-            <span className="font-body bg-border text-text-muted rounded-full px-2.5 py-1 text-xs font-semibold">
+          {!loadError && !loading && rows.length > 0 && (
+            <span className="font-body bg-surface-2 text-text-muted rounded-full px-2.5 py-1 text-xs font-semibold">
               {rows.length}
             </span>
           )}
@@ -172,14 +159,24 @@ export function SavedJobs() {
 
         <SavedTabs />
 
-        {loading && (
+        {loadError && (
+          <ErrorState
+            message="We could not load your saved jobs"
+            onRetry={() => {
+              setLoadError(false)
+              setReloadNonce((n) => n + 1)
+            }}
+          />
+        )}
+
+        {!loadError && loading && (
           <div className="space-y-3">
             <SkeletonCard />
             <SkeletonCard />
           </div>
         )}
 
-        {!loading && rows.length === 0 && (
+        {!loadError && !loading && rows.length === 0 && (
           <div className="bg-surface-2 rounded-12 p-12 text-center">
             <p className="font-body text-text mb-2 text-base font-semibold">
               You haven't saved any jobs yet.
@@ -196,7 +193,7 @@ export function SavedJobs() {
           </div>
         )}
 
-        {!loading && rows.length > 0 && (
+        {!loadError && !loading && rows.length > 0 && (
           <ul className="space-y-3">
             {rows.map((row) => {
               const job = row.jobs
@@ -211,16 +208,16 @@ export function SavedJobs() {
                       {job ? (
                         <Link
                           to={`/jobs/${job.id}`}
-                          className="font-body text-text hover:text-brand-hover text-[15px] font-semibold"
+                          className="font-body text-text hover:text-brand-hover text-base font-semibold"
                         >
                           {job.title}
                         </Link>
                       ) : (
-                        <p className="font-body text-text-muted text-[15px] font-semibold">
+                        <p className="font-body text-text-muted text-base font-semibold">
                           This listing has been removed
                         </p>
                       )}
-                      <p className="text-text-muted mt-0.5 text-[13px]">
+                      <p className="text-text-muted mt-0.5 text-label">
                         {job
                           ? [job.employer_profiles?.farm_name, job.region]
                               .filter(Boolean)

@@ -19,10 +19,15 @@ export function MobileBottomNav() {
   if (!session || role !== 'seeker') return null
 
   return (
-    <nav
-      aria-label="Primary"
-      className="bg-surface border-border fixed inset-x-0 bottom-0 z-40 border-t pb-[env(safe-area-inset-bottom)] md:hidden"
-    >
+    <>
+      {/* In-flow spacer: rendered by the layout at the END of the document so
+          the last content — including the footer — scrolls clear of the fixed
+          bar. Without it the bar permanently covers the bottom ~64px. */}
+      <div aria-hidden="true" className="h-16 md:hidden" />
+      <nav
+        aria-label="Quick links"
+        className="bg-surface border-border fixed inset-x-0 bottom-0 z-40 border-t pb-[env(safe-area-inset-bottom)] md:hidden"
+      >
       <div className="flex h-16">
         {SEEKER_NAV_PRIMARY.map((item) => (
           <NavLink
@@ -37,10 +42,11 @@ export function MobileBottomNav() {
             }
           >
             <item.icon size={20} aria-hidden="true" />
-            <span className="text-[11px] leading-none">{item.label}</span>
+            <span className="text-micro leading-none">{item.label}</span>
           </NavLink>
         ))}
       </div>
-    </nav>
+      </nav>
+    </>
   )
 }

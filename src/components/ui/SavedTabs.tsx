@@ -20,7 +20,7 @@ export function SavedTabs() {
           end
           className={({ isActive }) =>
             [
-              'font-body inline-flex min-h-9 items-center rounded-full px-3.5 text-[13px] font-semibold transition-colors',
+              'font-body inline-flex min-h-9 items-center rounded-full px-3.5 text-label font-semibold transition-colors',
               isActive
                 ? 'bg-brand-50 text-brand-900'
                 : 'text-text-muted hover:bg-surface-2 hover:text-text',
