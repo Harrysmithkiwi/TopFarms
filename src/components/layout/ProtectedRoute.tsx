@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useMemo, type ReactNode } from 'react'
 import { Navigate, useLocation } from 'react-router'
 import { useAuth } from '@/hooks/useAuth'
 import { RouteSkeleton } from '@/components/ui/Skeleton'
@@ -12,6 +12,14 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) {
   const { session, role, isActive, loading } = useAuth()
   const location = useLocation()
+  // MUST be referentially stable: <Navigate>'s effect lists `state` in its
+  // deps, so an inline object literal re-fires navigate on every render —
+  // outside a real route tree (e.g. a bare test harness where nothing
+  // unmounts this component) that is an infinite loop and an OOM.
+  const fromState = useMemo(
+    () => ({ from: location.pathname + location.search }),
+    [location.pathname, location.search],
+  )
 
   if (loading) {
     return (
@@ -24,9 +32,7 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
   if (!session) {
     // Carry the interrupted destination so Login can put the user back where
     // they were heading, not on a generic dashboard (src/lib/returnTo.ts).
-    return (
-      <Navigate to="/login" replace state={{ from: location.pathname + location.search }} />
-    )
+    return <Navigate to="/login" replace state={fromState} />
   }
 
   // Guard against the AUTH-FIX 3s loadRole timeout flipping loading=false

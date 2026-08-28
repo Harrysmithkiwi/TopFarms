@@ -3,7 +3,7 @@
  *
  * Wave 3 (17-03-list-page) GREEN — turned 9 it.todo() stubs into real
  * assertions covering empty state, list render, Load (navigate), Delete
- * with sonner Undo (cancellation flag + onAutoClose hard-DELETE), and
+ * with sonner Undo (delete-first, Undo re-inserts — 2026-08-29), and
  * inline rename (Enter commits / Escape reverts).
  *
  * Mock harness:
@@ -73,12 +73,14 @@ const FAKE_ROWS = [
 
 const deleteEqMock = vi.fn()
 const updateEqMock = vi.fn()
+const insertMock = vi.fn()
 const orderMock = vi.fn()
 
 function setupMocks(rows: typeof FAKE_ROWS | []) {
   orderMock.mockResolvedValue({ data: rows, error: null })
   deleteEqMock.mockResolvedValue({ error: null })
   updateEqMock.mockResolvedValue({ error: null })
+  insertMock.mockResolvedValue({ error: null })
 
   fromMock.mockReturnValue({
     select: vi.fn().mockReturnValue({
@@ -88,6 +90,7 @@ function setupMocks(rows: typeof FAKE_ROWS | []) {
     }),
     delete: vi.fn().mockReturnValue({ eq: deleteEqMock }),
     update: vi.fn().mockReturnValue({ eq: updateEqMock }),
+    insert: insertMock,
   })
 }
 
@@ -98,6 +101,7 @@ beforeEach(() => {
   navigateMock.mockReset()
   deleteEqMock.mockReset()
   updateEqMock.mockReset()
+  insertMock.mockReset()
   orderMock.mockReset()
 })
 
@@ -153,16 +157,23 @@ describe('SavedSearches list page (SRCH-15)', () => {
     )
     await waitFor(() => expect(screen.queryByText('Dairy in Waikato')).toBeInTheDocument())
     fireEvent.click(screen.getByRole('button', { name: /^delete dairy in waikato$/i }))
-    expect(toastMock.success).toHaveBeenCalledWith(
-      expect.stringContaining('Dairy in Waikato'),
-      expect.objectContaining({
-        duration: 5000,
-        action: expect.objectContaining({ label: 'Undo' }),
-      }),
+    // Delete-first pattern (2026-08-29): the toast fires after the DELETE
+    // resolves, so wait for it.
+    await waitFor(() =>
+      expect(toastMock.success).toHaveBeenCalledWith(
+        expect.stringContaining('Dairy in Waikato'),
+        expect.objectContaining({
+          duration: 5000,
+          action: expect.objectContaining({ label: 'Undo' }),
+        }),
+      ),
     )
   })
 
-  it('Clicking Undo within 5s flips cancellation flag and skips DELETE', async () => {
+  it('Clicking Undo re-inserts the deleted row and restores it in the list', async () => {
+    // Delete-first pattern (2026-08-29): the DELETE commits immediately and
+    // Undo re-INSERTs — the old commit-on-onAutoClose silently lost the
+    // delete whenever the toast ended any way other than timing out.
     setupMocks(FAKE_ROWS)
     render(
       <MemoryRouter>
@@ -172,31 +183,23 @@ describe('SavedSearches list page (SRCH-15)', () => {
     await waitFor(() => expect(screen.queryByText('Dairy in Waikato')).toBeInTheDocument())
     fireEvent.click(screen.getByRole('button', { name: /^delete dairy in waikato$/i }))
 
-    // Capture the toast options object passed to toast.success
-    const toastCall = toastMock.success.mock.calls[0]
-    const toastOpts = toastCall[1] as {
+    await waitFor(() => expect(toastMock.success).toHaveBeenCalled())
+    const toastOpts = toastMock.success.mock.calls[0][1] as {
       action: { onClick: (e: unknown) => void }
-      onAutoClose: () => Promise<void>
     }
 
-    // Simulate Undo click
+    // Simulate Undo click — re-inserts the original row, original id included
     await act(async () => {
       toastOpts.action.onClick({} as never)
     })
 
-    // Now invoke onAutoClose — it should early-return because cancelled is true
-    await act(async () => {
-      await toastOpts.onAutoClose()
-    })
-
-    // No DELETE call fired
-    expect(deleteEqMock).not.toHaveBeenCalled()
-
-    // Row restored
-    expect(screen.queryByText('Dairy in Waikato')).toBeInTheDocument()
+    expect(insertMock).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'r1', name: 'Dairy in Waikato', user_id: 'user-123' }),
+    )
+    await waitFor(() => expect(screen.queryByText('Dairy in Waikato')).toBeInTheDocument())
   })
 
-  it('onAutoClose fires supabase.from("saved_searches").delete().eq("id", id) when not cancelled', async () => {
+  it('Delete fires supabase.from("saved_searches").delete().eq("id", id) immediately on click', async () => {
     setupMocks(FAKE_ROWS)
     render(
       <MemoryRouter>
@@ -206,17 +209,10 @@ describe('SavedSearches list page (SRCH-15)', () => {
     await waitFor(() => expect(screen.queryByText('Dairy in Waikato')).toBeInTheDocument())
     fireEvent.click(screen.getByRole('button', { name: /^delete dairy in waikato$/i }))
 
-    const toastOpts = toastMock.success.mock.calls[0][1] as {
-      onAutoClose: () => Promise<void>
-    }
-
-    await act(async () => {
-      await toastOpts.onAutoClose()
-    })
-
-    // delete().eq('id', 'r1') chain
+    // Delete-first: the DELETE is not deferred behind the toast lifecycle.
+    await waitFor(() => expect(deleteEqMock).toHaveBeenCalledWith('id', 'r1'))
     expect(fromMock).toHaveBeenCalledWith('saved_searches')
-    expect(deleteEqMock).toHaveBeenCalledWith('id', 'r1')
+    expect(screen.queryByText('Dairy in Waikato')).not.toBeInTheDocument()
   })
 
   it('Click on name enters inline edit mode (Input replaces heading)', async () => {
