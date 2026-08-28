@@ -8,6 +8,7 @@ import { ErrorState } from '@/components/ui/ErrorState'
 import { supabase } from '@/lib/supabase'
 import { reportError } from '@/lib/observability'
 import { dashboardPathFor } from '@/lib/routing'
+import { consumeReturnTo } from '@/lib/returnTo'
 import type { UserRole } from '@/types/domain'
 
 // Path-based email verification — the fix for the corrupted-link blocker.
@@ -74,7 +75,12 @@ export function ConfirmEmail() {
       }
 
       const role = data?.role as UserRole | undefined
-      navigate(role ? dashboardPathFor(role) : '/auth/select-role', { replace: true })
+      // A signup that started on a job page parked its target in localStorage
+      // (src/lib/returnTo.ts). Only consume once the role exists — a role-less
+      // user still has to pass through SelectRole, which consumes it instead.
+      navigate(role ? (consumeReturnTo() ?? dashboardPathFor(role)) : '/auth/select-role', {
+        replace: true,
+      })
     },
     [navigate, type],
   )

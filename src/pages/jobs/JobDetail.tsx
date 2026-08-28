@@ -1,5 +1,5 @@
 import { useEffect, useId, useState } from 'react'
-import { useParams, Link } from 'react-router'
+import { useParams, Link, useNavigate } from 'react-router'
 import { track } from '@vercel/analytics'
 import * as Dialog from '@radix-ui/react-dialog'
 import {
@@ -91,7 +91,7 @@ interface JobDetailData extends JobListing {
  * fabrication was readable by anyone who looked. The call to action works
  * without pretending to know something about a stranger.
  */
-function MatchTeaser() {
+function MatchTeaser({ jobPath }: { jobPath: string }) {
   return (
     <div className="bg-surface border-border flex flex-col items-center rounded-12 border p-6 text-center">
       <p className="font-body text-[15px] font-semibold" style={{ color: 'var(--color-text)' }}>
@@ -105,7 +105,7 @@ function MatchTeaser() {
         the kind of work you&rsquo;re after.
       </p>
       <Link
-        to="/signup"
+        to={`/signup?role=seeker&next=${encodeURIComponent(jobPath)}`}
         className="font-body bg-brand-hover text-text-on-brand hover:bg-brand-900 focus-visible:outline-brand mt-4 inline-flex items-center justify-center rounded-8 px-4 py-2 text-[13px] font-medium transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2"
       >
         Sign up free
@@ -177,6 +177,7 @@ export interface JobDetailSeed {
 
 export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
   const { id: jobId } = useParams<{ id: string }>()
+  const navigate = useNavigate()
   const { session, role, loading: authLoading } = useAuth()
 
   const [job, setJob] = useState<JobDetailData | null>(seed?.job ?? null)
@@ -466,6 +467,18 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
   // Determine CTA type
   const isVisitor = !session
   const isSeeker = session && role === 'seeker'
+  const jobPath = `/jobs/${jobId ?? ''}`
+  // Save-intent for visitors: instead of the bookmark silently no-oping
+  // (useSavedJobs returns early with no user), route through login with this
+  // job as the return target — sign in, land back here, save for real.
+  const handleSaveIntent = () => {
+    if (!jobId) return
+    if (!session) {
+      navigate(`/login?next=${encodeURIComponent(jobPath)}`)
+      return
+    }
+    toggleSave(jobId)
+  }
   const isFeatured = job.listing_tier === 2
   const isPremium = job.listing_tier === 3
 
@@ -510,7 +523,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
       <div className="sticky top-0 z-30">
         <Breadcrumb
           items={[{ label: 'Jobs', href: '/jobs' }, { label: job.title }]}
-          onSave={() => jobId && toggleSave(jobId)}
+          onSave={handleSaveIntent}
           onShare={() => {
             navigator.clipboard.writeText(window.location.href)
             toast.success('Link copied to clipboard')
@@ -948,7 +961,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
             )}
             {isVisitor && (
               <div className="lg:hidden">
-                <MatchTeaser />
+                <MatchTeaser jobPath={jobPath} />
               </div>
             )}
           </div>
@@ -958,7 +971,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
             <div className="sticky top-20 space-y-4">
               {/* Match breakdown for seekers */}
               {isSeeker && matchScore && <MatchBreakdown score={matchScore} />}
-              {isVisitor && <MatchTeaser />}
+              {isVisitor && <MatchTeaser jobPath={jobPath} />}
 
               {/* Sidebar: quick facts, similar jobs, farm profile */}
               <JobDetailSidebar
@@ -972,7 +985,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
                 }}
                 similarJobs={similarJobs}
                 isSaved={jobId ? isSaved(jobId) : false}
-                onSaveToggle={() => jobId && toggleSave(jobId)}
+                onSaveToggle={handleSaveIntent}
                 onShare={() => {
                   navigator.clipboard.writeText(window.location.href)
                   toast.success('Link copied to clipboard')
@@ -994,7 +1007,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
             </p>
             <div className="flex flex-shrink-0 items-center gap-2">
               <Link
-                to="/login"
+                to={`/login?next=${encodeURIComponent(jobPath)}`}
                 className={cn(
                   'inline-flex items-center justify-center rounded-8 font-bold transition-all duration-200',
                   'bg-surface border-brand text-brand-900 hover:bg-surface-2 border',
@@ -1004,7 +1017,7 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
                 Log In
               </Link>
               <Link
-                to="/signup"
+                to={`/signup?role=seeker&next=${encodeURIComponent(jobPath)}`}
                 className={cn(
                   'inline-flex items-center justify-center rounded-8 font-bold transition-all duration-200',
                   'bg-brand-hover hover:bg-brand-900 text-white',

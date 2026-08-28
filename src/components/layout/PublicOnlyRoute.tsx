@@ -1,8 +1,9 @@
 import { useEffect, useState, type ReactNode } from 'react'
-import { Navigate } from 'react-router'
+import { Navigate, useLocation } from 'react-router'
 import { useAuth } from '@/hooks/useAuth'
 import { RouteSkeleton } from '@/components/ui/Skeleton'
 import { dashboardPathFor } from '@/lib/routing'
+import { sanitizeReturnTo } from '@/lib/returnTo'
 
 /**
  * The mirror of ProtectedRoute: these pages are for people who are NOT signed in.
@@ -34,6 +35,7 @@ import { dashboardPathFor } from '@/lib/routing'
  */
 export function PublicOnlyRoute({ children }: { children: ReactNode }) {
   const { session, role, isActive, loading } = useAuth()
+  const location = useLocation()
 
   // undefined = not yet decided · null = stay · string = go there
   const [decision, setDecision] = useState<string | null | undefined>(undefined)
@@ -45,10 +47,13 @@ export function PublicOnlyRoute({ children }: { children: ReactNode }) {
         ? '/suspended'
         : // A session with no role yet is someone mid-signup; the page owns that flow.
           session && role
-          ? dashboardPathFor(role)
+          ? // Already signed in but arrived with `?next=` (a login link on a job
+            // page): send them to the target, not the dashboard.
+            (sanitizeReturnTo(new URLSearchParams(location.search).get('next')) ??
+            dashboardPathFor(role))
           : null,
     )
-  }, [loading, session, role, isActive, decision])
+  }, [loading, session, role, isActive, decision, location.search])
 
   // Never flash the signup form at someone who turns out to be signed in.
   if (decision === undefined) {

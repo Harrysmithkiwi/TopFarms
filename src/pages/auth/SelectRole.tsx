@@ -6,6 +6,7 @@ import { AuthLayout } from '@/components/layout/AuthLayout'
 import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
 import { dashboardPathFor } from '@/lib/routing'
+import { consumeReturnTo } from '@/lib/returnTo'
 import { RouteSkeleton } from '@/components/ui/Skeleton'
 
 export function SelectRole() {
@@ -23,7 +24,9 @@ export function SelectRole() {
 
   if (!session) return <Navigate to="/login" replace />
   if (role) {
-    const dest = dashboardPathFor(role)
+    // Existing user back from an OAuth round trip: honour the target parked
+    // before the redirect (src/lib/returnTo.ts), else the usual dashboard.
+    const dest = consumeReturnTo() ?? dashboardPathFor(role)
     return <Navigate to={dest} replace />
   }
 

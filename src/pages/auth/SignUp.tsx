@@ -9,6 +9,7 @@ import { Eye, EyeOff, Building2, User } from 'lucide-react'
 import { AuthLayout } from '@/components/layout/AuthLayout'
 import { useAuth } from '@/hooks/useAuth'
 import { usePageMeta } from '@/lib/usePageMeta'
+import { sanitizeReturnTo, storeReturnTo } from '@/lib/returnTo'
 import { cn } from '@/lib/utils'
 
 const schema = z.object({
@@ -78,6 +79,9 @@ export function SignUp() {
       // allowlist is a known-broken surface (go-live ticket 02), and this needs no
       // allowlist entry at all.
       if (attributionRef) sessionStorage.setItem('tf-signup-ref', attributionRef)
+      // Same round-trip problem as `?ref=`: park the return target for
+      // SelectRole/ConfirmEmail (src/lib/returnTo.ts).
+      storeReturnTo(returnTo)
       await signInWithOAuth(provider)
     } catch {
       toast.error('Could not connect to Google. Please try again.')
@@ -101,6 +105,11 @@ export function SignUp() {
     /^[0-9a-f]{8}$|^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(refParam)
       ? refParam.toLowerCase()
       : null
+
+  // Return target from `?next=` (e.g. "Sign up" on a job page). The email path
+  // round-trips through the user's inbox, so it is parked in localStorage and
+  // consumed by ConfirmEmail after verification — same browser only.
+  const returnTo = sanitizeReturnTo(searchParams.get('next'))
 
   const [selectedRole, setSelectedRole] = useState<'employer' | 'seeker' | null>(initialRole)
 
@@ -146,6 +155,7 @@ export function SignUp() {
         })
       } else {
         track('signup_complete', { role: data.role, attributed: attributionRef ? 'yes' : 'no' })
+        storeReturnTo(returnTo)
         navigate('/auth/verify')
       }
     } catch {

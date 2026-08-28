@@ -2,13 +2,14 @@ import { useState, useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Link, useNavigate } from 'react-router'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router'
 import { toast } from 'sonner'
 import { Eye, EyeOff } from 'lucide-react'
 import { AuthLayout } from '@/components/layout/AuthLayout'
 import { useAuth } from '@/hooks/useAuth'
 import { usePageMeta } from '@/lib/usePageMeta'
 import { dashboardPathFor } from '@/lib/routing'
+import { sanitizeReturnTo, storeReturnTo } from '@/lib/returnTo'
 import { cn } from '@/lib/utils'
 
 const schema = z.object({
@@ -22,12 +23,23 @@ export function Login() {
   usePageMeta('Log in | TopFarms', 'Log in to your TopFarms account.')
   const { signIn, signInWithOAuth, session, role, loading } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const [searchParams] = useSearchParams()
   const [showPassword, setShowPassword] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [oauthLoading, setOauthLoading] = useState(false)
 
+  // Where to land after auth. `?next=` (links from job pages) outranks router
+  // state (ProtectedRoute bounces); both are sanitised to same-origin paths.
+  const returnTo =
+    sanitizeReturnTo(searchParams.get('next')) ??
+    sanitizeReturnTo((location.state as { from?: string } | null)?.from)
+
   const handleOAuth = async (provider: 'google') => {
     setOauthLoading(true)
+    // The OAuth redirect destroys this tab's JS context — park the target so
+    // SelectRole/ConfirmEmail can pick it up on the way back.
+    storeReturnTo(returnTo)
     try {
       await signInWithOAuth(provider)
     } catch {
@@ -49,10 +61,10 @@ export function Login() {
   // After successful login, role is loaded via onAuthStateChange — navigate when ready
   useEffect(() => {
     if (didSubmit.current && !loading && session && role) {
-      const dest = dashboardPathFor(role)
+      const dest = returnTo ?? dashboardPathFor(role)
       navigate(dest, { replace: true })
     }
-  }, [session, role, loading, navigate])
+  }, [session, role, loading, navigate, returnTo])
 
   const onSubmit = async (data: FormValues) => {
     setIsSubmitting(true)

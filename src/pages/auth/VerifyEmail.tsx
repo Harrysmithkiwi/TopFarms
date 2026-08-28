@@ -7,6 +7,7 @@ import { ErrorState } from '@/components/ui/ErrorState'
 import { supabase } from '@/lib/supabase'
 import { reportError } from '@/lib/observability'
 import { dashboardPathFor } from '@/lib/routing'
+import { consumeReturnTo } from '@/lib/returnTo'
 import type { UserRole } from '@/types/domain'
 
 export function VerifyEmail() {
@@ -53,7 +54,11 @@ export function VerifyEmail() {
 
       // No role assigned yet — let them choose. SelectRole redirects onward by itself if a
       // role does resolve, so this stays correct even if the read raced an insert.
-      navigate(role ? dashboardPathFor(role) : '/auth/select-role', { replace: true })
+      // Honour a return target parked at signup (src/lib/returnTo.ts); only
+      // consume once the role exists — SelectRole consumes it otherwise.
+      navigate(role ? (consumeReturnTo() ?? dashboardPathFor(role)) : '/auth/select-role', {
+        replace: true,
+      })
     },
     [navigate],
   )

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Navigate } from 'react-router'
+import { Navigate, useLocation } from 'react-router'
 import { useAuth } from '@/hooks/useAuth'
 import { RouteSkeleton } from '@/components/ui/Skeleton'
 import { AccessDenied } from '@/components/layout/AccessDenied'
@@ -11,6 +11,7 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) {
   const { session, role, isActive, loading } = useAuth()
+  const location = useLocation()
 
   if (loading) {
     return (
@@ -21,7 +22,11 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
   }
 
   if (!session) {
-    return <Navigate to="/login" replace />
+    // Carry the interrupted destination so Login can put the user back where
+    // they were heading, not on a generic dashboard (src/lib/returnTo.ts).
+    return (
+      <Navigate to="/login" replace state={{ from: location.pathname + location.search }} />
+    )
   }
 
   // Guard against the AUTH-FIX 3s loadRole timeout flipping loading=false
