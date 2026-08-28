@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router'
-import { LayoutDashboard, Search, FileText, FolderOpen, User, LogOut, Bookmark } from 'lucide-react'
+import { LayoutDashboard, LogOut } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
+import { SEEKER_NAV } from '@/lib/seekerNav'
 
 interface NavItem {
   to: string
@@ -16,14 +17,10 @@ const employerItems: NavItem[] = [
   // 2026-05-04 (UAT-04 — routes unregistered in main.tsx; pages don't exist yet).
 ]
 
-const seekerItems: NavItem[] = [
-  { to: '/dashboard/seeker', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/jobs', label: 'Find Jobs', icon: Search },
-  { to: '/dashboard/seeker/applications', label: 'My Applications', icon: FileText },
-  { to: '/dashboard/seeker/documents', label: 'My Documents', icon: FolderOpen },
-  { to: '/dashboard/seeker/saved-searches', label: 'Saved searches', icon: Bookmark },
-  { to: '/dashboard/seeker/profile', label: 'Edit Profile', icon: User },
-]
+// Seeker items come from the shared SEEKER_NAV source (src/lib/seekerNav.ts)
+// — this list drifted against Nav.tsx and ShellNav.tsx three ways before it
+// was centralised ("Find Jobs" vs "Find Work" vs "Find work").
+const seekerItems: NavItem[] = SEEKER_NAV
 
 export function Sidebar() {
   const { role, signOut } = useAuth()

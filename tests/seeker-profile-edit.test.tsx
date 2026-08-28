@@ -103,14 +103,14 @@ describe('seeker profile — contact details are their own section', () => {
 })
 
 describe('seeker profile — the edit route is reachable', () => {
-  it('sidebar Edit Profile points at the editor, not at onboarding', () => {
+  it('sidebar Profile points at the editor, not at onboarding', () => {
     render(
       <MemoryRouter>
         <Sidebar />
       </MemoryRouter>,
     )
 
-    const link = screen.getByRole('link', { name: /edit profile/i })
+    const link = screen.getByRole('link', { name: /^profile$/i })
 
     // The defect in one assertion: /onboarding/seeker bounces a completed seeker
     // straight back out, so pointing here makes the link do nothing at all.

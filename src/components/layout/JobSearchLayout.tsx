@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { PublicShell } from '@/components/shell/PublicShell'
+import { MobileBottomNav } from '@/components/layout/MobileBottomNav'
 
 interface JobSearchLayoutProps {
   children: ReactNode
@@ -17,5 +18,13 @@ interface JobSearchLayoutProps {
  * from DashboardLayout, which adds the role-based rail used on /dashboard/*.
  */
 export function JobSearchLayout({ children }: JobSearchLayoutProps) {
-  return <PublicShell>{children}</PublicShell>
+  // MobileBottomNav self-guards (seeker session only), so visitors and
+  // employers see plain PublicShell. The wrapper padding keeps the results
+  // list from ending underneath the bar on phones.
+  return (
+    <PublicShell>
+      <div className="pb-20 md:pb-0">{children}</div>
+      <MobileBottomNav />
+    </PublicShell>
+  )
 }

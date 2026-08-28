@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, NavLink } from 'react-router'
 import { useAuth } from '@/hooks/useAuth'
 import { dashboardPathFor } from '@/lib/routing'
+import { SEEKER_NAV_PRIMARY } from '@/lib/seekerNav'
 import { IconLeaf } from '@/components/landing/LandingIcons'
 
 // v14 shell nav (docs/design/MARKETING-DESIGN.md, comp of 2026-08-24): ONE bar, per the
@@ -25,15 +26,11 @@ const publicLinks = [
   { to: '/pricing', label: 'Pricing' },
 ]
 
-// Preserved from Nav.tsx (see its comments for the removal history), with one change:
-// "Find Work" is now "Find work", so the seeker's signed-in nav uses the same label as
-// the rest of the site. One label per intent means one CASING per label too.
+// Preserved from Nav.tsx (see its comments for the removal history). Seeker
+// links now come from the shared SEEKER_NAV source (src/lib/seekerNav.ts) so
+// this bar, the dashboard sidebar and the mobile bottom nav agree on labels.
 const authedEmployerLinks = [{ to: '/dashboard/employer', label: 'Dashboard' }]
-const authedSeekerLinks = [
-  { to: '/jobs', label: 'Find work' },
-  { to: '/dashboard/seeker/applications', label: 'My Applications' },
-  { to: '/dashboard/seeker/documents', label: 'My Documents' },
-]
+const authedSeekerLinks = SEEKER_NAV_PRIMARY.map(({ to, label }) => ({ to, label }))
 
 export function ShellNav() {
   const { session, role, signOut } = useAuth()

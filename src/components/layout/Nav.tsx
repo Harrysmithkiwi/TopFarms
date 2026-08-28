@@ -7,6 +7,7 @@ import { Link, NavLink } from 'react-router'
 import { Menu, X, Leaf } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { dashboardPathFor } from '@/lib/routing'
+import { SEEKER_NAV } from '@/lib/seekerNav'
 
 const employerLinks = [
   { to: '/dashboard/employer', label: 'Dashboard' },
@@ -15,14 +16,10 @@ const employerLinks = [
   // unregistered in main.tsx; pages don't exist yet). Employer hub is /dashboard/employer.
 ]
 
-const seekerLinks = [
-  { to: '/jobs', label: 'Find Work' },
-  { to: '/dashboard/seeker/applications', label: 'My Applications' },
-  { to: '/dashboard/seeker/documents', label: 'My Documents' },
-  // 'My Profile' (/profile) and 'Settings' (/settings) removed 2026-05-04 (UAT-04 — routes
-  // unregistered in main.tsx; pages don't exist yet). Seeker profile editing is via sidebar
-  // 'Edit Profile' → /onboarding/seeker.
-]
+// Shared source (src/lib/seekerNav.ts) — this copy said "Find Work" while the
+// Sidebar said "Find Jobs" and ShellNav said "Find work". One list now, and the
+// mobile slide-out stops hiding Home/Saved/Profile from phone users.
+const seekerLinks = SEEKER_NAV.map(({ to, label }) => ({ to, label }))
 
 const publicLinks = [
   { to: '/jobs', label: 'Find Work' },

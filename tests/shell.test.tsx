@@ -83,8 +83,10 @@ describe('ShellNav states', () => {
     authState.session = { user: { email: 'shepherd@example.com' } }
     authState.role = 'seeker'
     renderShell(<ShellNav />)
-    expect(screen.getByText('My Applications')).toBeInTheDocument()
-    expect(screen.getByText('My Documents')).toBeInTheDocument()
+    // Labels come from the shared SEEKER_NAV source (src/lib/seekerNav.ts).
+    expect(screen.getByText('Applications')).toBeInTheDocument()
+    expect(screen.getByText('Find work')).toBeInTheDocument()
+    expect(screen.getByText('Saved')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'User menu' })).toHaveTextContent('S')
     expect(screen.queryByText('Post a job')).not.toBeInTheDocument()
     expect(screen.queryByText('Sign in')).not.toBeInTheDocument()
