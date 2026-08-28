@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
+import { consumeReturnTo } from '@/lib/returnTo'
 import { CheckCircle } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { MatchBand } from '@/components/ui/MatchBand'
@@ -238,7 +239,14 @@ export function SeekerStep7Complete({ profileData, seekerProfileId }: SeekerStep
 
         {/* CTAs */}
         <div className="space-y-3">
-          <Button variant="primary" size="lg" className="w-full" onClick={() => navigate('/jobs')}>
+          <Button
+            variant="primary"
+            size="lg"
+            className="w-full"
+            // A seeker who started from a job's Apply button has that job
+            // parked as the return target — take them straight back to it.
+            onClick={() => navigate(consumeReturnTo() ?? '/jobs')}
+          >
             Browse Jobs
           </Button>
           <Button

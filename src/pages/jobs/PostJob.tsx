@@ -135,35 +135,39 @@ export function PostJob() {
         return
       }
 
-      if (profile) {
-        if (!profile.onboarding_complete) {
-          // ONBOARD-EMP-CTA-01 self-heal instrumentation. If the user has
-          // walked the wizard to Step 8 (onboarding_step >= 7) but the flag
-          // didn't flip, they're in the pre-fix soft loop. Log loudly so we
-          // notice any persistence regression of the finalize effect.
-          if ((profile.onboarding_step ?? 0) >= 7) {
-            console.warn(
-              `[ONBOARD-EMP-CTA-01] employer_profile=${profile.id} hit /jobs/new gate with ` +
-                `onboarding_step=${profile.onboarding_step} but onboarding_complete=false. ` +
-                `Step8Complete finalize effect may have regressed — soft loop imminent.`,
-            )
-          }
-          toast.error('Complete your farm profile first')
-          navigate('/onboarding/employer')
-          return
+      // No profile row at all (a brand-new employer who came straight here —
+      // e.g. the logged-out "Post a job" → login → return-to path) is the same
+      // situation as incomplete onboarding, and MUST hit the same gate. It
+      // used to fall through into the wizard, where every save needs
+      // employer_profiles.id and step 1 dead-ended on "Employer profile not
+      // loaded. Please refresh and try again" — a refresh that could never fix it.
+      if (!profile || !profile.onboarding_complete) {
+        // ONBOARD-EMP-CTA-01 self-heal instrumentation. If the user has
+        // walked the wizard to Step 8 (onboarding_step >= 7) but the flag
+        // didn't flip, they're in the pre-fix soft loop. Log loudly so we
+        // notice any persistence regression of the finalize effect.
+        if (profile && (profile.onboarding_step ?? 0) >= 7) {
+          console.warn(
+            `[ONBOARD-EMP-CTA-01] employer_profile=${profile.id} hit /jobs/new gate with ` +
+              `onboarding_step=${profile.onboarding_step} but onboarding_complete=false. ` +
+              `Step8Complete finalize effect may have regressed — soft loop imminent.`,
+          )
         }
-
-        setEmployerProfile({
-          id: profile.id, // employer_profiles.id used as employer_id FK in jobs table
-          region: profile.region,
-          farm_name: profile.farm_name,
-          farm_type: profile.farm_type,
-          shed_type: profile.shed_type,
-          herd_size: profile.herd_size,
-          accommodation_available: profile.accommodation_available,
-          accommodation_type: profile.accommodation_type,
-        })
+        toast.error('Complete your farm profile first')
+        navigate('/onboarding/employer')
+        return
       }
+
+      setEmployerProfile({
+        id: profile.id, // employer_profiles.id used as employer_id FK in jobs table
+        region: profile.region,
+        farm_name: profile.farm_name,
+        farm_type: profile.farm_type,
+        shed_type: profile.shed_type,
+        herd_size: profile.herd_size,
+        accommodation_available: profile.accommodation_available,
+        accommodation_type: profile.accommodation_type,
+      })
 
       // If editing existing draft, load it (no profile row → nothing to edit)
       if (urlJobId && profile) {

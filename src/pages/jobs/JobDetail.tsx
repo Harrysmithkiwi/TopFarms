@@ -32,6 +32,7 @@ import { Timeline } from '@/components/ui/Timeline'
 import { JobDetailSidebar } from '@/components/ui/JobDetailSidebar'
 import { MapPlaceholder } from '@/components/ui/MapPlaceholder'
 import { useSavedJobs } from '@/hooks/useSavedJobs'
+import { storeReturnTo } from '@/lib/returnTo'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { RouteSkeleton } from '@/components/ui/Skeleton'
 import type {
@@ -1049,19 +1050,27 @@ export function JobDetail({ seed }: { seed?: JobDetailSeed | null } = {}) {
                 </span>
               </div>
             )}
+            {/* Only a real "already applied" disables the button. A missing
+                profile used to disable it too, which meant the guidance toast
+                in onClick could never fire — an un-onboarded seeker saw a dead
+                grey button with no explanation and no way forward. Now the
+                click routes them into onboarding with this job parked as the
+                return target (src/lib/returnTo.ts). */}
             <button
               type="button"
-              disabled={hasApplied || !seekerProfileId}
+              disabled={hasApplied}
               onClick={() => {
                 if (!seekerProfileId) {
-                  toast.info('Complete your profile before applying')
+                  storeReturnTo(jobPath)
+                  toast.info("Finish your profile to apply — we'll bring you back to this job")
+                  navigate('/onboarding/seeker')
                   return
                 }
                 setApplyModalOpen(true)
               }}
               className={cn(
                 'ml-auto inline-flex items-center justify-center rounded-8 font-bold transition-all duration-200',
-                hasApplied || !seekerProfileId
+                hasApplied
                   ? 'bg-surface-2 text-text-muted cursor-not-allowed'
                   : 'bg-brand-hover hover:bg-brand-900 text-white',
                 'px-6 py-2.5 text-sm',
