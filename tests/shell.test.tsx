@@ -69,6 +69,10 @@ describe('ShellNav states', () => {
     expect(screen.getByText('Pricing')).toHaveAttribute('href', '/pricing')
     expect(screen.getByText('Sign in')).toHaveAttribute('href', '/login')
     expect(screen.getByText('Post a job')).toHaveAttribute('href', '/signup?role=employer')
+    // Regression guard (2026-08-29): seeker signup used to live ONLY in the
+    // footer, so the nav offered account creation to employers alone. A
+    // seeker-first launch cannot ship that.
+    expect(screen.getByText('Create a profile')).toHaveAttribute('href', '/signup?role=seeker')
   })
 
   it('logged out: no audience toggle, no duplicate CTA labels', () => {

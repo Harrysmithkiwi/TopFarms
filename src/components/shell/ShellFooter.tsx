@@ -3,8 +3,9 @@ import { Link } from 'react-router'
 // v14 shell footer, per the 2026-08-24 comp: brand column + three link columns. Every
 // target is a registered route (dead-link gate) — the comp's "Job Alerts", "Career
 // Advice", "Find Candidates", "About" and "Help Centre" have nothing behind them and are
-// deliberately absent. /login and /signup?role=seeker appear here because the nav's only
-// signup action is the employer one; the footer is where the seeker signup lives.
+// deliberately absent. /login and /signup?role=seeker are ALSO in the nav as of
+// 2026-08-29 (the nav used to carry the employer signup alone); they stay here too
+// because the footer is where someone who read the whole page looks for them.
 
 const COLUMNS: { h: string; links: { to: string; label: string }[] }[] = [
   {

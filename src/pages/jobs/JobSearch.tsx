@@ -880,10 +880,26 @@ function ResultsArea({
             <h3 className="text-text mb-2 text-[17px] font-semibold">
               No jobs listed right now
             </h3>
-            <p className="text-text-muted max-w-[320px] text-[14px]">
-              New farm roles are posted as employers join. Check back soon. Or if you're hiring,{' '}
+            {/* SEEKER-FIRST. This empty state used to offer exactly one action —
+                "post the first job free" — so a job seeker who followed "Find work"
+                onto an empty board was handed an EMPLOYER call to action and had
+                nowhere to go. That is the state production sits in until employers
+                arrive, and it is the state the first seeker cohort lands in, so the
+                seeker's next step leads and the employer line follows it. */}
+            <p className="text-text-muted max-w-[340px] text-[14px]">
+              New farm roles are posted as employers join. Create a profile now and we'll match
+              you to roles the moment they land — you don't need to keep checking back.
+            </p>
+            <Link
+              to="/signup?role=seeker"
+              className="font-body bg-brand-hover hover:bg-brand-900 mt-4 inline-flex min-h-11 items-center justify-center rounded-8 px-4 text-label font-semibold text-white transition-colors"
+            >
+              Create a profile
+            </Link>
+            <p className="text-text-subtle mt-4 text-[13px]">
+              Hiring instead?{' '}
               <Link to="/signup?role=employer" className="text-brand-hover underline">
-                post the first job free
+                Post the first job free
               </Link>
               .
             </p>

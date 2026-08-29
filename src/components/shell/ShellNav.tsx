@@ -114,6 +114,14 @@ export function ShellNav() {
             )}
           </div>
         ) : (
+          // Both audiences can now create an account from the top of any page.
+          // Until 2026-08-29 the only signup action up here was the employer's,
+          // and seeker signup lived in the FOOTER alone — fine when the site was
+          // employer-acquisition led, wrong for a seeker-first launch where the
+          // first cohort arrives intending to join.
+          //
+          // Weighting mirrors the hero exactly: seeker action green, employer
+          // action outlined. One green action per surface still holds.
           <div className="ml-auto flex items-center gap-1">
             <Link
               to="/login"
@@ -122,8 +130,14 @@ export function ShellNav() {
               Sign in
             </Link>
             <Link
-              to="/signup?role=employer"
+              to="/signup?role=seeker"
               className="bg-brand hover:bg-brand-900 inline-flex min-h-11 items-center rounded-full px-4.5 text-sm font-semibold text-white transition-colors"
+            >
+              Create a profile
+            </Link>
+            <Link
+              to="/signup?role=employer"
+              className="border-border text-text hover:border-brand hover:text-brand-900 inline-flex min-h-11 items-center rounded-full border-[1.5px] px-4.5 text-sm font-semibold transition-colors"
             >
               Post a job
             </Link>
