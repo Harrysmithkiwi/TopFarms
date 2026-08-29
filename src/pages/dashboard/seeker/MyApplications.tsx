@@ -11,7 +11,13 @@ import { reportError } from '@/lib/observability'
 import { useAuth } from '@/hooks/useAuth'
 import { useSavedJobs } from '@/hooks/useSavedJobs'
 import { computeProfileStrength, PROFILE_STRENGTH_SELECT } from '@/lib/profileStrength'
-import type { Application, ApplicationStatus, MatchScore, JobListing } from '@/types/domain'
+import type {
+  Application,
+  ApplicationEvent,
+  ApplicationStatus,
+  MatchScore,
+  JobListing,
+} from '@/types/domain'
 import { ACTIVE_STATUSES, COMPLETED_STATUSES } from '@/types/domain'
 import { ErrorState } from '@/components/ui/ErrorState'
 
@@ -46,6 +52,7 @@ export function MyApplications() {
   const [reloadNonce, setReloadNonce] = useState(0)
   const [sidebarFilter, setSidebarFilter] = useState('all')
   const [sidebarSheetOpen, setSidebarSheetOpen] = useState(false)
+  const [eventsMap, setEventsMap] = useState<Map<string, ApplicationEvent[]>>(new Map())
   const [savedJobDetails, setSavedJobDetails] = useState<
     { job_id: string; title: string; farm_name: string }[]
   >([])
@@ -95,6 +102,25 @@ export function MyApplications() {
 
       const apps = (data ?? []) as ApplicationWithJob[]
       setApplications(apps)
+
+      // Timeline: the append-only application_events rows (migration 107),
+      // batched in one query and grouped per application.
+      if (apps.length > 0) {
+        const { data: eventRows } = await supabase
+          .from('application_events')
+          .select('id, application_id, event_type, from_status, to_status, actor, created_at')
+          .in('application_id', apps.map((a) => a.id))
+          .order('created_at', { ascending: true })
+        if (eventRows) {
+          const map = new Map<string, ApplicationEvent[]>()
+          for (const ev of eventRows as ApplicationEvent[]) {
+            const list = map.get(ev.application_id) ?? []
+            list.push(ev)
+            map.set(ev.application_id, list)
+          }
+          setEventsMap(map)
+        }
+      }
 
       // Fetch batch match scores for all unique job IDs
       if (apps.length > 0) {
@@ -172,15 +198,56 @@ export function MyApplications() {
     )
   }
 
-  // _applicationId: placeholder handler — real accept flow not yet wired.
-  async function handleAcceptInterview(_applicationId: string) {
+  async function handleAcceptInterview(applicationId: string) {
+    // accept_interview() (migration 107) validates ownership + status server-side,
+    // stamps interview_accepted_at, and writes the timeline event. Idempotent.
+    const { data, error } = await supabase.rpc('accept_interview', {
+      p_application_id: applicationId,
+    })
+
+    if (error) {
+      toast.error('Could not accept the interview — please try again')
+      return
+    }
+
+    const acceptedAt = (data as string | null) ?? new Date().toISOString()
     toast.success('Interview accepted — the employer will be in touch shortly.')
+    setApplications((prev) =>
+      prev.map((a) => (a.id === applicationId ? { ...a, interview_accepted_at: acceptedAt } : a)),
+    )
+    // Refetch this application's events so the timeline shows the acceptance
+    // as the server recorded it (not a client-side fabrication).
+    const { data: eventRows } = await supabase
+      .from('application_events')
+      .select('id, application_id, event_type, from_status, to_status, actor, created_at')
+      .eq('application_id', applicationId)
+      .order('created_at', { ascending: true })
+    if (eventRows) {
+      setEventsMap((prev) => {
+        const next = new Map(prev)
+        next.set(applicationId, eventRows as ApplicationEvent[])
+        return next
+      })
+    }
   }
 
   async function handleDeclineInterview(applicationId: string) {
+    // Declining an interview is the CANDIDATE stepping away, so it maps to the
+    // seeker's own edge in the state machine: -> withdrawn. The old handler
+    // wrote status='declined' — an employer-only transition that migration
+    // 097's trigger has been rejecting since it shipped, so this button
+    // errored for every seeker who pressed it.
+    const app = applications.find((a) => a.id === applicationId)
+    if (
+      !window.confirm(
+        `Decline this interview? This withdraws your application for ${app?.jobs?.title ?? 'this job'}. You can re-apply later if you change your mind.`,
+      )
+    ) {
+      return
+    }
     const { error } = await supabase
       .from('applications')
-      .update({ status: 'declined' })
+      .update({ status: 'withdrawn' })
       .eq('id', applicationId)
 
     if (error) {
@@ -188,10 +255,10 @@ export function MyApplications() {
       return
     }
 
-    toast.success('Interview declined')
+    toast.success('Interview declined — application withdrawn')
     setApplications((prev) =>
       prev.map((a) =>
-        a.id === applicationId ? { ...a, status: 'declined' as ApplicationStatus } : a,
+        a.id === applicationId ? { ...a, status: 'withdrawn' as ApplicationStatus } : a,
       ),
     )
   }
@@ -319,6 +386,7 @@ export function MyApplications() {
                   key={app.id}
                   application={app}
                   matchScore={scoreMap.get(app.job_id) ?? null}
+                  events={eventsMap.get(app.id)}
                   onWithdraw={handleWithdraw}
                   onAcceptInterview={handleAcceptInterview}
                   onDeclineInterview={handleDeclineInterview}

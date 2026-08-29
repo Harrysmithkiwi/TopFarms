@@ -511,7 +511,25 @@ export interface Application {
   status: ApplicationStatus
   cover_note?: string
   created_at: string
+  /** Set only by the accept_interview() RPC (migration 107). A timestamp, not a
+   *  status — the pipeline position stays the employer's decision. */
+  interview_accepted_at?: string | null
   jobs?: JobListing & { employer_profiles?: { farm_name: string; region: string } }
+}
+
+/**
+ * One row of application_events (migration 107) — the append-only lifecycle
+ * record behind the candidate timeline. Written only by DB triggers and
+ * accept_interview(); client INSERT is revoked, so no event can be forged.
+ */
+export interface ApplicationEvent {
+  id: string
+  application_id: string
+  event_type: 'status_change' | 'interview_accepted'
+  from_status: ApplicationStatus | null
+  to_status: ApplicationStatus | null
+  actor: 'seeker' | 'employer' | 'admin' | 'system'
+  created_at: string
 }
 
 // ============================================================

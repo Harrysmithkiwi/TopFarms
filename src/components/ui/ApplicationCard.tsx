@@ -5,7 +5,14 @@ import { MatchBand } from '@/components/ui/MatchBand'
 import { StatusBanner } from '@/components/ui/StatusBanner'
 import { FarmResponseIndicator } from '@/components/ui/FarmResponseIndicator'
 import { Button } from '@/components/ui/Button'
-import type { Application, ApplicationStatus, MatchScore, JobListing } from '@/types/domain'
+import type {
+  Application,
+  ApplicationEvent,
+  ApplicationStatus,
+  MatchScore,
+  JobListing,
+} from '@/types/domain'
+import { ApplicationTimeline } from '@/components/ui/ApplicationTimeline'
 import { ACTIVE_STATUSES } from '@/types/domain'
 
 type TagVariant = 'green' | 'warn' | 'blue' | 'grey' | 'purple' | 'red'
@@ -51,6 +58,9 @@ interface ApplicationCardProps {
     jobs: JobListing & { employer_profiles: { farm_name: string; region: string } }
   } & { viewed_at?: string | null }
   matchScore?: MatchScore | null
+  /** application_events rows for this application (migration 107). When
+   *  present, a quiet History disclosure renders under the card body. */
+  events?: ApplicationEvent[]
   onWithdraw?: (applicationId: string) => void
   onAcceptInterview?: (applicationId: string) => void
   onDeclineInterview?: (applicationId: string) => void
@@ -59,6 +69,7 @@ interface ApplicationCardProps {
 export function ApplicationCard({
   application,
   matchScore,
+  events,
   onWithdraw,
   onAcceptInterview,
   onDeclineInterview,
@@ -94,23 +105,31 @@ export function ApplicationCard({
           <StatusBanner
             variant={bannerConfig.variant}
             actions={
-              application.status === 'interview' && onAcceptInterview && onDeclineInterview ? (
-                <div className="mt-2 flex gap-2">
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={() => onAcceptInterview(application.id)}
-                  >
-                    Accept
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onDeclineInterview(application.id)}
-                  >
-                    Decline
-                  </Button>
-                </div>
+              application.status === 'interview' ? (
+                application.interview_accepted_at ? (
+                  // Persisted by accept_interview() — survives refresh, and the
+                  // employer sees the same acceptance on their side.
+                  <p className="font-body text-text text-sm font-semibold">
+                    ✓ Interview accepted — the employer will be in touch to arrange a time.
+                  </p>
+                ) : onAcceptInterview && onDeclineInterview ? (
+                  <div className="mt-2 flex gap-2">
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => onAcceptInterview(application.id)}
+                    >
+                      Accept
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onDeclineInterview(application.id)}
+                    >
+                      Decline
+                    </Button>
+                  </div>
+                ) : undefined
               ) : undefined
             }
           />
@@ -157,6 +176,17 @@ export function ApplicationCard({
             >
               Withdraw
             </button>
+          )}
+
+          {/* History — real backend events only (application_events). Native
+              disclosure: keyboard- and screen-reader-correct for free. */}
+          {events && events.length > 0 && (
+            <details className="mt-3">
+              <summary className="font-body text-text-muted hover:text-text cursor-pointer text-label font-semibold">
+                History ({events.length})
+              </summary>
+              <ApplicationTimeline events={events} />
+            </details>
           )}
         </div>
 

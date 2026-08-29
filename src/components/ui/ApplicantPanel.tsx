@@ -56,6 +56,7 @@ interface ApplicantPanelApplication {
   status: ApplicationStatus
   cover_note?: string
   created_at: string
+  interview_accepted_at?: string | null
   seeker_profiles: SeekerProfile
   seeker_skills?: SeekerSkill[]
   application_notes?: string
@@ -244,6 +245,9 @@ export function ApplicantPanel({
           <Tag variant={STATUS_TAG_VARIANT[application.status]}>
             {APPLICATION_STATUS_LABELS[application.status]}
           </Tag>
+          {application.status === 'interview' && application.interview_accepted_at && (
+            <Tag variant="green">Accepted</Tag>
+          )}
           <span className="font-body text-text-subtle text-[11px]">
             {formatDate(application.created_at)}
           </span>
@@ -564,11 +568,32 @@ export function ApplicantPanel({
             </p>
           )}
 
-          {/* Interview tab */}
+          {/* Interview tab — the acceptance is the seeker's persisted answer
+              (applications.interview_accepted_at, written by accept_interview). */}
           {activeTab === 'interview' && (
-            <p className="font-body text-text-muted py-4 text-[14px]">
-              Interview scheduling is coming in a future release.
-            </p>
+            <div className="py-4">
+              {application.status === 'interview' ? (
+                application.interview_accepted_at ? (
+                  <p className="font-body text-text text-[14px] font-semibold">
+                    ✓ Interview accepted{' '}
+                    {new Date(application.interview_accepted_at).toLocaleDateString('en-NZ', {
+                      day: 'numeric',
+                      month: 'short',
+                    })}{' '}
+                    — contact the candidate to arrange a time.
+                  </p>
+                ) : (
+                  <p className="font-body text-text-muted text-[14px]">
+                    Interview requested — waiting for the candidate to respond.
+                  </p>
+                )
+              ) : (
+                <p className="font-body text-text-muted text-[14px]">
+                  Move this application to Interview to request one. Scheduling tools are coming
+                  in a future release.
+                </p>
+              )}
+            </div>
           )}
 
           {/* Notes tab */}

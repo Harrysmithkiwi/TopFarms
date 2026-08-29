@@ -48,6 +48,7 @@ interface Applicant {
   cover_note?: string
   created_at: string
   viewed_at?: string | null
+  interview_accepted_at?: string | null
   application_notes?: string
   seeker_profiles: SeekerProfile
   seeker_skills?: Omit<SeekerSkill, 'seeker_id'>[]
@@ -208,7 +209,7 @@ export function ApplicantDashboard() {
         .from('applications')
         .select(
           `
-          id, status, cover_note, created_at, viewed_at, application_notes,
+          id, status, cover_note, created_at, viewed_at, application_notes, interview_accepted_at,
           seeker_profiles(
             id, user_id, region, years_experience, sector_pref, visa_status,
             dairynz_level, couples_seeking, accommodation_needed,
