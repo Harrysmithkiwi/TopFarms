@@ -9,6 +9,67 @@ stream doc disagree, the stream doc wins and this file is out of date — fix it
 
 ---
 
+## 🟢 SESSION CLOSE — 2026-08-29. Seeker product shipped; launch gate is GREEN.
+
+Nine commits, all pushed, all live on `www.topfarms.co.nz` (verified by loading the real
+domain, not by trusting the deploy). Working tree clean. **Launch readiness 91/100 — 🟢
+LAUNCH READY.** The 2026-08-25 block below is superseded on the score and on "the gap is
+market": the engineering gap that mattered for a seeker-first launch was real, and is closed.
+
+**1. The candidate product (`1e429a7` → `4f49baa`).** Return-to flow so apply/save/login
+round-trips back to the job instead of a generic dashboard (`src/lib/returnTo.ts`, covers
+OAuth + email round trips). Saved Jobs page (`/dashboard/seeker/saved`) — jobs were saveable
+since Phase 9 with nowhere to see them. One nav source (`src/lib/seekerNav.ts`) killing a
+three-way label drift, plus a mobile bottom nav (phones previously had NO route to Home,
+Saved or Profile). Candidate Home rebuilt around "what do I do next": search card, For you /
+Saved / Applied strip, one profile-strength formula. Design-critic gate run — 10 findings
+fixed, two of them real bugs (waitlist false-positive on a failed count; undo-delete losing
+the DELETE on early toast dismissal, latent in SavedSearches too).
+
+**2. Journey audit, 12/12 scenarios (`776c827`).** Walked live on prod with temp accounts.
+Two P1 dead-ends found and fixed: an employer with no profile row was trapped at `/jobs/new`
+on an unrecoverable "please refresh"; a seeker with no profile got a *disabled* Apply button
+whose guidance toast could never fire.
+
+**3. Application lifecycle (`4576da3`, migration 107).** `application_events` (append-only,
+client INSERT revoked), `applications.interview_accepted_at`, and `accept_interview()` —
+ownership-validated, status-gated, idempotent. Interview accept was a toast with no write;
+interview *decline* was worse, writing an employer-only edge that 097's trigger had been
+rejecting since it shipped. Candidate timeline renders real events only. Proven on prod in a
+rolled-back transaction (A1–A8) and end-to-end both sides.
+
+**4. Acquisition fix (`018e9a6`) — the one that mattered most for Phase 1.** Seeker signup
+existed ONLY in the footer; the header's only signup action was the employer's. And `/jobs`
+is empty until employers arrive, so every one of ~200 seekers following "Find work" would
+have landed on an empty board whose only CTA was *"post the first job free"*. Header now
+carries `Create a profile` (green) beside `Post a job` (outlined); the empty board leads with
+"create a profile and we'll match you the moment roles land".
+
+### Where to pick up
+
+**Launch sequencing, not code.** Phase 1 ~200 seekers, Phase 2 ~100 employers +48h.
+
+- **One operator action before signups open:** Supabase Auth → enable **leaked-password
+  protection (HIBP)**. It is OFF. Dashboard toggle, not a code change. Signup already enforces
+  10-char letter+number, so this is defence in depth.
+- **Security verified at the boundary**, not through the UI: anon blocked on every sensitive
+  table; horizontal IDOR blocked both roles; seeker→`hired` self-promotion rejected by the 097
+  trigger; cross-account `accept_interview` rejected. Data integrity: 0 orphans/dupes/invalid
+  statuses.
+- **P2, deliberately deferred:** seeker job alerts (blocked on the UEMA consent posture),
+  interview *scheduling*, notification sends (`application_events` is the ready-made hook),
+  payment/placement-fee flow (needs a real hire).
+- **Not re-verified this session:** email-verification round trip (no test inbox; operator
+  proved it 2026-08-21, routing is unit-tested).
+- **Kept in prod deliberately:** a `CI Fixture Farm` employer profile for the CI test account.
+  It fixes the a11y sweep, which had only ever reached `/jobs/new` through the bug `776c827`
+  closed. Do not delete it.
+
+Full launch scorecard artifact: https://claude.ai/code/artifact/eb18d420-36d8-4bd2-a7b4-21372fe0f11d
+Journey audit artifact: https://claude.ai/code/artifact/c96e11d8-317c-4bd7-b3a8-6d7f30fedef5
+
+---
+
 ## 🟢 SESSION CLOSE — 2026-08-25. Engineering is done. The gap is market, not code.
 
 Everything below this block is still true. Three things changed today, all shipped to prod,
