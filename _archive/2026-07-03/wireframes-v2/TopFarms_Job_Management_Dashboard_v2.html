@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dashboard — TopFarms for Employers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="topfarms-v2.css" />
+<style>
+  .page-hero {
+    padding: 32px 0 16px;
+  }
+  .welcome-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 8px;
+  }
+  .welcome-title {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--text);
+  }
+  .welcome-sub {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+  .welcome-actions { display: flex; gap: 8px; }
+
+  /* Stat grid */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 24px;
+    margin-bottom: 32px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 20px;
+    transition: all 150ms;
+  }
+  .stat-card:hover { border-color: var(--border-strong); box-shadow: var(--shadow-sm); }
+  .stat-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .stat-card-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: -0.005em;
+  }
+  .stat-card-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--r-sm);
+    background: var(--brand-50);
+    color: var(--brand);
+    display: grid;
+    place-items: center;
+  }
+  .stat-card-num {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-card-delta {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--brand);
+  }
+  .stat-card-delta.down { color: var(--danger); }
+  .stat-card-delta.neutral { color: var(--text-muted); }
+
+  /* Main body */
+  .dash-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 24px;
+    padding-bottom: 96px;
+  }
+
+  /* Section blocks */
+  .dash-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .dash-block-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .dash-block-title {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+  .dash-block-title-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-left: 8px;
+  }
+  .dash-block-actions { display: flex; gap: 6px; }
+
+  /* Filter tabs */
+  .tabs-row {
+    display: flex;
+    gap: 4px;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-2);
+  }
+  .dash-tab {
+    padding: 6px 12px;
+    border-radius: var(--r-sm);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 150ms;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .dash-tab:hover { color: var(--text); }
+  .dash-tab.active { background: var(--surface); color: var(--text); font-weight: 600; box-shadow: var(--shadow-sm); }
+  .dash-tab-count {
+    background: rgba(0,0,0,0.06);
+    padding: 1px 6px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  /* Jobs table */
+  .jobs-table { width: 100%; }
+  .job-row {
+    display: grid;
+    grid-template-columns: 1fr 80px 80px 120px 100px auto;
+    align-items: center;
+    padding: 16px 20px;
+    gap: 16px;
+    border-bottom: 1px solid var(--border);
+    transition: background 150ms;
+    cursor: pointer;
+  }
+  .job-row:hover { background: var(--surface-2); }
+  .job-row:last-child { border-bottom: none; }
+  .job-row-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+    letter-spacing: -0.005em;
+  }
+  .job-row-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .job-row-meta-sep { color: var(--text-subtle); }
+  .job-row-stat {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .job-row-stat-label {
+    font-size: 11px;
+    color: var(--text-subtle);
+    text-align: center;
+    font-weight: 500;
+    margin-top: 2px;
+  }
+  .job-row-status {
+    display: inline-flex;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 99px;
+    letter-spacing: 0.02em;
+  }
+  .status-active { background: var(--brand-50); color: var(--brand-900); }
+  .status-featured { background: var(--warn-bg); color: var(--warn-text); }
+  .status-draft { background: var(--surface-2); color: var(--text-muted); }
+  .status-expired { background: var(--danger-bg); color: var(--danger); }
+
+  .job-row-actions { display: flex; gap: 4px; }
+
+  /* Table head */
+  .table-head {
+    display: grid;
+    grid-template-columns: 1fr 80px 80px 120px 100px auto;
+    gap: 16px;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    background: var(--surface-2);
+  }
+  .th-center { text-align: center; }
+
+  /* Quick actions sidebar */
+  .quick-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .quick-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: -0.005em;
+    color: var(--text);
+    margin-bottom: 14px;
+  }
+  .quick-action {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: var(--r);
+    cursor: pointer;
+    transition: all 150ms;
+    margin-bottom: 4px;
+  }
+  .quick-action:hover { background: var(--surface-2); }
+  .quick-action-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--r-sm);
+    background: var(--brand-50);
+    color: var(--brand);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+  .quick-action-text { flex: 1; }
+  .quick-action-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .quick-action-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  /* Insight card (AI) */
+  .insight-card {
+    background: linear-gradient(135deg, var(--ai-bg) 0%, #EDE9FC 100%);
+    border: 1px solid #E4DEF8;
+    border-radius: var(--r-lg);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .insight-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ai);
+    margin-bottom: 10px;
+  }
+  .insight-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+  .insight-body {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.55;
+    margin-bottom: 14px;
+  }
+
+  /* Analytics chart (inline SVG) */
+  .chart-wrap {
+    padding: 20px;
+  }
+  .chart-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 16px;
+  }
+  .chart-big-num {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    line-height: 1;
+  }
+  .chart-delta {
+    font-size: 13px;
+    color: var(--brand);
+    font-weight: 600;
+  }
+
+  /* Template card */
+  .templates {
+    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .template-card {
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    cursor: pointer;
+    transition: all 150ms;
+  }
+  .template-card:hover { border-color: var(--brand); background: var(--brand-50); }
+  .template-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .template-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* Recent activity list */
+  .activity-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .activity-item:last-child { border-bottom: none; }
+  .activity-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--brand-50), var(--brand-100));
+    color: var(--brand-900);
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: 10px;
+    flex-shrink: 0;
+  }
+  .activity-body { flex: 1; line-height: 1.5; color: var(--text); }
+  .activity-body strong { font-weight: 600; }
+  .activity-time {
+    font-size: 11px;
+    color: var(--text-subtle);
+    margin-top: 2px;
+  }
+
+  @media (max-width: 900px) {
+    .dash-body { grid-template-columns: 1fr; }
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    .job-row, .table-head { grid-template-columns: 1fr auto; gap: 10px; }
+    .job-row > *:not(:first-child):not(:last-child) { display: none; }
+    .table-head > *:not(:first-child):not(:last-child) { display: none; }
+    .templates { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="app-nav">
+  <div class="container-wide app-nav-inner">
+    <a href="#" class="logo">
+      <span class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19.2 2.96c.81 1.1 1.64 3.08 1.3 5.78C20.12 12.7 16.5 18.5 11 20Z"/>
+          <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+        </svg>
+      </span>
+      <span>TopFarms</span>
+    </a>
+    <div class="nav-links-app">
+      <a href="#" class="nav-link active">Dashboard</a>
+      <a href="#" class="nav-link">Jobs</a>
+      <a href="#" class="nav-link">Applicants</a>
+      <a href="#" class="nav-link">Messages</a>
+      <a href="#" class="nav-link">Analytics</a>
+    </div>
+    <div class="nav-actions">
+      <button class="btn btn-primary btn-sm">+ Post a job</button>
+      <button class="icon-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="icon-btn-dot"></span></button>
+      <div class="avatar-sm">GF</div>
+    </div>
+  </div>
+</nav>
+
+<div class="container-wide">
+  <!-- Welcome -->
+  <section class="page-hero">
+    <div class="welcome-row">
+      <div>
+        <div class="welcome-title">Kia ora, Dave</div>
+        <div class="welcome-sub">Here's what's happening at Greenfield Farms this week</div>
+      </div>
+      <div class="welcome-actions">
+        <button class="btn btn-secondary btn-sm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
+          Last 30 days
+        </button>
+        <button class="btn btn-primary btn-sm">+ Post a new job</button>
+      </div>
+    </div>
+
+    <!-- Stat Grid -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-card-head">
+          <div class="stat-card-label">Active listings</div>
+          <div class="stat-card-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        </div>
+        <div class="stat-card-num">5</div>
+        <div class="stat-card-delta">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          +2 this week
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-head">
+          <div class="stat-card-label">Total applications</div>
+          <div class="stat-card-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        </div>
+        <div class="stat-card-num">134</div>
+        <div class="stat-card-delta">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>
+          +28% vs last month
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-head">
+          <div class="stat-card-label">Profile views</div>
+          <div class="stat-card-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+        </div>
+        <div class="stat-card-num">1,247</div>
+        <div class="stat-card-delta">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>
+          +14% vs last month
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-head">
+          <div class="stat-card-label">Application rate</div>
+          <div class="stat-card-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg></div>
+        </div>
+        <div class="stat-card-num">10.7%</div>
+        <div class="stat-card-delta neutral">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          NZ avg 8.2%
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Body -->
+  <div class="dash-body">
+    <div>
+      <!-- Jobs table -->
+      <div class="dash-block">
+        <div class="dash-block-head">
+          <div>
+            <span class="dash-block-title">Your job listings</span>
+            <span class="dash-block-title-sub">5 active · 2 drafts · 1 expired</span>
+          </div>
+          <div class="dash-block-actions">
+            <button class="btn btn-secondary btn-sm">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              Filters
+            </button>
+          </div>
+        </div>
+
+        <div class="tabs-row">
+          <span class="dash-tab active">Active <span class="dash-tab-count">5</span></span>
+          <span class="dash-tab">Drafts <span class="dash-tab-count">2</span></span>
+          <span class="dash-tab">Expired <span class="dash-tab-count">1</span></span>
+          <span class="dash-tab">All <span class="dash-tab-count">8</span></span>
+        </div>
+
+        <div class="table-head">
+          <span>Listing</span>
+          <span class="th-center">Views</span>
+          <span class="th-center">Applicants</span>
+          <span>Status</span>
+          <span>Posted</span>
+          <span></span>
+        </div>
+
+        <div class="jobs-table">
+          <div class="job-row">
+            <div>
+              <div class="job-row-title">Dairy Farm Assistant</div>
+              <div class="job-row-meta">
+                <span>Te Awamutu, Waikato</span>
+                <span class="job-row-meta-sep">·</span>
+                <span>$52–62k</span>
+                <span class="job-row-meta-sep">·</span>
+                <span style="color: var(--brand); font-weight: 600;">12 new today</span>
+              </div>
+            </div>
+            <div class="u-col">
+              <div class="job-row-stat">89</div>
+              <div class="job-row-stat-label">views</div>
+            </div>
+            <div class="u-col">
+              <div class="job-row-stat">47</div>
+              <div class="job-row-stat-label">apps</div>
+            </div>
+            <div>
+              <span class="job-row-status status-featured">★ Featured</span>
+            </div>
+            <div style="font-size: 12px; color: var(--text-muted);">12 days ago</div>
+            <div class="job-row-actions">
+              <button class="icon-btn btn-sm" title="View applicants">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </button>
+              <button class="icon-btn btn-sm" title="Edit">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+              <button class="icon-btn btn-sm" title="More">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="job-row">
+            <div>
+              <div class="job-row-title">Herd Manager 2IC</div>
+              <div class="job-row-meta">
+                <span>Te Awamutu, Waikato</span>
+                <span class="job-row-meta-sep">·</span>
+                <span>$64–72k</span>
+                <span class="job-row-meta-sep">·</span>
+                <span>3 new today</span>
+              </div>
+            </div>
+            <div class="u-col">
+              <div class="job-row-stat">124</div>
+              <div class="job-row-stat-label">views</div>
+            </div>
+            <div class="u-col">
+              <div class="job-row-stat">18</div>
+              <div class="job-row-stat-label">apps</div>
+            </div>
+            <div>
+              <span class="job-row-status status-active">Active</span>
+            </div>
+            <div style="font-size: 12px; color: var(--text-muted);">8 days ago</div>
+            <div class="job-row-actions">
+              <button class="icon-btn btn-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></button>
+              <button class="icon-btn btn-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+              <button class="icon-btn btn-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+            </div>
+          </div>
+
+          <div class="job-row">
+            <div>
+              <div class="job-row-title">Relief Milker (weekends)</div>
+              <div class="job-row-meta">
+                <span>Te Awamutu, Waikato</span>
+                <span class="job-row-meta-sep">·</span>
+                <span>$32/hr casual</span>
+              </div>
+            </div>
+            <div class="u-col">
+              <div class="job-row-stat">67</div>
+              <div class="job-row-stat-label">views</div>
+            </div>
+            <div class="u-col">
+              <div class="job-row-stat">29</div>
+              <div class="job-row-stat-label">apps</div>
+            </div>
+            <div>
+              <span class="job-row-status status-active">Active</span>
+            </div>
+            <div style="font-size: 12px; color: var(--text-muted);">18 days ago</div>
+            <div class="job-row-actions">
+              <button class="icon-btn btn-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></button>
+              <button class="icon-btn btn-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+              <button class="icon-btn btn-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+            </div>
+          </div>
+
+          <div class="job-row">
+            <div>
+              <div class="job-row-title">Calf Rearer — Spring Season</div>
+              <div class="job-row-meta">
+                <span>Te Awamutu, Waikato</span>
+                <span class="job-row-meta-sep">·</span>
+                <span>$28/hr fixed term</span>
+              </div>
+            </div>
+            <div class="u-col">
+              <div class="job-row-stat">45</div>
+              <div class="job-row-stat-label">views</div>
+            </div>
+            <div class="u-col">
+              <div class="job-row-stat">11</div>
+              <div class="job-row-stat-label">apps</div>
+            </div>
+            <div>
+              <span class="job-row-status status-active">Active</span>
+            </div>
+            <div style="font-size: 12px; color: var(--text-muted);">5 days ago</div>
+            <div class="job-row-actions">
+              <button class="icon-btn btn-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></button>
+              <button class="icon-btn btn-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+              <button class="icon-btn btn-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+            </div>
+          </div>
+
+          <div class="job-row">
+            <div>
+              <div class="job-row-title">Fencing Contractor (short-term)</div>
+              <div class="job-row-meta">
+                <span>Te Awamutu, Waikato</span>
+                <span class="job-row-meta-sep">·</span>
+                <span>$35/hr</span>
+              </div>
+            </div>
+            <div class="u-col">
+              <div class="job-row-stat">22</div>
+              <div class="job-row-stat-label">views</div>
+            </div>
+            <div class="u-col">
+              <div class="job-row-stat">6</div>
+              <div class="job-row-stat-label">apps</div>
+            </div>
+            <div>
+              <span class="job-row-status status-active">Active</span>
+            </div>
+            <div style="font-size: 12px; color: var(--text-muted);">3 days ago</div>
+            <div class="job-row-actions">
+              <button class="icon-btn btn-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></button>
+              <button class="icon-btn btn-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+              <button class="icon-btn btn-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Templates -->
+      <div class="dash-block">
+        <div class="dash-block-head">
+          <div>
+            <span class="dash-block-title">Job templates</span>
+            <span class="dash-block-title-sub">Re-use past listings as starting points</span>
+          </div>
+          <button class="btn btn-secondary btn-sm">+ New template</button>
+        </div>
+        <div class="templates">
+          <div class="template-card">
+            <div class="template-name">Dairy Farm Assistant (standard)</div>
+            <div class="template-meta">Used 3× · Last updated Feb 2026</div>
+          </div>
+          <div class="template-card">
+            <div class="template-name">Relief Milker (weekends)</div>
+            <div class="template-meta">Used 2× · Last updated Dec 2025</div>
+          </div>
+          <div class="template-card">
+            <div class="template-name">Calf Rearer (spring)</div>
+            <div class="template-meta">Used 4× · Last updated Sep 2025</div>
+          </div>
+          <div class="template-card">
+            <div class="template-name">Herd Manager 2IC</div>
+            <div class="template-meta">Used 1× · Last updated Jan 2026</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Analytics chart -->
+      <div class="dash-block">
+        <div class="dash-block-head">
+          <div>
+            <span class="dash-block-title">Applications over time</span>
+            <span class="dash-block-title-sub">Last 30 days · all jobs</span>
+          </div>
+          <button class="btn btn-secondary btn-sm">View full analytics →</button>
+        </div>
+        <div class="chart-wrap">
+          <div class="chart-label-row">
+            <div>
+              <div class="chart-big-num">134</div>
+              <div class="chart-delta">+28 vs previous 30d</div>
+            </div>
+            <div style="display: flex; gap: 16px; font-size: 12px;">
+              <span style="display: inline-flex; align-items: center; gap: 6px; color: var(--text-muted);"><span style="width: 10px; height: 10px; background: var(--brand); border-radius: 2px;"></span>Applications</span>
+              <span style="display: inline-flex; align-items: center; gap: 6px; color: var(--text-muted);"><span style="width: 10px; height: 10px; background: var(--surface-2); border-radius: 2px; border: 1px solid var(--border);"></span>Views</span>
+            </div>
+          </div>
+
+          <!-- Bar chart SVG -->
+          <svg viewBox="0 0 680 180" width="100%" height="180" style="display: block;">
+            <!-- grid lines -->
+            <line x1="0" y1="40" x2="680" y2="40" stroke="#E5E8E2" stroke-dasharray="4 4"/>
+            <line x1="0" y1="90" x2="680" y2="90" stroke="#E5E8E2" stroke-dasharray="4 4"/>
+            <line x1="0" y1="140" x2="680" y2="140" stroke="#E5E8E2" stroke-dasharray="4 4"/>
+
+            <!-- bars (30 days) -->
+            <g>
+              <rect x="10" y="130" width="12" height="30" fill="#16A34A" rx="2"/>
+              <rect x="32" y="110" width="12" height="50" fill="#16A34A" rx="2"/>
+              <rect x="54" y="120" width="12" height="40" fill="#16A34A" rx="2"/>
+              <rect x="76" y="100" width="12" height="60" fill="#16A34A" rx="2"/>
+              <rect x="98" y="90" width="12" height="70" fill="#16A34A" rx="2"/>
+              <rect x="120" y="115" width="12" height="45" fill="#16A34A" rx="2"/>
+              <rect x="142" y="105" width="12" height="55" fill="#16A34A" rx="2"/>
+              <rect x="164" y="80" width="12" height="80" fill="#16A34A" rx="2"/>
+              <rect x="186" y="95" width="12" height="65" fill="#16A34A" rx="2"/>
+              <rect x="208" y="75" width="12" height="85" fill="#16A34A" rx="2"/>
+              <rect x="230" y="60" width="12" height="100" fill="#16A34A" rx="2"/>
+              <rect x="252" y="85" width="12" height="75" fill="#16A34A" rx="2"/>
+              <rect x="274" y="70" width="12" height="90" fill="#16A34A" rx="2"/>
+              <rect x="296" y="55" width="12" height="105" fill="#16A34A" rx="2"/>
+              <rect x="318" y="65" width="12" height="95" fill="#16A34A" rx="2"/>
+              <rect x="340" y="45" width="12" height="115" fill="#16A34A" rx="2"/>
+              <rect x="362" y="60" width="12" height="100" fill="#16A34A" rx="2"/>
+              <rect x="384" y="50" width="12" height="110" fill="#16A34A" rx="2"/>
+              <rect x="406" y="35" width="12" height="125" fill="#16A34A" rx="2"/>
+              <rect x="428" y="55" width="12" height="105" fill="#16A34A" rx="2"/>
+              <rect x="450" y="70" width="12" height="90" fill="#16A34A" rx="2"/>
+              <rect x="472" y="40" width="12" height="120" fill="#16A34A" rx="2"/>
+              <rect x="494" y="50" width="12" height="110" fill="#16A34A" rx="2"/>
+              <rect x="516" y="65" width="12" height="95" fill="#16A34A" rx="2"/>
+              <rect x="538" y="30" width="12" height="130" fill="#16A34A" rx="2"/>
+              <rect x="560" y="45" width="12" height="115" fill="#16A34A" rx="2"/>
+              <rect x="582" y="60" width="12" height="100" fill="#16A34A" rx="2"/>
+              <rect x="604" y="35" width="12" height="125" fill="#16A34A" rx="2"/>
+              <rect x="626" y="50" width="12" height="110" fill="#16A34A" rx="2"/>
+              <rect x="648" y="25" width="12" height="135" fill="#16A34A" rx="2"/>
+            </g>
+
+            <!-- X-axis labels -->
+            <text x="10" y="175" font-size="10" fill="#8A968D">Mar 24</text>
+            <text x="340" y="175" font-size="10" fill="#8A968D">Apr 8</text>
+            <text x="620" y="175" font-size="10" fill="#8A968D">Apr 23</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside>
+      <!-- AI insight -->
+      <div class="insight-card">
+        <div class="insight-head">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5z"/></svg>
+          AI insight
+        </div>
+        <div class="insight-title">Your Herd Manager 2IC listing is underperforming</div>
+        <div class="insight-body">
+          Only 18 applications in 8 days — below the 34 avg for similar roles. Salary may be the issue — comparable 2IC roles in Waikato pay $68–76k. Consider raising range or featuring the role.
+        </div>
+        <div class="u-row">
+          <button class="btn btn-primary btn-sm">Edit listing</button>
+          <button class="btn btn-ghost btn-sm">Dismiss</button>
+        </div>
+      </div>
+
+      <!-- Quick actions -->
+      <div class="quick-card">
+        <div class="quick-title">Quick actions</div>
+        <div class="quick-action">
+          <div class="quick-action-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+          <div class="quick-action-text">
+            <div class="quick-action-title">Post a new job</div>
+            <div class="quick-action-desc">From template or scratch</div>
+          </div>
+        </div>
+        <div class="quick-action">
+          <div class="quick-action-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+          <div class="quick-action-text">
+            <div class="quick-action-title">Browse candidates</div>
+            <div class="quick-action-desc">284 matching your filters</div>
+          </div>
+        </div>
+        <div class="quick-action">
+          <div class="quick-action-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+          <div class="quick-action-text">
+            <div class="quick-action-title">Update farm profile</div>
+            <div class="quick-action-desc">Last edited 42 days ago</div>
+          </div>
+        </div>
+        <div class="quick-action">
+          <div class="quick-action-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg></div>
+          <div class="quick-action-text">
+            <div class="quick-action-title">View analytics</div>
+            <div class="quick-action-desc">Views, applications, trends</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent activity -->
+      <div class="quick-card">
+        <div class="quick-title">Recent activity</div>
+        <div class="activity-item">
+          <div class="activity-avatar">JT</div>
+          <div class="activity-body">
+            <strong>James Tūhoe</strong> applied to Dairy Farm Assistant
+            <div class="activity-time">2 hours ago · 94% match</div>
+          </div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-avatar">SR</div>
+          <div class="activity-body">
+            <strong>Sarah R.</strong> sent you a message
+            <div class="activity-time">5 hours ago</div>
+          </div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-avatar">KT</div>
+          <div class="activity-body">
+            You shortlisted <strong>Kahu Thompson</strong>
+            <div class="activity-time">Yesterday · 64% match</div>
+          </div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-avatar">EK</div>
+          <div class="activity-body">
+            <strong>Emma K-W.</strong> applied to Herd Manager 2IC
+            <div class="activity-time">Yesterday · 85% match</div>
+          </div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-avatar">—</div>
+          <div class="activity-body">
+            Your Fencing Contractor job went live
+            <div class="activity-time">3 days ago</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+</body>
+</html>
