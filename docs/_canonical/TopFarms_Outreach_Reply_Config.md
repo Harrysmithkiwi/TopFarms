@@ -217,6 +217,13 @@ travels fast.
   than a cold signup form. This is the natural sibling to this config (config drafts
   the *message*; pre-seed drafts the *listing*) and is where the real conversion
   gain lives. Not required to ship the drafting; note it and move on.
+  - **Update, 25 Nov 2026 (PR: small-fixes branch): the read half is built.**
+    `get_lead_for_prefill` (migration 108) returns job fields only for an approved
+    employer row, never contact details, and `/jobs/new?lead=<id>` pre-fills the
+    wizard for a logged-in employer with onboarding complete, with a banner
+    telling them to check it before publishing. Still to build: parking `?lead=`
+    across signup and redirecting to `/jobs/new?lead=<id>` after onboarding, so
+    the ask becomes "log in to publish" end to end.
 - **Parked pricing decision (not a comms question):** whether to waive the *first
   placement fee* per employer as an acquisition wedge. This is a revenue-strategy
   call, not wording, and if used it belongs in a *later* message (post-signup), not

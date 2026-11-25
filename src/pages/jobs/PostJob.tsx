@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router'
+import { useNavigate, useParams, useSearchParams } from 'react-router'
 import { toast } from 'sonner'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { StepIndicator } from '@/components/ui/StepIndicator'
@@ -9,6 +9,7 @@ import { reportError } from '@/lib/observability'
 import { useAuth } from '@/hooks/useAuth'
 import { useWizard } from '@/hooks/useWizard'
 import { computeJobCompleteness } from '@/lib/wizardUtils'
+import { SHED_TYPES } from '@/types/domain'
 import { JobStep1Basics } from './steps/JobStep1Basics'
 import { JobStep2FarmDetails } from './steps/JobStep2FarmDetails'
 import { JobStep3Skills } from './steps/JobStep3Skills'
@@ -92,15 +93,61 @@ export interface EmployerProfileDefaults {
   accommodation_type?: string
 }
 
+// What get_lead_for_prefill (migration 108) returns: job fields only, never
+// contact details. See the migration header for why contact is excluded.
+interface LeadPrefill {
+  role?: string | null
+  region?: string | null
+  locality?: string | null
+  shed_type?: string | null
+  herd_details?: string | null
+  source_ref?: string | null
+}
+
+// Map a lead prefill onto JobPostingData. Only fields with a clean target are
+// mapped; everything else stays blank for the employer to fill, never invented.
+// herd_details is free text ("550 cows, split calving"), so only a leading herd
+// size is taken, as both min and max; the calving pattern stays for the
+// employer to pick. structured has no start date (applications_close is a
+// closing date, not a start), and no employer accommodation field, so neither
+// is mapped. A shed type that is not one of the wizard's options is dropped
+// rather than submitted as a value no chip can show.
+function mapLeadPrefill(prefill: LeadPrefill): Partial<JobPostingData> {
+  const mapped: Partial<JobPostingData> = {}
+  if (prefill.role) mapped.title = prefill.role
+  if (prefill.region) mapped.region = prefill.region
+  if (prefill.locality) mapped.nearest_town = prefill.locality
+  if (prefill.shed_type) {
+    const shed = prefill.shed_type.trim().toLowerCase()
+    if (SHED_TYPES.some((s) => s.value === shed)) mapped.shed_type = [shed]
+  }
+  if (prefill.herd_details) {
+    const sizeMatch = prefill.herd_details.match(/(\d[\d,]*)/)
+    if (sizeMatch) {
+      const size = Number(sizeMatch[1].replace(/,/g, ''))
+      if (Number.isFinite(size) && size > 0) {
+        mapped.herd_size_min = size
+        mapped.herd_size_max = size
+      }
+    }
+  }
+  return mapped
+}
+
+const LEAD_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
 export function PostJob() {
   const { session } = useAuth()
   const navigate = useNavigate()
   const { id: urlJobId } = useParams<{ id: string }>()
+  const [searchParams] = useSearchParams()
 
   const [jobId, setJobId] = useState<string | null>(urlJobId ?? null)
   const [jobData, setJobData] = useState<JobPostingData>({})
   const [employerProfile, setEmployerProfile] = useState<EmployerProfileDefaults>({})
   const [loading, setLoading] = useState(true)
+  // ?lead= prefill landed (migration 108): show the banner, not a silent fill.
+  const [leadPrefilled, setLeadPrefilled] = useState(false)
   // Phase 5.6 — a failed profile fetch is not "no profile". Falling through
   // here treats an unknown as a known and misroutes the user.
   const [profileError, setProfileError] = useState(false)
@@ -226,6 +273,34 @@ export function PostJob() {
           if (job.title && job.sector) {
             wizard.goToStep(1)
           }
+        }
+      }
+
+      // ?lead= prefill (migration 108): a logged-in employer arriving from an
+      // outreach link gets their own Facebook post's job fields pre-filled.
+      // New jobs only — never over an existing draft. Runs before setLoading
+      // (false) so the wizard mounts with the prefilled values, not blanks.
+      // The onboarding gate above already ran: ?lead= never bypasses login or
+      // onboarding, it only pre-fills the wizard once the employer is in.
+      const leadParam = searchParams.get('lead')
+      if (leadParam && !urlJobId && LEAD_ID_PATTERN.test(leadParam)) {
+        const { data, error: prefillError } = await supabase.rpc('get_lead_for_prefill', {
+          p_lead_id: leadParam,
+        })
+        if (prefillError) {
+          reportError('post job: lead prefill', prefillError)
+          toast.error('That saved post could not be loaded, so the form starts blank.')
+        } else if (data) {
+          const mapped = mapLeadPrefill(data as LeadPrefill)
+          if (Object.keys(mapped).length > 0) {
+            setJobData((prev) => ({ ...prev, ...mapped }))
+            setLeadPrefilled(true)
+          } else {
+            toast.error('That saved post could not be loaded, so the form starts blank.')
+          }
+        } else {
+          // RPC returned null: unknown id, not approved, or not an employer lead.
+          toast.error('That saved post could not be loaded, so the form starts blank.')
         }
       }
 
@@ -408,6 +483,18 @@ export function PostJob() {
             Complete all steps to publish your job listing
           </p>
         </div>
+
+        {/* ?lead= prefill landed: say so, and say to check it. The fields are
+            the employer's own post, not ours, and a wrong prefill published
+            blind would be worse than a blank form. */}
+        {leadPrefilled && (
+          <p
+            className="border-border bg-brand-50 rounded-8 border px-4 py-3 text-sm"
+            style={{ color: 'var(--color-text)' }}
+          >
+            Pre-filled from your Facebook post, check it before publishing.
+          </p>
+        )}
 
         {/* Step indicator */}
         <StepIndicator currentStep={currentStep} totalSteps={TOTAL_STEPS} labels={STEP_LABELS} />

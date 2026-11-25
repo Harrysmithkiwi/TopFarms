@@ -95,6 +95,7 @@ const FarmPhotoUpload = lazy(() =>
 const ForEmployers = lazy(() =>
   import('@/pages/ForEmployers').then((m) => ({ default: m.ForEmployers })),
 )
+const ForSeekers = lazy(() => import('@/pages/ForSeekers').then((m) => ({ default: m.ForSeekers })))
 const Pricing = lazy(() => import('@/pages/Pricing').then((m) => ({ default: m.Pricing })))
 const JobSearch = lazy(() =>
   import('@/pages/jobs/JobSearch').then((m) => ({ default: m.JobSearch })),
@@ -249,6 +250,10 @@ export function routeTable() {
     {
       path: '/for-employers',
       element: s(<ForEmployers />),
+    },
+    {
+      path: '/for-seekers',
+      element: s(<ForSeekers />),
     },
     {
       path: '/pricing',

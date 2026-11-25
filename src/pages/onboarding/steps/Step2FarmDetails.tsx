@@ -102,6 +102,15 @@ export function Step2FarmDetails({ onComplete, onBack, defaultValues }: Step2Pro
   // selected yet still shows them, so the form does not flicker fields in on first paint.
   const farmTypes = useWatch({ control, name: 'farm_types' }) ?? []
   const isAccredited = useWatch({ control, name: 'inz_accredited' }) ?? false
+  // Step 1 already asked farm type, and EmployerOnboarding seeds farm_types from
+  // that answer (or from the saved profile on resume). Re-rendering the question
+  // here made employers pick the same thing twice. When exactly one type is
+  // already known, the chips are hidden; the value stays in the form via
+  // defaultValues (react-hook-form keeps defaults for unmounted fields) and is
+  // submitted unchanged. Change it via Back to step 1. Two or more types keep
+  // the editor, because step 1 is single-select and this is the only place a
+  // second type can be added.
+  const farmTypeAlreadyAnswered = (defaultValues?.farm_types?.length ?? 0) === 1
   const showsDairyFields =
     farmTypes.length === 0 || farmTypes.includes('dairy') || farmTypes.includes('mixed')
 
@@ -134,23 +143,26 @@ export function Step2FarmDetails({ onComplete, onBack, defaultValues }: Step2Pro
       </div>
 
       <div className="space-y-4">
-        {/* Farm type chips — 2-column grid, multi-select */}
-        <Controller
-          control={control}
-          name="farm_types"
-          render={({ field }) => (
-            <ChipSelector
-              label="Farm type"
-              required
-              options={FARM_TYPE_OPTIONS}
-              value={field.value ?? []}
-              onChange={field.onChange}
-              mode="multi"
-              columns={2}
-              error={errors.farm_types?.message}
-            />
-          )}
-        />
+        {/* Farm type chips — 2-column grid, multi-select. Hidden when step 1
+            already answered it (see farmTypeAlreadyAnswered above). */}
+        {!farmTypeAlreadyAnswered && (
+          <Controller
+            control={control}
+            name="farm_types"
+            render={({ field }) => (
+              <ChipSelector
+                label="Farm type"
+                required
+                options={FARM_TYPE_OPTIONS}
+                value={field.value ?? []}
+                onChange={field.onChange}
+                mode="multi"
+                columns={2}
+                error={errors.farm_types?.message}
+              />
+            )}
+          />
+        )}
 
         {/* Ownership structure chips — 2-column grid, multi-select */}
         <Controller

@@ -1,5 +1,7 @@
+import { useSearchParams } from 'react-router'
 import { PublicShell } from '@/components/shell/PublicShell'
 import { usePageMeta } from '@/lib/usePageMeta'
+import { readAttributionRef, signupHref } from '@/lib/attribution'
 import { Container, Display, Btn, TextLink, IconPlate } from '@/components/landing/v12/V12Kit'
 import { IconCheck, IconLeaf, IconShield, IconTag } from '@/components/landing/LandingIcons'
 
@@ -74,6 +76,11 @@ export function ForEmployers() {
     'How posting a farm job on TopFarms works: post the whole job, applicants arrive scored with reasons, you decide who to ring. Every listing free.',
   )
 
+  // Carry `?ref=` through to the signup CTA: an outreach link that lands here
+  // must not lose attribution on the way to /signup.
+  const [searchParams] = useSearchParams()
+  const attributionRef = readAttributionRef(searchParams)
+
   return (
     <PublicShell>
       {/* ── Hero ── */}
@@ -89,7 +96,7 @@ export function ForEmployers() {
             Three steps, and the list stays yours the whole way through.
           </p>
           <div className="mt-9 flex flex-col items-center justify-center gap-3.5 sm:flex-row">
-            <Btn to="/signup?role=employer" size="lg">
+            <Btn to={signupHref('employer', attributionRef)} size="lg">
               Post a job
             </Btn>
             <Btn to="/pricing" variant="onScene" size="lg">

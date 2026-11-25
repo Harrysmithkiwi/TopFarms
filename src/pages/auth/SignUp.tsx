@@ -10,6 +10,7 @@ import { AuthLayout } from '@/components/layout/AuthLayout'
 import { useAuth } from '@/hooks/useAuth'
 import { usePageMeta } from '@/lib/usePageMeta'
 import { sanitizeReturnTo, storeReturnTo } from '@/lib/returnTo'
+import { readAttributionRef } from '@/lib/attribution'
 import { cn } from '@/lib/utils'
 
 const schema = z.object({
@@ -79,6 +80,13 @@ export function SignUp() {
       // allowlist is a known-broken surface (go-live ticket 02), and this needs no
       // allowlist entry at all.
       if (attributionRef) sessionStorage.setItem('tf-signup-ref', attributionRef)
+      // Same round-trip problem as `?ref=`, worse outcome: the OAuth redirect drops
+      // `?role=`, and the handle_new_user trigger defaults a role-less signup to
+      // seeker, so an employer who came in on /signup?role=employer would land as
+      // a seeker. Park the intended role (picked card, else the ?role= param) and
+      // let SelectRole apply it after the round trip.
+      const intendedRole = selectedRole ?? initialRole
+      if (intendedRole) sessionStorage.setItem('tf-signup-role', intendedRole)
       // Same round-trip problem as `?ref=`: park the return target for
       // SelectRole/ConfirmEmail (src/lib/returnTo.ts).
       storeReturnTo(returnTo)
@@ -96,15 +104,10 @@ export function SignUp() {
 
   // Attribution: `?ref=` on an outreach link, carrying the first 8 hex characters of a
   // lead_staging id (a full UUID is still accepted — links already sent stay valid).
-  // Validated rather than passed through: it lands in user metadata permanently, and a
-  // junk value would sit there forever pretending to be a lead. Absent or malformed
-  // simply means organic, which is a real and common case.
-  const refParam = searchParams.get('ref')
-  const attributionRef =
-    refParam &&
-    /^[0-9a-f]{8}$|^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(refParam)
-      ? refParam.toLowerCase()
-      : null
+  // Validated in src/lib/attribution.ts rather than passed through: it lands in user
+  // metadata permanently, and a junk value would sit there forever pretending to be
+  // a lead. Absent or malformed simply means organic, which is a real and common case.
+  const attributionRef = readAttributionRef(searchParams)
 
   // Return target from `?next=` (e.g. "Sign up" on a job page). The email path
   // round-trips through the user's inbox, so it is parked in localStorage and

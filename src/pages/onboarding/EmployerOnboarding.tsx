@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router'
 import { toast } from 'sonner'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { StepIndicator } from '@/components/ui/StepIndicator'
@@ -71,6 +72,7 @@ export interface EmployerProfileData {
 
 export function EmployerOnboarding() {
   const { session } = useAuth()
+  const navigate = useNavigate()
   const [profileData, setProfileData] = useState<EmployerProfileData>({})
   const [loading, setLoading] = useState(true)
   // Phase 5.6 — a failed profile fetch is not "no profile". Falling through
@@ -236,6 +238,27 @@ export function EmployerOnboarding() {
 
         {/* Step indicator */}
         <StepIndicator currentStep={currentStep} totalSteps={TOTAL_STEPS} labels={STEP_LABELS} />
+
+        {/*
+          Escape hatch, deliberately only from step 2 onward — copied from the
+          seeker wizard (SeekerOnboarding.tsx). Step 1 is the matchable core
+          (farm type) — leaving before it produces a profile the match engine
+          cannot see. After it, every remaining step only sharpens an existing
+          profile, so holding someone hostage to another seven screens just
+          loses them. Their progress is already saved: each step upserts on
+          completion, and the wizard resumes at onboarding_step on return.
+        */}
+        {currentStep > 0 && (
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={() => navigate('/dashboard/employer')}
+              className="text-text-muted hover:text-text focus-visible:outline-brand min-h-[44px] cursor-pointer text-[13px] underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2"
+            >
+              Save and finish later
+            </button>
+          </div>
+        )}
 
         {/* Step content */}
         <div className="bg-surface border-border rounded-16 border p-6 shadow-sm">
